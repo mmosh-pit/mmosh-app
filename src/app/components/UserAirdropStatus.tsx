@@ -31,7 +31,7 @@ const UserAirdropStatus = () => {
 
   const getRankData = React.useCallback(async () => {
     const result = await axios.get(
-      `/api/get-user-ranking?user=${userData!.telegram.id}`,
+      `/api/get-rank-data?user=${userData!.telegram.id}`,
     );
 
     const rank = result.data.yourRank;
@@ -66,32 +66,36 @@ const UserAirdropStatus = () => {
 
   return (
     <div className="w-full h-ull flex flex-col justify-center items-center">
-      <div>
+      <div className="mb-12 mt-20">
         <h3>Airdrop Status</h3>
       </div>
 
-      <div className="flex flex-col items-center justify-center">
-        <p>
-          <span className="font-bold">Total Members:</span>{" "}
-          {airdropStatus.totalMembers}
-        </p>
-        <p>
-          <span className="font-bold">Total Points:</span>{" "}
-          {airdropStatus.totalPoints}
-        </p>
-        <p>
-          <span className="font-bold">Your Points:</span> {airdropStatus.points}
-        </p>
-        <p>
-          <span className="font-bold">Your Odds:</span> {airdropStatus.odds}
-        </p>
-        <p>
-          <span className="font-bold">Your Rank:</span> {airdropStatus.rank}
-        </p>
+      <div className="flex flex-col md:w-[20%] xs:w-[40%]">
+        <div className="my-1 flex justify-between">
+          <p className="font-bold">Total Members:</p>{" "}
+          <p>{airdropStatus.totalMembers}</p>
+        </div>
+        <div className="my-1 flex justify-between">
+          <p className="font-bold">Total Points:</p>{" "}
+          <p>{airdropStatus.totalPoints}</p>
+        </div>
+
+        <div className="my-1 flex justify-between">
+          <p className="font-bold">Your Points:</p>
+          <p className="my-1">{airdropStatus.points}</p>
+        </div>
+        <div className="my-1 flex justify-between">
+          <p className="font-bold">Your Odds:</p>
+          <p className="my-1">{`${airdropStatus.odds}%`}</p>
+        </div>
+        <div className="my-1 flex justify-between">
+          <p className="font-bold">Your Rank:</p>
+          <p className="my-1">{airdropStatus.rank}</p>
+        </div>
       </div>
 
-      <div>
-        <p>
+      <div className="mt-20 lg:max-w-[45%] md:max-w-[50%] xs:max-w-[80%]">
+        <p className="text-center">
           Congratulations! You’re fully enrolled in our Airdrops. Return to our
           Airdrop Bot for additional tasks to earn points, win Airdrop Keys and
           claim your Airdrops.

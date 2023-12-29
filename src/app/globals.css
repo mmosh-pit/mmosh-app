@@ -41,3 +41,10 @@ p {
   line-height: 1.5vmax;
   color: #d7d7d7;
 }
+
+h3 {
+  font-family: var(--font-poppins);
+  font-size: 2vmax;
+  line-height: 1.5vmax;
+  color: #d7d7d7;
+}

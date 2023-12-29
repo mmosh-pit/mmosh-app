@@ -16,8 +16,6 @@ const ConnectedWOAccount = () => {
         request_access: true,
       },
       async (data: any) => {
-        console.log("Data: ", data);
-
         const telegramData = {
           id: data.id,
           firstName: data.firstName,

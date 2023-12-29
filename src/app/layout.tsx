@@ -27,6 +27,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${poppins.variable}`}>
+      <head>
+        <link rel="icon" href="/mmosh.ico" sizes="any" />
+      </head>
       <body className={inter.className}>
         <ConfigHOC>
           <Header />

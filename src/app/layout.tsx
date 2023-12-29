@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -31,6 +32,12 @@ export default function RootLayout({
         <ConfigHOC>
           <Header />
           {children}
+          <Script
+            async
+            strategy="beforeInteractive"
+            type="text/javascript"
+            src="https://telegram.org/js/telegram-widget.js?22"
+          ></Script>
         </ConfigHOC>
       </body>
     </html>

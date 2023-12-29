@@ -4,19 +4,24 @@ import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
+import { useAtom } from "jotai";
+import { UserStatus, status } from "../store";
 
 const Header = () => {
   const wallet = useAnchorWallet();
+  const [userStatus] = useAtom(status);
 
   return (
-    <div className="flex flex-col">
+    <div className="w-full flex flex-col justify-center items-center pt-12 px-8">
       <div className="flex w-full justify-between mx-8">
-        <Image
-          src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png"
-          alt="logo"
-          width={80}
-          height={80}
-        />
+        {userStatus !== UserStatus.fullAccount && (
+          <Image
+            src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png"
+            alt="logo"
+            width={80}
+            height={80}
+          />
+        )}
 
         {wallet?.publicKey && (
           <WalletMultiButton

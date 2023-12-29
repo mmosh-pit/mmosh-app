@@ -1,4 +1,4 @@
-const WithTelegramNoWallet = () => {
+const WithTelegramNoAccount = () => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-12">
       <div className="md::max-w-[40%] max-w-[90%] my-12">
@@ -9,12 +9,16 @@ const WithTelegramNoWallet = () => {
       </div>
 
       <div className="mt-8">
-        <button className="bg-[#FCAE0E] py-16 px-4 rounded-md">
+        <a
+          className="bg-[#FCAE0E] py-4 px-4 rounded-md flex items-center"
+          href="https://t.me/LiquidHeartsBot"
+          target="_blank"
+        >
           <p className="text-black text-lg">Activate Bot</p>
-        </button>
+        </a>
       </div>
     </div>
   );
 };
 
-export default WithTelegramNoWallet;
+export default WithTelegramNoAccount;

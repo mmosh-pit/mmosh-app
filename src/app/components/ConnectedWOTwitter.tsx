@@ -28,7 +28,7 @@ const ConnectedWOTwitter = () => {
           user: user.uid,
         };
 
-        await axios.post("/api/update-wallet-data", {
+        await axios.put("/api/update-wallet-data", {
           wallet: wallet!.publicKey,
           field: "twitter",
           value: twitterData,

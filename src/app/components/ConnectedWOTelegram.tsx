@@ -24,7 +24,7 @@ const ConnectedWOAccount = () => {
           username: data.username,
         };
 
-        await axios.post("/api/update-wallet-data", {
+        await axios.put("/api/update-wallet-data", {
           wallet: wallet!.publicKey,
           field: "telegram",
           value: telegramData,

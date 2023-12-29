@@ -35,7 +35,7 @@ const ConnectedWOTwitter = () => {
         });
 
         setUserStatus(UserStatus.fullAccount);
-        setUserData((prev) => ({
+        setUserData((prev: any) => ({
           ...prev,
           twitter: twitterData,
         }));

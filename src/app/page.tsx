@@ -26,7 +26,7 @@ export default function Home() {
     setUserData(result.data);
 
     const hasTwitter = !!result.data?.twitterData;
-    const hasTelegram = !!result.data?.telegramId;
+    const hasTelegram = !!result.data?.telegram;
 
     if (!hasTelegram) {
       setUserStatus(UserStatus.noTelegram);

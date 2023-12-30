@@ -43,8 +43,9 @@ p {
 }
 
 h3 {
-  font-family: var(--font-poppins);
-  font-size: 2vmax;
+  font-family: var(--font-patched);
+  font-size: 2.2vmax;
   line-height: 1.5vmax;
-  color: #d7d7d7;
+  font-weight: 900;
+  color: #ffffff;
 }

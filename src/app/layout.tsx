@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { Inter, Poppins } from "next/font/google";
+import ConfigHOC from "./components/ConfigHOC";
+import Header from "./components/Header";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-import { Poppins } from "next/font/google";
-import ConfigHOC from "./components/ConfigHOC";
-import Header from "./components/Header";
+const patched = localFont({
+  src: "./Patched-Medium.otf",
+  display: "swap",
+  variable: "--font-patched",
+});
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${poppins.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${patched.variable}`}>
       <head>
         <link rel="icon" href="/mmosh.ico" sizes="any" />
       </head>

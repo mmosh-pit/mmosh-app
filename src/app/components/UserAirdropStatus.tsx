@@ -72,30 +72,30 @@ const UserAirdropStatus = () => {
 
       <div className="flex flex-col md:w-[20%] xs:w-[40%]">
         <div className="my-1 flex justify-between">
-          <p className="font-bold">Total Members:</p>{" "}
+          <p className="font-bold text-white">Total Members:</p>{" "}
           <p>{airdropStatus.totalMembers}</p>
         </div>
         <div className="my-1 flex justify-between">
-          <p className="font-bold">Total Points:</p>{" "}
+          <p className="font-bold text-white">Total Points:</p>{" "}
           <p>{airdropStatus.totalPoints}</p>
         </div>
 
         <div className="my-1 flex justify-between">
-          <p className="font-bold">Your Points:</p>
+          <p className="font-bold text-white">Your Points:</p>
           <p className="my-1">{airdropStatus.points}</p>
         </div>
         <div className="my-1 flex justify-between">
-          <p className="font-bold">Your Odds:</p>
+          <p className="font-bold text-white">Your Odds:</p>
           <p className="my-1">{`${airdropStatus.odds}%`}</p>
         </div>
         <div className="my-1 flex justify-between">
-          <p className="font-bold">Your Rank:</p>
+          <p className="font-bold text-white">Your Rank:</p>
           <p className="my-1">{airdropStatus.rank}</p>
         </div>
       </div>
 
       <div className="mt-20 lg:max-w-[45%] md:max-w-[50%] xs:max-w-[80%]">
-        <p className="text-center">
+        <p className="text-center text-white">
           Congratulations! You’re fully enrolled in our Airdrops. Return to our
           Airdrop Bot for additional tasks to earn points, win Airdrop Keys and
           claim your Airdrops.

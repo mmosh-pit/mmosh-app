@@ -11,10 +11,12 @@ import ConnectedWOTelegram from "./components/ConnectedWOTelegram";
 import WithTelegramNoAccount from "./components/WithTelegramNoAccount";
 import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
 import { init } from "./lib/firebase";
-import UserAirdropStatus from "./components/UserAirdropStatus";
+import CreateProfile from "./components/CreateProfile";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const rendered = React.useRef(false);
+  const router = useRouter();
   const [userStatus, setUserStatus] = useAtom(status);
   const [_, setUserData] = useAtom(data);
   const wallet = useAnchorWallet();
@@ -28,6 +30,7 @@ export default function Home() {
 
     const hasTwitter = !!result.data?.twitter;
     const hasTelegram = !!result.data?.telegram;
+    const hasProfile = !!result.data?.profile;
 
     if (!hasTelegram) {
       setUserStatus(UserStatus.noTelegram);
@@ -48,7 +51,13 @@ export default function Home() {
       return;
     }
 
+    if (!hasProfile) {
+      setUserStatus(UserStatus.noProfile);
+      return;
+    }
+
     setUserStatus(UserStatus.fullAccount);
+    router.push(`/${result.data.profile.username}`);
   }, [wallet]);
 
   const renderComponent = () => {
@@ -68,8 +77,8 @@ export default function Home() {
       return <ConnectedWOTwitter />;
     }
 
-    if (userStatus === UserStatus.fullAccount) {
-      return <UserAirdropStatus />;
+    if (userStatus === UserStatus.noProfile) {
+      return <CreateProfile />;
     }
   };
 

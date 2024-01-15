@@ -19,34 +19,59 @@ const Header = () => {
         <Image
           src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png"
           alt="logo"
+          className="ml-8"
           width={isMobileScreen ? 40 : 80}
           height={isMobileScreen ? 40 : 80}
         />
 
-        {wallet?.publicKey && (
-          <WalletMultiButton
-            startIcon={undefined}
-            style={{
-              backgroundColor: "#3C4854",
-              padding: "1em 4em",
-              borderRadius: 15,
-            }}
-          >
-            <p className="text-lg">
-              {walletAddressShortener(wallet.publicKey.toString())}
-            </p>
-          </WalletMultiButton>
+        {userStatus === UserStatus.fullAccount && (
+          <div className="flex w-[10%] justify-between">
+            <p className="text-base text-white">Home</p>
+
+            <p className="text-base text-white">Website</p>
+          </div>
         )}
+
+        <div>
+          {userStatus === UserStatus.fullAccount && (
+            <button className="bg-[#3A3488] bg-opacity-[0.54] px-6 py-3 rounded-xl mr-6">
+              <p className="text-base text-white font-bold">Settings</p>
+            </button>
+          )}
+          {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                background:
+                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
+                padding: "0 2em",
+                borderRadius: 15,
+              }}
+            >
+              <p className="text-lg text-white">
+                {wallet?.publicKey
+                  ? walletAddressShortener(wallet.publicKey.toString())
+                  : "Connect Wallet"}
+              </p>
+            </WalletMultiButton>
+          )}
+        </div>
       </div>
 
       {userStatus !== UserStatus.fullAccount && (
-        <div>
+        <div className="flex flex-col justify-center items-center">
           <Image
-            src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh.png"
+            src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_white.png"
             alt="mmosh"
             width={isMobileScreen ? 150 : 400}
             height={isMobileScreen ? 50 : 200}
           />
+
+          <p className="text-xl text-white font-goudy font-normal">
+            {userStatus !== UserStatus.noProfile
+              ? "Welcome to the MMOSH PIT!"
+              : "Create Your MMOSH Account"}
+          </p>
         </div>
       )}
     </div>

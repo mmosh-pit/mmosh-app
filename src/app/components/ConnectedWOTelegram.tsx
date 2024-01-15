@@ -19,7 +19,7 @@ const ConnectedWOAccount = () => {
         if (!data.id) return;
         const telegramData = {
           id: data.id,
-          firstName: data.firstName,
+          firstName: data.first_name,
           username: data.username,
         };
 
@@ -49,11 +49,11 @@ const ConnectedWOAccount = () => {
 
       <div className="mt-8">
         <button
-          className="bg-[#FCAE0E] py-4 px-4 rounded-md flex items-center"
+          className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
           onClick={executeLogin}
         >
           <TelegramIcon />
-          <p className="text-black text-lg ml-2">Connect Telegram Account</p>
+          <p className="text-white text-lg ml-2">Connect Telegram Account</p>
         </button>
       </div>
     </div>

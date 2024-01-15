@@ -18,21 +18,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%),
-    url(https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/bg_mobile.png),
-    lightgray 50% no-repeat;
-  background-size: cover;
-}
-
-@media (min-width: 768px) {
-  body {
-    background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%),
-      url(https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/bg.png),
-      lightgray 50% no-repeat;
-    background-size: cover;
-  }
+  background: #09073a;
 }
 
 p {
@@ -48,4 +34,28 @@ h3 {
   line-height: 1.5vmax;
   font-weight: 900;
   color: #ffffff;
+}
+
+#desktop-navbar {
+  background: linear-gradient(
+    92deg,
+    rgba(255, 255, 255, 0.1) 1.89%,
+    rgba(255, 255, 255, 0.06) 103.72%
+  );
+  border: 1px solid rgba(242, 242, 242, 0.13);
+}
+
+#coming-soon {
+  background: var(
+    --Gradient-banner,
+    linear-gradient(120deg, #76c5f3 8.7%, #a195ee 67.39%)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@font-face {
+  font-family: "Goudy";
+  src: url("../assets/fonts/goudy_heavyface_bt.ttf");
 }

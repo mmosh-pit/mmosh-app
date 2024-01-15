@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export const init = () => {
   const firebaseConfig = {
@@ -12,4 +13,17 @@ export const init = () => {
   };
 
   initializeApp(firebaseConfig);
+};
+
+export const uploadFile = async (file: File, name: string): Promise<string> => {
+  const storage = getStorage();
+
+  const storageRef = ref(
+    storage,
+    `profile/${name}-${new Date().getTime()}.png`,
+  );
+
+  await uploadBytes(storageRef, file);
+
+  return await getDownloadURL(storageRef);
 };

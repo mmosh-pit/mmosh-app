@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useAtom } from "jotai";
 import TwitterIcon from "@/assets/icons/TwitterIcon";
-import { TwitterAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { TwitterAuthProvider, getAdditionalUserInfo, getAuth, signInWithPopup } from "firebase/auth";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { UserStatus, data, status } from "../store";
 
@@ -16,16 +16,12 @@ const ConnectedWOTwitter = () => {
 
     signInWithPopup(auth, provider)
       .then(async (result) => {
-        const credential = TwitterAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        const secret = credential?.secret;
-
-        const user = result.user;
+        const info = getAdditionalUserInfo(result);
 
         const twitterData = {
-          secret,
-          token,
-          user: user.uid,
+          name: info?.profile!.name,
+          username: info?.username,
+          id: info?.profile!.id,
         };
 
         await axios.put("/api/update-wallet-data", {
@@ -34,13 +30,15 @@ const ConnectedWOTwitter = () => {
           value: twitterData,
         });
 
-        setUserStatus(UserStatus.fullAccount);
+        setUserStatus(UserStatus.noProfile);
         setUserData((prev: any) => ({
           ...prev,
           twitter: twitterData,
         }));
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -54,11 +52,11 @@ const ConnectedWOTwitter = () => {
 
       <div className="mt-8">
         <button
-          className="bg-[#FCAE0E] py-4 px-4 rounded-md flex justify-center items-center"
+          className="bg-[#CD068E] py-4 px-4 rounded-md flex justify-center items-center"
           onClick={connectTwitter}
         >
           <TwitterIcon />
-          <p className="text-black text-lg ml-2">Connect Twitter/X Account</p>
+          <p className="text-white text-lg ml-2">Connect Twitter/X Account</p>
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ export enum UserStatus {
   noTelegram,
   noAccount,
   noTwitter,
+  noProfile,
   fullAccount,
 }
 

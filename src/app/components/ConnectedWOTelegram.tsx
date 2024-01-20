@@ -41,9 +41,12 @@ const ConnectedWOAccount = () => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-12">
       <div className="md::max-w-[40%] max-w-[90%] my-12">
+        <h3 className="text-center text-white font-goudy font-normal mb-12">
+          Connect to Solana
+        </h3>
         <p className="text-center">
-          Thanks for connecting your wallet! Now let’s link your Telegram
-          account to your Solana address.
+          Thanks for connecting your wallet. Now let’s link your Telegram
+          account to this Solana wallet.
         </p>
       </div>
 

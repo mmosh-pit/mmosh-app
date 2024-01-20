@@ -2,9 +2,12 @@ const WithTelegramNoAccount = () => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-12">
       <div className="md::max-w-[40%] max-w-[90%] my-12">
+        <h3 className="text-center text-white font-goudy font-normal mb-12">
+          Activate the Bot
+        </h3>
         <p className="text-center">
-          The Telegram account you’ve connected has not been activated in our
-          Telegram Bot. Activate now to join the MMOSH.
+          Activate our Telegram bot to receive messages and guidance along your
+          journey.
         </p>
       </div>
 

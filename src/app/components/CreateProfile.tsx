@@ -55,10 +55,13 @@ const CreateProfile = () => {
     <div className="w-full flex justify-center items-center">
       <div className="flex flex-col md:w-[70%] xs:w-[90%]">
         <div className="self-center md:w-[45%] xs:w-[80%]">
+          <h3 className="text-center text-white font-goudy font-normal mb-12">
+            Create Your MMOSH Account
+          </h3>
           <p className="text-base text-center">
-            Join our community of Founders, Builders, Creators, Promoters and
-            Collectors in the first and only Massively Multiplayer Online Shared
-            Hallucination!
+            Join our community of Creators, Scouts, Curators and Enjoyers in the
+            one and only Massively Multiplayer On-chain Shared{" "}
+            <span id="hallucination">Hallucination!</span>
           </p>
         </div>
         <div className="w-full self-start mt-16">

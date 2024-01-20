@@ -1,7 +1,12 @@
 import axios from "axios";
 import { useAtom } from "jotai";
 import TwitterIcon from "@/assets/icons/TwitterIcon";
-import { TwitterAuthProvider, getAdditionalUserInfo, getAuth, signInWithPopup } from "firebase/auth";
+import {
+  TwitterAuthProvider,
+  getAdditionalUserInfo,
+  getAuth,
+  signInWithPopup,
+} from "firebase/auth";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { UserStatus, data, status } from "../store";
 
@@ -19,9 +24,11 @@ const ConnectedWOTwitter = () => {
         const info = getAdditionalUserInfo(result);
 
         const twitterData = {
+          uid: result.user.uid,
           name: info?.profile!.name,
           username: info?.username,
           id: info?.profile!.id,
+          provider: result.providerId,
         };
 
         await axios.put("/api/update-wallet-data", {
@@ -44,9 +51,11 @@ const ConnectedWOTwitter = () => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-12">
       <div className="md::max-w-[40%] max-w-[90%] my-12">
+        <h3 className="text-center text-white font-goudy font-normal mb-12">
+          Connect to X / Twitter
+        </h3>
         <p className="text-center">
-          Last step! To complete your registration please connect your Twitter
-          (X) account to the Airdrop Bot.
+          Please connect your X/Twitter account to raid and win.
         </p>
       </div>
 

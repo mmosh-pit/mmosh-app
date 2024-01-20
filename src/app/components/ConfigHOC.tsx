@@ -20,11 +20,26 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
         type="text/javascript"
         src="https://telegram.org/js/telegram-widget.js?22"
       ></Script>
+      <Script
+        async
+        strategy="beforeInteractive"
+        type="text/javascript"
+        src="https://www.google.com/recaptcha/enterprise.js?render=6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN"
+      ></Script>
       <ConnectionProvider endpoint={endpoint}>
-        <WalletProvider autoConnect>{children}</WalletProvider>
+        <WalletProvider autoConnect>
+          <div className="bg-onboarding">{children}</div>
+        </WalletProvider>
       </ConnectionProvider>
     </>
   );
 };
+
+// function onClick(e) {
+//     e.preventDefault();
+//     grecaptcha.enterprise.ready(async () => {
+//       const token = await grecaptcha.enterprise.execute('6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN', {action: 'LOGIN'});
+//     });
+//   }
 
 export default ConfigHOC;

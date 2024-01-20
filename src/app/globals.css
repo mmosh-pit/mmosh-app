@@ -30,7 +30,7 @@ p {
 
 h3 {
   font-family: var(--font-patched);
-  font-size: 2.2vmax;
+  font-size: 1.8vmax;
   line-height: 1.5vmax;
   font-weight: 900;
   color: #ffffff;
@@ -45,11 +45,21 @@ h3 {
   border: 1px solid rgba(242, 242, 242, 0.13);
 }
 
-#coming-soon {
+#coming-soon-mobile {
   background: var(
     --Gradient-banner,
     linear-gradient(120deg, #76c5f3 8.7%, #a195ee 67.39%)
   );
+}
+
+#coming-soon-mobile-wrapper {
+  background: rgba(132, 132, 132, 0.22);
+  backdrop-filter: blur(5px);
+}
+
+#coming-soon {
+  background: linear-gradient(120deg, #009efa 8.7%, #4d34f0 67.39%);
+
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -58,4 +68,18 @@ h3 {
 @font-face {
   font-family: "Goudy";
   src: url("../assets/fonts/goudy_heavyface_bt.ttf");
+}
+
+.bg-onboarding {
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_bg.png"),
+    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background-size: cover, auto;
+  background-repeat: no-repeat, repeat;
+}
+
+#hallucination {
+  background: var(
+    --grad,
+    linear-gradient(91deg, #0061ff 71.76%, #ff00ae 92.51%)
+  );
 }

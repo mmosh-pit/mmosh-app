@@ -22,4 +22,5 @@ type Twitter = {
   id: string;
   name: string;
   username: string;
-}
+  providerId: string;
+};

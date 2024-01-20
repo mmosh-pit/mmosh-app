@@ -4,12 +4,12 @@ import * as React from "react";
 import DesktopNavbar from "../components/Profile/DesktopNavbar";
 import Image from "next/image";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import TelegramMagentaIcon from "@/assets/icons/TelegramMagentaIcon";
-import TwitterMagentaIcon from "@/assets/icons/TwitterMagentaIcon";
 import axios from "axios";
 import { useAtom } from "jotai";
 import { UserStatus, status } from "../store";
 import { User } from "../models/user";
+import TelegramAccount from "../components/Profile/TelegramAccount";
+import TwitterAccount from "../components/Profile/TwitterAccount";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -17,7 +17,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [rankData, setRankData] = React.useState({
     points: 0,
     rank: 0,
-  })
+  });
   const [_, setUserStatus] = useAtom(status);
 
   const getUserData = React.useCallback(async () => {
@@ -30,8 +30,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
     });
   }, [params]);
 
-  const getRankData = React.useCallback(async() => {
-    const result = await axios.get(`/api/get-rank-data?user=${userData?.telegram.id}`);
+  const getRankData = React.useCallback(async () => {
+    const result = await axios.get(
+      `/api/get-rank-data?user=${userData?.telegram.id}`,
+    );
 
     setRankData(result.data);
   }, [userData]);
@@ -46,12 +48,12 @@ const Profile = ({ params }: { params: { username: string } }) => {
     if (!userData) return;
 
     getRankData();
-  }, [userData])
+  }, [userData]);
 
   return (
     <div className="w-full h-screen flex flex-col mt-16">
       <div className="w-full h-full flex xs:flex-col md:flex-row justify-between px-12">
-        <DesktopNavbar />
+        {!isMobile && <DesktopNavbar />}
 
         <div className="flex flex-col items-center xs:w-[80%] md:w-[50%] mt-16">
           <div className="w-full flex flex-col">
@@ -84,32 +86,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
               </div>
 
               <div className="w-full flex justify-around mt-16">
-                <div className="flex flex-col">
-                  <div className="flex items-center">
-                    <TelegramMagentaIcon />
-                    <p className="text-lg text-white ml-2">Telegram</p>
-                  </div>
-                  <p className="text-base text-white">
-                    {userData?.telegram?.firstName}
-                  </p>
-                  <p className="text-base">@{userData?.telegram?.username}</p>
-                  <button className="rounded-full p-4 bg-[#09073A] mt-2">
-                    Switch Account
-                  </button>
-                </div>
+                <TelegramAccount userData={userData} />
 
-                <div className="flex flex-col">
-                  <div className="flex items-center">
-                    <TwitterMagentaIcon />
-                    <p className="text-lg text-white ml-2">Twitter</p>
-                  </div>
-                  <p className="text-base text-white">{userData?.twitter?.name}</p>
-                  <p className="text-base">@{userData?.twitter?.username}</p>
-
-                  <button className="rounded-full p-4 bg-[#09073A] mt-2">
-                    Switch Account
-                  </button>
-                </div>
+                <TwitterAccount userData={userData} />
               </div>
             </div>
           </div>

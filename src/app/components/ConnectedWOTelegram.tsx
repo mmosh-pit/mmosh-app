@@ -24,7 +24,7 @@ const ConnectedWOAccount = () => {
           id: data.id,
           firstName: data.first_name,
           username: data.username,
-          points: user.data.points,
+          points: user.data?.points || 0,
         };
 
         await axios.put("/api/update-wallet-data", {

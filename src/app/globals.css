@@ -28,6 +28,10 @@ p {
   color: #d7d7d7;
 }
 
+span {
+  color: #d7d7d7;
+}
+
 h3 {
   font-family: var(--font-patched);
   font-size: 1.8vmax;
@@ -82,4 +86,11 @@ h3 {
     --grad,
     linear-gradient(91deg, #0061ff 71.76%, #ff00ae 92.51%)
   );
+}
+
+#custom-progress {
+  width: 5%;
+  height: 25px;
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png")
+    lightgray 50% / cover no-repeat;
 }

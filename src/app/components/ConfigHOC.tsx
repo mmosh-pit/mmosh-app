@@ -28,7 +28,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
       ></Script>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider autoConnect>
-          <div className="bg-onboarding">{children}</div>
+          <div>{children}</div>
         </WalletProvider>
       </ConnectionProvider>
     </>

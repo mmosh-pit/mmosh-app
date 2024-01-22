@@ -17,10 +17,14 @@ const ConnectedWOAccount = () => {
       },
       async (data: any) => {
         if (!data.id) return;
+
+        const user = await axios.get(`/api/get-bot-user?id=${data.id}`);
+
         const telegramData = {
           id: data.id,
           firstName: data.first_name,
           username: data.username,
+          points: user.data.points,
         };
 
         await axios.put("/api/update-wallet-data", {
@@ -28,6 +32,15 @@ const ConnectedWOAccount = () => {
           field: "telegram",
           value: telegramData,
         });
+
+        if (!user.data || !user.data.points) {
+          setUserStatus(UserStatus.noAccount);
+          setUserData((prev: any) => ({
+            ...prev,
+            telegram: telegramData,
+          }));
+          return;
+        }
 
         setUserStatus(UserStatus.noTwitter);
         setUserData((prev: any) => ({

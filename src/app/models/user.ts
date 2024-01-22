@@ -10,6 +10,7 @@ type Profile = {
   bio: string;
   image: string;
   pronouns: string;
+  points: number;
 };
 
 type Telegram = {

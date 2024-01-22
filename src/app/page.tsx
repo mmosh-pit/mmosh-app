@@ -13,6 +13,7 @@ import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
 import { init } from "./lib/firebase";
 import CreateProfile from "./components/CreateProfile";
 import { useRouter } from "next/navigation";
+import HomePage from "./components/HomePage";
 
 export default function Home() {
   const rendered = React.useRef(false);
@@ -57,7 +58,6 @@ export default function Home() {
     }
 
     setUserStatus(UserStatus.fullAccount);
-    router.push(`/${result.data.profile.username}`);
   }, [wallet]);
 
   const renderComponent = () => {
@@ -80,6 +80,8 @@ export default function Home() {
     if (userStatus === UserStatus.noProfile) {
       return <CreateProfile />;
     }
+
+    return <HomePage />;
   };
 
   const saveWalletIfNotExists = React.useCallback(async () => {

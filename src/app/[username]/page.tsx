@@ -86,9 +86,12 @@ const Profile = ({ params }: { params: { username: string } }) => {
               </div>
 
               <div className="w-full flex justify-around mt-16">
-                <TelegramAccount userData={userData} />
+                <TelegramAccount
+                  userData={userData}
+                  setUserData={setUserData}
+                />
 
-                <TwitterAccount userData={userData} />
+                <TwitterAccount userData={userData} setUserData={setUserData} />
               </div>
             </div>
           </div>

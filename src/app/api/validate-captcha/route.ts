@@ -1,5 +1,5 @@
 import { RecaptchaEnterpriseServiceClient } from "@google-cloud/recaptcha-enterprise";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   // Create the reCAPTCHA client.
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     console.log(
       `The CreateAssessment call failed because the token was: ${response.tokenProperties?.invalidReason}`,
     );
-    return null;
+    return NextResponse.json("", { status: 400 });
   }
 
   // Check if the expected action was executed.
@@ -47,11 +47,13 @@ export async function POST(req: NextRequest) {
       console.log(reason);
     });
 
-    return response.riskAnalysis?.score;
+    return NextResponse.json(response.riskAnalysis?.score, {
+      status: 200,
+    });
   } else {
     console.log(
       "The action attribute in your reCAPTCHA tag does not match the action you are expecting to score",
     );
-    return null;
+    return NextResponse.json("", { status: 400 });
   }
 }

@@ -33,7 +33,7 @@ const HomePage = () => {
     <div className="w-full h-full flex flex-col items-center mt-12">
       <div className="self-center md:max-w-[50%] xs:max-w-[90%]">
         <p className="text-center text-white font-goudy font-normal mb-12">
-          Welcome Home, Frank
+          Welcome Home, {currentUser?.profile.name}
         </p>
 
         <p className="text-center text-white">
@@ -47,13 +47,16 @@ const HomePage = () => {
           <div className="grid">
             <div className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl">
               <div className="self-center max-w-[30%] mr-8">
-                <Image
-                  src={value.profile.image}
-                  alt="Profile Image"
-                  className="rounded-full"
-                  width={isMobileScreen ? 60 : 150}
-                  height={isMobileScreen ? 100 : 200}
-                />
+                <div
+                  className={`relative ${isMobileScreen ? "w-[60px] h-[60px]" : "w-[150px] h-[150px]"}`}
+                >
+                  <Image
+                    src={value.profile.image}
+                    alt="Profile Image"
+                    className="rounded-full"
+                    layout="fill"
+                  />
+                </div>
               </div>
 
               <div className="w-full flex flex-col justify-start">
@@ -100,7 +103,7 @@ const HomePage = () => {
                 <div className="w-[80%] flex justify-between bg-[#434E59] bg-opacity-50 px-12 py-2 rounded-3xl mt-4">
                   <div>
                     <p className="text-white text-base">
-                      Points: {value.profile.points}
+                      Points: {value.profile.points || 0}
                     </p>
                   </div>
 

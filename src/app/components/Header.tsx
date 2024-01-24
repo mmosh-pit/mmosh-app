@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
@@ -30,6 +31,8 @@ const formatNumber = (value: number) => {
 };
 
 const Header = () => {
+  const pathname = usePathname();
+  const router = useRouter();
   const wallet = useAnchorWallet();
   const [userStatus] = useAtom(status);
   const [totalAccounts] = useAtom(accounts);
@@ -48,7 +51,6 @@ const Header = () => {
   }, [userStatus]);
 
   const getProgress = React.useCallback(() => {
-    console.log("User status: ", userStatus);
     return progress[userStatus];
   }, [userStatus]);
 
@@ -76,9 +78,20 @@ const Header = () => {
 
           {userStatus === UserStatus.fullAccount && !isMobileScreen && (
             <div className="flex w-[10%] justify-between">
-              <p className="text-base text-white">Home</p>
+              <p
+                className="text-base text-white"
+                onClick={() => router.replace("/")}
+              >
+                Home
+              </p>
 
-              <p className="text-base text-white">Website</p>
+              <a
+                target="_blank"
+                href="https://mmosh.ai"
+                className="text-base text-white"
+              >
+                Website
+              </a>
             </div>
           )}
 
@@ -127,7 +140,8 @@ const Header = () => {
           </div>
         )}
       </div>
-      {userStatus === UserStatus.fullAccount && (
+
+      {userStatus === UserStatus.fullAccount && pathname === "/" && (
         <div className="w-full flex justify-between items-end mt-12">
           <div className="flex w-[33%]">
             <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">

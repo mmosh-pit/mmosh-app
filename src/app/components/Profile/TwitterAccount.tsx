@@ -15,9 +15,10 @@ import TwitterMagentaIcon from "@/assets/icons/TwitterMagentaIcon";
 type Props = {
   userData: User | undefined;
   setUserData: React.Dispatch<React.SetStateAction<User | undefined>>;
+  isMyProfile: boolean;
 };
 
-const TwitterAccount = ({ userData, setUserData }: Props) => {
+const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
   const wallet = useAnchorWallet();
   const [isDisconnecting, setIsDisconnecting] = React.useState(false);
   const [isConnecting, setIsConnecting] = React.useState(false);
@@ -104,13 +105,17 @@ const TwitterAccount = ({ userData, setUserData }: Props) => {
       <p className="text-base text-white">{userData?.twitter?.name}</p>
       <p className="text-base">@{userData?.twitter?.username}</p>
 
-      <button
-        className="rounded-full p-4 bg-[#09073A] mt-2"
-        onClick={toggleButtonState}
-      >
-        {getButtonLabel()}
-      </button>
-      <span className="text-xs">{getButtonHelperText()}</span>
+      {isMyProfile && (
+        <>
+          <button
+            className="rounded-full p-4 bg-[#09073A] mt-2"
+            onClick={toggleButtonState}
+          >
+            {getButtonLabel()}
+          </button>
+          <span className="text-xs">{getButtonHelperText()}</span>
+        </>
+      )}
     </div>
   );
 };

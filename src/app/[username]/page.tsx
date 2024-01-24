@@ -10,9 +10,11 @@ import { UserStatus, status } from "../store";
 import { User } from "../models/user";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
+  const wallet = useAnchorWallet();
   const [userData, setUserData] = React.useState<User>();
   const [rankData, setRankData] = React.useState({
     points: 0,
@@ -38,6 +40,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
     setRankData(result.data);
   }, [userData]);
 
+  const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
+
   React.useEffect(() => {
     setUserStatus(UserStatus.fullAccount);
     if (!params.username) return;
@@ -52,13 +56,17 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
   return (
     <div className="w-full h-screen flex flex-col mt-16">
-      <div className="w-full h-full flex xs:flex-col md:flex-row justify-between px-12">
-        {!isMobile && <DesktopNavbar />}
+      <div
+        className={`w-full h-full flex xs:flex-col md:flex-row ${isMyProfile ? "justify-between" : "justify-around"} px-12`}
+      >
+        {!isMobile && isMyProfile && <DesktopNavbar />}
 
         <div className="flex flex-col items-center xs:w-[80%] md:w-[50%] mt-16">
           <div className="w-full flex flex-col">
             <p className="text-lg text-white font-bold font-goudy">
-              My MMOSH Account
+              {isMyProfile
+                ? "My MMOSH Account"
+                : `${userData?.profile.name}'s Hideout`}
             </p>
 
             <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md p-8 mt-4">
@@ -91,7 +99,11 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   setUserData={setUserData}
                 />
 
-                <TwitterAccount userData={userData} setUserData={setUserData} />
+                <TwitterAccount
+                  userData={userData}
+                  setUserData={setUserData}
+                  isMyProfile={isMyProfile}
+                />
               </div>
             </div>
           </div>

@@ -22,6 +22,9 @@ const CreateProfile = () => {
   });
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const disabledButton =
+    !wallet?.publicKey || !image || !form.name || !form.username || !form.bio;
+
   const createAccount = React.useCallback(async () => {
     if (!wallet?.publicKey) return;
     if (!image) return;
@@ -136,6 +139,7 @@ const CreateProfile = () => {
           <button
             className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
             onClick={createAccount}
+            disabled={disabledButton}
           >
             {isLoading ? (
               <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>

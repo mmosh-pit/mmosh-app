@@ -1,4 +1,5 @@
 export type User = {
+  wallet: string;
   profile: Profile;
   telegram: Telegram;
   twitter: Twitter;

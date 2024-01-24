@@ -133,7 +133,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
           <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 self-start">
-            <p className="text-lg text-white font-bold">
+            <p className="flex text-lg text-white font-bold">
               Activation Link{" "}
               <sup
                 onClick={() =>

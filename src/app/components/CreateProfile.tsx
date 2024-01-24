@@ -130,9 +130,15 @@ const CreateProfile = () => {
                 value={form.pronouns}
                 onChange={(e) => setForm({ ...form, pronouns: e.target.value })}
               >
-                <option value="they/them">They/Them</option>
-                <option value="she/her">She/Her</option>
-                <option value="he/him">He/Him</option>
+                <option className="bg-black" value="they/them">
+                  They/Them
+                </option>
+                <option className="bg-black" value="she/her">
+                  She/Her
+                </option>
+                <option className="bg-black" value="he/him">
+                  He/Him
+                </option>
               </select>
             </div>
           </div>

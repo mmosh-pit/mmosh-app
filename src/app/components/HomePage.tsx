@@ -33,7 +33,7 @@ const HomePage = () => {
     <div className="w-full h-full flex flex-col items-center mt-12">
       <div className="self-center md:max-w-[50%] xs:max-w-[90%]">
         <p className="text-center text-white font-goudy font-normal mb-12">
-          Welcome Home, {currentUser?.profile.name}
+          Welcome Home, {currentUser?.profile?.name}
         </p>
 
         <p className="text-center text-white">

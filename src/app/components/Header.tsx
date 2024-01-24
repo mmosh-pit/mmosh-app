@@ -7,7 +7,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
-import { UserStatus, accounts, points, status } from "../store";
+import { UserStatus, accounts, points, searchBarText, status } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 import SearchIcon from "@/assets/icons/SearchIcon";
@@ -37,6 +37,7 @@ const Header = () => {
   const [userStatus] = useAtom(status);
   const [totalAccounts] = useAtom(accounts);
   const [totalPoints] = useAtom(points);
+  const [searchText, setSearchText] = useAtom(searchBarText);
   const isMobileScreen = useCheckMobileScreen();
 
   const getHeaderBackground = React.useCallback(() => {
@@ -191,6 +192,8 @@ const Header = () => {
             <input
               placeholder="Type your search terms"
               className="ml-4 w-full bg-transparent outline-none"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
             />
           </div>
         </div>

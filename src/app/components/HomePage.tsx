@@ -6,13 +6,15 @@ import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
 import Image from "next/image";
 import { User } from "../models/user";
 import axios from "axios";
-import { data, accounts, points } from "../store";
+import { data, accounts, points, searchBarText } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
   const [_, setTotalAccounts] = useAtom(accounts);
   const [__, setTotalPoints] = useAtom(points);
+  const [searchText] = useAtom(searchBarText);
+  const allUsers = React.useRef<User[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
   const isMobileScreen = useCheckMobileScreen();
 
@@ -20,6 +22,7 @@ const HomePage = () => {
     const result = await axios.get(`/api/get-all-users`);
 
     setUsers(result.data.users);
+    allUsers.current = result.data.users;
     setTotalPoints(result.data.totalPoints);
     setTotalAccounts(result.data.totalAccounts);
   }, []);
@@ -28,6 +31,26 @@ const HomePage = () => {
     if (!currentUser) return;
     getUsers();
   }, [currentUser]);
+
+  React.useEffect(() => {
+    if (searchText === "") {
+      setUsers(allUsers.current);
+      return;
+    }
+
+    const filteredUsers = allUsers.current.filter((value) => {
+      if (
+        value.profile.name.includes(searchText) ||
+        value.profile.username.includes(searchText)
+      ) {
+        return true;
+      }
+
+      return false;
+    });
+
+    setUsers(filteredUsers);
+  }, [searchText]);
 
   return (
     <div className="w-full h-full flex flex-col items-center mt-12">

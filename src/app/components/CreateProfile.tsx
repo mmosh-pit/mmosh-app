@@ -12,6 +12,7 @@ const CreateProfile = () => {
   const wallet = useAnchorWallet();
   const router = useRouter();
   const [_, setUserStatus] = useAtom(status);
+
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
   const [form, setForm] = React.useState({

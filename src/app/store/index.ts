@@ -15,4 +15,4 @@ export const data = atom<User | null>(null);
 
 export const accounts = atom(0);
 export const points = atom(0);
-export const searchText = atom("");
+export const searchBarText = atom("");

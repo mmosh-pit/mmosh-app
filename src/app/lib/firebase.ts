@@ -1,7 +1,11 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export const init = () => {
+  const apps = getApps();
+
+  if (apps.length > 0) return;
+
   const firebaseConfig = {
     apiKey: "AIzaSyC0b9E2BeKQIjJkyWG5aDz1ij2ytb3SqPU",
     authDomain: "mmosh-app.firebaseapp.com",

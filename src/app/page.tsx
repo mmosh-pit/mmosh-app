@@ -12,6 +12,7 @@ import WithTelegramNoAccount from "./components/WithTelegramNoAccount";
 import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
 import CreateProfile from "./components/CreateProfile";
 import HomePage from "./components/HomePage";
+import { init } from "./lib/firebase";
 
 export default function Home() {
   const rendered = React.useRef(false);

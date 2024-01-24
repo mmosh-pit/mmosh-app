@@ -42,7 +42,7 @@ const HomePage = () => {
         </p>
       </div>
 
-      <div className="w-[80%] mt-12 grid xs:grid-cols-auto md:grid-cols-3 gap-4">
+      <div className="w-[90%] mt-12 grid xs:grid-cols-auto md:grid-cols-3 gap-4">
         {users.map((value, index) => (
           <div className="grid">
             <div className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl">
@@ -83,7 +83,7 @@ const HomePage = () => {
 
                     <a
                       target="_blank"
-                      href="https://t.me/Frank"
+                      href={`https://t.me/${value.telegram.username}`}
                       className="ml-4 underline text-[#9493B2]"
                     >
                       https://t.me/{value.telegram.username}
@@ -95,7 +95,7 @@ const HomePage = () => {
 
                     <a
                       target="_blank"
-                      href="https://twitter.com/Frank"
+                      href={`https://twitter.com/${value.twitter.username}`}
                       className="ml-4 underline text-[#9493B2]"
                     >
                       https://twitter.com/{value.twitter.username}

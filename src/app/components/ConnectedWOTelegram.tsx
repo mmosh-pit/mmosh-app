@@ -33,7 +33,7 @@ const ConnectedWOAccount = () => {
           value: telegramData,
         });
 
-        if (!user.data || !user.data.points) {
+        if (!user.data) {
           setUserStatus(UserStatus.noAccount);
           setUserData((prev: any) => ({
             ...prev,

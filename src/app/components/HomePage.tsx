@@ -40,8 +40,8 @@ const HomePage = () => {
 
     const filteredUsers = allUsers.current.filter((value) => {
       if (
-        value.profile.name.includes(searchText) ||
-        value.profile.username.includes(searchText)
+        value.profile.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        value.profile.username?.toLowerCase().includes(searchText.toLowerCase())
       ) {
         return true;
       }

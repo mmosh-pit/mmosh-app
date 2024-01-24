@@ -37,7 +37,8 @@ const Header = () => {
   const [userStatus] = useAtom(status);
   const [totalAccounts] = useAtom(accounts);
   const [totalPoints] = useAtom(points);
-  const [searchText, setSearchText] = useAtom(searchBarText);
+  const [_, setSearchText] = useAtom(searchBarText);
+  const [localText, setLocalText] = React.useState("");
   const isMobileScreen = useCheckMobileScreen();
 
   const getHeaderBackground = React.useCallback(() => {
@@ -68,6 +69,10 @@ const Header = () => {
       </div>
     );
   }, [getProgress]);
+
+  const executeSearch = React.useCallback(() => {
+    setSearchText(localText);
+  }, [localText]);
 
   return (
     <div className="flex flex-col">
@@ -183,7 +188,10 @@ const Header = () => {
           />
 
           <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-            <button className="flex bg-[#3C00FF] rounded-full px-12 py-4">
+            <button
+              className="flex bg-[#3C00FF] rounded-full px-12 py-4"
+              onClick={executeSearch}
+            >
               <SearchIcon />
 
               <p className="text-white font-bold text-base ml-4">Search</p>
@@ -192,8 +200,8 @@ const Header = () => {
             <input
               placeholder="Type your search terms"
               className="ml-4 w-full bg-transparent outline-none"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              value={localText}
+              onChange={(e) => setLocalText(e.target.value)}
             />
           </div>
         </div>

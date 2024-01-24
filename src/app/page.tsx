@@ -10,8 +10,9 @@ import NoConnectedWallet from "./components/NoConnectedWallet";
 import ConnectedWOTelegram from "./components/ConnectedWOTelegram";
 import WithTelegramNoAccount from "./components/WithTelegramNoAccount";
 import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
+import CreateProfile from "./components/CreateProfile";
+import HomePage from "./components/HomePage";
 import { init } from "./lib/firebase";
-import UserAirdropStatus from "./components/UserAirdropStatus";
 
 export default function Home() {
   const rendered = React.useRef(false);
@@ -28,6 +29,7 @@ export default function Home() {
 
     const hasTwitter = !!result.data?.twitter;
     const hasTelegram = !!result.data?.telegram;
+    const hasProfile = !!result.data?.profile;
 
     if (!hasTelegram) {
       setUserStatus(UserStatus.noTelegram);
@@ -45,6 +47,11 @@ export default function Home() {
 
     if (!hasBotAccount) {
       setUserStatus(UserStatus.noAccount);
+      return;
+    }
+
+    if (!hasProfile) {
+      setUserStatus(UserStatus.noProfile);
       return;
     }
 
@@ -68,9 +75,11 @@ export default function Home() {
       return <ConnectedWOTwitter />;
     }
 
-    if (userStatus === UserStatus.fullAccount) {
-      return <UserAirdropStatus />;
+    if (userStatus === UserStatus.noProfile) {
+      return <CreateProfile />;
     }
+
+    return <HomePage />;
   };
 
   const saveWalletIfNotExists = React.useCallback(async () => {

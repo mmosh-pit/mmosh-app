@@ -17,10 +17,14 @@ const ConnectedWOAccount = () => {
       },
       async (data: any) => {
         if (!data.id) return;
+
+        const user = await axios.get(`/api/get-bot-user?id=${data.id}`);
+
         const telegramData = {
           id: data.id,
-          firstName: data.firstName,
+          firstName: data.first_name,
           username: data.username,
+          points: user.data?.points || 0,
         };
 
         await axios.put("/api/update-wallet-data", {
@@ -28,6 +32,15 @@ const ConnectedWOAccount = () => {
           field: "telegram",
           value: telegramData,
         });
+
+        if (!user.data) {
+          setUserStatus(UserStatus.noAccount);
+          setUserData((prev: any) => ({
+            ...prev,
+            telegram: telegramData,
+          }));
+          return;
+        }
 
         setUserStatus(UserStatus.noTwitter);
         setUserData((prev: any) => ({
@@ -41,19 +54,22 @@ const ConnectedWOAccount = () => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-12">
       <div className="md::max-w-[40%] max-w-[90%] my-12">
+        <h3 className="text-center text-white font-goudy font-normal mb-12">
+          Connect to Solana
+        </h3>
         <p className="text-center">
-          Thanks for connecting your wallet! Now let’s link your Telegram
-          account to your Solana address.
+          Thanks for connecting your wallet. Now let’s link your Telegram
+          account to this Solana wallet.
         </p>
       </div>
 
       <div className="mt-8">
         <button
-          className="bg-[#FCAE0E] py-4 px-4 rounded-md flex items-center"
+          className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
           onClick={executeLogin}
         >
           <TelegramIcon />
-          <p className="text-black text-lg ml-2">Connect Telegram Account</p>
+          <p className="text-white text-lg ml-2">Connect Telegram Account</p>
         </button>
       </div>
     </div>

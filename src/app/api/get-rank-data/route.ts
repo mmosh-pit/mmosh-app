@@ -41,21 +41,16 @@ export async function GET(req: NextRequest) {
   if (!data) return NextResponse.json("", { status: 200 });
 
   const result = {
-    totalPoints: 0,
-    yourRank: 0,
-    userPoints: 0,
-    totalUsers: 0,
+    rank: 0,
+    points: 0,
   };
 
   data.forEach((row, index) => {
-    result.totalPoints += row.points;
     if (row.telegramId == Number(user as string)) {
-      result.yourRank = index;
-      result.userPoints = row.points;
+      result.rank = index;
+      result.points = row.points;
     }
   });
-
-  result.totalUsers = data.length;
 
   return NextResponse.json(result, {
     status: 200,

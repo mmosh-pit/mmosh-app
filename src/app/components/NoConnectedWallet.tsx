@@ -6,15 +6,20 @@ const NoConnectedWallet = () => {
   const wallet = useAnchorWallet();
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center mt-12">
-      <div className="md::max-w-[45%] max-w-[90%] my-12">
+    <div className="w-full h-full flex flex-col justify-center items-center mt-4">
+      <div className="md:max-w-[45%] max-w-[90%] my-12">
+        <h3 className="text-center text-white font-goudy font-normal mb-12">
+          Connect to Solana
+        </h3>
+
         <p className="text-center">
-          Welcome to the MMOSH Airdrop App! Complete the tasks to earn points,
-          win Airdrop Keys and claim your Airdrops.
+          {`Welcome to the Genesis MMOSH, a decentralized, permissionless and
+          composable world that plays out across many different access devices
+          and software platforms.`}
         </p>
-        <p className="mt-4 text-center">
-          Connect a Solana wallet to begin. To be safe, use a fresh wallet that
-          does not contain valuable tokens.
+
+        <p className="text-center mt-8">
+          {`Connect your Solana Wallet to enter our realm and mint a free Treasure Chest to stash all your loot.`}
         </p>
       </div>
 
@@ -22,12 +27,12 @@ const NoConnectedWallet = () => {
         <WalletMultiButton
           startIcon={undefined}
           style={{
-            backgroundColor: "#FCAE0E",
+            backgroundColor: "#CD068E",
             padding: "1em 4em",
             borderRadius: 15,
           }}
         >
-          <p className="text-black text-lg">
+          <p className="text-white text-lg">
             {wallet?.publicKey
               ? walletAddressShortener(wallet.publicKey.toString())
               : "Connect your Wallet"}

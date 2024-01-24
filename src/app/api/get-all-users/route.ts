@@ -13,6 +13,9 @@ export async function GET(req: NextRequest) {
         profile: {
           $exists: true,
         },
+        telegram: {
+          $exists: true,
+        },
       },
       {
         sort: { points: -1 },
@@ -29,7 +32,7 @@ export async function GET(req: NextRequest) {
   };
 
   data.forEach((row) => {
-    result.totalPoints += row.points;
+    result.totalPoints += row.telegram.points;
   });
 
   result.totalAccounts = data.length;

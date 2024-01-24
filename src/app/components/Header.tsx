@@ -93,7 +93,7 @@ const Header = () => {
           {userStatus === UserStatus.fullAccount && !isMobileScreen && (
             <div className="flex w-[10%] justify-between">
               <p
-                className="text-base text-white"
+                className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
               >
                 Home

@@ -71,74 +71,78 @@ const Profile = ({ params }: { params: { username: string } }) => {
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
-        <div className="flex flex-col items-center xs:w-[80%] md:w-[50%] mt-16">
-          <div className="w-full flex flex-col">
-            <p className="text-lg text-white font-bold font-goudy">
-              {isMyProfile
-                ? "My MMOSH Account"
-                : `${userData?.profile.name}'s Hideout`}
-            </p>
+        <div
+          className={`w-full flex xs:flex-col md:flex-row justify-around mt-16`}
+        >
+          <div className="flex flex-col items-center xs:w-[80%] md:w-[50%]">
+            <div className="w-full flex flex-col">
+              <p className="text-lg text-white font-bold font-goudy">
+                {isMyProfile
+                  ? "My MMOSH Account"
+                  : `${userData?.profile.name}'s Hideout`}
+              </p>
 
-            <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
-              <div className="w-full flex">
-                <div
-                  className={`relative ${isMobile ? "w-[80px] h-[80px]" : "w-[180px] h-[180px]"}`}
-                >
-                  <Image
-                    src={userData?.profile?.image || ""}
-                    alt="Profile Image"
-                    className="rounded-full"
-                    layout="fill"
+              <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
+                <div className="w-full flex">
+                  <div
+                    className={`relative ${isMobile ? "w-[80px] h-[80px]" : "w-[180px] h-[180px]"}`}
+                  >
+                    <Image
+                      src={userData?.profile?.image || ""}
+                      alt="Profile Image"
+                      className="rounded-full"
+                      layout="fill"
+                    />
+                  </div>
+
+                  <div className="flex flex-col ml-4">
+                    <p className="text-lg text-white font-bold">
+                      {userData?.profile?.name}
+                    </p>
+                    <p className="text-sm">{`@${userData?.profile?.username}`}</p>
+                    <p className="text-base text-white">
+                      {userData?.profile?.bio}
+                    </p>
+                    <a
+                      className="text-base font-white underline"
+                      href={`https://mmosh.app/${userData?.profile?.username}`}
+                    >
+                      {`mmosh.app/${userData?.profile?.username}`}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="w-full flex justify-around mt-16">
+                  <TelegramAccount
+                    userData={userData}
+                    setUserData={setUserData}
+                  />
+
+                  <TwitterAccount
+                    userData={userData}
+                    setUserData={setUserData}
+                    isMyProfile={isMyProfile}
                   />
                 </div>
-
-                <div className="flex flex-col ml-4">
-                  <p className="text-lg text-white font-bold">
-                    {userData?.profile?.name}
-                  </p>
-                  <p className="text-sm">{`@${userData?.profile?.username}`}</p>
-                  <p className="text-base text-white">
-                    {userData?.profile?.bio}
-                  </p>
-                  <a
-                    className="text-base font-white underline"
-                    href={`https://mmosh.app/${userData?.profile?.username}`}
-                  >
-                    {`mmosh.app/${userData?.profile?.username}`}
-                  </a>
-                </div>
-              </div>
-
-              <div className="w-full flex justify-around mt-16">
-                <TelegramAccount
-                  userData={userData}
-                  setUserData={setUserData}
-                />
-
-                <TwitterAccount
-                  userData={userData}
-                  setUserData={setUserData}
-                  isMyProfile={isMyProfile}
-                />
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex flex-col lg:h-[30%] xs:h-[60%] items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16">
-          <p className="text-lg text-white font-bold">Activation Link</p>
-          <p className="text-base text-white my-6">
-            {`https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`}
-          </p>
+          <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 self-start">
+            <p className="text-lg text-white font-bold">Activation Link</p>
+            <p className="text-base text-white my-6">
+              {`https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`}
+            </p>
 
-          <p className="text-base text-white">
-            <span className="font-bold">Your Role: </span> Guest
-          </p>
-          <p className="text-base text-white my-4">
-            <span className="font-bold">Your Points: </span> {rankData.points}
-          </p>
-          <p className="text-base text-white">
-            <span className="font-bold">Your Rank: </span> {rankData.rank}
-          </p>
+            <p className="text-base text-white">
+              <span className="font-bold">Your Role: </span> Guest
+            </p>
+            <p className="text-base text-white my-4">
+              <span className="font-bold">Your Points: </span> {rankData.points}
+            </p>
+            <p className="text-base text-white">
+              <span className="font-bold">Your Rank: </span> {rankData.rank}
+            </p>
+          </div>
         </div>
       </div>
     </div>

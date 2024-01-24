@@ -33,6 +33,11 @@ const CreateProfile = () => {
 
     const imageUrl = await uploadFile(image!, form.name);
 
+    // grecaptcha.ready(function() {
+    //   grecaptcha.execute('6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN', {action: 'submit'}).then(function(token) {
+    //   });
+    // });
+
     await axios.put("/api/update-wallet-data", {
       field: "profile",
       value: {

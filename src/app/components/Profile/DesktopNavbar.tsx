@@ -2,7 +2,7 @@ const DesktopNavbar = () => {
   return (
     <div
       id="desktop-navbar"
-      className="min-w-[15%] h-[70%] px-8 py-16 flex flex-col rounded-2xl"
+      className="min-w-[15%] md:h-[80%] lg:h-[70%] px-8 py-16 flex flex-col rounded-2xl mr-12"
     >
       <p className="text-lg font-bold mb-8">My MMOSH Account</p>
 

@@ -106,7 +106,7 @@ const HomePage = () => {
                 <div className="w-[80%] flex justify-between bg-[#434E59] bg-opacity-50 px-12 py-2 rounded-3xl mt-4">
                   <div>
                     <p className="text-white text-base">
-                      Points: {value.profile.points || 0}
+                      Points: {value.telegram.points || 0}
                     </p>
                   </div>
 

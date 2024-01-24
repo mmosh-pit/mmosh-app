@@ -11,13 +11,13 @@ type Profile = {
   bio: string;
   image: string;
   pronouns: string;
-  points: number;
 };
 
 type Telegram = {
   id: number;
   firstName: string;
   username: string;
+  points: number;
 };
 
 type Twitter = {

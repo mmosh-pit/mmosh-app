@@ -69,9 +69,12 @@ const HomePage = () => {
 
                 <div className="my-4">
                   <p className="text-white text-base">{value.profile.bio}</p>
-                  <p className="text-[#FF00C7] text-base">
+                  <a
+                    className="text-[#FF00C7] text-base"
+                    href={`https://mmosh.app/${value.profile.username}`}
+                  >
                     mmosh.app/{value.profile.username}
-                  </p>
+                  </a>
                 </div>
 
                 <div>

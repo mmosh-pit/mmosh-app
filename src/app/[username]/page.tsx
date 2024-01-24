@@ -1,19 +1,22 @@
 "use client";
 import * as React from "react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
+import { useAtom } from "jotai";
 
 import DesktopNavbar from "../components/Profile/DesktopNavbar";
 import Image from "next/image";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import axios from "axios";
-import { useAtom } from "jotai";
+
 import { UserStatus, status } from "../store";
 import { User } from "../models/user";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { init } from "../lib/firebase";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
+  const rendered = React.useRef(false);
   const wallet = useAnchorWallet();
   const [userData, setUserData] = React.useState<User>();
   const [rankData, setRankData] = React.useState({
@@ -54,6 +57,13 @@ const Profile = ({ params }: { params: { username: string } }) => {
     getRankData();
   }, [userData]);
 
+  React.useEffect(() => {
+    if (!rendered.current) {
+      init();
+      rendered.current = true;
+    }
+  }, []);
+
   return (
     <div className="w-full h-screen flex flex-col mt-16">
       <div
@@ -69,15 +79,18 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 : `${userData?.profile.name}'s Hideout`}
             </p>
 
-            <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md p-8 mt-4">
+            <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
               <div className="w-full flex">
-                <Image
-                  src={userData?.profile?.image || ""}
-                  className="rounded-full"
-                  width={isMobile ? 80 : 180}
-                  height={isMobile ? 80 : 180}
-                  alt="Profile image"
-                />
+                <div
+                  className={`relative ${isMobile ? "w-[80px] h-[80px]" : "w-[180px] h-[180px]"}`}
+                >
+                  <Image
+                    src={userData?.profile?.image || ""}
+                    alt="Profile Image"
+                    className="rounded-full"
+                    layout="fill"
+                  />
+                </div>
 
                 <div className="flex flex-col ml-4">
                   <p className="text-lg text-white font-bold">
@@ -87,9 +100,12 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   <p className="text-base text-white">
                     {userData?.profile?.bio}
                   </p>
-                  <p className="text-base font-white underline">
+                  <a
+                    className="text-base font-white underline"
+                    href={`https://mmosh.app/${userData?.profile?.username}`}
+                  >
                     {`mmosh.app/${userData?.profile?.username}`}
-                  </p>
+                  </a>
                 </div>
               </div>
 
@@ -108,7 +124,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col md:h-[30%] xs:h-[60%] items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16">
+        <div className="flex flex-col lg:h-[30%] xs:h-[60%] items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16">
           <p className="text-lg text-white font-bold">Activation Link</p>
           <p className="text-base text-white my-6">
             {`https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`}

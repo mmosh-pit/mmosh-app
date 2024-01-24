@@ -24,7 +24,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
   const [isConnecting, setIsConnecting] = React.useState(false);
 
   const getButtonLabel = React.useCallback(() => {
-    if (isDisconnecting) {
+    if (isDisconnecting && !isConnecting) {
       return "Disconnect";
     }
 

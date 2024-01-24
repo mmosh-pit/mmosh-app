@@ -10,14 +10,11 @@ import NoConnectedWallet from "./components/NoConnectedWallet";
 import ConnectedWOTelegram from "./components/ConnectedWOTelegram";
 import WithTelegramNoAccount from "./components/WithTelegramNoAccount";
 import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
-import { init } from "./lib/firebase";
 import CreateProfile from "./components/CreateProfile";
-import { useRouter } from "next/navigation";
 import HomePage from "./components/HomePage";
 
 export default function Home() {
   const rendered = React.useRef(false);
-  const router = useRouter();
   const [userStatus, setUserStatus] = useAtom(status);
   const [_, setUserData] = useAtom(data);
   const wallet = useAnchorWallet();

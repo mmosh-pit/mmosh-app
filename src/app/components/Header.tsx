@@ -54,6 +54,20 @@ const Header = () => {
     return progress[userStatus];
   }, [userStatus]);
 
+  const renderProgressBar = React.useCallback(() => {
+    return <></>;
+
+    return (
+      <div className="xs:w-[60%] sm:w-[50%] lg:w-[40%] h-[25px] bg-[#FFFFFF] bg-opacity-40 rounded-[20px] mb-12">
+        <div
+          className={`w-[${getProgress()}] h-full flex justify-end items-center`}
+        >
+          <div id="custom-progress" />
+        </div>
+      </div>
+    );
+  }, [getProgress]);
+
   return (
     <div className="flex flex-col">
       <div className={getHeaderBackground()}>
@@ -97,8 +111,11 @@ const Header = () => {
 
           <div className="flex justify-end items-center w-[33%]">
             {userStatus === UserStatus.fullAccount && (
-              <button className="bg-[#3A3488] bg-opacity-[0.54] px-6 py-3 rounded-xl mr-6">
-                <p className="text-base text-white font-bold">Settings</p>
+              <button className="relative bg-[#3A3488] bg-opacity-[0.54] px-6 py-3 rounded-xl mr-6">
+                <p className="text-base text-white font-bold settings-btn">
+                  Settings
+                </p>
+                <span className="settings-badge">Coming Soon</span>
               </button>
             )}
             {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
@@ -123,13 +140,7 @@ const Header = () => {
 
         {userStatus !== UserStatus.fullAccount && (
           <div className="w-full flex flex-col justify-center items-center mb-4">
-            <div className="xs:w-[60%] sm:w-[50%] lg:w-[40%] h-[25px] bg-[#FFFFFF] bg-opacity-40 rounded-[20px] mb-12">
-              <div
-                className={`w-[${getProgress()}] h-full flex justify-end items-center`}
-              >
-                <div id="custom-progress" />
-              </div>
-            </div>
+            {renderProgressBar()}
 
             <Image
               src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"

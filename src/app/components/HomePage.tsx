@@ -136,7 +136,7 @@ const HomePage = () => {
                   <div className="bg-[#596570] w-[1px] h-full" />
 
                   <div>
-                    <p className="text-white text-base">Rank: {index}</p>
+                    <p className="text-white text-base">Rank: {index + 1}</p>
                   </div>
                 </div>
               </div>

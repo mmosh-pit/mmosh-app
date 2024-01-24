@@ -13,6 +13,7 @@ import { User } from "../models/user";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
 import { init } from "../lib/firebase";
+import CopyIcon from "@/assets/icons/CopyIcon";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -44,6 +45,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
   }, [userData]);
 
   const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
+
+  const copyToClipboard = React.useCallback(async (text: string) => {
+    await navigator.clipboard.writeText(text);
+  }, []);
 
   React.useEffect(() => {
     setUserStatus(UserStatus.fullAccount);
@@ -128,7 +133,18 @@ const Profile = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
           <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 self-start">
-            <p className="text-lg text-white font-bold">Activation Link</p>
+            <p className="text-lg text-white font-bold">
+              Activation Link{" "}
+              <sup
+                onClick={() =>
+                  copyToClipboard(
+                    `https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`,
+                  )
+                }
+              >
+                <CopyIcon />
+              </sup>
+            </p>
             <p className="text-base text-white my-6">
               {`https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`}
             </p>

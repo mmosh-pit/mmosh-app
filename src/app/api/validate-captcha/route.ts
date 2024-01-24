@@ -1,9 +1,12 @@
+import { db } from "@/app/lib/mongoClient";
 import { RecaptchaEnterpriseServiceClient } from "@google-cloud/recaptcha-enterprise";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   // Create the reCAPTCHA client.
   // TODO: Cache the client generation code (recommended) or call client.close() before exiting the method.
+
+  const collection = db.collection("mmosh-app-profiles");
 
   const { token, wallet, recaptchaAction } = await req.json();
 
@@ -46,6 +49,23 @@ export async function POST(req: NextRequest) {
     response.riskAnalysis?.reasons?.forEach((reason) => {
       console.log(reason);
     });
+
+    const user = await collection.findOne({
+      wallet,
+    });
+
+    if (user) {
+      await collection.updateOne(
+        {
+          _id: user._id,
+        },
+        {
+          $set: {
+            score: response.riskAnalysis?.score,
+          },
+        },
+      );
+    }
 
     return NextResponse.json(response.riskAnalysis?.score, {
       status: 200,

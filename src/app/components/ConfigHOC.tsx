@@ -35,11 +35,4 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// function onClick(e) {
-//     e.preventDefault();
-//     grecaptcha.enterprise.ready(async () => {
-//       const token = await grecaptcha.enterprise.execute('6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN', {action: 'LOGIN'});
-//     });
-//   }
-
 export default ConfigHOC;

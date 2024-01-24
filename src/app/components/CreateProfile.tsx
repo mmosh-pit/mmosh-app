@@ -34,10 +34,17 @@ const CreateProfile = () => {
 
     const imageUrl = await uploadFile(image!, form.name);
 
-    // grecaptcha.ready(function() {
-    //   grecaptcha.execute('6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN', {action: 'submit'}).then(function(token) {
-    //   });
-    // });
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute(
+        "6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN",
+        { action: "LOGIN" },
+      );
+
+      await axios.post("/api/validate-captcha", {
+        token,
+        wallet: wallet.publicKey.toString(),
+      });
+    });
 
     await axios.put("/api/update-wallet-data", {
       field: "profile",

@@ -3,7 +3,7 @@ declare global {
     Telegram: any;
   }
 
-  interface grecaptcha {}
+  declare var grecaptcha;
 
   namespace NodeJS {
     interface ProcessEnv {

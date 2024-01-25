@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const param = searchParams.get("id");
 
   const user = await collection.findOne({
-    telegramId: param,
+    telegramId: Number(param?.trim()),
   });
 
   return NextResponse.json(user, {

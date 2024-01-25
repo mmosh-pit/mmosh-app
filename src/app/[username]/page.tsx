@@ -19,6 +19,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
   const rendered = React.useRef(false);
   const wallet = useAnchorWallet();
+  const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [userData, setUserData] = React.useState<User>();
   const [rankData, setRankData] = React.useState({
     points: 0,
@@ -47,7 +48,12 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
 
   const copyToClipboard = React.useCallback(async (text: string) => {
+    setIsTooltipShown(true);
     await navigator.clipboard.writeText(text);
+
+    setTimeout(() => {
+      setIsTooltipShown(false);
+    }, 2000);
   }, []);
 
   React.useEffect(() => {
@@ -69,6 +75,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
     }
   }, []);
 
+  if (!userData) return <></>;
+
   return (
     <div className="w-full h-screen flex flex-col mt-16">
       <div
@@ -84,7 +92,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
               <p className="text-lg text-white font-bold font-goudy">
                 {isMyProfile
                   ? "My MMOSH Account"
-                  : `${userData?.profile.name}'s Hideout`}
+                  : `${userData?.profile?.name}'s Hideout`}
               </p>
 
               <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
@@ -92,12 +100,14 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   <div
                     className={`relative ${isMobile ? "w-[80px] h-[80px]" : "w-[180px] h-[180px]"}`}
                   >
-                    <Image
-                      src={userData?.profile?.image || ""}
-                      alt="Profile Image"
-                      className="rounded-full"
-                      layout="fill"
-                    />
+                    {userData?.profile?.image && (
+                      <Image
+                        src={userData?.profile?.image || ""}
+                        alt="Profile Image"
+                        className="rounded-full"
+                        layout="fill"
+                      />
+                    )}
                   </div>
 
                   <div className="flex flex-col ml-4">
@@ -136,12 +146,18 @@ const Profile = ({ params }: { params: { username: string } }) => {
             <p className="flex text-lg text-white font-bold">
               Activation Link{" "}
               <sup
+                className="relative cursor-pointer"
                 onClick={() =>
                   copyToClipboard(
                     `https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`,
                   )
                 }
               >
+                {isTooltipShown && (
+                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                    Copied!
+                  </div>
+                )}
                 <CopyIcon />
               </sup>
             </p>

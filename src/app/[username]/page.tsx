@@ -20,11 +20,13 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const rendered = React.useRef(false);
   const wallet = useAnchorWallet();
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
+  const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
   const [userData, setUserData] = React.useState<User>();
   const [rankData, setRankData] = React.useState({
     points: 0,
     rank: 0,
   });
+  const [lhcWallet, setLhcWallet] = React.useState("");
   const [_, setUserStatus] = useAtom(status);
 
   const getUserData = React.useCallback(async () => {
@@ -45,16 +47,35 @@ const Profile = ({ params }: { params: { username: string } }) => {
     setRankData(result.data);
   }, [userData]);
 
+  const getLhcWallet = React.useCallback(async () => {
+    const result = await axios.get(
+      `/api/get-lhc-address?id=${userData?.telegram.id}`,
+    );
+
+    setLhcWallet(result.data.addressPublicKey);
+  }, [userData]);
+
   const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
 
-  const copyToClipboard = React.useCallback(async (text: string) => {
-    setIsTooltipShown(true);
-    await navigator.clipboard.writeText(text);
+  const copyToClipboard = React.useCallback(
+    async (text: string, first: boolean) => {
+      if (first) {
+        setIsFirstTooltipShown(true);
+      } else {
+        setIsTooltipShown(true);
+      }
+      await navigator.clipboard.writeText(text);
 
-    setTimeout(() => {
-      setIsTooltipShown(false);
-    }, 2000);
-  }, []);
+      setTimeout(() => {
+        if (first) {
+          setIsFirstTooltipShown(false);
+        } else {
+          setIsTooltipShown(false);
+        }
+      }, 2000);
+    },
+    [],
+  );
 
   React.useEffect(() => {
     setUserStatus(UserStatus.fullAccount);
@@ -66,6 +87,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
     if (!userData) return;
 
     getRankData();
+    getLhcWallet();
   }, [userData]);
 
   React.useEffect(() => {
@@ -111,8 +133,20 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   </div>
 
                   <div className="flex flex-col ml-4">
-                    <p className="text-lg text-white font-bold">
+                    <p className="flex text-lg text-white font-bold">
                       {userData?.profile?.name}
+
+                      <sup
+                        className="relative cursor-pointer"
+                        onClick={() => copyToClipboard(lhcWallet, true)}
+                      >
+                        {isFirstTooltipShown && (
+                          <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                            Copied!
+                          </div>
+                        )}
+                        <CopyIcon />
+                      </sup>
                     </p>
                     <p className="text-sm">{`@${userData?.profile?.username}`}</p>
                     <p className="text-base text-white">
@@ -150,6 +184,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 onClick={() =>
                   copyToClipboard(
                     `https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`,
+                    false,
                   )
                 }
               >

@@ -7,9 +7,16 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("id");
 
-  const user = await collection.findOne({
-    telegramId: Number(param?.trim()),
-  });
+  const user = await collection.findOne(
+    {
+      telegramId: Number(param?.trim()),
+    },
+    {
+      projection: {
+        addressPublicKey: 1,
+      },
+    },
+  );
 
   return NextResponse.json(user, {
     status: 200,

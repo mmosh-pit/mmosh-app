@@ -1,4 +1,30 @@
+import axios from "axios";
+import { useAtom } from "jotai";
+import React from "react";
+import { UserStatus, data, status } from "../store";
+
 const WithTelegramNoAccount = () => {
+  const [_, setUserStatus] = useAtom(status);
+  const [userData] = useAtom(data);
+
+  const checkForTelegramAccount = React.useCallback(async () => {
+    const user = await axios.get(
+      `/api/get-bot-user?id=${userData?.telegram.id}`,
+    );
+
+    if (user.data) {
+      setUserStatus(UserStatus.noTwitter);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      checkForTelegramAccount();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-12">
       <div className="md::max-w-[40%] max-w-[90%] my-12">

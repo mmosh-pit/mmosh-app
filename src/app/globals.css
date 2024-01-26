@@ -2,16 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: #09073a;
-}
-
 p {
   font-family: var(--font-poppins);
   font-size: 1.2vmax;
   line-height: 1.5vmax;
   color: #d7d7d7;
+}
+
+a {
+  font-size: 0.8vmax;
 }
 
 span {
@@ -68,7 +67,32 @@ h3 {
   background-attachment: fixed;
 }
 
-.bg-onboarding::before {
+.bg-home {
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_bg.png");
+  background-size: cover, auto;
+  background-repeat: no-repeat, repeat;
+  background-attachment: fixed;
+}
+
+.bg-profile {
+  background:
+    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png")
+      cover no-repeat,
+    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_white.png")
+      no-repeat cover bottom;
+}
+
+.home-content {
+  height: 100%;
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background-size: auto;
+  background-repeat: repeat;
+  background-attachment: fixed;
+}
+
+.bg-onboarding::before,
+.home-content::before,
+.bg-profile::before {
   content: "";
   display: block;
   height: 100%;

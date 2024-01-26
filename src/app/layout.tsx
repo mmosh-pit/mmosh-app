@@ -38,7 +38,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ConfigHOC>
           <Header />
-          {children}
+          <div className="h-full">{children}</div>
         </ConfigHOC>
       </body>
     </html>

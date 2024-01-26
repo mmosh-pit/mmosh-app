@@ -7,7 +7,7 @@ const NoConnectedWallet = () => {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center mt-4">
-      <div className="md:max-w-[45%] max-w-[90%] my-12">
+      <div className="md:max-w-[45%] max-w-[90%]">
         <h3 className="text-center text-white font-goudy font-normal mb-12">
           Connect to Solana
         </h3>
@@ -18,12 +18,12 @@ const NoConnectedWallet = () => {
           and software platforms.`}
         </p>
 
-        <p className="text-center mt-8">
+        <p className="text-center mt-4">
           {`Connect your Solana Wallet to enter our realm and mint a free Treasure Chest to stash all your loot.`}
         </p>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-4">
         <WalletMultiButton
           startIcon={undefined}
           style={{

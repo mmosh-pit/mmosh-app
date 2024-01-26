@@ -80,7 +80,7 @@ const CreateProfile = () => {
             <span id="hallucination">Hallucination!</span>
           </p>
         </div>
-        <div className="w-full self-start mt-16">
+        <div className="w-full self-start mt-12">
           <p className="text-lg text-white">About You</p>
         </div>
 

@@ -7,7 +7,6 @@ import Image from "next/image";
 import { User } from "../models/user";
 import axios from "axios";
 import { data, accounts, points, searchBarText } from "../store";
-import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -16,7 +15,6 @@ const HomePage = () => {
   const [searchText] = useAtom(searchBarText);
   const allUsers = React.useRef<User[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
-  const isMobileScreen = useCheckMobileScreen();
 
   const getUsers = React.useCallback(async () => {
     const result = await axios.get(`/api/get-all-users`);
@@ -53,9 +51,9 @@ const HomePage = () => {
   }, [searchText]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center mt-12">
+    <div className="w-full h-screen flex flex-col items-center mt-6 home-content">
       <div className="self-center md:max-w-[50%] xs:max-w-[90%]">
-        <p className="text-center text-white font-goudy font-normal mb-12">
+        <p className="text-center text-white font-goudy font-normal mb-[3vmax]">
           Welcome Home, {currentUser?.profile?.name}
         </p>
 
@@ -65,14 +63,12 @@ const HomePage = () => {
         </p>
       </div>
 
-      <div className="w-[90%] mt-12 grid xs:grid-cols-auto md:grid-cols-3 gap-4">
+      <div className="w-[90%] grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
         {users.map((value, index) => (
           <div className="grid">
             <div className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl">
               <div className="self-center max-w-[30%] mr-8">
-                <div
-                  className={`relative ${isMobileScreen ? "w-[60px] h-[60px]" : "w-[150px] h-[150px]"}`}
-                >
+                <div className="relative w-[8vmax] h-[8vmax]">
                   <Image
                     src={value.profile.image}
                     alt="Profile Image"
@@ -126,7 +122,7 @@ const HomePage = () => {
                   </div>
                 </div>
 
-                <div className="w-[80%] flex justify-between bg-[#434E59] bg-opacity-50 px-12 py-2 rounded-3xl mt-4">
+                <div className="w-[80%] flex justify-between bg-[#434E59] bg-opacity-50 px-[2vmax] py-2 rounded-3xl mt-4">
                   <div>
                     <p className="text-white text-base">
                       Points: {value.telegram.points || 0}

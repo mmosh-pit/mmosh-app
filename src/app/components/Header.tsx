@@ -71,7 +71,8 @@ const Header = () => {
   }, [getProgress]);
 
   const executeSearch = React.useCallback(() => {
-    setSearchText(localText);
+    const text = localText.replace("@", "");
+    setSearchText(text);
   }, [localText]);
 
   return (
@@ -202,6 +203,11 @@ const Header = () => {
               className="ml-4 w-full bg-transparent outline-none"
               value={localText}
               onChange={(e) => setLocalText(e.target.value)}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  executeSearch();
+                }
+              }}
             />
           </div>
         </div>

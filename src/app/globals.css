@@ -83,15 +83,33 @@ h3 {
 }
 
 .home-content {
-  height: 100%;
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
   background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
   background-size: auto;
   background-repeat: repeat;
   background-attachment: fixed;
 }
 
+.home-content > * {
+  position: relative;
+}
+
+.home-content:before {
+  content: "";
+  display: block;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  filter: blur(100px);
+  background: radial-gradient(circle at 50% 50%, #174aff 0%, #030064 100%);
+  mix-blend-mode: soft-light;
+}
+
 .bg-onboarding::before,
-.home-content::before,
 .bg-profile::before {
   content: "";
   display: block;

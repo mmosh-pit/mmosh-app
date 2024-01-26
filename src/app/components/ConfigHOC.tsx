@@ -41,7 +41,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
         async
         strategy="beforeInteractive"
         type="text/javascript"
-        src="https://www.google.com/recaptcha/enterprise.js?render=6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN"
+        src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
       ></Script>
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider autoConnect>

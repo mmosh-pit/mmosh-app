@@ -18,6 +18,9 @@ const ConnectedWOTwitter = () => {
 
   const connectTwitter = async () => {
     const provider = new TwitterAuthProvider();
+    provider.addScope("tweet.read");
+    provider.addScope("follows.read");
+    provider.addScope("users.read");
     const auth = getAuth();
 
     signInWithPopup(auth, provider)

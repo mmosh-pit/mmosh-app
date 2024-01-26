@@ -65,6 +65,21 @@ h3 {
     url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
   background-size: cover, auto;
   background-repeat: no-repeat, repeat;
+  background-attachment: fixed;
+}
+
+.bg-onboarding::before {
+  content: "";
+  display: block;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: radial-gradient(circle at 50% 50%, #174aff 0%, #030064 100%);
+  filter: blur(100px);
+  mix-blend-mode: soft-light;
+  /* mix-blend-mode: soft-light; */
 }
 
 #hallucination {

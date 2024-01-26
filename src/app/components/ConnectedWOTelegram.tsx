@@ -52,7 +52,7 @@ const ConnectedWOAccount = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center mt-8">
+    <div className="relative w-full h-full flex flex-col justify-center items-center mt-8">
       <div className="md::max-w-[40%] max-w-[90%]">
         <h3 className="text-center text-white font-goudy font-normal mb-12">
           Connect to Telegram

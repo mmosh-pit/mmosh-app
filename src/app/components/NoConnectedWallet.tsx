@@ -6,7 +6,7 @@ const NoConnectedWallet = () => {
   const wallet = useAnchorWallet();
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center mt-4">
+    <div className="relative w-full h-full flex flex-col justify-center items-center mt-4">
       <div className="md:max-w-[45%] max-w-[90%]">
         <h3 className="text-center text-white font-goudy font-normal mb-12">
           Connect to Solana

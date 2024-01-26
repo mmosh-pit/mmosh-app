@@ -192,7 +192,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 }
               >
                 {isTooltipShown && (
-                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
                     Copied!
                   </div>
                 )}

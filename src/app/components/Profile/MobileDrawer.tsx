@@ -11,13 +11,13 @@ const MobileDrawer = () => {
         </label>
       </div>
 
-      <div className="drawer-side z-10">
+      <div className="drawer-side">
         <label
           htmlFor="my-drawer"
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <div className="flex flex-col menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+        <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
             <p className="text-base text-white mb-2">Home</p>
 

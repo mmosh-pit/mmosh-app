@@ -13,17 +13,12 @@ export async function GET(req: NextRequest) {
         profile: {
           $exists: true,
         },
-        telegram: {
-          $exists: true,
-        },
       },
       {
         sort: { points: -1 },
       },
     )
     .toArray();
-
-  if (!data) return NextResponse.json("", { status: 200 });
 
   const result = {
     totalAccounts: 0,

@@ -9,8 +9,8 @@ import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import { UserStatus, accounts, points, searchBarText, status } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 import SearchIcon from "@/assets/icons/SearchIcon";
+import MobileDrawer from "./Profile/MobileDrawer";
 
 const progress = ["5%", "25%", "50%", "75%", "100%"];
 
@@ -84,11 +84,7 @@ const Header = () => {
       <div className={getHeaderBackground()}>
         <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (
-            <div className="drawer-content">
-              <label htmlFor="my-drawer" className="btn drawer-button">
-                <HamburgerIcon />
-              </label>
-            </div>
+            <MobileDrawer />
           ) : (
             <div className="w-[33%]">
               <Image

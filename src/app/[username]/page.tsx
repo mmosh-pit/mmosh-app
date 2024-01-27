@@ -100,16 +100,16 @@ const Profile = ({ params }: { params: { username: string } }) => {
   if (!userData) return <></>;
 
   return (
-    <div className="relative w-full h-screen overflow-hidden flex flex-col mt-16">
+    <div className="relative w-full h-screen flex flex-col mt-16">
       <div
-        className={`w-full h-full flex xs:flex-col overflow-hidden md:flex-row ${isMyProfile ? "justify-between" : "justify-around"} px-12`}
+        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-12`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
         <div
-          className={`w-full flex xs:flex-col overflow-hidden md:flex-row justify-around mt-16`}
+          className={`w-full flex flex-col items-center lg:items-start lg:flex-row lg:justify-around mt-16`}
         >
-          <div className="flex flex-col items-center xs:w-[80%] md:w-[50%]">
+          <div className="flex flex-col lg:w-[50%] w-[90%]">
             <div className="w-full flex flex-col">
               <p className="text-lg text-white font-bold font-goudy">
                 {isMyProfile
@@ -179,7 +179,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 self-start">
+          <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 lg:self-start">
             <p className="flex text-lg text-white font-bold">
               Activation Link{" "}
               <sup

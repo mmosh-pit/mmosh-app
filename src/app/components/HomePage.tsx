@@ -53,7 +53,7 @@ const HomePage = () => {
   return (
     <div className="w-full h-screen flex flex-col items-center mt-6 home-content">
       <div className="self-center md:max-w-[50%] xs:max-w-[90%]">
-        <p className="text-center text-white font-goudy font-normal mb-[3vmax]">
+        <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
           Welcome Home, {currentUser?.profile?.name}
         </p>
 

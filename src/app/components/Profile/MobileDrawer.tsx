@@ -11,7 +11,7 @@ const MobileDrawer = () => {
         </label>
       </div>
 
-      <div className="drawer-side z-10">
+      <div className="drawer-side z-100">
         <label
           htmlFor="my-drawer"
           aria-label="close sidebar"

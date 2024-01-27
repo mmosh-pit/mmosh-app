@@ -108,7 +108,7 @@ const Header = () => {
 
               <a
                 target="_blank"
-                href="https://mmosh.ai"
+                href="https://www.mmosh.ai"
                 className="text-base text-white"
               >
                 Website

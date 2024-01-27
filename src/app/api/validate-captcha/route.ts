@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   const collection = db.collection("mmosh-app-profiles");
 
-  const { token, wallet, recaptchaAction } = await req.json();
+  const { token, wallet } = await req.json();
 
   const { projectID, recaptchaKey } = {
     projectID: process.env.NEXT_PUBLIC_PROJECT_ID!,
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
         process.env.CLIENT_EMAIL,
       client_secret: "",
       client_id: process.env.CLIENT_ID,
-      private_key: process.env.PRIVATE_KEY,
+      private_key: process.env.PRIVATE_KEY!.split(String.raw`\n`).join('\n'),
       private_key_id: process.env.PRIVATE_KEY_ID,
       type: "service_account",
       universe_domain: "googleapis.com",

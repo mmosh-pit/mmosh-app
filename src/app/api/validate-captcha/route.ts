@@ -8,14 +8,26 @@ export async function POST(req: NextRequest) {
 
   const collection = db.collection("mmosh-app-profiles");
 
-  const { token, wallet, recaptchaAction } = await req.json();
+  const { token, wallet } = await req.json();
 
   const { projectID, recaptchaKey } = {
     projectID: process.env.NEXT_PUBLIC_PROJECT_ID!,
     recaptchaKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY!,
   };
 
-  const client = new RecaptchaEnterpriseServiceClient();
+  const client = new RecaptchaEnterpriseServiceClient({
+    credentials: {
+      client_email:
+        process.env.CLIENT_EMAIL,
+      client_secret: "",
+      client_id: process.env.CLIENT_ID,
+      private_key: process.env.PRIVATE_KEY!.split(String.raw`\n`).join('\n'),
+      private_key_id: process.env.PRIVATE_KEY_ID,
+      type: "service_account",
+      universe_domain: "googleapis.com",
+    },
+    projectId: projectID,
+  });
   const projectPath = client.projectPath(projectID);
 
   // Build the assessment request.
@@ -41,39 +53,29 @@ export async function POST(req: NextRequest) {
 
   // Check if the expected action was executed.
   // The `action` property is set by user client in the grecaptcha.enterprise.execute() method.
-  if (response.tokenProperties.action === recaptchaAction) {
-    // Get the risk score and the reason(s).
-    // For more information on interpreting the assessment, see:
-    // https://cloud.google.com/recaptcha-enterprise/docs/interpret-assessment
-    console.log(`The reCAPTCHA score is: ${response.riskAnalysis?.score}`);
-    response.riskAnalysis?.reasons?.forEach((reason) => {
-      console.log(reason);
-    });
+  console.log(`The reCAPTCHA score is: ${response.riskAnalysis?.score}`);
+  response.riskAnalysis?.reasons?.forEach((reason) => {
+    console.log(reason);
+  });
 
-    const user = await collection.findOne({
-      wallet,
-    });
+  const user = await collection.findOne({
+    wallet,
+  });
 
-    if (user) {
-      await collection.updateOne(
-        {
-          _id: user._id,
+  if (user) {
+    await collection.updateOne(
+      {
+        _id: user._id,
+      },
+      {
+        $set: {
+          score: response.riskAnalysis?.score,
         },
-        {
-          $set: {
-            score: response.riskAnalysis?.score,
-          },
-        },
-      );
-    }
-
-    return NextResponse.json(response.riskAnalysis?.score, {
-      status: 200,
-    });
-  } else {
-    console.log(
-      "The action attribute in your reCAPTCHA tag does not match the action you are expecting to score",
+      },
     );
-    return NextResponse.json("", { status: 400 });
   }
+
+  return NextResponse.json(response.riskAnalysis?.score, {
+    status: 200,
+  });
 }

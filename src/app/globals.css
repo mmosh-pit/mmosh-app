@@ -60,8 +60,10 @@ h3 {
 }
 
 .bg-onboarding {
-  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_bg.png"),
-    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background:
+    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_bg.png"),
+    rgba(0, 0, 0, 0.7)
+      url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
   background-size: cover, auto;
   background-repeat: no-repeat, repeat;
   background-attachment: fixed;
@@ -75,7 +77,8 @@ h3 {
 }
 
 .bg-profile {
-  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: rgba(0, 0, 0, 0.7)
+    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
 
   background-size: auto;
   background-repeat: repeat;
@@ -85,7 +88,8 @@ h3 {
   overflow: hidden;
   height: 100vh;
   position: relative;
-  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: rgba(0, 0, 0, 0.7)
+    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
   background-size: auto;
   background-repeat: repeat;
   background-attachment: fixed;

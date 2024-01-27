@@ -68,7 +68,7 @@ const CreateProfile = () => {
   }, [image]);
 
   return (
-    <div className="w-full flex justify-center items-center">
+    <div className="relative w-full flex justify-center items-center">
       <div className="flex flex-col md:w-[70%] xs:w-[90%]">
         <div className="self-center md:w-[45%] xs:w-[80%]">
           <h3 className="text-center text-white font-goudy font-normal mb-12">
@@ -80,7 +80,7 @@ const CreateProfile = () => {
             <span id="hallucination">Hallucination!</span>
           </p>
         </div>
-        <div className="w-full self-start mt-16">
+        <div className="w-full self-start mt-12">
           <p className="text-lg text-white">About You</p>
         </div>
 

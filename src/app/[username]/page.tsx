@@ -100,14 +100,14 @@ const Profile = ({ params }: { params: { username: string } }) => {
   if (!userData) return <></>;
 
   return (
-    <div className="w-full h-screen flex flex-col mt-16">
+    <div className="relative w-full h-screen overflow-hidden flex flex-col mt-16">
       <div
-        className={`w-full h-full flex xs:flex-col md:flex-row ${isMyProfile ? "justify-between" : "justify-around"} px-12`}
+        className={`w-full h-full flex xs:flex-col overflow-hidden md:flex-row ${isMyProfile ? "justify-between" : "justify-around"} px-12`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
         <div
-          className={`w-full flex xs:flex-col md:flex-row justify-around mt-16`}
+          className={`w-full flex xs:flex-col overflow-hidden md:flex-row justify-around mt-16`}
         >
           <div className="flex flex-col items-center xs:w-[80%] md:w-[50%]">
             <div className="w-full flex flex-col">
@@ -119,9 +119,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
               <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
                 <div className="w-full flex">
-                  <div
-                    className={`relative ${isMobile ? "w-[80px] h-[80px]" : "w-[180px] h-[180px]"}`}
-                  >
+                  <div className="relative w-[8vmax] h-[8vmax]">
                     {userData?.profile?.image && (
                       <Image
                         src={userData?.profile?.image || ""}
@@ -135,29 +133,34 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   <div className="flex flex-col ml-4">
                     <p className="flex text-lg text-white font-bold">
                       {userData?.profile?.name}
-
-                      <sup
-                        className="relative cursor-pointer"
-                        onClick={() => copyToClipboard(lhcWallet, true)}
-                      >
-                        {isFirstTooltipShown && (
-                          <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                            Copied!
-                          </div>
-                        )}
-                        <CopyIcon />
-                      </sup>
                     </p>
                     <p className="text-sm">{`@${userData?.profile?.username}`}</p>
-                    <p className="text-base text-white">
+                    <p className="text-base text-white mt-4">
                       {userData?.profile?.bio}
                     </p>
-                    <a
-                      className="text-base font-white underline"
-                      href={`https://mmosh.app/${userData?.profile?.username}`}
-                    >
-                      {`mmosh.app/${userData?.profile?.username}`}
-                    </a>
+                    <div className="flex items-center">
+                      <a
+                        className="text-base font-white underline"
+                        href={`https://mmosh.app/${userData?.profile?.username}`}
+                      >
+                        {`mmosh.app/${userData?.profile?.username}`}
+                      </a>
+
+                      <div className="relative ml-4 px-4 rounded-[18px] bg-[#09073A]">
+                        <p className="text-sm">Secret Hideout Access</p>
+                        <sup
+                          className="absolute top-[-2px] right-[-2px] cursor-pointer"
+                          onClick={() => copyToClipboard(lhcWallet, true)}
+                        >
+                          <CopyIcon />
+                          {isFirstTooltipShown && (
+                            <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                              Copied!
+                            </div>
+                          )}
+                        </sup>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -189,7 +192,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 }
               >
                 {isTooltipShown && (
-                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
                     Copied!
                   </div>
                 )}

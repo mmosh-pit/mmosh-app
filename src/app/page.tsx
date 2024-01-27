@@ -104,7 +104,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="w-full h-full items-center justify-between text-sm">
+      <div className="w-full h-full items-center justify-between">
         {renderComponent()}
       </div>
     </main>

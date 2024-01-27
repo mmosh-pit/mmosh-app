@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
   const { token, wallet, recaptchaAction } = await req.json();
 
   const { projectID, recaptchaKey } = {
-    projectID: "hellbenders-public-c095b",
-    recaptchaKey: "6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN",
+    projectID: process.env.NEXT_PUBLIC_PROJECT_ID!,
+    recaptchaKey: process.env.NEXT_PUBLIC_RECAPTCHA_KEY!,
   };
 
   const client = new RecaptchaEnterpriseServiceClient();

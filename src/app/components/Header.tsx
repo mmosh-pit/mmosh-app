@@ -45,8 +45,12 @@ const Header = () => {
     let defaultClass =
       "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
-    if (userStatus === UserStatus.fullAccount) {
+    if (userStatus === UserStatus.fullAccount && pathname !== "/") {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
+    }
+
+    if (userStatus === UserStatus.fullAccount && pathname === "/") {
+      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
     return defaultClass;
@@ -149,12 +153,15 @@ const Header = () => {
           <div className="w-full flex flex-col justify-center items-center mb-4">
             {renderProgressBar()}
 
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              width={isMobileScreen ? 150 : 300}
-              height={isMobileScreen ? 150 : 300}
-            />
+            <div
+              className={`relative ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
+            >
+              <Image
+                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
+                alt="mmosh"
+                layout="fill"
+              />
+            </div>
           </div>
         )}
       </div>
@@ -190,7 +197,7 @@ const Header = () => {
 
           <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
             <button
-              className="flex bg-[#3C00FF] rounded-full px-12 py-4"
+              className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
               onClick={executeSearch}
             >
               <SearchIcon />

@@ -85,7 +85,8 @@ h3 {
 }
 
 .home-content {
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100vh;
   position: relative;
   background: rgba(0, 0, 0, 0.5)

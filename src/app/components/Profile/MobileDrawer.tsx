@@ -1,27 +1,41 @@
-import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 import * as React from "react";
+import { useAtom } from "jotai";
+import { useRouter } from "next/navigation";
+
+import HamburgerIcon from "@/assets/icons/HamburgerIcon";
+import { isDrawerOpen } from "@/app/store";
 
 const MobileDrawer = () => {
+  const router = useRouter();
+  const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
+
   return (
     <div className="drawer">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
-        <label htmlFor="my-drawer" className="btn drawer-button">
+        <label htmlFor="my-drawer" className="btn drawer-button" onClick={() => setIsDrawerOpen(true)}>
           <HamburgerIcon />
         </label>
       </div>
 
-      <div className="drawer-side">
+      <div className="drawer-side z-10">
         <label
           htmlFor="my-drawer"
           aria-label="close sidebar"
           className="drawer-overlay"
-        ></label>
+          onClick={() => setIsDrawerOpen(false)}
+        >
+        </label>
         <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
-            <p className="text-base text-white mb-2">Home</p>
+            <p
+              className="text-base text-white mb-2 cursor-pointer"
+              onClick={() => router.replace("/")}
+            >
+              Home
+            </p>
 
-            <p className="text-base text-white mt-2">Website</p>
+            <a href="https://www.mmosh.ai" className="text-base text-white mt-2 cursor-pointer">Website</a>
           </div>
           <div className="h-[1px] w-[90%] bg-white mt-4" />
           <div className="flex flex-col mt-4">

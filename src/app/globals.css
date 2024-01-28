@@ -77,7 +77,7 @@ h3 {
 }
 
 .bg-profile {
-  background: rgba(0, 0, 0, 0.5)
+  background: rgba(0, 0, 0, 0.5),
     url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
 
   background-size: auto;

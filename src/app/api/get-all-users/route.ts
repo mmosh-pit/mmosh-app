@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         },
       },
       {
-        sort: { points: -1 },
+        sort: { "telegram.points": -1 },
       },
     )
     .toArray();

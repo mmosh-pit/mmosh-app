@@ -6,13 +6,14 @@ import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
 import Image from "next/image";
 import { User } from "../models/user";
 import axios from "axios";
-import { data, accounts, points, searchBarText } from "../store";
+import { data, accounts, points, searchBarText, isDrawerOpen } from "../store";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
   const [_, setTotalAccounts] = useAtom(accounts);
   const [__, setTotalPoints] = useAtom(points);
   const [searchText] = useAtom(searchBarText);
+  const [isDrawerShown] = useAtom(isDrawerOpen);
   const allUsers = React.useRef<User[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
 
@@ -51,7 +52,7 @@ const HomePage = () => {
   }, [searchText]);
 
   return (
-    <div className="w-full h-screen flex flex-col items-center mt-6 home-content">
+    <div className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}>
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
           Welcome Home, {currentUser?.profile?.name}

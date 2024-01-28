@@ -8,7 +8,7 @@ import DesktopNavbar from "../components/Profile/DesktopNavbar";
 import Image from "next/image";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
-import { UserStatus, status } from "../store";
+import { UserStatus, isDrawerOpen, status } from "../store";
 import { User } from "../models/user";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
@@ -19,6 +19,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
   const rendered = React.useRef(false);
   const wallet = useAnchorWallet();
+  const [isDrawerShown] = useAtom(isDrawerOpen);
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
   const [userData, setUserData] = React.useState<User>();
@@ -100,7 +101,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   if (!userData) return <></>;
 
   return (
-    <div className="relative w-full h-screen flex flex-col mt-16">
+    <div className="w-full h-screen flex flex-col mt-16">
       <div
         className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-12`}
       >
@@ -117,9 +118,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   : `${userData?.profile?.name}'s Hideout`}
               </p>
 
-              <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[100px] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
+              <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[8vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
                 <div className="w-full flex">
-                  <div className="relative w-[8vmax] h-[8vmax]">
+                  <div className={`relative w-[8vmax] h-[8vmax] ${isDrawerShown ? "z-[-1]" : ""}`}>
                     {userData?.profile?.image && (
                       <Image
                         src={userData?.profile?.image || ""}
@@ -146,8 +147,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         {`mmosh.app/${userData?.profile?.username}`}
                       </a>
 
-                      <div className="relative ml-4 px-4 rounded-[18px] bg-[#09073A]">
-                        <p className="text-sm">Secret Hideout Access</p>
+                      <div className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}>
+                        <p className="text-base">Secret Hideout Access</p>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"
                           onClick={() => copyToClipboard(lhcWallet, true)}

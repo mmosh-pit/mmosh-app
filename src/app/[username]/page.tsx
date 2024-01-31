@@ -120,7 +120,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
               <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[8vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
                 <div className="w-full flex">
-                  <div className={`relative w-[8vmax] h-[8vmax] ${isDrawerShown ? "z-[-1]" : ""}`}>
+                  <div
+                    className={`relative w-[8vmax] h-[8vmax] ${isDrawerShown ? "z-[-1]" : ""}`}
+                  >
                     {userData?.profile?.image && (
                       <Image
                         src={userData?.profile?.image || ""}
@@ -147,7 +149,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         {`mmosh.app/${userData?.profile?.username}`}
                       </a>
 
-                      <div className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}>
+                      <div
+                        className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
+                      >
                         <p className="text-base">Secret Hideout Access</p>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"
@@ -187,7 +191,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 className="relative cursor-pointer"
                 onClick={() =>
                   copyToClipboard(
-                    `https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`,
+                    `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
                     false,
                   )
                 }
@@ -201,7 +205,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
               </sup>
             </p>
             <p className="text-base text-white my-6">
-              {`https://t.me/LiquidHeartsBot?start=${userData?.telegram?.id}`}
+              {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
             </p>
 
             <p className="text-base text-white">

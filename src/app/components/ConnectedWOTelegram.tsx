@@ -16,6 +16,9 @@ const ConnectedWOAccount = () => {
         request_access: true,
       },
       async (data: any) => {
+        await axios.post("/api/log-data", {
+          data,
+        });
         if (!data.id) return;
 
         const user = await axios.get(`/api/get-bot-user?id=${data.id}`);
@@ -47,6 +50,11 @@ const ConnectedWOAccount = () => {
           ...prev,
           telegram: telegramData,
         }));
+      },
+      async (val: any) => {
+        await axios.post("/api/log-data", {
+          data: val,
+        });
       },
     );
   };

@@ -7,6 +7,7 @@ import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { uploadFile } from "../lib/firebase";
 import { UserStatus, status } from "../store";
 import { useRouter } from "next/navigation";
+import { mintTokens } from "@/utils/mintTokens";
 
 const CreateProfile = () => {
   const wallet = useAnchorWallet();
@@ -37,7 +38,7 @@ const CreateProfile = () => {
     grecaptcha.enterprise.ready(async () => {
       const token = await grecaptcha.enterprise.execute(
         "6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN",
-        { action: "LOGIN" },
+        { action: "LOGIN" }
       );
 
       await axios.post("/api/validate-captcha", {
@@ -55,10 +56,50 @@ const CreateProfile = () => {
       wallet: wallet!.publicKey.toString(),
     });
 
+    await processTokenTransfers();
+
     setUserStatus(UserStatus.fullAccount);
     router.push(`/${form.username}`);
     setIsLoading(false);
   }, [form, image]);
+
+  const processTokenTransfers = async () => {
+    const walletData = await axios.get(
+      `/api/get-wallet-data?wallet=${wallet!.publicKey}`
+    );
+
+    const userData = await axios.get(
+      `/api/get-bot-user?id=${walletData.data.telegram.id}`
+    );
+
+    // Mint 100 tokens to user for registering
+    await mintTokens(userData.data.addressPublicKey);
+
+    await axios.put("/api/update-bot-account", {
+      telegramId: walletData.data.telegram.id,
+      field: "tokenPoints",
+      value: 100,
+    });
+
+    const referralData = await axios.get(
+      `/api/get-referral-data?id=${userData.data._id}`
+    );
+
+    if (referralData.data) {
+      const parentData = await axios.get(
+        `/api/get-bot-account-by-id?id=${referralData.data.parent}`
+      );
+
+      // Mint 100 tokens to parent for referral registration
+      await mintTokens(parentData.data.addressPublicKey);
+
+      await axios.put("/api/update-bot-account", {
+        telegramId: parentData.data.telegramId,
+        field: "tokenPoints",
+        value: 100,
+      });
+    }
+  };
 
   React.useEffect(() => {
     if (!image) return;

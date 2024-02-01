@@ -115,11 +115,7 @@ const CreateProfile = () => {
       telegramId: userInfo.data.telegramId,
       points: userInfo.data.points
     })
-    console.log({
-      addressPublicKey: userInfo.data.addressPublicKey,
-      telegramId: userInfo.data.telegramId,
-      points: userInfo.data.points
-    })
+
     const referralData = await axios.get(
       `/api/get-referral-data?id=${userInfo.data._id}`
     );
@@ -129,10 +125,6 @@ const CreateProfile = () => {
         `/api/get-bot-account-by-id?id=${referralData.data.parent}`
       );
       setParentData({
-        addressPublicKey: parentInfo.data.addressPublicKey,
-        telegramId: parentInfo.data.telegramId
-      })
-      console.log({
         addressPublicKey: parentInfo.data.addressPublicKey,
         telegramId: parentInfo.data.telegramId
       })

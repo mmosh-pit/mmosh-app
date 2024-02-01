@@ -40,7 +40,7 @@ const WithTelegramNoAccount = () => {
       <div className="mt-8">
         <a
           className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
-          href="https://t.me/LiquidHeartsBot"
+          href="https://t.me/MMOSHBot"
           target="_blank"
         >
           <p className="text-white text-lg">Activate Bot</p>

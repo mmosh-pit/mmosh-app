@@ -16,9 +16,9 @@ const ConnectedWOAccount = () => {
         request_access: true,
       },
       async (data: any) => {
-        await axios.post("/api/log-data", {
-          data,
-        });
+        // await axios.post("/api/log-data", {
+        //   data,
+        // });
         if (!data.id) return;
 
         const user = await axios.get(`/api/get-bot-user?id=${data.id}`);

@@ -23,6 +23,16 @@ const CreateProfile = () => {
     pronouns: "they/them",
   });
   const [isLoading, setIsLoading] = React.useState(false);
+  const [userData, setUserData] = React.useState({
+    addressPublicKey: "",
+    telegramId: "",
+    points: ""
+  });
+  const [parentData, setParentData] = React.useState({
+    addressPublicKey: "",
+    telegramId: ""
+  });
+
 
   const disabledButton =
     !wallet?.publicKey || !image || !form.name || !form.username || !form.bio;
@@ -64,37 +74,21 @@ const CreateProfile = () => {
   }, [form, image]);
 
   const processTokenTransfers = async () => {
-    const walletData = await axios.get(
-      `/api/get-wallet-data?wallet=${wallet!.publicKey}`
-    );
-
-    const userData = await axios.get(
-      `/api/get-bot-user?id=${walletData.data.telegram.id}`
-    );
-
-    // Mint 100 tokens to user for registering
-    await mintTokens(userData.data.addressPublicKey);
+    // Mint tokens to user wallet for registering
+    await mintTokens(userData.addressPublicKey, Number(userData.points));
 
     await axios.put("/api/update-bot-account", {
-      telegramId: walletData.data.telegram.id,
+      telegramId: userData.telegramId,
       field: "tokenPoints",
-      value: 100,
+      value: Number(userData.points),
     });
 
-    const referralData = await axios.get(
-      `/api/get-referral-data?id=${userData.data._id}`
-    );
-
-    if (referralData.data) {
-      const parentData = await axios.get(
-        `/api/get-bot-account-by-id?id=${referralData.data.parent}`
-      );
-
+    if (parentData.addressPublicKey !== "") {
       // Mint 100 tokens to parent for referral registration
-      await mintTokens(parentData.data.addressPublicKey);
+      await mintTokens(parentData.addressPublicKey);
 
       await axios.put("/api/update-bot-account", {
-        telegramId: parentData.data.telegramId,
+        telegramId: parentData.telegramId,
         field: "tokenPoints",
         value: 100,
       });
@@ -104,9 +98,50 @@ const CreateProfile = () => {
   React.useEffect(() => {
     if (!image) return;
     const objectUrl = URL.createObjectURL(image);
-
     setPreview(objectUrl);
   }, [image]);
+
+  const initUserData = async (publicKey: string | undefined) => {
+    const walletData = await axios.get(
+      `/api/get-wallet-data?wallet=${publicKey}`
+    );
+
+    const userInfo = await axios.get(
+      `/api/get-bot-user?id=${walletData.data.telegram.id}`
+    );
+
+    setUserData({
+      addressPublicKey: userInfo.data.addressPublicKey,
+      telegramId: userInfo.data.telegramId,
+      points: userInfo.data.points
+    })
+    console.log({
+      addressPublicKey: userInfo.data.addressPublicKey,
+      telegramId: userInfo.data.telegramId,
+      points: userInfo.data.points
+    })
+    const referralData = await axios.get(
+      `/api/get-referral-data?id=${userInfo.data._id}`
+    );
+
+    if(referralData.data) {
+      const parentInfo = await axios.get(
+        `/api/get-bot-account-by-id?id=${referralData.data.parent}`
+      );
+      setParentData({
+        addressPublicKey: parentInfo.data.addressPublicKey,
+        telegramId: parentInfo.data.telegramId
+      })
+      console.log({
+        addressPublicKey: parentInfo.data.addressPublicKey,
+        telegramId: parentInfo.data.telegramId
+      })
+    }
+  }
+
+  React.useEffect(() => {
+    initUserData(wallet?.publicKey.toString())
+  }, [wallet])
 
   return (
     <div className="relative w-full flex justify-center items-center">

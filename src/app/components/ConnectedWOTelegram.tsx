@@ -51,11 +51,6 @@ const ConnectedWOAccount = () => {
           telegram: telegramData,
         }));
       },
-      async (val: any) => {
-        await axios.post("/api/log-data", {
-          data: val,
-        });
-      },
     );
   };
 

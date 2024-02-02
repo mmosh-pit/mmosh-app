@@ -75,7 +75,10 @@ const CreateProfile = () => {
 
   const processTokenTransfers = async () => {
     // Mint tokens to user wallet for registering
-    await mintTokens(userData.addressPublicKey, Number(userData.points));
+    await axios.post("/api/mint-tokens", {
+      publicKey: userData.addressPublicKey,
+      points: Number(userData.points),
+    });
 
     await axios.put("/api/update-bot-account", {
       telegramId: userData.telegramId,
@@ -85,7 +88,10 @@ const CreateProfile = () => {
 
     if (parentData.addressPublicKey !== "") {
       // Mint 100 tokens to parent for referral registration
-      await mintTokens(parentData.addressPublicKey);
+      await axios.post("/api/mint-tokens", {
+        publicKey: parentData.addressPublicKey,
+        points: 100,
+      });
 
       await axios.put("/api/update-bot-account", {
         telegramId: parentData.telegramId,

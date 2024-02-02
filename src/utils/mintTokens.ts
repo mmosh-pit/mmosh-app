@@ -3,7 +3,7 @@ import * as token from "@solana/spl-token";
 import base58 from "bs58";
 import { NextResponse } from "next/server";
 
-export async function mintTokens(destination: string, points?: number) {
+export async function mintTokens(destination: string, points: number) {
   try {
     const connection = new Connection(
       process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "",
@@ -28,14 +28,12 @@ export async function mintTokens(destination: string, points?: number) {
       new PublicKey(process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS || ""),
       tokenAccount.address,
       keyPair.publicKey,
-      points
-        ? points * 10 ** tokenDetails.value.decimals
-        : parseInt(process.env.NEXT_PUBLIC_TOKEN_MINT_AMOUNT || "100000000000")
+      points * 10 ** tokenDetails.value.decimals
     );
 
-    return NextResponse.json("Points transferred to wallet", { status: 200 });
+    return NextResponse.json("", { status: 200 });
   } catch (error) {
-    return NextResponse.json("Error while transferring points", {
+    return NextResponse.json("", {
       status: 400,
     });
   }

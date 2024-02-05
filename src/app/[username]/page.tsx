@@ -171,6 +171,29 @@ const Profile = ({ params }: { params: { username: string } }) => {
                           )}
                         </sup>
                       </div>
+
+                      <div
+                        className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
+                      >
+                        <a
+                          className="text-base"
+                          href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                          target="_blank"
+                        >
+                          Wallet Address
+                        </a>
+                        <sup
+                          className="absolute top-[-2px] right-[-2px] cursor-pointer"
+                          onClick={() => copyToClipboard(userData.wallet, true)}
+                        >
+                          <CopyIcon />
+                          {isFirstTooltipShown && (
+                            <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                              Copied!
+                            </div>
+                          )}
+                        </sup>
+                      </div>
                     </div>
                   </div>
                 </div>

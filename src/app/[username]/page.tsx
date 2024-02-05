@@ -152,7 +152,13 @@ const Profile = ({ params }: { params: { username: string } }) => {
                       <div
                         className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                       >
-                        <p className="text-base">Secret Hideout Access</p>
+                        <a
+                          className="text-base"
+                          href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
+                          target="_blank"
+                        >
+                          Secret Hideout Access
+                        </a>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"
                           onClick={() => copyToClipboard(lhcWallet, true)}

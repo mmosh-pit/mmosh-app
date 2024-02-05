@@ -22,6 +22,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
+  const [isSecTooltipShown, setIsSecTooltipShown] = React.useState(false);
   const [userData, setUserData] = React.useState<User>();
   const [rankData, setRankData] = React.useState({
     points: 0,
@@ -59,17 +60,21 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
 
   const copyToClipboard = React.useCallback(
-    async (text: string, first: boolean) => {
-      if (first) {
+    async (text: string, textNumber: number) => {
+      if (textNumber === 1) {
         setIsFirstTooltipShown(true);
+      } else if (textNumber === 2) {
+        setIsSecTooltipShown(true);
       } else {
         setIsTooltipShown(true);
       }
       await navigator.clipboard.writeText(text);
 
       setTimeout(() => {
-        if (first) {
+        if (textNumber === 1) {
           setIsFirstTooltipShown(false);
+        } else if (textNumber === 2) {
+          setIsSecTooltipShown(false);
         } else {
           setIsTooltipShown(false);
         }
@@ -153,7 +158,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                       >
                         <a
-                          className="text-base"
+                          className="text-base underline"
                           href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
                           target="_blank"
                         >
@@ -161,7 +166,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         </a>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"
-                          onClick={() => copyToClipboard(lhcWallet, true)}
+                          onClick={() => copyToClipboard(lhcWallet, 1)}
                         >
                           <CopyIcon />
                           {isFirstTooltipShown && (
@@ -176,7 +181,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                       >
                         <a
-                          className="text-base"
+                          className="text-base underline"
                           href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
                           target="_blank"
                         >
@@ -184,10 +189,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         </a>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"
-                          onClick={() => copyToClipboard(userData.wallet, true)}
+                          onClick={() => copyToClipboard(userData.wallet, 2)}
                         >
                           <CopyIcon />
-                          {isFirstTooltipShown && (
+                          {isSecTooltipShown && (
                             <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
                               Copied!
                             </div>
@@ -221,7 +226,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 onClick={() =>
                   copyToClipboard(
                     `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
-                    false,
+                    0,
                   )
                 }
               >

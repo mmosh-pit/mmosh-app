@@ -7,28 +7,28 @@ export async function mintTokens(destination: string, points: number) {
   try {
     const connection = new Connection(
       process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "",
-      "confirmed"
+      "confirmed",
     );
     const keyPair = Keypair.fromSecretKey(
-      new Uint8Array(base58.decode(process.env.NEXT_PUBLIC_SECRET_KEY || ""))
+      new Uint8Array(base58.decode(process.env.SECRET_KEY || "")),
     );
     const tokenDetails = await connection.getTokenSupply(
-      new PublicKey(process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS || "")
+      new PublicKey(process.env.TOKEN_MINT_ADDRESS || ""),
     );
     const tokenAccount = await token.getOrCreateAssociatedTokenAccount(
       connection,
       keyPair,
-      new PublicKey(process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS || ""),
-      new PublicKey(destination)
+      new PublicKey(process.env.TOKEN_MINT_ADDRESS || ""),
+      new PublicKey(destination),
     );
 
     await token.mintTo(
       connection,
       keyPair,
-      new PublicKey(process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS || ""),
+      new PublicKey(process.env.TOKEN_MINT_ADDRESS || ""),
       tokenAccount.address,
       keyPair.publicKey,
-      points * 10 ** tokenDetails.value.decimals
+      points * 10 ** tokenDetails.value.decimals,
     );
 
     return NextResponse.json("", { status: 200 });

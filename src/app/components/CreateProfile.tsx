@@ -22,6 +22,15 @@ const CreateProfile = () => {
     pronouns: "they/them",
   });
   const [isLoading, setIsLoading] = React.useState(false);
+  const [userData, setUserData] = React.useState({
+    addressPublicKey: "",
+    telegramId: "",
+    points: "",
+  });
+  const [parentData, setParentData] = React.useState({
+    addressPublicKey: "",
+    telegramId: "",
+  });
 
   const disabledButton =
     !wallet?.publicKey || !image || !form.name || !form.username;
@@ -37,7 +46,7 @@ const CreateProfile = () => {
     grecaptcha.enterprise.ready(async () => {
       const token = await grecaptcha.enterprise.execute(
         "6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN",
-        { action: "LOGIN" },
+        { action: "LOGIN" }
       );
 
       await axios.post("/api/validate-captcha", {
@@ -56,17 +65,87 @@ const CreateProfile = () => {
       wallet: wallet!.publicKey.toString(),
     });
 
+    await processTokenTransfers();
+
     setUserStatus(UserStatus.fullAccount);
     router.push(`/${form.username}`);
     setIsLoading(false);
   }, [form, image]);
 
+  const processTokenTransfers = async () => {
+    // Mint tokens to user wallet for registering
+    await axios.post("/api/mint-tokens", {
+      publicKey: userData.addressPublicKey,
+      points: Number(userData.points),
+    });
+
+    await axios.put("/api/update-bot-account", {
+      telegramId: userData.telegramId,
+      field: "tokenPoints",
+      value: Number(userData.points),
+    });
+
+    if (parentData.addressPublicKey !== "") {
+      const result = await axios.get(
+        `/api/get-wallet-by-telegram?telegramId=${parentData.telegramId}`
+      );
+      const hasProfile = !!result.data?.profile;
+
+      // Proceed only if parent is registered
+      if (hasProfile) {
+        // Mint 100 tokens to parent for referral registration
+        await axios.post("/api/mint-tokens", {
+          publicKey: parentData.addressPublicKey,
+          points: 100,
+        });
+        await axios.put("/api/update-bot-account", {
+          telegramId: parentData.telegramId,
+          field: "tokenPoints",
+          value: 100,
+        });
+      }
+    }
+  };
+
   React.useEffect(() => {
     if (!image) return;
     const objectUrl = URL.createObjectURL(image);
-
     setPreview(objectUrl);
   }, [image]);
+
+  const initUserData = async (publicKey: string | undefined) => {
+    const walletData = await axios.get(
+      `/api/get-wallet-data?wallet=${publicKey}`
+    );
+
+    const userInfo = await axios.get(
+      `/api/get-bot-user?id=${walletData.data.telegram.id}`
+    );
+
+    setUserData({
+      addressPublicKey: userInfo.data.addressPublicKey,
+      telegramId: userInfo.data.telegramId,
+      points: userInfo.data.points,
+    });
+
+    const referralData = await axios.get(
+      `/api/get-referral-data?id=${userInfo.data._id}`
+    );
+
+    if (referralData.data) {
+      const parentInfo = await axios.get(
+        `/api/get-bot-account-by-id?id=${referralData.data.parent}`
+      );
+      setParentData({
+        addressPublicKey: parentInfo.data.addressPublicKey,
+        telegramId: parentInfo.data.telegramId,
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    initUserData(wallet?.publicKey.toString());
+  }, [wallet]);
 
   return (
     <div className="relative w-full flex justify-center items-center">

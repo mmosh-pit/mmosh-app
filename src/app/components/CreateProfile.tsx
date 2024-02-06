@@ -7,7 +7,6 @@ import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { uploadFile } from "../lib/firebase";
 import { UserStatus, status } from "../store";
 import { useRouter } from "next/navigation";
-import { mintTokens } from "@/utils/mintTokens";
 
 const CreateProfile = () => {
   const wallet = useAnchorWallet();
@@ -26,13 +25,12 @@ const CreateProfile = () => {
   const [userData, setUserData] = React.useState({
     addressPublicKey: "",
     telegramId: "",
-    points: ""
+    points: "",
   });
   const [parentData, setParentData] = React.useState({
     addressPublicKey: "",
-    telegramId: ""
+    telegramId: "",
   });
-
 
   const disabledButton =
     !wallet?.publicKey || !image || !form.name || !form.username;
@@ -88,17 +86,24 @@ const CreateProfile = () => {
     });
 
     if (parentData.addressPublicKey !== "") {
-      // Mint 100 tokens to parent for referral registration
-      await axios.post("/api/mint-tokens", {
-        publicKey: parentData.addressPublicKey,
-        points: 100,
-      });
+      const result = await axios.get(
+        `/api/get-wallet-by-telegram?telegramId=${parentData.telegramId}`
+      );
+      const hasProfile = !!result.data?.profile;
 
-      await axios.put("/api/update-bot-account", {
-        telegramId: parentData.telegramId,
-        field: "tokenPoints",
-        value: 100,
-      });
+      // Proceed only if parent is registered
+      if (hasProfile) {
+        // Mint 100 tokens to parent for referral registration
+        await axios.post("/api/mint-tokens", {
+          publicKey: parentData.addressPublicKey,
+          points: 100,
+        });
+        await axios.put("/api/update-bot-account", {
+          telegramId: parentData.telegramId,
+          field: "tokenPoints",
+          value: 100,
+        });
+      }
     }
   };
 
@@ -120,27 +125,27 @@ const CreateProfile = () => {
     setUserData({
       addressPublicKey: userInfo.data.addressPublicKey,
       telegramId: userInfo.data.telegramId,
-      points: userInfo.data.points
-    })
+      points: userInfo.data.points,
+    });
 
     const referralData = await axios.get(
       `/api/get-referral-data?id=${userInfo.data._id}`
     );
 
-    if(referralData.data) {
+    if (referralData.data) {
       const parentInfo = await axios.get(
         `/api/get-bot-account-by-id?id=${referralData.data.parent}`
       );
       setParentData({
         addressPublicKey: parentInfo.data.addressPublicKey,
-        telegramId: parentInfo.data.telegramId
-      })
+        telegramId: parentInfo.data.telegramId,
+      });
     }
-  }
+  };
 
   React.useEffect(() => {
-    initUserData(wallet?.publicKey.toString())
-  }, [wallet])
+    initUserData(wallet?.publicKey.toString());
+  }, [wallet]);
 
   return (
     <div className="relative w-full flex justify-center items-center">

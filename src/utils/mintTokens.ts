@@ -1,6 +1,8 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import * as token from "@solana/spl-token";
 import base58 from "bs58";
+import { NextResponse } from "next/server";
+import { getKeypairFromEnvironment } from "@solana-developers/node-helpers";
 
 export async function mintTokens(destination: string, points: number) {
   try {
@@ -18,6 +20,7 @@ export async function mintTokens(destination: string, points: number) {
     const tokenDetails = await connection.getTokenSupply(
       new PublicKey(tokenMint),
     );
+    const mintAuthority = getKeypairFromEnvironment("MINT_AUTHORITY_SECRET_KEY");
 
     console.log("Keypair: ", keyPair.publicKey.toString());
 
@@ -35,8 +38,8 @@ export async function mintTokens(destination: string, points: number) {
       keyPair,
       new PublicKey(tokenMint),
       tokenAccount.address,
-      keyPair.publicKey,
-      points * 10 ** tokenDetails.value.decimals,
+      mintAuthority,
+      points * 10 ** tokenDetails.value.decimals
     );
 
     return true;

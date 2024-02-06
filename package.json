@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
+    "@solana-developers/node-helpers": "^1.2.2",
     "@solana/spl-token": "^0.4.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",

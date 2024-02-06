@@ -35,12 +35,12 @@ const CreateProfile = () => {
 
 
   const disabledButton =
-    !wallet?.publicKey || !image || !form.name || !form.username || !form.bio;
+    !wallet?.publicKey || !image || !form.name || !form.username;
 
   const createAccount = React.useCallback(async () => {
     if (!wallet?.publicKey) return;
     if (!image) return;
-    if (!form.name || !form.username || !form.bio) return;
+    if (!form.name || !form.username) return;
     setIsLoading(true);
 
     const imageUrl = await uploadFile(image!, form.name);
@@ -61,6 +61,7 @@ const CreateProfile = () => {
       field: "profile",
       value: {
         ...form,
+        username: form.username.trim(),
         image: imageUrl,
       },
       wallet: wallet!.publicKey.toString(),

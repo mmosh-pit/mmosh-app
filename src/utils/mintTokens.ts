@@ -1,10 +1,13 @@
-import { Connection, Keypair, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import * as token from "@solana/spl-token";
 import base58 from "bs58";
-import { NextResponse } from "next/server";
 
 export async function mintTokens(destination: string, points: number) {
   try {
+    const tokenMint = process.env.TOKEN_MINT_ADDRESS!;
+
+    console.log("Token Mint: ", tokenMint);
+
     const connection = new Connection(
       process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "",
       "confirmed",
@@ -13,28 +16,34 @@ export async function mintTokens(destination: string, points: number) {
       new Uint8Array(base58.decode(process.env.SECRET_KEY || "")),
     );
     const tokenDetails = await connection.getTokenSupply(
-      new PublicKey(process.env.TOKEN_MINT_ADDRESS || ""),
+      new PublicKey(tokenMint),
     );
+
+    console.log("Keypair: ", keyPair.publicKey.toString());
+
+    console.log("Destination: ", destination);
+
     const tokenAccount = await token.getOrCreateAssociatedTokenAccount(
       connection,
       keyPair,
-      new PublicKey(process.env.TOKEN_MINT_ADDRESS || ""),
+      new PublicKey(tokenMint),
       new PublicKey(destination),
     );
 
     await token.mintTo(
       connection,
       keyPair,
-      new PublicKey(process.env.TOKEN_MINT_ADDRESS || ""),
+      new PublicKey(tokenMint),
       tokenAccount.address,
       keyPair.publicKey,
       points * 10 ** tokenDetails.value.decimals,
     );
 
-    return NextResponse.json("", { status: 200 });
+    return true;
   } catch (error) {
-    return NextResponse.json("", {
-      status: 400,
-    });
+    console.log("ERROR");
+    console.error(error);
+    console.log("-----------");
+    return false;
   }
 }

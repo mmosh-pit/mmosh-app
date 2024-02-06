@@ -46,7 +46,7 @@ const CreateProfile = () => {
     grecaptcha.enterprise.ready(async () => {
       const token = await grecaptcha.enterprise.execute(
         "6Le3O1QpAAAAABxXfBkbNNFgyYbgOQYR43Ia8zcN",
-        { action: "LOGIN" }
+        { action: "LOGIN" },
       );
 
       await axios.post("/api/validate-captcha", {
@@ -87,7 +87,7 @@ const CreateProfile = () => {
 
     if (parentData.addressPublicKey !== "") {
       const result = await axios.get(
-        `/api/get-wallet-by-telegram?telegramId=${parentData.telegramId}`
+        `/api/get-wallet-by-telegram?telegramId=${parentData.telegramId}`,
       );
       const hasProfile = !!result.data?.profile;
 
@@ -115,11 +115,11 @@ const CreateProfile = () => {
 
   const initUserData = async (publicKey: string | undefined) => {
     const walletData = await axios.get(
-      `/api/get-wallet-data?wallet=${publicKey}`
+      `/api/get-wallet-data?wallet=${publicKey}`,
     );
 
     const userInfo = await axios.get(
-      `/api/get-bot-user?id=${walletData.data.telegram.id}`
+      `/api/get-bot-user?id=${walletData.data.telegram.id}`,
     );
 
     setUserData({
@@ -129,12 +129,12 @@ const CreateProfile = () => {
     });
 
     const referralData = await axios.get(
-      `/api/get-referral-data?id=${userInfo.data._id}`
+      `/api/get-referral-data?id=${userInfo.data._id}`,
     );
 
     if (referralData.data) {
       const parentInfo = await axios.get(
-        `/api/get-bot-account-by-id?id=${referralData.data.parent}`
+        `/api/get-bot-account-by-id?id=${referralData.data.parent}`,
       );
       setParentData({
         addressPublicKey: parentInfo.data.addressPublicKey,

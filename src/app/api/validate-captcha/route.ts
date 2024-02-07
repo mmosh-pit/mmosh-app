@@ -17,11 +17,10 @@ export async function POST(req: NextRequest) {
 
   const client = new RecaptchaEnterpriseServiceClient({
     credentials: {
-      client_email:
-        process.env.CLIENT_EMAIL,
+      client_email: process.env.CLIENT_EMAIL,
       client_secret: "",
       client_id: process.env.CLIENT_ID,
-      private_key: process.env.PRIVATE_KEY!.split(String.raw`\n`).join('\n'),
+      private_key: process.env.PRIVATE_KEY!.split(String.raw`\n`).join("\n"),
       private_key_id: process.env.PRIVATE_KEY_ID,
       type: "service_account",
       universe_domain: "googleapis.com",
@@ -45,18 +44,11 @@ export async function POST(req: NextRequest) {
 
   // Check if the token is valid.
   if (!response.tokenProperties?.valid) {
-    console.log(
-      `The CreateAssessment call failed because the token was: ${response.tokenProperties?.invalidReason}`,
-    );
     return NextResponse.json("", { status: 400 });
   }
 
   // Check if the expected action was executed.
   // The `action` property is set by user client in the grecaptcha.enterprise.execute() method.
-  console.log(`The reCAPTCHA score is: ${response.riskAnalysis?.score}`);
-  response.riskAnalysis?.reasons?.forEach((reason) => {
-    console.log(reason);
-  });
 
   const user = await collection.findOne({
     wallet,

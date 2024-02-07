@@ -1,14 +1,11 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import * as token from "@solana/spl-token";
 import base58 from "bs58";
-import { NextResponse } from "next/server";
 import { getKeypairFromEnvironment } from "@solana-developers/node-helpers";
 
 export async function mintTokens(destination: string, points: number) {
   try {
     const tokenMint = process.env.TOKEN_MINT_ADDRESS!;
-
-    console.log("Token Mint: ", tokenMint);
 
     const connection = new Connection(
       process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "",
@@ -20,11 +17,9 @@ export async function mintTokens(destination: string, points: number) {
     const tokenDetails = await connection.getTokenSupply(
       new PublicKey(tokenMint),
     );
-    const mintAuthority = getKeypairFromEnvironment("MINT_AUTHORITY_SECRET_KEY");
-
-    console.log("Keypair: ", keyPair.publicKey.toString());
-
-    console.log("Destination: ", destination);
+    const mintAuthority = getKeypairFromEnvironment(
+      "MINT_AUTHORITY_SECRET_KEY",
+    );
 
     const tokenAccount = await token.getOrCreateAssociatedTokenAccount(
       connection,
@@ -39,14 +34,11 @@ export async function mintTokens(destination: string, points: number) {
       new PublicKey(tokenMint),
       tokenAccount.address,
       mintAuthority,
-      points * 10 ** tokenDetails.value.decimals
+      points * 10 ** tokenDetails.value.decimals,
     );
 
     return true;
   } catch (error) {
-    console.log("ERROR");
-    console.error(error);
-    console.log("-----------");
     return false;
   }
 }

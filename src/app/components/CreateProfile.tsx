@@ -65,47 +65,47 @@ const CreateProfile = () => {
       wallet: wallet!.publicKey.toString(),
     });
 
-    await processTokenTransfers();
+    // await processTokenTransfers();
 
     setUserStatus(UserStatus.fullAccount);
     router.push(`/${form.username}`);
     setIsLoading(false);
   }, [form, image]);
 
-  const processTokenTransfers = async () => {
-    // Mint tokens to user wallet for registering
-    await axios.post("/api/mint-tokens", {
-      publicKey: userData.addressPublicKey,
-      points: Number(userData.points),
-    });
-
-    await axios.put("/api/update-bot-account", {
-      telegramId: userData.telegramId,
-      field: "tokenPoints",
-      value: Number(userData.points),
-    });
-
-    if (parentData.addressPublicKey !== "") {
-      const result = await axios.get(
-        `/api/get-wallet-by-telegram?telegramId=${parentData.telegramId}`,
-      );
-      const hasProfile = !!result.data?.profile;
-
-      // Proceed only if parent is registered
-      if (hasProfile) {
-        // Mint 100 tokens to parent for referral registration
-        await axios.post("/api/mint-tokens", {
-          publicKey: parentData.addressPublicKey,
-          points: 100,
-        });
-        await axios.put("/api/update-bot-account", {
-          telegramId: parentData.telegramId,
-          field: "tokenPoints",
-          value: 100,
-        });
-      }
-    }
-  };
+  // const processTokenTransfers = async () => {
+  //   // Mint tokens to user wallet for registering
+  //   await axios.post("/api/mint-tokens", {
+  //     publicKey: userData.addressPublicKey,
+  //     points: Number(userData.points),
+  //   });
+  //
+  //   await axios.put("/api/update-bot-account", {
+  //     telegramId: userData.telegramId,
+  //     field: "tokenPoints",
+  //     value: Number(userData.points),
+  //   });
+  //
+  //   if (parentData.addressPublicKey !== "") {
+  //     const result = await axios.get(
+  //       `/api/get-wallet-by-telegram?telegramId=${parentData.telegramId}`,
+  //     );
+  //     const hasProfile = !!result.data?.profile;
+  //
+  //     // Proceed only if parent is registered
+  //     if (hasProfile) {
+  //       // Mint 100 tokens to parent for referral registration
+  //       await axios.post("/api/mint-tokens", {
+  //         publicKey: parentData.addressPublicKey,
+  //         points: 100,
+  //       });
+  //       await axios.put("/api/update-bot-account", {
+  //         telegramId: parentData.telegramId,
+  //         field: "tokenPoints",
+  //         value: 100,
+  //       });
+  //     }
+  //   }
+  // };
 
   React.useEffect(() => {
     if (!image) return;

@@ -42,7 +42,7 @@ export default function Home() {
     }
 
     const hasBotAccount = await axios.get(
-      `/api/check-bot-account?telegramId=${result.data.telegramId}`,
+      `/api/check-bot-account?telegramId=${result.data.telegram.id}`,
     );
 
     if (!hasBotAccount) {

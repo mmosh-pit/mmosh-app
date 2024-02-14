@@ -140,6 +140,15 @@ h3 {
   -moz-text-fill-color: transparent;
 }
 
+#onboarding-points-gradient {
+  background: linear-gradient(88.63deg, #fed008 59.31%, #ff008a 80.33%);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+}
+
 #custom-progress {
   width: 5%;
   height: 25px;

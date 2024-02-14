@@ -76,7 +76,9 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
 
   const toggleButtonState = React.useCallback(() => {
     const auth = getAuth();
+    console.log("Clicking");
     if (!userData?.twitter?.name) {
+      console.log("Joining");
       connectTwitter(auth, true);
       return;
     }
@@ -98,7 +100,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
       setIsConnecting(false);
       return;
     }
-  }, [isDisconnecting, isConnecting]);
+  }, [isDisconnecting, isConnecting, userData]);
 
   const getButtonHelperText = React.useCallback(() => {
     if (isDisconnecting && !isConnecting) {
@@ -113,7 +115,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
   }, [isDisconnecting, isConnecting]);
 
   return (
-    <div className="flex flex-col items-center max-w-[40%]">
+    <div className="relative flex flex-col md:max-w-[25%] max-w-[50%]">
       <div className="flex items-center">
         <TwitterMagentaIcon />
         <p className="text-lg text-white ml-2">Twitter</p>
@@ -134,7 +136,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
       {isMyProfile && (
         <>
           <button
-            className="rounded-full p-4 bg-[#09073A] mt-2"
+            className="rounded-full p-4 bg-[#09073A] mt-2 cursor-pointer"
             onClick={toggleButtonState}
           >
             {getButtonLabel()}

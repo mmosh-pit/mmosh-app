@@ -15,6 +15,17 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json("User not found", { status: 400 });
   }
 
+  const userSavedData = await collection.findOne({
+    "telegram.id": user.telegram.id,
+    profile: {
+      $exists: true,
+    },
+  });
+
+  if (userSavedData) {
+    return NextResponse.json("", { status: 200 });
+  }
+
   let pointsToAdd = 50;
 
   if (user.telegram) {
@@ -47,5 +58,5 @@ export async function PUT(req: NextRequest) {
     },
   );
 
-  return NextResponse.json("User not found", { status: 400 });
+  return NextResponse.json("", { status: 200 });
 }

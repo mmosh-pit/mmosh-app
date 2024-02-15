@@ -7,9 +7,17 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("username");
 
-  const user = await collection.findOne({
-    "profile.username": param,
-  });
+  const user = await collection.findOne(
+    {
+      "profile.username": param,
+    },
+    {
+      collation: {
+        locale: "en",
+        strength: 2,
+      },
+    },
+  );
 
   return NextResponse.json(!!user, {
     status: 200,

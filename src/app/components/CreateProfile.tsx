@@ -21,6 +21,12 @@ const CreateProfile = () => {
     bio: "",
     pronouns: "they/them",
   });
+
+  const [error, setError] = React.useState({
+    error: false,
+    message: "",
+  });
+
   const [isLoading, setIsLoading] = React.useState(false);
   const [userData, setUserData] = React.useState({
     addressPublicKey: "",
@@ -39,6 +45,7 @@ const CreateProfile = () => {
     if (!wallet?.publicKey) return;
     if (!image) return;
     if (!form.name || !form.username) return;
+    if (error.error) return;
     setIsLoading(true);
 
     const imageUrl = await uploadFile(image!, form.name);
@@ -147,6 +154,25 @@ const CreateProfile = () => {
     }
   };
 
+  const checkForUsername = React.useCallback(async () => {
+    const exists = await axios.get(
+      `/api/check-username?username=${form.username}`,
+    );
+
+    if (exists) {
+      setError({
+        error: true,
+        message: "Username already exists!",
+      });
+      return;
+    }
+
+    setError({
+      error: false,
+      message: "",
+    });
+  }, [form.username]);
+
   React.useEffect(() => {
     initUserData(wallet?.publicKey.toString());
   }, [wallet]);
@@ -199,10 +225,15 @@ const CreateProfile = () => {
                 type="text"
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
+                onBlur={checkForUsername}
                 placeholder="Username"
                 className="input input-bordered bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3]"
               />
-              <p className="text-sm">15 characters</p>
+              {error.error ? (
+                <p className="text-sm text-red-600">{error.message}</p>
+              ) : (
+                <p className="text-sm">15 characters</p>
+              )}
             </div>
 
             <div className="flex flex-col">

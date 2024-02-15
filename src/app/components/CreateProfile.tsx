@@ -65,6 +65,10 @@ const CreateProfile = () => {
       wallet: wallet!.publicKey.toString(),
     });
 
+    await axios.put("/api/update-points-profile-completion", {
+      wallet: wallet.publicKey.toString(),
+    });
+
     // await processTokenTransfers();
 
     setUserStatus(UserStatus.fullAccount);

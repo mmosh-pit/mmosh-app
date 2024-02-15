@@ -125,12 +125,14 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
           <p className="text-base text-white">{userData?.twitter?.name}</p>
           <p className="text-base">@{userData?.twitter?.username}</p>
         </>
-      ) : (
+      ) : isMyProfile ? (
         <p className="text-sm">
           Connect your X/Twitter to{" "}
           <span id="onboarding-points-gradient">earn 100 points</span>, raid and
           win.
         </p>
+      ) : (
+        <p className="text-base text-white">Not Connected</p>
       )}
 
       {isMyProfile && (

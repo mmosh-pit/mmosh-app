@@ -24,6 +24,8 @@ export async function PUT(req: NextRequest) {
     })
     .toArray();
 
+  console.log("User saved data: ", userSavedData);
+
   if (userSavedData.length > 1) {
     return NextResponse.json("", { status: 200 });
   }

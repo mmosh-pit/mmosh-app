@@ -83,7 +83,8 @@ const ConnectedWOAccount = () => {
         </h3>
         <p className="text-center">
           Thanks for connecting your wallet. Now let’s link your Telegram
-          account to this Solana wallet.
+          account, and you'll{" "}
+          <span id="onboarding-points-gradient">earn 200 points</span>
         </p>
       </div>
 

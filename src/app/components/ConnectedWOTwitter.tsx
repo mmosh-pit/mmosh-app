@@ -77,7 +77,9 @@ const ConnectedWOTwitter = () => {
             Connect to X / Twitter
           </h3>
           <p className="text-center">
-            Please connect your X/Twitter account to raid and win.
+            Connect your X/Twitter to{" "}
+            <span id="onboarding-points-gradient">earn 100 points</span>, raid
+            and win.
           </p>
         </div>
 

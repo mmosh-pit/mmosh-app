@@ -24,8 +24,6 @@ export async function PUT(req: NextRequest) {
     })
     .toArray();
 
-  console.log("User saved data: ", userSavedData);
-
   if (userSavedData.length > 1) {
     return NextResponse.json("", { status: 200 });
   }
@@ -53,11 +51,11 @@ export async function PUT(req: NextRequest) {
 
   await botCollection.updateOne(
     {
-      telegramId: user.telegram.id,
+      telegramId: Number(user.telegram.id),
     },
     {
       $inc: {
-        "telegram.points": pointsToAdd,
+        points: pointsToAdd,
       },
     },
   );

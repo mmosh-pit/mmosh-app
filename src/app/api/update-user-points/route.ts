@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
     },
     {
       $inc: {
-        "telegram.points": pointsToAdd,
+        points: pointsToAdd,
       },
     },
   );

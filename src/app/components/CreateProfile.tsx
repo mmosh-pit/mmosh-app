@@ -155,11 +155,11 @@ const CreateProfile = () => {
   };
 
   const checkForUsername = React.useCallback(async () => {
-    const exists = await axios.get(
+    const result = await axios.get(
       `/api/check-username?username=${form.username}`,
     );
 
-    if (exists) {
+    if (result.data) {
       setError({
         error: true,
         message: "Username already exists!",

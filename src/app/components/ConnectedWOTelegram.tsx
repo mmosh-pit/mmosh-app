@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useAtom } from "jotai";
 import axios from "axios";
 import TelegramIcon from "../../assets/icons/TelegramIcon";
@@ -54,6 +55,26 @@ const ConnectedWOAccount = () => {
     );
   };
 
+  const checkForTelegramAccount = React.useCallback(async () => {
+    const user = await axios.get(
+      `/api/get-wallet-data?wallet=${wallet!.publicKey.toString()}`,
+    );
+
+    if (user.data) {
+      if (user.data.telegram) {
+        setUserStatus(UserStatus.noTwitter);
+      }
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      checkForTelegramAccount();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="relative w-full h-full flex flex-col justify-center items-center mt-8">
       <div className="md::max-w-[40%] max-w-[90%]">
@@ -74,6 +95,22 @@ const ConnectedWOAccount = () => {
           <TelegramIcon />
           <p className="text-white text-lg ml-2">Connect Telegram Account</p>
         </button>
+      </div>
+
+      <p className="text-center mt-12 md:max-w-[60%] max-w-[85%]">
+        If the automatic connection fails and you’re stuck on this page, go to
+        the bot and connect manually with the Connect Apps command.
+      </p>
+
+      <div>
+        <a
+          type="button"
+          className="bg-[#1D1E62] py-4 px-8 rounded-md flex items-center mt-4"
+          href="https://t.me/MMOSHBot"
+          target="_blank"
+        >
+          <p className="text-white text-lg ml-2">Connect Manually</p>
+        </a>
       </div>
     </div>
   );

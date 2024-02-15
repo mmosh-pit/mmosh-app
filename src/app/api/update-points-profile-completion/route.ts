@@ -15,14 +15,16 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json("User not found", { status: 400 });
   }
 
-  const userSavedData = await collection.findOne({
-    "telegram.id": user.telegram.id,
-    profile: {
-      $exists: true,
-    },
-  });
+  const userSavedData = await collection
+    .find({
+      "telegram.id": user.telegram.id,
+      profile: {
+        $exists: true,
+      },
+    })
+    .toArray();
 
-  if (userSavedData) {
+  if (userSavedData.length > 1) {
     return NextResponse.json("", { status: 200 });
   }
 

@@ -97,7 +97,7 @@ const ConnectedWOTwitter = () => {
         className="flex items-center absolute bottom-[5vmax] right-[10vmax] cursor-pointer"
         onClick={skipTwitter}
       >
-        <p className="pr-4">Skip</p>
+        <p className="pr-4 font-extrabold">Skip</p>
         <ArrowIcon />
       </div>
     </>

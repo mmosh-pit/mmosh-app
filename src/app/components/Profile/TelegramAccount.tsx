@@ -1,17 +1,18 @@
 import * as React from "react";
-// import { useAnchorWallet } from "@solana/wallet-adapter-react";
-// import axios from "axios";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import axios from "axios";
 
 import { User } from "@/app/models/user";
 import TelegramMagentaIcon from "@/assets/icons/TelegramMagentaIcon";
 
 type Props = {
+  isMyProfile: boolean;
   userData: User | undefined;
   setUserData: React.Dispatch<React.SetStateAction<User | undefined>>;
 };
 
-const TelegramAccount = ({ userData, setUserData }: Props) => {
-  // const wallet = useAnchorWallet();
+const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {
+  const wallet = useAnchorWallet();
   // const [isDisconnecting, setIsDisconnecting] = React.useState(false);
   // const [isConnecting, setIsConnecting] = React.useState(false);
 
@@ -83,14 +84,77 @@ const TelegramAccount = ({ userData, setUserData }: Props) => {
   //   return "";
   // }, [isDisconnecting, isConnecting]);
 
+  const executeLogin = () => {
+    window.Telegram.Login.auth(
+      {
+        bot_id: process.env.NEXT_PUBLIC_BOT_TOKEN,
+        request_access: true,
+      },
+      async (data: any) => {
+        // await axios.post("/api/log-data", {
+        //   data,
+        // });
+        if (!data.id) return;
+
+        const user = await axios.get(`/api/get-bot-user?id=${data.id}`);
+
+        const telegramData = {
+          id: data.id,
+          firstName: data.first_name,
+          username: data.username,
+          points: user.data?.points || 0,
+        };
+
+        await axios.put("/api/update-wallet-data", {
+          wallet: wallet!.publicKey,
+          field: "telegram",
+          value: telegramData,
+        });
+
+        if (!user.data) {
+          setUserData((prev: any) => ({
+            ...prev,
+            telegram: telegramData,
+          }));
+          return;
+        }
+
+        setUserData((prev: any) => ({
+          ...prev,
+          telegram: telegramData,
+        }));
+      },
+    );
+  };
+
   return (
-    <div className="flex flex-col">
+    <div className="relative flex flex-col md:max-w-[25%] max-w-[50%]">
       <div className="flex items-center">
         <TelegramMagentaIcon />
         <p className="text-lg text-white ml-2">Telegram</p>
       </div>
-      <p className="text-base text-white">{userData?.telegram?.firstName}</p>
-      <p className="text-base">@{userData?.telegram?.username}</p>
+      {isMyProfile && !userData?.telegram?.id && (
+        <>
+          <p className="text-sm leading-6 text-white">
+            Connect your Telegram account to fully activate the MMOSH and{" "}
+            <span id="onboarding-points-gradient">earn 200 points.</span>
+          </p>
+          <button
+            className="rounded-full p-4 bg-[#09073A] mt-2 cursor-pointer"
+            onClick={executeLogin}
+          >
+            Connect Telegram
+          </button>
+        </>
+      )}
+      {userData?.telegram?.id && (
+        <>
+          <p className="text-base text-white">
+            {userData?.telegram?.firstName}
+          </p>
+          <p className="text-base">@{userData?.telegram?.username}</p>
+        </>
+      )}
     </div>
   );
 };

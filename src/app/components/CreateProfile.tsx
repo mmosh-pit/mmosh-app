@@ -28,15 +28,15 @@ const CreateProfile = () => {
   });
 
   const [isLoading, setIsLoading] = React.useState(false);
-  const [userData, setUserData] = React.useState({
-    addressPublicKey: "",
-    telegramId: "",
-    points: "",
-  });
-  const [parentData, setParentData] = React.useState({
-    addressPublicKey: "",
-    telegramId: "",
-  });
+  // const [userData, setUserData] = React.useState({
+  //   addressPublicKey: "",
+  //   telegramId: "",
+  //   points: "",
+  // });
+  // const [parentData, setParentData] = React.useState({
+  //   addressPublicKey: "",
+  //   telegramId: "",
+  // });
 
   const disabledButton =
     !wallet?.publicKey || !image || !form.name || !form.username;
@@ -124,35 +124,35 @@ const CreateProfile = () => {
     setPreview(objectUrl);
   }, [image]);
 
-  const initUserData = async (publicKey: string | undefined) => {
-    const walletData = await axios.get(
-      `/api/get-wallet-data?wallet=${publicKey}`,
-    );
-
-    const userInfo = await axios.get(
-      `/api/get-bot-user?id=${walletData.data.telegram.id}`,
-    );
-
-    setUserData({
-      addressPublicKey: userInfo.data.addressPublicKey,
-      telegramId: userInfo.data.telegramId,
-      points: userInfo.data.points,
-    });
-
-    const referralData = await axios.get(
-      `/api/get-referral-data?id=${userInfo.data._id}`,
-    );
-
-    if (referralData.data) {
-      const parentInfo = await axios.get(
-        `/api/get-bot-account-by-id?id=${referralData.data.parent}`,
-      );
-      setParentData({
-        addressPublicKey: parentInfo.data.addressPublicKey,
-        telegramId: parentInfo.data.telegramId,
-      });
-    }
-  };
+  // const initUserData = async (publicKey: string | undefined) => {
+  //   const walletData = await axios.get(
+  //     `/api/get-wallet-data?wallet=${publicKey}`,
+  //   );
+  //
+  //   const userInfo = await axios.get(
+  //     `/api/get-bot-user?id=${walletData.data.telegram.id}`,
+  //   );
+  //
+  //   setUserData({
+  //     addressPublicKey: userInfo.data.addressPublicKey,
+  //     telegramId: userInfo.data.telegramId,
+  //     points: userInfo.data.points,
+  //   });
+  //
+  //   const referralData = await axios.get(
+  //     `/api/get-referral-data?id=${userInfo.data._id}`,
+  //   );
+  //
+  //   if (referralData.data) {
+  //     const parentInfo = await axios.get(
+  //       `/api/get-bot-account-by-id?id=${referralData.data.parent}`,
+  //     );
+  //     setParentData({
+  //       addressPublicKey: parentInfo.data.addressPublicKey,
+  //       telegramId: parentInfo.data.telegramId,
+  //     });
+  //   }
+  // };
 
   const checkForUsername = React.useCallback(async () => {
     const result = await axios.get(
@@ -173,9 +173,9 @@ const CreateProfile = () => {
     });
   }, [form.username]);
 
-  React.useEffect(() => {
-    initUserData(wallet?.publicKey.toString());
-  }, [wallet]);
+  // React.useEffect(() => {
+  //   initUserData(wallet?.publicKey.toString());
+  // }, [wallet]);
 
   return (
     <div className="relative w-full flex justify-center items-center">

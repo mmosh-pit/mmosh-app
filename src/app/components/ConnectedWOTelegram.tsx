@@ -4,6 +4,7 @@ import axios from "axios";
 import TelegramIcon from "../../assets/icons/TelegramIcon";
 import { UserStatus, data, status } from "../store";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import ArrowIcon from "@/assets/icons/ArrowIcon";
 
 const ConnectedWOAccount = () => {
   const wallet = useAnchorWallet();
@@ -67,6 +68,22 @@ const ConnectedWOAccount = () => {
     }
   }, []);
 
+  const skipTelegram = React.useCallback(async () => {
+    const telegramData = {};
+
+    await axios.put("/api/update-wallet-data", {
+      wallet: wallet!.publicKey,
+      field: "telegram",
+      value: telegramData,
+    });
+
+    setUserStatus(UserStatus.noProfile);
+    setUserData((prev: any) => ({
+      ...prev,
+      twitter: telegramData,
+    }));
+  }, []);
+
   React.useEffect(() => {
     const interval = setInterval(() => {
       checkForTelegramAccount();
@@ -76,44 +93,53 @@ const ConnectedWOAccount = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-full flex flex-col justify-center items-center mt-8">
-      <div className="md::max-w-[40%] max-w-[90%]">
-        <h3 className="text-center text-white font-goudy font-normal mb-12">
-          Connect to Telegram
-        </h3>
-        <p className="text-center">
-          Thanks for connecting your wallet. Now let’s link your Telegram
-          account, and you'll{" "}
-          <span id="onboarding-points-gradient">earn 200 points</span>
+    <>
+      <div className="relative w-full h-full flex flex-col justify-center items-center mt-8">
+        <div className="md::max-w-[40%] max-w-[90%]">
+          <h3 className="text-center text-white font-goudy font-normal mb-12">
+            Connect to Telegram
+          </h3>
+          <p className="text-center">
+            Thanks for connecting your wallet. Now let’s link your Telegram
+            account, and you'll{" "}
+            <span id="onboarding-points-gradient">earn 200 points</span>
+          </p>
+        </div>
+
+        <div className="mt-8">
+          <button
+            className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
+            onClick={executeLogin}
+          >
+            <TelegramIcon />
+            <p className="text-white text-lg ml-2">Connect Telegram Account</p>
+          </button>
+        </div>
+
+        <p className="text-center mt-12 md:max-w-[60%] max-w-[85%]">
+          If the automatic connection fails and you’re stuck on this page, go to
+          the bot and connect manually with the Connect Apps command.
         </p>
-      </div>
 
-      <div className="mt-8">
-        <button
-          className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
-          onClick={executeLogin}
-        >
-          <TelegramIcon />
-          <p className="text-white text-lg ml-2">Connect Telegram Account</p>
-        </button>
+        <div>
+          <a
+            type="button"
+            className="bg-[#1D1E62] py-4 px-8 rounded-md flex items-center mt-4"
+            href="https://t.me/MMOSHBot"
+            target="_blank"
+          >
+            <p className="text-white text-lg ml-2">Connect Manually</p>
+          </a>
+        </div>
       </div>
-
-      <p className="text-center mt-12 md:max-w-[60%] max-w-[85%]">
-        If the automatic connection fails and you’re stuck on this page, go to
-        the bot and connect manually with the Connect Apps command.
-      </p>
-
-      <div>
-        <a
-          type="button"
-          className="bg-[#1D1E62] py-4 px-8 rounded-md flex items-center mt-4"
-          href="https://t.me/MMOSHBot"
-          target="_blank"
-        >
-          <p className="text-white text-lg ml-2">Connect Manually</p>
-        </a>
+      <div
+        className="flex items-center absolute bottom-[10vmax] right-[10vmax] cursor-pointer"
+        onClick={skipTelegram}
+      >
+        <p className="pr-4">Skip</p>
+        <ArrowIcon />
       </div>
-    </div>
+    </>
   );
 };
 

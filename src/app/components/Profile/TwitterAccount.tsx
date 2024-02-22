@@ -126,7 +126,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
           <p className="text-base">@{userData?.twitter?.username}</p>
         </>
       ) : isMyProfile ? (
-        <p className="text-sm">
+        <p className="text-sm leading-6 text-white">
           Connect your X/Twitter to{" "}
           <span id="onboarding-points-gradient">earn 100 points</span>, raid and
           win.

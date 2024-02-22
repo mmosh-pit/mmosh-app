@@ -115,7 +115,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
   }, [isDisconnecting, isConnecting]);
 
   return (
-    <div className="relative flex flex-col md:max-w-[25%] max-w-[50%]">
+    <div className="relative flex flex-col xl:max-w-[25%] lg:max-w-[30%] md:max-w-[35%] sm:max-w-[50%] max-w-[65%]">
       <div className="flex items-center">
         <TwitterMagentaIcon />
         <p className="text-lg text-white ml-2">Twitter</p>

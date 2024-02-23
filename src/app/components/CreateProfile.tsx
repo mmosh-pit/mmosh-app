@@ -179,8 +179,8 @@ const CreateProfile = () => {
 
   return (
     <div className="relative w-full flex justify-center items-center">
-      <div className="flex flex-col md:w-[70%] xs:w-[90%]">
-        <div className="self-center md:w-[45%] xs:w-[80%]">
+      <div className="flex flex-col md:w-[70%] w-[90%]">
+        <div className="self-center md:w-[45%] w-[80%]">
           <h3 className="text-center text-white font-goudy font-normal mb-12">
             Create Your MMOSH Account
           </h3>
@@ -194,8 +194,8 @@ const CreateProfile = () => {
           <p className="text-lg text-white">About You</p>
         </div>
 
-        <div className="w-full xs:flex-col md:flex-row flex justify-around mt-4">
-          <div className="flex flex-col xs:w-[85%] md:w-[25%]">
+        <div className="w-full flex-col md:flex-row flex justify-around mt-4">
+          <div className="flex flex-col w-[85%] md:w-[25%]">
             <p className="text-sm">
               Avatar<sup>*</sup>
               <ImagePicker changeImage={setImage} image={preview} />

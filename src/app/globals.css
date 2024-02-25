@@ -185,3 +185,7 @@ h3 {
   -webkit-text-fill-color: transparent;
   -moz-text-fill-color: transparent;
 }
+
+#profile-info-image {
+  grid-template-columns: 0.2fr 1fr;
+}

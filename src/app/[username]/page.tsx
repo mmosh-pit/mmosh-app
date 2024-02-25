@@ -134,6 +134,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         alt="Profile Image"
                         className="rounded-full"
                         layout="fill"
+                        objectFit="contain"
                       />
                     )}
                   </div>

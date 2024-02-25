@@ -108,14 +108,14 @@ const Profile = ({ params }: { params: { username: string } }) => {
   return (
     <div className="w-full h-screen flex flex-col mt-16">
       <div
-        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-12`}
+        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
         <div
           className={`w-full flex flex-col items-center lg:items-start lg:flex-row lg:justify-around mt-16`}
         >
-          <div className="flex flex-col lg:w-[50%] w-[90%]">
+          <div className="flex flex-col lg:w-[50%] md:w-[90%] w-[100%]">
             <div className="w-full flex flex-col">
               <p className="text-lg text-white font-bold font-goudy">
                 {isMyProfile
@@ -144,7 +144,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                       {userData?.profile?.name}
                     </p>
                     <p className="text-sm">{`@${userData?.profile?.username}`}</p>
-                    <p className="text-base text-white mt-4">
+                    <p className="text-base text-white mt-4 max-w-[60%] md:max-w-[80%]">
                       {userData?.profile?.bio}
                     </p>
 

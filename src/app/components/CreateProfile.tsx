@@ -28,15 +28,15 @@ const CreateProfile = () => {
   });
 
   const [isLoading, setIsLoading] = React.useState(false);
-  const [userData, setUserData] = React.useState({
-    addressPublicKey: "",
-    telegramId: "",
-    points: "",
-  });
-  const [parentData, setParentData] = React.useState({
-    addressPublicKey: "",
-    telegramId: "",
-  });
+  // const [userData, setUserData] = React.useState({
+  //   addressPublicKey: "",
+  //   telegramId: "",
+  //   points: "",
+  // });
+  // const [parentData, setParentData] = React.useState({
+  //   addressPublicKey: "",
+  //   telegramId: "",
+  // });
 
   const disabledButton =
     !wallet?.publicKey || !image || !form.name || !form.username;
@@ -124,35 +124,35 @@ const CreateProfile = () => {
     setPreview(objectUrl);
   }, [image]);
 
-  const initUserData = async (publicKey: string | undefined) => {
-    const walletData = await axios.get(
-      `/api/get-wallet-data?wallet=${publicKey}`,
-    );
-
-    const userInfo = await axios.get(
-      `/api/get-bot-user?id=${walletData.data.telegram.id}`,
-    );
-
-    setUserData({
-      addressPublicKey: userInfo.data.addressPublicKey,
-      telegramId: userInfo.data.telegramId,
-      points: userInfo.data.points,
-    });
-
-    const referralData = await axios.get(
-      `/api/get-referral-data?id=${userInfo.data._id}`,
-    );
-
-    if (referralData.data) {
-      const parentInfo = await axios.get(
-        `/api/get-bot-account-by-id?id=${referralData.data.parent}`,
-      );
-      setParentData({
-        addressPublicKey: parentInfo.data.addressPublicKey,
-        telegramId: parentInfo.data.telegramId,
-      });
-    }
-  };
+  // const initUserData = async (publicKey: string | undefined) => {
+  //   const walletData = await axios.get(
+  //     `/api/get-wallet-data?wallet=${publicKey}`,
+  //   );
+  //
+  //   const userInfo = await axios.get(
+  //     `/api/get-bot-user?id=${walletData.data.telegram.id}`,
+  //   );
+  //
+  //   setUserData({
+  //     addressPublicKey: userInfo.data.addressPublicKey,
+  //     telegramId: userInfo.data.telegramId,
+  //     points: userInfo.data.points,
+  //   });
+  //
+  //   const referralData = await axios.get(
+  //     `/api/get-referral-data?id=${userInfo.data._id}`,
+  //   );
+  //
+  //   if (referralData.data) {
+  //     const parentInfo = await axios.get(
+  //       `/api/get-bot-account-by-id?id=${referralData.data.parent}`,
+  //     );
+  //     setParentData({
+  //       addressPublicKey: parentInfo.data.addressPublicKey,
+  //       telegramId: parentInfo.data.telegramId,
+  //     });
+  //   }
+  // };
 
   const checkForUsername = React.useCallback(async () => {
     const result = await axios.get(
@@ -173,14 +173,14 @@ const CreateProfile = () => {
     });
   }, [form.username]);
 
-  React.useEffect(() => {
-    initUserData(wallet?.publicKey.toString());
-  }, [wallet]);
+  // React.useEffect(() => {
+  //   initUserData(wallet?.publicKey.toString());
+  // }, [wallet]);
 
   return (
     <div className="relative w-full flex justify-center items-center">
-      <div className="flex flex-col md:w-[70%] xs:w-[90%]">
-        <div className="self-center md:w-[45%] xs:w-[80%]">
+      <div className="flex flex-col md:w-[70%] w-[90%]">
+        <div className="self-center md:w-[45%] w-[80%]">
           <h3 className="text-center text-white font-goudy font-normal mb-12">
             Create Your MMOSH Account
           </h3>
@@ -194,15 +194,15 @@ const CreateProfile = () => {
           <p className="text-lg text-white">About You</p>
         </div>
 
-        <div className="w-full xs:flex-col md:flex-row flex justify-around mt-4">
-          <div className="flex flex-col xs:w-[85%] md:w-[25%]">
+        <div className="w-full flex-col md:flex-row flex items-center md:items-stretch justify-around mt-4">
+          <div className="flex flex-col w-[100%] sm:w-[85%] md:w-[25%] mb-4 md:mb-0">
             <p className="text-sm">
               Avatar<sup>*</sup>
               <ImagePicker changeImage={setImage} image={preview} />
             </p>
           </div>
 
-          <div className="flex flex-col md:w-[35%] xs:w-[85%]">
+          <div className="flex flex-col w-full md:w-[35%] xs:w-[85%]">
             <div className="flex flex-col w-full">
               <p className="text-base text-white">
                 Name<sup>*</sup>
@@ -258,13 +258,13 @@ const CreateProfile = () => {
             </div>
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-4 md:mt-4 w-full md:w-fit">
             <p className="text-base text-white">Bio</p>
             <textarea
               placeholder="Tell us about yourself in up to 160 characters"
               value={form.bio}
               onChange={(e) => setForm({ ...form, bio: e.target.value })}
-              className="textarea textarea-bordered textarea-lg w-full max-w-xs bg-black bg-opacity-[0.07] text-base placeholder-white placeholder-opacity-[0.3] h-full"
+              className="textarea textarea-bordered textarea-lg w-full md:max-w-xs bg-black bg-opacity-[0.07] text-base placeholder-white placeholder-opacity-[0.3] h-full"
             ></textarea>
           </div>
         </div>

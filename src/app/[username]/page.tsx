@@ -54,7 +54,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
       `/api/get-lhc-address?id=${userData?.telegram.id}`,
     );
 
-    setLhcWallet(result.data.addressPublicKey);
+    setLhcWallet(result.data?.addressPublicKey);
   }, [userData]);
 
   const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
@@ -134,6 +134,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         alt="Profile Image"
                         className="rounded-full"
                         layout="fill"
+                        objectFit="contain"
                       />
                     )}
                   </div>
@@ -146,7 +147,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
                     <p className="text-base text-white mt-4">
                       {userData?.profile?.bio}
                     </p>
-                    <div className="flex items-center">
+
+                    <div className="flex items-center mt-4">
                       <a
                         className="text-base font-white underline"
                         href={`https://mmosh.app/${userData?.profile?.username}`}
@@ -154,28 +156,30 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         {`mmosh.app/${userData?.profile?.username}`}
                       </a>
 
-                      <div
-                        className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
-                      >
-                        <a
-                          className="text-base underline"
-                          href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                          target="_blank"
+                      {lhcWallet && (
+                        <div
+                          className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                         >
-                          Secret Hideout Access
-                        </a>
-                        <sup
-                          className="absolute top-[-2px] right-[-2px] cursor-pointer"
-                          onClick={() => copyToClipboard(lhcWallet, 1)}
-                        >
-                          <CopyIcon />
-                          {isFirstTooltipShown && (
-                            <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                              Copied!
-                            </div>
-                          )}
-                        </sup>
-                      </div>
+                          <a
+                            className="text-base underline"
+                            href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
+                            target="_blank"
+                          >
+                            Secret Hideout Access
+                          </a>
+                          <sup
+                            className="absolute top-[-2px] right-[-2px] cursor-pointer"
+                            onClick={() => copyToClipboard(lhcWallet, 1)}
+                          >
+                            <CopyIcon />
+                            {isFirstTooltipShown && (
+                              <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                                Copied!
+                              </div>
+                            )}
+                          </sup>
+                        </div>
+                      )}
 
                       <div
                         className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
@@ -205,6 +209,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
                 <div className="w-full flex justify-around mt-16">
                   <TelegramAccount
+                    isMyProfile={isMyProfile}
                     userData={userData}
                     setUserData={setUserData}
                   />
@@ -219,7 +224,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
           <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 lg:self-start">
-            <p className="flex text-lg text-white font-bold">
+            <p className="flex text-lg text-white font-bold mb-6">
               Activation Link{" "}
               <sup
                 className="relative cursor-pointer"
@@ -238,18 +243,22 @@ const Profile = ({ params }: { params: { username: string } }) => {
                 <CopyIcon />
               </sup>
             </p>
-            <p className="text-base text-white my-6">
-              {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
-            </p>
+            {userData?.telegram?.id && (
+              <p className="text-base text-white">
+                {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
+              </p>
+            )}
 
-            <p className="text-base text-white">
+            <p className="text-base text-white mt-6">
               <span className="font-bold">Your Role: </span> Guest
             </p>
             <p className="text-base text-white my-4">
-              <span className="font-bold">Your Points: </span> {rankData.points}
+              <span className="font-bold">Your Points: </span>{" "}
+              {rankData.points || 0}
             </p>
             <p className="text-base text-white">
-              <span className="font-bold">Your Rank: </span> {rankData.rank}
+              <span className="font-bold">Your Rank: </span>{" "}
+              {rankData.rank || 0}
             </p>
           </div>
         </div>

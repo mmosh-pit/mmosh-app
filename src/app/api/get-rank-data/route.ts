@@ -9,7 +9,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const user = searchParams.get("user");
 
-  if (user === "undefined") return;
+  if (user === "undefined") {
+    return NextResponse.json("", { status: 200 });
+  }
 
   if (!user) {
     return NextResponse.json(

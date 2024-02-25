@@ -12,7 +12,7 @@ const config: Config = {
   theme: {
     fontSize: {
       xs: ".75rem",
-      sm: ".875rem",
+      sm: "0.8vmax",
       tiny: ".875rem",
       base: "0.85vmax",
       lg: "1vmax",

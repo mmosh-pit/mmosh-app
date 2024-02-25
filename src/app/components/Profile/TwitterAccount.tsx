@@ -115,7 +115,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
   }, [isDisconnecting, isConnecting]);
 
   return (
-    <div className="relative flex flex-col md:max-w-[25%] max-w-[50%]">
+    <div className="relative flex flex-col xl:max-w-[25%] lg:max-w-[30%] md:max-w-[35%] sm:max-w-[50%] max-w-[65%]">
       <div className="flex items-center">
         <TwitterMagentaIcon />
         <p className="text-lg text-white ml-2">Twitter</p>
@@ -126,7 +126,7 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
           <p className="text-base">@{userData?.twitter?.username}</p>
         </>
       ) : isMyProfile ? (
-        <p className="text-sm">
+        <p className="text-sm leading-6 text-white">
           Connect your X/Twitter to{" "}
           <span id="onboarding-points-gradient">earn 100 points</span>, raid and
           win.

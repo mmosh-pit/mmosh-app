@@ -30,7 +30,7 @@ export async function PUT(req: NextRequest) {
 
   let pointsToAdd = 50;
 
-  if (user.telegram) {
+  if (user.telegram?.id) {
     pointsToAdd += 200;
   }
 

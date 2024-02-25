@@ -123,8 +123,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   : `${userData?.profile?.name}'s Hideout`}
               </p>
 
-              <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[8vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
-                <div className="w-full flex">
+              <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[6vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
+                <div className="w-full grid" id="profile-info-image">
                   <div
                     className={`relative w-[8vmax] h-[8vmax] ${isDrawerShown ? "z-[-1]" : ""}`}
                   >

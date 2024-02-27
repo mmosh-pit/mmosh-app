@@ -198,3 +198,7 @@ h3 {
 #profile-info-image {
   grid-template-columns: 0.2fr 1fr;
 }
+
+input {
+  font-size: 0.85vmax;
+}

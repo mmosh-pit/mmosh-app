@@ -8,12 +8,12 @@ import DesktopNavbar from "../components/Profile/DesktopNavbar";
 import Image from "next/image";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
-import { UserStatus, isDrawerOpen, status } from "../store";
-import { User } from "../models/user";
+import { UserStatus, data, isDrawerOpen, status } from "../store";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
 import { init } from "../lib/firebase";
 import CopyIcon from "@/assets/icons/CopyIcon";
+import Banner from "../components/Banner";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -23,7 +23,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
   const [isSecTooltipShown, setIsSecTooltipShown] = React.useState(false);
-  const [userData, setUserData] = React.useState<User>();
+  const [userData, setUserData] = useAtom(data);
   const [rankData, setRankData] = React.useState({
     points: 0,
     rank: 0,
@@ -106,9 +106,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
   if (!userData) return <></>;
 
   return (
-    <div className="w-full h-screen flex flex-col mt-16">
+    <div className="w-full h-screen flex flex-col">
+      <Banner />
       <div
-        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12`}
+        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 

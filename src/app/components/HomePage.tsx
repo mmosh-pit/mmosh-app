@@ -7,6 +7,7 @@ import Image from "next/image";
 import { User } from "../models/user";
 import axios from "axios";
 import { data, accounts, points, searchBarText, isDrawerOpen } from "../store";
+import Banner from "./Banner";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -52,7 +53,10 @@ const HomePage = () => {
   }, [searchText]);
 
   return (
-    <div className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}>
+    <div
+      className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}
+    >
+      <Banner />
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
           Welcome Home, {currentUser?.profile?.name}

@@ -15,7 +15,7 @@ import TwitterMagentaIcon from "@/assets/icons/TwitterMagentaIcon";
 
 type Props = {
   userData: User | undefined;
-  setUserData: React.Dispatch<React.SetStateAction<User | undefined>>;
+  setUserData: any;
   isMyProfile: boolean;
 };
 

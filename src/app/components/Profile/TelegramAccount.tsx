@@ -8,7 +8,7 @@ import TelegramMagentaIcon from "@/assets/icons/TelegramMagentaIcon";
 type Props = {
   isMyProfile: boolean;
   userData: User | undefined;
-  setUserData: React.Dispatch<React.SetStateAction<User | undefined>>;
+  setUserData: any;
 };
 
 const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {

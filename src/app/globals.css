@@ -156,6 +156,15 @@ h3 {
     lightgray 50% / cover no-repeat;
 }
 
+#banner-image-container {
+  background-color: #080536;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(66, 221, 255, 1) 20%,
+    rgba(17, 112, 255, 0.46) 50%
+  );
+}
+
 .settings-btn {
   border: none;
   border-radius: 5px;

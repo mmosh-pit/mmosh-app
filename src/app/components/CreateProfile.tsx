@@ -224,7 +224,12 @@ const CreateProfile = () => {
               <input
                 type="text"
                 value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    username: e.target.value.replace(/\s/g, ""),
+                  })
+                }
                 onBlur={checkForUsername}
                 placeholder="Username"
                 className="input input-bordered bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3]"

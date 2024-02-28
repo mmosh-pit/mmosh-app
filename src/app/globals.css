@@ -156,6 +156,10 @@ h3 {
     lightgray 50% / cover no-repeat;
 }
 
+#banner-image-container > div {
+  box-shadow: 0 0 10vmax rgba(66, 221, 255, 1);
+}
+
 .settings-btn {
   border: none;
   border-radius: 5px;
@@ -188,4 +192,12 @@ h3 {
 
 #profile-info-image {
   grid-template-columns: 0.2fr 1fr;
+}
+
+input {
+  font-size: 0.85vmax;
+}
+
+a {
+  font-size: 0.85vmax;
 }

@@ -14,6 +14,8 @@ import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
 import { init } from "../lib/firebase";
 import CopyIcon from "@/assets/icons/CopyIcon";
+import Banner from "../components/Banner";
+import { walletAddressShortener } from "../lib/walletAddressShortener";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -106,9 +108,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
   if (!userData) return <></>;
 
   return (
-    <div className="w-full h-screen flex flex-col mt-16">
+    <div className="w-full h-screen flex flex-col">
+      {wallet?.publicKey && <Banner />}
       <div
-        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12`}
+        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
@@ -160,13 +163,23 @@ const Profile = ({ params }: { params: { username: string } }) => {
                         <div
                           className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                         >
-                          <a
-                            className="text-base underline"
-                            href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                            target="_blank"
-                          >
-                            Secret Hideout Access
-                          </a>
+                          <div className="flex flex-col justify-center items-center">
+                            <a
+                              className="text-base text-white underline"
+                              href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
+                              target="_blank"
+                            >
+                              Social Wallet
+                            </a>
+                            <a
+                              className="text-base text-white underline"
+                              href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
+                              target="_blank"
+                            >
+                              {walletAddressShortener(lhcWallet)}
+                            </a>
+                          </div>
+
                           <sup
                             className="absolute top-[-2px] right-[-2px] cursor-pointer"
                             onClick={() => copyToClipboard(lhcWallet, 1)}
@@ -184,13 +197,23 @@ const Profile = ({ params }: { params: { username: string } }) => {
                       <div
                         className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                       >
-                        <a
-                          className="text-base underline"
-                          href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
-                          target="_blank"
-                        >
-                          Wallet Address
-                        </a>
+                        <div className="flex flex-col items-center justify-center">
+                          <a
+                            className="text-base text-white underline"
+                            href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                            target="_blank"
+                          >
+                            Linked Wallet
+                          </a>
+
+                          <a
+                            className="text-base text-white underline"
+                            href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                            target="_blank"
+                          >
+                            {walletAddressShortener(userData.wallet)}
+                          </a>
+                        </div>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"
                           onClick={() => copyToClipboard(userData.wallet, 2)}

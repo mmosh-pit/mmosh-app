@@ -8,7 +8,8 @@ import DesktopNavbar from "../components/Profile/DesktopNavbar";
 import Image from "next/image";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
-import { UserStatus, data, isDrawerOpen, status } from "../store";
+import { UserStatus, isDrawerOpen, status } from "../store";
+import { User } from "../models/user";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
 import { init } from "../lib/firebase";
@@ -23,7 +24,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
   const [isSecTooltipShown, setIsSecTooltipShown] = React.useState(false);
-  const [userData, setUserData] = useAtom(data);
+  const [userData, setUserData] = React.useState<User>();
   const [rankData, setRankData] = React.useState({
     points: 0,
     rank: 0,
@@ -107,7 +108,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <Banner />
+      {wallet?.publicKey && <Banner />}
       <div
         className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >
@@ -166,7 +167,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                             href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
                             target="_blank"
                           >
-                            Secret Hideout Access
+                            Social Wallet
                           </a>
                           <sup
                             className="absolute top-[-2px] right-[-2px] cursor-pointer"
@@ -190,7 +191,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                           href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
                           target="_blank"
                         >
-                          Wallet Address
+                          Linked Wallet
                         </a>
                         <sup
                           className="absolute top-[-2px] right-[-2px] cursor-pointer"

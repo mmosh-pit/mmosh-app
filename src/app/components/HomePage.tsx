@@ -8,6 +8,7 @@ import { User } from "../models/user";
 import axios from "axios";
 import { data, accounts, points, searchBarText, isDrawerOpen } from "../store";
 import Banner from "./Banner";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -17,6 +18,8 @@ const HomePage = () => {
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const allUsers = React.useRef<User[]>([]);
   const [users, setUsers] = React.useState<User[]>([]);
+
+  const wallet = useWallet();
 
   const getUsers = React.useCallback(async () => {
     const result = await axios.get(`/api/get-all-users`);
@@ -56,7 +59,7 @@ const HomePage = () => {
     <div
       className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}
     >
-      <Banner />
+      {wallet.publicKey && <Banner />}
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
           Welcome Home, {currentUser?.profile?.name}

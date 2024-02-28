@@ -156,13 +156,8 @@ h3 {
     lightgray 50% / cover no-repeat;
 }
 
-#banner-image-container {
-  background-color: #080536;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(66, 221, 255, 1) 20%,
-    rgba(17, 112, 255, 0.46) 50%
-  );
+#banner-image-container > div {
+  box-shadow: 0 0 10vmax rgba(66, 221, 255, 1);
 }
 
 .settings-btn {

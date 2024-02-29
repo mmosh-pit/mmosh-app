@@ -55,7 +55,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
       const profileInfo = await userConn.getUserInfo();
 
       if (profileInfo.profiles.length > 0) {
-        getUserData(profileInfo.profiles[0].userinfo.username);
+        await getUserData(profileInfo.profiles[0].userinfo.username);
         setUserData({ ...userData, hasProfile: true });
         return;
       } else {
@@ -184,7 +184,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
         </div>
       </div>
     );
-  }, [currentUser]);
+  }, [currentUser, userData]);
 
   if (!hasInitialized) return <></>;
 

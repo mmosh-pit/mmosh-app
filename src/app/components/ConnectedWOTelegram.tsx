@@ -92,6 +92,14 @@ const ConnectedWOAccount = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // <div
+  //       className="flex items-center absolute bottom-[5vmax] right-[10vmax] cursor-pointer"
+  //       onClick={skipTelegram}
+  //     >
+  //       <p className="pr-4 font-normal font-goudy">Skip</p>
+  //       <ArrowIcon />
+  //     </div>
+
   return (
     <>
       <div className="relative w-full h-full flex flex-col justify-center items-center mt-8">
@@ -131,13 +139,6 @@ const ConnectedWOAccount = () => {
             <p className="text-white text-lg ml-2">Connect Manually</p>
           </a>
         </div>
-      </div>
-      <div
-        className="flex items-center absolute bottom-[5vmax] right-[10vmax] cursor-pointer"
-        onClick={skipTelegram}
-      >
-        <p className="pr-4 font-normal font-goudy">Skip</p>
-        <ArrowIcon />
       </div>
     </>
   );

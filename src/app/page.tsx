@@ -13,6 +13,7 @@ import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
 import CreateProfile from "./components/CreateProfile";
 import HomePage from "./components/HomePage";
 import { init } from "./lib/firebase";
+import { fetchUserData } from "./lib/fetchUserData";
 
 export default function Home() {
   const rendered = React.useRef(false);
@@ -21,9 +22,7 @@ export default function Home() {
   const wallet = useAnchorWallet();
 
   const getUserData = React.useCallback(async () => {
-    const result = await axios.get(
-      `/api/get-wallet-data?wallet=${wallet!.publicKey}`,
-    );
+    const result = await fetchUserData(wallet!);
 
     setUserData(result.data);
 

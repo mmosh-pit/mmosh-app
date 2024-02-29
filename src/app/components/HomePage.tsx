@@ -59,7 +59,7 @@ const HomePage = () => {
     <div
       className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}
     >
-      {wallet.publicKey && <Banner />}
+      {wallet.publicKey && <Banner fromProfile={false} />}
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
           Welcome Home, {currentUser?.profile?.name}

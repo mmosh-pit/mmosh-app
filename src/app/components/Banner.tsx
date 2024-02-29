@@ -10,9 +10,10 @@ import { web3Consts } from "../lib/anchor/web3Consts";
 import { data } from "../store";
 import axios from "axios";
 
-const Banner = () => {
+const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
   const [currentUser, setCurrentUser] = useAtom(data);
 
+  const [hasInitialized, setHasInitialized] = React.useState(false);
   const [userData, setUserData] = React.useState({
     hasProfile: false,
     hasInvitation: false,
@@ -20,6 +21,7 @@ const Banner = () => {
   const wallet = useAnchorWallet();
 
   const getUserData = React.useCallback(async (username: string) => {
+    if (!fromProfile) return;
     const result = await axios.get(`/api/get-user-data?username=${username}`);
 
     setCurrentUser({
@@ -28,6 +30,7 @@ const Banner = () => {
   }, []);
 
   const getUserDataByWallet = React.useCallback(async () => {
+    if (!fromProfile) return;
     const result = await axios.get(
       `/api/get-wallet-data?username=${wallet?.publicKey}`,
     );
@@ -51,11 +54,12 @@ const Banner = () => {
       let userConn = new UserConn(env, web3Consts.programID);
       const profileInfo = await userConn.getUserInfo();
 
-      console.log("Profile info: ", profileInfo);
       if (profileInfo.profiles.length > 0) {
         getUserData(profileInfo.profiles[0].userinfo.username);
         setUserData({ ...userData, hasProfile: true });
         return;
+      } else {
+        await getUserDataByWallet();
       }
 
       if (profileInfo.activationTokens.length > 0) {
@@ -69,10 +73,15 @@ const Banner = () => {
     }
   }, []);
 
+  const fetchUserInfo = React.useCallback(async () => {
+    await getProfileInfo();
+
+    setHasInitialized(true);
+  }, [wallet?.publicKey]);
+
   React.useEffect(() => {
     if (wallet?.publicKey) {
-      getUserDataByWallet();
-      getProfileInfo();
+      fetchUserInfo();
     }
   }, [wallet]);
 
@@ -176,6 +185,8 @@ const Banner = () => {
       </div>
     );
   }, [userData]);
+
+  if (!hasInitialized) return <></>;
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

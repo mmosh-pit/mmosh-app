@@ -184,7 +184,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
         </div>
       </div>
     );
-  }, [userData]);
+  }, [currentUser]);
 
   if (!hasInitialized) return <></>;
 

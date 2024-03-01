@@ -4,6 +4,7 @@ import React from "react";
 import { UserStatus, data, status } from "../store";
 
 const WithTelegramNoAccount = () => {
+  const intervalRef = React.useRef<NodeJS.Timeout>();
   const [_, setUserStatus] = useAtom(status);
   const [userData] = useAtom(data);
 
@@ -15,14 +16,15 @@ const WithTelegramNoAccount = () => {
     if (user.data) {
       setUserStatus(UserStatus.noTwitter);
     }
+
+    clearInterval(intervalRef.current);
   }, []);
 
-  React.useEffect(() => {
+  const startChecking = React.useCallback(() => {
     const interval = setInterval(() => {
       checkForTelegramAccount();
     }, 2000);
-
-    return () => clearInterval(interval);
+    intervalRef.current = interval;
   }, []);
 
   return (
@@ -37,7 +39,7 @@ const WithTelegramNoAccount = () => {
         </p>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8" onClick={startChecking}>
         <a
           className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
           href="https://t.me/MMOSHBot"

@@ -7,7 +7,15 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
-import { UserStatus, accounts, points, searchBarText, status } from "../store";
+import {
+  UserStatus,
+  accounts,
+  data,
+  isDrawerOpen,
+  points,
+  searchBarText,
+  status,
+} from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
@@ -35,7 +43,9 @@ const Header = () => {
   const router = useRouter();
   const wallet = useAnchorWallet();
   const [userStatus] = useAtom(status);
+  const [currentUser] = useAtom(data);
   const [totalAccounts] = useAtom(accounts);
+  const [isDrawerShown] = useAtom(isDrawerOpen);
   const [totalPoints] = useAtom(points);
   const [_, setSearchText] = useAtom(searchBarText);
   const [localText, setLocalText] = React.useState("");
@@ -98,7 +108,7 @@ const Header = () => {
           )}
 
           {userStatus === UserStatus.fullAccount && !isMobileScreen && (
-            <div className="flex w-[10%] justify-between items-center">
+            <div className="flex w-[25%] justify-between items-center">
               <p
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
@@ -106,12 +116,26 @@ const Header = () => {
                 Home
               </p>
 
+              <p
+                className="text-base text-white cursor-pointer"
+                onClick={() => router.push(`/${currentUser?.profile.username}`)}
+              >
+                My Profile
+              </p>
+
               <a
                 target="_blank"
                 href="https://www.mmosh.ai"
-                className="text-base text-white"
+                className="text-base text-white cursor-pointer"
               >
                 Website
+              </a>
+
+              <a
+                href="https://forge.mmosh.app"
+                className="text-base text-white cursor-pointer"
+              >
+                Forge
               </a>
             </div>
           )}
@@ -150,7 +174,7 @@ const Header = () => {
             {renderProgressBar()}
 
             <div
-              className={`relative ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
+              className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
             >
               <Image
                 src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"

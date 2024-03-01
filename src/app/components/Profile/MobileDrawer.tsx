@@ -3,17 +3,22 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
-import { isDrawerOpen } from "@/app/store";
+import { data, isDrawerOpen } from "@/app/store";
 
 const MobileDrawer = () => {
   const router = useRouter();
   const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
+  const [currentUser] = useAtom(data);
 
   return (
     <div className="drawer">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
-        <label htmlFor="my-drawer" className="btn drawer-button" onClick={() => setIsDrawerOpen(true)}>
+        <label
+          htmlFor="my-drawer"
+          className="btn drawer-button"
+          onClick={() => setIsDrawerOpen(true)}
+        >
           <HamburgerIcon />
         </label>
       </div>
@@ -24,8 +29,7 @@ const MobileDrawer = () => {
           aria-label="close sidebar"
           className="drawer-overlay"
           onClick={() => setIsDrawerOpen(false)}
-        >
-        </label>
+        ></label>
         <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
             <p
@@ -35,7 +39,26 @@ const MobileDrawer = () => {
               Home
             </p>
 
-            <a href="https://www.mmosh.ai" className="text-base text-white mt-2 cursor-pointer">Website</a>
+            <p
+              className="text-base text-white cursor-pointer"
+              onClick={() => router.push(`/${currentUser?.profile.username}`)}
+            >
+              My Profile
+            </p>
+
+            <a
+              href="https://www.mmosh.ai"
+              className="text-base text-white mt-2 cursor-pointer"
+            >
+              Website
+            </a>
+
+            <a
+              href="https://forge.mmosh.app"
+              className="text-base text-white mt-2 cursor-pointer"
+            >
+              Forge
+            </a>
           </div>
           <div className="h-[1px] w-[90%] bg-white mt-4" />
           <div className="flex flex-col mt-4">

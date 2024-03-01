@@ -84,13 +84,13 @@ const ConnectedWOAccount = () => {
     }));
   }, []);
 
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      checkForTelegramAccount();
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // React.useEffect(() => {
+  // const interval = setInterval(() => {
+  //   checkForTelegramAccount();
+  // }, 2000);
+  //
+  // return () => clearInterval(interval);
+  // }, []);
 
   // <div
   //       className="flex items-center absolute bottom-[5vmax] right-[10vmax] cursor-pointer"

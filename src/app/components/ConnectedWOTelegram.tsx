@@ -8,6 +8,7 @@ import ArrowIcon from "@/assets/icons/ArrowIcon";
 
 const ConnectedWOAccount = () => {
   const wallet = useAnchorWallet();
+  const intervalRef = React.useRef<NodeJS.Timeout>();
   const [_, setUserStatus] = useAtom(status);
   const [__, setUserData] = useAtom(data);
 
@@ -18,9 +19,6 @@ const ConnectedWOAccount = () => {
         request_access: true,
       },
       async (data: any) => {
-        // await axios.post("/api/log-data", {
-        //   data,
-        // });
         if (!data.id) return;
 
         const user = await axios.get(`/api/get-bot-user?id=${data.id}`);
@@ -64,6 +62,7 @@ const ConnectedWOAccount = () => {
     if (user.data) {
       if (user.data.telegram) {
         setUserStatus(UserStatus.noTwitter);
+        clearInterval(intervalRef.current);
       }
     }
   }, []);
@@ -84,21 +83,13 @@ const ConnectedWOAccount = () => {
     }));
   }, []);
 
-  // React.useEffect(() => {
-  // const interval = setInterval(() => {
-  //   checkForTelegramAccount();
-  // }, 2000);
-  //
-  // return () => clearInterval(interval);
-  // }, []);
+  const startChecking = React.useCallback(() => {
+    const interval = setInterval(() => {
+      checkForTelegramAccount();
+    }, 2000);
 
-  // <div
-  //       className="flex items-center absolute bottom-[5vmax] right-[10vmax] cursor-pointer"
-  //       onClick={skipTelegram}
-  //     >
-  //       <p className="pr-4 font-normal font-goudy">Skip</p>
-  //       <ArrowIcon />
-  //     </div>
+    intervalRef.current = interval;
+  }, []);
 
   return (
     <>
@@ -131,6 +122,7 @@ const ConnectedWOAccount = () => {
 
         <div>
           <a
+            onClick={startChecking}
             type="button"
             className="bg-[#1D1E62] py-4 px-8 rounded-md flex items-center mt-4"
             href="https://t.me/MMOSHBot"
@@ -139,6 +131,13 @@ const ConnectedWOAccount = () => {
             <p className="text-white text-lg ml-2">Connect Manually</p>
           </a>
         </div>
+      </div>
+      <div
+        className="flex items-center absolute bottom-[5vmax] right-[10vmax] cursor-pointer"
+        onClick={skipTelegram}
+      >
+        <p className="pr-4 font-normal font-goudy">Skip</p>
+        <ArrowIcon />
       </div>
     </>
   );

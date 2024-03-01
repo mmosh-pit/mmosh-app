@@ -35,12 +35,18 @@ const BotBanner = () => {
       className="w-full flex justify-between items-center py-2"
       id="bot-banner-container"
     >
-      <div className="w-[4vmax]"></div>
-      <p>
-        Activate our <a href="https://t.me/MMOSHBot">Telegram Bot</a> and
-        connect your account to join the MMOSH!
+      <div className="w-[3vmax]"></div>
+      <p className="text-base">
+        Activate our{" "}
+        <a className="underline cursor-pointer" href="https://t.me/MMOSHBot">
+          Telegram Bot
+        </a>{" "}
+        and connect your account to join the MMOSH!
       </p>
-      <div className="w-[4vmax]">
+      <div
+        className="w-[3vmax] cursor-pointer"
+        onClick={() => setHasBotAccount(true)}
+      >
         <CloseIcon />
       </div>
     </div>

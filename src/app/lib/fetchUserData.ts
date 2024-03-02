@@ -25,7 +25,7 @@ export async function fetchUserData(wallet: AnchorWallet) {
     const walletAddress = wallet?.publicKey;
 
     const result = await axios.get(
-      `/api/get-wallet-data?username=${walletAddress}`,
+      `/api/get-wallet-data?wallet=${walletAddress}`,
     );
 
     return result;

@@ -16,6 +16,7 @@ import { init } from "../lib/firebase";
 import CopyIcon from "@/assets/icons/CopyIcon";
 import Banner from "../components/Banner";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
+import BotBanner from "../components/BotBanner";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -109,6 +110,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
   return (
     <div className="w-full h-screen flex flex-col">
+      {wallet?.publicKey && <BotBanner />}
       {wallet?.publicKey && <Banner fromProfile />}
       <div
         className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}

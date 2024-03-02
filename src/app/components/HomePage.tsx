@@ -9,6 +9,7 @@ import axios from "axios";
 import { data, accounts, points, searchBarText, isDrawerOpen } from "../store";
 import Banner from "./Banner";
 import { useWallet } from "@solana/wallet-adapter-react";
+import BotBanner from "./BotBanner";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -59,6 +60,7 @@ const HomePage = () => {
     <div
       className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}
     >
+      {wallet?.publicKey && <BotBanner />}
       {wallet.publicKey && <Banner fromProfile={false} />}
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">

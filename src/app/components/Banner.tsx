@@ -32,7 +32,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
   const getUserDataByWallet = React.useCallback(async () => {
     if (!fromProfile) return;
     const result = await axios.get(
-      `/api/get-wallet-data?username=${wallet?.publicKey}`,
+      `/api/get-wallet-data?wallet=${wallet?.publicKey}`,
     );
 
     setCurrentUser({

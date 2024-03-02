@@ -160,6 +160,19 @@ h3 {
   box-shadow: 0 0 10vmax rgba(66, 221, 255, 1);
 }
 
+#bot-banner-container {
+  background: linear-gradient(
+    90.57deg,
+    rgba(0, 97, 255, 0) 0.5%,
+    rgba(31, 85, 245, 0.16) 12.37%,
+    #4b44e7 29.79%,
+    #842fd5 51.74%,
+    #b51cc6 70.59%,
+    rgba(223, 12, 184, 0.16) 87.04%,
+    rgba(255, 0, 174, 0) 99.5%
+  );
+}
+
 .settings-btn {
   border: none;
   border-radius: 5px;

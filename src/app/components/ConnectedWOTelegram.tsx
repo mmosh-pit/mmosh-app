@@ -76,7 +76,7 @@ const ConnectedWOAccount = () => {
       value: telegramData,
     });
 
-    setUserStatus(UserStatus.noProfile);
+    setUserStatus(UserStatus.noTwitter);
     setUserData((prev: any) => ({
       ...prev,
       twitter: telegramData,

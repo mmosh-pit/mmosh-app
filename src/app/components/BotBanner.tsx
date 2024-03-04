@@ -31,7 +31,7 @@ const BotBanner = () => {
   if (hasBotAccount || !currentUser) return <></>;
 
   return (
-    <a className="relative" target="_blank" href="https://t.me/MMOSHBot">
+    <a className="w-full relative" target="_blank" href="https://t.me/MMOSHBot">
       <div
         className="w-full flex justify-between items-center py-2"
         id="bot-banner-container"

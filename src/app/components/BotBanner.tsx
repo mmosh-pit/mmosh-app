@@ -31,25 +31,30 @@ const BotBanner = () => {
   if (hasBotAccount || !currentUser) return <></>;
 
   return (
-    <div
-      className="w-full flex justify-between items-center py-2"
-      id="bot-banner-container"
-    >
-      <div className="w-[3vmax]"></div>
-      <p className="text-base">
-        Activate our{" "}
-        <a className="underline cursor-pointer" href="https://t.me/MMOSHBot">
-          Telegram Bot
-        </a>{" "}
-        and connect your account to join the MMOSH!
-      </p>
+    <a className="relative" target="_blank" href="https://t.me/MMOSHBot">
       <div
-        className="w-[3vmax] cursor-pointer"
-        onClick={() => setHasBotAccount(true)}
+        className="w-full flex justify-between items-center py-2"
+        id="bot-banner-container"
       >
-        <CloseIcon />
+        <div className="w-[3vmax]"></div>
+        <p className="text-base">
+          Activate our{" "}
+          <span className="text-base underline cursor-pointer">
+            Telegram Bot
+          </span>{" "}
+          and connect your account to join the MMOSH!
+        </p>
+        <div
+          className="w-[3vmax] cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            setHasBotAccount(true);
+          }}
+        >
+          <CloseIcon />
+        </div>
       </div>
-    </div>
+    </a>
   );
 };
 

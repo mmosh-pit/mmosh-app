@@ -186,7 +186,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
     );
   }, [currentUser, userData]);
 
-  if (!hasInitialized) return <></>;
+  if (!hasInitialized || !currentUser) return <></>;
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

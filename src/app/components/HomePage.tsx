@@ -71,7 +71,8 @@ const HomePage = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
       if (
-        scrollTop + clientHeight === scrollHeight && !lastPageTriggered.current
+        scrollTop + clientHeight === scrollHeight &&
+        !lastPageTriggered.current
       ) {
         setCurrentPage(currentPage + 1);
       }
@@ -144,9 +145,8 @@ const HomePage = () => {
           <div id="filter-container">
             {sortOptions.map((option) => (
               <div
-                className={`px-2 ${
-                  option.value === selectedSortOption &&
-                  "selected-sort-option rounded-xl"
+                className={`px-4 ${
+                  option.value === selectedSortOption && "selected-sort-option"
                 } relative cursor-pointer`}
                 onClick={() => setSelectedSortOption(option.value)}
               >

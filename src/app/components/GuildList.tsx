@@ -9,42 +9,37 @@ const sortOptions = [
   { label: "Points", value: "telegram.points" },
 ];
 
-const gensOptions = [
-  { label: "Promoted", value: "gen1", selected: true },
-  { label: "Scouted", value: "gen2", selected: true },
-  { label: "Recruited", value: "gen3", selected: true },
-  { label: "Originated", value: "gen4", selected: true },
-];
-
-const GuildList = ({ profilenft }: { profilenft: string }) => {
+const GuildList = ({
+  profilenft,
+  isMyProfile,
+  userName,
+}: {
+  profilenft: string;
+  isMyProfile: boolean;
+  userName: string;
+}) => {
   const [currentPage, setCurrentPage] = React.useState(0);
   const [users, setUsers] = React.useState<User[]>([]);
   const [selectedSortOption, setSelectedSortOption] = React.useState("royalty");
-  const [lineageOptions, setLineageOptions] = React.useState(gensOptions);
+  const [lineageOptions, setLineageOptions] = React.useState([
+    { label: "Promoted", value: "gen1", selected: true, subLabel: "Gen 1" },
+    { label: "Scouted", value: "gen2", selected: true, subLabel: "Gen 2" },
+    { label: "Recruited", value: "gen3", selected: true, subLabel: "Gen 3" },
+    { label: "Originated", value: "gen4", selected: true, subLabel: "Gen 4" },
+  ]);
 
   const listInnerRef = React.useRef(null);
   const lastPageTriggered = React.useRef(false);
 
-  const getGuildData = React.useCallback(async () => {
-    if (!profilenft) return;
-
-    const result = await axios.get(
-      `/api/get-user-guild?address=${profilenft}&gens=gen1,gen2,gen3,gen4&skip=${
-        currentPage * 10
-      }&sort=royalty`,
-    );
-
-    setUsers(result.data);
-  }, [profilenft]);
-
   const filterGuild = React.useCallback(async () => {
+    if (!profilenft) return;
     const gensArr: string[] = [];
 
-    lineageOptions.forEach(val => {
+    lineageOptions.forEach((val) => {
       if (val.selected) {
         gensArr.push(val.value);
       }
-    })
+    });
 
     const result = await axios.get(
       `/api/get-user-guild?address=${profilenft}&skip=${
@@ -52,18 +47,19 @@ const GuildList = ({ profilenft }: { profilenft: string }) => {
       }&sort=${selectedSortOption}&gens=${gensArr.join(",")}`,
     );
 
-    if (result.data.users.length === 0) {
+    if (result.data.length === 0) {
       lastPageTriggered.current = true;
     }
 
-    setUsers(result.data.users);
+    setUsers(result.data);
   }, [selectedSortOption, currentPage]);
 
   const onScroll = React.useCallback(() => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
       if (
-        scrollTop + clientHeight === scrollHeight && !lastPageTriggered.current
+        scrollTop + clientHeight === scrollHeight &&
+        !lastPageTriggered.current
       ) {
         setCurrentPage(currentPage + 1);
       }
@@ -71,18 +67,16 @@ const GuildList = ({ profilenft }: { profilenft: string }) => {
   }, [currentPage]);
 
   const toggleChangeOption = React.useCallback(
-    (checked: boolean, field: string) => {
-      setLineageOptions((prev) => {
-        const newValues = [...prev.map((val) => {
-          if (val.value === field) {
-            val.selected = checked;
-          }
+    (field: string) => {
+      const newValues = [...lineageOptions].map((val) => {
+        if (val.value === field) {
+          val.selected = !val.selected;
+        }
 
-          return val;
-        })];
-
-        return newValues;
+        return { ...val };
       });
+
+      setLineageOptions(newValues);
     },
     [lineageOptions],
   );
@@ -91,27 +85,32 @@ const GuildList = ({ profilenft }: { profilenft: string }) => {
     filterGuild();
   }, [selectedSortOption, currentPage]);
 
-  React.useEffect(() => {
-    getGuildData();
-  }, [profilenft]);
-
   if (!profilenft || users.length === 0) return <></>;
 
   return (
     <>
-      <div className="flex flex-col items-start ml-20">
-        <div className="flex self-start bg-[#020028] rounded-2xl">
+      <div className="flex flex-col items-start ml-20 mt-8">
+        <p className="text-lg text-white font-bold font-goudy">
+          {isMyProfile ? "Your Guild" : `${userName}'s Guild`}
+        </p>
+        <div className="flex self-start mt-4">
           {lineageOptions.map((option) => (
-            <div className="flex">
+            <div
+              key={option.value}
+              className="flex justify-center items-center mx-4 cursor-pointer relative"
+              onClick={() => toggleChangeOption(option.value)}
+            >
               <input
                 type="radio"
-                name="radio-1"
+                name={`radio-${option.value}`}
                 className="radio"
                 checked={option.selected}
-                onChange={(e) =>
-                  toggleChangeOption(e.target.checked, option.value)}
+                onChange={() => {}}
               />
-              <p className="text-base text-white ml-4">{option.label}</p>
+              <p className="text-base text-white ml-4">
+                {option.label}{" "}
+                <span className="text-xs">({option.subLabel})</span>
+              </p>
             </div>
           ))}
         </div>
@@ -119,10 +118,10 @@ const GuildList = ({ profilenft }: { profilenft: string }) => {
         <div id="filter-container">
           {sortOptions.map((option) => (
             <div
-              className={`px-2 ${
-                option.value === selectedSortOption &&
-                "selected-sort-option rounded-xl"
-              } relative cursor-pointer`}
+              className={`px-4 ${
+                option.value === selectedSortOption && "selected-sort-option"
+              } cursor-pointer relative`}
+              key={option.value}
               onClick={() => setSelectedSortOption(option.value)}
             >
               <p className="text-sm text-white">{option.label}</p>

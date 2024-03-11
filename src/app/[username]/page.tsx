@@ -289,7 +289,11 @@ const Profile = ({ params }: { params: { username: string } }) => {
           </div>
         </div>
       </div>
-      <GuildList profilenft={userData?.profilenft} />
+      <GuildList
+        profilenft={userData?.profilenft}
+        isMyProfile={isMyProfile}
+        userName={userData?.profile?.name}
+      />
     </div>
   );
 };

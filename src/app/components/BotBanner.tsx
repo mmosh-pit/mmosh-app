@@ -11,7 +11,7 @@ const BotBanner = () => {
 
   const checkForBotAccount = React.useCallback(async () => {
     const result = await axios.get(
-      `/api/check-bot-account?telegramId=${currentUser?.telegram.id}`,
+      `/api/check-bot-account?telegramId=${currentUser?.telegram?.id}`,
     );
 
     if (result.data) {

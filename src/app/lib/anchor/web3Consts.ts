@@ -12,10 +12,24 @@ export const web3Consts = {
     "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
   ),
   addressLookupTableProgram: web3.AddressLookupTableProgram.programId,
-  oposToken: new web3.PublicKey(process.env.NEXT_PUBLIC_OPOS_TOKEN!),
-  rootProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_ROOT_PROFILE!),
-  genesisProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_GENESIS_PROFILE!),
-  commonLut: new web3.PublicKey(process.env.NEXT_PUBLIC_COMMON_LUT!),
+  // oposToken: new web3.PublicKey(process.env.NEXT_PUBLIC_OPOS_TOKEN!),
+  // rootProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_ROOT_PROFILE!),
+  // genesisProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_GENESIS_PROFILE!),
+  // commonLut: new web3.PublicKey(process.env.NEXT_PUBLIC_COMMON_LUT!),
+
+  oposToken: new web3.PublicKey("6vgT7gxtF8Jdu7foPDZzdHxkwYFX9Y1jvgpxP8vH2Apw"),
+  rootProfile: new web3.PublicKey(
+    "85YaBFhbwuqPiRVNrXdMJwdt1qjdxbtypGcFBc6Tp7qA",
+  ),
+  genesisProfile: new web3.PublicKey(
+    "J2tFYfnM4t8XMcaMsR2WyUhaNrkJ26pwKZGq2J9T7rQL",
+  ),
+  commonLut: new web3.PublicKey("5D3XazMMpBcQb8FLxTWMB7WoWzU1YeVP3usekchp1xLu"),
+
+  badgeCollection: new web3.PublicKey("147m8aw1hcmyBduQvSJoXCFaLb8wQSe9DNxWVsLTfqec"),
+
+  rootCollection: new web3.PublicKey("9h9c4idX2UnGhFa266dQxMGD5kMk9pigumRAV2x9Hbk2"),
+
   LAMPORTS_PER_OPOS: 1000_000_000,
   Seeds: {
     mainState: utf8.encode("main_state4"),

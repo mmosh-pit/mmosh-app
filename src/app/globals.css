@@ -214,3 +214,46 @@ input {
 a {
   font-size: 0.85vmax;
 }
+
+#filter-container {
+  position: relative;
+  display: flex;
+  margin-top: 2vmax;
+  align-self: start;
+  background-color: #0a083c;
+}
+
+#filter-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 25px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+
+  background: linear-gradient(90.66deg, #0061ff 10.22%, #ff00ae 92.51%)
+    border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
+}
+
+.selected-sort-option::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 25px;
+
+  background: linear-gradient(90.66deg, #0061ff 20.76%, #ff00ae 92.51%) border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
+}

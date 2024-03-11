@@ -1,15 +1,28 @@
 import * as React from "react";
 import { useAtom } from "jotai";
 
-import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
-import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
-import Image from "next/image";
 import { User } from "../models/user";
 import axios from "axios";
-import { data, accounts, points, searchBarText, isDrawerOpen } from "../store";
+import { accounts, data, isDrawerOpen, points, searchBarText } from "../store";
 import Banner from "./Banner";
 import { useWallet } from "@solana/wallet-adapter-react";
 import BotBanner from "./BotBanner";
+import UserCard from "./UserCard";
+
+const userTypeOptions = [
+  { label: "All", value: "all" },
+  { label: "Members", value: "members" },
+  {
+    label: "Guests",
+    value: "guests",
+  },
+];
+
+const sortOptions = [
+  { label: "Royalties", value: "royalty" },
+  { label: "Seniority", value: "profile.seniority" },
+  { label: "Points", value: "telegram.points" },
+];
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -17,19 +30,57 @@ const HomePage = () => {
   const [__, setTotalPoints] = useAtom(points);
   const [searchText] = useAtom(searchBarText);
   const [isDrawerShown] = useAtom(isDrawerOpen);
+
   const allUsers = React.useRef<User[]>([]);
+  const listInnerRef = React.useRef(null);
+  const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
+  const [selectedFilter, setSelectedFilter] = React.useState("all");
+  const [selectedSortOption, setSelectedSortOption] = React.useState("royalty");
+  const [currentPage, setCurrentPage] = React.useState(0);
 
   const wallet = useWallet();
 
   const getUsers = React.useCallback(async () => {
-    const result = await axios.get(`/api/get-all-users`);
+    const result = await axios.get(
+      `/api/get-all-users?sort=royalty&skip=0&userType=all`,
+    );
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
     setTotalPoints(result.data.totalPoints);
     setTotalAccounts(result.data.totalAccounts);
   }, []);
+
+  const filterUsers = React.useCallback(async () => {
+    const result = await axios.get(
+      `/api/get-all-users?sort=${selectedSortOption}&skip=${
+        currentPage * 10
+      }&userType=${selectedFilter}`,
+    );
+
+    if (result.data.users.length === 0) {
+      lastPageTriggered.current = true;
+    }
+
+    setUsers(result.data.users);
+    allUsers.current = result.data.users;
+  }, [selectedFilter, selectedSortOption, currentPage]);
+
+  const onScroll = React.useCallback(() => {
+    if (listInnerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
+      if (
+        scrollTop + clientHeight === scrollHeight && !lastPageTriggered.current
+      ) {
+        setCurrentPage(currentPage + 1);
+      }
+    }
+  }, [currentPage]);
+
+  React.useEffect(() => {
+    filterUsers();
+  }, [selectedFilter, selectedSortOption, currentPage]);
 
   React.useEffect(() => {
     if (!currentUser) return;
@@ -58,7 +109,9 @@ const HomePage = () => {
 
   return (
     <div
-      className={`w-full h-screen flex flex-col items-center mt-6 home-content ${isDrawerShown ? "z-[-1]" : ""}`}
+      className={`w-full h-screen flex flex-col items-center mt-6 home-content ${
+        isDrawerShown ? "z-[-1]" : ""
+      }`}
     >
       {wallet?.publicKey && <BotBanner />}
       {wallet.publicKey && <Banner fromProfile={false} />}
@@ -73,82 +126,45 @@ const HomePage = () => {
         </p>
       </div>
 
-      <div className="w-[90%] grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
-        {users.map((value, index) => (
-          <div className="grid">
-            <div className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl">
-              <div className="self-center max-w-[30%] mr-8">
-                <div className="relative w-[8vmax] h-[8vmax]">
-                  <Image
-                    src={value.profile.image}
-                    alt="Profile Image"
-                    className="rounded-full"
-                    layout="fill"
-                  />
-                </div>
+      <div className="w-full mt-8">
+        <div className="flex flex-col items-start ml-20">
+          <div className="flex self-start bg-[#020028] rounded-2xl">
+            {userTypeOptions.map((type) => (
+              <div
+                className={`py-2 px-6 ${
+                  type.value === selectedFilter && "bg-[#0A083C] rounded-2xl"
+                } cursor-pointer`}
+                onClick={() => setSelectedFilter(type.value)}
+              >
+                <p className="text-base text-white">{type.label}</p>
               </div>
-
-              <div className="w-full flex flex-col justify-start">
-                <div>
-                  <p className="text-white text-lg">
-                    {value.profile.name} • <span>Guest</span>
-                  </p>
-                  <p className="text-base">@{value.profile.username}</p>
-                </div>
-
-                <div className="my-4">
-                  <p className="text-white text-base">{value.profile.bio}</p>
-                  <a
-                    className="text-[#FF00C7] text-base"
-                    href={`https://mmosh.app/${value.profile.username}`}
-                  >
-                    mmosh.app/{value.profile.username}
-                  </a>
-                </div>
-
-                <div>
-                  <div className="flex items-center">
-                    <TelegramDarkIcon />
-
-                    <a
-                      target="_blank"
-                      href={`https://t.me/${value.telegram.username}`}
-                      className="ml-4 underline text-[#9493B2]"
-                    >
-                      https://t.me/{value.telegram.username}
-                    </a>
-                  </div>
-
-                  <div className="flex items-center mt-2">
-                    <TwitterDarkIcon />
-
-                    <a
-                      target="_blank"
-                      href={`https://twitter.com/${value.twitter.username}`}
-                      className="ml-4 underline text-[#9493B2]"
-                    >
-                      https://twitter.com/{value.twitter.username}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="w-[80%] flex justify-between bg-[#434E59] bg-opacity-50 px-[2vmax] py-2 rounded-3xl mt-4">
-                  <div>
-                    <p className="text-white text-base">
-                      Points: {value.telegram.points || 0}
-                    </p>
-                  </div>
-
-                  <div className="bg-[#596570] w-[1px] h-full" />
-
-                  <div>
-                    <p className="text-white text-base">Rank: {index + 1}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
+
+          <div id="filter-container">
+            {sortOptions.map((option) => (
+              <div
+                className={`px-2 ${
+                  option.value === selectedSortOption &&
+                  "selected-sort-option rounded-xl"
+                } relative cursor-pointer`}
+                onClick={() => setSelectedSortOption(option.value)}
+              >
+                <p className="text-sm text-white">{option.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          className="w-[90%] grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]"
+          ref={listInnerRef}
+          onScroll={onScroll}
+        >
+          {users.map((value) => (
+            <UserCard user={value} key={value.profile.username} />
+          ))}
+        </div>
       </div>
     </div>
   );

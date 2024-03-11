@@ -58,6 +58,7 @@ export default function Home() {
   }, [wallet]);
 
   const renderComponent = () => {
+    return <HomePage />;
     if (!wallet?.publicKey) {
       return <NoConnectedWallet />;
     }

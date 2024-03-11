@@ -7,13 +7,13 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const user = searchParams.get("user");
+  const profilenft = searchParams.get("nft");
 
-  if (user === "undefined") {
+  if (profilenft === "undefined") {
     return NextResponse.json("", { status: 200 });
   }
 
-  if (!user) {
+  if (!profilenft) {
     return NextResponse.json(
       {
         error: "Invalid Request",
@@ -25,16 +25,15 @@ export async function GET(req: NextRequest) {
   }
 
   const data = await db
-    .collection("users")
+    .collection("mmosh-app-profiles")
     .find(
-      {},
+      { profilenft: { $exists: true } },
       {
         projection: {
           _id: 1,
-          points: 1,
-          telegramId: 1,
+          royalty: 1,
         },
-        sort: { points: -1 },
+        sort: { royalty: -1 },
       },
     )
     .toArray();
@@ -43,13 +42,11 @@ export async function GET(req: NextRequest) {
 
   const result = {
     rank: 0,
-    points: 0,
   };
 
   data.forEach((row, index) => {
-    if (row.telegramId == Number(user as string)) {
+    if (row.profilenft == profilenft) {
       result.rank = index;
-      result.points = row.points;
     }
   });
 

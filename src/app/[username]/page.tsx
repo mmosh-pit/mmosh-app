@@ -17,6 +17,7 @@ import CopyIcon from "@/assets/icons/CopyIcon";
 import Banner from "../components/Banner";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import BotBanner from "../components/BotBanner";
+import GuildList from "../components/GuildList";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -113,7 +114,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
       {wallet?.publicKey && <BotBanner />}
       {wallet?.publicKey && <Banner fromProfile />}
       <div
-        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
+        className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
@@ -288,6 +289,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
           </div>
         </div>
       </div>
+      <GuildList profilenft={userData?.profilenft} />
     </div>
   );
 };

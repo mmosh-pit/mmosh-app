@@ -106,7 +106,7 @@ const UserCard = ({ user }: Props) => {
 
             <div>
               <p className="text-white text-xs">
-                Seniority: {user.profile.seniority}
+                Seniority: {user.profile.seniority || 0}
               </p>
             </div>
 

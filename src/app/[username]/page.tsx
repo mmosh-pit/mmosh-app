@@ -276,7 +276,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
             )}
 
             <p className="text-base text-white mt-6">
-              <span className="font-bold">Your Role: </span> Guest
+              <span className="font-bold">Your Role: </span>{" "}
+              {userData?.profilenft ? "Member" : "Guest"}
             </p>
             <p className="text-base text-white my-4">
               <span className="font-bold">Your Points: </span>{" "}

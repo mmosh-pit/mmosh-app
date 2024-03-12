@@ -3,26 +3,22 @@ import { useAtom } from "jotai";
 
 import { User } from "../models/user";
 import axios from "axios";
-import { accounts, data, isDrawerOpen, points, searchBarText } from "../store";
+import {
+  accounts,
+  data,
+  isDrawerOpen,
+  points,
+  searchBarText,
+  sortDirection,
+  sortOption,
+  userType,
+} from "../store";
 import Banner from "./Banner";
 import { useWallet } from "@solana/wallet-adapter-react";
 import BotBanner from "./BotBanner";
 import UserCard from "./UserCard";
-
-const userTypeOptions = [
-  { label: "All", value: "all" },
-  { label: "Members", value: "members" },
-  {
-    label: "Guests",
-    value: "guests",
-  },
-];
-
-const sortOptions = [
-  { label: "Royalties", value: "royalty" },
-  { label: "Seniority", value: "profile.seniority" },
-  { label: "Points", value: "telegram.points" },
-];
+import UserSortTabs from "./UserSortTabs";
+import UserTypeOptionsTabs from "./Home/UserTypeOptionsTabs";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -30,13 +26,14 @@ const HomePage = () => {
   const [__, setTotalPoints] = useAtom(points);
   const [searchText] = useAtom(searchBarText);
   const [isDrawerShown] = useAtom(isDrawerOpen);
+  const [selectedSortOption] = useAtom(sortOption);
+  const [selectedSortDirection] = useAtom(sortDirection);
+  const [selectedFilter] = useAtom(userType);
 
   const allUsers = React.useRef<User[]>([]);
   const listInnerRef = React.useRef(null);
   const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
-  const [selectedFilter, setSelectedFilter] = React.useState("all");
-  const [selectedSortOption, setSelectedSortOption] = React.useState("royalty");
   const [currentPage, setCurrentPage] = React.useState(0);
 
   const wallet = useWallet();
@@ -56,7 +53,7 @@ const HomePage = () => {
     const result = await axios.get(
       `/api/get-all-users?sort=${selectedSortOption}&skip=${
         currentPage * 10
-      }&userType=${selectedFilter}`,
+      }&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
     );
 
     if (result.data.users.length === 0) {
@@ -65,7 +62,7 @@ const HomePage = () => {
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
-  }, [selectedFilter, selectedSortOption, currentPage]);
+  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
 
   const onScroll = React.useCallback(() => {
     if (listInnerRef.current) {
@@ -129,31 +126,9 @@ const HomePage = () => {
 
       <div className="w-full mt-8">
         <div className="flex flex-col items-start ml-20">
-          <div className="flex self-start bg-[#020028] rounded-2xl">
-            {userTypeOptions.map((type) => (
-              <div
-                className={`py-2 px-6 ${
-                  type.value === selectedFilter && "bg-[#0A083C] rounded-2xl"
-                } cursor-pointer`}
-                onClick={() => setSelectedFilter(type.value)}
-              >
-                <p className="text-base text-white">{type.label}</p>
-              </div>
-            ))}
-          </div>
+          <UserTypeOptionsTabs />
 
-          <div id="filter-container">
-            {sortOptions.map((option) => (
-              <div
-                className={`px-4 ${
-                  option.value === selectedSortOption && "selected-sort-option"
-                } relative cursor-pointer`}
-                onClick={() => setSelectedSortOption(option.value)}
-              >
-                <p className="text-sm text-white">{option.label}</p>
-              </div>
-            ))}
-          </div>
+          <UserSortTabs />
         </div>
 
         <div

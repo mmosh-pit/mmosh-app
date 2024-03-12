@@ -1,13 +1,10 @@
 import axios from "axios";
 import * as React from "react";
+import { useAtom } from "jotai";
 import { User } from "../models/user";
 import UserCard from "./UserCard";
-
-const sortOptions = [
-  { label: "Royalties", value: "royalty" },
-  { label: "Seniority", value: "profile.seniority" },
-  { label: "Points", value: "telegram.points" },
-];
+import UserSortTabs from "./UserSortTabs";
+import { lineage, sortDirection, sortOption } from "../store";
 
 const GuildList = ({
   profilenft,
@@ -20,13 +17,10 @@ const GuildList = ({
 }) => {
   const [currentPage, setCurrentPage] = React.useState(0);
   const [users, setUsers] = React.useState<User[]>([]);
-  const [selectedSortOption, setSelectedSortOption] = React.useState("royalty");
-  const [lineageOptions, setLineageOptions] = React.useState([
-    { label: "Promoted", value: "gen1", selected: true, subLabel: "Gen 1" },
-    { label: "Scouted", value: "gen2", selected: true, subLabel: "Gen 2" },
-    { label: "Recruited", value: "gen3", selected: true, subLabel: "Gen 3" },
-    { label: "Originated", value: "gen4", selected: true, subLabel: "Gen 4" },
-  ]);
+
+  const [selectedSortOption] = useAtom(sortOption);
+  const [selectedSortDirection] = useAtom(sortDirection);
+  const [lineageOptions] = useAtom(lineage);
 
   const listInnerRef = React.useRef(null);
   const lastPageTriggered = React.useRef(false);
@@ -44,7 +38,7 @@ const GuildList = ({
     const result = await axios.get(
       `/api/get-user-guild?address=${profilenft}&skip=${
         currentPage * 10
-      }&sort=${selectedSortOption}&gens=${gensArr.join(",")}`,
+      }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}`,
     );
 
     if (result.data.length === 0) {
@@ -52,7 +46,7 @@ const GuildList = ({
     }
 
     setUsers(result.data);
-  }, [selectedSortOption, currentPage]);
+  }, [selectedSortOption, selectedSortDirection, currentPage]);
 
   const onScroll = React.useCallback(() => {
     if (listInnerRef.current) {
@@ -66,21 +60,6 @@ const GuildList = ({
     }
   }, [currentPage]);
 
-  const toggleChangeOption = React.useCallback(
-    (field: string) => {
-      const newValues = [...lineageOptions].map((val) => {
-        if (val.value === field) {
-          val.selected = !val.selected;
-        }
-
-        return { ...val };
-      });
-
-      setLineageOptions(newValues);
-    },
-    [lineageOptions],
-  );
-
   React.useEffect(() => {
     filterGuild();
   }, [selectedSortOption, currentPage]);
@@ -93,41 +72,8 @@ const GuildList = ({
         <p className="text-lg text-white font-bold font-goudy">
           {isMyProfile ? "Your Guild" : `${userName}'s Guild`}
         </p>
-        <div className="flex self-start mt-4">
-          {lineageOptions.map((option) => (
-            <div
-              key={option.value}
-              className="flex justify-center items-center mx-4 cursor-pointer relative"
-              onClick={() => toggleChangeOption(option.value)}
-            >
-              <input
-                type="radio"
-                name={`radio-${option.value}`}
-                className="radio"
-                checked={option.selected}
-                onChange={() => {}}
-              />
-              <p className="text-base text-white ml-4">
-                {option.label}{" "}
-                <span className="text-xs">({option.subLabel})</span>
-              </p>
-            </div>
-          ))}
-        </div>
 
-        <div id="filter-container">
-          {sortOptions.map((option) => (
-            <div
-              className={`px-4 ${
-                option.value === selectedSortOption && "selected-sort-option"
-              } cursor-pointer relative`}
-              key={option.value}
-              onClick={() => setSelectedSortOption(option.value)}
-            >
-              <p className="text-sm text-white">{option.label}</p>
-            </div>
-          ))}
-        </div>
+        <UserSortTabs />
       </div>
 
       <div

@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const skip = searchParams.get("skip");
   const sortValue = searchParams.get("sort") as string;
+  const sortDirection = searchParams.get("sortDir") as string;
   const memberTypes = searchParams.get("userType") as string;
 
   if (!skip || !sortValue || !memberTypes) {
@@ -27,10 +28,12 @@ export async function GET(req: NextRequest) {
     };
   }
 
+  const sortDirectionValue = sortDirection === "asc" ? 1 : -1;
+
   const data = await db
     .collection("mmosh-app-profiles")
     .find(filter)
-    .sort({ [sortValue]: -1 })
+    .sort({ [sortValue]: sortDirectionValue })
     .skip(Number(skip))
     .limit(10)
     .toArray();

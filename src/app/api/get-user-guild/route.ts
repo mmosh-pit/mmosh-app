@@ -17,8 +17,9 @@ export async function GET(req: NextRequest) {
   const gens = searchParams.get("gens");
   const skip = searchParams.get("skip");
   const sortValue = searchParams.get("sort") as string;
+  const sortDirection = searchParams.get("sortDir") as string;
 
-  if (!param || !gens || !skip || !sortValue) {
+  if (!param || !gens || !skip || !sortValue || !sortDirection) {
     return NextResponse.json("Invalid Payload", { status: 400 });
   }
 
@@ -70,6 +71,8 @@ export async function GET(req: NextRequest) {
     profilenft: { $in: Object.keys(lineagesMap) },
   };
 
+  const sortDirectionValue = sortDirection === "desc" ? -1 : 1;
+
   const profiles = await db
     .collection("mmosh-app-profiles")
     .find(profilesFilter, {
@@ -83,7 +86,7 @@ export async function GET(req: NextRequest) {
         "twitter.username": 1,
       },
     })
-    .sort({ [sortValue]: -1 })
+    .sort({ [sortValue]: sortDirectionValue })
     .skip(Number(skip))
     .limit(10)
     .toArray();

@@ -18,7 +18,7 @@ const LineageFilterOptions = () => {
   };
 
   return (
-    <div className="flex self-start mt-4">
+    <div className="relative flex self-start mt-4">
       {lineageOptions.map((option) => (
         <div
           key={option.value}

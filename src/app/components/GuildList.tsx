@@ -47,7 +47,7 @@ const GuildList = ({
     setCurrentPage(0);
 
     setUsers(result.data);
-  }, [selectedSortOption, selectedSortDirection, currentPage]);
+  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage]);
 
   const paginateGuild = React.useCallback(async () => {
     if (!profilenft) return;
@@ -72,7 +72,7 @@ const GuildList = ({
     }
 
     setUsers((prev) => [...prev, ...result.data]);
-  }, [selectedSortOption, selectedSortDirection, currentPage]);
+  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -92,7 +92,7 @@ const GuildList = ({
 
   React.useEffect(() => {
     filterGuild();
-  }, [selectedSortOption, selectedSortDirection]);
+  }, [selectedSortOption, selectedSortDirection, lineageOptions]);
 
   if (!profilenft || users.length === 0) return <></>;
 

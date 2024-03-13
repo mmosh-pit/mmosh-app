@@ -32,10 +32,11 @@ export async function GET(req: NextRequest) {
 
   const data = await db
     .collection("mmosh-app-profiles")
-    .find(filter)
-    .sort({ [sortValue]: sortDirectionValue })
-    .skip(Number(skip))
-    .limit(10)
+    .find(filter, {
+      sort: { [sortValue]: sortDirectionValue },
+      skip: Number(skip),
+      limit: 10,
+    })
     .toArray();
 
   const result = {

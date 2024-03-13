@@ -23,8 +23,10 @@ const GuildList = ({
   const [selectedSortDirection] = useAtom(sortDirection);
   const [lineageOptions] = useAtom(lineage);
 
-  const listInnerRef = React.useRef(null);
   const lastPageTriggered = React.useRef(false);
+
+  const fetching = React.useRef(false);
+  const containerRef = React.useRef<any>(null);
 
   const filterGuild = React.useCallback(async () => {
     if (!profilenft) return;
@@ -36,40 +38,71 @@ const GuildList = ({
       }
     });
 
+    fetching.current = true;
+    const result = await axios.get(
+      `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}`,
+    );
+    fetching.current = false;
+
+    setCurrentPage(0);
+
+    setUsers(result.data);
+  }, [selectedSortOption, selectedSortDirection, currentPage]);
+
+  const paginateGuild = React.useCallback(async () => {
+    if (!profilenft) return;
+    const gensArr: string[] = [];
+
+    lineageOptions.forEach((val) => {
+      if (val.selected) {
+        gensArr.push(val.value);
+      }
+    });
+
+    fetching.current = true;
     const result = await axios.get(
       `/api/get-user-guild?address=${profilenft}&skip=${
         currentPage * 10
       }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}`,
     );
+    fetching.current = false;
 
     if (result.data.length === 0) {
       lastPageTriggered.current = true;
     }
 
-    setUsers(result.data);
+    setUsers((prev) => [...prev, ...result.data]);
   }, [selectedSortOption, selectedSortDirection, currentPage]);
 
-  const onScroll = React.useCallback(() => {
-    if (listInnerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (
-        scrollTop + clientHeight === scrollHeight &&
-        !lastPageTriggered.current
-      ) {
-        setCurrentPage(currentPage + 1);
-      }
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    if (
+      containerRef.current.scrollHeight - containerRef.current.scrollTop <=
+      containerRef.current.clientHeight + 50
+    ) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  React.useEffect(() => {
+    if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
+      paginateGuild();
     }
   }, [currentPage]);
 
   React.useEffect(() => {
     filterGuild();
-  }, [selectedSortOption, selectedSortDirection, currentPage]);
+  }, [selectedSortOption, selectedSortDirection]);
 
   if (!profilenft || users.length === 0) return <></>;
 
   return (
     <>
-      <div className="flex flex-col items-start ml-20 mt-8">
+      <div
+        className="flex flex-col items-start ml-20 mt-8"
+        ref={containerRef}
+        onScroll={handleScroll}
+      >
         <p className="text-lg text-white font-bold font-goudy">
           {isMyProfile ? "Your Guild" : `${userName}'s Guild`}
         </p>
@@ -79,11 +112,7 @@ const GuildList = ({
         <UserSortTabs />
       </div>
 
-      <div
-        className="relative px-16 pb-8 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]"
-        onScroll={onScroll}
-        ref={listInnerRef}
-      >
+      <div className="relative px-16 pb-8 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
         {users.map((value) => (
           <UserCard user={value} key={value.profile.username} />
         ))}

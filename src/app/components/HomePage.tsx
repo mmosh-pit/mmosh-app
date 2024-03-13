@@ -30,11 +30,12 @@ const HomePage = () => {
   const [selectedSortDirection] = useAtom(sortDirection);
   const [selectedFilter] = useAtom(userType);
 
+  const fetching = React.useRef(false);
+  const containerRef = React.useRef<any>(null);
+  const [currentPage, setCurrentPage] = React.useState(0);
   const allUsers = React.useRef<User[]>([]);
-  const listInnerRef = React.useRef(null);
   const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
-  const [currentPage, setCurrentPage] = React.useState(0);
 
   const wallet = useWallet();
 
@@ -50,35 +51,56 @@ const HomePage = () => {
   }, []);
 
   const filterUsers = React.useCallback(async () => {
+    fetching.current = true;
+    const result = await axios.get(
+      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
+    );
+
+    setCurrentPage(0);
+    fetching.current = false;
+
+    setUsers(result.data.users);
+    allUsers.current = result.data.users;
+  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
+
+  const paginateUsers = React.useCallback(async () => {
+    console.log("Paginating with page: ", currentPage);
+    fetching.current = true;
     const result = await axios.get(
       `/api/get-all-users?sort=${selectedSortOption}&skip=${
         currentPage * 10
       }&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
     );
 
+    fetching.current = false;
+
     if (result.data.users.length === 0) {
       lastPageTriggered.current = true;
     }
 
-    setUsers(result.data.users);
-    allUsers.current = result.data.users;
+    setUsers((prev) => [...prev, ...result.data.users]);
+    allUsers.current = [...allUsers.current, ...result.data.users];
   }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
 
-  const onScroll = React.useCallback(() => {
-    if (listInnerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (
-        scrollTop + clientHeight === scrollHeight &&
-        !lastPageTriggered.current
-      ) {
-        setCurrentPage(currentPage + 1);
-      }
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    if (
+      containerRef.current.scrollHeight - containerRef.current.scrollTop <=
+      containerRef.current.clientHeight + 50
+    ) {
+      setCurrentPage(currentPage + 1);
     }
-  }, [currentPage]);
+  };
 
   React.useEffect(() => {
     filterUsers();
-  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
+  }, [selectedFilter, selectedSortOption, selectedSortDirection]);
+
+  React.useEffect(() => {
+    if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
+      paginateUsers();
+    }
+  }, [currentPage]);
 
   React.useEffect(() => {
     if (!currentUser) return;
@@ -110,6 +132,8 @@ const HomePage = () => {
       className={`w-full h-screen flex flex-col items-center mt-6 home-content ${
         isDrawerShown ? "z-[-1]" : ""
       }`}
+      ref={containerRef}
+      onScroll={handleScroll}
     >
       {wallet?.publicKey && <BotBanner />}
       {wallet.publicKey && <Banner fromProfile={false} />}
@@ -131,11 +155,7 @@ const HomePage = () => {
           <UserSortTabs />
         </div>
 
-        <div
-          className="w-[90%] grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]"
-          ref={listInnerRef}
-          onScroll={onScroll}
-        >
+        <div className="w-[90%] grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
           {users.map((value) => (
             <UserCard user={value} key={value.profile.username} />
           ))}

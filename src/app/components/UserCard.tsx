@@ -98,7 +98,7 @@ const UserCard = ({ user }: Props) => {
           <div className="w-[100%] flex justify-between bg-[#434E59] bg-opacity-50 px-[1vmax] py-2 rounded-3xl mt-4">
             <div>
               <p className="text-white text-xs">
-                Earnings: {user.royalty || 0}
+                Royalties: {user.royalty || 0}
               </p>
             </div>
 

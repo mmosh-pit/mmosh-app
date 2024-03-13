@@ -7,6 +7,10 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("telegramId");
 
+  if (param === "undefined" || !param) {
+    return NextResponse.json(false, { status: 200 });
+  }
+
   const user = await collection.findOne({
     telegramId: Number(param),
   });

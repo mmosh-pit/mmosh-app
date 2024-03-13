@@ -78,7 +78,7 @@ const HomePage = () => {
 
   React.useEffect(() => {
     filterUsers();
-  }, [selectedFilter, selectedSortOption, currentPage]);
+  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
 
   React.useEffect(() => {
     if (!currentUser) return;

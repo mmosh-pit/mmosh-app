@@ -63,7 +63,7 @@ const GuildList = ({
 
   React.useEffect(() => {
     filterGuild();
-  }, [selectedSortOption, currentPage]);
+  }, [selectedSortOption, selectedSortDirection, currentPage]);
 
   if (!profilenft || users.length === 0) return <></>;
 

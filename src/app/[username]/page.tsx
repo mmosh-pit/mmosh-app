@@ -250,26 +250,29 @@ const Profile = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
           <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 lg:self-start">
-            <p className="flex text-lg text-white font-bold mb-6">
-              Activation Link{" "}
-              <sup
-                className="relative cursor-pointer"
-                onClick={() =>
-                  copyToClipboard(
-                    `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
-                    0,
-                  )
-                }
-              >
-                {isTooltipShown && (
-                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
-                    Copied!
-                  </div>
-                )}
-                <CopyIcon />
-              </sup>
-            </p>
-            {userData?.telegram?.id && (
+            {lhcWallet && userData?.telegram?.id && (
+              <p className="flex text-lg text-white font-bold mb-6">
+                Activation Link{" "}
+                <sup
+                  className="relative cursor-pointer"
+                  onClick={() =>
+                    copyToClipboard(
+                      `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
+                      0,
+                    )
+                  }
+                >
+                  {isTooltipShown && (
+                    <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
+                      Copied!
+                    </div>
+                  )}
+                  <CopyIcon />
+                </sup>
+              </p>
+            )}
+
+            {lhcWallet && userData?.telegram?.id && (
               <p className="text-base text-white">
                 {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
               </p>

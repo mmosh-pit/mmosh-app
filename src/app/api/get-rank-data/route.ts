@@ -5,7 +5,7 @@ let cachedUsers: any[] = [];
 
 setInterval(() => {
   cachedUsers = [];
-}, 3600000);
+}, 1800000);
 
 export async function GET(req: NextRequest) {
   if (req.method !== "GET") {

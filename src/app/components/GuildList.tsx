@@ -5,6 +5,7 @@ import { User } from "../models/user";
 import UserCard from "./UserCard";
 import UserSortTabs from "./UserSortTabs";
 import { lineage, sortDirection, sortOption } from "../store";
+import LineageFilterOptions from "./Profile/LineageFilterOptions";
 
 const GuildList = ({
   profilenft,
@@ -72,6 +73,8 @@ const GuildList = ({
         <p className="text-lg text-white font-bold font-goudy">
           {isMyProfile ? "Your Guild" : `${userName}'s Guild`}
         </p>
+
+        <LineageFilterOptions />
 
         <UserSortTabs />
       </div>

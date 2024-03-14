@@ -17,6 +17,7 @@ import CopyIcon from "@/assets/icons/CopyIcon";
 import Banner from "../components/Banner";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import BotBanner from "../components/BotBanner";
+import GuildList from "../components/GuildList";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
@@ -113,7 +114,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
       {wallet?.publicKey && <BotBanner />}
       {wallet?.publicKey && <Banner fromProfile />}
       <div
-        className={`w-full h-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
+        className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar />}
 
@@ -128,7 +129,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
                   : `${userData?.profile?.name}'s Hideout`}
               </p>
 
-              <div className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[6vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4">
+              <div
+                className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[3vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4"
+                id={userData?.profile && "member-container"}
+              >
                 <div className="w-full grid" id="profile-info-image">
                   <div
                     className={`relative w-[8vmax] h-[8vmax] ${isDrawerShown ? "z-[-1]" : ""}`}
@@ -249,33 +253,37 @@ const Profile = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
           <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 mt-16 lg:self-start">
-            <p className="flex text-lg text-white font-bold mb-6">
-              Activation Link{" "}
-              <sup
-                className="relative cursor-pointer"
-                onClick={() =>
-                  copyToClipboard(
-                    `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
-                    0,
-                  )
-                }
-              >
-                {isTooltipShown && (
-                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
-                    Copied!
-                  </div>
-                )}
-                <CopyIcon />
-              </sup>
-            </p>
-            {userData?.telegram?.id && (
+            {lhcWallet && userData?.telegram?.id && (
+              <p className="flex text-lg text-white font-bold mb-6">
+                Activation Link{" "}
+                <sup
+                  className="relative cursor-pointer"
+                  onClick={() =>
+                    copyToClipboard(
+                      `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
+                      0,
+                    )
+                  }
+                >
+                  {isTooltipShown && (
+                    <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
+                      Copied!
+                    </div>
+                  )}
+                  <CopyIcon />
+                </sup>
+              </p>
+            )}
+
+            {lhcWallet && userData?.telegram?.id && (
               <p className="text-base text-white">
                 {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
               </p>
             )}
 
             <p className="text-base text-white mt-6">
-              <span className="font-bold">Your Role: </span> Guest
+              <span className="font-bold">Your Role: </span>{" "}
+              {userData?.profilenft ? "Member" : "Guest"}
             </p>
             <p className="text-base text-white my-4">
               <span className="font-bold">Your Points: </span>{" "}
@@ -288,6 +296,11 @@ const Profile = ({ params }: { params: { username: string } }) => {
           </div>
         </div>
       </div>
+      <GuildList
+        profilenft={userData?.profilenft}
+        isMyProfile={isMyProfile}
+        userName={userData?.profile?.name}
+      />
     </div>
   );
 };

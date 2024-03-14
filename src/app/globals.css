@@ -214,3 +214,106 @@ input {
 a {
   font-size: 0.85vmax;
 }
+
+#filter-container {
+  position: relative;
+  display: flex;
+  margin-top: 2vmax;
+  align-self: start;
+  background-color: #0a083c;
+  border-radius: 8px;
+}
+
+#filter-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+
+  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
+    border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
+}
+
+#member-container {
+  position: relative;
+  box-shadow:
+    1px 2px 8px #ff00ae,
+    -0.2em 0 0.2em #0061ff;
+}
+
+#member-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 3vmax 0.375rem 0.375rem 0.375rem;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+
+  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
+    border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
+}
+
+#member-container-home {
+  position: relative;
+  box-shadow:
+    1px 2px 4px #ff00ae,
+    -0.2em 0 0.1em #0061ff;
+}
+
+#member-container p,
+#member-container a,
+#member-container-home p,
+#member-container-home a {
+  position: relative;
+  z-index: 1;
+}
+
+#member-container-home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+
+  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
+    border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
+}
+
+.selected-sort-option::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 8px;
+
+  background: linear-gradient(90.66deg, #ff00ae 10.76%, #0061ff 92.51%)
+    border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
+}

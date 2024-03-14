@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../lib/mongoClient";
 
+let cachedUsers: any[] = [];
+
+setInterval(() => {
+  cachedUsers = [];
+}, 1800000);
+
 export async function GET(req: NextRequest) {
   if (req.method !== "GET") {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
@@ -24,30 +30,33 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const data = await db
-    .collection("users")
-    .find(
-      {},
-      {
-        projection: {
-          _id: 1,
-          referredUsers: 1,
-          points: 1,
-          telegramId: 1,
+  if (cachedUsers.length === 0) {
+    const data = await db
+      .collection("users")
+      .find(
+        {},
+        {
+          projection: {
+            _id: 1,
+            points: 1,
+            telegramId: 1,
+          },
+          sort: { points: -1 },
         },
-        sort: { points: -1 },
-      },
-    )
-    .toArray();
+      )
+      .toArray();
 
-  if (!data) return NextResponse.json("", { status: 200 });
+    if (!data) return NextResponse.json("", { status: 200 });
+
+    cachedUsers = data;
+  }
 
   const result = {
     rank: 0,
     points: 0,
   };
 
-  data.forEach((row, index) => {
+  cachedUsers.forEach((row, index) => {
     if (row.telegramId == Number(user as string)) {
       result.rank = index;
       result.points = row.points;

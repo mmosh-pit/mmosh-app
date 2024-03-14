@@ -20,8 +20,6 @@ import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
 
-const progress = ["5%", "25%", "50%", "75%", "100%"];
-
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
 
@@ -65,24 +63,6 @@ const Header = () => {
 
     return defaultClass;
   }, [userStatus]);
-
-  const getProgress = React.useCallback(() => {
-    return progress[userStatus];
-  }, [userStatus]);
-
-  const renderProgressBar = React.useCallback(() => {
-    return <></>;
-
-    return (
-      <div className="xs:w-[60%] sm:w-[50%] lg:w-[40%] h-[25px] bg-[#FFFFFF] bg-opacity-40 rounded-[20px] mb-12">
-        <div
-          className={`w-[${getProgress()}] h-full flex justify-end items-center`}
-        >
-          <div id="custom-progress" />
-        </div>
-      </div>
-    );
-  }, [getProgress]);
 
   const executeSearch = React.useCallback(() => {
     const text = localText.replace("@", "");
@@ -171,8 +151,6 @@ const Header = () => {
 
         {userStatus !== UserStatus.fullAccount && (
           <div className="w-full flex flex-col justify-center items-center mb-4">
-            {renderProgressBar()}
-
             <div
               className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
             >

@@ -39,7 +39,7 @@ const UserCard = ({ user }: Props) => {
   }, []);
 
   return (
-    <div className="grid">
+    <div className="relative grid">
       <div
         className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl"
         id={user.profilenft && "member-container-home"}

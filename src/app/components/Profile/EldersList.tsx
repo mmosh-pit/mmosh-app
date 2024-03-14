@@ -1,27 +1,14 @@
-import { fetchNFTUsername } from "@/app/lib/fetchNFTMetadata";
-import { Guild } from "@/app/models/guild";
-import axios from "axios";
 import * as React from "react";
+
+import { fetchNFTMetadata } from "@/app/lib/fetchNFTMetadata";
 
 const EldersList = ({ profilenft }: { profilenft: string }) => {
   const [lineageList, setLineageList] = React.useState();
 
   const getElderValues = async () => {
-    const res = await axios.get<Guild>(`/api/get-elders?profile=${profilenft}`);
+    const metadata = await fetchNFTMetadata(profilenft);
 
-    if (!res.data) return;
-
-    const resultingLineage: any = {};
-
-    for (const entry of Object.entries(res.data)) {
-      const [key, value] = entry;
-
-      const username = await fetchNFTUsername(value);
-
-      resultingLineage[key] = username;
-    }
-
-    setLineageList(resultingLineage);
+    console.log("Got metadata: ", metadata);
   };
 
   React.useEffect(() => {

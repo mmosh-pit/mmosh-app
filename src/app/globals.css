@@ -274,6 +274,14 @@ a {
     -0.2em 0 0.1em #0061ff;
 }
 
+#member-container p,
+#member-container a,
+#member-container-home p,
+#member-container-home a {
+  position: relative;
+  z-index: 1;
+}
+
 #member-container-home::before {
   content: "";
   position: absolute;

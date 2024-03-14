@@ -8,9 +8,10 @@ import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
 
 type Props = {
   user: User;
+  isHome: boolean;
 };
 
-const UserCard = ({ user }: Props) => {
+const UserCard = ({ user, isHome }: Props) => {
   const rendered = React.useRef(false);
   const [rank, setRank] = React.useState(0);
 
@@ -39,7 +40,10 @@ const UserCard = ({ user }: Props) => {
 
   return (
     <div className="grid">
-      <div className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl">
+      <div
+        className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl"
+        id={user.profilenft && isHome && "member-container-home"}
+      >
         <div className="self-center max-w-[30%] mr-8">
           <div className="relative w-[8vmax] h-[8vmax]">
             <Image

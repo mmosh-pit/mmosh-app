@@ -155,9 +155,9 @@ const HomePage = () => {
           <UserSortTabs />
         </div>
 
-        <div className="w-[90%] grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
+        <div className="w-full px-12 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
           {users.map((value) => (
-            <UserCard user={value} key={value.profile.username} />
+            <UserCard user={value} key={value.profile.username} isHome />
           ))}
         </div>
       </div>

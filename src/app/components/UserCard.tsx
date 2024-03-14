@@ -42,7 +42,7 @@ const UserCard = ({ user, isHome }: Props) => {
     <div className="grid">
       <div
         className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl"
-        id={user.profilenft && isHome && "member-container-home"}
+        id={user.profilenft && isHome ? "member-container-home" : ""}
       >
         <div className="self-center max-w-[30%] mr-8">
           <div className="relative w-[8vmax] h-[8vmax]">

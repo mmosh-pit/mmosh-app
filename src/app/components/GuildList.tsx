@@ -94,7 +94,7 @@ const GuildList = ({
     filterGuild();
   }, [selectedSortOption, selectedSortDirection, lineageOptions]);
 
-  if (!profilenft || users.length === 0) return <></>;
+  if (!profilenft) return <></>;
 
   return (
     <>
@@ -112,11 +112,24 @@ const GuildList = ({
         <UserSortTabs />
       </div>
 
-      <div className="relative px-16 pb-8 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
-        {users.map((value) => (
-          <UserCard user={value} key={value.profile.username} isHome={false} />
-        ))}
-      </div>
+      {users.length === 0 ? (
+        <div className="w-full h-full flex justify-center items-center">
+          <p className="text-base">
+            {isMyProfile &&
+              "Hmm, looks like you need to start expanding your Guild"}
+          </p>
+        </div>
+      ) : (
+        <div className="relative px-16 pb-8 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
+          {users.map((value) => (
+            <UserCard
+              user={value}
+              key={value.profile.username}
+              isHome={false}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 };

@@ -11,7 +11,7 @@ type Props = {
   isHome: boolean;
 };
 
-const UserCard = ({ user, isHome }: Props) => {
+const UserCard = ({ user }: Props) => {
   const rendered = React.useRef(false);
   const [rank, setRank] = React.useState(0);
 
@@ -42,7 +42,7 @@ const UserCard = ({ user, isHome }: Props) => {
     <div className="grid">
       <div
         className="flex bg-[#030007] bg-opacity-40 px-4 py-4 rounded-2xl"
-        id={user.profilenft && isHome ? "member-container-home" : ""}
+        id={user.profilenft && "member-container-home"}
       >
         <div className="self-center max-w-[30%] mr-8">
           <div className="relative w-[8vmax] h-[8vmax]">
@@ -58,7 +58,10 @@ const UserCard = ({ user, isHome }: Props) => {
         <div className="w-full flex flex-col justify-start">
           <div>
             <p className="text-white text-lg">
-              {user.profile.name} • <span>Guest</span>
+              {user.profile.name} •{" "}
+              <span className="text-gray-500">
+                {user.profilenft ? "Member" : "Guest"}
+              </span>
             </p>
             <p className="text-base">@{user.profile.username}</p>
           </div>

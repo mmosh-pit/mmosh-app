@@ -185,7 +185,7 @@ const Header = () => {
               <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
                 <div className="bg-[#3C00FF] rounded-full px-8 py-4">
                   <p className="text-white font-bold text-base">
-                    Total Accounts
+                    Total Members
                   </p>
                 </div>
                 <p className="text-white font-bold text-base ml-4 px-8">
@@ -195,7 +195,9 @@ const Header = () => {
 
               <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
                 <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">Total Points</p>
+                  <p className="text-white font-bold text-base">
+                    Total Royalties
+                  </p>
                 </div>
                 <p className="text-white font-bold text-base ml-4 px-8">
                   {formatNumber(totalRoyalties)}

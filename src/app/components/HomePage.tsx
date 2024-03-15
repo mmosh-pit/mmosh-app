@@ -4,10 +4,8 @@ import { useAtom } from "jotai";
 import { User } from "../models/user";
 import axios from "axios";
 import {
-  accounts,
   data,
   isDrawerOpen,
-  points,
   searchBarText,
   sortDirection,
   sortOption,
@@ -22,8 +20,6 @@ import UserTypeOptionsTabs from "./Home/UserTypeOptionsTabs";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
-  const [_, setTotalAccounts] = useAtom(accounts);
-  const [__, setTotalPoints] = useAtom(points);
   const [searchText] = useAtom(searchBarText);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [selectedSortOption] = useAtom(sortOption);
@@ -46,30 +42,34 @@ const HomePage = () => {
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
-    setTotalPoints(result.data.totalPoints);
-    setTotalAccounts(result.data.totalAccounts);
   }, []);
 
   const filterUsers = React.useCallback(async () => {
     fetching.current = true;
     const result = await axios.get(
-      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
+      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&userType=${selectedFilter}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
     );
 
     setCurrentPage(0);
     fetching.current = false;
+    lastPageTriggered.current = false;
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
-  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
+  }, [
+    selectedFilter,
+    selectedSortOption,
+    selectedSortDirection,
+    currentPage,
+    searchText,
+  ]);
 
   const paginateUsers = React.useCallback(async () => {
-    console.log("Paginating with page: ", currentPage);
     fetching.current = true;
     const result = await axios.get(
       `/api/get-all-users?sort=${selectedSortOption}&skip=${
         currentPage * 10
-      }&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
+      }&userType=${selectedFilter}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
     );
 
     fetching.current = false;
@@ -80,7 +80,13 @@ const HomePage = () => {
 
     setUsers((prev) => [...prev, ...result.data.users]);
     allUsers.current = [...allUsers.current, ...result.data.users];
-  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
+  }, [
+    selectedFilter,
+    selectedSortOption,
+    selectedSortDirection,
+    currentPage,
+    searchText,
+  ]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -94,7 +100,7 @@ const HomePage = () => {
 
   React.useEffect(() => {
     filterUsers();
-  }, [selectedFilter, selectedSortOption, selectedSortDirection]);
+  }, [selectedFilter, selectedSortOption, selectedSortDirection, searchText]);
 
   React.useEffect(() => {
     if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
@@ -106,26 +112,6 @@ const HomePage = () => {
     if (!currentUser) return;
     getUsers();
   }, [currentUser]);
-
-  React.useEffect(() => {
-    if (searchText === "") {
-      setUsers(allUsers.current);
-      return;
-    }
-
-    const filteredUsers = allUsers.current.filter((value) => {
-      if (
-        value.profile.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        value.profile.username?.toLowerCase().includes(searchText.toLowerCase())
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-
-    setUsers(filteredUsers);
-  }, [searchText]);
 
   return (
     <div

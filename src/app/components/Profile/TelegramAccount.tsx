@@ -152,7 +152,12 @@ const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {
           <p className="text-base text-white">
             {userData?.telegram?.firstName}
           </p>
-          <p className="text-base">@{userData?.telegram?.username}</p>
+          <a
+            className="cursor-pointer"
+            href={`https://t.me/${userData.telegram.username}`}
+          >
+            <p className="text-base">@{userData?.telegram?.username}</p>
+          </a>
         </>
       )}
     </div>

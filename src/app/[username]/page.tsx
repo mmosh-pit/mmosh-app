@@ -121,7 +121,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
         <div
           className={`w-full flex flex-col items-center lg:items-start lg:flex-row lg:justify-around mt-16`}
         >
-          <div className="flex flex-col lg:w-[50%] md:w-[90%] w-[100%]">
+          <div className="flex flex-col lg:w-[80%] md:w-[90%] w-[100%]">
             <div className="w-full flex flex-col">
               <p className="text-lg text-white font-bold font-goudy">
                 {isMyProfile

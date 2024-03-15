@@ -77,29 +77,33 @@ const UserCard = ({ user }: Props) => {
           </div>
 
           <div>
-            <div className="flex items-center">
-              <TelegramDarkIcon />
+            {user.telegram.username && (
+              <div className="flex items-center">
+                <TelegramDarkIcon />
 
-              <a
-                target="_blank"
-                href={`https://t.me/${user.telegram.username}`}
-                className="ml-4 underline text-[#9493B2]"
-              >
-                https://t.me/{user.telegram.username}
-              </a>
-            </div>
+                <a
+                  target="_blank"
+                  href={`https://t.me/${user.telegram.username}`}
+                  className="ml-4 underline text-[#9493B2]"
+                >
+                  https://t.me/{user.telegram.username}
+                </a>
+              </div>
+            )}
 
-            <div className="flex items-center mt-2">
-              <TwitterDarkIcon />
+            {user.twitter.username && (
+              <div className="flex items-center mt-2">
+                <TwitterDarkIcon />
 
-              <a
-                target="_blank"
-                href={`https://twitter.com/${user.twitter.username}`}
-                className="ml-4 underline text-[#9493B2]"
-              >
-                https://twitter.com/{user.twitter.username}
-              </a>
-            </div>
+                <a
+                  target="_blank"
+                  href={`https://twitter.com/${user.twitter.username}`}
+                  className="ml-4 underline text-[#9493B2]"
+                >
+                  https://twitter.com/{user.twitter.username}
+                </a>
+              </div>
+            )}
           </div>
 
           <div className="w-[100%] flex justify-between bg-[#434E59] bg-opacity-50 px-[1vmax] py-2 rounded-3xl mt-4">

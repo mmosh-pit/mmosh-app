@@ -53,7 +53,7 @@ const HomePage = () => {
   const filterUsers = React.useCallback(async () => {
     fetching.current = true;
     const result = await axios.get(
-      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
+      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&userType=${selectedFilter}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
     );
 
     setCurrentPage(0);
@@ -61,10 +61,15 @@ const HomePage = () => {
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
-  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
+  }, [
+    selectedFilter,
+    selectedSortOption,
+    selectedSortDirection,
+    currentPage,
+    searchText,
+  ]);
 
   const paginateUsers = React.useCallback(async () => {
-    console.log("Paginating with page: ", currentPage);
     fetching.current = true;
     const result = await axios.get(
       `/api/get-all-users?sort=${selectedSortOption}&skip=${
@@ -94,7 +99,7 @@ const HomePage = () => {
 
   React.useEffect(() => {
     filterUsers();
-  }, [selectedFilter, selectedSortOption, selectedSortDirection]);
+  }, [selectedFilter, selectedSortOption, selectedSortDirection, searchText]);
 
   React.useEffect(() => {
     if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
@@ -106,26 +111,6 @@ const HomePage = () => {
     if (!currentUser) return;
     getUsers();
   }, [currentUser]);
-
-  React.useEffect(() => {
-    if (searchText === "") {
-      setUsers(allUsers.current);
-      return;
-    }
-
-    const filteredUsers = allUsers.current.filter((value) => {
-      if (
-        value.profile.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        value.profile.username?.toLowerCase().includes(searchText.toLowerCase())
-      ) {
-        return true;
-      }
-
-      return false;
-    });
-
-    setUsers(filteredUsers);
-  }, [searchText]);
 
   return (
     <div

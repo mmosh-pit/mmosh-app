@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
   const sortValue = searchParams.get("sort") as string;
   const sortDirection = searchParams.get("sortDir") as string;
   const memberTypes = searchParams.get("userType") as string;
+  const searchText = searchParams.get("searchText") as string;
 
   if (!skip || !sortValue || !memberTypes) {
     return NextResponse.json("Invalid Payload", { status: 400 });
@@ -28,12 +29,35 @@ export async function GET(req: NextRequest) {
     };
   }
 
+  if (searchText) {
+    searchText.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+
+    const searchRegex = new RegExp(`\\b${searchText}\\b`, "i");
+
+    filter["$or"] = [
+      {
+        "profile.username": searchRegex,
+      },
+      {
+        "profile.name": searchRegex,
+      },
+    ];
+  }
+
   const sortDirectionValue = sortDirection === "asc" ? 1 : -1;
 
   const data = await db
     .collection("mmosh-app-profiles")
     .find(filter, {
-      sort: { [sortValue]: sortDirectionValue },
+      projection: {
+        wallet: 1,
+        profile: 1,
+        telegram: 1,
+        twitter: 1,
+        royalty: { $ifNull: ["$royalty", 0] },
+        profilenft: { $ifNull: ["$profilenft", null] },
+      },
+      sort: { [sortValue]: sortDirectionValue, profilenft: -1 },
       skip: Number(skip),
       limit: 10,
     })

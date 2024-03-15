@@ -123,7 +123,12 @@ const TwitterAccount = ({ userData, setUserData, isMyProfile }: Props) => {
       {userData?.twitter?.name ? (
         <>
           <p className="text-base text-white">{userData?.twitter?.name}</p>
-          <p className="text-base">@{userData?.twitter?.username}</p>
+          <a
+            className="cursor-pointer"
+            href={`https://twitter.com/${userData?.twitter?.username}`}
+          >
+            <p className="text-base">@{userData?.twitter?.username}</p>
+          </a>
         </>
       ) : isMyProfile ? (
         <p className="text-sm leading-6 text-white">

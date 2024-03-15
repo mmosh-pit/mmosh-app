@@ -32,17 +32,17 @@ export async function GET(req: NextRequest) {
   if (searchText) {
     searchText.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 
-    const searchRegex = new RegExp(`\\b${searchText}\\b`, "i");
-
     filter["$or"] = [
       {
-        "profile.username": searchRegex,
+        "profile.username": { $regex: searchText, $options: "i" },
       },
       {
-        "profile.name": searchRegex,
+        "profile.name": { $regex: searchText, $options: "i" },
       },
     ];
   }
+
+  console.log("Filter: ", filter["$or"]);
 
   const sortDirectionValue = sortDirection === "asc" ? 1 : -1;
 

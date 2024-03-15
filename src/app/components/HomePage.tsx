@@ -4,10 +4,8 @@ import { useAtom } from "jotai";
 import { User } from "../models/user";
 import axios from "axios";
 import {
-  accounts,
   data,
   isDrawerOpen,
-  points,
   searchBarText,
   sortDirection,
   sortOption,
@@ -22,8 +20,6 @@ import UserTypeOptionsTabs from "./Home/UserTypeOptionsTabs";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
-  const [_, setTotalAccounts] = useAtom(accounts);
-  const [__, setTotalPoints] = useAtom(points);
   const [searchText] = useAtom(searchBarText);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [selectedSortOption] = useAtom(sortOption);
@@ -46,8 +42,6 @@ const HomePage = () => {
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
-    setTotalPoints(result.data.totalPoints);
-    setTotalAccounts(result.data.totalAccounts);
   }, []);
 
   const filterUsers = React.useCallback(async () => {

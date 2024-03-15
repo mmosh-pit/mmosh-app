@@ -19,6 +19,7 @@ import {
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
+import axios from "axios";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -42,9 +43,9 @@ const Header = () => {
   const wallet = useAnchorWallet();
   const [userStatus] = useAtom(status);
   const [currentUser] = useAtom(data);
-  const [totalAccounts] = useAtom(accounts);
+  const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const [totalPoints] = useAtom(points);
+  const [totalRoyalties, setTotalRoyalties] = useAtom(points);
   const [_, setSearchText] = useAtom(searchBarText);
   const [localText, setLocalText] = React.useState("");
   const isMobileScreen = useCheckMobileScreen();
@@ -68,6 +69,19 @@ const Header = () => {
     const text = localText.replace("@", "");
     setSearchText(text);
   }, [localText]);
+
+  const getTotals = React.useCallback(async () => {
+    const res = await axios.get("/api/get-header-analytics");
+
+    setTotalAccounts(res.data.members);
+    setTotalRoyalties(res.data.royalties);
+  }, []);
+
+  React.useEffect(() => {
+    if (userStatus === UserStatus.fullAccount && pathname === "/") {
+      getTotals();
+    }
+  }, [userStatus]);
 
   return (
     <div className="flex flex-col">
@@ -184,7 +198,7 @@ const Header = () => {
                   <p className="text-white font-bold text-base">Total Points</p>
                 </div>
                 <p className="text-white font-bold text-base ml-4 px-8">
-                  {formatNumber(totalPoints)}
+                  {formatNumber(totalRoyalties)}
                 </p>
               </div>
             </div>

@@ -68,7 +68,7 @@ const HomePage = () => {
     const result = await axios.get(
       `/api/get-all-users?sort=${selectedSortOption}&skip=${
         currentPage * 10
-      }&userType=${selectedFilter}&sortDir=${selectedSortDirection}`,
+      }&userType=${selectedFilter}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
     );
 
     fetching.current = false;
@@ -79,7 +79,13 @@ const HomePage = () => {
 
     setUsers((prev) => [...prev, ...result.data.users]);
     allUsers.current = [...allUsers.current, ...result.data.users];
-  }, [selectedFilter, selectedSortOption, selectedSortDirection, currentPage]);
+  }, [
+    selectedFilter,
+    selectedSortOption,
+    selectedSortDirection,
+    currentPage,
+    searchText,
+  ]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;

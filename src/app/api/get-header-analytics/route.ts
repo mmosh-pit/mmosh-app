@@ -16,8 +16,6 @@ export async function GET(req: NextRequest) {
     )
     .toArray();
 
-  console.log("Got data here: ", data);
-
   const totalValues = {
     royalties: 0,
     members: data.length,

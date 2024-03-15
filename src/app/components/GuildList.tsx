@@ -43,6 +43,7 @@ const GuildList = ({
       `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}`,
     );
     fetching.current = false;
+    lastPageTriggered.current = false;
 
     setCurrentPage(0);
 

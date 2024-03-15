@@ -52,6 +52,7 @@ const HomePage = () => {
 
     setCurrentPage(0);
     fetching.current = false;
+    lastPageTriggered.current = false;
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;

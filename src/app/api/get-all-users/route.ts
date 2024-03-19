@@ -42,8 +42,6 @@ export async function GET(req: NextRequest) {
     ];
   }
 
-  console.log("Filter: ", filter["$or"]);
-
   const sortDirectionValue = sortDirection === "asc" ? 1 : -1;
 
   const data = await db

@@ -5,7 +5,7 @@ import axios from "axios";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { useAtom } from "jotai";
 
-import { UserStatus, data, status } from "./store";
+import { UserStatus, data, settings, status } from "./store";
 import NoConnectedWallet from "./components/NoConnectedWallet";
 import ConnectedWOTelegram from "./components/ConnectedWOTelegram";
 import WithTelegramNoAccount from "./components/WithTelegramNoAccount";
@@ -14,11 +14,13 @@ import CreateProfile from "./components/CreateProfile";
 import HomePage from "./components/HomePage";
 import { init } from "./lib/firebase";
 import { fetchUserData } from "./lib/fetchUserData";
+import Settings from "./components/Settings";
 
 export default function Home() {
   const rendered = React.useRef(false);
   const [userStatus, setUserStatus] = useAtom(status);
   const [_, setUserData] = useAtom(data);
+  const [isOnSettings] = useAtom(settings);
   const wallet = useAnchorWallet();
 
   const getUserData = React.useCallback(async () => {
@@ -60,6 +62,10 @@ export default function Home() {
   const renderComponent = () => {
     if (!wallet?.publicKey) {
       return <NoConnectedWallet />;
+    }
+
+    if (isOnSettings) {
+      return <Settings />;
     }
 
     if (userStatus === UserStatus.noTelegram) {

@@ -8,7 +8,7 @@ import DesktopNavbar from "../components/Profile/DesktopNavbar";
 import Image from "next/image";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
-import { UserStatus, isDrawerOpen, status } from "../store";
+import { UserStatus, isDrawerOpen, settings, status } from "../store";
 import { User } from "../models/user";
 import TelegramAccount from "../components/Profile/TelegramAccount";
 import TwitterAccount from "../components/Profile/TwitterAccount";
@@ -18,11 +18,13 @@ import Banner from "../components/Banner";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import BotBanner from "../components/BotBanner";
 import GuildList from "../components/GuildList";
+import Settings from "../components/Settings";
 
 const Profile = ({ params }: { params: { username: string } }) => {
   const isMobile = useCheckMobileScreen();
   const rendered = React.useRef(false);
   const wallet = useAnchorWallet();
+  const [isOnSettings] = useAtom(settings);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
@@ -109,6 +111,10 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
   if (!userData) return <></>;
 
+  if (isOnSettings) {
+    return <Settings />;
+  }
+
   return (
     <div className="w-full h-screen flex flex-col">
       {wallet?.publicKey && <BotBanner />}
@@ -187,7 +193,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                           </div>
 
                           <sup
-                            className="absolute top-[-2px] right-[-2px] cursor-pointer"
+                            className="absolute top-[-8px] right-[-8px] cursor-pointer"
                             onClick={() => copyToClipboard(lhcWallet, 1)}
                           >
                             <CopyIcon />
@@ -221,7 +227,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
                           </a>
                         </div>
                         <sup
-                          className="absolute top-[-2px] right-[-2px] cursor-pointer"
+                          className="absolute top-[-8px] right-[-8px] cursor-pointer"
                           onClick={() => copyToClipboard(userData.wallet, 2)}
                         >
                           <CopyIcon />

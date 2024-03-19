@@ -14,6 +14,7 @@ import {
   isDrawerOpen,
   points,
   searchBarText,
+  settings,
   status,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
@@ -43,6 +44,7 @@ const Header = () => {
   const wallet = useAnchorWallet();
   const [userStatus] = useAtom(status);
   const [currentUser] = useAtom(data);
+  const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [totalRoyalties, setTotalRoyalties] = useAtom(points);
@@ -54,11 +56,18 @@ const Header = () => {
     let defaultClass =
       "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
-    if (userStatus === UserStatus.fullAccount && pathname !== "/") {
+    if (
+      (userStatus === UserStatus.fullAccount && pathname !== "/") ||
+      isOnSettings
+    ) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
     }
 
-    if (userStatus === UserStatus.fullAccount && pathname === "/") {
+    if (
+      userStatus === UserStatus.fullAccount &&
+      pathname === "/" &&
+      !isOnSettings
+    ) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
@@ -135,14 +144,18 @@ const Header = () => {
           )}
 
           <div className="flex justify-end items-center w-[33%]">
-            {userStatus === UserStatus.fullAccount && !isMobileScreen && (
-              <button className="relative bg-[#3A3488] bg-opacity-[0.54] px-6 py-3 rounded-xl mr-6">
-                <p className="text-base text-white font-bold settings-btn">
-                  Settings
-                </p>
-                <span className="settings-badge">Coming Soon</span>
-              </button>
-            )}
+            {userStatus === UserStatus.fullAccount &&
+              !isMobileScreen &&
+              currentUser?.telegram?.id && (
+                <button
+                  className="relative bg-[#03002B] px-6 py-3 rounded-xl mr-6"
+                  onClick={() => setIsOnSettings(true)}
+                >
+                  <p className="text-base text-white font-bold settings-btn">
+                    Settings
+                  </p>
+                </button>
+              )}
             {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
               <WalletMultiButton
                 startIcon={undefined}
@@ -178,68 +191,70 @@ const Header = () => {
         )}
       </div>
 
-      {userStatus === UserStatus.fullAccount && pathname === "/" && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12">
-          {!isMobileScreen && (
-            <div className="flex w-[33%]">
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Members
+      {userStatus === UserStatus.fullAccount &&
+        pathname === "/" &&
+        !isOnSettings && (
+          <div className="w-full flex justify-center lg:justify-between items-end mt-12">
+            {!isMobileScreen && (
+              <div className="flex w-[33%]">
+                <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
+                  <div className="bg-[#3C00FF] rounded-full px-8 py-4">
+                    <p className="text-white font-bold text-base">
+                      Total Members
+                    </p>
+                  </div>
+                  <p className="text-white font-bold text-base ml-4 px-8">
+                    {totalAccounts}
                   </p>
                 </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {totalAccounts}
-                </p>
-              </div>
 
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Royalties
+                <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
+                  <div className="bg-[#3C00FF] rounded-full px-8 py-4">
+                    <p className="text-white font-bold text-base">
+                      Total Royalties
+                    </p>
+                  </div>
+                  <p className="text-white font-bold text-base ml-4 px-8">
+                    {formatNumber(totalRoyalties)}
                   </p>
                 </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {formatNumber(totalRoyalties)}
-                </p>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="relative w-[16vmax] h-[16vmax]">
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              layout="fill"
-            />
-          </div>
-
-          {!isMobileScreen && (
-            <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-              <button
-                className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
-                onClick={executeSearch}
-              >
-                <SearchIcon />
-
-                <p className="text-white font-bold text-base ml-4">Search</p>
-              </button>
-
-              <input
-                placeholder="Type your search terms"
-                className="ml-4 w-full bg-transparent outline-none"
-                value={localText}
-                onChange={(e) => setLocalText(e.target.value)}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    executeSearch();
-                  }
-                }}
+            <div className="relative w-[16vmax] h-[16vmax]">
+              <Image
+                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
+                alt="mmosh"
+                layout="fill"
               />
             </div>
-          )}
-        </div>
-      )}
+
+            {!isMobileScreen && (
+              <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
+                <button
+                  className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
+                  onClick={executeSearch}
+                >
+                  <SearchIcon />
+
+                  <p className="text-white font-bold text-base ml-4">Search</p>
+                </button>
+
+                <input
+                  placeholder="Type your search terms"
+                  className="ml-4 w-full bg-transparent outline-none"
+                  value={localText}
+                  onChange={(e) => setLocalText(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      executeSearch();
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
     </div>
   );
 };

@@ -3,12 +3,13 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
-import { data, isDrawerOpen } from "@/app/store";
+import { data, isDrawerOpen, settings } from "@/app/store";
 
 const MobileDrawer = () => {
   const router = useRouter();
   const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
   const [currentUser] = useAtom(data);
+  const [isOnSettings, setIsOnSettings] = useAtom(settings);
 
   return (
     <div className="drawer">
@@ -119,9 +120,11 @@ const MobileDrawer = () => {
               </div>
             </div>
 
-            <div className="mt-8">
-              <p className="text-base text-white font-bold">Settings</p>
-            </div>
+            {currentUser?.telegram?.id && (
+              <div className="mt-8" onClick={() => setIsOnSettings(true)}>
+                <p className="text-base text-white font-bold">Settings</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

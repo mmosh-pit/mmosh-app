@@ -30,3 +30,5 @@ export const lineage = atom([
 ]);
 
 export const userType = atom("all");
+
+export const settings = atom(false);

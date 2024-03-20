@@ -317,3 +317,7 @@ a {
   -webkit-mask-composite: xor; /*5'*/
   mask-composite: exclude; /*5*/
 }
+
+.word-break-text {
+  word-break: break-all;
+}

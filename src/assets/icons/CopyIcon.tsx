@@ -3,8 +3,8 @@ type Props = React.SVGProps<SVGSVGElement>;
 const CopyIcon = (props: Props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="11"
-    height="15"
+    width="1vmax"
+    height="1.1vmax"
     viewBox="0 0 11 15"
     fill="none"
     {...props}

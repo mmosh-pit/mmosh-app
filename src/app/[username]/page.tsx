@@ -136,7 +136,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
               </p>
 
               <div
-                className="w-full flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[3vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4"
+                className="w-[90%] flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[3vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4"
                 id={userData?.profilenft && "member-container"}
               >
                 <div className="w-full grid" id="profile-info-image">

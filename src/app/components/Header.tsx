@@ -121,7 +121,10 @@ const Header = () => {
 
               <p
                 className="text-base text-white cursor-pointer"
-                onClick={() => router.push(`/${currentUser?.profile.username}`)}
+                onClick={() => {
+                  if (isOnSettings) return setIsOnSettings(false);
+                  router.push(`/${currentUser?.profile.username}`);
+                }}
               >
                 My Profile
               </p>

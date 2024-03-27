@@ -29,6 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const username = params.username;
 
+  console.log("Username: ", username);
+
   if (!username) {
     return {
       title: "MMOSH App Home",
@@ -43,6 +45,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const user = await getUserDataForMetadata(username);
+
+  if (!user) {
+    return {
+      title: "MMOSH App Home",
+      description:
+        "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
+      openGraph: {
+        images: [
+          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
+        ],
+      },
+    };
+  }
 
   return {
     title: `MMOSH App ${user?.profile?.username} Hideout`,

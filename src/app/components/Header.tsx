@@ -148,7 +148,7 @@ const Header = () => {
 
           <div className="flex justify-end items-center w-[33%]">
             {currentUser?.profile?.image && (
-              <div className="relative w-[2vmax] h-[2vmax]">
+              <div className="relative w-[2.5vmax] h-[2.5vmax] mr-6">
                 <Image
                   src={currentUser.profile.image}
                   alt="Profile Image"
@@ -158,18 +158,6 @@ const Header = () => {
               </div>
             )}
 
-            {userStatus === UserStatus.fullAccount &&
-              !isMobileScreen &&
-              currentUser?.telegram?.id && (
-                <button
-                  className="relative bg-[#03002B] px-6 py-3 rounded-xl mr-6"
-                  onClick={() => setIsOnSettings(true)}
-                >
-                  <p className="text-base text-white font-bold settings-btn">
-                    Settings
-                  </p>
-                </button>
-              )}
             {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
               <WalletMultiButton
                 startIcon={undefined}
@@ -187,6 +175,19 @@ const Header = () => {
                 </p>
               </WalletMultiButton>
             )}
+
+            {userStatus === UserStatus.fullAccount &&
+              !isMobileScreen &&
+              currentUser?.telegram?.id && (
+                <button
+                  className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-6"
+                  onClick={() => setIsOnSettings(true)}
+                >
+                  <p className="text-base text-white font-bold settings-btn">
+                    Settings
+                  </p>
+                </button>
+              )}
           </div>
         </div>
 

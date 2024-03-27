@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import localFont from "next/font/local";
 import { Inter, Poppins } from "next/font/google";
 import ConfigHOC from "./components/ConfigHOC";
@@ -21,8 +21,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "MMOSH",
-  description: "Welcome to the MMOSH Airdrop App",
+  title: "MMOSH App Home",
+  description:
+    "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
+  openGraph: {
+    images: ["https://storage.googleapis.com/mmosh-assets/metadata_image.png"],
+  },
 };
 
 export default function RootLayout({

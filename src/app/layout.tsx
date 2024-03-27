@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import localFont from "next/font/local";
 import { Inter, Poppins } from "next/font/google";
 import ConfigHOC from "./components/ConfigHOC";
 import Header from "./components/Header";
 import "./globals.css";
+import { getUserDataForMetadata } from "./lib/getUserDataForMetadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,10 +21,45 @@ const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-export const metadata: Metadata = {
-  title: "MMOSH",
-  description: "Welcome to the MMOSH Airdrop App",
+// export const metadata: Metadata = {
+//   title: "MMOSH",
+//   description: "Welcome to the MMOSH App",
+// };
+
+type Props = {
+  params: { username: string };
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // read route params
+  const username = params.username;
+
+  if (!username) {
+    return {
+      title: "MMOSH App Home",
+      description:
+        "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
+      openGraph: {
+        images: [
+          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
+        ],
+      },
+    };
+  }
+
+  const user = await getUserDataForMetadata(username);
+
+  return {
+    title: `MMOSH App ${user?.profile?.username} Hideout`,
+    description: user?.profile?.bio,
+    openGraph: {
+      images: [
+        user?.profile?.image ||
+          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
+      ],
+    },
+  };
+}
 
 export default function RootLayout({
   children,

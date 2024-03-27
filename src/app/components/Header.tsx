@@ -147,6 +147,17 @@ const Header = () => {
           )}
 
           <div className="flex justify-end items-center w-[33%]">
+            {currentUser?.profile?.image && (
+              <div className="relative w-[2vmax] h-[2vmax]">
+                <Image
+                  src={currentUser.profile.image}
+                  alt="Profile Image"
+                  className="rounded-full"
+                  layout="fill"
+                />
+              </div>
+            )}
+
             {userStatus === UserStatus.fullAccount &&
               !isMobileScreen &&
               currentUser?.telegram?.id && (

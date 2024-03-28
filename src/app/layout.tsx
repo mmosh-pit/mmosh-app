@@ -1,4 +1,4 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Inter, Poppins } from "next/font/google";
 import ConfigHOC from "./components/ConfigHOC";
@@ -41,7 +41,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ConfigHOC>
-          <Header />
+          <Header isHome />
           <div className="h-full">{children}</div>
         </ConfigHOC>
       </body>

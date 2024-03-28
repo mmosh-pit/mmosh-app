@@ -1,4 +1,4 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Inter, Poppins } from "next/font/google";
 import ConfigHOC from "../components/ConfigHOC";
@@ -28,8 +28,6 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const username = params.username;
-
-  console.log("Username: ", username);
 
   if (!username) {
     return {
@@ -83,6 +81,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ConfigHOC>
+          <Header isHome={false} />
           <div className="h-full">{children}</div>
         </ConfigHOC>
       </body>

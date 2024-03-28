@@ -38,7 +38,7 @@ const formatNumber = (value: number) => {
   return `${formattedNumber}${units[exponent]}`;
 };
 
-const Header = () => {
+const Header = ({ isHome }: { isHome: boolean }) => {
   const pathname = usePathname();
   const router = useRouter();
   const wallet = useAnchorWallet();
@@ -91,6 +91,8 @@ const Header = () => {
       getTotals();
     }
   }, [userStatus]);
+
+  if (isHome && pathname !== "/") return <></>;
 
   return (
     <div className="flex flex-col">

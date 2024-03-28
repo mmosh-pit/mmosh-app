@@ -83,7 +83,6 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ConfigHOC>
-          <Header />
           <div className="h-full">{children}</div>
         </ConfigHOC>
       </body>

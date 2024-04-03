@@ -53,7 +53,7 @@ const Settings = () => {
           <p className="text-base text-white">Private Key</p>
         </div>
 
-        <div className="w-[30%] min-h-[8vmax] bg-[#030007] bg-opacity-[0.33] rounded-md p-8">
+        <div className="lg:w-[30%] md:w-[45%] sm:w-[80%] w-[90%] min-h-[8vmax] bg-[#030007] bg-opacity-[0.33] rounded-md p-8">
           <div className="flex flex-col bg-[#02001A] rounded-md p-8">
             <div className="ml-4 mb-4">
               <p className="text-base text-white font-goudy">

@@ -13,7 +13,6 @@ import {
 } from "../store";
 import Banner from "./Banner";
 import { useWallet } from "@solana/wallet-adapter-react";
-import BotBanner from "./BotBanner";
 import UserCard from "./UserCard";
 import UserSortTabs from "./UserSortTabs";
 import UserTypeOptionsTabs from "./Home/UserTypeOptionsTabs";
@@ -121,7 +120,6 @@ const HomePage = () => {
       ref={containerRef}
       onScroll={handleScroll}
     >
-      {wallet?.publicKey && <BotBanner />}
       {wallet.publicKey && <Banner fromProfile={false} />}
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">

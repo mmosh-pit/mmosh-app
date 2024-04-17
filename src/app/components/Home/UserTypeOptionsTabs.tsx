@@ -21,6 +21,7 @@ const UserTypeOptionsTabs = () => {
             type.value === selectedFilter && "bg-[#0A083C] rounded-2xl"
           } cursor-pointer`}
           onClick={() => setSelectedFilter(type.value)}
+          key={type.value}
         >
           <p className="text-base text-white">{type.label}</p>
         </div>

@@ -16,7 +16,6 @@ import { init } from "../lib/firebase";
 import CopyIcon from "@/assets/icons/CopyIcon";
 import Banner from "../components/Banner";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
-import BotBanner from "../components/BotBanner";
 import GuildList from "../components/GuildList";
 import Settings from "../components/Settings";
 
@@ -117,8 +116,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      {wallet?.publicKey && <BotBanner />}
-      {wallet?.publicKey && <Banner fromProfile />}
+      {wallet?.publicKey && (
+        <Banner fromProfile userTelegramId={userData?.telegram?.id} />
+      )}
       <div
         className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >

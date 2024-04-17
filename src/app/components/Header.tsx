@@ -11,6 +11,7 @@ import {
   UserStatus,
   accounts,
   data,
+  incomingWallet,
   isDrawerOpen,
   points,
   searchBarText,
@@ -46,6 +47,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
   const [currentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
+  const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [totalRoyalties, setTotalRoyalties] = useAtom(points);
   const [_, setSearchText] = useAtom(searchBarText);
@@ -91,6 +93,18 @@ const Header = ({ isHome }: { isHome: boolean }) => {
       getTotals();
     }
   }, [userStatus]);
+
+  React.useEffect(() => {
+    if (wallet?.publicKey && incomingWalletToken !== "") {
+      (async () => {
+        await axios.post("/api/link-social-wallet", {
+          token: incomingWalletToken,
+          wallet: wallet.publicKey.toString(),
+        });
+        setIncomingWalletToken("");
+      })();
+    }
+  }, [wallet, incomingWalletToken]);
 
   if (isHome && pathname !== "/") return <></>;
 

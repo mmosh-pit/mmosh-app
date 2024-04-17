@@ -3,22 +3,20 @@
 import * as React from "react";
 import axios from "axios";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
 
-import { UserStatus, data, settings, status } from "./store";
-import NoConnectedWallet from "./components/NoConnectedWallet";
-import ConnectedWOTelegram from "./components/ConnectedWOTelegram";
-import WithTelegramNoAccount from "./components/WithTelegramNoAccount";
-import ConnectedWOTwitter from "./components/ConnectedWOTwitter";
-import CreateProfile from "./components/CreateProfile";
+import { UserStatus, data, incomingWallet, settings, status } from "./store";
 import HomePage from "./components/HomePage";
 import { init } from "./lib/firebase";
 import { fetchUserData } from "./lib/fetchUserData";
 import Settings from "./components/Settings";
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const rendered = React.useRef(false);
-  const [userStatus, setUserStatus] = useAtom(status);
+  const [___, setIncomingWalletToken] = useAtom(incomingWallet);
+  const [__, setUserStatus] = useAtom(status);
   const [_, setUserData] = useAtom(data);
   const [isOnSettings] = useAtom(settings);
   const wallet = useAnchorWallet();
@@ -28,17 +26,10 @@ export default function Home() {
 
     setUserData(result.data);
 
-    const hasTwitter = !!result.data?.twitter;
     const hasTelegram = !!result.data?.telegram;
-    const hasProfile = !!result.data?.profile;
 
     if (!hasTelegram) {
-      setUserStatus(UserStatus.noTelegram);
-      return;
-    }
-
-    if (!hasTwitter) {
-      setUserStatus(UserStatus.noTwitter);
+      setUserStatus(UserStatus.noAccount);
       return;
     }
 
@@ -51,51 +42,19 @@ export default function Home() {
       return;
     }
 
-    if (!hasProfile) {
-      setUserStatus(UserStatus.noProfile);
-      return;
-    }
-
     setUserStatus(UserStatus.fullAccount);
   }, [wallet]);
 
   const renderComponent = () => {
-    if (!wallet?.publicKey) {
-      return <NoConnectedWallet />;
-    }
-
     if (isOnSettings) {
       return <Settings />;
-    }
-
-    if (userStatus === UserStatus.noTelegram) {
-      return <ConnectedWOTelegram />;
-    }
-
-    if (userStatus === UserStatus.noAccount) {
-      return <WithTelegramNoAccount />;
-    }
-
-    if (userStatus === UserStatus.noTwitter) {
-      return <ConnectedWOTwitter />;
-    }
-
-    if (userStatus === UserStatus.noProfile) {
-      return <CreateProfile />;
     }
 
     return <HomePage />;
   };
 
-  const saveWalletIfNotExists = React.useCallback(async () => {
-    await axios.post("/api/save-wallet", {
-      wallet: wallet?.publicKey.toString(),
-    });
-  }, [wallet]);
-
   React.useEffect(() => {
     if (wallet?.publicKey) {
-      saveWalletIfNotExists();
       getUserData();
     }
   }, [wallet]);
@@ -103,6 +62,11 @@ export default function Home() {
   React.useEffect(() => {
     if (!rendered.current) {
       init();
+      const param = searchParams.get("socialwallet");
+
+      if (param) {
+        setIncomingWalletToken(param);
+      }
       rendered.current = true;
     }
   }, []);

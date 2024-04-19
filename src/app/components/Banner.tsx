@@ -10,6 +10,7 @@ import { web3Consts } from "../lib/anchor/web3Consts";
 import { UserStatus, data, status } from "../store";
 import axios from "axios";
 import TelegramBigIcon from "@/assets/icons/TelegramBigIcon";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const Banner = ({
   fromProfile,
@@ -21,7 +22,6 @@ const Banner = ({
   const [userStatus] = useAtom(status);
   const [currentUser, setCurrentUser] = useAtom(data);
 
-  const [hasInitialized, setHasInitialized] = React.useState(false);
   const [userData, setUserData] = React.useState({
     hasProfile: false,
     hasInvitation: false,
@@ -83,8 +83,6 @@ const Banner = ({
 
   const fetchUserInfo = React.useCallback(async () => {
     await getProfileInfo();
-
-    setHasInitialized(true);
   }, [wallet?.publicKey]);
 
   React.useEffect(() => {
@@ -93,11 +91,55 @@ const Banner = ({
     }
   }, [wallet]);
 
-  console.log("User status: ", userStatus);
-
   const renderComponent = React.useCallback(() => {
-    //TODO Banner when wallet not connected
-    //
+    if (!wallet?.publicKey) {
+      return (
+        <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
+          <div className="flex flex-col justify-around items-center max-w-[75%]">
+            <div className="flex flex-col items-center mb-8">
+              <p className="text-2xl font-bold text-white font-goudy text-center">
+                Connect to Solana
+              </p>
+              <p className="text-base text-white text-center mt-4">
+                Welcome to the MMOSH! An epic adventure beyond time, space and
+                the death-grip of global civilization.
+              </p>
+              <p className="text-base text-white text-center mt-4">
+                Connect your Solana wallet.
+              </p>
+            </div>
+
+            <a href="https://forge.mmosh.app">
+              <WalletMultiButton
+                startIcon={undefined}
+                style={{
+                  position: "relative",
+                  background: "#CD068E",
+                  padding: "0 2em",
+                  borderRadius: 15,
+                }}
+              >
+                <p className="text-base text-white">Connect Wallet</p>
+              </WalletMultiButton>
+            </a>
+          </div>
+
+          <div
+            className="w-full flex justify-center items-center py-4"
+            id="banner-image-container"
+          >
+            <div className="relative w-[8vmax] h-[8vmax] rounded-full">
+              <Image
+                src="https://storage.googleapis.com/mmosh-assets/solana.png"
+                alt="invitation"
+                layout="fill"
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (userStatus === UserStatus.noAccount) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
@@ -108,7 +150,7 @@ const Banner = ({
             </p>
 
             <a
-              href={`https://t.me/MMOSHBot?start=${userTelegramId || 1294956737}`}
+              href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
             >
               <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
                 <p className="text-base text-white">Activate Bot</p>
@@ -226,9 +268,7 @@ const Banner = ({
         </div>
       </div>
     );
-  }, [currentUser, userData, userStatus]);
-
-  if (!hasInitialized) return <></>;
+  }, [currentUser, userData, userStatus, wallet?.publicKey]);
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

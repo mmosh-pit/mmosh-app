@@ -109,19 +109,17 @@ const Banner = ({
               </p>
             </div>
 
-            <a href="https://forge.mmosh.app">
-              <WalletMultiButton
-                startIcon={undefined}
-                style={{
-                  position: "relative",
-                  background: "#CD068E",
-                  padding: "0 2em",
-                  borderRadius: 15,
-                }}
-              >
-                <p className="text-base text-white">Connect Wallet</p>
-              </WalletMultiButton>
-            </a>
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                position: "relative",
+                background: "#CD068E",
+                padding: "0 2em",
+                borderRadius: 15,
+              }}
+            >
+              <p className="text-base text-white">Connect Wallet</p>
+            </WalletMultiButton>
           </div>
 
           <div

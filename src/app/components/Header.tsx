@@ -207,19 +207,17 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           </div>
         </div>
 
-        {userStatus !== UserStatus.fullAccount && (
-          <div className="w-full flex flex-col justify-center items-center mb-4">
-            <div
-              className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
-            >
-              <Image
-                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-                alt="mmosh"
-                layout="fill"
-              />
-            </div>
+        <div className="w-full flex flex-col justify-center items-center mb-4">
+          <div
+            className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
+          >
+            <Image
+              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
+              alt="mmosh"
+              layout="fill"
+            />
           </div>
-        )}
+        </div>
       </div>
 
       {pathname === "/" && !isOnSettings && (
@@ -249,14 +247,6 @@ const Header = ({ isHome }: { isHome: boolean }) => {
               </div>
             </div>
           )}
-
-          <div className="relative w-[16vmax] h-[16vmax]">
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              layout="fill"
-            />
-          </div>
 
           {!isMobileScreen && (
             <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">

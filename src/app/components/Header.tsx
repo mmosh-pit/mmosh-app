@@ -40,6 +40,7 @@ const formatNumber = (value: number) => {
 };
 
 const Header = ({ isHome }: { isHome: boolean }) => {
+  const calledActivatedEndpoint = React.useRef(false);
   const pathname = usePathname();
   const router = useRouter();
   const wallet = useAnchorWallet();
@@ -56,7 +57,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8 ";
+      "w-full flex flex-col justify-center items-center py-6 px-8";
 
     if (
       (userStatus === UserStatus.fullAccount && pathname !== "/") ||
@@ -95,7 +96,12 @@ const Header = ({ isHome }: { isHome: boolean }) => {
   }, [userStatus]);
 
   React.useEffect(() => {
-    if (wallet?.publicKey && incomingWalletToken !== "") {
+    if (
+      wallet?.publicKey &&
+      incomingWalletToken !== "" &&
+      !calledActivatedEndpoint.current
+    ) {
+      calledActivatedEndpoint.current = true;
       (async () => {
         await axios.post("/api/link-social-wallet", {
           token: incomingWalletToken,
@@ -174,23 +180,21 @@ const Header = ({ isHome }: { isHome: boolean }) => {
               </div>
             )}
 
-            {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
-              <WalletMultiButton
-                startIcon={undefined}
-                style={{
-                  background:
-                    "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                  padding: "0 2em",
-                  borderRadius: 15,
-                }}
-              >
-                <p className="text-lg text-white">
-                  {wallet?.publicKey
-                    ? walletAddressShortener(wallet.publicKey.toString())
-                    : "Connect Wallet"}
-                </p>
-              </WalletMultiButton>
-            )}
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                background:
+                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
+                padding: "0 2em",
+                borderRadius: 15,
+              }}
+            >
+              <p className="text-lg text-white">
+                {wallet?.publicKey
+                  ? walletAddressShortener(wallet.publicKey.toString())
+                  : "Connect Wallet"}
+              </p>
+            </WalletMultiButton>
 
             {userStatus === UserStatus.fullAccount &&
               !isMobileScreen &&

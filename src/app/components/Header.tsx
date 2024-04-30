@@ -127,7 +127,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           )}
 
           {!isMobileScreen && (
-            <div className="flex w-[25%] justify-between items-center">
+            <div className="relative flex w-[25%] justify-between items-center">
               <p
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}

@@ -28,7 +28,8 @@
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",
-    "react-telegram-login": "^1.1.2"
+    "react-telegram-login": "^1.1.2",
+    "recharts": "^2.12.6"
   },
   "devDependencies": {
     "@types/node": "^20",

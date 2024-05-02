@@ -267,6 +267,13 @@ a {
   mask-composite: exclude; /*5*/
 }
 
+#border-gradient-container {
+  position: relative;
+  box-shadow:
+    1px 2px 4px #ff00ae,
+    -0.2em 0 0.1em #0061ff;
+}
+
 #member-container-home {
   position: relative;
   box-shadow:
@@ -320,4 +327,10 @@ a {
 
 .word-break-text {
   word-break: break-all;
+}
+
+.text-dots {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

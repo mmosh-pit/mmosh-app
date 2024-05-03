@@ -39,7 +39,7 @@ const formatNumber = (value: number) => {
   return `${formattedNumber}${units[exponent]}`;
 };
 
-const Header = ({ isHome }: { isHome: boolean }) => {
+const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const wallet = useAnchorWallet();
@@ -58,23 +58,20 @@ const Header = ({ isHome }: { isHome: boolean }) => {
     let defaultClass =
       "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
-    if (
-      (userStatus === UserStatus.fullAccount && pathname !== "/") ||
-      isOnSettings
-    ) {
+    if (pathname === "/create") {
+      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
+    }
+
+    if (pathname !== "/" || isOnSettings) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
     }
 
-    if (
-      userStatus === UserStatus.fullAccount &&
-      pathname === "/" &&
-      !isOnSettings
-    ) {
+    if (pathname === "/" && !isOnSettings) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
     return defaultClass;
-  }, [userStatus]);
+  }, [userStatus, pathname]);
 
   const executeSearch = React.useCallback(() => {
     const text = localText.replace("@", "");
@@ -106,8 +103,6 @@ const Header = ({ isHome }: { isHome: boolean }) => {
     }
   }, [wallet, incomingWalletToken]);
 
-  if (isHome && pathname !== "/") return <></>;
-
   return (
     <div className="flex flex-col">
       <div className={getHeaderBackground()}>
@@ -126,7 +121,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
             </div>
           )}
 
-          {userStatus === UserStatus.fullAccount && !isMobileScreen && (
+          {!isMobileScreen && (
             <div className="flex w-[25%] justify-between items-center">
               <p
                 className="text-base text-white cursor-pointer"
@@ -207,7 +202,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           </div>
         </div>
 
-        {userStatus !== UserStatus.fullAccount && (
+        {userStatus !== UserStatus.fullAccount && pathname === "/" && (
           <div className="w-full flex flex-col justify-center items-center mb-4">
             <div
               className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}

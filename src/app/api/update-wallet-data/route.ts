@@ -22,7 +22,11 @@ export async function PUT(req: NextRequest) {
       },
     );
     return NextResponse.json("", { status: 200 });
+  } else {
+    await collection.insertOne({
+      wallet,
+      [field]: value,
+    });
+    return NextResponse.json("", { status: 200 });
   }
-
-  return NextResponse.json("User not found", { status: 400 });
 }

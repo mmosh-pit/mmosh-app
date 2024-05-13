@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import axios from "axios";
+import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -17,11 +19,14 @@ import {
   searchBarText,
   settings,
   status,
+  userWeb3Info,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
-import axios from "axios";
+import { Connectivity as UserConn } from "../../anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
+import { Connection } from "@solana/web3.js";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -39,13 +44,14 @@ const formatNumber = (value: number) => {
   return `${formattedNumber}${units[exponent]}`;
 };
 
-const Header = ({ isHome }: { isHome: boolean }) => {
-  const calledActivatedEndpoint = React.useRef(false);
+const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const wallet = useAnchorWallet();
+  const renderedUserInfo = React.useRef(false);
+  const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [userStatus] = useAtom(status);
-  const [currentUser] = useAtom(data);
+  const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
@@ -57,25 +63,22 @@ const Header = ({ isHome }: { isHome: boolean }) => {
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8";
+      "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
-    if (
-      (userStatus === UserStatus.fullAccount && pathname !== "/") ||
-      isOnSettings
-    ) {
+    if (pathname === "/create") {
+      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
+    }
+
+    if (pathname !== "/" || isOnSettings) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
     }
 
-    if (
-      userStatus === UserStatus.fullAccount &&
-      pathname === "/" &&
-      !isOnSettings
-    ) {
+    if (pathname === "/" && !isOnSettings) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
     return defaultClass;
-  }, [userStatus]);
+  }, [userStatus, pathname]);
 
   const executeSearch = React.useCallback(() => {
     const text = localText.replace("@", "");
@@ -89,6 +92,78 @@ const Header = ({ isHome }: { isHome: boolean }) => {
     setTotalRoyalties(res.data.royalties);
   }, []);
 
+  const getProfileInfo = async () => {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+    const profileInfo = await userConn.getUserInfo();
+
+    const genesis = profileInfo.activationTokens[0]?.genesis;
+    const activation = profileInfo.activationTokens[0]?.activation;
+
+    const totalMints = profileInfo.totalChild;
+
+    let firstTime = true;
+
+    if (profileInfo.activationTokens.length > 0) {
+      if (profileInfo.activationTokens[0].activation != "") {
+        firstTime = false;
+      }
+    }
+    const totalChilds = totalMints;
+
+    let quota = 0;
+
+    if (totalChilds < 3) {
+      quota = 10;
+    } else if (totalChilds >= 3 && totalChilds < 7) {
+      quota = 25;
+    } else if (totalChilds >= 7 && totalChilds < 15) {
+      quota = 50;
+    } else if (totalChilds >= 15 && totalChilds < 35) {
+      quota = 250;
+    } else if (totalChilds >= 35 && totalChilds < 75) {
+      quota = 500;
+    } else {
+      quota = 1000;
+    }
+
+    const profileNft = profileInfo.profiles[0];
+
+    if (profileNft?.address) {
+      const username = profileNft.userinfo.username;
+
+      const res = await axios.get(`/api/get-user-data?username=${username}`);
+      setCurrentUser(res.data);
+    } else {
+      const res = await axios.get(
+        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
+      );
+
+      setCurrentUser(res.data);
+    }
+
+    setProfileInfo({
+      generation: profileInfo.generation,
+      genesisToken: genesis,
+      profileLineage: profileInfo.profilelineage,
+      activationToken: activation,
+      solBalance: profileInfo.solBalance,
+      mmoshBalance: profileInfo.oposTokenBalance,
+      firstTimeInvitation: firstTime,
+      quota,
+      activationTokenBalance:
+        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild,
+      profile: {
+        address: profileNft?.address,
+        image: profileNft?.userinfo.image,
+      },
+    });
+  };
+
   React.useEffect(() => {
     if (userStatus === UserStatus.fullAccount && pathname === "/") {
       getTotals();
@@ -96,12 +171,14 @@ const Header = ({ isHome }: { isHome: boolean }) => {
   }, [userStatus]);
 
   React.useEffect(() => {
-    if (
-      wallet?.publicKey &&
-      incomingWalletToken !== "" &&
-      !calledActivatedEndpoint.current
-    ) {
-      calledActivatedEndpoint.current = true;
+    if (wallet?.publicKey && !renderedUserInfo.current) {
+      renderedUserInfo.current = true;
+      getProfileInfo();
+    }
+  }, [wallet]);
+
+  React.useEffect(() => {
+    if (wallet?.publicKey && incomingWalletToken !== "") {
       (async () => {
         await axios.post("/api/link-social-wallet", {
           token: incomingWalletToken,
@@ -111,8 +188,6 @@ const Header = ({ isHome }: { isHome: boolean }) => {
       })();
     }
   }, [wallet, incomingWalletToken]);
-
-  if (isHome && pathname !== "/") return <></>;
 
   return (
     <div className="flex flex-col">
@@ -133,7 +208,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           )}
 
           {!isMobileScreen && (
-            <div className="relative flex w-[25%] justify-between items-center">
+            <div className="flex w-[25%] justify-between items-center">
               <p
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
@@ -211,73 +286,85 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col justify-center items-center mb-4">
-          <div
-            className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
-          >
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              layout="fill"
-            />
-          </div>
-        </div>
-      </div>
-
-      {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12">
-          {!isMobileScreen && (
-            <div className="flex w-[33%]">
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Members
-                  </p>
-                </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {totalAccounts}
-                </p>
-              </div>
-
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Royalties
-                  </p>
-                </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {formatNumber(totalRoyalties)}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {!isMobileScreen && (
-            <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-              <button
-                className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
-                onClick={executeSearch}
-              >
-                <SearchIcon />
-
-                <p className="text-white font-bold text-base ml-4">Search</p>
-              </button>
-
-              <input
-                placeholder="Type your search terms"
-                className="ml-4 w-full bg-transparent outline-none"
-                value={localText}
-                onChange={(e) => setLocalText(e.target.value)}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    executeSearch();
-                  }
-                }}
+        {userStatus !== UserStatus.fullAccount && pathname === "/" && (
+          <div className="w-full flex flex-col justify-center items-center mb-4">
+            <div
+              className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
+            >
+              <Image
+                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
+                alt="mmosh"
+                layout="fill"
               />
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
+
+      {userStatus === UserStatus.fullAccount &&
+        pathname === "/" &&
+        !isOnSettings && (
+          <div className="w-full flex justify-center lg:justify-between items-end mt-12">
+            {!isMobileScreen && (
+              <div className="flex w-[33%]">
+                <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
+                  <div className="bg-[#3C00FF] rounded-full px-8 py-4">
+                    <p className="text-white font-bold text-base">
+                      Total Members
+                    </p>
+                  </div>
+                  <p className="text-white font-bold text-base ml-4 px-8">
+                    {totalAccounts}
+                  </p>
+                </div>
+
+                <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
+                  <div className="bg-[#3C00FF] rounded-full px-8 py-4">
+                    <p className="text-white font-bold text-base">
+                      Total Royalties
+                    </p>
+                  </div>
+                  <p className="text-white font-bold text-base ml-4 px-8">
+                    {formatNumber(totalRoyalties)}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="relative w-[16vmax] h-[16vmax]">
+              <Image
+                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
+                alt="mmosh"
+                layout="fill"
+              />
+            </div>
+
+            {!isMobileScreen && (
+              <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
+                <button
+                  className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
+                  onClick={executeSearch}
+                >
+                  <SearchIcon />
+
+                  <p className="text-white font-bold text-base ml-4">Search</p>
+                </button>
+
+                <input
+                  placeholder="Type your search terms"
+                  className="ml-4 w-full bg-transparent outline-none"
+                  value={localText}
+                  onChange={(e) => setLocalText(e.target.value)}
+                  onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                      executeSearch();
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
     </div>
   );
 };

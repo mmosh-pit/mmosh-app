@@ -12,7 +12,6 @@ import {
   userType,
 } from "../store";
 import Banner from "./Banner";
-import { useWallet } from "@solana/wallet-adapter-react";
 import UserCard from "./UserCard";
 import UserSortTabs from "./UserSortTabs";
 import UserTypeOptionsTabs from "./Home/UserTypeOptionsTabs";
@@ -31,8 +30,6 @@ const HomePage = () => {
   const allUsers = React.useRef<User[]>([]);
   const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
-
-  const wallet = useWallet();
 
   const getUsers = React.useCallback(async () => {
     const result = await axios.get(
@@ -114,7 +111,7 @@ const HomePage = () => {
 
   return (
     <div
-      className={`w-full h-screen flex flex-col items-center mt-6 home-content ${
+      className={`w-full h-screen flex flex-col items-center mt-6 background-content ${
         isDrawerShown ? "z-[-1]" : ""
       }`}
       ref={containerRef}

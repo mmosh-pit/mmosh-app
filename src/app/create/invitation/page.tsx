@@ -2,7 +2,7 @@
 import MintInvitation from "@/app/components/Forge/MintInvitation";
 
 const Invitation = () => (
-  <div className="w-full flex flex-col justify-center items-center pt-20">
+  <div className="relative w-full flex flex-col justify-center items-center pt-20">
     <h4 className="text-center text-white font-goudy font-normal mb-4">
       Invite your Friends to the DAO
     </h4>

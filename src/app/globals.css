@@ -73,6 +73,10 @@ h4 {
   background-attachment: fixed;
 }
 
+.common-bg:before {
+  mix-blend-mode: color-dodge;
+}
+
 .bg-profile {
   background: rgba(0, 0, 0, 0.5),
     url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
@@ -107,7 +111,7 @@ h4 {
   width: 100%;
   filter: blur(100px);
   background: radial-gradient(
-    circle at 50% 25%,
+    circle at 50% 15%,
     #133ad5 1%,
     #102da1 30%,
     #102a95 60%,
@@ -322,4 +326,40 @@ a {
 
 .word-break-text {
   word-break: break-all;
+}
+
+.success-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.018) 0%,
+    rgba(33, 239, 0, 0.6) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.error-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 0, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.warn-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 132, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.featured-card {
+  background: linear-gradient(
+    180deg,
+    rgba(3, 0, 7, 0.4) 0%,
+    rgba(21, 0, 59, 0.04) 50.4%,
+    rgba(39, 0, 109, 0) 100%
+  );
 }

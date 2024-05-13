@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import axios from "axios";
+import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -17,11 +19,14 @@ import {
   searchBarText,
   settings,
   status,
+  userWeb3Info,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
-import axios from "axios";
+import { Connectivity as UserConn } from "../../anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
+import { Connection } from "@solana/web3.js";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -43,8 +48,10 @@ const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const wallet = useAnchorWallet();
+  const renderedUserInfo = React.useRef(false);
+  const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [userStatus] = useAtom(status);
-  const [currentUser] = useAtom(data);
+  const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
@@ -85,11 +92,90 @@ const Header = () => {
     setTotalRoyalties(res.data.royalties);
   }, []);
 
+  const getProfileInfo = async () => {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+    const profileInfo = await userConn.getUserInfo();
+
+    const genesis = profileInfo.activationTokens[0]?.genesis;
+    const activation = profileInfo.activationTokens[0]?.activation;
+
+    const totalMints = profileInfo.totalChild;
+
+    let firstTime = true;
+
+    if (profileInfo.activationTokens.length > 0) {
+      if (profileInfo.activationTokens[0].activation != "") {
+        firstTime = false;
+      }
+    }
+    const totalChilds = totalMints;
+
+    let quota = 0;
+
+    if (totalChilds < 3) {
+      quota = 10;
+    } else if (totalChilds >= 3 && totalChilds < 7) {
+      quota = 25;
+    } else if (totalChilds >= 7 && totalChilds < 15) {
+      quota = 50;
+    } else if (totalChilds >= 15 && totalChilds < 35) {
+      quota = 250;
+    } else if (totalChilds >= 35 && totalChilds < 75) {
+      quota = 500;
+    } else {
+      quota = 1000;
+    }
+
+    const profileNft = profileInfo.profiles[0];
+
+    if (profileNft?.address) {
+      const username = profileNft.userinfo.username;
+
+      const res = await axios.get(`/api/get-user-data?username=${username}`);
+      setCurrentUser(res.data);
+    } else {
+      const res = await axios.get(
+        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
+      );
+
+      setCurrentUser(res.data);
+    }
+
+    setProfileInfo({
+      generation: profileInfo.generation,
+      genesisToken: genesis,
+      profileLineage: profileInfo.profilelineage,
+      activationToken: activation,
+      solBalance: profileInfo.solBalance,
+      mmoshBalance: profileInfo.oposTokenBalance,
+      firstTimeInvitation: firstTime,
+      quota,
+      activationTokenBalance:
+        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild,
+      profile: {
+        address: profileNft?.address,
+        image: profileNft?.userinfo.image,
+      },
+    });
+  };
+
   React.useEffect(() => {
     if (userStatus === UserStatus.fullAccount && pathname === "/") {
       getTotals();
     }
   }, [userStatus]);
+
+  React.useEffect(() => {
+    if (wallet?.publicKey && !renderedUserInfo.current) {
+      renderedUserInfo.current = true;
+      getProfileInfo();
+    }
+  }, [wallet]);
 
   React.useEffect(() => {
     if (wallet?.publicKey && incomingWalletToken !== "") {
@@ -169,23 +255,21 @@ const Header = () => {
               </div>
             )}
 
-            {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
-              <WalletMultiButton
-                startIcon={undefined}
-                style={{
-                  background:
-                    "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                  padding: "0 2em",
-                  borderRadius: 15,
-                }}
-              >
-                <p className="text-lg text-white">
-                  {wallet?.publicKey
-                    ? walletAddressShortener(wallet.publicKey.toString())
-                    : "Connect Wallet"}
-                </p>
-              </WalletMultiButton>
-            )}
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                background:
+                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
+                padding: "0 2em",
+                borderRadius: 15,
+              }}
+            >
+              <p className="text-lg text-white">
+                {wallet?.publicKey
+                  ? walletAddressShortener(wallet.publicKey.toString())
+                  : "Connect Wallet"}
+              </p>
+            </WalletMultiButton>
 
             {userStatus === UserStatus.fullAccount &&
               !isMobileScreen &&

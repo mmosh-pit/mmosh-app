@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { User } from "../models/user";
+import { ProfileInfo } from "../models/profileInfo";
 
 export enum UserStatus {
   noTelegram,
@@ -34,3 +35,6 @@ export const userType = atom("all");
 export const settings = atom(false);
 
 export const incomingWallet = atom("");
+
+// Web3 info
+export const userWeb3Info = atom<ProfileInfo | null>(null);

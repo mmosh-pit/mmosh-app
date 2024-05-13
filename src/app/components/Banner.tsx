@@ -5,8 +5,8 @@ import * as anchor from "@coral-xyz/anchor";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 
-import { Connectivity as UserConn } from "../lib/anchor/user";
-import { web3Consts } from "../lib/anchor/web3Consts";
+import { Connectivity as UserConn } from "../../anchor/user";
+import { web3Consts } from "../../anchor/web3Consts";
 import { UserStatus, data, status } from "../store";
 import axios from "axios";
 import TelegramBigIcon from "@/assets/icons/TelegramBigIcon";

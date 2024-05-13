@@ -1,11 +1,13 @@
+"use client";
+
 import * as React from "react";
-import DefaultCard from "./MainPage/DefaultCard";
-import CoinCard from "./MainPage/CoinCard";
-import CommunityCard from "./MainPage/CommunityCard";
-import InvitationCard from "./MainPage/InvitationCard";
-import ProfileCard from "./MainPage/ProfileCard";
-import FeaturedCard from "./MainPage/FeaturedCard";
-import GuestPassCard from "./MainPage/GuestPassCard";
+import FeaturedCard from "../components/Forge/MainPage/FeaturedCard";
+import GuestPassCard from "../components/Forge/MainPage/GuestPassCard";
+import DefaultCard from "../components/Forge/MainPage/DefaultCard";
+import CoinCard from "../components/Forge/MainPage/CoinCard";
+import CommunityCard from "../components/Forge/MainPage/CommunityCard";
+import InvitationCard from "../components/Forge/MainPage/InvitationCard";
+import ProfileCard from "../components/Forge/MainPage/ProfileCard";
 
 const Forge = () => {
   return (

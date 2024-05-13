@@ -82,7 +82,7 @@ export class Connectivity {
   extraSigns: web3.Keypair[] = [];
   multiSignInfo: any[] = [];
   program: Program<Mmoshforge>;
-  mainState: web3.PublicKey;
+  mainState: web3.PublicKey | undefined;
   connection: web3.Connection;
   metaplex: Metaplex;
   baseSpl: BaseSpl;
@@ -273,6 +273,7 @@ export class Connectivity {
     } catch (error) {
       console.log(error);
     }
+    return "";
   }
 
   async createTargetMint(name: any, symbol: any, url: any): Promise<string> {
@@ -989,9 +990,9 @@ export class Connectivity {
     );
 
     const instructions: anchor.web3.TransactionInstruction[] = this.txis;
-    console.log("buy instruction is ", instructions)
+    console.log("buy instruction is ", instructions);
 
-    this.txis = []
+    this.txis = [];
     // let req = ComputeBudgetProgram.setComputeUnitLimit({units: 400000});
     // instructions.push(req);
 
@@ -1167,14 +1168,16 @@ export class Connectivity {
         });
       }
       tx.add(feeIns);
-      const signature = await this.provider.sendAndConfirm(tx, tokenObj.signers);
+      const signature = await this.provider.sendAndConfirm(
+        tx,
+        tokenObj.signers,
+      );
       console.log("sell ", signature);
       return signature;
     } catch (error) {
-      console.log("error is", error)
+      console.log("error is", error);
       return "";
     }
-
   }
 
   /**
@@ -1235,9 +1238,9 @@ export class Connectivity {
     );
 
     const instructions: anchor.web3.TransactionInstruction[] = this.txis;
-    console.log("sell instruction is ", instructions)
+    console.log("sell instruction is ", instructions);
     this.txis = [];
-    
+
     // let req = ComputeBudgetProgram.setComputeUnitLimit({units: 350000});
     // instructions.push(req);
     if (!source) {
@@ -1336,22 +1339,28 @@ export class Connectivity {
           .instruction(),
       );
     } else {
-      console.log("sell instruction args minimumPrice", args.minimumPrice.toNumber())
-      console.log("sell instruction args targetAmount", args.targetAmount.toNumber())
-      console.log("sell instruction args  common",{
-      tokenBonding: tokenBonding.toBase58(),
-      // @ts-ignore
-      curve: tokenBondingAcct.curve.toBase58(),
-      baseMint: tokenBondingAcct.baseMint.toBase58(),
-      targetMint: tokenBondingAcct.targetMint.toBase58(),
-      baseStorage: tokenBondingAcct.baseStorage.toBase58(),
-      sellBaseRoyalties: tokenBondingAcct.sellBaseRoyalties.toBase58(),
-      sellTargetRoyalties: tokenBondingAcct.sellTargetRoyalties.toBase58(),
-      source: source.toBase58(),
-      sourceAuthority: sourceAuthority.toBase58(),
-      tokenProgram: TOKEN_PROGRAM_ID,
-      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-    })
+      console.log(
+        "sell instruction args minimumPrice",
+        args.minimumPrice.toNumber(),
+      );
+      console.log(
+        "sell instruction args targetAmount",
+        args.targetAmount.toNumber(),
+      );
+      console.log("sell instruction args  common", {
+        tokenBonding: tokenBonding.toBase58(),
+        // @ts-ignore
+        curve: tokenBondingAcct.curve.toBase58(),
+        baseMint: tokenBondingAcct.baseMint.toBase58(),
+        targetMint: tokenBondingAcct.targetMint.toBase58(),
+        baseStorage: tokenBondingAcct.baseStorage.toBase58(),
+        sellBaseRoyalties: tokenBondingAcct.sellBaseRoyalties.toBase58(),
+        sellTargetRoyalties: tokenBondingAcct.sellTargetRoyalties.toBase58(),
+        source: source.toBase58(),
+        sourceAuthority: sourceAuthority.toBase58(),
+        tokenProgram: TOKEN_PROGRAM_ID,
+        clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+      });
       instructions.push(
         await this.program.methods
           .sellV1(args)
@@ -1362,7 +1371,6 @@ export class Connectivity {
           })
           .instruction(),
       );
-    
     }
 
     return {
@@ -1617,35 +1625,38 @@ export class Connectivity {
         new anchor.web3.PublicKey(this.provider.publicKey.toBase58()),
       ]);
       console.log("getTokenBalance ", infoes);
-      let baseBalance = 0
-      let targetBalance = 0
-      let solBalance = 0
-      if(infoes[0]) {
+      let baseBalance = 0;
+      let targetBalance = 0;
+      let solBalance = 0;
+      if (infoes[0]) {
         const tokenBaseAccount = unpackAccount(userbasetokenAta, infoes[0]);
-        baseBalance = (parseInt(tokenBaseAccount?.amount?.toString()) ?? 0) / web3Consts.LAMPORTS_PER_OPOS
+        baseBalance =
+          (parseInt(tokenBaseAccount?.amount?.toString()) ?? 0) /
+          web3Consts.LAMPORTS_PER_OPOS;
       }
 
-      if(infoes[1]) {
+      if (infoes[1]) {
         const tokenTargetAccount = unpackAccount(usertargettokenAta, infoes[1]);
-        targetBalance = (parseInt(tokenTargetAccount?.amount?.toString()) ?? 0) / web3Consts.LAMPORTS_PER_OPOS
+        targetBalance =
+          (parseInt(tokenTargetAccount?.amount?.toString()) ?? 0) /
+          web3Consts.LAMPORTS_PER_OPOS;
       }
 
       if (infoes[2]) {
         solBalance = infoes[2].lamports / 1000_000_000;
       }
-    
 
       return {
-        base:baseBalance,
-        target:targetBalance,
+        base: baseBalance,
+        target: targetBalance,
         sol: solBalance,
       };
     } catch (error) {
-      console.log("erorror ",error)
+      console.log("erorror ", error);
       return {
         base: 0,
         target: 0,
-        sol: 0
+        sol: 0,
       };
     }
   }

@@ -55,7 +55,7 @@ const CreateProfile = () => {
   });
 
   const checkForUsername = React.useCallback(async () => {
-    if (form.username === "create") {
+    if (form.username.toLowerCase() === "create") {
       setError({
         error: true,
         message: "Username already exists!",

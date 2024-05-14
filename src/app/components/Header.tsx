@@ -190,7 +190,7 @@ const Header = () => {
   }, [wallet, incomingWalletToken]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-4">
       <div className={getHeaderBackground()}>
         <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (
@@ -234,12 +234,14 @@ const Header = () => {
                 Website
               </a>
 
-              <a
-                href="https://forge.mmosh.app"
+              <p
                 className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create");
+                }}
               >
                 Forge
-              </a>
+              </p>
             </div>
           )}
 

@@ -106,7 +106,7 @@ const CreateProfile = () => {
       return false;
     }
 
-    if (profileInfo.mmoshBalance < 20000) {
+    if (profileInfo.mmoshBalance < 1000) {
       createMessage(
         "Hey! We checked your wallet and you don't have enough MMOSH to mint.\n[Get some MMOSH here](https://jup.ag/swap/SOL-MMOSH) and try again!",
         "warn",
@@ -168,179 +168,189 @@ const CreateProfile = () => {
     setPreview(objectUrl);
   }, [image]);
 
+  console.log("Profile info: ", profileInfo);
+
   return (
     <div className="w-full flex justify-center">
-      <div className="flex flex-col md:w-[70%] w-[90%]">
+      <div className="flex flex-col items-center justify-center w-full">
         <MessageBanner type={message.type} message={message.message} />
-        <div className="self-center md:w-[45%] w-[80%] pt-20">
-          <h4 className="text-center text-white font-goudy font-normal mb-8">
-            Create your Profile to join the DAO
-          </h4>
-          <p className="text-base text-center">
-            MMOSH DAO members can create their own coins, build community and
-            help allocate resources to support the growth and expansion of our
-            ecosystem.
-          </p>
-        </div>
-        <div className="w-full self-start mt-8">
-          <p className="text-lg text-white">About You</p>
-        </div>
-
-        <div className="w-full flex-col lg:flex-row flex items-center lg:items-stretch justify-around mt-4">
-          <div className="flex flex-col w-[100%] sm:w-[85%] lg:w-[25%] mb-4 md:mb-0">
-            <p className="text-sm">
-              Avatar<sup>*</sup>
-              <ImagePicker changeImage={setImage} image={preview} />
+        <div className="flex flex-col md:w-[70%] w-[90%]">
+          <div className="self-center md:w-[45%] w-[80%] pt-20">
+            <h4 className="text-center text-white font-goudy font-normal mb-8">
+              Create your Profile to join the DAO
+            </h4>
+            <p className="text-base text-center">
+              MMOSH DAO members can create their own coins, build community and
+              help allocate resources to support the growth and expansion of our
+              ecosystem.
             </p>
           </div>
+          <div className="w-full self-start mt-8">
+            <p className="text-lg text-white">About You</p>
+          </div>
 
-          <div className="flex flex-col w-full lg:w-[35%] xs:w-[85%] md:px-[3vmax]">
-            <div className="flex flex-col w-full">
-              <p className="text-xs text-white">
-                First Name or Alias<sup>*</sup>
+          <div className="w-full flex-col lg:flex-row flex items-center lg:items-stretch justify-around mt-4">
+            <div className="flex flex-col w-[100%] sm:w-[85%] lg:w-[25%] mb-4 md:mb-0">
+              <p className="text-sm">
+                Avatar<sup>*</sup>
+                <ImagePicker changeImage={setImage} image={preview} />
               </p>
-              <Input
-                type="text"
-                placeholder="Name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-              <p className="text-tiny">Up to 50 characters, can have spaces.</p>
             </div>
 
-            <div className="flex flex-col w-full">
-              <p className="text-xs text-white">Last Name</p>
-              <Input
-                type="text"
-                placeholder="Last Name"
-                value={form.lastName}
-                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-              />
-              <p className="text-tiny">Up to 15 characters</p>
+            <div className="flex flex-col w-full lg:w-[35%] xs:w-[85%] md:px-[3vmax]">
+              <div className="flex flex-col w-full">
+                <p className="text-xs text-white">
+                  First Name or Alias<sup>*</sup>
+                </p>
+                <Input
+                  type="text"
+                  placeholder="Name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+                <p className="text-tiny">
+                  Up to 50 characters, can have spaces.
+                </p>
+              </div>
+
+              <div className="flex flex-col w-full">
+                <p className="text-xs text-white">Last Name</p>
+                <Input
+                  type="text"
+                  placeholder="Last Name"
+                  value={form.lastName}
+                  onChange={(e) =>
+                    setForm({ ...form, lastName: e.target.value })
+                  }
+                />
+                <p className="text-tiny">Up to 15 characters</p>
+              </div>
+
+              <div className="flex flex-col">
+                <p className="text-xs text-white">
+                  Username<sup>*</sup>
+                </p>
+                <Input
+                  type="text"
+                  value={form.username}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      username: e.target.value.replace(/\s/g, ""),
+                    })
+                  }
+                  onBlur={checkForUsername}
+                  placeholder="Username"
+                />
+                {error.error ? (
+                  <p className="text-xs text-red-600">{error.message}</p>
+                ) : (
+                  <p className="text-xs">15 characters</p>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <p className="text-xs text-white">
+                  Pronouns<sup>*</sup>
+                </p>
+                <Select
+                  value={form.pronouns}
+                  onChange={(e) =>
+                    setForm({ ...form, pronouns: e.target.value })
+                  }
+                  options={PronounsSelectOptions}
+                />
+              </div>
             </div>
 
-            <div className="flex flex-col">
-              <p className="text-xs text-white">
-                Username<sup>*</sup>
-              </p>
+            <div className="flex flex-col mt-4 md:mt-4 w-[85%] lg:w-fit">
+              <p className="text-xs text-white">Description</p>
               <Input
                 type="text"
-                value={form.username}
+                placeholder="Tell us about yourself in up to 160 characters"
+                value={form.description}
                 onChange={(e) =>
-                  setForm({
-                    ...form,
-                    username: e.target.value.replace(/\s/g, ""),
-                  })
+                  setForm({ ...form, description: e.target.value })
                 }
-                onBlur={checkForUsername}
-                placeholder="Username"
+                textarea
               />
-              {error.error ? (
-                <p className="text-xs text-red-600">{error.message}</p>
+
+              <div className="flex flex-col mt-4 w-full md:w-fit">
+                <p className="text-xs text-white">Superhero Identity</p>
+                <label className="text-tiny">
+                  Example: Frank the Amazing Elf
+                </label>
+
+                <div className="flex w-full items-center">
+                  <p className="text-xs text-white mb-[0.5vmax] mr-4">The</p>
+                  <div className="flex flex-col">
+                    <Input
+                      type="text"
+                      value={form.descriptor}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          descriptor: e.target.value,
+                        })
+                      }
+                      placeholder="Descriptor"
+                    />
+                    <label className="text-xs">Example: Amazing</label>
+                  </div>
+
+                  <div className="flex flex-col ml-4">
+                    <Input
+                      type="text"
+                      value={form.noun}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          noun: e.target.value,
+                        })
+                      }
+                      placeholder="Noun"
+                    />
+                    <label className="text-tiny">Example: Elf</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col justify-center items-center mt-20">
+            <button
+              className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
+              onClick={submitForm}
+            >
+              {isLoading ? (
+                <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>
               ) : (
-                <p className="text-xs">15 characters</p>
+                <p className="text-white text-base ml-2">Mint Your Profile</p>
               )}
+            </button>
+            <div className="flex flex-col justify-center items-center">
+              <p className="text-sm text-white">Price: 10.000 MMOSH</p>
+              <p className="text-tiny text-white">
+                plus a small amount of SOL for gas fees
+              </p>
             </div>
 
             <div className="flex flex-col">
-              <p className="text-xs text-white">
-                Pronouns<sup>*</sup>
-              </p>
-              <Select
-                value={form.pronouns}
-                onChange={(e) => setForm({ ...form, pronouns: e.target.value })}
-                options={PronounsSelectOptions}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col mt-4 md:mt-4 w-[85%] lg:w-fit">
-            <p className="text-xs text-white">Description</p>
-            <Input
-              type="text"
-              placeholder="Tell us about yourself in up to 160 characters"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              textarea
-            />
-
-            <div className="flex flex-col mt-4 w-full md:w-fit">
-              <p className="text-xs text-white">Superhero Identity</p>
-              <label className="text-tiny">
-                Example: Frank the Amazing Elf
-              </label>
-
-              <div className="flex w-full items-center">
-                <p className="text-xs text-white mb-[0.5vmax] mr-4">The</p>
-                <div className="flex flex-col">
-                  <Input
-                    type="text"
-                    value={form.descriptor}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        descriptor: e.target.value,
-                      })
-                    }
-                    placeholder="Descriptor"
-                  />
-                  <label className="text-xs">Example: Amazing</label>
+              <div className="flex items-center">
+                <p className="text-sm text-white">Current balance</p>
+                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
+                  {profileInfo?.mmoshBalance || 0}
                 </div>
+                <p className="text-sm text-white">MMOSH</p>
+              </div>
 
-                <div className="flex flex-col ml-4">
-                  <Input
-                    type="text"
-                    value={form.noun}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        noun: e.target.value,
-                      })
-                    }
-                    placeholder="Noun"
-                  />
-                  <label className="text-tiny">Example: Elf</label>
+              <div className="flex items-center mt-2">
+                <p className="text-sm text-white">Current balance</p>
+                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
+                  {profileInfo?.solBalance || 0}
                 </div>
+                <p className="text-sm text-white">SOL</p>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full flex flex-col justify-center items-center mt-20">
-          <button
-            className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
-            onClick={submitForm}
-          >
-            {isLoading ? (
-              <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>
-            ) : (
-              <p className="text-white text-base ml-2">Mint Your Profile</p>
-            )}
-          </button>
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-sm text-white">Price: 1.000 MMOSH</p>
-            <p className="text-tiny text-white">
-              plus a small amount of SOL for gas fees
-            </p>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <p className="text-sm text-white">Current balance</p>
-              <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                {profileInfo?.mmoshBalance || 0}
-              </div>
-              <p className="text-sm text-white">MMOSH</p>
-            </div>
-
-            <div className="flex items-center mt-2">
-              <p className="text-sm text-white">Current balance</p>
-              <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                {profileInfo?.solBalance || 0}
-              </div>
-              <p className="text-sm text-white">SOL</p>
             </div>
           </div>
         </div>

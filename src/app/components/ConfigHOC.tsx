@@ -17,7 +17,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
   });
 
   const getClassName = () => {
-    if (pathname === "/create") return "common-bg";
+    if (pathname.includes("create")) return "common-bg";
 
     if (pathname !== "/" || isOnSettings) {
       return "bg-profile";

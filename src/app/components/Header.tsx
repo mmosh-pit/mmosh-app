@@ -65,7 +65,7 @@ const Header = () => {
     let defaultClass =
       "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
-    if (pathname === "/create") {
+    if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 

@@ -41,7 +41,7 @@ export const createSubscriptionInvitation = async ({
 
   let isSuccess = false;
   if (profileInfo.firstTimeInvitation) {
-    let attributes = [];
+    const attributes = [];
     // get promoter name
     if (profileLineage.promoter.length > 0) {
       const promoter: any = await getUsername(profileLineage.promoter);
@@ -126,8 +126,10 @@ export const createSubscriptionInvitation = async ({
         " on the MMOSH. The favor of a reply is requested.";
     }
 
+    console.log("Got name: ", name);
+
     const body = {
-      name: name != "" ? "Invitation from " + name : "Invitation",
+      name: `Invitation from ${name}`,
       symbol: "INVITE",
       description: desc,
       image:
@@ -137,7 +139,7 @@ export const createSubscriptionInvitation = async ({
       attributes: attributes,
     };
 
-    const shdwHash: any = await pinFileToShadowDrive(body);
+    const shdwHash = await pinFileToShadowDrive(body);
 
     if (shdwHash === "") {
       return {

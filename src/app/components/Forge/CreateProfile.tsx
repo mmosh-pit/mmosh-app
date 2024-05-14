@@ -10,6 +10,7 @@ import ImagePicker from "../ImagePicker";
 import { createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
 import Select from "../common/Select";
+import Button from "../common/Button";
 
 const PronounsSelectOptions = [
   {
@@ -157,7 +158,9 @@ const CreateProfile = () => {
         return { ...prev!, profile: result.data };
       });
 
-      // navigate.push("");
+      setTimeout(() => {
+        navigate.replace("/create");
+      }, 5000);
     }
     setIsLoading(false);
   }, [wallet, profileInfo, image, form]);
@@ -167,8 +170,6 @@ const CreateProfile = () => {
     const objectUrl = URL.createObjectURL(image);
     setPreview(objectUrl);
   }, [image]);
-
-  console.log("Profile info: ", profileInfo);
 
   return (
     <div className="w-full flex justify-center">
@@ -318,16 +319,14 @@ const CreateProfile = () => {
           </div>
 
           <div className="w-full flex flex-col justify-center items-center mt-20">
-            <button
-              className="bg-[#CD068E] py-4 px-4 rounded-md flex items-center"
-              onClick={submitForm}
-            >
-              {isLoading ? (
-                <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>
-              ) : (
-                <p className="text-white text-base ml-2">Mint Your Profile</p>
-              )}
-            </button>
+            <Button
+              isLoading={isLoading}
+              isPrimary
+              title="Mint Your Profile"
+              size="large"
+              action={submitForm}
+              disabled={isLoading}
+            />
             <div className="flex flex-col justify-center items-center">
               <p className="text-sm text-white">Price: 10.000 MMOSH</p>
               <p className="text-tiny text-white">

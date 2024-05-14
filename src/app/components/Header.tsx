@@ -156,7 +156,8 @@ const Header = () => {
       firstTimeInvitation: firstTime,
       quota,
       activationTokenBalance:
-        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild,
+        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild ||
+        0,
       profile: {
         address: profileNft?.address,
         image: profileNft?.userinfo.image,

@@ -20,9 +20,8 @@ const MintInvitation = () => {
   });
 
   const mintInvitation = React.useCallback(async () => {
+    setMessage({ type: "", message: "" });
     setIsLoading(true);
-
-    console.log("Current user: ", currentUser);
 
     const res = await createSubscriptionInvitation({
       wallet: wallet!,
@@ -111,6 +110,7 @@ const MintInvitation = () => {
                   isPrimary
                   size="small"
                   action={mintInvitation}
+                  disabled={isLoading}
                 />
 
                 <label className="text-white text-sm">

@@ -4,12 +4,21 @@ type Props = {
   isPrimary: boolean;
   isLoading: boolean;
   size: "small" | "large";
+  disabled?: boolean;
 };
 
-const Button = ({ isLoading, action, title, isPrimary, size }: Props) => (
+const Button = ({
+  isLoading,
+  action,
+  title,
+  isPrimary,
+  size,
+  disabled,
+}: Props) => (
   <button
     className={`${isPrimary && "bg-[#CD068E]"} ${size === "small" ? "p-2" : "p-4"} rounded-md flex items-center justify-center text-center`}
     onClick={action}
+    disabled={disabled}
   >
     {isLoading ? (
       <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>

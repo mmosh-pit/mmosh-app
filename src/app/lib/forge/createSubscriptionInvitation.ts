@@ -126,8 +126,6 @@ export const createSubscriptionInvitation = async ({
         " on the MMOSH. The favor of a reply is requested.";
     }
 
-    console.log("Got name: ", name);
-
     const body = {
       name: `Invitation from ${name}`,
       symbol: "INVITE",
@@ -158,7 +156,6 @@ export const createSubscriptionInvitation = async ({
       profile: profileInfo.profile.address,
     });
 
-    // setTimeout(async () => {
     const res1 = await userConn.mintSubscriptionToken({
       amount,
       subscriptionToken: res.Ok.info.subscriptionToken,
@@ -179,7 +176,6 @@ export const createSubscriptionInvitation = async ({
         "We’re sorry, there was an error while trying to mint your Invitation Badge(s). Check your wallet and try again.",
       type: "error",
     };
-    // }, 15000);
   } else {
     const res = await userConn.initSubscriptionBadge({
       name: "Invitation",

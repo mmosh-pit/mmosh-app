@@ -1,4 +1,7 @@
 import * as React from "react";
+import { useAtom } from "jotai";
+
+import { userWeb3Info } from "@/app/store";
 import DefaultCard from "./MainPage/DefaultCard";
 import CoinCard from "./MainPage/CoinCard";
 import CommunityCard from "./MainPage/CommunityCard";
@@ -8,12 +11,27 @@ import FeaturedCard from "./MainPage/FeaturedCard";
 import GuestPassCard from "./MainPage/GuestPassCard";
 
 const Forge = () => {
+  const [profileInfo] = useAtom(userWeb3Info);
+
+  const hasProfile = !!profileInfo?.profile?.address;
+  const hasInvitation = (profileInfo?.activationTokenBalance || 0) > 0;
+
+  const getFeaturedComponent = () => {
+    if (hasProfile) {
+      return <InvitationCard />;
+    }
+
+    if (hasInvitation) {
+      return <InvitationCard />;
+    }
+
+    return <GuestPassCard />;
+  };
+
   return (
     <div className="relative w-full h-full flex flex-col background-content pt-20">
       <div className="self-center">
-        <FeaturedCard>
-          <GuestPassCard />
-        </FeaturedCard>
+        <FeaturedCard>{getFeaturedComponent()}</FeaturedCard>
       </div>
 
       <div className="grid grid-cols-3 p-8 gap-8">
@@ -25,13 +43,17 @@ const Forge = () => {
           <CommunityCard />
         </DefaultCard>
 
-        <DefaultCard>
-          <InvitationCard />
-        </DefaultCard>
+        {!hasProfile && (
+          <DefaultCard>
+            <InvitationCard />
+          </DefaultCard>
+        )}
 
-        <DefaultCard>
-          <ProfileCard />
-        </DefaultCard>
+        {!hasInvitation && !hasProfile && (
+          <DefaultCard>
+            <ProfileCard />
+          </DefaultCard>
+        )}
       </div>
     </div>
   );

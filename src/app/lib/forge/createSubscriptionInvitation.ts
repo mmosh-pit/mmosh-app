@@ -148,7 +148,7 @@ export const createSubscriptionInvitation = async ({
     }
 
     const symbol = "INVITE";
-    const uri = shdwHash;
+    const uri = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ shdwHash;
     const res: any = await userConn.initSubscriptionBadge({
       name: "Invitation",
       symbol,

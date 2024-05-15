@@ -29,6 +29,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const username = params.username;
 
+  if (username === "create") {
+    return {
+      title: "MMOSH App Forge",
+      description:
+        "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
+      openGraph: {
+        images: [
+          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
+        ],
+      },
+    };
+  }
+
   if (!username) {
     return {
       title: "MMOSH App Home",
@@ -74,17 +87,5 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html lang="en" className={`${poppins.variable} ${patched.variable}`}>
-      <head>
-        <link rel="icon" href="/mmosh.ico" sizes="any" />
-      </head>
-      <body className={inter.className}>
-        <ConfigHOC>
-          <Header isHome={false} />
-          <div className="h-full">{children}</div>
-        </ConfigHOC>
-      </body>
-    </html>
-  );
+  return <div className="h-full">{children}</div>;
 }

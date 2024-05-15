@@ -5,12 +5,11 @@ import { useAtom } from "jotai";
 import { ConnectionProvider } from "@solana/wallet-adapter-react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { UserStatus, settings, status } from "../store";
+import { settings } from "../store";
 
 const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
   const endpoint = process.env.NEXT_PUBLIC_SOLANA_CLUSTER!;
   const pathname = usePathname();
-  const [userStatus] = useAtom(status);
   const [isOnSettings] = useAtom(settings);
 
   const WalletProvider = dynamic(() => import("../lib/ClientWalletProvider"), {
@@ -18,15 +17,13 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
   });
 
   const getClassName = () => {
+    if (pathname.includes("create")) return "common-bg";
+
     if (pathname !== "/" || isOnSettings) {
       return "bg-profile";
     }
 
-    if (pathname === "/" && userStatus === UserStatus.fullAccount) {
-      return "bg-home";
-    }
-
-    return "bg-onboarding";
+    return "common-bg";
   };
 
   return (

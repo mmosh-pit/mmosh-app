@@ -1,92 +1,98 @@
 import * as React from "react";
 import { useAtom } from "jotai";
 import Image from "next/image";
-import * as anchor from "@coral-xyz/anchor";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { Connection } from "@solana/web3.js";
+import { data, status, userWeb3Info } from "../store";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
-import { Connectivity as UserConn } from "../lib/anchor/user";
-import { web3Consts } from "../lib/anchor/web3Consts";
-import { data } from "../store";
-import axios from "axios";
+const Banner = () => {
+  const [userStatus] = useAtom(status);
+  const [currentUser] = useAtom(data);
+  const [profileInfo] = useAtom(userWeb3Info);
 
-const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
-  const [currentUser, setCurrentUser] = useAtom(data);
-
-  const [hasInitialized, setHasInitialized] = React.useState(false);
-  const [userData, setUserData] = React.useState({
-    hasProfile: false,
-    hasInvitation: false,
-  });
   const wallet = useAnchorWallet();
 
-  const getUserData = React.useCallback(async (username: string) => {
-    if (!fromProfile) return;
-    const result = await axios.get(`/api/get-user-data?username=${username}`);
-
-    setCurrentUser({
-      ...result.data,
-    });
-  }, []);
-
-  const getUserDataByWallet = React.useCallback(async () => {
-    if (!fromProfile) return;
-    const result = await axios.get(
-      `/api/get-wallet-data?wallet=${wallet?.publicKey}`,
-    );
-
-    setCurrentUser({
-      ...result.data,
-    });
-  }, [wallet?.publicKey]);
-
-  const getProfileInfo = React.useCallback(async () => {
-    try {
-      if (!wallet) return;
-
-      const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-      );
-      const env = new anchor.AnchorProvider(connection, wallet, {
-        preflightCommitment: "processed",
-      });
-
-      let userConn = new UserConn(env, web3Consts.programID);
-      const profileInfo = await userConn.getUserInfo();
-
-      if (profileInfo.profiles.length > 0) {
-        await getUserData(profileInfo.profiles[0].userinfo.username);
-        setUserData({ ...userData, hasProfile: true });
-        return;
-      } else {
-        await getUserDataByWallet();
-      }
-
-      if (profileInfo.activationTokens.length > 0) {
-        setUserData({ ...userData, hasInvitation: true, hasProfile: false });
-        return;
-      }
-
-      setUserData({ hasProfile: false, hasInvitation: false });
-    } catch (error) {
-      console.log("Got error", error);
-    }
-  }, []);
-
-  const fetchUserInfo = React.useCallback(async () => {
-    await getProfileInfo();
-
-    setHasInitialized(true);
-  }, [wallet?.publicKey]);
-
-  React.useEffect(() => {
-    if (wallet?.publicKey) {
-      fetchUserInfo();
-    }
-  }, [wallet]);
+  const hasProfile = !!profileInfo?.profile.address;
+  const hasInvitation = !!profileInfo?.activationToken;
 
   const renderComponent = React.useCallback(() => {
-    if (userData.hasProfile) {
+    if (!wallet?.publicKey) {
+      return (
+        <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
+          <div className="flex flex-col justify-around items-center max-w-[75%]">
+            <div className="flex flex-col items-center mb-8">
+              <p className="text-2xl font-bold text-white font-goudy text-center">
+                Connect to Solana
+              </p>
+              <p className="text-base text-white text-center mt-4">
+                Welcome to the MMOSH! An epic adventure beyond time, space and
+                the death-grip of global civilization.
+              </p>
+              <p className="text-base text-white text-center mt-4">
+                Connect your Solana wallet.
+              </p>
+            </div>
+
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                position: "relative",
+                background: "#CD068E",
+                padding: "0 2em",
+                borderRadius: 15,
+              }}
+            >
+              <p className="text-base text-white">Connect Wallet</p>
+            </WalletMultiButton>
+          </div>
+
+          <div
+            className="w-full flex justify-center items-center py-4"
+            id="banner-image-container"
+          >
+            <div className="relative w-[8vmax] h-[8vmax] rounded-full">
+              <Image
+                src="https://storage.googleapis.com/mmosh-assets/solana.png"
+                alt="invitation"
+                layout="fill"
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // if (userStatus === UserStatus.noAccount) {
+    //   return (
+    //     <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
+    //       <div className="flex flex-col justify-around items-center max-w-[75%]">
+    //         <p className="text-base text-white text-center">
+    //           Create and Join Crypto Communities on Telegram! Start by
+    //           activating MMOSHBot
+    //         </p>
+    //
+    //         <a
+    //           href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
+    //         >
+    //           <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
+    //             <p className="text-base text-white">Activate Bot</p>
+    //           </button>
+    //         </a>
+    //       </div>
+    //
+    //       <div
+    //         className="w-full flex justify-center items-center py-8"
+    //         id="banner-image-container"
+    //       >
+    //         <div className="relative flex justify-center items-center rounded-full w-[8vmax] h-[8vmax] bg-blue-500">
+    //           <TelegramBigIcon className="mr-2" />
+    //         </div>
+    //       </div>
+    //     </div>
+    //   );
+    // }
+
+    if (hasProfile) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
@@ -118,7 +124,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
       );
     }
 
-    if (userData.hasInvitation) {
+    if (hasInvitation) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
@@ -184,9 +190,7 @@ const Banner = ({ fromProfile }: { fromProfile: boolean }) => {
         </div>
       </div>
     );
-  }, [currentUser, userData]);
-
-  if (!hasInitialized || !currentUser?.profile?.name) return <></>;
+  }, [currentUser, userStatus, wallet?.publicKey, hasProfile, hasInvitation]);
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

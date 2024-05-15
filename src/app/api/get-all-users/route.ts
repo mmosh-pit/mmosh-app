@@ -10,10 +10,9 @@ export async function GET(req: NextRequest) {
   const skip = searchParams.get("skip");
   const sortValue = searchParams.get("sort") as string;
   const sortDirection = searchParams.get("sortDir") as string;
-  const memberTypes = searchParams.get("userType") as string;
   const searchText = searchParams.get("searchText") as string;
 
-  if (!skip || !sortValue || !memberTypes) {
+  if (!skip || !sortValue) {
     return NextResponse.json("Invalid Payload", { status: 400 });
   }
 
@@ -21,13 +20,10 @@ export async function GET(req: NextRequest) {
     profile: {
       $exists: true,
     },
+    profilenft: {
+      $exists: true,
+    },
   };
-
-  if (memberTypes !== "all") {
-    filter.profilenft = {
-      $exists: memberTypes === "members",
-    };
-  }
 
   if (searchText) {
     searchText.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -68,7 +64,7 @@ export async function GET(req: NextRequest) {
   };
 
   data.forEach((row) => {
-    result.totalPoints += row.telegram.points;
+    result.totalPoints += row.telegram?.points || 0;
   });
 
   result.totalAccounts = data.length;

@@ -34,6 +34,10 @@ const MintInvitation = () => {
 
     setMessage(res);
 
+    setTimeout(() => {
+      setMessage({ type: "", message: "" });
+    }, 5000);
+
     setIsLoading(false);
   }, [amountSelected]);
 

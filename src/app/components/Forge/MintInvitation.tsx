@@ -48,7 +48,7 @@ const MintInvitation = () => {
           Build up your guild and earn royalties when new members join MMOSH
           DAO.
         </p>
-        <div className="flex items-center px-2 py-4 bg-[#030007] bg-opacity-40 rounded-lg mt-12">
+        <div className="flex items-center px-2 py-4 bg-[#030007] bg-opacity-40 rounded-lg mt-12 lg:max-w-[40%] md:max-w-[50%]">
           <div className="relative w-[12vmax] h-[10vmax] ml-2 mr-4">
             <Image
               src="https://storage.googleapis.com/mmosh-assets/invitation.png"
@@ -62,7 +62,7 @@ const MintInvitation = () => {
               <p className="text-lg text-white">
                 Invitation from {currentUser?.profile.username}
               </p>
-              <p className="text-base max-w-[50%]">
+              <p className="text-base">
                 {currentUser?.profile.username} cordially invites you to join
                 him on Moral Panic, the Genesis MMOSH. The favor of a reply is
                 requested
@@ -103,7 +103,7 @@ const MintInvitation = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col mr-4">
                 <Button
                   isLoading={isLoading}
                   title="Mint"

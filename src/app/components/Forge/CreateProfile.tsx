@@ -133,7 +133,12 @@ const CreateProfile = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (!validateFields() || !profileInfo || !wallet) {
+    if (
+      !validateFields() ||
+      !profileInfo ||
+      !wallet ||
+      !profileInfo?.activationToken
+    ) {
       return;
     }
 
@@ -170,6 +175,17 @@ const CreateProfile = () => {
     const objectUrl = URL.createObjectURL(image);
     setPreview(objectUrl);
   }, [image]);
+
+  React.useEffect(() => {
+    if (!profileInfo?.activationToken) {
+      setMessage({
+        type: "info",
+        message:
+          "Hey! We checked your wallet and you don’t have any Invitations. You can find one in our [Telegram Group](https://t.me/mmoshpit)",
+      });
+      return;
+    }
+  }, [profileInfo]);
 
   return (
     <div className="w-full flex justify-center">
@@ -325,7 +341,7 @@ const CreateProfile = () => {
               title="Mint Your Profile"
               size="large"
               action={submitForm}
-              disabled={isLoading}
+              disabled={isLoading || !profileInfo?.activationToken}
             />
             <div className="flex flex-col justify-center items-center">
               <p className="text-sm text-white">Price: 10.000 MMOSH</p>

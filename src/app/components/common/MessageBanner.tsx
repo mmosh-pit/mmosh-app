@@ -11,6 +11,10 @@ const MessageBanner = ({ message, type }: Props) => {
       return "warn-container";
     }
 
+    if (type === "info") {
+      return "info-container";
+    }
+
     if (type === "error") {
       return "error-container";
     }

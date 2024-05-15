@@ -63,7 +63,7 @@ const Header = () => {
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8 ";
+      "w-full flex flex-col justify-center items-center py-6 px-8";
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
@@ -191,9 +191,9 @@ const Header = () => {
   }, [wallet, incomingWalletToken]);
 
   return (
-    <div className="flex flex-col pb-4">
+    <div className="flex flex-col">
       <div className={getHeaderBackground()}>
-        <div className="flex w-full justify-between items-center mx-8">
+        <div className="flex w-full justify-between items-center mx-8 pb-4">
           {isMobileScreen ? (
             <MobileDrawer />
           ) : (

@@ -11,6 +11,7 @@ p {
 
 a {
   font-size: 0.8vmax;
+  text-decoration: underline;
 }
 
 span {
@@ -217,10 +218,6 @@ input {
   font-size: 0.85vmax;
 }
 
-a {
-  font-size: 0.85vmax;
-}
-
 #filter-container {
   position: relative;
   display: flex;
@@ -353,6 +350,19 @@ a {
     rgba(244, 132, 0, 0.602) 49.43%,
     rgba(45, 14, 1, 0) 100%
   );
+}
+
+.info-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(255, 255, 255, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.info-container span {
+  color: #000;
 }
 
 .featured-card {

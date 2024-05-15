@@ -180,8 +180,7 @@ const CreateProfile = () => {
     if (!profileInfo?.activationToken) {
       setMessage({
         type: "info",
-        message:
-          "Hey! We checked your wallet and you don’t have any Invitations. You can find one in our [Telegram Group](https://t.me/mmoshpit)",
+        message: `Hey! An Invitation from a current member is required to mint a Profile NFT and join MMOSH DAO. You can find a member to sponsor you in the [Membership Directory.](${process.env.NEXT_PUBLIC_APP_MAIN_URL})`,
       });
       return;
     }

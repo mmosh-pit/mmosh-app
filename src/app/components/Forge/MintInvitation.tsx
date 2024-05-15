@@ -114,7 +114,7 @@ const MintInvitation = () => {
                   isPrimary
                   size="small"
                   action={mintInvitation}
-                  disabled={isLoading}
+                  disabled={isLoading || amountSelected <= 0}
                 />
 
                 <label className="text-white text-sm">

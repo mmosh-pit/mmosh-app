@@ -11,7 +11,6 @@ p {
 
 a {
   font-size: 0.8vmax;
-  text-decoration: underline;
 }
 
 span {
@@ -363,6 +362,10 @@ input {
 
 .info-container span {
   color: #000;
+}
+
+.info-container a {
+  text-decoration: underline;
 }
 
 .featured-card {

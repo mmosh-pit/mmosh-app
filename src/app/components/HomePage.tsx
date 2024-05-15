@@ -9,12 +9,10 @@ import {
   searchBarText,
   sortDirection,
   sortOption,
-  userType,
 } from "../store";
 import Banner from "./Banner";
 import UserCard from "./UserCard";
 import UserSortTabs from "./UserSortTabs";
-import UserTypeOptionsTabs from "./Home/UserTypeOptionsTabs";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -22,7 +20,6 @@ const HomePage = () => {
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [selectedSortOption] = useAtom(sortOption);
   const [selectedSortDirection] = useAtom(sortDirection);
-  const [selectedFilter] = useAtom(userType);
 
   const fetching = React.useRef(false);
   const containerRef = React.useRef<any>(null);
@@ -43,7 +40,7 @@ const HomePage = () => {
   const filterUsers = React.useCallback(async () => {
     fetching.current = true;
     const result = await axios.get(
-      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&userType=${selectedFilter}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
+      `/api/get-all-users?sort=${selectedSortOption}&skip=${0}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
     );
 
     setCurrentPage(0);
@@ -52,20 +49,14 @@ const HomePage = () => {
 
     setUsers(result.data.users);
     allUsers.current = result.data.users;
-  }, [
-    selectedFilter,
-    selectedSortOption,
-    selectedSortDirection,
-    currentPage,
-    searchText,
-  ]);
+  }, [selectedSortOption, selectedSortDirection, currentPage, searchText]);
 
   const paginateUsers = React.useCallback(async () => {
     fetching.current = true;
     const result = await axios.get(
       `/api/get-all-users?sort=${selectedSortOption}&skip=${
         currentPage * 10
-      }&userType=${selectedFilter}&sortDir=${selectedSortDirection}&searchText=${searchText}`,
+      }&sortDir=${selectedSortDirection}&searchText=${searchText}`,
     );
 
     fetching.current = false;
@@ -76,13 +67,7 @@ const HomePage = () => {
 
     setUsers((prev) => [...prev, ...result.data.users]);
     allUsers.current = [...allUsers.current, ...result.data.users];
-  }, [
-    selectedFilter,
-    selectedSortOption,
-    selectedSortDirection,
-    currentPage,
-    searchText,
-  ]);
+  }, [selectedSortOption, selectedSortDirection, currentPage, searchText]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -96,7 +81,7 @@ const HomePage = () => {
 
   React.useEffect(() => {
     filterUsers();
-  }, [selectedFilter, selectedSortOption, selectedSortDirection, searchText]);
+  }, [selectedSortOption, selectedSortDirection, searchText]);
 
   React.useEffect(() => {
     if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
@@ -131,8 +116,6 @@ const HomePage = () => {
 
       <div className="w-full mt-8">
         <div className="flex flex-col items-start ml-20">
-          <UserTypeOptionsTabs />
-
           <UserSortTabs />
         </div>
 

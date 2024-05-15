@@ -9,14 +9,23 @@ import { useAtom } from "jotai";
 // import CommunityCard from "../components/Forge/MainPage/CommunityCard";
 // import InvitationCard from "../components/Forge/MainPage/InvitationCard";
 // import ProfileCard from "../components/Forge/MainPage/ProfileCard";
-import { userWeb3Info } from "../store";
+import { userWeb3Info, web3InfoLoading } from "../store";
 import MintInvitation from "../components/Forge/MintInvitation";
 import CreateProfile from "../components/Forge/CreateProfile";
 
 const Forge = () => {
   const [profileData] = useAtom(userWeb3Info);
+  const [isLoadingProfile] = useAtom(web3InfoLoading);
 
   const hasProfile = !!profileData?.profile.address;
+
+  if (isLoadingProfile) {
+    return (
+      <div className="relative background-content flex w-full justify-center items-center">
+        <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
+      </div>
+    );
+  }
 
   if (hasProfile) {
     return (

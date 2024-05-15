@@ -157,8 +157,6 @@ const CreateProfile = () => {
     createMessage(result.message, result.type);
 
     if (result.type === "success") {
-      // TODO: implement navigation to User's profile or anywere needed
-
       setCurrentUser((prev) => {
         return { ...prev!, profile: result.data };
       });
@@ -214,56 +212,41 @@ const CreateProfile = () => {
             </div>
 
             <div className="flex flex-col w-full lg:w-[35%] xs:w-[85%] md:px-[3vmax]">
-              <div className="flex flex-col w-full">
-                <p className="text-xs text-white">
-                  First Name or Alias<sup>*</sup>
-                </p>
-                <Input
-                  type="text"
-                  placeholder="Name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-                <p className="text-tiny">
-                  Up to 50 characters, can have spaces.
-                </p>
-              </div>
+              <Input
+                type="text"
+                title="First Name or Alias"
+                required
+                helperText="Up to 50 characters, can have spaces."
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
 
-              <div className="flex flex-col w-full">
-                <p className="text-xs text-white">Last Name</p>
-                <Input
-                  type="text"
-                  placeholder="Last Name"
-                  value={form.lastName}
-                  onChange={(e) =>
-                    setForm({ ...form, lastName: e.target.value })
-                  }
-                />
-                <p className="text-tiny">Up to 15 characters</p>
-              </div>
+              <Input
+                type="text"
+                title="Last Name"
+                required={false}
+                helperText="Up to 15 characters"
+                placeholder="Last Name"
+                value={form.lastName}
+                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+              />
 
-              <div className="flex flex-col">
-                <p className="text-xs text-white">
-                  Username<sup>*</sup>
-                </p>
-                <Input
-                  type="text"
-                  value={form.username}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      username: e.target.value.replace(/\s/g, ""),
-                    })
-                  }
-                  onBlur={checkForUsername}
-                  placeholder="Username"
-                />
-                {error.error ? (
-                  <p className="text-xs text-red-600">{error.message}</p>
-                ) : (
-                  <p className="text-xs">15 characters</p>
-                )}
-              </div>
+              <Input
+                type="text"
+                title="Username"
+                required
+                helperText={error.error ? error.message : "15 characters"}
+                value={form.username}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    username: e.target.value.replace(/\s/g, ""),
+                  })
+                }
+                onBlur={checkForUsername}
+                placeholder="Username"
+              />
 
               <div className="flex flex-col">
                 <p className="text-xs text-white">
@@ -280,9 +263,10 @@ const CreateProfile = () => {
             </div>
 
             <div className="flex flex-col mt-4 md:mt-4 w-[85%] lg:w-fit">
-              <p className="text-xs text-white">Description</p>
               <Input
                 type="text"
+                title="Description"
+                required={false}
                 placeholder="Tell us about yourself in up to 160 characters"
                 value={form.description}
                 onChange={(e) =>
@@ -302,6 +286,9 @@ const CreateProfile = () => {
                   <div className="flex flex-col">
                     <Input
                       type="text"
+                      title=""
+                      helperText="Example: Amazing"
+                      required={false}
                       value={form.descriptor}
                       onChange={(e) =>
                         setForm({
@@ -311,12 +298,14 @@ const CreateProfile = () => {
                       }
                       placeholder="Descriptor"
                     />
-                    <label className="text-xs">Example: Amazing</label>
                   </div>
 
                   <div className="flex flex-col ml-4">
                     <Input
                       type="text"
+                      title=""
+                      helperText="Example: Elf"
+                      required={false}
                       value={form.noun}
                       onChange={(e) =>
                         setForm({
@@ -326,7 +315,6 @@ const CreateProfile = () => {
                       }
                       placeholder="Noun"
                     />
-                    <label className="text-tiny">Example: Elf</label>
                   </div>
                 </div>
               </div>

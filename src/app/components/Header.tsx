@@ -20,6 +20,7 @@ import {
   settings,
   status,
   userWeb3Info,
+  web3InfoLoading,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
@@ -50,6 +51,7 @@ const Header = () => {
   const wallet = useAnchorWallet();
   const renderedUserInfo = React.useRef(false);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
+  const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [userStatus] = useAtom(status);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
@@ -97,6 +99,9 @@ const Header = () => {
     const env = new anchor.AnchorProvider(connection, wallet!, {
       preflightCommitment: "processed",
     });
+
+    setIsLoadingProfile(true);
+
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const profileInfo = await userConn.getUserInfo();
@@ -163,6 +168,7 @@ const Header = () => {
         image: profileNft?.userinfo.image,
       },
     });
+    setIsLoadingProfile(false);
   };
 
   React.useEffect(() => {
@@ -175,6 +181,8 @@ const Header = () => {
     if (wallet?.publicKey && !renderedUserInfo.current) {
       renderedUserInfo.current = true;
       getProfileInfo();
+    } else {
+      setIsLoadingProfile(false);
     }
   }, [wallet]);
 

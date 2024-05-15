@@ -7,14 +7,12 @@ import { Connection } from "@solana/web3.js";
 
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "../../anchor/web3Consts";
-import { UserStatus, data, status } from "../store";
+import { data, status } from "../store";
 import axios from "axios";
-import TelegramBigIcon from "@/assets/icons/TelegramBigIcon";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const Banner = ({
   fromProfile,
-  userTelegramId,
 }: {
   fromProfile: boolean;
   userTelegramId?: number;
@@ -138,35 +136,35 @@ const Banner = ({
       );
     }
 
-    if (userStatus === UserStatus.noAccount) {
-      return (
-        <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
-          <div className="flex flex-col justify-around items-center max-w-[75%]">
-            <p className="text-base text-white text-center">
-              Create and Join Crypto Communities on Telegram! Start by
-              activating MMOSHBot
-            </p>
-
-            <a
-              href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
-            >
-              <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
-                <p className="text-base text-white">Activate Bot</p>
-              </button>
-            </a>
-          </div>
-
-          <div
-            className="w-full flex justify-center items-center py-8"
-            id="banner-image-container"
-          >
-            <div className="relative flex justify-center items-center rounded-full w-[8vmax] h-[8vmax] bg-blue-500">
-              <TelegramBigIcon className="mr-2" />
-            </div>
-          </div>
-        </div>
-      );
-    }
+    // if (userStatus === UserStatus.noAccount) {
+    //   return (
+    //     <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
+    //       <div className="flex flex-col justify-around items-center max-w-[75%]">
+    //         <p className="text-base text-white text-center">
+    //           Create and Join Crypto Communities on Telegram! Start by
+    //           activating MMOSHBot
+    //         </p>
+    //
+    //         <a
+    //           href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
+    //         >
+    //           <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
+    //             <p className="text-base text-white">Activate Bot</p>
+    //           </button>
+    //         </a>
+    //       </div>
+    //
+    //       <div
+    //         className="w-full flex justify-center items-center py-8"
+    //         id="banner-image-container"
+    //       >
+    //         <div className="relative flex justify-center items-center rounded-full w-[8vmax] h-[8vmax] bg-blue-500">
+    //           <TelegramBigIcon className="mr-2" />
+    //         </div>
+    //       </div>
+    //     </div>
+    //   );
+    // }
 
     if (userData.hasProfile) {
       return (

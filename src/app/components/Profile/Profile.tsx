@@ -113,7 +113,7 @@ const Profile = ({ username }: { username: string }) => {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <Banner fromProfile userTelegramId={userData?.telegram?.id} />
+      <Banner />
       <div
         className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16`}
       >

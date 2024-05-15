@@ -102,7 +102,7 @@ const HomePage = () => {
       ref={containerRef}
       onScroll={handleScroll}
     >
-      <Banner fromProfile={false} />
+      <Banner />
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <p className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
           Welcome Home, {currentUser?.profile?.name}

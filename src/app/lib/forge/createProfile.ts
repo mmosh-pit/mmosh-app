@@ -225,6 +225,7 @@ export const createProfile = async ({
         data: params,
       };
     } else {
+      console.log("Response: ", res);
       return {
         type: "error",
         message:
@@ -232,7 +233,7 @@ export const createProfile = async ({
       };
     }
   } catch (err) {
-    console.log("Got error: ", err);
+    console.error("Got error: ", err);
     return {
       type: "error",
       message: "Something wrong happened, please contact support",

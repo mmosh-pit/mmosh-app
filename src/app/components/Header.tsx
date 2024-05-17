@@ -296,20 +296,6 @@ const Header = () => {
               )}
           </div>
         </div>
-
-        {userStatus !== UserStatus.fullAccount && pathname === "/" && (
-          <div className="w-full flex flex-col justify-center items-center mb-4">
-            <div
-              className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
-            >
-              <Image
-                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-                alt="mmosh"
-                layout="fill"
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       {pathname === "/" && !isOnSettings && (

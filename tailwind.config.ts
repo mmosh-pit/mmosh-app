@@ -13,7 +13,7 @@ const config: Config = {
     fontSize: {
       xs: "0.65vmax",
       sm: "0.8vmax",
-      tiny: ".875rem",
+      tiny: "0.5vmax",
       base: "0.85vmax",
       lg: "1vmax",
       xl: "1.25rem",

@@ -331,7 +331,7 @@ const CreateProfile = () => {
               disabled={isLoading || !profileInfo?.activationToken}
             />
             <div className="flex flex-col justify-center items-center">
-              <p className="text-sm text-white">Price: 10.000 MMOSH</p>
+              <p className="text-sm text-white">Price: 10,000 MMOSH</p>
               <p className="text-tiny text-white">
                 plus a small amount of SOL for gas fees
               </p>

@@ -7,20 +7,8 @@ import { CreateInvitationParams } from "@/app/models/createInvitationParams";
 import { web3Consts } from "@/anchor/web3Consts";
 import { getUsername } from "./getUsername";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
-
-const capitalizeString = (str: any) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-const getPronouns = (pronoun: string) => {
-  if (pronoun == "they/them") {
-    return "them";
-  } else if (pronoun == "he/him") {
-    return "him";
-  } else {
-    return "her";
-  }
-};
+import { capitalizeString } from "../capitalizeString";
+import { getPronouns } from "../getPronouns";
 
 export const createSubscriptionInvitation = async ({
   wallet,
@@ -148,11 +136,10 @@ export const createSubscriptionInvitation = async ({
     }
 
     const symbol = "INVITE";
-    const uri = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ shdwHash;
     const res: any = await userConn.initSubscriptionBadge({
       name: "Invitation",
       symbol,
-      uri,
+      uri: shdwHash,
       profile: profileInfo.profile.address,
     });
 

@@ -96,7 +96,7 @@ const HomePage = () => {
 
   return (
     <div
-      className={`w-full h-screen flex flex-col items-center background-content ${
+      className={`w-full min-h-screen flex flex-col items-center background-content ${
         isDrawerShown ? "z-[-1]" : ""
       }`}
       ref={containerRef}

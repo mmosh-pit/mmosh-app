@@ -12,9 +12,9 @@ const HamburgerIcon = (props: Props) => (
     <path
       d="M2 1.66602H18M2 6.99935H18M2 12.3327H18"
       stroke="white"
-      stroke-width="3"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

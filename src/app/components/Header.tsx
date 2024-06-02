@@ -199,9 +199,9 @@ const Header = () => {
   }, [wallet, incomingWalletToken]);
 
   return (
-    <div className="flex flex-col">
+    <header className="flex flex-col">
       <div className={getHeaderBackground()}>
-        <div className="flex w-full justify-between items-center mx-8 pb-4">
+        <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (
             <MobileDrawer />
           ) : (
@@ -218,14 +218,14 @@ const Header = () => {
 
           {!isMobileScreen && (
             <div className="flex w-[25%] justify-between items-center">
-              <p
+              <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
               >
                 Home
-              </p>
+              </a>
 
-              <p
+              <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => {
                   if (isOnSettings) return setIsOnSettings(false);
@@ -233,7 +233,7 @@ const Header = () => {
                 }}
               >
                 My Profile
-              </p>
+              </a>
 
               <a
                 target="_blank"
@@ -243,14 +243,14 @@ const Header = () => {
                 Website
               </a>
 
-              <p
+              <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => {
                   router.push("/create");
                 }}
               >
                 Forge
-              </p>
+              </a>
             </div>
           )}
 
@@ -273,6 +273,7 @@ const Header = () => {
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
                 padding: "0 2em",
                 borderRadius: 15,
+                position: "relative",
               }}
             >
               <p className="text-lg text-white">
@@ -296,24 +297,10 @@ const Header = () => {
               )}
           </div>
         </div>
-
-        {userStatus !== UserStatus.fullAccount && pathname === "/" && (
-          <div className="w-full flex flex-col justify-center items-center mb-4">
-            <div
-              className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
-            >
-              <Image
-                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-                alt="mmosh"
-                layout="fill"
-              />
-            </div>
-          </div>
-        )}
       </div>
 
       {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12">
+        <div className="w-full flex justify-center lg:justify-between items-end mt-12 pb-4">
           {!isMobileScreen && (
             <div className="flex w-[33%]">
               <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
@@ -340,7 +327,9 @@ const Header = () => {
             </div>
           )}
 
-          <div className="relative w-[16vmax] h-[16vmax]">
+          <div
+            className={`relative w-[16vmax] h-[16vmax] ${isDrawerShown && "z-[-1]"}`}
+          >
             <Image
               src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
               alt="mmosh"
@@ -374,7 +363,7 @@ const Header = () => {
           )}
         </div>
       )}
-    </div>
+    </header>
   );
 };
 

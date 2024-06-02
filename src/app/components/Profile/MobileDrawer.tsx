@@ -33,14 +33,14 @@ const MobileDrawer = () => {
         ></label>
         <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
-            <p
+            <a
               className="text-base text-white mb-2 cursor-pointer"
               onClick={() => router.replace("/")}
             >
               Home
-            </p>
+            </a>
 
-            <p
+            <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
                 if (isOnSettings) return setIsOnSettings(false);
@@ -48,7 +48,7 @@ const MobileDrawer = () => {
               }}
             >
               My Profile
-            </p>
+            </a>
 
             <a
               href="https://www.mmosh.ai"

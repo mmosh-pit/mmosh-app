@@ -30,7 +30,6 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
     <>
       <Script
         async
-        onLoad={() => console.log("Loaded!")}
         strategy="beforeInteractive"
         type="text/javascript"
         src="https://telegram.org/js/telegram-widget.js?22"

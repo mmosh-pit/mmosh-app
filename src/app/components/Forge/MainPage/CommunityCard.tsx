@@ -31,8 +31,8 @@ const CommunityCard = () => {
         <div className="w-full flex justify-around">
           <Button
             isLoading={false}
-            title="Community"
-            isPrimary
+            title="Communities Directory"
+            isPrimary={false}
             size="small"
             action={navigateToCommunity}
           />

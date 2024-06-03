@@ -4,11 +4,18 @@ import { Connection, Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import Config from "./../../anchor/web3Config.json";
 
-export const pinImageToShadowDrive = async (file: any) => {
+export const pinImageToShadowDrive = async (file: File) => {
   try {
+    const blob = file.slice(0, file.size, "image/png");
+    const updatedFileName = new File(
+      [blob],
+      `${file.name.replace(".png", "")}-${new Date()}.png`,
+      { type: "image/png" },
+    );
+
     const privateKey: any = process.env.NEXT_PUBLIC_SHDW_PRIVATE;
-    let private_buffer = bs58.decode(privateKey);
-    let private_arrray = new Uint8Array(
+    const private_buffer = bs58.decode(privateKey);
+    const private_arrray = new Uint8Array(
       private_buffer.buffer,
       private_buffer.byteOffset,
       private_buffer.byteLength / Uint8Array.BYTES_PER_ELEMENT,
@@ -22,7 +29,7 @@ export const pinImageToShadowDrive = async (file: any) => {
     const accounts = await drive.getStorageAccounts();
     const acc = accounts[0].publicKey;
 
-    const upload = await drive.uploadFile(acc, file);
+    const upload = await drive.uploadFile(acc, updatedFileName);
     return upload.finalized_locations[0];
   } catch (error) {
     console.log("shadow drive upload error: ", error);

@@ -16,7 +16,7 @@ const Button = ({
   disabled,
 }: Props) => (
   <button
-    className={`${isPrimary && "bg-[#CD068E]"} ${size === "small" ? "p-2" : "p-4"} rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
+    className={`${isPrimary ? "bg-[#CD068E]" : "bg-[#6536BB]"} ${size === "small" ? "p-2" : "p-4"} w-full rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
     onClick={action}
     disabled={disabled}
   >

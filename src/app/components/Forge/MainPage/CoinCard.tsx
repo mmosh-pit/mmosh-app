@@ -28,7 +28,15 @@ const CoinCard = () => {
           </p>
         </div>
 
-        <div className="flex flex-col self-center">
+        <div className="w-full flex justify-around">
+          <Button
+            isLoading={false}
+            title="Coin Directory"
+            isPrimary={false}
+            size="small"
+            action={navigateToCoin}
+          />
+
           <Button
             isLoading={false}
             title="Create a Coin!"

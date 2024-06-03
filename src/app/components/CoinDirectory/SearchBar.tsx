@@ -48,7 +48,7 @@ const SearchBar = () => {
     <div className="w-full flex justify-between px-8">
       {!isMobile && <div className="w-[33%]" />}
 
-      <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
+      <div className="w-[33%] flex items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
         <button
           className="flex bg-[#5A00FF] rounded-full px-12 py-4 items-center"
           onClick={executeSearch}
@@ -71,25 +71,25 @@ const SearchBar = () => {
         />
       </div>
 
-      <div className="w-[33%] flex items-center justify-between">
-        <div className="flex items-center">
+      <div className="w-[33%] flex items-center justify-end">
+        <div className="flex items-center mr-8">
           <p className="text-sm">MMOSH</p>
           <input
             type="checkbox"
-            className="toggle [--tglbg:#1A1750] bg-[#EF01A4]"
+            className="toggle [--tglbg:#1A1750] hover:bg-[#EF01A4] bg-[#EF01A4] mx-4"
             checked={isUSDCSelected}
             onChange={(e) => setIsUSDCSelected(e.target.checked)}
           />
           <p className="text-sm">USDC</p>
         </div>
 
-        <div className="dropdown bg-[#221E5F] rounded-lg py-1">
+        <div className="dropdown rounded-lg py-1 mr-8">
           <div tabIndex={0} role="button" className="btn m-1">
             {volume.label}
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 bg-[#221E5F]"
+            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
           >
             {volumeOptions.map((value) => (
               <li onClick={() => setVolume(value)}>

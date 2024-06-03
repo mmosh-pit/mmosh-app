@@ -20,6 +20,7 @@ export type Community = {
   creatorRoyalties: string;
   invitation: string;
   invitationPrice: string;
+  inviteImg: string;
   passPrice: string;
   promoterRoyalties: string;
   scoutRoyalties: string;

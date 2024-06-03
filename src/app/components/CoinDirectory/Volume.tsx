@@ -1,30 +1,71 @@
+import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
+import axios from "axios";
 import * as React from "react";
 
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 
 const Volume = () => {
-  // const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState([]);
+  const [total, setTotal] = React.useState("0");
 
-  const data = [
-    { name: "1", uv: 300, pv: 456 },
-    { name: "5", uv: 100, pv: 321 },
-    { name: "6", uv: 9, pv: 235 },
-    { name: "7", uv: 53, pv: 267 },
-    { name: "12", uv: 43, pv: 45 },
-    { name: "19", uv: 222, pv: 366 },
-    { name: "20", uv: 372, pv: 486 },
-    { name: "21", uv: 182, pv: 512 },
-    { name: "22", uv: 164, pv: 302 },
-    { name: "23", uv: 316, pv: 425 },
-    { name: "24", uv: 131, pv: 467 },
-    { name: "32", uv: 154, pv: 33 },
-    { name: "33", uv: 205, pv: 354 },
-    { name: "34", uv: 70, pv: 258 },
-  ];
+  const [type, setType] = React.useState("");
+
+  const getVolume = async () => {
+    try {
+      const tvlResult = await axios.get(`/api/volume?type=${type}`);
+
+      setData(tvlResult.data.labels?.reverse() || []);
+
+      setTotal(abbreviateNumber(Math.abs(tvlResult.data.total)));
+    } catch (error) {
+      setTotal("0");
+    }
+  };
+
+  React.useEffect(() => {
+    getVolume();
+  }, [type]);
 
   return (
-    <div className="w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
+      <div className="w-full flex justify-between">
+        <div className="flex flex-col ml-6 mt-4">
+          <p className="text-sm">Volume</p>
+          <h6 className="my-2">${total}M</h6>
+          <p className="text-tiny">Past Month</p>
+        </div>
+
+        <div className="flex">
+          <div
+            className={`${type === "day" ? "bg-[#8511F98F]" : "bg-transparent border-[1px] border-[#FFFFFF22]"} flex justify-center items-center w-[1vmax] h-[1vmax] mx-1`}
+            onClick={() => setType("day")}
+          >
+            D
+          </div>
+
+          <div
+            className={`${type === "week" ? "bg-[#8511F98F]" : "bg-transparent border-[1px] border-[#FFFFFF22]"} flex justify-center items-center w-[1vmax] h-[1vmax] mx-1`}
+            onClick={() => setType("week")}
+          >
+            W
+          </div>
+
+          <div
+            className={`${type === "month" ? "bg-[#8511F98F]" : "bg-transparent border-[1px] border-[#FFFFFF22]"} flex justify-center items-center w-[1vmax] h-[1vmax] mx-1`}
+            onClick={() => setType("month")}
+          >
+            M
+          </div>
+
+          <div
+            className={`${type === "year" ? "bg-[#8511F98F]" : "bg-transparent border-[1px] border-[#FFFFFF22]"} flex justify-center items-center w-[1vmax] h-[1vmax] mx-1`}
+            onClick={() => setType("year")}
+          >
+            Y
+          </div>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={200}>
         <BarChart
           width={500}
           height={300}
@@ -37,7 +78,7 @@ const Volume = () => {
           }}
         >
           <XAxis dataKey="name" />
-          <Bar dataKey="pv" fill="#7000FF" radius={[20, 20, 10, 10]} />
+          <Bar dataKey="value" fill="#7000FF" radius={[20, 20, 10, 10]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

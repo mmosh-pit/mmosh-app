@@ -50,31 +50,13 @@ const Price = () => {
     },
   ];
 
-  const customizedGroupTick = (props: any) => {
-    const { index, x, y, payload } = props;
-
-    return (
-      <g>
-        <g>
-          <text x={x} y={y}>
-            2021
-          </text>
-          <text x={x} y={y}>
-            2022
-          </text>
-          <text x={x} y={y}>
-            2023
-          </text>
-          <text x={x} y={y}>
-            2024
-          </text>
-        </g>
-      </g>
-    );
-  };
-
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
+      <div className="flex flex-col ml-6 mt-4">
+        <p className="text-sm">MMOSH Price</p>
+        <h6 className="my-2">$12.2M</h6>
+        <h6>USDC 12.2M</h6>
+      </div>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart
           width={500}
@@ -99,7 +81,6 @@ const Price = () => {
             scale="band"
             interval={0}
             axisLine={false}
-            tick={customizedGroupTick}
           />
           <Area
             type="monotone"

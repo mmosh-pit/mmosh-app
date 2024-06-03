@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useAtom } from "jotai";
 import Image from "next/image";
 
 import WalletIcon from "@/assets/icons/WalletIcon";
@@ -8,6 +9,7 @@ import { Coin } from "@/app/models/coin";
 import Button from "../../common/Button";
 import { getSwapTokenInfo } from "@/app/lib/forge/getSwapTokenInfo";
 import { swapTokens } from "@/app/lib/forge/swapTokens";
+import { targetTokenBalance } from "@/app/store/community";
 
 type Props = {
   coin: Coin;
@@ -16,6 +18,8 @@ type Props = {
 
 const Swap = ({ coin, communitySymbol }: Props) => {
   const wallet = useAnchorWallet();
+
+  const [_, setTargetTokenBalance] = useAtom(targetTokenBalance);
 
   const [swapLoading, setSwapLoading] = React.useState(false);
   const [result, setResult] = React.useState({ res: "", message: "" });
@@ -31,6 +35,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
     setSwapLoading(true);
     const res = await getSwapTokenInfo(token, wallet!);
 
+    setTargetTokenBalance(res.targetToken.balance);
     setBaseToken(res.baseToken);
     setTargetToken(res.targetToken);
     setSwapLoading(false);
@@ -61,7 +66,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
     <div className="community-page-container-card p-6 rounded-xl">
       <div className="flex flex-col">
         <div className="self-start">
-          <h5>Coin</h5>
+          <h6>Coin</h6>
         </div>
 
         <div className="flex flex-col items-center justify-center">
@@ -164,9 +169,12 @@ const Swap = ({ coin, communitySymbol }: Props) => {
             </div>
 
             <div className="w-[25%] flex justify-end">
-              <p className="w-full text-center px-4 text-sm text-white">
-                {targetToken.balance}
-              </p>
+              <input
+                readOnly={true}
+                value={targetToken.balance}
+                onChange={() => {}}
+                className="input max-w-[100%] text-center text-xs bg-transparent placeholder-white placeholder-opacity-[0.3]"
+              />
             </div>
           </div>
         </div>

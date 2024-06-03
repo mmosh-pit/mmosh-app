@@ -28,6 +28,7 @@ import MobileDrawer from "./Profile/MobileDrawer";
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
+import { pageCommunity } from "../store/community";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -53,6 +54,7 @@ const Header = () => {
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [userStatus] = useAtom(status);
+  const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
@@ -68,14 +70,10 @@ const Header = () => {
       "w-full flex flex-col justify-center items-center py-6 px-8";
 
     if (pathname.includes("create")) {
-      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
-    }
-
-    if (pathname !== "/" || isOnSettings) {
+      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
+    } else if (pathname !== "/" || isOnSettings) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
-    }
-
-    if (pathname === "/" && !isOnSettings) {
+    } else if (pathname === "/" && !isOnSettings) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
@@ -298,6 +296,18 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {pathname.includes("/create/communities/") && (
+        <div className="relative w-full flex justify-center items-end mt-12 pb-4">
+          <div
+            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
+          >
+            <h2 className="text-center">
+              Mint this pass to join {community?.name}
+            </h2>
+          </div>
+        </div>
+      )}
 
       {pathname === "/" && !isOnSettings && (
         <div className="w-full flex justify-center lg:justify-between items-end mt-12 pb-4">

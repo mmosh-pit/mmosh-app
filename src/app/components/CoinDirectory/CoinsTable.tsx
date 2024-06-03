@@ -2,65 +2,72 @@ import { useAtom } from "jotai";
 import * as React from "react";
 import Image from "next/image";
 
-import { coinTextSearch, selectedUSDCCoin } from "@/app/store/coins";
+import {
+  coinTextSearch,
+  selectedUSDCCoin,
+  selectedVolume,
+} from "@/app/store/coins";
 import SortIcon from "@/assets/icons/SortIcon";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import ArrowUp from "@/assets/icons/ArrowUp";
 import ArrowDown from "@/assets/icons/ArrowDown";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
-
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+import axios, { CancelTokenSource } from "axios";
 
 const CoinsTable = () => {
+  const source = React.useRef<CancelTokenSource | null>(null);
+
   const [searchText] = useAtom(coinTextSearch);
   const [isUSDCSelected] = useAtom(selectedUSDCCoin);
+  const [volume, setVolume] = useAtom(selectedVolume);
 
   const [selectedSort, setSelectedSort] = React.useState("");
+  const [isLastPage, setIsLastPage] = React.useState(false);
 
   const [coins, setCoins] = React.useState<DirectoryCoin[]>([]);
+
+  const getCoins = async (volume: string, keyword: string, page: number) => {
+    try {
+      if (source.current) {
+        source.current.cancel();
+        source.current = null;
+      }
+      source.current = axios.CancelToken.source();
+
+      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}`;
+
+      const apiResult = await axios.get(url, {
+        cancelToken: source.current.token,
+      });
+
+      console.log("Result: ", apiResult);
+
+      const newCoins = [];
+      for (let index = 0; index < apiResult.data.length; index++) {
+        const element = apiResult.data[index];
+        const datas = [];
+
+        for (
+          let index = 0;
+          index < element.priceLastSevenDays.length;
+          index++
+        ) {
+          const elementchart = element.priceLastSevenDays[index];
+          datas.push(elementchart.value);
+        }
+        element.priceLastSevenDays = datas;
+
+        newCoins.push(element);
+      }
+
+      setCoins(newCoins);
+      if (apiResult.data.length < 10) {
+        setIsLastPage(true);
+      }
+    } catch (error) {
+      setCoins([]);
+    }
+  };
 
   const getCoinPriceStatus = React.useCallback((start: number, end: number) => {
     const isIncremental = start <= end;
@@ -70,45 +77,49 @@ const CoinsTable = () => {
     const percentage = `${((end - start) / start) * 100}%`;
 
     return (
-      <div className="flex items-center">
+      <div className="flex items-center justify-evenly">
         {percentage}
         {iconToRender}
       </div>
     );
   }, []);
 
+  React.useEffect(() => {
+    getCoins(volume.value, searchText, 0);
+  }, [searchText, volume]);
+
   return (
-    <table>
+    <table className="w-full bg-[#100E5242] rounded-md">
       <thead>
         <tr>
           <th>
             <p className="text-white text-sm">Rank</p>
           </th>
-          <th>
-            <div className="flex">
+          <th align="center">
+            <div className="flex items-center">
               <SortIcon />
-              <p className="text-white text-sm">Coin</p>
+              <p className="text-white text-sm ml-2">Coin</p>
             </div>
           </th>
-          <th>
+          <th align="center">
             <p className="text-white text-sm">Price</p>
           </th>
-          <th>
+          <th align="center">
             <p className="text-white text-sm">1H%</p>
           </th>
-          <th>
+          <th align="center">
             <p className="text-white text-sm">24H%</p>
           </th>
 
-          <th>
+          <th align="center">
             <p className="text-white text-sm">FDV%</p>
           </th>
 
-          <th>
+          <th align="center">
             <p className="text-white text-sm">Volume%</p>
           </th>
 
-          <th>
+          <th align="center">
             <p className="text-white text-sm">Last 7 days</p>
           </th>
         </tr>
@@ -116,12 +127,15 @@ const CoinsTable = () => {
 
       <tbody>
         {coins.map((coin, index) => (
-          <tr className={`${index % 2 === 0 ? "#100E52" : "#07076E"}`}>
-            <td>
+          <tr
+            className={`${index % 2 === 0 ? "bg-[#100E5242]" : "bg-[#07076E70]"}`}
+            key={coin.symbol}
+          >
+            <td align="center">
               <p className="text-white text-sm">{index}</p>
             </td>
 
-            <td>
+            <td align="center">
               <div className="flex items-center">
                 <div className="relative w-[1vmax] h-[1vmax] rounded-full">
                   <Image
@@ -137,26 +151,26 @@ const CoinsTable = () => {
               </div>
             </td>
 
-            <td>{coin.price} MMOSH</td>
+            <td align="center">{coin.price} MMOSH</td>
 
-            <td>
+            <td align="center">
               {getCoinPriceStatus(coin.oneHourPriceStart, coin.oneHourPriceEnd)}
             </td>
 
-            <td>
+            <td align="center">
               {getCoinPriceStatus(coin.oneDayPriceStart, coin.oneDayPriceEnd)}
             </td>
 
-            <td>{coin.price * coin.volume} MMOSH</td>
+            <td align="center">{coin.price * coin.volume} MMOSH</td>
 
-            <td>{coin.volume} MMOSH</td>
+            <td align="center">{coin.volume} MMOSH</td>
 
-            <td>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart width={300} height={50} data={data}>
+            <td align="center">
+              <ResponsiveContainer width={150} height={50}>
+                <LineChart width={150} height={50} data={[1, 5, 10, 12]}>
                   <Line
                     type="monotone"
-                    dataKey="pv"
+                    dataKey="value"
                     stroke="#8884d8"
                     dot={false}
                     strokeWidth={2}

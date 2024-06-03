@@ -1,4 +1,5 @@
 import { Coin } from "@/app/models/coin";
+import { Community } from "@/app/models/community";
 import { atom } from "jotai";
 
 export const defaultFirstFormState = {
@@ -42,3 +43,7 @@ export const step3Form = atom<{
 }>(defaultThirdFormState);
 
 export const step = atom(0);
+
+export const pageCommunity = atom<Community | null>(null);
+
+export const targetTokenBalance = atom(0);

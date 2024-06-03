@@ -48,15 +48,15 @@ export async function GET(req: NextRequest) {
   const d = new Date();
   let filterDate;
 
-  if (volume == "hour") {
+  if (volume === "hour") {
     filterDate = new Date(d.setHours(d.getHours() - 1));
-  } else if (volume == "day") {
+  } else if (volume === "day") {
     filterDate = new Date(d.setDate(d.getDate() - 1));
-  } else if (volume == "week") {
+  } else if (volume === "week") {
     filterDate = new Date(d.setDate(d.getDate() - 7));
-  } else if (volume == "month") {
+  } else if (volume === "month") {
     filterDate = new Date(d.setMonth(d.getMonth() - 1));
-  } else if (volume == "year") {
+  } else if (volume === "year") {
     filterDate = new Date(d.setFullYear(d.getFullYear() - 1));
   }
 

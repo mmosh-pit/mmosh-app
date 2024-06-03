@@ -1,80 +1,47 @@
+import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
+import axios from "axios";
 import * as React from "react";
 
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 const TVL = () => {
-  // const [data, setData] = React.useState([]);
+  const rendered = React.useRef(false);
 
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+  const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
+  const [total, setTotal] = React.useState("0");
 
-  const customizedGroupTick = (props: any) => {
-    const { index, x, y, payload } = props;
+  const getTVL = async () => {
+    try {
+      const tvlResult = await axios.get(`/api/tvl`);
+      const data = [];
 
-    return (
-      <g>
-        <g>
-          <text x={x} y={y}>
-            2021
-          </text>
-          <text x={x} y={y}>
-            2022
-          </text>
-          <text x={x} y={y}>
-            2023
-          </text>
-          <text x={x} y={y}>
-            2024
-          </text>
-        </g>
-      </g>
-    );
+      for (let index = 0; index < tvlResult.data.labels.length; index++) {
+        const element = tvlResult.data.labels[index];
+        data.push({ value: Math.abs(element.value), name: element.label });
+      }
+
+      setTotal(abbreviateNumber(Math.abs(tvlResult.data.total)));
+
+      setData(data.reverse());
+    } catch (error) {
+      console.error(error);
+      setTotal("0");
+    }
   };
 
+  React.useEffect(() => {
+    if (!rendered.current) {
+      getTVL();
+      rendered.current = true;
+    }
+  }, []);
+
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
+      <div className="flex flex-col ml-6 mt-4">
+        <p className="text-sm mb-2">TVL</p>
+        <h6>{total} MMOSH</h6>
+      </div>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart
           width={500}
@@ -99,11 +66,10 @@ const TVL = () => {
             scale="band"
             interval={0}
             axisLine={false}
-            tick={customizedGroupTick}
           />
           <Area
             type="monotone"
-            dataKey="pv"
+            dataKey="value"
             stroke="#007AFF"
             fill="url(#gradient)"
           />

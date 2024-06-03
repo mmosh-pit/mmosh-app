@@ -8,8 +8,8 @@ body {
 
 p {
   font-family: var(--font-poppins);
-  font-size: 1.2vmax;
-  line-height: 1.5vmax;
+  font-size: 1vmax;
+  line-height: 1.2vmax;
   color: #bcbcbc;
 }
 
@@ -21,10 +21,18 @@ span {
   color: #d7d7d7;
 }
 
-h3 {
+h2 {
   font-family: var(--font-goudy);
   font-size: 1.8vmax;
   line-height: 1.5vmax;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+h3 {
+  font-family: var(--font-goudy);
+  font-size: 1.6vmax;
+  line-height: 1.3vmax;
   font-weight: 900;
   color: #ffffff;
 }
@@ -41,6 +49,14 @@ h5 {
   font-family: var(--font-goudy);
   font-size: 1.2vmax;
   line-height: 1vmax;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+h6 {
+  font-family: var(--font-goudy);
+  font-size: 1vmax;
+  line-height: 0.8vmax;
   font-weight: 700;
   color: #ffffff;
 }
@@ -625,4 +641,14 @@ select {
   align-items: center;
   background: rgba(39, 36, 85, 0.46);
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th,
+td {
+  padding: 1.5rem;
 }

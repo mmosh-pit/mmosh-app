@@ -1,17 +1,19 @@
-import CoinsTable from "../components/CoinDirectory/CoinsTable";
-import Price from "../components/CoinDirectory/Price";
-import SearchBar from "../components/CoinDirectory/SearchBar";
-import TVL from "../components/CoinDirectory/TVL";
-import Volume from "../components/CoinDirectory/Volume";
-import useCheckMobileScreen from "../lib/useCheckMobileScreen";
+"use client";
+
+import CoinsTable from "@/app/components/CoinDirectory/CoinsTable";
+import Price from "@/app/components/CoinDirectory/Price";
+import SearchBar from "@/app/components/CoinDirectory/SearchBar";
+import TVL from "@/app/components/CoinDirectory/TVL";
+import Volume from "@/app/components/CoinDirectory/Volume";
+import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 
 const Coins = () => {
   const isMobile = useCheckMobileScreen();
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
       {!isMobile && (
-        <div className="w-full flex justify-around items-center">
+        <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
           <TVL />
 
           <Volume />
@@ -24,7 +26,7 @@ const Coins = () => {
         <SearchBar />
       </div>
 
-      <div className="mt-8">
+      <div className="w-full mt-8">
         <CoinsTable />
       </div>
     </div>

@@ -63,7 +63,7 @@ const CustomSelect = ({
                   className="p-2 mx-1 custom-select-item rounded-full"
                   key={element}
                 >
-                  {element}
+                  <p className="text-xs text-white">{element}</p>
                   <div
                     className="p-1 rounded-full custom-select-item-delete"
                     onClick={() => onDelete!(element)}

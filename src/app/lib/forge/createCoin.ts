@@ -27,6 +27,7 @@ export const createCoin = async ({
   initialPrice,
   type,
   setMintingStatus,
+  username,
 }: CreateCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
@@ -48,7 +49,9 @@ export const createCoin = async ({
 
   try {
     setMintingStatus("Vaidating Symbol...");
-    const symbolResult = await axios.get(`/api/get-token?symbol=${symbol}`);
+    const symbolResult = await axios.get(
+      `/api/check-token-symbol?symbol=${symbol}`,
+    );
     if (symbolResult.data) {
       return {
         message:
@@ -161,6 +164,7 @@ export const createCoin = async ({
         image: body.image,
         tokenAddress: res.targetMint.toBase58(),
         bondingAddress: res.tokenBonding.toBase58(),
+        creatorUsername: username,
       };
 
       await axios.post("/api/save-directory", directoryParams);

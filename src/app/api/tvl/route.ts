@@ -10,16 +10,16 @@ export async function GET(req: NextRequest) {
   const labels = [];
 
   for (let index = 0; index < 4; index++) {
-    var d = new Date();
-    var pastYear = d.getFullYear() - index;
+    const d = new Date();
+    const pastYear = d.getFullYear() - index;
     labels.push({
       label: pastYear,
       value: 0,
     });
   }
 
-  var d = new Date();
-  var pastYear = d.getFullYear() - 3;
+  const d = new Date();
+  const pastYear = d.getFullYear() - 3;
   const buyresult = await collection
     .aggregate([
       {

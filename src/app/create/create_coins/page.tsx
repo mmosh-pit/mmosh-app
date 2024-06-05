@@ -14,7 +14,7 @@ import SimpleInput from "@/app/components/common/SimpleInput";
 import BalanceBox from "@/app/components/common/BalanceBox";
 import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { createCoin } from "@/app/lib/forge/createCoin";
-import { userWeb3Info } from "@/app/store";
+import { data, userWeb3Info } from "@/app/store";
 
 /* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */
 /* THE LIBRARY STILL WORKS WELL, SO IT IS NOT A BREAKING ERROR. RECHART DEV TEAM IS WORKING ON IT */
@@ -48,6 +48,7 @@ const defaultFormState = {
 const CreateCoin = () => {
   const wallet = useAnchorWallet();
   const [profileInfo] = useAtom(userWeb3Info);
+  const [currentUser] = useAtom(data);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState({
@@ -151,9 +152,8 @@ const CreateCoin = () => {
       imageFile: image,
       wallet: wallet!,
       setMintingStatus,
+      username: currentUser!.profile.username,
     };
-
-    console.log("Params: ", params);
 
     const res = await createCoin(params);
     setIsLoading(false);
@@ -169,7 +169,9 @@ const CreateCoin = () => {
 
   const checkSymbolExists = React.useCallback(async () => {
     setError(null);
-    const result = await axios.get(`/api/get-token?symbol=${form.symbol}`);
+    const result = await axios.get(
+      `/api/check-token-symbol?symbol=${form.symbol}`,
+    );
 
     if (result.data) {
       setError(
@@ -270,7 +272,7 @@ const CreateCoin = () => {
             required
             value={form.symbol}
             placeholder="Name"
-            helperText={error || "Up to 32 characters, can have spaces."}
+            helperText={error || "Up to 10 characters"}
             error={!!error}
             onBlur={checkSymbolExists}
             type="text"

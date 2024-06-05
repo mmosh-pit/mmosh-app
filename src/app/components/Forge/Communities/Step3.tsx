@@ -41,15 +41,22 @@ const Step3 = () => {
   );
 
   const getTotalRoyaltiesValue = React.useCallback(() => {
+    const hasInvitation = form.invitation !== "none";
+
     const totalValue =
-      Number(form.scoutRoyalties.replace("%", "")) +
+      (hasInvitation ? Number(form.scoutRoyalties.replace("%", "")) : 0) +
       Number(form.creatorRoyalties.replace("%", "")) +
-      Number(form.promoterRoyalties.replace("%", "")) +
+      (hasInvitation ? Number(form.promoterRoyalties.replace("%", "")) : 0) +
       3 +
       2;
 
     return totalValue;
-  }, [form.scoutRoyalties, form.promoterRoyalties, form.creatorRoyalties]);
+  }, [
+    form.scoutRoyalties,
+    form.promoterRoyalties,
+    form.creatorRoyalties,
+    form.invitation,
+  ]);
 
   const navigateToNextStep = React.useCallback(async () => {
     setIsLoading(true);
@@ -57,9 +64,16 @@ const Step3 = () => {
       const finalDiscount =
         form.invitation === "optional" ? form.invitationDiscount : "";
 
+      const scoutRoyalties =
+        form.invitation !== "none" ? form.scoutRoyalties : 0;
+      const promoterRoyalties =
+        form.invitation !== "none" ? form.promoterRoyalties : 0;
+
       const newFormData = {
         ...form,
         invitationDiscount: finalDiscount,
+        scoutRoyalties,
+        promoterRoyalties,
       };
 
       setForm({ ...form, invitationDiscount: finalDiscount });
@@ -194,7 +208,11 @@ const Step3 = () => {
                         checked={form.invitation === "none"}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setForm({ ...form, invitation: "none" });
+                            setForm({
+                              ...form,
+                              invitation: "none",
+                              creatorRoyalties: "90%",
+                            });
                             return;
                           }
 
@@ -273,50 +291,52 @@ const Step3 = () => {
                       }
                     />
                   </div>
-                  <p className="text-sm text-white w-[70%]">
-                    Your royalties as the Community founder
-                  </p>
+                  <p className="text-sm text-white w-[70%]">Your royalties</p>
                 </div>
               </div>
 
               <div className="flex w-full flex-col my-4">
-                <p className="text-base text-white">Agents</p>
+                {form.invitation !== "none" && (
+                  <>
+                    <p className="text-base text-white">Agents</p>
 
-                <div className="flex items-center">
-                  <p className="text-sm w-[10%] xs:w-[20%]">Promoter</p>
-                  <div className="mx-4 w-[10%]">
-                    <SimpleInput
-                      value={form.promoterRoyalties}
-                      onChange={(e) =>
-                        changeFormRoyaltiesInput(
-                          e.target.value,
-                          "promoterRoyalties",
-                        )
-                      }
-                    />
-                  </div>
-                  <p className="text-sm text-white w-[70%]">
-                    Promotes your Community
-                  </p>
-                </div>
+                    <div className="flex items-center">
+                      <p className="text-sm w-[10%] xs:w-[20%]">Promoter</p>
+                      <div className="mx-4 w-[10%]">
+                        <SimpleInput
+                          value={form.promoterRoyalties}
+                          onChange={(e) =>
+                            changeFormRoyaltiesInput(
+                              e.target.value,
+                              "promoterRoyalties",
+                            )
+                          }
+                        />
+                      </div>
+                      <p className="text-sm text-white w-[70%]">
+                        Promotes your Community
+                      </p>
+                    </div>
 
-                <div className="flex items-center mt-2">
-                  <p className="text-sm w-[10%] xs:w-[20%]">Scout</p>
-                  <div className="mx-4 w-[10%]">
-                    <SimpleInput
-                      value={form.scoutRoyalties}
-                      onChange={(e) =>
-                        changeFormRoyaltiesInput(
-                          e.target.value,
-                          "scoutRoyalties",
-                        )
-                      }
-                    />
-                  </div>
-                  <p className="text-sm text-white w-[70%]">
-                    Organizes, encourages, trains and motivates Promoters
-                  </p>
-                </div>
+                    <div className="flex items-center mt-2">
+                      <p className="text-sm w-[10%] xs:w-[20%]">Scout</p>
+                      <div className="mx-4 w-[10%]">
+                        <SimpleInput
+                          value={form.scoutRoyalties}
+                          onChange={(e) =>
+                            changeFormRoyaltiesInput(
+                              e.target.value,
+                              "scoutRoyalties",
+                            )
+                          }
+                        />
+                      </div>
+                      <p className="text-sm text-white w-[70%]">
+                        Organizes, encourages, trains and motivates Promoters
+                      </p>
+                    </div>
+                  </>
+                )}
 
                 <div className="flex mt-4">
                   <p className="text-sm text-white font-bold w-[20%]">Total:</p>

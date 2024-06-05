@@ -2,6 +2,7 @@ import * as React from "react";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 
 export type CreateCoinParams = {
+  username: string;
   name: string;
   symbol: string;
   description: string;

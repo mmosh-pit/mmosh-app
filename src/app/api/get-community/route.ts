@@ -6,9 +6,11 @@ export async function GET(req: NextRequest) {
   const communityCollection = db.collection("mmosh-app-community");
 
   const { searchParams } = new URL(req.url);
-  const communitySymbol = searchParams.get("symbol");
+  const communitySymbol = searchParams.get("symbol") || "";
   const result = await communityCollection.findOne<CommunityAPIResult>({
-    "data.symbol": communitySymbol,
+    "data.symbol": {
+      $regex: new RegExp(communitySymbol, "ig"),
+    },
   });
 
   return NextResponse.json(result?.data, {

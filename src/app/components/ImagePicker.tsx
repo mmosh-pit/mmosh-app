@@ -76,14 +76,14 @@ const ImagePicker = ({ changeImage, image }: Props) => {
       <input
         ref={inputRef}
         type="file"
-        accept="image/png"
+        accept="image/*"
         style={{ display: "none" }}
         onChange={handleChangeInput}
       />
       {image ? (
         <div className="flex flex-col">
           <div className="flex w-full sm:h-[220px] md:h-[250px] xs:h-[150px] relative">
-            <Image src={image} alt="Identity" fill />
+            <Image src={image} alt="Identity" fill objectFit="cover" />
           </div>
           <div
             className="flex items-center relative mt-2 cursor-pointer"
@@ -97,17 +97,18 @@ const ImagePicker = ({ changeImage, image }: Props) => {
         </div>
       ) : (
         <div
-          className="flex md:h-[12vmax] xs:h-[5vmax] sm:h-[8vmax] xs:mb-[1.5vmax] md:mb-0 flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 rounded-md select-none cursor-pointer p-[2vmax] md:p-0 xl:p-[1vmax] 2xl:p-[2vmax] bg-black bg-opacity-[0.07]"
+          className="flex flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 rounded-md select-none cursor-pointer backdrop-container py-11"
           onClick={triggerClick}
         >
-          <p className="text-base">Jpg, Png. Max 100 mb</p>
-          <div className="relative w-[3vmax] h-[3vmax] md:w-[6vmax] md:h-[6vmax]">
-            <Image src="/png.svg" alt="png" layout="fill" />
+          <p className="text-base font-montserrat text-para-font-size leading-3 font-light">1080 x 1080</p>
+          <p className="text-base font-montserrat text-para-font-size leading-3 font-light">Jpg, Png, Gif. Max 100 mb</p>
+          <div className="relative py-1.5">
+            <Image src="/png.svg" alt="png" width={64} height={64} />
           </div>
-          <p className="text-sm text-white font-bold">Drag and Drop file</p>
-          <p className="text-sm text-center">
+          <p className="text-sm text-center text-para-font-size font-light font-montserrat leading-3">
+            <span className="text-sm text-white font-medium font-montserrat">Drag and Drop file</span><br/>
             or{" "}
-            <span className="text-sm text-white font-bold"> Browse media </span>{" "}
+            <span className="text-sm text-white font-medium font-montserrat"> Browse media </span>{" "}
             on your device
           </p>
         </div>

@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 p {
   font-family: var(--font-poppins);
   font-size: 1.2vmax;
@@ -375,4 +374,17 @@ input {
     rgba(21, 0, 59, 0.04) 50.4%,
     rgba(39, 0, 109, 0) 100%
   );
+}
+
+.backdrop-container {
+  background: rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(19.5px);
+}
+
+.gradient-container {
+  background: linear-gradient(135.98deg, #1A006D 0%, #7B559F 100%);
+}
+
+.border-container {
+  background:linear-gradient(90.66deg, #0061FF 71.76%, #FF00AE 92.51%);
 }

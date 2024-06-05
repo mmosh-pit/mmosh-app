@@ -30,7 +30,7 @@ const Input = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="textarea textarea-bordered text-base textarea-lg w-full bg-black bg-opacity-[0.07] text-base placeholder-white placeholder-opacity-[0.3] h-full"
+          className="textarea textarea-bordered text-base textarea-md w-full bg-black bg-opacity-[0.07] text-base placeholder-white placeholder-opacity-[0.3] h-full backdrop-container"
         ></textarea>
       );
     }
@@ -42,7 +42,7 @@ const Input = ({
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}
-        className="input input-bordered h-[2.5vmax] text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3]"
+        className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container"
       />
     );
   };
@@ -54,7 +54,7 @@ const Input = ({
         {required && <sup>*</sup>}
       </p>
       {getTextType()}
-      {helperText && <p className="text-tiny">{helperText}</p>}
+      {helperText && <p className="text-tiny opacity-30">{helperText}</p>}
     </div>
   );
 };

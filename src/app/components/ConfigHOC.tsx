@@ -41,7 +41,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
         type="text/javascript"
         src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
       ></Script>
-      <ConnectionProvider endpoint={endpoint}>
+      <ConnectionProvider endpoint={endpoint} config={{confirmTransactionInitialTimeout:120000}}>
         <WalletProvider autoConnect>
           <div className={getClassName()}>{children}</div>
         </WalletProvider>

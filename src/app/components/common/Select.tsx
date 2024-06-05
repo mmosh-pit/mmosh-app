@@ -13,7 +13,7 @@ type Props = {
 
 const Select = ({ value, options, onChange }: Props) => (
   <select
-    className="select text-base h-[2.5vmax] select-bordered bg-black bg-opacity-[0.07]"
+    className="select text-base h-10 min-h-10 select-bordered bg-black bg-opacity-[0.07]"
     value={value}
     onChange={onChange}
   >

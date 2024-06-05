@@ -152,10 +152,12 @@ export class Connectivity {
         let userData: any = {
           project: "",
         };
-        for (let index = 0; index < result.data.attributes.length; index++) {
-          const element = result.data.attributes[index];
-          if (element.trait_type == "Community") {
-            userData.project = element.value;
+        if(result.data.attributes) {
+          for (let index = 0; index < result.data.attributes.length; index++) {
+            const element = result.data.attributes[index];
+            if (element.trait_type == "Community") {
+              userData.project = element.value;
+            }
           }
         }
         return userData;
@@ -1335,7 +1337,7 @@ export class Connectivity {
     const grandParentProfile = input.parent;
     const greatGrandParentProfile = input.grandParent;
     const ggreateGrandParentProfile = input.greatGrandParent;
-
+    
     const currentParentProfileHolderAta = (
       await this.connection.getTokenLargestAccounts(parentProfile)
     ).value[0].address;

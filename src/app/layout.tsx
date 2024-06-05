@@ -38,6 +38,8 @@ export default function RootLayout({
     <html lang="en" className={`${poppins.variable} ${patched.variable}`}>
       <head>
         <link rel="icon" href="/mmosh.ico" sizes="any" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
       </head>
       <body className={inter.className}>
         <ConfigHOC>

@@ -140,6 +140,8 @@ const CustomCoinSelect = ({
                 <RecentCoin
                   token={coin.token}
                   bonding={coin.bonding}
+                  desc={coin.desc}
+                  username={coin.username}
                   name={coin.name}
                   symbol={coin.symbol}
                   image={coin.image}
@@ -158,6 +160,8 @@ const CustomCoinSelect = ({
                     token={coin.token}
                     bonding={coin.bonding}
                     name={coin.name}
+                    desc={coin.desc}
+                    username={coin.username}
                     symbol={coin.symbol}
                     image={coin.image}
                     onTokenSelect={onTokenSelect}

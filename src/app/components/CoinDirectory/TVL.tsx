@@ -1,8 +1,9 @@
-import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 import axios from "axios";
 import * as React from "react";
 
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
+
+import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 
 const TVL = () => {
   const rendered = React.useRef(false);

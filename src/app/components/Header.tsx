@@ -300,7 +300,7 @@ const Header = () => {
       {pathname.includes("/create/communities/") && (
         <div className="relative w-full flex justify-center items-end mt-12 pb-4">
           <div
-            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
+            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-30`}
           >
             <h2 className="text-center">
               Mint this pass to join {community?.name}

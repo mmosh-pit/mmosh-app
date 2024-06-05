@@ -231,7 +231,7 @@ const Step4 = () => {
                     <div className="relative w-[5vmax] h-[2vmax] rounded-full">
                       <Image
                         alt="Total Access"
-                        src={thirdForm.coin!.image}
+                        src="https://storage.googleapis.com/mmosh-assets/access.png"
                         layout="fill"
                       />
                     </div>
@@ -249,7 +249,7 @@ const Step4 = () => {
                     <div className="relative w-[1.5vmax] h-[1.5vmax] mb-[0.8vmax] ml-[0.6vmax]">
                       <Image
                         alt="Coin"
-                        src="https://storage.googleapis.com/mmosh-assets/logo.png"
+                        src={thirdForm.coin!.image}
                         layout="fill"
                       />
                     </div>

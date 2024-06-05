@@ -77,6 +77,7 @@ const Step2 = () => {
               value=""
               selectedElements={selectedItems}
               onChange={(e) => {
+                if (selectedItems.length >= 8) return;
                 setSelectedItems([...selectedItems, e]);
               }}
               onDelete={(e) => {

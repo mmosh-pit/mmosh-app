@@ -1,6 +1,9 @@
 import { useAtom } from "jotai";
 import * as React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import axios, { CancelTokenSource } from "axios";
+import { Line, LineChart, ResponsiveContainer } from "recharts";
 
 import {
   coinTextSearch,
@@ -11,15 +14,14 @@ import SortIcon from "@/assets/icons/SortIcon";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import ArrowUp from "@/assets/icons/ArrowUp";
 import ArrowDown from "@/assets/icons/ArrowDown";
-import { Line, LineChart, ResponsiveContainer } from "recharts";
-import axios, { CancelTokenSource } from "axios";
 
 const CoinsTable = () => {
+  const navigate = useRouter();
   const source = React.useRef<CancelTokenSource | null>(null);
 
   const [searchText] = useAtom(coinTextSearch);
   const [isUSDCSelected] = useAtom(selectedUSDCCoin);
-  const [volume, setVolume] = useAtom(selectedVolume);
+  const [volume] = useAtom(selectedVolume);
 
   const [selectedSort, setSelectedSort] = React.useState("");
   const [isLastPage, setIsLastPage] = React.useState(false);
@@ -84,6 +86,10 @@ const CoinsTable = () => {
     );
   }, []);
 
+  const navigateToCoinPage = React.useCallback((symbol: string) => {
+    navigate.push(`/create/coins/${symbol}`);
+  }, []);
+
   React.useEffect(() => {
     getCoins(volume.value, searchText, 0);
   }, [searchText, volume]);
@@ -128,8 +134,9 @@ const CoinsTable = () => {
       <tbody>
         {coins.map((coin, index) => (
           <tr
-            className={`${index % 2 === 0 ? "bg-[#100E5242]" : "bg-[#07076E70]"}`}
+            className={`${index % 2 === 0 ? "bg-[#100E5242] hover:bg-[#100E5230]" : "bg-[#07076E70] hover:bg-[#07076E60]"} cursor-pointer`}
             key={coin.symbol}
+            onClick={() => navigateToCoinPage(coin.symbol)}
           >
             <td align="center">
               <p className="text-white text-sm">{index}</p>
@@ -167,7 +174,11 @@ const CoinsTable = () => {
 
             <td align="center">
               <ResponsiveContainer width={150} height={50}>
-                <LineChart width={150} height={50} data={[1, 5, 10, 12]}>
+                <LineChart
+                  width={150}
+                  height={50}
+                  data={coin.priceLastSevenDays}
+                >
                   <Line
                     type="monotone"
                     dataKey="value"

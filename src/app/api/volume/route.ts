@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const labels = [];
   for (let index = 0; index < 14; index++) {
     let volType;
-    if (type == "day") {
+    if (type === "day") {
       volType = new Date(new Date().setDate(new Date().getDate() - index));
       labels.push({
         label: volType.toLocaleString("en-us", {
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
         }),
         value: 0,
       });
-    } else if (type == "month") {
+    } else if (type === "month") {
       volType = new Date(new Date().setMonth(new Date().getMonth() - index));
       labels.push({
         label: volType.toLocaleString("en-us", {
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         }),
         value: 0,
       });
-    } else if (type == "year") {
+    } else if (type === "year") {
       volType = new Date().getFullYear() - index;
       labels.push({
         label: volType,
@@ -37,21 +37,20 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  console.log("labels ", labels);
+  const d = new Date();
+  let filterDate;
+  let idFitler;
 
-  var d = new Date();
-  var filterDate;
-  var idFitler;
-  if (type == "day") {
+  if (type === "day") {
     filterDate = new Date(d.setDate(d.getDate() - 13));
     idFitler = { year: { date: "$created_date" } };
-  } else if (type == "month") {
+  } else if (type === "month") {
     filterDate = new Date(d.setMonth(d.getMonth() - 13));
     idFitler = {
       year: { $year: "$created_date" },
       month: { $month: "$created_date" },
     };
-  } else if (type == "year") {
+  } else if (type === "year") {
     idFitler = { year: { $year: "$created_date" } };
     filterDate = new Date(d.setFullYear(d.getFullYear() - 13));
   }

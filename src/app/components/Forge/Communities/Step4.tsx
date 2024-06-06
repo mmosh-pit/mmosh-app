@@ -45,24 +45,38 @@ const Step4 = () => {
   });
 
   const mintCommunity = React.useCallback(async () => {
+    setMessage({ type: "", message: "" });
     if (!wallet || !profileInfo || !currentUser) return;
 
-    console.log("1");
+    setMintingStatus("Trying to Generating images...");
     const genesisImage = await toBlob(genesisPassRef.current!, {
       cacheBust: true,
+      height: 1080,
+      width: 1080,
     });
-    console.log("2");
     const invitationImage =
       thirdForm.invitation !== "none"
         ? await toBlob(invitationPassRef.current!, {
             cacheBust: true,
+            height: 1080,
+            width: 1080,
           })
         : null;
 
-    console.log("Invitation: ", thirdForm.invitation);
+    if (
+      !genesisImage ||
+      (!invitationImage && thirdForm.invitation !== "none")
+    ) {
+      setMintingStatus("Mint");
 
-    if (!genesisImage || (!invitationImage && thirdForm.invitation !== "none"))
+      setMessage({
+        type: "error",
+        message:
+          "There was an error trying to generate the Pass and Badge images, please try again.",
+      });
+
       return;
+    }
 
     const res = await createCommunity({
       wallet,
@@ -106,7 +120,7 @@ const Step4 = () => {
     }
 
     setMessage({ type: res.type, message: res.message });
-    setMintingStatus("");
+    setMintingStatus("Mint");
   }, []);
 
   const goBack = React.useCallback(() => {

@@ -306,6 +306,8 @@ const CreateCoin = () => {
 
                   if (value < 0) return;
 
+                  if (value > 9000) return;
+
                   setForm({
                     ...form,
                     initialPrice: value,
@@ -332,6 +334,10 @@ const CreateCoin = () => {
                     if (Number.isNaN(value)) return;
 
                     if (value < 0) return;
+
+                    if (value >= 3 && form.supply > 15850) return;
+
+                    if (value >= 4 && form.supply > 1450) return;
 
                     setForm({ ...form, multiplier: value });
                   }}
@@ -406,7 +412,7 @@ const CreateCoin = () => {
           </p>
         </div>
 
-        <div className="flex items-center mt-4">
+        <div className="flex items-center mt-4 mb-2">
           <p className="text-xs text-white">Exchange</p>
           <div className="mx-2 max-w-[5vmax]">
             <SimpleInput
@@ -418,6 +424,10 @@ const CreateCoin = () => {
 
                 if (value < 0) return;
 
+                if (form.multiplier >= 3 && value > 15850) return;
+
+                if (form.multiplier >= 4 && value > 1450) return;
+
                 setForm({ ...form, supply: value });
               }}
             />
@@ -425,7 +435,7 @@ const CreateCoin = () => {
 
           <p className="text-xs text-gray-300">
             $MMOSH for{" "}
-            <span className="text-xs text-gray-500">{coinPrice}</span> $
+            <span className="text-xs text-gray-500">{form.supply}</span> $
             {form.symbol}
           </p>
         </div>
@@ -433,7 +443,7 @@ const CreateCoin = () => {
         <p className="text-xs text-gray-300 text-center max-w-[80%]">
           Enter the amount of your initial Swap. You will swap{" "}
           <span className="font-bold text-white">{form.supply}</span> MMOSH for{" "}
-          <span className="font-bold text-white">{coinPrice}</span>{" "}
+          <span className="font-bold text-white">{form.supply}</span>{" "}
           {form.symbol} and you will be charged a small amount of SOL in
           transaction fees.
         </p>

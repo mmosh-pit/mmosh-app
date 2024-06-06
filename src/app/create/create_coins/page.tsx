@@ -60,20 +60,10 @@ const CreateCoin = () => {
   const [preview, setPreview] = React.useState("");
 
   const [datasets, setDatasets] = React.useState<{ data: number }[]>([]);
-  const [maxChartValue, setMaxChartValue] = React.useState(0);
   const [coinPrice, setCoinPrice] = React.useState(0);
   const [mintingStatus, setMintingStatus] = React.useState("Mint and Swap");
 
   const [error, setError] = React.useState<string | null>(null);
-
-  const tickYFormat = React.useCallback(
-    (value: number) => {
-      if (value >= maxChartValue) return "Price = Y";
-
-      return "";
-    },
-    [maxChartValue],
-  );
 
   const tickXFormat = React.useCallback(
     (value: number) => {
@@ -196,7 +186,6 @@ const CreateCoin = () => {
       (isExponential && form.multiplier === 0)
     ) {
       setDatasets([]);
-      setMaxChartValue(0);
       return;
     }
 
@@ -211,14 +200,6 @@ const CreateCoin = () => {
       multiplier,
     );
 
-    let maxDataValue = 0;
-
-    res.data.forEach((val) => {
-      if (val > maxDataValue) {
-        maxDataValue = val;
-      }
-    });
-
     const datasetsValue = res.data.map((value) => ({
       data: value,
     }));
@@ -228,7 +209,6 @@ const CreateCoin = () => {
       : datasetsValue;
 
     setDatasets(datasetsResult);
-    setMaxChartValue(maxDataValue);
     setCoinPrice(res.coinPrice);
   }, [form.multiplier, form.initialPrice, form.supply, form.bonding]);
 
@@ -267,23 +247,25 @@ const CreateCoin = () => {
             }}
           />
 
-          <Input
-            title="Symbol"
-            required
-            value={form.symbol}
-            placeholder="Name"
-            helperText={error || "Up to 10 characters"}
-            error={!!error}
-            onBlur={checkSymbolExists}
-            type="text"
-            onChange={(e) => {
-              const value = e.target.value.replace(/\s/g, "");
+          <div className="my-2">
+            <Input
+              title="Symbol"
+              required
+              value={form.symbol}
+              placeholder="Name"
+              helperText={error || "Up to 10 characters"}
+              error={!!error}
+              onBlur={checkSymbolExists}
+              type="text"
+              onChange={(e) => {
+                const value = e.target.value.replace(/\s/g, "");
 
-              if (value.length > 10) return;
+                if (value.length > 10) return;
 
-              setForm({ ...form, symbol: value });
-            }}
-          />
+                setForm({ ...form, symbol: value });
+              }}
+            />
+          </div>
 
           <Input
             title="Description"
@@ -362,17 +344,13 @@ const CreateCoin = () => {
           )}
 
           <div className="w-full h-full mt-4">
-            <ResponsiveContainer width="100%" height={200} className="pt-2">
+            <ResponsiveContainer width="85%" height={200} className="pt-2">
               <AreaChart
-                width={300}
-                height={160}
+                width={150}
+                height={200}
                 data={datasets}
-                className="overflow-visible"
                 margin={{
-                  top: 10,
-                  right: 30,
-                  left: 0,
-                  bottom: 0,
+                  top: 30,
                 }}
               >
                 <defs>
@@ -383,10 +361,15 @@ const CreateCoin = () => {
                 </defs>
                 <XAxis tickFormatter={tickXFormat} tickLine={false} />
                 <YAxis
-                  width={80}
-                  tickFormatter={tickYFormat}
+                  width={5}
+                  tick={false}
                   tickLine={false}
-                  offset={-50}
+                  label={{
+                    value: "Price = Y",
+                    position: "top",
+                    offset: 5,
+                    dx: 30,
+                  }}
                 />
                 <Area
                   type="monotone"

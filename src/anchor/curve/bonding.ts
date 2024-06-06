@@ -272,8 +272,8 @@ export class Connectivity {
       return signature;
     } catch (error) {
       console.log(error);
+      return "";
     }
-    return "";
   }
 
   async createTargetMint(name: any, symbol: any, url: any): Promise<string> {

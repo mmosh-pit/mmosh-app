@@ -51,8 +51,6 @@ export async function createCommunity({
 
     const projectKeyPair = anchor.web3.Keypair.generate();
 
-    console.log("project key ", projectKeyPair.publicKey.toBase58());
-
     const projectConn: ProjectConn = new ProjectConn(
       env,
       web3Consts.programID,
@@ -75,7 +73,6 @@ export async function createCommunity({
     const fileName = uuidv4() + ".png";
     const file = new File([genesisImage], fileName, { type: "image/png" });
     passImageUri = await pinImageToShadowDrive(file);
-    console.log("pass image", passImageUri);
 
     setMintingStatus("Preparing Invitation Image...");
 
@@ -85,7 +82,6 @@ export async function createCommunity({
         type: "image/png",
       });
       invitationImageUri = await pinImageToShadowDrive(invitationFile);
-      console.log("invitation image", invitationImageUri);
     }
 
     setMintingStatus("Preparing Metadata...");
@@ -177,7 +173,6 @@ export async function createCommunity({
     });
 
     const genesisProfileStr = res1.Ok?.info?.profile;
-    console.log("genesisProfileStr ", genesisProfileStr);
 
     setMintingStatus("Waiting for Confirmation...");
 
@@ -237,7 +232,6 @@ export async function createCommunity({
       uri,
       profile: genesisProfileStr!,
     });
-    console.log("badge result ", res2);
 
     setMintingStatus("Waiting for Confirmation...");
     await delay(15000);
@@ -248,18 +242,15 @@ export async function createCommunity({
       amount: 100,
       subscriptionToken: res2.Ok.info.subscriptionToken,
     });
-    console.log("create badge result ", res3);
 
     setMintingStatus("Waiting for Confirmation...");
     await delay(15000);
 
     setMintingStatus("Creating LUT Registration...");
     const res4: any = await projectConn.registerCommonLut();
-    console.log("register lookup result ", res4);
 
     setMintingStatus("Buying new Community...");
     const res5 = await projectConn.sendProjectPrice(userProfile);
-    console.log("create badge result ", res5);
 
     if (res5.Ok) {
       await axios.patch("/api/update-community-info", {

@@ -92,7 +92,7 @@ const Step1 = () => {
           title="Deploy the Art and Metadata"
           subtitle="Set the image, name, symbol and description for your community."
         />
-        <div className="w-[50%] flex flex-col md:flex-row items-center justify-around">
+        <div className="w-[50%] flex flex-col md:flex-row items-center justify-around mt-12">
           <div className="w-[100%] sm:w-[85%] lg:w-[50%]">
             <ImagePicker changeImage={setImage} image={preview} />
           </div>
@@ -114,21 +114,23 @@ const Step1 = () => {
               }}
             />
 
-            <Input
-              title="Symbol"
-              placeholder="Symbol"
-              helperText="10 characters"
-              value={form.symbol}
-              type="text"
-              required={false}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\s/g, "");
+            <div className="my-2">
+              <Input
+                title="Symbol"
+                placeholder="Symbol"
+                helperText="10 characters"
+                value={form.symbol}
+                type="text"
+                required={false}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\s/g, "");
 
-                if (value.length > 10) return;
+                  if (value.length > 10) return;
 
-                setForm({ ...form, symbol: value });
-              }}
-            />
+                  setForm({ ...form, symbol: value });
+                }}
+              />
+            </div>
 
             <Input
               title="Description"

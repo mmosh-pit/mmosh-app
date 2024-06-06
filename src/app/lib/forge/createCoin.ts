@@ -15,6 +15,8 @@ import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 import { calculatePrice } from "./setupCoinPrice";
 import { deleteShdwDriveFile } from "../deleteShdwDriveFile";
 
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
 export const createCoin = async ({
   name,
   symbol,
@@ -109,6 +111,7 @@ export const createCoin = async ({
     });
 
     setMintingStatus("Creating Token...");
+    await delay(15000);
     const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash);
     // setIsSubmit(false);
     // return
@@ -131,6 +134,7 @@ export const createCoin = async ({
     });
 
     setMintingStatus("Swapping Token...");
+    await delay(15000);
     const buyres = await curveConn.buy({
       tokenBonding: res.tokenBonding,
       desiredTargetAmount: new anchor.BN(

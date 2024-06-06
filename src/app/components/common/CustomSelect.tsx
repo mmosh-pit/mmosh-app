@@ -15,6 +15,8 @@ type Props = {
   helperText?: string;
 };
 
+const MIN_DIV_HEIGHT = 50;
+
 const CustomSelect = ({
   title,
   placeholder,
@@ -23,6 +25,10 @@ const CustomSelect = ({
   onDelete,
   selectedElements,
 }: Props) => {
+  const divRef = React.useRef<HTMLDivElement>(null);
+
+  const [divHeight, setDivHeight] = React.useState(50);
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [displayItems, setDisplayItems] = React.useState(false);
   const animating = React.useRef(false);
@@ -45,28 +51,49 @@ const CustomSelect = ({
     setIsOpen(!isOpen);
   };
 
+  React.useEffect(() => {
+    const elementHeight = divRef.current?.offsetHeight || 0;
+
+    if (elementHeight === 500) return;
+
+    const height =
+      (divRef.current?.offsetHeight || 0) < MIN_DIV_HEIGHT
+        ? MIN_DIV_HEIGHT
+        : divRef.current?.offsetHeight;
+
+    console.log(height);
+    setDivHeight(height || MIN_DIV_HEIGHT);
+  }, [selectedElements]);
+
   return (
     <div className="flex flex-col w-full">
       <p className="text-sm text-white">{title}</p>
 
       <div
-        className={`custom-select px-[1vmax] ${!isOpen ? "h-[3vmax]" : "h-[500px]"}`}
+        className={`custom-select px-[1vmax]`}
+        style={{
+          height: !isOpen ? `${divHeight}px` : "500px",
+        }}
       >
         <div
           className="w-full flex justify-between items-center self-center"
           onClick={toggleContainer}
         >
-          <div className="flex">
+          <div className="flex flex-wrap" ref={divRef}>
             {selectedElements.length > 0 ? (
               selectedElements.map((element) => (
                 <div
-                  className="p-2 mx-1 custom-select-item rounded-full"
+                  className="p-2 mx-1 my-2 custom-select-item rounded-full"
                   key={element}
                 >
                   <p className="text-xs text-white">{element}</p>
                   <div
                     className="p-1 rounded-full custom-select-item-delete"
-                    onClick={() => onDelete!(element)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onDelete!(element);
+                    }}
                   >
                     <DeleteIcon />
                   </div>

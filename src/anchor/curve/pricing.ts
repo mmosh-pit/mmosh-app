@@ -39,7 +39,7 @@ function reduce<A>({
     current = current!.parent;
     if (!current) {
       throw new Error(
-        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`
+        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`,
       );
     }
     value = func(value, current);
@@ -81,7 +81,7 @@ function reduceFromParent<A>({
     current = current!.parent;
     if (!current) {
       throw new Error(
-        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`
+        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`,
       );
     }
   }
@@ -101,7 +101,6 @@ function now(): number {
 }
 
 export interface IBondingPricing {
-
   get hierarchy(): BondingHierarchy;
 
   current(baseMint: PublicKey, unixTime?: number): number;
@@ -116,10 +115,7 @@ export interface IBondingPricing {
     unixTime?: number,
   ): number;
 
-  isBuying(
-    lowMint: PublicKey,
-    targetMint: PublicKey,
-  ): boolean;
+  isBuying(lowMint: PublicKey, targetMint: PublicKey): boolean;
 
   swapTargetAmount(
     targetAmount: number,
@@ -133,20 +129,20 @@ export interface IBondingPricing {
   sellTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number;
 
   buyTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number;
 
   buyWithBaseAmount(
     baseAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
-  ): number ;
+    unixTime?: number,
+  ): number;
 }
 
 export class BondingPricing implements IBondingPricing {
@@ -156,10 +152,7 @@ export class BondingPricing implements IBondingPricing {
     this.hierarchy = args.hierarchy;
   }
 
-  current(
-    baseMint?: PublicKey,
-    unixTime?: number
-  ): number {
+  current(baseMint?: PublicKey, unixTime?: number): number {
     return reduce({
       hierarchy: this.hierarchy,
       func: (acc: number, current: BondingHierarchy) => {
@@ -168,7 +161,7 @@ export class BondingPricing implements IBondingPricing {
           current.pricingCurve.current(
             unixTime || now(),
             current.tokenBonding.buyBaseRoyaltyPercentage,
-            current.tokenBonding.buyTargetRoyaltyPercentage
+            current.tokenBonding.buyTargetRoyaltyPercentage,
           )
         );
       },
@@ -187,7 +180,7 @@ export class BondingPricing implements IBondingPricing {
           current.pricingCurve.current(
             now(),
             current.tokenBonding.buyBaseRoyaltyPercentage,
-            current.tokenBonding.buyTargetRoyaltyPercentage
+            current.tokenBonding.buyTargetRoyaltyPercentage,
           )
         );
       },
@@ -206,10 +199,7 @@ export class BondingPricing implements IBondingPricing {
   ): number {
     const lowMint = this.hierarchy.lowest(baseMint, targetMint);
     const highMint = this.hierarchy.highest(baseMint, targetMint);
-    const isBuying = this.isBuying(
-      lowMint,
-      targetMint,
-    );
+    const isBuying = this.isBuying(lowMint, targetMint);
 
     const path = this.hierarchy.path(lowMint, highMint, ignoreFrozen);
 
@@ -223,7 +213,7 @@ export class BondingPricing implements IBondingPricing {
           amount,
           tokenBonding.buyBaseRoyaltyPercentage,
           tokenBonding.buyTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       }, baseAmount);
     } else {
@@ -232,16 +222,13 @@ export class BondingPricing implements IBondingPricing {
           amount,
           tokenBonding.sellBaseRoyaltyPercentage,
           tokenBonding.sellTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       }, baseAmount);
     }
   }
 
-  isBuying(
-    lowMint: PublicKey,
-    targetMint: PublicKey,
-  ) {
+  isBuying(lowMint: PublicKey, targetMint: PublicKey) {
     return lowMint.equals(targetMint);
   }
 
@@ -255,10 +242,7 @@ export class BondingPricing implements IBondingPricing {
   ): number {
     const lowMint = this.hierarchy.lowest(baseMint, targetMint);
     const highMint = this.hierarchy.highest(baseMint, targetMint);
-    const isBuying = this.isBuying(
-      lowMint,
-      targetMint,
-    );
+    const isBuying = this.isBuying(lowMint, targetMint);
 
     const path = this.hierarchy.path(lowMint, highMint, ignoreFreeze);
 
@@ -272,7 +256,7 @@ export class BondingPricing implements IBondingPricing {
             -amount,
             tokenBonding.sellBaseRoyaltyPercentage,
             tokenBonding.sellTargetRoyaltyPercentage,
-            unixTime
+            unixTime,
           );
         }, targetAmount)
       : path.reverse().reduce((amount, { pricingCurve, tokenBonding }) => {
@@ -280,7 +264,7 @@ export class BondingPricing implements IBondingPricing {
             amount,
             tokenBonding.buyBaseRoyaltyPercentage,
             tokenBonding.buyTargetRoyaltyPercentage,
-            unixTime
+            unixTime,
           );
         }, targetAmount);
   }
@@ -288,7 +272,7 @@ export class BondingPricing implements IBondingPricing {
   sellTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number {
     return reduce({
       hierarchy: this.hierarchy,
@@ -297,7 +281,7 @@ export class BondingPricing implements IBondingPricing {
           acc,
           current.tokenBonding.sellBaseRoyaltyPercentage,
           current.tokenBonding.sellTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       },
       initial: targetAmountNum,
@@ -309,7 +293,7 @@ export class BondingPricing implements IBondingPricing {
   buyTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number {
     return reduce({
       hierarchy: this.hierarchy,
@@ -318,7 +302,7 @@ export class BondingPricing implements IBondingPricing {
           acc,
           current.tokenBonding.buyBaseRoyaltyPercentage,
           current.tokenBonding.buyTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       },
       initial: targetAmountNum,
@@ -330,7 +314,7 @@ export class BondingPricing implements IBondingPricing {
   buyWithBaseAmount(
     baseAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number {
     return reduceFromParent({
       hierarchy: this.hierarchy,
@@ -339,7 +323,7 @@ export class BondingPricing implements IBondingPricing {
           acc,
           current.tokenBonding.buyBaseRoyaltyPercentage,
           current.tokenBonding.buyTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       },
       initial: baseAmountNum,

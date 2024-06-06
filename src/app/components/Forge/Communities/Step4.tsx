@@ -95,9 +95,13 @@ const Step4 = () => {
     if (res.type === "success") {
       setTimeout(() => {
         navigate.replace("/create/communities");
-        setFirstForm(defaultFirstFormState);
-        setSecForm([]);
-        setThirdForm(defaultThirdFormState);
+
+        setTimeout(() => {
+          setFirstForm(defaultFirstFormState);
+          setSecForm([]);
+          setThirdForm(defaultThirdFormState);
+          setCurrentStep(0);
+        }, 3000);
       }, 5000);
     }
 

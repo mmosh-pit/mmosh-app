@@ -14,7 +14,7 @@ export const getCommunityProjectInfo = async (
   });
 
   anchor.setProvider(env);
-  let projectConn: ProjectConn = new ProjectConn(
+  const projectConn: ProjectConn = new ProjectConn(
     env,
     web3Consts.programID,
     new anchor.web3.PublicKey(address),

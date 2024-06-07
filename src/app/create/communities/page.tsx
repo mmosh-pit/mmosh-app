@@ -67,6 +67,7 @@ const Communities = () => {
             <div
               className="cursor-pointer"
               onClick={() => onCommunitySelect(value.data)}
+              key={value._id?.toString()}
             >
               <Card
                 name={value.data.name}

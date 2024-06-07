@@ -91,6 +91,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     );
   }
 
+  console.log("Community: ", community);
+
   if (!community)
     return (
       <div className="background-content relative flex flex-col max-h-full" />
@@ -100,7 +102,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     <div className="background-content relative flex flex-col max-h-full">
       <div className="w-full relative flex flex-col md:flex-row justify-around">
         <div className="flex flex-col">
-          <div className="w-[8vmax] h-[8vmax] absolute top-[-150px] z-5">
+          <div className="w-[8vmax] h-[8vmax] relative">
             <Image src={community.image} layout="fill" alt="" />
           </div>
 

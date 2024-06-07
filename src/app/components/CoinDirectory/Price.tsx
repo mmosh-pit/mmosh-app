@@ -64,9 +64,6 @@ const Price = () => {
           data={data}
           margin={{
             top: 10,
-            right: 30,
-            left: 0,
-            bottom: 0,
           }}
         >
           <defs>
@@ -75,13 +72,7 @@ const Price = () => {
               <stop offset="75%" stopColor="#C900B3" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <XAxis
-            dataKey="name"
-            tickLine={false}
-            scale="band"
-            interval={0}
-            axisLine={false}
-          />
+          <XAxis dataKey="name" tickLine={false} axisLine={false} />
           <Area
             type="monotone"
             dataKey="pv"

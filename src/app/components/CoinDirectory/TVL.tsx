@@ -50,9 +50,6 @@ const TVL = () => {
           data={data}
           margin={{
             top: 10,
-            right: 30,
-            left: 0,
-            bottom: 0,
           }}
         >
           <defs>
@@ -61,13 +58,7 @@ const TVL = () => {
               <stop offset="75%" stopColor="#09093C" stopOpacity={0.03} />
             </linearGradient>
           </defs>
-          <XAxis
-            dataKey="name"
-            tickLine={false}
-            scale="band"
-            interval={0}
-            axisLine={false}
-          />
+          <XAxis dataKey="name" tickLine={false} axisLine={false} />
           <Area
             type="monotone"
             dataKey="value"

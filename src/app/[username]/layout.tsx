@@ -9,19 +9,6 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
   const username = params.username;
-  //
-  // if (username === "create") {
-  //   return {
-  //     title: "MMOSH App Forge",
-  //     description:
-  //       "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
-  //     openGraph: {
-  //       images: [
-  //         "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
-  //       ],
-  //     },
-  //   };
-  // }
 
   if (!username) {
     return {
@@ -63,10 +50,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return <div className="h-full">{children}</div>;
 }

@@ -73,9 +73,10 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       setCommunity(communityRes.data);
       setIsLoading(false);
     } catch (error) {
+      console.error(error);
       setIsLoading(false);
     }
-  }, [params]);
+  }, [params, wallet]);
 
   React.useEffect(() => {
     if (!params.symbol || !wallet) return;
@@ -90,8 +91,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       </div>
     );
   }
-
-  console.log("Community: ", community);
 
   if (!community)
     return (

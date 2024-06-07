@@ -107,7 +107,7 @@ const TransactionsTable = ({ coin }: Props) => {
 
               <td align="center">
                 <p
-                  className={`text-white text-sm ${item.type === "sell" ? "text-red" : "text-green"}`}
+                  className={`capitalize text-sm ${item.type === "sell" ? "text-red-600" : "text-green-500"}`}
                 >
                   {item.type}
                 </p>

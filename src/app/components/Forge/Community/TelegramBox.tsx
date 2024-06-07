@@ -38,7 +38,7 @@ const TelegramBox = ({ telegram, communityName, isOwner }: Props) => {
           {telegramData}
         </a>
       ) : (
-        <div className="self-center">
+        <div className="w-full flex items-center self-center justify-evenly">
           <div className="relative border-[1px] border-[#FFF] border-opacity-30 rounded-xl">
             <input
               value={telegramData}
@@ -60,14 +60,16 @@ const TelegramBox = ({ telegram, communityName, isOwner }: Props) => {
             )}
           </div>
           {isEditMode && (
-            <Button
-              isPrimary={false}
-              action={updateCommunity}
-              title="Save"
-              size="small"
-              disabled={!isEditMode}
-              isLoading={isLoading}
-            />
+            <div className="max-w-[50%]">
+              <Button
+                isPrimary={false}
+                action={updateCommunity}
+                title="Save"
+                size="small"
+                disabled={!isEditMode}
+                isLoading={isLoading}
+              />
+            </div>
           )}
         </div>
       )}

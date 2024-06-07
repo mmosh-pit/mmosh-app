@@ -59,9 +59,6 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
   if (!baseToken || !targetToken) return;
 
-  console.log("Base token: ", baseToken);
-  console.log("Target token: ", targetToken);
-
   return (
     <div className="community-page-container-card p-6 rounded-xl">
       <div className="flex flex-col">

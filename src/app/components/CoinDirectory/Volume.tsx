@@ -13,11 +13,11 @@ const Volume = () => {
 
   const getVolume = async () => {
     try {
-      const tvlResult = await axios.get(`/api/volume?type=${type}`);
+      const result = await axios.get(`/api/volume?type=${type}`);
 
-      setData(tvlResult.data.labels?.reverse() || []);
+      setData(result.data.labels?.reverse() || []);
 
-      setTotal(abbreviateNumber(Math.abs(tvlResult.data.total)));
+      setTotal(abbreviateNumber(Math.abs(result.data.total)));
     } catch (error) {
       setTotal("0");
     }
@@ -50,7 +50,7 @@ const Volume = () => {
             bottom: 5,
           }}
         >
-          <XAxis dataKey="name" />
+          <XAxis dataKey="label" />
           <Bar dataKey="value" fill="#7000FF" radius={[20, 20, 10, 10]} />
         </BarChart>
       </ResponsiveContainer>

@@ -27,6 +27,7 @@ const CoinsTable = () => {
   const [isLastPage, setIsLastPage] = React.useState(false);
 
   const [coins, setCoins] = React.useState<DirectoryCoin[]>([]);
+  const [usdcMmoshPrice, setUsdcMmoshPrice] = React.useState(0);
 
   const getCoins = async (volume: string, keyword: string, page: number) => {
     try {
@@ -41,8 +42,6 @@ const CoinsTable = () => {
       const apiResult = await axios.get(url, {
         cancelToken: source.current.token,
       });
-
-      console.log("Result: ", apiResult);
 
       const newCoins = [];
       for (let index = 0; index < apiResult.data.length; index++) {
@@ -71,27 +70,93 @@ const CoinsTable = () => {
     }
   };
 
-  const getCoinPriceStatus = React.useCallback((start: number, end: number) => {
-    const isIncremental = start <= end;
+  const getCoinPriceStatus = React.useCallback(
+    (start: number, end: number) => {
+      const isIncremental = start <= end;
 
-    const iconToRender = isIncremental ? <ArrowUp /> : <ArrowDown />;
+      const iconToRender = isIncremental ? (
+        <ArrowUp fill={isIncremental ? "#22C55E" : "#DC2626"} />
+      ) : (
+        <ArrowDown fill={isIncremental ? "#22C55E" : "#DC2626"} />
+      );
 
-    const percentage = `${((end - start) / start) * 100}%`;
+      const substraction = end - start;
 
-    return (
-      <div className="flex items-center justify-evenly">
-        {percentage}
-        {iconToRender}
-      </div>
+      const percentage =
+        substraction === 0 || start === 0
+          ? "0%"
+          : `${(substraction / start) * 100}%`;
+
+      return (
+        <div className="flex items-center justify-evenly">
+          <p
+            className={`text-sm ${isIncremental ? "text-green-500" : "text-red-500"}`}
+          >
+            {percentage}
+          </p>
+          {iconToRender}
+        </div>
+      );
+    },
+    [usdcMmoshPrice, isUSDCSelected],
+  );
+
+  const getUsdcMmoshPrice = React.useCallback(async () => {
+    const mmoshUsdcPrice = await axios.get(
+      `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
     );
+
+    setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0);
   }, []);
 
   const navigateToCoinPage = React.useCallback((symbol: string) => {
     navigate.push(`/create/coins/${symbol}`);
   }, []);
 
+  const getCoinPrice = React.useCallback(
+    (price: number) => {
+      if (isUSDCSelected) {
+        return `${price * usdcMmoshPrice} USDC`;
+      }
+
+      return `${price} MMOSH`;
+    },
+    [usdcMmoshPrice, isUSDCSelected],
+  );
+
+  const getCoinFDV = React.useCallback(
+    (value: number) => {
+      if (isUSDCSelected) {
+        return `${value * usdcMmoshPrice} USDC`;
+      }
+
+      return `${value} MMOSH`;
+    },
+    [usdcMmoshPrice, isUSDCSelected],
+  );
+
+  const getCoinVolume = React.useCallback(
+    (value: number) => {
+      if (isUSDCSelected) {
+        return `${value * usdcMmoshPrice} USDC`;
+      }
+
+      return `${value} MMOSH`;
+    },
+    [usdcMmoshPrice, isUSDCSelected],
+  );
+
+  const getChartColor = React.useCallback((prices: string[]) => {
+    if (Number(prices[prices.length - 1]) < Number(prices[prices.length - 2])) {
+      return "#DC2626";
+    }
+
+    return "#22C55E";
+  }, []);
+
   React.useEffect(() => {
     getCoins(volume.value, searchText, 0);
+    getUsdcMmoshPrice();
   }, [searchText, volume]);
 
   return (
@@ -134,31 +199,36 @@ const CoinsTable = () => {
       <tbody>
         {coins.map((coin, index) => (
           <tr
-            className={`${index % 2 === 0 ? "bg-[#100E5242] hover:bg-[#100E5230]" : "bg-[#07076E70] hover:bg-[#07076E60]"} cursor-pointer`}
+            className={`${index % 2 === 0 ? "bg-[#100E5242] hover:bg-[#100E5230]" : "bg-[#07076E70] hover:bg-[#07076E60]"}`}
             key={coin.symbol}
             onClick={() => navigateToCoinPage(coin.symbol)}
           >
             <td align="center">
-              <p className="text-white text-sm">{index}</p>
+              <p className="text-white text-sm">{index + 1}</p>
             </td>
 
             <td align="center">
-              <div className="flex items-center">
-                <div className="relative w-[1vmax] h-[1vmax] rounded-full">
-                  <Image
-                    src={coin.image}
-                    layout="fill"
-                    alt={`${coin.name} image`}
-                  />
+              <a
+                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/coins/${coin.symbol}`}
+                className="cursor-pointer"
+              >
+                <div className="flex items-center">
+                  <div className="relative w-[1vmax] h-[1vmax] rounded-full">
+                    <Image
+                      src={coin.image}
+                      layout="fill"
+                      alt={`${coin.name} image`}
+                    />
+                  </div>
+                  <p className="text-white text-sm ml-1">{coin.name}</p>
+                  <p className="text-white text-sm ml-2">
+                    {coin.symbol.toUpperCase()}
+                  </p>
                 </div>
-                <p className="text-white text-sm ml-1">{coin.name}</p>
-                <p className="text-white text-sm ml-2">
-                  {coin.symbol.toUpperCase()}
-                </p>
-              </div>
+              </a>
             </td>
 
-            <td align="center">{coin.price} MMOSH</td>
+            <td align="center">{getCoinPrice(coin.price)}</td>
 
             <td align="center">
               {getCoinPriceStatus(coin.oneHourPriceStart, coin.oneHourPriceEnd)}
@@ -168,21 +238,21 @@ const CoinsTable = () => {
               {getCoinPriceStatus(coin.oneDayPriceStart, coin.oneDayPriceEnd)}
             </td>
 
-            <td align="center">{coin.price * coin.volume} MMOSH</td>
+            <td align="center">{getCoinFDV(coin.price * coin.volume)}</td>
 
-            <td align="center">{coin.volume} MMOSH</td>
+            <td align="center">{getCoinVolume(coin.volume)}</td>
 
             <td align="center">
               <ResponsiveContainer width={150} height={50}>
                 <LineChart
                   width={150}
                   height={50}
-                  data={coin.priceLastSevenDays}
+                  data={coin.priceLastSevenDays.map((val) => ({ value: val }))}
                 >
                   <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#8884d8"
+                    stroke={getChartColor(coin.priceLastSevenDays)}
                     dot={false}
                     strokeWidth={2}
                   />

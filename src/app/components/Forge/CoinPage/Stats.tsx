@@ -17,7 +17,7 @@ const Stats = ({ coin }: Props) => {
 
   const fetchCoinOwner = React.useCallback(async () => {
     const result = await axios.get(
-      `/api/get-user-data?username=${coin.username}`,
+      `/api/get-user-data?username=${coin.creatorUsername}`,
     );
 
     setCoinOwner(result.data);
@@ -48,13 +48,13 @@ const Stats = ({ coin }: Props) => {
           </div>
         </div>
 
-        <div className="h-[1px] w-full bg-[#100E5242] rounded-full" />
+        <div className="h-[1px] w-full bg-[#100E5242] rounded-full my-8" />
 
         <div className="flex flex-col mt-8">
           <h5>Info</h5>
           <p className="my-2">{coin.desc}</p>
           {coinOwner && (
-            <div className="bg-[#7420E8] rounded-2xl p-4">
+            <div className="bg-[#7420E8] md:max-w-[35%] max-w-[40%] lg:max-w-[25%] rounded-2xl p-4">
               <p className="text-white text-sm">{coinOwner.profile.name}</p>
             </div>
           )}

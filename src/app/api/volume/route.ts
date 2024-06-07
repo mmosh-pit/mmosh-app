@@ -8,10 +8,19 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type") ? searchParams.get("type") : "day";
 
   const labels = [];
-  for (let index = 0; index < 14; index++) {
+  for (let index = 0; index < 7; index++) {
     let volType;
     if (type === "day") {
       volType = new Date(new Date().setDate(new Date().getDate() - index));
+      labels.push({
+        label: volType.toLocaleString("en-us", {
+          month: "short",
+          day: "numeric",
+        }),
+        value: 0,
+      });
+    } else if (type === "week") {
+      volType = new Date(new Date().setDate(new Date().getDate() - index * 7));
       labels.push({
         label: volType.toLocaleString("en-us", {
           month: "short",
@@ -43,6 +52,9 @@ export async function GET(req: NextRequest) {
 
   if (type === "day") {
     filterDate = new Date(d.setDate(d.getDate() - 13));
+    idFitler = { year: { date: "$created_date" } };
+  } else if (type === "week") {
+    filterDate = new Date(d.setDate(d.getDate() - 13 * 7));
     idFitler = { year: { date: "$created_date" } };
   } else if (type === "month") {
     filterDate = new Date(d.setMonth(d.getMonth() - 13));

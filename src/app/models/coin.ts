@@ -5,5 +5,5 @@ export type Coin = {
   token: string;
   image: string;
   bonding: string;
-  username: string;
+  creatorUsername: string;
 };

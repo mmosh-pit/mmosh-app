@@ -39,6 +39,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         `/api/get-community?symbol=${params.symbol}`,
       );
 
+      console.log("Result: ", communityRes);
+
       if (!communityRes.data) {
         setIsLoading(false);
         return;
@@ -73,6 +75,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       setCommunity(communityRes.data);
       setIsLoading(false);
     } catch (error) {
+      console.error(error);
       setIsLoading(false);
     }
   }, [params]);

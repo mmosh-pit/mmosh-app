@@ -53,25 +53,38 @@ const Swap = ({ coin, communitySymbol }: Props) => {
     onTokenSelect(response.data.token);
   }, [baseToken, targetToken, wallet]);
 
-  const changeCoins = React.useCallback(() => {
-    const baseTokenNewValue =
-      targetToken!.value > targetToken!.balance
-        ? targetToken!.balance
-        : targetToken!.value;
+  const switchCoins = React.useCallback(() => {
+    if (targetToken!.value > targetToken!.balance) {
+      const isMMOSHBase =
+        targetToken?.token === web3Consts.oposToken.toBase58();
+
+      const value = targetToken!.balance;
+
+      const buyValue = !isMMOSHBase
+        ? curve!.buyWithBaseAmount(value - value * 0.06)
+        : curve!.sellTargetAmount(value - value * 0.06);
+
+      setBaseToken({ ...targetToken!, value });
+      setTargetToken({ ...baseToken!, value: buyValue });
+      return;
+    }
 
     setTargetToken(baseToken);
-    setBaseToken({ ...targetToken!, value: baseTokenNewValue });
+    setBaseToken(targetToken);
   }, [baseToken, targetToken]);
 
   const onChangeValue = React.useCallback(
     (value: number) => {
       if (value === 0) {
         setBaseToken({ ...baseToken!, value });
+        setTargetToken({ ...targetToken!, value });
         return;
       }
 
       if (value < 0) {
         setBaseToken({ ...baseToken!, value: 0 });
+        setTargetToken({ ...targetToken!, value });
+        return;
       }
 
       if (value > baseToken!.balance) return;
@@ -80,16 +93,11 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
       setBaseToken({ ...baseToken!, value });
 
-      console.log("Is MMOSH Base: ", isMMOSHBase);
-
-      const buyValue = isMMOSHBase
+      const buyValue = !isMMOSHBase
         ? curve!.buyWithBaseAmount(value - value * 0.06)
         : curve!.sellTargetAmount(value - value * 0.06);
 
-      console.log("Buy value: ", buyValue);
-
-      const resultingValue = isMMOSHBase ? buyValue * value : value;
-      setTargetToken({ ...targetToken!, value: resultingValue });
+      setTargetToken({ ...targetToken!, value: buyValue });
     },
     [baseToken, targetToken],
   );
@@ -146,6 +154,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
             <div className="w-[25%] flex justify-end">
               <input
                 value={baseToken.value}
+                type="number"
                 onChange={(e) => {
                   const number = Number(e.target.value);
 
@@ -161,7 +170,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
         </div>
 
         <button
-          onClick={changeCoins}
+          onClick={switchCoins}
           className="swap-arrows-button rounded-full mt-8 mb-4"
         >
           <CompareArrows />

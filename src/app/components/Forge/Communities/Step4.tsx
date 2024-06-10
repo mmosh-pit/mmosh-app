@@ -139,7 +139,7 @@ const Step4 = () => {
           <StepsTitle
             name="Step 4"
             title="Mint and Deploy"
-            subtitle="Deploy your community to the Solana blockchain and mint your Genesis Pass, a Community Pass and 100 Invitations Badges. You can mint more Badges on the project page any time."
+            subtitle={`Deploy your community to the Solana blockchain and mint your Genesis Pass ${thirdForm.invitation !== "none" ? ", a Community Pass and 100 Invitations Badges" : "and a Community Pass"}. You can mint more Badges on the project page any time.`}
           />
 
           <div className="w-[33%]" />

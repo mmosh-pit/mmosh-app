@@ -10,6 +10,8 @@ import Button from "../../common/Button";
 import { getSwapTokenInfo } from "@/app/lib/forge/getSwapTokenInfo";
 import { swapTokens } from "@/app/lib/forge/swapTokens";
 import { targetTokenBalance } from "@/app/store/community";
+import { BondingPricing } from "@/anchor/curve/curves";
+import { web3Consts } from "@/anchor/web3Consts";
 
 type Props = {
   coin: Coin;
@@ -31,6 +33,8 @@ const Swap = ({ coin, communitySymbol }: Props) => {
     Coin & { balance: number; value: number }
   >();
 
+  const [curve, setCurve] = React.useState<BondingPricing>();
+
   const onTokenSelect = React.useCallback(async (token: Coin) => {
     setSwapLoading(true);
     const res = await getSwapTokenInfo(token, wallet!);
@@ -39,6 +43,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
     setBaseToken(res.baseToken);
     setTargetToken(res.targetToken);
     setSwapLoading(false);
+    setCurve(res.pricing);
   }, []);
 
   const executeSwap = React.useCallback(async () => {
@@ -49,9 +54,43 @@ const Swap = ({ coin, communitySymbol }: Props) => {
   }, [baseToken, targetToken, wallet]);
 
   const changeCoins = React.useCallback(() => {
+    const baseTokenNewValue =
+      targetToken!.value > targetToken!.balance
+        ? targetToken!.balance
+        : targetToken!.value;
+
     setTargetToken(baseToken);
-    setBaseToken(targetToken);
+    setBaseToken({ ...targetToken!, value: baseTokenNewValue });
   }, [baseToken, targetToken]);
+
+  const onChangeValue = React.useCallback(
+    (value: number) => {
+      if (value === 0) {
+        setBaseToken({ ...baseToken!, value });
+        return;
+      }
+
+      if (value < 0) {
+        setBaseToken({ ...baseToken!, value: 0 });
+      }
+
+      if (value > baseToken!.balance) return;
+
+      const isMMOSHBase = baseToken?.token === web3Consts.oposToken.toBase58();
+
+      setBaseToken({ ...baseToken!, value });
+
+      const buyValue = isMMOSHBase
+        ? curve!.buyWithBaseAmount(value - value * 0.06)
+        : curve!.sellTargetAmount(value - value * 0.06);
+
+      console.log("Buy value: ", buyValue);
+
+      const resultingValue = isMMOSHBase ? buyValue * value : value;
+      setTargetToken({ ...targetToken!, value: resultingValue });
+    },
+    [baseToken, targetToken],
+  );
 
   React.useEffect(() => {
     onTokenSelect(coin);
@@ -104,24 +143,13 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
             <div className="w-[25%] flex justify-end">
               <input
-                value={baseToken.balance}
+                value={baseToken.value}
                 onChange={(e) => {
                   const number = Number(e.target.value);
 
                   if (Number.isNaN(number)) return;
 
-                  if (e.target.value === "") {
-                    setBaseToken({ ...baseToken, value: number });
-                    return;
-                  }
-
-                  if (number < 0) {
-                    setBaseToken({ ...baseToken, value: 0 });
-                  }
-
-                  if (number > baseToken.balance) return;
-
-                  setBaseToken({ ...baseToken, value: number });
+                  onChangeValue(number);
                 }}
                 placeholder="0.00"
                 className="input max-w-[100%] text-center text-xs bg-transparent placeholder-white placeholder-opacity-[0.3]"
@@ -168,7 +196,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
             <div className="w-[25%] flex justify-end">
               <input
                 readOnly={true}
-                value={targetToken.balance}
+                value={targetToken.value}
                 onChange={() => {}}
                 className="input max-w-[100%] text-center text-xs bg-transparent placeholder-white placeholder-opacity-[0.3]"
               />

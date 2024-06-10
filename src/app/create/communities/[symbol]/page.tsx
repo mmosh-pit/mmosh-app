@@ -39,8 +39,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         `/api/get-community?symbol=${params.symbol}`,
       );
 
-      console.log("Result: ", communityRes);
-
       if (!communityRes.data) {
         setIsLoading(false);
         return;
@@ -53,8 +51,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       const creatorResult = await axios.get(
         `/api/get-user-data?username=${communityRes.data.username}`,
       );
-
-      console.log("wallet: ", wallet?.publicKey.toString());
 
       const communityProjectInfo = await getCommunityProjectInfo(
         wallet!,
@@ -80,7 +76,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       console.error(error);
       setIsLoading(false);
     }
-  }, [params]);
+  }, [params, wallet]);
 
   React.useEffect(() => {
     if (!params.symbol || !wallet) return;
@@ -95,8 +91,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       </div>
     );
   }
-
-  console.log("Community: ", community);
 
   if (!community)
     return (
@@ -166,7 +160,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
               price={Number(community.invitationPrice)}
               coin={community.coin}
               projectInfo={communityWeb3Info}
-              solBalance={userInfo!.solBalance}
+              solBalance={userInfo?.solBalance || 0}
             />
           </div>
         )}
@@ -177,7 +171,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             price={Number(community.passPrice)}
             coin={community.coin}
             projectInfo={communityWeb3Info}
-            solBalance={userInfo!.solBalance}
+            solBalance={userInfo?.solBalance || 0}
           />
         </div>
       </div>

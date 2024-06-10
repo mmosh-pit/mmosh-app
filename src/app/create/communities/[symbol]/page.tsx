@@ -52,6 +52,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         `/api/get-user-data?username=${communityRes.data.username}`,
       );
 
+      console.log("Creator result: ", creatorResult);
+
       const communityProjectInfo = await getCommunityProjectInfo(
         wallet!,
         communityRes.data.tokenAddress,
@@ -99,7 +101,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
   return (
     <div className="background-content relative flex flex-col max-h-full">
-      <div className="w-full relative flex flex-col md:flex-row justify-around">
+      <div className="w-full relative flex flex-col md:flex-row justify-around px-16 md:px-0">
         <div className="flex flex-col">
           <div className="w-[8vmax] h-[8vmax] relative">
             <Image src={community.image} layout="fill" alt="" />
@@ -118,25 +120,29 @@ const Page = ({ params }: { params: { symbol: string } }) => {
           </div>
 
           {communityCreator && (
-            <div className="relative p-4 mt-12 flex flex-col border-[1px] border-[#fff] border-opacity-20 rounded-xl">
-              <div className="w-full flex relative">
-                <div className="w-[4vmax] h-[4vmax] absolute top-[-5px] left-[-5px]">
-                  <Image
-                    src={communityCreator.profile.image}
-                    alt={communityCreator.profile.username}
-                  />
+            <div className="relative p-4 mt-12 flex flex-col border-[1px] border-[#fff] border-opacity-20 rounded-3xl min-h-[250px]">
+              <div className="w-full flex">
+                <div className="relative w-[3vmax]">
+                  <div className="w-[4vmax] h-[4vmax] absolute top-[-20px] left-[-20px] rounded-full">
+                    <Image
+                      src={communityCreator.profile.image}
+                      alt={communityCreator.profile.username}
+                      layout="fill"
+                      className="rounded-full"
+                    />
+                  </div>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col ml-4">
                   <p className="text-white text-base">
                     {communityCreator.profile.name}
                   </p>
-                  <p className="text-sm">
+                  <p className="text-sm mt-2">
                     @{communityCreator.profile.username}
                   </p>
                 </div>
               </div>
 
-              <div className="my-2">
+              <div className="mt-8 mb-2">
                 <p className="text-white text-sm">
                   {communityCreator.profile.bio}
                 </p>

@@ -51,15 +51,11 @@ const Step4 = () => {
     setMintingStatus("Trying to Generating images...");
     const genesisImage = await toBlob(genesisPassRef.current!, {
       cacheBust: true,
-      height: 1080,
-      width: 1080,
     });
     const invitationImage =
       thirdForm.invitation !== "none"
         ? await toBlob(invitationPassRef.current!, {
             cacheBust: true,
-            height: 1080,
-            width: 1080,
           })
         : null;
 

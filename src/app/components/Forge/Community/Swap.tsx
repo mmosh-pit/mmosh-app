@@ -80,6 +80,8 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
       setBaseToken({ ...baseToken!, value });
 
+      console.log("Is MMOSH Base: ", isMMOSHBase);
+
       const buyValue = isMMOSHBase
         ? curve!.buyWithBaseAmount(value - value * 0.06)
         : curve!.sellTargetAmount(value - value * 0.06);

@@ -160,7 +160,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
               price={Number(community.invitationPrice)}
               coin={community.coin}
               projectInfo={communityWeb3Info}
-              solBalance={userInfo!.solBalance}
+              solBalance={userInfo?.solBalance || 0}
             />
           </div>
         )}
@@ -171,7 +171,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             price={Number(community.passPrice)}
             coin={community.coin}
             projectInfo={communityWeb3Info}
-            solBalance={userInfo!.solBalance}
+            solBalance={userInfo?.solBalance || 0}
           />
         </div>
       </div>

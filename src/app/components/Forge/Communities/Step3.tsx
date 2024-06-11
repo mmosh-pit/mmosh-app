@@ -1,7 +1,12 @@
 import * as React from "react";
 import { useAtom } from "jotai";
 
-import { step, step1Form, step3Form } from "@/app/store/community";
+import {
+  selectOpened,
+  step,
+  step1Form,
+  step3Form,
+} from "@/app/store/community";
 import Card from "../common/Card";
 import Input from "../../common/Input";
 import SimpleInput from "../../common/SimpleInput";
@@ -19,6 +24,8 @@ const Step3 = () => {
   const [currentStep, setCurrentStep] = useAtom(step);
   const [firstForm] = useAtom(step1Form);
   const [form, setForm] = useAtom(step3Form);
+  const [isSelectOpen] = useAtom(selectOpened);
+
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [message, setMessage] = React.useState({
@@ -139,7 +146,9 @@ const Step3 = () => {
               description={firstForm.description}
             />
 
-            <div className="community-config-card md:ml-12 mt-12 md:mt-0 relative z-1">
+            <div
+              className={`community-config-card ${isSelectOpen ? "select-open" : "select-closed"} md:ml-12 mt-12 md:mt-0 relative`}
+            >
               <div className="w-full grid grid-cols-2 gap-8">
                 <CustomCoinSelect
                   selectedItem={form.coin}

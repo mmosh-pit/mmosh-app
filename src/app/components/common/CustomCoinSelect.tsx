@@ -1,6 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
+import Image from "next/image";
 
 import ArrowDown from "@/assets/icons/ArrowDown";
 import ArrowUp from "@/assets/icons/ArrowUp";
@@ -9,7 +10,7 @@ import { userWeb3Info } from "@/app/store";
 import CoinListItem from "./CoinListItem";
 import Search from "./Search";
 import RecentCoin from "./RecentCoin";
-import Image from "next/image";
+import { selectOpened } from "@/app/store/community";
 
 type Props = {
   onSelect: (value: Coin) => void;
@@ -25,9 +26,9 @@ const CustomCoinSelect = ({
   selectedItem,
 }: Props) => {
   const [profileInfo] = useAtom(userWeb3Info);
+  const [isOpen, setIsOpen] = useAtom(selectOpened);
 
   const fetching = React.useRef(false);
-  const [isOpen, setIsOpen] = React.useState(false);
   const [displayItems, setDisplayItems] = React.useState(false);
 
   const [searchText, setSearchText] = React.useState("");

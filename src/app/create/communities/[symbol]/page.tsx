@@ -52,8 +52,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         `/api/get-user-data?username=${communityRes.data.username}`,
       );
 
-      console.log("Community res: ", communityRes.data);
-
       const communityProjectInfo = await getCommunityProjectInfo(
         wallet!,
         communityRes.data.project,

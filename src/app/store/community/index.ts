@@ -47,3 +47,5 @@ export const step = atom(0);
 export const pageCommunity = atom<Community | null>(null);
 
 export const targetTokenBalance = atom(0);
+
+export const selectOpened = atom(false);

@@ -60,8 +60,6 @@ const CustomSelect = ({
       (divRef.current?.offsetHeight || 0) < MIN_DIV_HEIGHT
         ? MIN_DIV_HEIGHT
         : divRef.current?.offsetHeight;
-
-    console.log(height);
     setDivHeight(height || MIN_DIV_HEIGHT);
   }, [selectedElements]);
 

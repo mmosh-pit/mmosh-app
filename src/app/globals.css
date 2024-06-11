@@ -517,12 +517,18 @@ select {
   flex-flow: column;
   justify-content: space-between;
   flex-flow: column;
-  backdrop-filter: blur(19.5px);
   background-color: rgba(16, 14, 82, 0.26);
 
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 1rem;
   padding: 1vmax;
+}
+
+.community-config-card.select-open {
+}
+
+.community-config-card.select-closed {
+  backdrop-filter: blur(19.5px);
 }
 
 .community-genesis-card {

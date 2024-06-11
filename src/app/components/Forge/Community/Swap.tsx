@@ -47,10 +47,12 @@ const Swap = ({ coin, communitySymbol }: Props) => {
   }, []);
 
   const executeSwap = React.useCallback(async () => {
-    const response = await swapTokens(baseToken!, targetToken!, wallet!);
+    setSwapLoading(true);
+    const response = await swapTokens(targetToken!, baseToken!, wallet!);
 
     setResult({ res: response.type, message: response.message });
     onTokenSelect(response.data.token);
+    setSwapLoading(false);
   }, [baseToken, targetToken, wallet]);
 
   const switchCoins = React.useCallback(() => {
@@ -60,7 +62,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
       const value = targetToken!.balance;
 
-      const buyValue = !isMMOSHBase
+      const buyValue = isMMOSHBase
         ? curve!.buyWithBaseAmount(value - value * 0.06)
         : curve!.sellTargetAmount(value - value * 0.06);
 
@@ -93,7 +95,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
       setBaseToken({ ...baseToken!, value });
 
-      const buyValue = !isMMOSHBase
+      const buyValue = isMMOSHBase
         ? curve!.buyWithBaseAmount(value - value * 0.06)
         : curve!.sellTargetAmount(value - value * 0.06);
 

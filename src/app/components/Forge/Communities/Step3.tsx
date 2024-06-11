@@ -177,8 +177,6 @@ const Step3 = () => {
                             setForm({ ...form, invitation: "required" });
                             return;
                           }
-
-                          setForm({ ...form, invitation: "" });
                         }}
                       />
                       <p className="text-tiny">Required</p>
@@ -194,8 +192,6 @@ const Step3 = () => {
                             setForm({ ...form, invitation: "optional" });
                             return;
                           }
-
-                          setForm({ ...form, invitation: "" });
                         }}
                       />
                       <p className="text-tiny">Optional</p>
@@ -215,8 +211,6 @@ const Step3 = () => {
                             });
                             return;
                           }
-
-                          setForm({ ...form, invitation: "" });
                         }}
                       />
                       <p className="text-tiny">None</p>
@@ -356,7 +350,9 @@ const Step3 = () => {
             action={navigateToNextStep}
             isPrimary
             disabled={
-              getTotalRoyaltiesValue() < 100 || getTotalRoyaltiesValue() > 100
+              getTotalRoyaltiesValue() < 100 ||
+              getTotalRoyaltiesValue() > 100 ||
+              form.invitation === ""
             }
             size="large"
           />

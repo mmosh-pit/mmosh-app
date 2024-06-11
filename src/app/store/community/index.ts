@@ -13,7 +13,7 @@ export const defaultFirstFormState = {
 export const defaultThirdFormState = {
   coin: null,
   passPrice: "0",
-  invitation: "",
+  invitation: "required",
   invitationPrice: "0",
   creatorRoyalties: "70%",
   promoterRoyalties: "20%",

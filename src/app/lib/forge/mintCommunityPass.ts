@@ -119,6 +119,7 @@ export const mintCommunityPass = async ({
       type: "error",
     };
   } catch (error) {
+    console.error(error);
     setMintStatus("Mint");
     return {
       message:

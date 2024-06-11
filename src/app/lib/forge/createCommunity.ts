@@ -238,7 +238,7 @@ export async function createCommunity({
 
     setMintingStatus("Minting Badges...");
 
-    const res3 = await projectConn.createBadge({
+    await projectConn.createBadge({
       amount: 100,
       subscriptionToken: res2.Ok.info.subscriptionToken,
     });

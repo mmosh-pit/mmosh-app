@@ -52,11 +52,11 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         `/api/get-user-data?username=${communityRes.data.username}`,
       );
 
-      console.log("Creator result: ", creatorResult);
+      console.log("Community res: ", communityRes.data);
 
       const communityProjectInfo = await getCommunityProjectInfo(
         wallet!,
-        communityRes.data.tokenAddress,
+        communityRes.data.project,
       );
 
       if (communityProjectInfo.profiles.length > 0) {

@@ -134,6 +134,7 @@ export const mintInvitation = async ({
       };
     }
   } catch (error) {
+    console.error(error);
     setInvitationStatus("Mint");
     return {
       message:

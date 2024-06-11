@@ -137,8 +137,8 @@ const Step3 = () => {
           <div className="w-[33%]" />
         </div>
 
-        <div className="flex flex-col mt-12">
-          <div className="flex md:flex-row flex-col">
+        <div className="flex justify-center items-center mt-12 w-[70%]">
+          <div className="flex md:flex-row flex-col justify-around">
             <Card
               name={firstForm.name}
               image={firstForm.preview}
@@ -147,7 +147,7 @@ const Step3 = () => {
             />
 
             <div
-              className={`community-config-card ${isSelectOpen ? "select-open" : "select-closed"} md:ml-12 mt-12 md:mt-0 relative`}
+              className={`w-full community-config-card ${isSelectOpen ? "select-open" : "select-closed"} md:ml-12 mt-12 md:mt-0 relative`}
             >
               <div className="w-full grid grid-cols-2 gap-8">
                 <CustomCoinSelect

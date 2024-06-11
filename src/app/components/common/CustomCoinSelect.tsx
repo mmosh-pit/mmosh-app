@@ -102,7 +102,7 @@ const CustomCoinSelect = ({
       <p className="text-sm text-white">{title}</p>
 
       <div
-        className={`custom-select absolute px-[1vmax] ${!isOpen ? "h-[2.5vmax]" : "h-[500px] opened"} z-2 top-[35px]`}
+        className={`custom-select absolute px-[1vmax] ${!isOpen ? "h-[2.5vmax]" : "h-[500px] opened"} z-2 top-[25px]`}
       >
         <div
           className="w-full flex justify-between items-center self-center"

@@ -98,8 +98,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     );
 
   return (
-    <div className="background-content relative flex flex-col max-h-full">
-      <div className="w-full relative flex flex-col md:flex-row justify-around px-16 md:px-0">
+    <div className="background-content relative flex flex-col items-center max-h-full">
+      <div className="w-full relative flex flex-col lg:flex-row justify-around px-16 md:px-0 w-[80%] md:w-[70%] lg:w-full">
         <div className="flex flex-col">
           <div className="w-[8vmax] h-[8vmax] relative">
             <Image src={community.image} layout="fill" alt="" />

@@ -6,7 +6,7 @@ const ProfileCard = () => {
   const navigate = useRouter();
 
   const navigateToInvitation = () => {
-    navigate.push("/create/profile");
+    navigate.push("/create/create_profile");
   };
 
   return (
@@ -24,7 +24,7 @@ const ProfileCard = () => {
           <p className="text-lg text-white">
             Create your Profile to join the DAO
           </p>
-          <p className="text-sm">
+          <p className="text-sm mt-2">
             MMOSH DAO members can create their own coins, build community and
             help allocate resources to support the growth and expansion of our
             ecosystem.

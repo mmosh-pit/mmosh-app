@@ -215,22 +215,12 @@ const Header = () => {
           )}
 
           {!isMobileScreen && (
-            <div className="flex w-[25%] justify-between items-center">
+            <div className="flex w-[75%] justify-between items-center">
               <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
               >
                 Home
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  if (isOnSettings) return setIsOnSettings(false);
-                  router.push(`/${currentUser?.profile.username}`);
-                }}
-              >
-                My Profile
               </a>
 
               <a
@@ -248,6 +238,52 @@ const Header = () => {
                 }}
               >
                 Forge
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create");
+                }}
+              >
+                Members
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/communities");
+                }}
+              >
+                Communities
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/coins");
+                }}
+              >
+                Coins
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/swap");
+                }}
+              >
+                Swap
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  if (isOnSettings) return setIsOnSettings(false);
+                  router.push(`/${currentUser?.profile.username}`);
+                }}
+              >
+                My Profile
               </a>
             </div>
           )}

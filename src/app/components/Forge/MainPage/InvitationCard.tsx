@@ -6,7 +6,7 @@ const InvitationCard = () => {
   const navigate = useRouter();
 
   const navigateToInvitation = () => {
-    navigate.push("/create/invitation");
+    navigate.push("/create/create_invitation");
   };
 
   return (
@@ -22,7 +22,7 @@ const InvitationCard = () => {
       <div className="w-full flex flex-col justify-between">
         <div className="w-full flex flex-col mt-2 mb-4">
           <p className="text-lg text-white">Invite your Friends to the DAO</p>
-          <p className="text-sm">
+          <p className="text-sm mt-2">
             Build up your guild and earn royalties when new members join MMOSH
             DAO.
           </p>

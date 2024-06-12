@@ -34,10 +34,63 @@ const MobileDrawer = () => {
         <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
             <a
-              className="text-base text-white mb-2 cursor-pointer"
+              className="text-base text-white cursor-pointer"
               onClick={() => router.replace("/")}
             >
               Home
+            </a>
+
+            <a
+              target="_blank"
+              href="https://www.mmosh.ai"
+              className="text-base text-white cursor-pointer"
+            >
+              Website
+            </a>
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/create");
+              }}
+            >
+              Forge
+            </a>
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/create");
+              }}
+            >
+              Members
+            </a>
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/create/communities");
+              }}
+            >
+              Communities
+            </a>
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/create/coins");
+              }}
+            >
+              Coins
+            </a>
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/create/swap");
+              }}
+            >
+              Swap
             </a>
 
             <a
@@ -48,20 +101,6 @@ const MobileDrawer = () => {
               }}
             >
               My Profile
-            </a>
-
-            <a
-              href="https://www.mmosh.ai"
-              className="text-base text-white mt-2 cursor-pointer"
-            >
-              Website
-            </a>
-
-            <a
-              href="https://forge.mmosh.app"
-              className="text-base text-white mt-2 cursor-pointer"
-            >
-              Forge
             </a>
           </div>
           <div className="h-[1px] w-[90%] bg-white mt-4" />

@@ -95,17 +95,17 @@ const CommunityPassMint = ({
         <p className="text-white text-sm self-center text-center">
           Price {price} {coin.symbol.toUpperCase()}
         </p>
-        <label className="text-[0.5vmax]">
+        <label className="text-[0.5vmax] self-center text-center">
           Plus you will be charged a small amount of SOL in transaction fees.
         </label>
       </div>
 
-      <div className="flex flex-col mt-2">
-        <p>
+      <div className="flex flex-col justify-center mt-2">
+        <p className="text-sm self-center text-center">
           Current balance: <span className="mx-2">{balance}</span>{" "}
           {coin.symbol.toUpperCase()}
         </p>
-        <p>
+        <p className="text-sm self-center text-center">
           Current balance: <span className="mx-2">{solBalance}</span> SOL
         </p>
       </div>

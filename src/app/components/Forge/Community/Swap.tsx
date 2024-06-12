@@ -111,7 +111,7 @@ const Swap = ({ coin, communitySymbol }: Props) => {
   if (!baseToken || !targetToken) return;
 
   return (
-    <div className="community-page-container-card p-6 rounded-xl">
+    <div className="community-page-container-card md:p-4 p-6 lg:p-6 rounded-xl">
       <div className="flex flex-col">
         <div className="self-start">
           <h6>Coin</h6>
@@ -237,12 +237,12 @@ const Swap = ({ coin, communitySymbol }: Props) => {
             isPrimary
           />
           <div className="w-full flex justify-between items-center">
-            <p className="text-tiny mr-4">
+            <p className="text-tiny mr-4 max-w-[40%]">
               The price will automatically update after a period of time.
             </p>
 
             <a
-              className="text-tiny"
+              className="text-tiny font-normal"
               href={`https://mmosh.app/create/communities/${communitySymbol}`}
             >
               https://mmosh.app/create/communities/{communitySymbol}

@@ -1,5 +1,6 @@
 "use client";
 
+import FilePicker from "@/app/components/FilePicker";
 import ImagePicker from "@/app/components/ImagePicker";
 import Button from "@/app/components/common/Button";
 import Input from "@/app/components/common/Input";
@@ -10,20 +11,19 @@ import Calender from "@/assets/icons/Calender";
 import FileIcon from "@/assets/icons/FileIcon";
 import MinusIcon from "@/assets/icons/MinusIcon";
 import TimeIcon from "@/assets/icons/TimeIcon";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 export default function ProjectCreateStep9() {
+     const navigate = useRouter();
      const [files, setFiles] = useState<any>([])
 
-     const uploadAction = () => {
-        let newFiles = [];
-        for (let index = 0; index < files.length; index++) {
-            const element = files[index];
-            newFiles.push(element)
-            
-        }
-        newFiles.push(1)
+     const uploadAction = (fileUri:any) => {
+        let data:any = localStorage.getItem("projectstep9");
+        let newFiles = localStorage.getItem("projectstep9") ? JSON.parse(data) : [];
+        newFiles.push(fileUri)
         setFiles(newFiles);
+        localStorage.setItem("projectstep9",JSON.stringify(newFiles));
      }
 
      const removeFileAction = (deletedIndex:any) => {
@@ -36,12 +36,24 @@ export default function ProjectCreateStep9() {
             newFiles.push(element)
         }
         setFiles(newFiles);
+        localStorage.setItem("projectstep9",JSON.stringify(newFiles));
      }
+
      const gotoStep10 = () => {
+        navigate.push("/project/create/step10");
      }
 
      const goBack = () => {
+        navigate.back()
      }
+
+     React.useEffect(()=>{
+        if(localStorage.getItem("projectstep9")) {
+          let savedData:any = localStorage.getItem("projectstep9");
+          setFiles(JSON.parse(savedData));
+        }
+      },[])
+     
 
     return (
         <div className="relative background-content">
@@ -61,14 +73,10 @@ export default function ProjectCreateStep9() {
                         <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20 mb-10 ">
                             <div className="grid grid-cols-3 gap-4">
                                 {files.length == 0 &&
-                                   <div>
-                                      <h5 className="text-header-small-font-size text-while font-poppins text-center font-bold">File 1</h5>
-                                      <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                                           <p className="text-para-font-size light-gray-color text-center">PDF or Docx</p>
-                                           <div className="w-8 mx-auto"><FileIcon /></div>
-                                           <p className="text-para-font-size light-gray-color text-center"><span className="font-semibold">Drag and Drop file</span> or <span className="font-semibold">Browse media</span> on your device</p>
-                                      </div>
-                                   </div>
+                                    <FilePicker file={""} isButton={false} changeFile={(file:any)=>{
+                                        const objectUrl = URL.createObjectURL(file);
+                                        uploadAction(objectUrl);
+                                    }} />
                                 }
                                 {files.length > 0 &&
                                    <>
@@ -76,7 +84,7 @@ export default function ProjectCreateStep9() {
                                         <div>
                                             <h5 className="text-header-small-font-size text-while font-poppins text-center font-bold">File {i+1}</h5>
                                             <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                                                <p className="text-para-font-size light-gray-color text-center">File1.pdf</p>
+                                                <p className="text-para-font-size light-gray-color text-center">File{i+1}.pdf</p>
                                                 <div className="w-8 mx-auto"><FileIcon /></div>
                                                 <h3 className="flex justify-center mt-2.5">
                                                     <div className="cursor-pointer" onClick={()=>{removeFileAction(i)}}>
@@ -89,13 +97,10 @@ export default function ProjectCreateStep9() {
                                     ))}
                                    </>
                                 }
-                                <div>
-                                        <h3 className="flex h-full justify-center items-center">
-                                            <div className="cursor-pointer" onClick={()=>{uploadAction()}}>
-                                                <AddIcon />
-                                            </div>
-                                            <span className="text-para-font-size text-while font-poppins p-1.5">Add File</span></h3>
-                                </div>
+                                <FilePicker file={""} isButton={true} changeFile={(file:any)=>{
+                                    const objectUrl = URL.createObjectURL(file);
+                                    uploadAction(objectUrl);
+                                }} />
                             </div>
                         </div>
                    </div>

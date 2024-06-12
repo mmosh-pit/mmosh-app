@@ -8,21 +8,93 @@ import Select from "@/app/components/common/Select";
 import AddIcon from "@/assets/icons/AddIcon";
 import Calender from "@/assets/icons/Calender";
 import TimeIcon from "@/assets/icons/TimeIcon";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function ProjectCreateStep7() {
+    const navigate = useRouter();
 
+    const [fields, setFields] = useState([{
+        type: "Founder",
+        value: 0,
+        cliff:0,
+        vesting:0
+    }]);
+
+    const [showMsg, setShowMsg] = useState(false);
+    const [msgClass, setMsgClass] = useState("");
+    const [msgText, setMsgText] = useState("");
+
+    React.useEffect(()=>{
+
+         if(localStorage.getItem("projectstep6")) {
+            let savedData:any = localStorage.getItem("projectstep6");
+            setFields(JSON.parse(savedData));
+         }
+         
+    },[])
 
      const gotoStep8 = () => {
-
+        for (let index = 0; index < fields.length; index++) {
+            const element = fields[index];
+            console.log(element)
+            if(element.cliff == 0 || element.vesting == 0) {
+                createMessage("Vesting and Cliff Month should not be zero","danger-container");
+                return;
+            }
+        }
+        localStorage.setItem("projectstep6",JSON.stringify(fields));
+        navigate.push("/project/create/step8");
      }
 
-     const goBack = () => {
-        
-     }
+    const goBack = () => {
+        navigate.back()
+    }
+
+     const createMessage = (message: any, type: any) => {
+        window.scrollTo(0, 0);
+        setMsgText(message);
+        setMsgClass(type);
+        setShowMsg(true);
+        if(type == "success-container") {
+          setTimeout(() => {
+            setShowMsg(false);
+          }, 4000);
+        } else {
+          setTimeout(() => {
+            setShowMsg(false);
+          }, 4000);
+        }
+    };
+
+    const updateVesting = (i:any, fieldItem:any) => {
+        console.log(i)
+        console.log(fieldItem)
+        let newTokenomics = [];
+        for (let index = 0; index < fields.length; index++) {
+            if(i == index) {
+                newTokenomics.push(fieldItem);
+            } else {
+                newTokenomics.push(fields[index]);
+            }
+        }
+        setFields(newTokenomics)
+    }
+
+    const prepareNumber = (inputValue:any) => {
+        if(isNaN(inputValue)) {
+            return 0
+        }
+        return inputValue;
+    }
+
 
     return (
-        <div className="relative background-content">
+        <>
+            {showMsg && (
+                <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
+            )}
+            <div className="relative background-content">
             <div className="flex flex-col items-center justify-center w-full">
                 <div className="relative w-full flex flex-col justify-center items-center pt-5">
                     <div className="max-w-md">
@@ -45,85 +117,35 @@ export default function ProjectCreateStep7() {
                                 <h5 className="text-header-small-font-size text-white">Vesting Months</h5>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 text-center mb-5">
-                                <p className="text-para-font-size text-white leading-10">Founder 5%</p>
-                                <div className="w-12 mx-auto">
+                           {fields.map((fieldItem,i)=>(
+                                <div className="grid grid-cols-3 gap-4 text-center mb-5">
+                                    <p className="text-para-font-size text-white leading-10">{fieldItem.type} {fieldItem.value}%</p>
+                                    <div className="w-12 mx-auto">
+                                        <Input
+                                            type="text"
+                                            title=""
+                                            required={false}
+                                            helperText=""
+                                            placeholder="0"
+                                            value={(fieldItem.cliff > 0 ? fieldItem.cliff.toString() : "")}
+                                            onChange={(e) => {fieldItem.cliff = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                        />
+                                    </div>
+                                    <div className="w-12 mx-auto">
                                     <Input
                                         type="text"
                                         title=""
                                         required={false}
                                         helperText=""
                                         placeholder="0"
-                                        value={""}
-                                        onChange={(e) => {}}
+                                        value={(fieldItem.vesting > 0 ? fieldItem.vesting.toString() : "")}
+                                        onChange={(e) => {fieldItem.vesting = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
                                     />
+                                    </div>
                                 </div>
-                                <div className="w-12 mx-auto">
-                                <Input
-                                    type="text"
-                                    title=""
-                                    required={false}
-                                    helperText=""
-                                    placeholder="0"
-                                    value={""}
-                                    onChange={(e) => {}}
-                                />
-                                </div>
-                            </div>
+                           ))}
 
-                            <div className="grid grid-cols-3 gap-4 text-center mb-5">
-                                <p className="text-para-font-size text-white  leading-10">Community 5%</p>
-                                <div className="w-12 mx-auto">
-                                    <Input
-                                        type="text"
-                                        title=""
-                                        required={false}
-                                        helperText=""
-                                        placeholder="0"
-                                        value={""}
-                                        onChange={(e) => {}}
-                                    />
-                                </div>
-                                <div className="w-12 mx-auto">
-                                <Input
-                                    type="text"
-                                    title=""
-                                    required={false}
-                                    helperText=""
-                                    placeholder="0"
-                                    value={""}
-                                    onChange={(e) => {}}
-                                />
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-3 gap-4 text-center">
-                                <p className="text-para-font-size text-white  leading-10">Treasury 45%</p>
-                                <div className="w-12 mx-auto">
-                                    <Input
-                                        type="text"
-                                        title=""
-                                        required={false}
-                                        helperText=""
-                                        placeholder="0"
-                                        value={""}
-                                        onChange={(e) => {}}
-                                    />
-                                </div>
-                                <div className="w-12 mx-auto">
-                                <Input
-                                    type="text"
-                                    title=""
-                                    required={false}
-                                    helperText=""
-                                    placeholder="0"
-                                    value={""}
-                                    onChange={(e) => {}}
-                                />
-                                </div>
-                            </div>
-                            
-                            
                             <p className="text-header-small-font-size text-center pt-10">NOTE: Unvested tokens will be held by the MMOSH protocol until they are vested. At that time they will be released to the Founder for distribution. Vesting schedules are counted from the Listing Date.</p>
 
   
@@ -136,6 +158,7 @@ export default function ProjectCreateStep7() {
                     <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep8}>Next</button>
                 </div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }

@@ -6,19 +6,131 @@ import Input from "@/app/components/common/Input";
 import Radio from "@/app/components/common/Radio";
 import Calender from "@/assets/icons/Calender";
 import TimeIcon from "@/assets/icons/TimeIcon";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 export default function ProjectCreateStep4() {
-     const gotoStep5 = () => {
+    const navigate = useRouter();
 
-     }
+    const [showMsg, setShowMsg] = useState(false);
+    const [msgClass, setMsgClass] = useState("");
+    const [msgText, setMsgText] = useState("");
 
-     const goBack = () => {
+    const [coinDetails, setCoinDetails] = useState({
+        preview: "",
+        name: "", 
+        symbol: "",
+        desc: "",
+        supply: 0,
+        listingPrice: 0,
+    })
+
+    const [fields, setFields] = useState({
+        presaleStartDate: "",
+        presaleStartTime: "",
+        presaleEndDate: "",
+        presaleEndTime: "",
+        dexListingDate: "",
+        dexListingTime: "",
+        maxPresale: 0,
+        minPresale: 0
+    })
+
+
+    const gotoStep5 = () => {
+        if(validateFields()) {
+            localStorage.setItem("projectstep4",JSON.stringify(fields));
+            navigate.push("/project/create/step5");
+        }
+    }
+
+    const goBack = () => {
+        navigate.back()
+    }
+
+    React.useEffect(()=>{
+        if(localStorage.getItem("projectstep3")) {
+          let savedData:any = localStorage.getItem("projectstep3");
+          setCoinDetails(JSON.parse(savedData));
+        }
+        if(localStorage.getItem("projectstep4")) {
+            let savedData:any = localStorage.getItem("projectstep4");
+            setFields(JSON.parse(savedData));
+        }
+    },[])
+
+    const prepareNumber = (inputValue:any) => {
+        if(isNaN(inputValue)) {
+            return 0
+        }
+        return inputValue;
+    }
+
+    const validateFields = () => {
+        if (fields.maxPresale < 10 || fields.maxPresale > 25) {
+          createMessage("Presale percentage should be between 10 to 25", "danger-container");
+          return false;
+        }
+       
+        if (fields.minPresale <= 0 || fields.minPresale > 100) {
+            createMessage("Minimum Presale Purchases should be between 1 to 100", "danger-container");
+            return false;
+        }
         
-     }
+        let presaleStart = new Date(fields.presaleStartDate + " "+fields.presaleStartTime)
+        let presaleEnd = new Date(fields.presaleEndDate + " "+fields.presaleEndTime)
+        let dexDate = new Date(fields.dexListingDate + " "+fields.dexListingTime)
+
+        console.log(getDateDiff(presaleStart, presaleEnd))
+        if(getDateDiff(presaleStart, presaleEnd) < 1 || getDateDiff(presaleStart, presaleEnd) > 90) {
+            createMessage("Presale duration should be minmum 1 day and maximum 90 days", "danger-container");
+            return false;
+        }
+        
+        console.log(getDateDiff(presaleEnd, dexDate))
+        if(getDateDiff(presaleEnd, dexDate) < 0) {
+            createMessage("Dex list date should after presale is completed", "danger-container");
+            return false;
+        }
+
+        return true;
+    };
+
+    const getDateDiff=(startDate:any, endDate:any)=> {
+        if (endDate.getTime() - startDate.getTime() > 0) {
+            var diff = endDate.getTime() - startDate.getTime();
+            var diffDays = Math.ceil(diff / (1000 * 3600 * 24)); 
+            return diffDays
+        } else {
+            return -1;
+        }
+
+    }
+
+    const createMessage = (message: any, type: any) => {
+        window.scrollTo(0, 0);
+        setMsgText(message);
+        setMsgClass(type);
+        setShowMsg(true);
+        if(type == "success-container") {
+          setTimeout(() => {
+            setShowMsg(false);
+          }, 4000);
+        } else {
+          setTimeout(() => {
+            setShowMsg(false);
+          }, 4000);
+        }
+    
+    };
+
 
     return (
-        <div className="relative background-content">
+        <>
+            {showMsg && (
+                <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
+            )}
+            <div className="relative background-content">
             <div className="flex flex-col items-center justify-center w-full">
                 <div className="relative w-full flex flex-col justify-center items-center pt-5">
                     <div className="max-w-md">
@@ -35,7 +147,7 @@ export default function ProjectCreateStep4() {
                         <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20 grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                             <div className="col-span-4">
                                 <div className="rounded-full gradient-container p-1.5">
-                                   <img src="/profile.png" className="object-cover rounded-full w-full" />
+                                   <img src={coinDetails.preview} className="object-cover rounded-full w-full" />
                                 </div>
                             </div>
                             <div className="col-span-4">
@@ -43,28 +155,28 @@ export default function ProjectCreateStep4() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="mb-10">
                                             <label className="text-while text-header-small-font-size block">Name</label>
-                                            <span className="text-while text-header-small-font-size block">Coin1</span>
+                                            <span className="text-while text-header-small-font-size block">{coinDetails.name}</span>
                                         </div>
                                         <div className="mb-10">
                                             <label className="text-while text-header-small-font-size block">Symbol</label>
-                                            <span className="text-while text-header-small-font-size block">Coin12</span>
+                                            <span className="text-while text-header-small-font-size block">{coinDetails.symbol}</span>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="mb-10">
                                             <label className="text-while text-header-small-font-size block">Supply</label>
-                                            <span className="text-while text-header-small-font-size block">12</span>
+                                            <span className="text-while text-header-small-font-size block">{coinDetails.supply}</span>
                                         </div>
                                         <div className="mb-10">
                                             <label className="text-while text-header-small-font-size block">List Price</label>
-                                            <span className="text-while text-header-small-font-size block">12</span>
+                                            <span className="text-while text-header-small-font-size block">{coinDetails.listingPrice}</span>
                                         </div>
                                     </div>
 
                                     <div>
                                         <label className="text-while text-header-small-font-size block">Fully Diluted Value (FDV)</label>
-                                        <span className="text-while text-header-small-font-size block">123</span>
+                                        <span className="text-while text-header-small-font-size block">{coinDetails.supply * coinDetails.listingPrice}</span>
                                     </div>
                                 </div>
 
@@ -72,7 +184,7 @@ export default function ProjectCreateStep4() {
                             <div className="col-span-4">
                                 <div>
                                     <label className="text-while text-header-small-font-size block">Description</label>
-                                    <span className="text-while text-header-small-font-size block">Lorem ipsum dolor sit amet</span>
+                                    <span className="text-while text-header-small-font-size block">{coinDetails.desc}</span>
                                  </div>
                             </div>
                         </div>
@@ -87,7 +199,7 @@ export default function ProjectCreateStep4() {
                                            <Calender />
                                         </div>
                                
-                                        <input type="text" className="grow" placeholder="Start Date" />
+                                        <input type="date" className="grow" placeholder="Start Date" value={fields.presaleStartDate} onChange={(e) => setFields({ ...fields, presaleStartDate: e.target.value })} />
                                         </label>
                                    </div>
                                    <div>
@@ -96,7 +208,7 @@ export default function ProjectCreateStep4() {
                                            <TimeIcon />
                                         </div>
                                
-                                        <input type="text" className="grow" placeholder="Time" />
+                                        <input type="time" className="grow" placeholder="Time" value={fields.presaleStartTime} onChange={(e) => setFields({ ...fields, presaleStartTime: e.target.value })} />
                                         </label>
                                    </div>
                                </div>
@@ -110,7 +222,7 @@ export default function ProjectCreateStep4() {
                                            <Calender />
                                         </div>
                                
-                                        <input type="text" className="grow" placeholder="Start Date" />
+                                        <input type="date" className="grow" placeholder="Start Date" value={fields.presaleEndDate} onChange={(e) => setFields({ ...fields, presaleEndDate: e.target.value })} />
                                         </label>
                                    </div>
                                    <div>
@@ -119,7 +231,7 @@ export default function ProjectCreateStep4() {
                                            <TimeIcon />
                                         </div>
                                
-                                        <input type="text" className="grow" placeholder="Time" />
+                                        <input type="time" className="grow" placeholder="Time" value={fields.presaleEndTime} onChange={(e) => setFields({ ...fields, presaleEndTime: e.target.value })} />
                                         </label>
                                    </div>
                                </div>
@@ -133,7 +245,7 @@ export default function ProjectCreateStep4() {
                                            <Calender />
                                         </div>
                                
-                                        <input type="text" className="grow" placeholder="Start Date" />
+                                        <input type="date" className="grow" placeholder="Start Date" value={fields.dexListingDate} onChange={(e) => setFields({ ...fields, dexListingDate: e.target.value })}/>
                                         </label>
                                    </div>
                                    <div>
@@ -142,7 +254,7 @@ export default function ProjectCreateStep4() {
                                            <TimeIcon />
                                         </div>
                                
-                                        <input type="text" className="grow" placeholder="Time" />
+                                        <input type="time" className="grow" placeholder="Time" value={fields.dexListingTime} onChange={(e) => setFields({ ...fields, dexListingTime: e.target.value })} />
                                         </label>
                                    </div>
                                </div>
@@ -158,12 +270,14 @@ export default function ProjectCreateStep4() {
                                                 required
                                                 helperText=""
                                                 placeholder="%"
-                                                value={""}
-                                                onChange={(e) => {}}
+                                                value={(fields.maxPresale > 0 ? fields.maxPresale.toString() : "")}
+                                                onChange={(e) => setFields({ ...fields, maxPresale: prepareNumber(Number(e.target.value))})}
                                             />
                                        </div>
                                         <div className="col-span-1">
-                                           <p className="text-right text-header-small-font-size mt-7">10,000 Coin12</p>
+                                            {fields.maxPresale > 0 &&
+                                               <p className="text-right text-header-small-font-size mt-7">{coinDetails.supply * (fields.maxPresale / 100)} Coin12</p>
+                                            }
                                         </div>
                                   </div>
 
@@ -177,12 +291,14 @@ export default function ProjectCreateStep4() {
                                                 required
                                                 helperText="Minimum presale purchases must be less than or equal to total presale allocation."
                                                 placeholder="%"
-                                                value={""}
-                                                onChange={(e) => {}}
+                                                value={(fields.minPresale > 0 ? fields.minPresale.toString() : "")}
+                                                onChange={(e) => setFields({ ...fields, minPresale: prepareNumber(Number(e.target.value))})}
                                             />
                                         </div>
                                         <div className="col-span-1">
-                                            <p className="text-right text-header-small-font-size mt-7">10,000 Coin12</p>
+                                            {fields.minPresale > 0 &&
+                                               <p className="text-right text-header-small-font-size mt-7">{(coinDetails.supply * (fields.maxPresale / 100)) * (fields.minPresale / 100) } Coin12</p>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -197,5 +313,7 @@ export default function ProjectCreateStep4() {
                 </div>
             </div>
         </div>
+        </>
+
     );
 }

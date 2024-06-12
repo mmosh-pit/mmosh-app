@@ -10,6 +10,7 @@ type ProfileLineage = {
 };
 
 type Profile = {
+  name: string,
   address: string;
   image: string;
 };

@@ -362,7 +362,8 @@ const Step3 = () => {
             disabled={
               getTotalRoyaltiesValue() < 100 ||
               getTotalRoyaltiesValue() > 100 ||
-              form.invitation === ""
+              form.invitation === "" ||
+              !form.coin
             }
             size="large"
           />

@@ -32,6 +32,16 @@ const Step1 = () => {
 
     const file = image ? await pinImageToShadowDrive(image) : preview;
 
+    if (file === "") {
+      setMessage({
+        type: "error",
+        message:
+          "We’re sorry. An error occurred while trying to save your community. Please try again.",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     setForm({ ...form, image: null, preview: file });
 
     try {

@@ -5,14 +5,14 @@ import { Connection } from "@solana/web3.js";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { web3Consts } from "@/anchor/web3Consts";
-import { Coin } from "@/app/models/coin";
 import { MintResultMessage } from "@/app/models/mintResultMessage";
 import axios from "axios";
 import { CoinDirectoryItem } from "@/app/models/coinDirectoryItem";
+import { SwapCoin } from "@/app/models/swapCoin";
 
 export const swapTokens = async (
-  baseToken: Coin & { balance: number; value: number },
-  targetToken: Coin & { balance: number; value: number },
+  baseToken: SwapCoin,
+  targetToken: SwapCoin,
   wallet: AnchorWallet,
 ): Promise<MintResultMessage> => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);

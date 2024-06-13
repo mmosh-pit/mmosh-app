@@ -36,7 +36,7 @@ const Step4 = () => {
 
   const [telegramLink, setTelegramLink] = React.useState("");
   const genesisPassRef = React.useRef<HTMLDivElement>(null);
-  const invitationPassRef = React.useRef<HTMLDivElement>(null);
+  const invitationBadgeRef = React.useRef<HTMLDivElement>(null);
 
   const [mintingStatus, setMintingStatus] = React.useState("");
   const [message, setMessage] = React.useState({
@@ -51,13 +51,13 @@ const Step4 = () => {
     setMintingStatus("Trying to Generating images...");
     const genesisImage = await toBlob(genesisPassRef.current!, {
       cacheBust: true,
+      skipAutoScale: true,
     });
-    const invitationImage =
-      thirdForm.invitation !== "none"
-        ? await toBlob(invitationPassRef.current!, {
-            cacheBust: true,
-          })
-        : null;
+
+    const invitationImage = await toBlob(invitationBadgeRef.current!, {
+      cacheBust: true,
+      skipAutoScale: true,
+    });
 
     if (
       !genesisImage ||
@@ -183,38 +183,31 @@ const Step4 = () => {
                 className="w-[12vmax] h-[12vmax] community-genesis-card rounded-2xl"
                 ref={genesisPassRef}
               >
-                <Image
+                <img
                   alt="Genesis Pass"
                   src={firstForm.preview}
-                  layout="fill"
-                  className="rounded-xl"
+                  className="rounded-xl w-full h-full"
                 />
 
                 <div className="upper-card-images">
                   <div className="relative w-[5vmax] h-[2vmax]">
-                    <Image
+                    <img
                       alt="Total Access"
                       src="https://storage.googleapis.com/mmosh-assets/access.png"
-                      layout="fill"
                     />
                   </div>
 
                   <div className="relative w-[1.5vmax] h-[1.5vmax]">
-                    <Image
+                    <img
                       alt="Logo"
                       src="https://storage.googleapis.com/mmosh-assets/logo.png"
-                      layout="fill"
                     />
                   </div>
                 </div>
 
                 <div className="bottom-card-images">
                   <div className="relative w-[1.5vmax] h-[1.5vmax] mb-[0.8vmax] ml-[0.6vmax] rounded-full">
-                    <Image
-                      alt="Coin"
-                      src={thirdForm.coin!.image}
-                      layout="fill"
-                    />
+                    <img alt="Coin" src={thirdForm.coin!.image} />
                   </div>
 
                   <div className="relative pr-[1vmax] pb-[0.1vmax]">
@@ -232,39 +225,34 @@ const Step4 = () => {
 
                 <div
                   className="w-[12vmax] h-[12vmax] relative rounded-2xl"
-                  ref={invitationPassRef}
+                  ref={invitationBadgeRef}
                 >
-                  <Image
-                    alt="Genesis Pass"
+                  <img
+                    alt="Invitation Badge"
                     src={firstForm.preview}
-                    className="rounded-2xl"
-                    layout="fill"
+                    className="rounded-2xl w-full h-full"
                   />
 
                   <div className="upper-card-images">
-                    <div className="relative w-[5vmax] h-[2vmax] rounded-full">
-                      <Image
-                        alt="Total Access"
-                        src="https://storage.googleapis.com/mmosh-assets/access.png"
-                        layout="fill"
-                      />
-                    </div>
+                    <img
+                      alt="Total Access"
+                      src="https://storage.googleapis.com/mmosh-assets/access.png"
+                      className="w-[5vmax] h-[2vmax] rounded-full"
+                    />
 
-                    <div className="relative w-[1.5vmax] h-[1.5vmax]">
-                      <Image
-                        alt="Logo"
-                        src="https://storage.googleapis.com/mmosh-assets/logo.png"
-                        layout="fill"
-                      />
-                    </div>
+                    <img
+                      alt="Logo"
+                      src="https://storage.googleapis.com/mmosh-assets/logo.png"
+                      className="w-[1.5vmax] h-[1.5vmax]"
+                    />
                   </div>
 
                   <div className="bottom-card-image-invitation">
-                    <div className="relative w-[1.5vmax] h-[1.5vmax] mb-[0.8vmax] ml-[0.6vmax]">
-                      <Image
+                    <div className="mb-[0.8vmax] ml-[0.6vmax]">
+                      <img
                         alt="Coin"
                         src={thirdForm.coin!.image}
-                        layout="fill"
+                        className="w-[1.5vmax] h-[1.5vmax]"
                       />
                     </div>
 

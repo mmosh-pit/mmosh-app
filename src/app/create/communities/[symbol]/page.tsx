@@ -101,11 +101,16 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     <div className="background-content relative flex flex-col items-center max-h-full">
       <div className="w-full relative flex flex-col lg:flex-row justify-around px-16 md:px-0 w-[80%] md:w-[70%] lg:w-full">
         <div className="flex flex-col">
-          <div className="w-[8vmax] h-[8vmax] relative">
-            <Image src={community.image} layout="fill" alt="" />
+          <div className="w-[12vmax] h-[12vmax] relative self-center rounded-xl">
+            <Image
+              src={community.image}
+              layout="fill"
+              alt=""
+              className="rounded-xl"
+            />
           </div>
 
-          <div className="flex flex-col mt-12">
+          <div className="flex flex-col mt-4">
             <div className="flex items-center mt-2 mb-4">
               <p className="text-base text-white font-medium">
                 {community.name}
@@ -118,7 +123,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
           </div>
 
           {communityCreator && (
-            <div className="relative p-4 mt-12 flex flex-col border-[1px] border-[#fff] border-opacity-20 rounded-3xl min-h-[250px]">
+            <div className="relative p-4 mt-8 flex flex-col border-[1px] border-[#fff] bg-[#100E5242] backdrop-filter backdrop-blur-[19.5px] border-opacity-20 rounded-3xl min-h-[150px]">
               <div className="w-full flex">
                 <div className="relative w-[3vmax]">
                   <div className="w-[4vmax] h-[4vmax] absolute top-[-20px] left-[-20px] rounded-full">
@@ -148,13 +153,14 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
               <a
                 href={`https://www.mmosh.app/${communityCreator.profile.username}`}
-              >{`${communityCreator.profile.name} the ${communityCreator.profile.descriptor}`}</a>
+                className="underline text-[#FF00C7]"
+              >{`${communityCreator.profile.username} the ${communityCreator.profile.descriptor}`}</a>
             </div>
           )}
         </div>
 
         <div className="mt-16">
-          <Swap coin={community.coin} communitySymbol={community.symbol} />
+          <Swap coin={community.coin} />
         </div>
 
         {community.invitation !== "none" && (

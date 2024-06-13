@@ -12,13 +12,13 @@ import { swapTokens } from "@/app/lib/forge/swapTokens";
 import { targetTokenBalance } from "@/app/store/community";
 import { BondingPricing } from "@/anchor/curve/curves";
 import { web3Consts } from "@/anchor/web3Consts";
+import { SwapCoin } from "@/app/models/swapCoin";
 
 type Props = {
   coin: Coin;
-  communitySymbol: string;
 };
 
-const Swap = ({ coin, communitySymbol }: Props) => {
+const Swap = ({ coin }: Props) => {
   const wallet = useAnchorWallet();
 
   const [_, setTargetTokenBalance] = useAtom(targetTokenBalance);
@@ -26,12 +26,8 @@ const Swap = ({ coin, communitySymbol }: Props) => {
   const [swapLoading, setSwapLoading] = React.useState(false);
   const [result, setResult] = React.useState({ res: "", message: "" });
 
-  const [baseToken, setBaseToken] = React.useState<
-    Coin & { balance: number; value: number }
-  >();
-  const [targetToken, setTargetToken] = React.useState<
-    Coin & { balance: number; value: number }
-  >();
+  const [baseToken, setBaseToken] = React.useState<SwapCoin>();
+  const [targetToken, setTargetToken] = React.useState<SwapCoin>();
 
   const [curve, setCurve] = React.useState<BondingPricing>();
 
@@ -243,9 +239,9 @@ const Swap = ({ coin, communitySymbol }: Props) => {
 
             <a
               className="text-tiny font-normal"
-              href={`https://mmosh.app/create/communities/${communitySymbol}`}
+              href={`https://mmosh.app/create/coins/${coin.symbol}`}
             >
-              https://mmosh.app/create/communities/{communitySymbol}
+              https://mmosh.app/create/coins/{coin.symbol}
             </a>
           </div>
         </div>

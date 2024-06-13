@@ -4,10 +4,13 @@ type Props = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  darker?: boolean;
 };
 
-const Search = ({ value, onChange, placeholder }: Props) => (
-  <div className="w-full flex items-center bg-[#384658] bg-opacity-80 border-[1px] border-[#FFF] border-opacity-30 rounded-full p-3">
+const Search = ({ value, onChange, placeholder, darker }: Props) => (
+  <div
+    className={`w-full flex items-center  ${darker ? "bg-[#38465840] border-[#FFFFFF06]" : "bg-[#38465880] border-[#FFFFFF30]"} border-[1px] rounded-full p-3`}
+  >
     <SearchIcon />
     <input
       placeholder={placeholder || "Search"}

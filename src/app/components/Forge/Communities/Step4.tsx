@@ -152,6 +152,7 @@ const Step4 = () => {
               image={firstForm.preview}
               username={firstForm.symbol}
               description={firstForm.description}
+              coinImage={thirdForm.coin?.image}
             />
             <p className="text-xs mt-2">
               Please note: the wallet that holds the Genesis Pass will receive

@@ -144,6 +144,7 @@ const Step3 = () => {
               image={firstForm.preview}
               username={firstForm.symbol}
               description={firstForm.description}
+              coinImage={form.coin?.image}
             />
 
             <div

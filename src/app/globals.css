@@ -680,3 +680,12 @@ input[type="number"]::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
 }
+
+.community-card img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  padding: 1.5px;
+  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
+    border-box;
+}

@@ -6,9 +6,10 @@ type Props = {
   name: string;
   username: string;
   description: string;
+  coinImage?: string;
 };
 
-const Card = ({ image, name, description, username }: Props) => (
+const Card = ({ image, name, description, username, coinImage }: Props) => (
   <div className="community-card">
     <div className="flex w-full justify-center items-center">
       <p className="text-lg text-white text-center">{name}</p>
@@ -21,6 +22,14 @@ const Card = ({ image, name, description, username }: Props) => (
         layout="fill"
         className="rounded-lg"
       />
+
+      {coinImage && (
+        <img
+          src={coinImage}
+          alt="Coin"
+          className="absolute left-[45%] bottom-[-15px] w-[1.5vmax] h-[1.5vmax] rounded-full"
+        />
+      )}
     </div>
 
     <div className="w-full flex flex-col">

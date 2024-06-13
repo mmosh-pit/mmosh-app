@@ -537,6 +537,10 @@ select {
   background-clip: padding-box; /* !importanté */
   border: solid 5px transparent; /* !importanté */
 
+  img {
+    position: relative;
+  }
+
   &:before {
     content: "";
     position: absolute;
@@ -546,6 +550,7 @@ select {
     left: 0;
     margin: -5px; /* !importanté */
     border-radius: inherit; /* !importanté */
+    z-index: 0;
     background: linear-gradient(
       to right,
       rgba(255, 255, 255, 0.5),

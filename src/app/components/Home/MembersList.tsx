@@ -130,7 +130,7 @@ const MembersList = () => {
                 <p className="text-white text-xs">Guild Size</p>
 
                 <div className="w-[3vmax] py-1 flex justify-center items-center text-center bg-[#584C6E] bg-opacity-40 rounded-full ml-4">
-                  12
+                  <p className="text-white text-sm">12</p>
                 </div>
               </div>
 

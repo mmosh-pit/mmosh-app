@@ -6,11 +6,8 @@ import { useAtom } from "jotai";
 
 import { searchBarText } from "@/app/store";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
-import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 
 const CoinsList = () => {
-  const isMobile = useCheckMobileScreen();
-
   const [searchText] = useAtom(searchBarText);
 
   const fetching = React.useRef(false);
@@ -119,7 +116,7 @@ const CoinsList = () => {
             <p className="text-sm font-white self-start">FDV</p>
 
             <div className="self-center">
-              <p className="text-lg text-white font-bold">
+              <p className="text-sm text-white font-bold">
                 {coin.price * coin.volume * usdcMmoshPrice}{" "}
                 <span className="text-sm font-normal">USDC</span>
               </p>
@@ -131,10 +128,10 @@ const CoinsList = () => {
           <div className="flex flex-col">
             <p className="text-xs self-end">24h</p>
 
-            <div>
-              <ResponsiveContainer width={isMobile ? 100 : 150} height={50}>
+            <div className="w-[5vmax]">
+              <ResponsiveContainer width="100%" height={50}>
                 <LineChart
-                  width={isMobile ? 100 : 150}
+                  width={150}
                   height={50}
                   data={coin.priceLastSevenDays.map((val) => ({ value: val }))}
                 >

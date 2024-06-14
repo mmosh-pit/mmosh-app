@@ -67,7 +67,7 @@ const Price = () => {
           }}
         >
           <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="2">
+            <linearGradient id="gradient-price" x1="0" y1="0" x2="0" y2="2">
               <stop offset="0%" stopColor="#C900B3" stopOpacity={0.8} />
               <stop offset="75%" stopColor="#C900B3" stopOpacity={0.02} />
             </linearGradient>
@@ -76,8 +76,8 @@ const Price = () => {
           <Area
             type="monotone"
             dataKey="pv"
-            stroke="#007AFF"
-            fill="url(#gradient)"
+            stroke="#C900B3"
+            fill="url(#gradient-price)"
           />
         </AreaChart>
       </ResponsiveContainer>

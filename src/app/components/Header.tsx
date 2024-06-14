@@ -276,15 +276,17 @@ const Header = () => {
                 Swap
               </a>
 
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  if (isOnSettings) return setIsOnSettings(false);
-                  router.push(`/${currentUser?.profile.username}`);
-                }}
-              >
-                My Profile
-              </a>
+              {currentUser?.profilenft && (
+                <a
+                  className="text-base text-white cursor-pointer"
+                  onClick={() => {
+                    if (isOnSettings) return setIsOnSettings(false);
+                    router.push(`/${currentUser?.profile.username}`);
+                  }}
+                >
+                  My Profile
+                </a>
+              )}
             </div>
           )}
 

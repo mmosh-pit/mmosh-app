@@ -69,7 +69,7 @@ const InvitationBadgeMint = ({
       <div className="w-[75%] self-center flex flex-col my-4">
         <Input
           type="text"
-          title="Project Passes"
+          title="Invitations to Mint"
           value={amountToMint.toString()}
           required={false}
           onChange={(e) => {

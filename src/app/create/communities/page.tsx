@@ -41,7 +41,6 @@ const Communities = () => {
   }, [searchText]);
 
   const onCommunitySelect = (community: Community) => {
-    // TODO complete this naviation to the right route
     navigate.push(`/create/communities/${community.symbol}`);
   };
 

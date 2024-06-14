@@ -295,6 +295,13 @@ h6 {
   mask-composite: exclude; /*5*/
 }
 
+#border-gradient-container {
+  position: relative;
+  box-shadow:
+    1px 2px 4px #ff00ae,
+    -0.2em 0 0.1em #0061ff;
+}
+
 #member-container-home {
   position: relative;
   box-shadow:
@@ -348,6 +355,12 @@ h6 {
 
 .word-break-text {
   word-break: break-all;
+}
+
+.text-dots {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .success-container {
@@ -690,4 +703,31 @@ input[type="number"]::-webkit-outer-spin-button {
   padding: 1.5px;
   background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
     border-box;
+}
+
+.home-community-card-image {
+  position: relative;
+
+  box-shadow: -6px 0px 19px 0px rgba(25, 0, 168, 1);
+
+  box-shadow: 7px 0px 20px 0px rgba(108, 0, 74, 1);
+}
+
+.home-community-card-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.8rem;
+  margin: -2px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+
+  background: linear-gradient(69.52deg, #0061ff 14.14%, #ff00ae 79.21%)
+    border-box;
+
+  -webkit-mask: /*4*/
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; /*5'*/
+  mask-composite: exclude; /*5*/
 }

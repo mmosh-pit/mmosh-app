@@ -14,6 +14,8 @@ const CommunitiesList = () => {
     [],
   );
 
+  const [isLoading, setIsLoading] = React.useState(false);
+
   const [currentUser] = useAtom(data);
   const [searchText] = useAtom(searchBarText);
 
@@ -22,7 +24,8 @@ const CommunitiesList = () => {
   const [currentPage, setCurrentPage] = React.useState(0);
   const lastPageTriggered = React.useRef(false);
 
-  const getUsers = React.useCallback(async () => {
+  const getCommunities = React.useCallback(async () => {
+    setIsLoading(true);
     fetching.current = true;
     // TODO include pagination
     const result = await axios.get(
@@ -31,6 +34,7 @@ const CommunitiesList = () => {
 
     setCommunities(result.data);
     fetching.current = false;
+    setIsLoading(false);
   }, []);
 
   const handleScroll = () => {
@@ -48,31 +52,47 @@ const CommunitiesList = () => {
   };
 
   React.useEffect(() => {
-    if (!currentUser || fetching.current) return;
-    getUsers();
+    if (fetching.current) return;
+    getCommunities();
   }, [currentUser]);
 
+  if (isLoading) return <></>;
+
   return (
-    <div
-      className="w-full grid grid-cols-auto lg:grid-cols-8 md:grid-cols-4 sm:grid-cols-2 gap-8 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
-      ref={containerRef}
-      onScroll={handleScroll}
-    >
-      {communities.map((value) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => onCommunitySelect(value.data)}
-          key={value._id?.toString()}
+    <div id="communities" className="w-full flex flex-col mb-4">
+      <div className="w-full flex justify-between px-4">
+        <p className="text-white text-base">
+          Community<span className="text-gray-500"></span>
+        </p>
+
+        <a
+          className="underline text-white cursor-pointer text-base"
+          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/communities`}
         >
-          <CommunityCard
-            name={value.data.name}
-            image={value.data.image}
-            username={value.data.symbol}
-            description={value.data.description}
-            key={value.data.tokenAddress}
-          />
-        </div>
-      ))}
+          Go to Community Directory
+        </a>
+      </div>
+      <div
+        className="w-full grid grid-cols-auto lg:grid-cols-8 md:grid-cols-4 sm:grid-cols-2 gap-8 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
+        ref={containerRef}
+        onScroll={handleScroll}
+      >
+        {communities.map((value) => (
+          <div
+            className="cursor-pointer"
+            onClick={() => onCommunitySelect(value.data)}
+            key={value._id?.toString()}
+          >
+            <CommunityCard
+              name={value.data.name}
+              image={value.data.image}
+              username={value.data.symbol}
+              description={value.data.description}
+              key={value.data.tokenAddress}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

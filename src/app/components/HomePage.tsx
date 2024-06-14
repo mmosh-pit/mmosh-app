@@ -30,45 +30,12 @@ const HomePage = () => {
       </div>
 
       <div className="flex flex-col w-full mt-8 px-12">
-        <div id="communities" className="w-full flex flex-col mb-4">
-          <div className="w-full flex justify-between px-4">
-            <p className="text-white text-base">
-              Community<span className="text-gray-500"></span>
-            </p>
-
-            <a className="underline text-white cursor-pointer text-base">
-              Go to Community Directory
-            </a>
-          </div>
-          <CommunitiesList />
-        </div>
+        <CommunitiesList />
 
         <div className="w-full flex justify-between mt-8">
-          <div className="flex w-full flex-col" id="members">
-            <div className="w-full flex justify-between px-4">
-              <p className="text-white text-base">
-                Members <span className="text-gray-500"></span>
-              </p>
+          <MembersList />
 
-              <a className="underline text-white cursor-pointer text-base">
-                Go to Membership Directory
-              </a>
-            </div>
-            <MembersList />
-          </div>
-
-          <div className="flex w-full flex-col" id="coins">
-            <div className="w-full flex justify-between px-4">
-              <p className="text-white text-base">
-                Coins <span className="text-gray-500"></span>
-              </p>
-
-              <a className="underline text-white cursor-pointer text-base">
-                Go to Coin Directory
-              </a>
-            </div>
-            <CoinsList />
-          </div>
+          <CoinsList />
         </div>
       </div>
     </div>

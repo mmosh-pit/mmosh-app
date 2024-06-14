@@ -14,6 +14,8 @@ type Profile = {
   image: string;
   pronouns: string;
   seniority: number;
+  descriptor: string;
+  nouns: string;
 };
 
 type Telegram = {

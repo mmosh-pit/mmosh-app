@@ -3,15 +3,11 @@ import { AccountInfo, MintInfo, NATIVE_MINT } from "@solana/spl-token";
 // @ts-ignore
 import BN from "bn.js";
 import { amountAsNum, asDecimal, supplyAsNum } from "./utils";
-import {
-  PublicKey,
-  Keypair
-} from "@solana/web3.js";
+import { PublicKey, Keypair } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { CurveV0, ICurveConfig, TokenBondingV0 } from "./bonding";
 import { toU128 } from "./utils";
 import { BondingHierarchy } from "./bondingHierarchy";
-
 
 /**
  * Traverse a bonding hierarchy, executing func and accumulating
@@ -50,7 +46,7 @@ function reduce<A>({
     current = current!.parent;
     if (!current) {
       throw new Error(
-        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`
+        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`,
       );
     }
     value = func(value, current);
@@ -92,7 +88,7 @@ function reduceFromParent<A>({
     current = current!.parent;
     if (!current) {
       throw new Error(
-        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`
+        `Base mint ${destination.toBase58()} is not in the hierarchy for ${hierarchy.tokenBonding.publicKey.toBase58()}`,
       );
     }
   }
@@ -150,7 +146,6 @@ export interface IBuyArgs {
   slippage: number;
 }
 
-
 export interface IPrimitiveCurve {
   toRawPrimitiveConfig(): any;
 }
@@ -162,11 +157,10 @@ export interface ITokenBonding extends TokenBondingV0 {
   publicKey: PublicKey;
 }
 
-
 export interface ICreateTokenBondingArgs {
-  name: string,
-  symbol: string,
-  url: string
+  name: string;
+  symbol: string;
+  url: string;
   /** The payer to create this token bonding, defaults to provider.wallet */
   payer?: PublicKey;
   /** The shape of the bonding curve. Must be created using {@link SplTokenBonding.initializeCurve} */
@@ -355,7 +349,7 @@ export function fromCurve(
   curve: any,
   baseAmount: number,
   targetSupply: number,
-  goLiveUnixTime: number
+  goLiveUnixTime: number,
 ): IPricingCurve {
   switch (Object.keys(curve.definition)[0]) {
     case "timeV0":
@@ -374,26 +368,26 @@ export interface IPricingCurve {
   current(
     unixTime?: number,
     baseRoyaltiesPercent?: number,
-    targetRoyaltiesPercent?: number
+    targetRoyaltiesPercent?: number,
   ): number;
   locked(): number;
   sellTargetAmount(
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime?: number
+    unixTime?: number,
   ): number;
   buyTargetAmount(
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime?: number
+    unixTime?: number,
   ): number;
   buyWithBaseAmount(
     baseAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime?: number
+    unixTime?: number,
   ): number;
 }
 
@@ -413,7 +407,7 @@ interface ITimeCurveItem {
 
 function transitionFeesToPercent(
   offset: number,
-  fees: ITransitionFee | null
+  fees: ITransitionFee | null,
 ): number {
   if (!fees) {
     return 0;
@@ -458,7 +452,7 @@ export class TimeCurve implements IPricingCurve {
       subCurve = [...this.curve.definition.timeV0.curves]
         .reverse()
         .find(
-          (c: any) => unixTime >= this.goLiveUnixTime + c.offset.toNumber()
+          (c: any) => unixTime >= this.goLiveUnixTime + c.offset.toNumber(),
         );
     }
 
@@ -468,14 +462,14 @@ export class TimeCurve implements IPricingCurve {
             subCurve.curve.exponentialCurveV0 as ExponentialCurveV0,
             this.baseAmount,
             this.targetSupply,
-            this.goLiveUnixTime + subCurve.offset.toNumber()
+            this.goLiveUnixTime + subCurve.offset.toNumber(),
           )
         : new TimeDecayExponentialCurve(
             subCurve.curve
               .timeDecayExponentialCurveV0 as TimeDecayExponentialCurveV0,
             this.baseAmount,
             this.targetSupply,
-            this.goLiveUnixTime + subCurve.offset.toNumber()
+            this.goLiveUnixTime + subCurve.offset.toNumber(),
           ),
       offset: subCurve.offset.toNumber(),
       buyTransitionFees: subCurve.buyTransitionFees,
@@ -486,7 +480,7 @@ export class TimeCurve implements IPricingCurve {
   current(
     unixTime: number = now(),
     baseRoyaltiesPercent: number = 0,
-    targetRoyaltiesPercent: number = 0
+    targetRoyaltiesPercent: number = 0,
   ): number {
     const { subCurve, buyTransitionFees, offset } = this.currentCurve(unixTime);
 
@@ -503,7 +497,7 @@ export class TimeCurve implements IPricingCurve {
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     const { subCurve, sellTransitionFees, offset } =
       this.currentCurve(unixTime);
@@ -511,7 +505,7 @@ export class TimeCurve implements IPricingCurve {
       targetAmountNum,
       baseRoyaltiesPercent,
       targetRoyaltiesPercent,
-      unixTime
+      unixTime,
     );
 
     return (
@@ -519,7 +513,7 @@ export class TimeCurve implements IPricingCurve {
       (1 -
         transitionFeesToPercent(
           unixTime - this.goLiveUnixTime - offset,
-          sellTransitionFees
+          sellTransitionFees,
         ))
     );
   }
@@ -527,14 +521,14 @@ export class TimeCurve implements IPricingCurve {
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     const { subCurve, buyTransitionFees, offset } = this.currentCurve(unixTime);
     const price = subCurve.buyTargetAmount(
       targetAmountNum,
       baseRoyaltiesPercent,
       targetRoyaltiesPercent,
-      unixTime
+      unixTime,
     );
 
     return (
@@ -542,7 +536,7 @@ export class TimeCurve implements IPricingCurve {
       (1 +
         transitionFeesToPercent(
           unixTime - this.goLiveUnixTime - offset,
-          buyTransitionFees
+          buyTransitionFees,
         ))
     );
   }
@@ -550,7 +544,7 @@ export class TimeCurve implements IPricingCurve {
     baseAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     const { subCurve, buyTransitionFees, offset } = this.currentCurve(unixTime);
     const baseAmountPostFees =
@@ -558,13 +552,13 @@ export class TimeCurve implements IPricingCurve {
       (1 -
         transitionFeesToPercent(
           unixTime - this.goLiveUnixTime - offset,
-          buyTransitionFees
+          buyTransitionFees,
         ));
 
     return subCurve.buyWithBaseAmount(
       baseAmountPostFees,
       baseRoyaltiesPercent,
-      targetRoyaltiesPercent
+      targetRoyaltiesPercent,
     );
   }
 }
@@ -582,7 +576,7 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
     c: number,
     baseAmount: number,
     targetSupply: number,
-    goLiveUnixTime: number
+    goLiveUnixTime: number,
   ) {
     this.c = c;
     this.baseAmount = baseAmount;
@@ -593,9 +587,14 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
   current(
     unixTime?: number,
     baseRoyaltiesPercent: number = 0,
-    targetRoyaltiesPercent: number = 0
+    targetRoyaltiesPercent: number = 0,
   ): number {
-    return this.changeInTargetAmount(1, baseRoyaltiesPercent, targetRoyaltiesPercent, unixTime);
+    return this.changeInTargetAmount(
+      1,
+      baseRoyaltiesPercent,
+      targetRoyaltiesPercent,
+      unixTime,
+    );
   }
 
   locked(): number {
@@ -606,7 +605,7 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     const R = this.baseAmount;
     const S = this.targetSupply;
@@ -615,16 +614,17 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
     // Calculate with the actual target amount they will need to get the target amount after royalties
     const dS = targetAmountNum * (1 / (1 - asDecimal(targetRoyaltiesPercent)));
 
-
-
     if (R == 0 || S == 0) {
       // b dS + (c dS^(1 + k))/(1 + k)
-      console.log("this.c ",this.c)
-      console.log("dS ",dS)
-      console.log("k ",k)
+      console.log("this.c ", this.c);
+      console.log("dS ", dS);
+      console.log("k ", k);
 
-      console.log("base price ",(this.b * dS + (this.c * Math.pow(dS, 1 + k)) / (1 + k)) *
-      (1 / (1 - asDecimal(baseRoyaltiesPercent))))
+      console.log(
+        "base price ",
+        (this.b * dS + (this.c * Math.pow(dS, 1 + k)) / (1 + k)) *
+          (1 / (1 - asDecimal(baseRoyaltiesPercent))),
+      );
 
       return (
         (this.b * dS + (this.c * Math.pow(dS, 1 + k)) / (1 + k)) *
@@ -645,7 +645,7 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
         return ((R * dS) / S) * (1 / (1 - asDecimal(baseRoyaltiesPercent)));
       } else {
         throw new Error(
-          "Cannot convert base amount to target amount when both b and k are defined on an exponential curve. The math is too hard"
+          "Cannot convert base amount to target amount when both b and k are defined on an exponential curve. The math is too hard",
         );
       }
     }
@@ -655,14 +655,14 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     return (
       -this.changeInTargetAmount(
         -targetAmountNum * (1 - asDecimal(targetRoyaltiesPercent)),
         0,
         0,
-        unixTime
+        unixTime,
       ) *
       (1 - asDecimal(baseRoyaltiesPercent))
     );
@@ -672,13 +672,13 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
     targetAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     return this.changeInTargetAmount(
       targetAmountNum,
       baseRoyaltiesPercent,
       targetRoyaltiesPercent,
-      unixTime
+      unixTime,
     );
   }
 
@@ -686,7 +686,7 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
     baseAmountNum: number,
     baseRoyaltiesPercent: number,
     targetRoyaltiesPercent: number,
-    unixTime: number = now()
+    unixTime: number = now(),
   ): number {
     const k = this.k(unixTime - this.goLiveUnixTime);
 
@@ -712,7 +712,7 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
       }
 
       throw new Error(
-        "Cannot convert base amount to target amount when both b and k are defined on an exponential curve. The math is too hard"
+        "Cannot convert base amount to target amount when both b and k are defined on an exponential curve. The math is too hard",
       );
     } else {
       const R = this.baseAmount;
@@ -730,7 +730,7 @@ export abstract class BaseExponentialCurve implements IPricingCurve {
         return ((S * dR) / R) * (1 - asDecimal(targetRoyaltiesPercent));
       } else {
         throw new Error(
-          "Cannot convert base amount to target amount when both b and k are defined on an exponential curve. The math is too hard"
+          "Cannot convert base amount to target amount when both b and k are defined on an exponential curve. The math is too hard",
         );
       }
     }
@@ -751,13 +751,13 @@ export class ExponentialCurve extends BaseExponentialCurve {
     curve: ExponentialCurveV0,
     baseAmount: number,
     targetSupply: number,
-    goLiveUnixTime: number = now()
+    goLiveUnixTime: number = now(),
   ) {
     super(
       +curve.c.toString() / 1000000000000,
       baseAmount,
       targetSupply,
-      goLiveUnixTime
+      goLiveUnixTime,
     );
     this.b = +curve.b.toString() / 1000000000000;
     this._k = curve.pow / curve.frac;
@@ -788,13 +788,13 @@ export class TimeDecayExponentialCurve extends BaseExponentialCurve {
     curve: TimeDecayExponentialCurveV0,
     baseAmount: number,
     targetSupply: number,
-    goLiveUnixTime: number
+    goLiveUnixTime: number,
   ) {
     super(
       +curve.c.toString() / 1000000000000,
       baseAmount,
       targetSupply,
-      goLiveUnixTime
+      goLiveUnixTime,
     );
     this.k1 = +curve.k1.toString() / 1000000000000;
     this.k0 = +curve.k0.toString() / 1000000000000;
@@ -805,7 +805,6 @@ export class TimeDecayExponentialCurve extends BaseExponentialCurve {
     this.targetSupply = targetSupply;
   }
 }
-
 
 export class ExponentialCurveConfig implements ICurveConfig, IPrimitiveCurve {
   c: BN;
@@ -831,7 +830,7 @@ export class ExponentialCurveConfig implements ICurveConfig, IPrimitiveCurve {
 
     if (this.b.gt(new BN(0)) && this.c.gt(new BN(0))) {
       throw new Error(
-        "Unsupported: Cannot define an exponential function with `b`, the math to go from base to target amount becomes too hard."
+        "Unsupported: Cannot define an exponential function with `b`, the math to go from base to target amount becomes too hard.",
       );
     }
   }
@@ -862,7 +861,7 @@ export class ExponentialCurveConfig implements ICurveConfig, IPrimitiveCurve {
               // @ts-ignore
               curve: this.toRawPrimitiveConfig(),
               buyTransitionFees: null,
-              sellTransitionFees: null
+              sellTransitionFees: null,
             },
           ],
         },
@@ -872,7 +871,6 @@ export class ExponentialCurveConfig implements ICurveConfig, IPrimitiveCurve {
 }
 
 export interface IBondingPricing {
-
   get hierarchy(): BondingHierarchy;
 
   current(baseMint: PublicKey, unixTime?: number): number;
@@ -887,10 +885,7 @@ export interface IBondingPricing {
     unixTime?: number,
   ): number;
 
-  isBuying(
-    lowMint: PublicKey,
-    targetMint: PublicKey,
-  ): boolean;
+  isBuying(lowMint: PublicKey, targetMint: PublicKey): boolean;
 
   swapTargetAmount(
     targetAmount: number,
@@ -904,20 +899,20 @@ export interface IBondingPricing {
   sellTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number;
 
   buyTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number;
 
   buyWithBaseAmount(
     baseAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
-  ): number ;
+    unixTime?: number,
+  ): number;
 }
 
 export class BondingPricing implements IBondingPricing {
@@ -927,10 +922,7 @@ export class BondingPricing implements IBondingPricing {
     this.hierarchy = args.hierarchy;
   }
 
-  current(
-    baseMint?: PublicKey,
-    unixTime?: number
-  ): number {
+  current(baseMint?: PublicKey, unixTime?: number): number {
     return reduce({
       hierarchy: this.hierarchy,
       func: (acc: number, current: BondingHierarchy) => {
@@ -939,7 +931,7 @@ export class BondingPricing implements IBondingPricing {
           current.pricingCurve.current(
             unixTime || now(),
             current.tokenBonding.buyBaseRoyaltyPercentage,
-            current.tokenBonding.buyTargetRoyaltyPercentage
+            current.tokenBonding.buyTargetRoyaltyPercentage,
           )
         );
       },
@@ -958,7 +950,7 @@ export class BondingPricing implements IBondingPricing {
           current.pricingCurve.current(
             now(),
             current.tokenBonding.buyBaseRoyaltyPercentage,
-            current.tokenBonding.buyTargetRoyaltyPercentage
+            current.tokenBonding.buyTargetRoyaltyPercentage,
           )
         );
       },
@@ -977,10 +969,7 @@ export class BondingPricing implements IBondingPricing {
   ): number {
     const lowMint = this.hierarchy.lowest(baseMint, targetMint);
     const highMint = this.hierarchy.highest(baseMint, targetMint);
-    const isBuying = this.isBuying(
-      lowMint,
-      targetMint,
-    );
+    const isBuying = this.isBuying(lowMint, targetMint);
 
     const path = this.hierarchy.path(lowMint, highMint, ignoreFrozen);
 
@@ -994,7 +983,7 @@ export class BondingPricing implements IBondingPricing {
           amount,
           tokenBonding.buyBaseRoyaltyPercentage,
           tokenBonding.buyTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       }, baseAmount);
     } else {
@@ -1003,16 +992,13 @@ export class BondingPricing implements IBondingPricing {
           amount,
           tokenBonding.sellBaseRoyaltyPercentage,
           tokenBonding.sellTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       }, baseAmount);
     }
   }
 
-  isBuying(
-    lowMint: PublicKey,
-    targetMint: PublicKey,
-  ) {
+  isBuying(lowMint: PublicKey, targetMint: PublicKey) {
     return lowMint.equals(targetMint);
   }
 
@@ -1026,10 +1012,7 @@ export class BondingPricing implements IBondingPricing {
   ): number {
     const lowMint = this.hierarchy.lowest(baseMint, targetMint);
     const highMint = this.hierarchy.highest(baseMint, targetMint);
-    const isBuying = this.isBuying(
-      lowMint,
-      targetMint,
-    );
+    const isBuying = this.isBuying(lowMint, targetMint);
 
     const path = this.hierarchy.path(lowMint, highMint, ignoreFreeze);
 
@@ -1043,7 +1026,7 @@ export class BondingPricing implements IBondingPricing {
             -amount,
             tokenBonding.sellBaseRoyaltyPercentage,
             tokenBonding.sellTargetRoyaltyPercentage,
-            unixTime
+            unixTime,
           );
         }, targetAmount)
       : path.reverse().reduce((amount, { pricingCurve, tokenBonding }) => {
@@ -1051,7 +1034,7 @@ export class BondingPricing implements IBondingPricing {
             amount,
             tokenBonding.buyBaseRoyaltyPercentage,
             tokenBonding.buyTargetRoyaltyPercentage,
-            unixTime
+            unixTime,
           );
         }, targetAmount);
   }
@@ -1059,7 +1042,7 @@ export class BondingPricing implements IBondingPricing {
   sellTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number {
     return reduce({
       hierarchy: this.hierarchy,
@@ -1068,7 +1051,7 @@ export class BondingPricing implements IBondingPricing {
           acc,
           current.tokenBonding.sellBaseRoyaltyPercentage,
           current.tokenBonding.sellTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       },
       initial: targetAmountNum,
@@ -1080,7 +1063,7 @@ export class BondingPricing implements IBondingPricing {
   buyTargetAmount(
     targetAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number {
     return reduce({
       hierarchy: this.hierarchy,
@@ -1089,7 +1072,7 @@ export class BondingPricing implements IBondingPricing {
           acc,
           current.tokenBonding.buyBaseRoyaltyPercentage,
           current.tokenBonding.buyTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       },
       initial: targetAmountNum,
@@ -1101,7 +1084,7 @@ export class BondingPricing implements IBondingPricing {
   buyWithBaseAmount(
     baseAmountNum: number,
     baseMint?: PublicKey,
-    unixTime?: number
+    unixTime?: number,
   ): number {
     return reduceFromParent({
       hierarchy: this.hierarchy,
@@ -1110,7 +1093,7 @@ export class BondingPricing implements IBondingPricing {
           acc,
           current.tokenBonding.buyBaseRoyaltyPercentage,
           current.tokenBonding.buyTargetRoyaltyPercentage,
-          unixTime
+          unixTime,
         );
       },
       initial: baseAmountNum,

@@ -11,6 +11,7 @@ import { createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import Button from "../common/Button";
+import BalanceBox from "../common/BalanceBox";
 
 const PronounsSelectOptions = [
   {
@@ -56,7 +57,7 @@ const CreateProfile = () => {
   });
 
   const checkForUsername = React.useCallback(async () => {
-    if (form.username.toLowerCase() === "create") {
+    if (["create"].includes(form.username.toLowerCase())) {
       setError({
         error: true,
         message: "Username already exists!",
@@ -203,7 +204,7 @@ const CreateProfile = () => {
             <p className="text-lg text-white">About You</p>
           </div>
 
-          <div className="w-full flex-col lg:flex-row flex items-center lg:items-stretch justify-around mt-4">
+          <div className="w-full flex flex-col lg:flex-row items-center lg:items-stretch justify-around mt-4">
             <div className="flex flex-col w-[100%] sm:w-[85%] lg:w-[25%] mb-4 md:mb-0">
               <p className="text-sm">
                 Avatar<sup>*</sup>
@@ -237,6 +238,7 @@ const CreateProfile = () => {
                 title="Username"
                 required
                 helperText={error.error ? error.message : "15 characters"}
+                error={error.error}
                 value={form.username}
                 onChange={(e) =>
                   setForm({
@@ -336,24 +338,7 @@ const CreateProfile = () => {
                 plus a small amount of SOL for gas fees
               </p>
             </div>
-
-            <div className="flex flex-col">
-              <div className="flex items-center">
-                <p className="text-sm text-white">Current balance</p>
-                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                  {profileInfo?.mmoshBalance || 0}
-                </div>
-                <p className="text-sm text-white">MMOSH</p>
-              </div>
-
-              <div className="flex items-center mt-2">
-                <p className="text-sm text-white">Current balance</p>
-                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                  {profileInfo?.solBalance || 0}
-                </div>
-                <p className="text-sm text-white">SOL</p>
-              </div>
-            </div>
+            <BalanceBox />
           </div>
         </div>
       </div>

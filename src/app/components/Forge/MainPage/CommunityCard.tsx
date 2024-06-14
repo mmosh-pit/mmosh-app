@@ -6,7 +6,11 @@ const CommunityCard = () => {
   const navigate = useRouter();
 
   const navigateToCommunity = () => {
-    navigate.push("/communities");
+    navigate.push("/create/communities");
+  };
+
+  const navigateToCreateCommunity = () => {
+    navigate.push("/create/create_community");
   };
 
   return (
@@ -22,7 +26,7 @@ const CommunityCard = () => {
       <div className="w-full flex flex-col justify-between">
         <div className="w-full flex flex-col mt-2 mb-4">
           <p className="text-lg text-white">Create a Community</p>
-          <p className="text-sm">
+          <p className="text-sm mt-2">
             With your own Community, you can build community to launch and scale
             your own community. Get started now!
           </p>
@@ -31,8 +35,8 @@ const CommunityCard = () => {
         <div className="w-full flex justify-around">
           <Button
             isLoading={false}
-            title="Community"
-            isPrimary
+            title="Communities Directory"
+            isPrimary={false}
             size="small"
             action={navigateToCommunity}
           />
@@ -42,7 +46,7 @@ const CommunityCard = () => {
             title="Create"
             isPrimary
             size="small"
-            action={navigateToCommunity}
+            action={navigateToCreateCommunity}
           />
         </div>
       </div>

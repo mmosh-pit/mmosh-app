@@ -28,6 +28,7 @@ import MobileDrawer from "./Profile/MobileDrawer";
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
+import { pageCommunity } from "../store/community";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -53,6 +54,7 @@ const Header = () => {
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [userStatus] = useAtom(status);
+  const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
@@ -65,17 +67,13 @@ const Header = () => {
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8";
+      "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
     if (pathname.includes("create")) {
-      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
-    }
-
-    if (pathname !== "/" || isOnSettings) {
+      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
+    } else if (pathname !== "/" || isOnSettings) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
-    }
-
-    if (pathname === "/" && !isOnSettings) {
+    } else if (pathname === "/" && !isOnSettings) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
@@ -199,9 +197,9 @@ const Header = () => {
   }, [wallet, incomingWalletToken]);
 
   return (
-    <div className="flex flex-col">
+    <header className="flex flex-col">
       <div className={getHeaderBackground()}>
-        <div className="flex w-full justify-between items-center mx-8 pb-4">
+        <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (
             <MobileDrawer />
           ) : (
@@ -217,23 +215,13 @@ const Header = () => {
           )}
 
           {!isMobileScreen && (
-            <div className="flex w-[25%] justify-between items-center">
-              <p
+            <div className="flex w-[75%] justify-between items-center">
+              <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
               >
                 Home
-              </p>
-
-              <p
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  if (isOnSettings) return setIsOnSettings(false);
-                  router.push(`/${currentUser?.profile.username}`);
-                }}
-              >
-                My Profile
-              </p>
+              </a>
 
               <a
                 target="_blank"
@@ -243,14 +231,62 @@ const Header = () => {
                 Website
               </a>
 
-              <p
+              <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => {
                   router.push("/create");
                 }}
               >
                 Forge
-              </p>
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create");
+                }}
+              >
+                Members
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/communities");
+                }}
+              >
+                Communities
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/coins");
+                }}
+              >
+                Coins
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/swap");
+                }}
+              >
+                Swap
+              </a>
+
+              {currentUser?.profilenft && (
+                <a
+                  className="text-base text-white cursor-pointer"
+                  onClick={() => {
+                    if (isOnSettings) return setIsOnSettings(false);
+                    router.push(`/${currentUser?.profile.username}`);
+                  }}
+                >
+                  My Profile
+                </a>
+              )}
             </div>
           )}
 
@@ -273,6 +309,7 @@ const Header = () => {
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
                 padding: "0 2em",
                 borderRadius: 15,
+                position: "relative",
               }}
             >
               <p className="text-lg text-white">
@@ -298,8 +335,20 @@ const Header = () => {
         </div>
       </div>
 
+      {pathname.includes("/create/communities/") && (
+        <div className="relative w-full flex justify-center items-end mt-12 pb-4">
+          <div
+            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
+          >
+            <h2 className="text-center">
+              Mint this pass to join {community?.name}
+            </h2>
+          </div>
+        </div>
+      )}
+
       {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12">
+        <div className="w-full flex justify-center lg:justify-between items-end mt-12 pb-4">
           {!isMobileScreen && (
             <div className="flex w-[33%]">
               <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
@@ -326,7 +375,9 @@ const Header = () => {
             </div>
           )}
 
-          <div className="relative w-[16vmax] h-[16vmax]">
+          <div
+            className={`relative w-[16vmax] h-[16vmax] ${isDrawerShown && "z-[-1]"}`}
+          >
             <Image
               src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
               alt="mmosh"
@@ -360,7 +411,7 @@ const Header = () => {
           )}
         </div>
       )}
-    </div>
+    </header>
   );
 };
 

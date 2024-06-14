@@ -33,7 +33,7 @@ export const mintInvitation = async ({
     const projectConn: ProjectConn = new ProjectConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(community.tokenAddress),
+      new anchor.web3.PublicKey(community.project),
     );
     let activationToken;
     if (projectInfo.activationTokens.length == 0) {

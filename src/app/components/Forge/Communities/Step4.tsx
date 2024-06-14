@@ -248,7 +248,7 @@ const Step4 = () => {
                     />
                   </div>
 
-                  <div className="bottom-card-image-invitation">
+                  <div className="bottom-card-image-invitation rounded-b-2xl">
                     <div className="mb-[0.8vmax] ml-[0.6vmax]">
                       <img
                         alt="Coin"

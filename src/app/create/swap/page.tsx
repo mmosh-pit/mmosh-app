@@ -50,15 +50,19 @@ const Swap = () => {
 
   const [curve, setCurve] = React.useState<BondingPricing>();
 
-  const onTokenSelect = async (token: SwapCoin, isBase: boolean) => {
-    setSwapLoading(true);
-    const result = await getSwapPrices(token, wallet!, isBase);
+  const onTokenSelect = React.useCallback(
+    async (token: SwapCoin, isBase: boolean) => {
+      console.log("Wallet: ", wallet);
+      setSwapLoading(true);
+      const result = await getSwapPrices(token, wallet!, isBase);
 
-    setBaseToken(result.baseToken);
-    setTargetToken(result.targetToken);
-    setCurve(result.curve);
-    setSwapLoading(false);
-  };
+      setBaseToken(result.baseToken);
+      setTargetToken(result.targetToken);
+      setCurve(result.curve);
+      setSwapLoading(false);
+    },
+    [wallet],
+  );
 
   const executeSwap = React.useCallback(async () => {
     setSwapLoading(true);
@@ -143,7 +147,7 @@ const Swap = () => {
                 selectedCoin={baseToken}
                 onTokenSelect={onTokenSelect}
                 isBase
-                readonly={baseToken?.symbol === "mmosh"}
+                readonly={baseToken?.symbol.toLowerCase() === "mmosh"}
               />
 
               <div className="w-[25%] flex justify-end">
@@ -191,7 +195,7 @@ const Swap = () => {
                 selectedCoin={targetToken}
                 onTokenSelect={onTokenSelect}
                 isBase={false}
-                readonly={targetToken?.symbol === "mmosh"}
+                readonly={targetToken?.symbol.toLowerCase() === "mmosh"}
               />
 
               <div className="w-[25%] flex justify-end">
@@ -207,12 +211,12 @@ const Swap = () => {
 
           <div className="flex flex-col mt-4">
             {result.res === "err" && (
-              <p className="text-errorColor text-center mb-2 text-sm">
+              <p className="text-red-600 text-center mb-2 text-sm">
                 There was an error while swapping your tokens. Please, try again
               </p>
             )}
             {result.res === "success" && (
-              <p className="text-successColor text-center mb-2 text-sm">
+              <p className="text-green-500 text-center mb-2 text-sm">
                 Congrats! Your tokens have been swapped successfully
               </p>
             )}

@@ -18,16 +18,12 @@ export const getSwapPrices = async (
   });
 
   anchor.setProvider(env);
-  const curveConn: CurveConn = new CurveConn(env, web3Consts.programID);
-
-  console.log("Sending token: ", token);
+  const curveConn = new CurveConn(env, web3Consts.programID);
 
   const balances = await curveConn.getTokenBalance(
     token.token,
     web3Consts.oposToken.toBase58(),
   );
-
-  console.log("Resulting balances: ", balances);
 
   const target = {
     name: token.name,

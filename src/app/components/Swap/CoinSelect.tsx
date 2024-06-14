@@ -1,6 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import Image from "next/image";
 
 import { Coin } from "@/app/models/coin";
@@ -25,6 +26,7 @@ const CoinSelect = ({
   isBase,
   readonly,
 }: Props) => {
+  const wallet = useAnchorWallet();
   const [profileInfo] = useAtom(userWeb3Info);
 
   const fetching = React.useRef(false);
@@ -49,10 +51,13 @@ const CoinSelect = ({
     fetching.current = false;
   }, [searchText]);
 
-  const handleTokenSelect = React.useCallback((token: Coin) => {
-    onTokenSelect(token as SwapCoin, isBase);
-    (document.getElementById("coin_modal") as any)?.close();
-  }, []);
+  const handleTokenSelect = React.useCallback(
+    (token: Coin) => {
+      onTokenSelect(token as SwapCoin, isBase);
+      (document.getElementById("coin_modal") as any)?.close();
+    },
+    [wallet],
+  );
 
   React.useEffect(() => {
     getCoinsList();

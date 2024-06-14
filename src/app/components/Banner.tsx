@@ -24,11 +24,11 @@ const Banner = () => {
               <p className="text-2xl font-bold text-white font-goudy text-center">
                 Connect to Solana
               </p>
-              <p className="text-base text-white text-center mt-4">
+              <p className="text-sm text-white text-center mt-4">
                 Welcome to the MMOSH! An epic adventure beyond time, space and
                 the death-grip of global civilization.
               </p>
-              <p className="text-base text-white text-center mt-4">
+              <p className="text-sm text-white text-center mt-4">
                 Connect your Solana wallet.
               </p>
             </div>
@@ -42,7 +42,7 @@ const Banner = () => {
                 borderRadius: 15,
               }}
             >
-              <p className="text-base text-white">Connect Wallet</p>
+              <p className="text-sm text-white">Connect Wallet</p>
             </WalletMultiButton>
           </div>
 
@@ -66,7 +66,7 @@ const Banner = () => {
     //   return (
     //     <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
     //       <div className="flex flex-col justify-around items-center max-w-[75%]">
-    //         <p className="text-base text-white text-center">
+    //         <p className="text-sm text-white text-center">
     //           Create and Join Crypto Communities on Telegram! Start by
     //           activating MMOSHBot
     //         </p>
@@ -74,8 +74,8 @@ const Banner = () => {
     //         <a
     //           href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
     //         >
-    //           <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
-    //             <p className="text-base text-white">Activate Bot</p>
+    //           <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
+    //             <p className="text-sm text-white">Activate Bot</p>
     //           </button>
     //         </a>
     //       </div>
@@ -96,14 +96,14 @@ const Banner = () => {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
-            <p className="text-base text-white text-center">
+            <p className="text-sm text-white text-center">
               Hey {currentUser?.profile?.name}, mint and send out more
               invitations to grow you Guild and earn more royalties.
             </p>
 
             <a href="https://forge.mmosh.app">
-              <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
-                <p className="text-base text-white">Enter the Forge</p>
+              <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
+                <p className="text-sm text-white">Enter the Forge</p>
               </button>
             </a>
           </div>
@@ -128,13 +128,13 @@ const Banner = () => {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
-            <p className="text-base text-white text-center">
+            <p className="text-sm text-white text-center">
               Hey {currentUser?.profile?.name}, now it’s time to mint your
               Profile to join MMOSH DAO as a lifetime member.
             </p>
             <a href="https://forge.mmosh.app">
-              <button className="bg-[#CD068E] relative rounded-md px-4 py-2">
-                <p className="text-base text-white">Enter the Forge</p>
+              <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
+                <p className="text-sm text-white">Enter the Forge</p>
               </button>
             </a>
           </div>
@@ -159,19 +159,19 @@ const Banner = () => {
       <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
         <div className="flex flex-col justify-around items-center">
           <div className="max-w-[75%]">
-            <p className="text-base text-white text-center">
+            <p className="text-sm text-white text-center">
               Hey {currentUser?.profile?.name}, you’ll need an invitation to
               mint your Profile and become a MMOSH DAO member.
             </p>
-            <p className="text-base text-white text-center">
+            <p className="text-sm text-white text-center">
               You can get an invitation from a current member. Find one in the
               Membership Directory, or ask around in our main Telegram group.
             </p>
           </div>
 
           <a href="https://t.me/mmoshpit" target="_blank">
-            <button className="relative bg-[#CD068E] rounded-md px-4 py-2">
-              <p className="text-base text-white">Go to Telegram Group</p>
+            <button className="relative bg-[#CD068E] rounded-md px-6 py-4">
+              <p className="text-sm text-white">Go to Telegram Group</p>
             </button>
           </a>
         </div>

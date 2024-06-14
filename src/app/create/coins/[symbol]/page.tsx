@@ -63,7 +63,10 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
       <div className="w-full flex justify-between">
         <div className="flex items-center mb-8 ml-4">
-          <div className="flex items-center mr-4" onClick={goBack}>
+          <div
+            className="flex items-center mr-4 cursor-pointer"
+            onClick={goBack}
+          >
             <ArrowBack />
             <p className="text-white text-sm">Back</p>
           </div>
@@ -74,7 +77,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             </div>
 
             <h6 className="mx-2">{coin.name}</h6>
-            <p className="text-sm">{coin.symbol}</p>
+            <p className="text-tiny self-end">{coin.symbol}</p>
           </div>
         </div>
       </div>

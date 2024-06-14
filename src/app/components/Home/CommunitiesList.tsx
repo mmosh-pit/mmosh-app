@@ -1,13 +1,18 @@
 import * as React from "react";
 import { useAtom } from "jotai";
 import axios from "axios";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-import { Community } from "@/app/models/community";
+import { Community, CommunityAPIResult } from "@/app/models/community";
 import { data, searchBarText } from "@/app/store";
+import CommunityCard from "./CommunityCard";
 
 const CommunitiesList = () => {
-  const [communities, setCommunities] = React.useState<Community[]>([]);
+  const navigate = useRouter();
+
+  const [communities, setCommunities] = React.useState<CommunityAPIResult[]>(
+    [],
+  );
 
   const [currentUser] = useAtom(data);
   const [searchText] = useAtom(searchBarText);
@@ -15,17 +20,16 @@ const CommunitiesList = () => {
   const fetching = React.useRef(false);
   const containerRef = React.useRef<any>(null);
   const [currentPage, setCurrentPage] = React.useState(0);
-  const allCommunities = React.useRef<Community[]>([]);
   const lastPageTriggered = React.useRef(false);
 
   const getUsers = React.useCallback(async () => {
     fetching.current = true;
+    // TODO include pagination
     const result = await axios.get(
-      `/api/get-home-communities?search=${searchText}&skip=${currentPage * 15}`,
+      `/api/list-communities?searchText=${searchText}`,
     );
 
     setCommunities(result.data);
-    allCommunities.current = result.data.users;
     fetching.current = false;
   }, []);
 
@@ -39,6 +43,10 @@ const CommunitiesList = () => {
     }
   };
 
+  const onCommunitySelect = (community: Community) => {
+    navigate.push(`/create/communities/${community.symbol}`);
+  };
+
   React.useEffect(() => {
     if (!currentUser || fetching.current) return;
     getUsers();
@@ -46,24 +54,23 @@ const CommunitiesList = () => {
 
   return (
     <div
-      className="w-full px-4 flex mt-[3vmax] overflow-x-auto"
+      className="w-full grid grid-cols-auto lg:grid-cols-8 md:grid-cols-4 sm:grid-cols-2 gap-8 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
       ref={containerRef}
       onScroll={handleScroll}
     >
-      {communities.map((community) => (
-        <div className="flex flex-col">
-          <div
-            className="relative flex bg-[#030007] bg-opacity-40 px-2 py-2 rounded-t-xl w-[6vmax] h-[6vmax]"
-            id="border-gradient-container"
-          >
-            <Image
-              src={community.image}
-              alt="Profile Image"
-              className="rounded-full"
-              layout="fill"
-            />
-          </div>
-          <p>{community.name}</p>
+      {communities.map((value) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => onCommunitySelect(value.data)}
+          key={value._id?.toString()}
+        >
+          <CommunityCard
+            name={value.data.name}
+            image={value.data.image}
+            username={value.data.symbol}
+            description={value.data.description}
+            key={value.data.tokenAddress}
+          />
         </div>
       ))}
     </div>

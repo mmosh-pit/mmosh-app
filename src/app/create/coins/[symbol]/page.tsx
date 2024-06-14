@@ -25,6 +25,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   const fetchCoinData = React.useCallback(async () => {
     try {
       setIsLoading(true);
+      console.log("Queryiiing");
       const result = await axios.get<Coin>(
         `/api/get-token-by-symbol?symbol=${params.symbol}`,
       );

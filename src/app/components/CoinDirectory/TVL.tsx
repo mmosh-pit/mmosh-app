@@ -5,7 +5,11 @@ import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 
-const TVL = () => {
+type Props = {
+  bonding?: string;
+};
+
+const TVL = ({ bonding }: Props) => {
   const rendered = React.useRef(false);
 
   const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
@@ -13,7 +17,7 @@ const TVL = () => {
 
   const getTVL = async () => {
     try {
-      const tvlResult = await axios.get(`/api/tvl`);
+      const tvlResult = await axios.get(`/api/tvl?bonding=${bonding}`);
       const data = [];
 
       for (let index = 0; index < tvlResult.data.labels.length; index++) {

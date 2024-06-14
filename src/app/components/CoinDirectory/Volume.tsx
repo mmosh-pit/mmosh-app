@@ -5,7 +5,11 @@ import * as React from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 import DateTypeSelector from "../common/DateTypeSelector";
 
-const Volume = () => {
+type Props = {
+  bonding?: string;
+};
+
+const Volume = ({ bonding }: Props) => {
   const [data, setData] = React.useState([]);
   const [total, setTotal] = React.useState("0");
 
@@ -13,7 +17,9 @@ const Volume = () => {
 
   const getVolume = async () => {
     try {
-      const result = await axios.get(`/api/volume?type=${type}`);
+      const result = await axios.get(
+        `/api/volume?type=${type}&bonding=${bonding}`,
+      );
 
       setData(result.data.labels?.reverse() || []);
 

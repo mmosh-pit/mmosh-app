@@ -1,8 +1,8 @@
 import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
-import { Connectivity as UserConn } from "./anchor/user";
-import { web3Consts } from "./anchor/web3Consts";
+import { Connectivity as UserConn } from "@/anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 

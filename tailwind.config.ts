@@ -11,18 +11,16 @@ const config: Config = {
   },
   theme: {
     fontSize: {
-      xs: "0.65vmax",
-      sm: "0.8vmax",
-      tiny: ".875rem",
-      base: "0.85vmax",
-      lg: "1vmax",
-      xl: "1.25rem",
-      "2xl": "1.5rem",
-      "3xl": "1.875rem",
-      "4xl": "2.25rem",
-      "5xl": "3rem",
-      "6xl": "4rem",
-      "7xl": "5rem",
+      xs: "0.8vmax",
+      sm: "0.85vmax",
+      tiny: "0.60vmax",
+      base: "1vmax",
+      lg: "1.10vmax",
+      xl: "1.25vmax",
+      "2xl": "1.5vmax",
+      "3xl": "1.75vmax",
+      "4xl": "2vmax",
+      "5xl": "2.5vmax",
     },
 
     fontFamily: {

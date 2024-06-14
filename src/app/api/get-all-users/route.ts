@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
   };
 
   data.forEach((row) => {
-    result.totalPoints += row.telegram.points;
+    result.totalPoints += row.telegram?.points || 0;
   });
 
   result.totalAccounts = data.length;

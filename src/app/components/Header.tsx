@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import axios from "axios";
+import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -17,11 +19,16 @@ import {
   searchBarText,
   settings,
   status,
+  userWeb3Info,
+  web3InfoLoading,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
-import axios from "axios";
+import { Connectivity as UserConn } from "../../anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
+import { Connection } from "@solana/web3.js";
+import { pageCommunity } from "../store/community";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -39,12 +46,16 @@ const formatNumber = (value: number) => {
   return `${formattedNumber}${units[exponent]}`;
 };
 
-const Header = ({ isHome }: { isHome: boolean }) => {
+const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
   const wallet = useAnchorWallet();
+  const renderedUserInfo = React.useRef(false);
+  const [__, setProfileInfo] = useAtom(userWeb3Info);
+  const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [userStatus] = useAtom(status);
-  const [currentUser] = useAtom(data);
+  const [community] = useAtom(pageCommunity);
+  const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
@@ -58,23 +69,16 @@ const Header = ({ isHome }: { isHome: boolean }) => {
     let defaultClass =
       "w-full flex flex-col justify-center items-center py-6 px-8 ";
 
-    if (
-      (userStatus === UserStatus.fullAccount && pathname !== "/") ||
-      isOnSettings
-    ) {
+    if (pathname.includes("create")) {
+      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
+    } else if (pathname !== "/" || isOnSettings) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
-    }
-
-    if (
-      userStatus === UserStatus.fullAccount &&
-      pathname === "/" &&
-      !isOnSettings
-    ) {
+    } else if (pathname === "/" && !isOnSettings) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
     return defaultClass;
-  }, [userStatus]);
+  }, [userStatus, pathname]);
 
   const executeSearch = React.useCallback(() => {
     const text = localText.replace("@", "");
@@ -88,11 +92,97 @@ const Header = ({ isHome }: { isHome: boolean }) => {
     setTotalRoyalties(res.data.royalties);
   }, []);
 
+  const getProfileInfo = async () => {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+
+    setIsLoadingProfile(true);
+
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+    const profileInfo = await userConn.getUserInfo();
+
+    const genesis = profileInfo.activationTokens[0]?.genesis;
+    const activation = profileInfo.activationTokens[0]?.activation;
+
+    const totalMints = profileInfo.totalChild;
+
+    let firstTime = true;
+
+    if (profileInfo.activationTokens.length > 0) {
+      if (profileInfo.activationTokens[0].activation != "") {
+        firstTime = false;
+      }
+    }
+    const totalChilds = totalMints;
+
+    let quota = 0;
+
+    if (totalChilds < 3) {
+      quota = 10;
+    } else if (totalChilds >= 3 && totalChilds < 7) {
+      quota = 25;
+    } else if (totalChilds >= 7 && totalChilds < 15) {
+      quota = 50;
+    } else if (totalChilds >= 15 && totalChilds < 35) {
+      quota = 250;
+    } else if (totalChilds >= 35 && totalChilds < 75) {
+      quota = 500;
+    } else {
+      quota = 1000;
+    }
+
+    const profileNft = profileInfo.profiles[0];
+
+    if (profileNft?.address) {
+      const username = profileNft.userinfo.username;
+
+      const res = await axios.get(`/api/get-user-data?username=${username}`);
+      setCurrentUser(res.data);
+    } else {
+      const res = await axios.get(
+        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
+      );
+
+      setCurrentUser(res.data);
+    }
+
+    setProfileInfo({
+      generation: profileInfo.generation,
+      genesisToken: genesis,
+      profileLineage: profileInfo.profilelineage,
+      activationToken: activation,
+      solBalance: profileInfo.solBalance,
+      mmoshBalance: profileInfo.oposTokenBalance,
+      firstTimeInvitation: firstTime,
+      quota,
+      activationTokenBalance:
+        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild ||
+        0,
+      profile: {
+        address: profileNft?.address,
+        image: profileNft?.userinfo.image,
+      },
+    });
+    setIsLoadingProfile(false);
+  };
+
   React.useEffect(() => {
     if (userStatus === UserStatus.fullAccount && pathname === "/") {
       getTotals();
     }
   }, [userStatus]);
+
+  React.useEffect(() => {
+    if (wallet?.publicKey && !renderedUserInfo.current) {
+      renderedUserInfo.current = true;
+      getProfileInfo();
+    } else {
+      setIsLoadingProfile(false);
+    }
+  }, [wallet]);
 
   React.useEffect(() => {
     if (wallet?.publicKey && incomingWalletToken !== "") {
@@ -106,10 +196,8 @@ const Header = ({ isHome }: { isHome: boolean }) => {
     }
   }, [wallet, incomingWalletToken]);
 
-  if (isHome && pathname !== "/") return <></>;
-
   return (
-    <div className="flex flex-col">
+    <header className="flex flex-col">
       <div className={getHeaderBackground()}>
         <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (
@@ -127,23 +215,13 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           )}
 
           {!isMobileScreen && (
-            <div className="relative flex w-[25%] justify-between items-center">
-              <p
+            <div className="flex w-[75%] justify-between items-center">
+              <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => router.replace("/")}
               >
                 Home
-              </p>
-
-              <p
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  if (isOnSettings) return setIsOnSettings(false);
-                  router.push(`/${currentUser?.profile.username}`);
-                }}
-              >
-                My Profile
-              </p>
+              </a>
 
               <a
                 target="_blank"
@@ -154,10 +232,58 @@ const Header = ({ isHome }: { isHome: boolean }) => {
               </a>
 
               <a
-                href="https://forge.mmosh.app"
                 className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create");
+                }}
               >
                 Forge
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create");
+                }}
+              >
+                Members
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/communities");
+                }}
+              >
+                Communities
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/coins");
+                }}
+              >
+                Coins
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/create/swap");
+                }}
+              >
+                Swap
+              </a>
+
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  if (isOnSettings) return setIsOnSettings(false);
+                  router.push(`/${currentUser?.profile.username}`);
+                }}
+              >
+                My Profile
               </a>
             </div>
           )}
@@ -174,23 +300,22 @@ const Header = ({ isHome }: { isHome: boolean }) => {
               </div>
             )}
 
-            {(wallet?.publicKey || userStatus === UserStatus.fullAccount) && (
-              <WalletMultiButton
-                startIcon={undefined}
-                style={{
-                  background:
-                    "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                  padding: "0 2em",
-                  borderRadius: 15,
-                }}
-              >
-                <p className="text-lg text-white">
-                  {wallet?.publicKey
-                    ? walletAddressShortener(wallet.publicKey.toString())
-                    : "Connect Wallet"}
-                </p>
-              </WalletMultiButton>
-            )}
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                background:
+                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
+                padding: "0 2em",
+                borderRadius: 15,
+                position: "relative",
+              }}
+            >
+              <p className="text-lg text-white">
+                {wallet?.publicKey
+                  ? walletAddressShortener(wallet.publicKey.toString())
+                  : "Connect Wallet"}
+              </p>
+            </WalletMultiButton>
 
             {userStatus === UserStatus.fullAccount &&
               !isMobileScreen &&
@@ -206,22 +331,22 @@ const Header = ({ isHome }: { isHome: boolean }) => {
               )}
           </div>
         </div>
-
-        <div className="w-full flex flex-col justify-center items-center mb-4">
-          <div
-            className={`relative ${isDrawerShown ? "z-[-1]" : ""} ${isMobileScreen ? "w-[150px] h-[150px]" : "w-[16vmax] h-[16vmax]"}`}
-          >
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              layout="fill"
-            />
-          </div>
-        </div>
       </div>
 
+      {pathname.includes("/create/communities/") && (
+        <div className="relative w-full flex justify-center items-end mt-12 pb-4">
+          <div
+            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
+          >
+            <h2 className="text-center">
+              Mint this pass to join {community?.name}
+            </h2>
+          </div>
+        </div>
+      )}
+
       {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12">
+        <div className="w-full flex justify-center lg:justify-between items-end mt-12 pb-4">
           {!isMobileScreen && (
             <div className="flex w-[33%]">
               <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
@@ -247,6 +372,16 @@ const Header = ({ isHome }: { isHome: boolean }) => {
               </div>
             </div>
           )}
+
+          <div
+            className={`relative w-[16vmax] h-[16vmax] ${isDrawerShown && "z-[-1]"}`}
+          >
+            <Image
+              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
+              alt="mmosh"
+              layout="fill"
+            />
+          </div>
 
           {!isMobileScreen && (
             <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
@@ -274,7 +409,7 @@ const Header = ({ isHome }: { isHome: boolean }) => {
           )}
         </div>
       )}
-    </div>
+    </header>
   );
 };
 

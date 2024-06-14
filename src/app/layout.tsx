@@ -41,8 +41,8 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ConfigHOC>
-          <Header isHome />
-          <div className="h-full">{children}</div>
+          <Header />
+          <main className="min-h-screen">{children}</main>
         </ConfigHOC>
       </body>
     </html>

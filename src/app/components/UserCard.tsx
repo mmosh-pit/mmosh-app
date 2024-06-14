@@ -24,7 +24,7 @@ const UserCard = ({ user }: Props) => {
       setRank(result.data.rank);
     } else {
       const result = await axios.get(
-        `/api/get-rank-data?user=${user.telegram.id}`,
+        `/api/get-rank-data?user=${user.telegram?.id}`,
       );
 
       setRank(result.data.rank);
@@ -77,7 +77,7 @@ const UserCard = ({ user }: Props) => {
           </div>
 
           <div>
-            {user.telegram.username && (
+            {user.telegram?.username && (
               <div className="flex items-center">
                 <TelegramDarkIcon />
 
@@ -91,7 +91,7 @@ const UserCard = ({ user }: Props) => {
               </div>
             )}
 
-            {user.twitter.username && (
+            {user.twitter?.username && (
               <div className="flex items-center mt-2">
                 <TwitterDarkIcon />
 
@@ -131,7 +131,7 @@ const UserCard = ({ user }: Props) => {
 
             <div>
               <p className="text-white text-xs">
-                Points: {user.telegram.points || 0}
+                Points: {user.telegram?.points || 0}
               </p>
             </div>
           </div>

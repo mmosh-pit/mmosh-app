@@ -211,12 +211,12 @@ const Swap = () => {
 
           <div className="flex flex-col mt-4">
             {result.res === "err" && (
-              <p className="text-errorColor text-center mb-2 text-sm">
+              <p className="text-red-600 text-center mb-2 text-sm">
                 There was an error while swapping your tokens. Please, try again
               </p>
             )}
             {result.res === "success" && (
-              <p className="text-successColor text-center mb-2 text-sm">
+              <p className="text-green-500 text-center mb-2 text-sm">
                 Congrats! Your tokens have been swapped successfully
               </p>
             )}

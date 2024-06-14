@@ -1,3 +1,4 @@
+import { Filter } from "mongodb";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,6 +7,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") ? searchParams.get("type") : "day";
+  const bonding = searchParams.get("bonding");
 
   const labels = [];
   for (let index = 0; index < 7; index++) {
@@ -67,9 +69,15 @@ export async function GET(req: NextRequest) {
     filterDate = new Date(d.setFullYear(d.getFullYear() - 13));
   }
 
+  const matchCondition: Filter<Document> = {};
+
+  if (bonding) {
+    matchCondition.bonding = bonding;
+  }
+
   const buyresult = await collection
     .aggregate([
-      { $match: { created_date: { $gte: filterDate } } },
+      { $match: { ...matchCondition, created_date: { $gte: filterDate } } },
       {
         $group: {
           _id: idFitler,
@@ -112,6 +120,7 @@ export async function GET(req: NextRequest) {
 
   const buyfullresult = await collection
     .aggregate([
+      { $match: matchCondition },
       {
         $group: {
           _id: { year: {} },

@@ -1,12 +1,12 @@
-import axios from "axios";
 import * as React from "react";
 import { useAtom } from "jotai";
-import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 import DateTypeSelector from "../../common/DateTypeSelector";
 import { Coin } from "@/app/models/coin";
-import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 import { coinStats } from "@/app/store/coins";
+import TVL from "../../CoinDirectory/TVL";
+import Volume from "../../CoinDirectory/Volume";
+import Price from "../../CoinDirectory/Price";
 
 const typeOptions = [
   {
@@ -28,46 +28,29 @@ type Props = {
 };
 
 const Graphics = ({ coin }: Props) => {
-  const [stats, setStats] = useAtom(coinStats);
+  const [stats] = useAtom(coinStats);
 
   const [type, setType] = React.useState("day");
 
   const [selectedGraphicType, setSelectedGraphicType] = React.useState({
-    label: "Price",
-    value: "price",
+    label: "TVL",
+    value: "tvl",
   });
 
-  const [graphicData, setGraphicData] = React.useState<
-    { value: number; name: string }[]
-  >([]);
+  const renderGraphicType = React.useCallback(() => {
+    if (selectedGraphicType.value === "tvl")
+      return <TVL bonding={coin.bonding} />;
 
-  const getGraphicData = React.useCallback(async () => {
-    const result = await axios.get(`/api/tvl?bonding=${coin.bonding}`);
-    const data = [];
-    for (let index = 0; index < result.data.labels.length; index++) {
-      const element = result.data.labels[index];
-      data.push({ value: Math.abs(element.value), name: element.label });
-    }
-    const total = abbreviateNumber(Math.abs(result.data.total));
-    setStats((prev) => ({ ...prev, total }));
-    setGraphicData(data.reverse());
-  }, []);
+    if (selectedGraphicType.value === "volume")
+      return <Volume bonding={coin.bonding} />;
 
-  React.useEffect(() => {
-    getGraphicData();
-  }, [selectedGraphicType]);
+    return <Price />;
+  }, [coin, selectedGraphicType]);
 
   return (
-    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-8">
-      <div className="w-full flex justify-between mt-4 px-12">
-        <h6 className="self-end">
-          ${stats.total}
-          <p className="text-white">MMOSH</p>
-        </h6>
-
-        <div className="flex items-center self-start">
-          <DateTypeSelector type={type} setType={setType} />
-
+    <div className="w-full flex flex-col bg-[#040241] rounded-xl py-1">
+      <div className="w-full flex justify-end mt-4 px-12">
+        <div className="flex items-center self-end">
           <div className="dropdown rounded-lg py-1 ml-4">
             <div tabIndex={0} role="button" className="btn m-1">
               {selectedGraphicType.label}
@@ -85,33 +68,7 @@ const Graphics = ({ coin }: Props) => {
           </div>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <AreaChart
-          width={450}
-          height={300}
-          data={graphicData}
-          margin={{
-            top: 10,
-            right: 30,
-            left: 0,
-            bottom: 0,
-          }}
-        >
-          <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="2">
-              <stop offset="0%" stopColor="#007AFF" stopOpacity={0.8} />
-              <stop offset="75%" stopColor="#09093C" stopOpacity={0.03} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="name" tickLine={false} axisLine={false} />
-          <Area
-            type="monotone"
-            dataKey="value"
-            stroke="#007AFF"
-            fill="url(#gradient)"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      {renderGraphicType()}
     </div>
   );
 };

@@ -58,6 +58,8 @@ const CommunitiesList = () => {
 
   if (isLoading) return <></>;
 
+  if (communities?.length === 0) return <></>;
+
   return (
     <div id="communities" className="w-full flex flex-col mb-4">
       <div className="w-full flex justify-between px-4">

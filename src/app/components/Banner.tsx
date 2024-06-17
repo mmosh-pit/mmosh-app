@@ -2,13 +2,14 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import Image from "next/image";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { data, status, userWeb3Info } from "../store";
+import { data, status, userWeb3Info, web3InfoLoading } from "../store";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const Banner = () => {
   const [userStatus] = useAtom(status);
   const [currentUser] = useAtom(data);
   const [profileInfo] = useAtom(userWeb3Info);
+  const [isLoading] = useAtom(web3InfoLoading);
 
   const wallet = useAnchorWallet();
 
@@ -16,6 +17,8 @@ const Banner = () => {
   const hasInvitation = !!profileInfo?.activationToken;
 
   const renderComponent = React.useCallback(() => {
+    if (isLoading) return <></>;
+
     if (!wallet?.publicKey) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
@@ -61,36 +64,6 @@ const Banner = () => {
         </div>
       );
     }
-
-    // if (userStatus === UserStatus.noAccount) {
-    //   return (
-    //     <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
-    //       <div className="flex flex-col justify-around items-center max-w-[75%]">
-    //         <p className="text-sm text-white text-center">
-    //           Create and Join Crypto Communities on Telegram! Start by
-    //           activating MMOSHBot
-    //         </p>
-    //
-    //         <a
-    //           href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
-    //         >
-    //           <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
-    //             <p className="text-sm text-white">Activate Bot</p>
-    //           </button>
-    //         </a>
-    //       </div>
-    //
-    //       <div
-    //         className="w-full flex justify-center items-center py-8"
-    //         id="banner-image-container"
-    //       >
-    //         <div className="relative flex justify-center items-center rounded-full w-[8vmax] h-[8vmax] bg-blue-500">
-    //           <TelegramBigIcon className="mr-2" />
-    //         </div>
-    //       </div>
-    //     </div>
-    //   );
-    // }
 
     if (hasProfile) {
       return (
@@ -190,7 +163,14 @@ const Banner = () => {
         </div>
       </div>
     );
-  }, [currentUser, userStatus, wallet?.publicKey, hasProfile, hasInvitation]);
+  }, [
+    currentUser,
+    userStatus,
+    wallet?.publicKey,
+    hasProfile,
+    hasInvitation,
+    isLoading,
+  ]);
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

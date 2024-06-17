@@ -86,6 +86,8 @@ const MembersList = () => {
 
   if (isLoading) return <></>;
 
+  if (users?.length === 0) return <></>;
+
   return (
     <div className="flex w-full flex-col" id="members">
       <div className="w-full flex justify-between px-4">

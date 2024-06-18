@@ -163,7 +163,7 @@ const CreateProfile = () => {
       });
 
       setTimeout(() => {
-        navigate.replace(`/${result.data.profile.username}`);
+        navigate.replace(`/create`);
       }, 5000);
     }
     setIsLoading(false);

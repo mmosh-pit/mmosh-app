@@ -17,8 +17,6 @@ const Banner = () => {
   const hasInvitation = !!profileInfo?.activationToken;
 
   const renderComponent = React.useCallback(() => {
-    if (isLoading) return <></>;
-
     if (!wallet?.publicKey) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
@@ -172,8 +170,9 @@ const Banner = () => {
     wallet?.publicKey,
     hasProfile,
     hasInvitation,
-    isLoading,
   ]);
+
+  if (isLoading) return <></>;
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

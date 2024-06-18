@@ -70,11 +70,12 @@ const Banner = () => {
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey {currentUser?.profile?.name}, mint and send out more
-              invitations to grow you Guild and earn more royalties.
+              Hey{" "}
+              {currentUser?.profile?.name}, mint and send out more invitations
+              to grow you Guild and earn more royalties.
             </p>
 
-            <a href="https://forge.mmosh.app">
+            <a href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create`}>
               <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
                 <p className="text-sm text-white">Enter the Forge</p>
               </button>
@@ -102,10 +103,11 @@ const Banner = () => {
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey {currentUser?.profile?.name}, now it’s time to mint your
-              Profile to join MMOSH DAO as a lifetime member.
+              Hey{" "}
+              {currentUser?.profile?.name}, now it’s time to mint your Profile
+              to join MMOSH DAO as a lifetime member.
             </p>
-            <a href="https://forge.mmosh.app">
+            <a href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create`}>
               <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
                 <p className="text-sm text-white">Enter the Forge</p>
               </button>
@@ -133,8 +135,9 @@ const Banner = () => {
         <div className="flex flex-col justify-around items-center">
           <div className="max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey {currentUser?.profile?.name}, you’ll need an invitation to
-              mint your Profile and become a MMOSH DAO member.
+              Hey{" "}
+              {currentUser?.profile?.name}, you’ll need an invitation to mint
+              your Profile and become a MMOSH DAO member.
             </p>
             <p className="text-sm text-white text-center">
               You can get an invitation from a current member. Find one in the

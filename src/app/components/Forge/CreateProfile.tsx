@@ -177,6 +177,7 @@ const CreateProfile = () => {
 
   React.useEffect(() => {
     if (!profileInfo?.activationToken) {
+      console.log("Profile info here: ", profileInfo);
       setMessage({
         type: "info",
         message: `Hey! An Invitation from a current member is required to mint a Profile NFT and join MMOSH DAO. You can find a member to sponsor you in the [Membership Directory.](${process.env.NEXT_PUBLIC_APP_MAIN_URL})`,

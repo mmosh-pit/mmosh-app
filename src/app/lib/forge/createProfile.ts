@@ -196,7 +196,7 @@ export const createProfile = async ({
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
     const res = await userConn.mintProfileByActivationToken({
       name: form.username.substring(0, 15),
-      symbol: form.username.substring(0, 5).toUpperCase(),
+      symbol: form.username.substring(0, 10).toUpperCase(),
       uriHash: shadowHash,
       activationToken,
       genesisProfile,

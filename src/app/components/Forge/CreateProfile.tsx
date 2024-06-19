@@ -324,7 +324,7 @@ const CreateProfile = () => {
             </div>
           </div>
 
-          <div className="w-full flex flex-col justify-center items-center mt-20">
+          <div className="w-full flex flex-col justify-center items-center mt-20 md:w-[45%] w-[80%]">
             <Button
               isLoading={isLoading}
               isPrimary

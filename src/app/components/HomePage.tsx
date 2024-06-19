@@ -20,12 +20,12 @@ const HomePage = () => {
       <Banner />
       <div className="self-center md:max-w-[50%] max-w-[80%]">
         <h5 className="text-center text-white font-goudy font-normal mb-[3vmax] mt-[1vmax]">
-          Welcome Home, {currentUser?.profile?.name}
+          {currentUser?.profile?.name ? `Welcome Home, ${currentUser?.profile?.name}` : "Howdy Stranger!"} 
         </h5>
 
-        <p className="text-center text-white text-lg">
-          A MMOSH is a decentralized, permissionless and composable virtual
-          world available through various access devices and software platforms
+        <p className="text-center text-base">
+          {currentUser?.profile?.name ? "A MMOSH is a decentralized, permissionless and composable virtual world available through various access devices and software platforms" : "Welcome to MMOSH, the social protocol for connected communities. Make Money Fun!"}
+          
         </p>
       </div>
 

@@ -66,7 +66,7 @@ const MintInvitation = () => {
               <p className="text-lg text-white">
                 Invitation from {currentUser?.profile.username}
               </p>
-              <p className="text-base">
+              <p className="text-sm mt-2">
                 {currentUser?.profile.username} cordially invites you to join
                 him on Moral Panic, the Genesis MMOSH. The favor of a reply is
                 requested
@@ -76,7 +76,7 @@ const MintInvitation = () => {
             <div className="w-full flex justify-between">
               <div className="flex flex-col">
                 <div className="flex">
-                  <p className="text-base text-white">Minted:</p>
+                  <p className="text-sm text-white">Minted:</p>
 
                   <input
                     className="bg-[#C7C7C7] bg-opacity-[0.17] px-2 ml-2 rounded-md md:max-w-[10%] max-w-[25%] text-center"
@@ -95,13 +95,13 @@ const MintInvitation = () => {
                   />
                 </div>
 
-                <p className="text-base text-white">
+                <p className="text-sm text-white">
                   Quota:{" "}
                   <span className="text-gray-300 ml-2">
                     {profileInfo?.quota || 0}
                   </span>
                 </p>
-                <p className="text-base text-white">
+                <p className="text-sm text-white">
                   Unit Cost:{" "}
                   <span className="text-gray-300 ml-2">1 $MMOSH</span>
                 </p>

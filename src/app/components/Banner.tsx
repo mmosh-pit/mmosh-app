@@ -2,13 +2,14 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import Image from "next/image";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { data, status, userWeb3Info } from "../store";
+import { data, status, userWeb3Info, web3InfoLoading } from "../store";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 const Banner = () => {
   const [userStatus] = useAtom(status);
   const [currentUser] = useAtom(data);
   const [profileInfo] = useAtom(userWeb3Info);
+  const [isLoading] = useAtom(web3InfoLoading);
 
   const wallet = useAnchorWallet();
 
@@ -62,46 +63,17 @@ const Banner = () => {
       );
     }
 
-    // if (userStatus === UserStatus.noAccount) {
-    //   return (
-    //     <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
-    //       <div className="flex flex-col justify-around items-center max-w-[75%]">
-    //         <p className="text-sm text-white text-center">
-    //           Create and Join Crypto Communities on Telegram! Start by
-    //           activating MMOSHBot
-    //         </p>
-    //
-    //         <a
-    //           href={`${process.env.NEXT_PUBLIC_BOT_LINK}?start=${userTelegramId || 1294956737}`}
-    //         >
-    //           <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
-    //             <p className="text-sm text-white">Activate Bot</p>
-    //           </button>
-    //         </a>
-    //       </div>
-    //
-    //       <div
-    //         className="w-full flex justify-center items-center py-8"
-    //         id="banner-image-container"
-    //       >
-    //         <div className="relative flex justify-center items-center rounded-full w-[8vmax] h-[8vmax] bg-blue-500">
-    //           <TelegramBigIcon className="mr-2" />
-    //         </div>
-    //       </div>
-    //     </div>
-    //   );
-    // }
-
     if (hasProfile) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey {currentUser?.profile?.name}, mint and send out more
-              invitations to grow you Guild and earn more royalties.
+              Hey{" "}
+              {currentUser?.profile?.name}, mint and send out more invitations
+              to grow you Guild and earn more royalties.
             </p>
 
-            <a href="https://forge.mmosh.app">
+            <a href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create`}>
               <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
                 <p className="text-sm text-white">Enter the Forge</p>
               </button>
@@ -129,10 +101,11 @@ const Banner = () => {
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey {currentUser?.profile?.name}, now it’s time to mint your
-              Profile to join MMOSH DAO as a lifetime member.
+              Hey{" "}
+              {currentUser?.profile?.name}, now it’s time to mint your Profile
+              to join MMOSH DAO as a lifetime member.
             </p>
-            <a href="https://forge.mmosh.app">
+            <a href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create`}>
               <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
                 <p className="text-sm text-white">Enter the Forge</p>
               </button>
@@ -160,8 +133,9 @@ const Banner = () => {
         <div className="flex flex-col justify-around items-center">
           <div className="max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey {currentUser?.profile?.name}, you’ll need an invitation to
-              mint your Profile and become a MMOSH DAO member.
+              Hey{" "}
+              {currentUser?.profile?.name}, you’ll need an invitation to mint
+              your Profile and become a MMOSH DAO member.
             </p>
             <p className="text-sm text-white text-center">
               You can get an invitation from a current member. Find one in the
@@ -190,7 +164,15 @@ const Banner = () => {
         </div>
       </div>
     );
-  }, [currentUser, userStatus, wallet?.publicKey, hasProfile, hasInvitation]);
+  }, [
+    currentUser,
+    userStatus,
+    wallet?.publicKey,
+    hasProfile,
+    hasInvitation,
+  ]);
+
+  if (isLoading) return <></>;
 
   return (
     <div className="w-full flex justify-center py-12 bg-[#080536]">

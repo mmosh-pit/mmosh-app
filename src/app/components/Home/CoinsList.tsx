@@ -87,6 +87,8 @@ const CoinsList = () => {
 
   if (isLoading) return <></>;
 
+  if (coins?.length === 0) return <></>;
+
   return (
     <div className="flex w-full flex-col" id="coins">
       <div className="w-full flex justify-between px-4">

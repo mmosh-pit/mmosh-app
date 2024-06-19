@@ -23,7 +23,10 @@ const CoinsTable = () => {
   const [isUSDCSelected] = useAtom(selectedUSDCCoin);
   const [volume] = useAtom(selectedVolume);
 
-  const [selectedSort, setSelectedSort] = React.useState("");
+  const [selectedSort, setSelectedSort] = React.useState({
+    type: "coin",
+    value: "DESC",
+  });
   const [isLastPage, setIsLastPage] = React.useState(false);
 
   const [coins, setCoins] = React.useState<DirectoryCoin[]>([]);
@@ -37,7 +40,8 @@ const CoinsTable = () => {
       }
       source.current = axios.CancelToken.source();
 
-      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}`;
+      const url =
+        `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}`;
 
       const apiResult = await axios.get(url, {
         cancelToken: source.current.token,
@@ -74,23 +78,22 @@ const CoinsTable = () => {
     (start: number, end: number) => {
       const isIncremental = start <= end;
 
-      const iconToRender = isIncremental ? (
-        <ArrowUp fill={isIncremental ? "#22C55E" : "#DC2626"} />
-      ) : (
-        <ArrowDown fill={isIncremental ? "#22C55E" : "#DC2626"} />
-      );
+      const iconToRender = isIncremental
+        ? <ArrowUp fill={isIncremental ? "#22C55E" : "#DC2626"} />
+        : <ArrowDown fill={isIncremental ? "#22C55E" : "#DC2626"} />;
 
       const substraction = end - start;
 
-      const percentage =
-        substraction === 0 || start === 0
-          ? "0%"
-          : `${(substraction / start) * 100}%`;
+      const percentage = substraction === 0 || start === 0
+        ? "0%"
+        : `${(substraction / start) * 100}%`;
 
       return (
         <div className="flex items-center justify-evenly">
           <p
-            className={`text-sm ${isIncremental ? "text-green-500" : "text-red-500"}`}
+            className={`text-sm ${
+              isIncremental ? "text-green-500" : "text-red-500"
+            }`}
           >
             {percentage}
           </p>
@@ -154,6 +157,20 @@ const CoinsTable = () => {
     return "#22C55E";
   }, []);
 
+  const handleSortOptionSelect = React.useCallback((type: string) => {
+    if (selectedSort.type === type) {
+      setSelectedSort(
+        {
+          type,
+          value: selectedSort.value === "ASC" ? "DESC" : "ASC",
+        },
+      );
+      return;
+    }
+
+    setSelectedSort({ type, value: "DESC" });
+  }, [selectedSort]);
+
   React.useEffect(() => {
     getCoins(volume.value, searchText, 0);
     getUsdcMmoshPrice();
@@ -167,13 +184,26 @@ const CoinsTable = () => {
             <p className="text-white text-sm">Rank</p>
           </th>
           <th align="center">
-            <div className="flex items-center">
-              <SortIcon />
+            <div
+              className="flex items-center"
+              onClick={() => handleSortOptionSelect("coin")}
+            >
+              {selectedSort.type === "coin" && (
+                <SortIcon />
+              )}
               <p className="text-white text-sm ml-2">Coin</p>
             </div>
           </th>
           <th align="center">
-            <p className="text-white text-sm">Price</p>
+            <div
+              className="flex items-center"
+              onClick={() => handleSortOptionSelect("price")}
+            >
+              {selectedSort.type === "price" && (
+                <SortIcon />
+              )}
+              <p className="text-white text-sm">Price</p>
+            </div>
           </th>
           <th align="center">
             <p className="text-white text-sm">1H%</p>
@@ -183,11 +213,27 @@ const CoinsTable = () => {
           </th>
 
           <th align="center">
-            <p className="text-white text-sm">FDV%</p>
+            <div
+              className="flex items-center"
+              onClick={() => handleSortOptionSelect("fdv")}
+            >
+              {selectedSort.type === "fdv" && (
+                <SortIcon />
+              )}
+              <p className="text-white text-sm">FDV%</p>
+            </div>
           </th>
 
           <th align="center">
-            <p className="text-white text-sm">Volume%</p>
+            <div
+              className="flex items-center"
+              onClick={() => handleSortOptionSelect("volume")}
+            >
+              {selectedSort.type === "volume" && (
+                <SortIcon />
+              )}
+              <p className="text-white text-sm">Volume%</p>
+            </div>
           </th>
 
           <th align="center">
@@ -199,7 +245,11 @@ const CoinsTable = () => {
       <tbody>
         {coins.map((coin, index) => (
           <tr
-            className={`${index % 2 === 0 ? "bg-[#100E5242] hover:bg-[#100E5230]" : "bg-[#07076E70] hover:bg-[#07076E60]"}`}
+            className={`${
+              index % 2 === 0
+                ? "bg-[#100E5242] hover:bg-[#100E5230]"
+                : "bg-[#07076E70] hover:bg-[#07076E60]"
+            }`}
             key={coin.symbol}
             onClick={() => navigateToCoinPage(coin.symbol)}
           >

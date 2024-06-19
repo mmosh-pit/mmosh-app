@@ -1,3 +1,4 @@
+import { Sort } from "mongodb";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,6 +13,9 @@ export async function GET(req: NextRequest) {
   const offset = Number(searchParams.get("page")) * limit;
 
   const volumeParam = searchParams.get("volume");
+
+  const sortOption = searchParams.get("sort") as string;
+  const sortDirection = searchParams.get("direction") as string;
 
   const volume = volumeParam || "hour";
 
@@ -38,9 +42,19 @@ export async function GET(req: NextRequest) {
     };
   }
 
+  const sortFilter: Sort = {}
+
+  const directionValue = sortDirection === "ASC" ? 1 : -1;
+
+  if (sortOption === "coin") {
+    sortFilter["name"] = directionValue;
+  } else {
+    sortFilter["created_date"] = -1;
+  }
+
   const tokenResults = await collection
     .find(filter)
-    .sort({ created_date: -1 })
+    .sort(sortFilter)
     .skip(offset)
     .limit(limit)
     .toArray();
@@ -101,11 +115,19 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .toArray();
 
+    const priceSortFilter: Sort = {};
+
+    if (sortOption === "price" || sortOption === "fdv") {
+      priceSortFilter["price"] = directionValue;
+    } else {
+      priceSortFilter["created_date"] = 1;
+    }
+
     const onehourResult2 = await directoryCollection
       .find({
         bonding: element.bonding,
       })
-      .sort({ created_date: 1 })
+      .sort(priceSortFilter)
       .limit(1)
       .toArray();
 

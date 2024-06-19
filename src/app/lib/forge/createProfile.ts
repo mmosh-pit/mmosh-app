@@ -3,7 +3,6 @@ import * as anchor from "@coral-xyz/anchor";
 
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
-import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 import { pinImageToShadowDrive } from "../uploadImageToShdwDrive";
 import { MintResultMessage } from "../../models/mintResultMessage";
 import { CreateProfileParams } from "../../models/createProfileParams";
@@ -11,6 +10,7 @@ import { getTotalMints } from "../forge/getTotalMints";
 import { getUsername } from "../forge/getUsername";
 import { updateUserData } from "../forge/updateUserData";
 import { updateTotalMints } from "../forge/updateTotalMints";
+import { oldUploadFile } from "../oldUploadFile";
 
 export const createProfile = async ({
   wallet,
@@ -181,7 +181,7 @@ export const createProfile = async ({
       body.image = preview;
     }
 
-    const shadowHash: any = await pinFileToShadowDrive(body);
+    const shadowHash: any = await oldUploadFile(body);
     if (shadowHash === "") {
       return {
         message:

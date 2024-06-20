@@ -28,7 +28,7 @@ const Forge = () => {
     }
 
     return <GuestPassCard />;
-  }, [hasProfile]);
+  }, [hasProfile, hasInvitation]);
 
   if (isLoadingProfile) {
     return (

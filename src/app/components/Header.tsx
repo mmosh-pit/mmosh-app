@@ -239,7 +239,7 @@ const Header = () => {
                   router.push("/create");
                 }}
               >
-                Forge
+                Create
               </a>
 
               <a

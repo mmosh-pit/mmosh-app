@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
   const text =
     "Congratulations! You’ve verified your Social Wallet on the MMOSH app.\n\nThe MMOSH is an ecosystem of connected crypto communities. Find your tribe, share your vibe. Make money fun!!\n\nWe recommend you get started in “Enter Quests.” This initial quest will walk you step by step through the important sequences of securing your account, joining token-gated communities, becoming a member of the DAO, creating your own coins and forming your own communities.\n\nWhen you enter a quest, you’ll earn tokens for each task you complete!";
 
-  console.log("Going to update...");
   await axios.post(
     `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
     {
@@ -103,7 +102,6 @@ export async function POST(req: NextRequest) {
       },
     },
   );
-  console.log("Updated");
 
   return NextResponse.json(
     { ...data, id: newData.insertedId },

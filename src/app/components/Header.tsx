@@ -187,10 +187,12 @@ const Header = () => {
   React.useEffect(() => {
     if (wallet?.publicKey && incomingWalletToken !== "") {
       (async () => {
-        await axios.post("/api/link-social-wallet", {
+        const result = await axios.post("/api/link-social-wallet", {
           token: incomingWalletToken,
           wallet: wallet.publicKey.toString(),
         });
+
+        setCurrentUser(result.data);
         setIncomingWalletToken("");
       })();
     }

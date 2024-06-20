@@ -30,7 +30,7 @@ const TelegramBox = ({ telegram, communityName, isOwner }: Props) => {
       <h6 className="text-center">Official Community on Telegram</h6>
       <p className="text-white text-xs my-4 text-center">{`With the ${communityName} Pass, you may join the Official Community on Telegram by following the link below`}</p>
 
-      {isOwner ? (
+      {!isOwner ? (
         <a
           className="text-underline text-[#E5029D] mt-2 text-center"
           href={telegram}

@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
-import { data, userWeb3Info } from "@/app/store";
+import { data, userWeb3Info, web3InfoLoading } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
 import ImagePicker from "../ImagePicker";
 import { createProfile } from "@/app/lib/forge/createProfile";
@@ -32,6 +32,7 @@ const CreateProfile = () => {
   const wallet = useAnchorWallet();
   const navigate = useRouter();
   const [profileInfo] = useAtom(userWeb3Info);
+  const [isLoadingProfile] = useAtom(web3InfoLoading);
   const [_, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
@@ -176,15 +177,18 @@ const CreateProfile = () => {
   }, [image]);
 
   React.useEffect(() => {
-    console.log("Profile info here: ", profileInfo);
-    if (!profileInfo?.activationToken) {
-      setMessage({
-        type: "info",
-        message: `Hey! An Invitation from a current member is required to mint a Profile NFT and join MMOSH DAO. You can find a member to sponsor you in the [Membership Directory.](${process.env.NEXT_PUBLIC_APP_MAIN_URL})`,
-      });
-      return;
+    if (!isLoadingProfile) {
+      if (!profileInfo?.activationToken) {
+        setMessage({
+          type: "info",
+          message: `Hey! An Invitation from a current member is required to mint a Profile NFT and join MMOSH DAO. You can find a member to sponsor you in the [Membership Directory.](${process.env.NEXT_PUBLIC_APP_MAIN_URL})`,
+        });
+        return;
+      } else {
+        setMessage({ type: "", message: "" });
+      }
     }
-  }, [profileInfo]);
+  }, [profileInfo, isLoadingProfile]);
 
   return (
     <div className="w-full flex justify-center">

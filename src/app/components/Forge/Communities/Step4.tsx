@@ -63,7 +63,7 @@ const Step4 = () => {
       !genesisImage ||
       (!invitationImage && thirdForm.invitation !== "none")
     ) {
-      setMintingStatus("Mint");
+      setMintingStatus("");
 
       setMessage({
         type: "error",
@@ -116,7 +116,7 @@ const Step4 = () => {
     }
 
     setMessage({ type: res.type, message: res.message });
-    setMintingStatus("Mint");
+    setMintingStatus("");
   }, []);
 
   const goBack = React.useCallback(() => {

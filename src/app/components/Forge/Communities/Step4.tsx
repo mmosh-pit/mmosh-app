@@ -51,12 +51,10 @@ const Step4 = () => {
     setMintingStatus("Trying to Generating images...");
     const genesisImage = await toBlob(genesisPassRef.current!, {
       cacheBust: true,
-      skipAutoScale: true,
     });
 
     const invitationImage = await toBlob(invitationBadgeRef.current!, {
       cacheBust: true,
-      skipAutoScale: true,
     });
 
     if (

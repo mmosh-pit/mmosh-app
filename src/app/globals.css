@@ -414,6 +414,11 @@ h6 {
     rgba(21, 0, 59, 0.04) 50.4%,
     rgba(39, 0, 109, 0) 100%
   );
+
+  > div > div:first-child {
+    width: 12vmax !important;
+    height: 10vmax !important;
+  }
 }
 
 .custom-select {

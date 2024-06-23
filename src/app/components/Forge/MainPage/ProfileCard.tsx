@@ -11,7 +11,7 @@ const ProfileCard = () => {
 
   return (
     <div className="flex">
-      <div className="relative w-[12vmax] h-[10vmax] ml-2 mr-4">
+      <div className="relative w-[12vmax] h-[8vmax] ml-2 mr-4">
         <Image
           src="https://storage.googleapis.com/mmosh-assets/profile_placeholder.png"
           alt="Invitation"

@@ -32,7 +32,7 @@ const Input = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full"
+          className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full text-xs"
         ></textarea>
       );
     }
@@ -44,7 +44,7 @@ const Input = ({
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}
-        className="input input-bordered h-[2.5vmax] bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3]"
+        className="input input-bordered h-[2.5vmax] bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] text-xs"
       />
     );
   };

@@ -20,6 +20,8 @@ a {
 
 span {
   color: #d7d7d7;
+  font-size: 0.8vmax;
+  line-height: 1vmax;
 }
 
 h2 {
@@ -495,6 +497,13 @@ textarea,
 option,
 select {
   font-size: 0.8vmax;
+}
+
+@media (max-width: 500px) {
+  input::placeholder,
+  textarea::placeholder {
+    padding-bottom: 5px;
+  }
 }
 
 .community-card {

@@ -138,7 +138,7 @@ const Step3 = () => {
         </div>
 
         <div className="flex justify-center items-center mt-12 w-[70%]">
-          <div className="flex md:flex-row flex-col justify-around">
+          <div className="w-full flex md:flex-row flex-col justify-around">
             <Card
               name={firstForm.name}
               image={firstForm.preview}
@@ -180,7 +180,7 @@ const Step3 = () => {
                       <input
                         id="my-drawer"
                         type="checkbox"
-                        className="checkbox mr-2 checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
+                        className="checkbox checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
                         checked={form.invitation === "required"}
                         onChange={(e) => {
                           if (e.target.checked) {
@@ -191,11 +191,11 @@ const Step3 = () => {
                       />
                       <p className="text-tiny">Required</p>
                     </div>
-                    <div className="flex flex-col items-center justify-center mx-12">
+                    <div className="flex flex-col items-center justify-center mx-4 md:mx-12">
                       <input
                         id="my-drawer"
                         type="checkbox"
-                        className="checkbox mr-2 checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
+                        className="checkbox checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
                         checked={form.invitation === "optional"}
                         onChange={(e) => {
                           if (e.target.checked) {
@@ -210,7 +210,7 @@ const Step3 = () => {
                       <input
                         id="my-drawer"
                         type="checkbox"
-                        className="checkbox mr-2 checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
+                        className="checkbox checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
                         checked={form.invitation === "none"}
                         onChange={(e) => {
                           if (e.target.checked) {

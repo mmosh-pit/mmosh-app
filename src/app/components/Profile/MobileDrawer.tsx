@@ -54,7 +54,7 @@ const MobileDrawer = () => {
                 router.push("/create");
               }}
             >
-              Forge
+              Create
             </a>
 
             <a

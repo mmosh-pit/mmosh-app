@@ -17,20 +17,48 @@ const Banner = () => {
   const hasInvitation = !!profileInfo?.activationToken;
 
   const renderComponent = React.useCallback(() => {
+    if (!currentUser?.telegram?.id) {
+      return (
+        <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
+          <div className="flex flex-col justify-around items-center max-w-[75%]">
+            <div className="flex flex-col items-center mb-8">
+              <p className="text-sm text-white text-center mt-4">
+                Create your own Coins and Build your own Communities on
+                Telegram! Start by activating MMOSH Bot.
+              </p>
+            </div>
+
+            <a href="https://t.me/mmoshbot" target="_blank">
+              <button className="relative bg-[#CD068E] rounded-md px-6 py-4 mt-2">
+                <p className="text-sm text-white">Activate Bot</p>
+              </button>
+            </a>
+          </div>
+
+          <div
+            className="w-full flex justify-center items-center py-4"
+            id="banner-image-container"
+          >
+            <div className="relative w-[8vmax] h-[8vmax] rounded-full">
+              <Image
+                src="https://storage.googleapis.com/mmosh-assets/telegram.png"
+                alt="invitation"
+                layout="fill"
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (!wallet?.publicKey) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
             <div className="flex flex-col items-center mb-8">
-              <p className="text-2xl font-bold text-white font-goudy text-center">
-                Connect to Solana
-              </p>
               <p className="text-sm text-white text-center mt-4">
-                Welcome to the MMOSH! An epic adventure beyond time, space and
-                the death-grip of global civilization.
-              </p>
-              <p className="text-sm text-white text-center mt-4">
-                Connect your Solana wallet.
+                Create, Join and Build connected crypto communities on Telegram!
+                Next, connect your Solana Wallet
               </p>
             </div>
 
@@ -63,19 +91,21 @@ const Banner = () => {
       );
     }
 
-    if (hasProfile) {
+    if (!hasProfile) {
       return (
         <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
           <div className="flex flex-col justify-around items-center max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey{" "}
-              {currentUser?.profile?.name}, mint and send out more invitations
-              to grow you Guild and earn more royalties.
+              Congratulations! You're now connected to the MMOSH as a Guest. To
+              create your own coins and build your own communities, become a
+              Member of the DAO
             </p>
 
-            <a href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create`}>
+            <a
+              href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/create_profile`}
+            >
               <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
-                <p className="text-sm text-white">Enter the Forge</p>
+                <p className="text-sm text-white">Create a Profile NFT</p>
               </button>
             </a>
           </div>
@@ -86,40 +116,8 @@ const Banner = () => {
           >
             <div className="relative w-[8vmax] h-[8vmax]">
               <Image
-                src="https://storage.googleapis.com/mmosh-assets/invitation.png"
+                src="https://storage.googleapis.com/mmosh-assets/lion.png"
                 alt="invitation"
-                layout="fill"
-              />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (hasInvitation) {
-      return (
-        <div className="max-w-[95%] md:max-w-[60%] grid grid-cols-2 justify-items-center">
-          <div className="flex flex-col justify-around items-center max-w-[75%]">
-            <p className="text-sm text-white text-center">
-              Hey{" "}
-              {currentUser?.profile?.name}, now it’s time to mint your Profile
-              to join MMOSH DAO as a lifetime member.
-            </p>
-            <a href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create`}>
-              <button className="bg-[#CD068E] relative rounded-md px-6 py-4">
-                <p className="text-sm text-white">Enter the Forge</p>
-              </button>
-            </a>
-          </div>
-
-          <div
-            className="w-full flex justify-center items-center py-4"
-            id="banner-image-container"
-          >
-            <div className="relative w-[8vmax] h-[8vmax]">
-              <Image
-                src={currentUser?.profile?.image || ""}
-                alt="Profile Image"
                 layout="fill"
               />
             </div>
@@ -133,9 +131,8 @@ const Banner = () => {
         <div className="flex flex-col justify-around items-center">
           <div className="max-w-[75%]">
             <p className="text-sm text-white text-center">
-              Hey{" "}
-              {currentUser?.profile?.name}, you’ll need an invitation to mint
-              your Profile and become a MMOSH DAO member.
+              Welcome to MMOSH DAO, {currentUser?.profile?.name}, join us in our
+              Members Only Community on Telegram
             </p>
             <p className="text-sm text-white text-center">
               You can get an invitation from a current member. Find one in the
@@ -145,7 +142,7 @@ const Banner = () => {
 
           <a href="https://t.me/mmoshpit" target="_blank">
             <button className="relative bg-[#CD068E] rounded-md px-6 py-4">
-              <p className="text-sm text-white">Go to Telegram Group</p>
+              <p className="text-sm text-white">Join Us!</p>
             </button>
           </a>
         </div>
@@ -156,7 +153,7 @@ const Banner = () => {
         >
           <div className="relative w-[8vmax] h-[8vmax]">
             <Image
-              src="https://storage.googleapis.com/mmosh-assets/invitation.png"
+              src="https://storage.googleapis.com/mmosh-assets/lion.png"
               alt="invitation"
               layout="fill"
             />
@@ -164,13 +161,7 @@ const Banner = () => {
         </div>
       </div>
     );
-  }, [
-    currentUser,
-    userStatus,
-    wallet?.publicKey,
-    hasProfile,
-    hasInvitation,
-  ]);
+  }, [currentUser, userStatus, wallet?.publicKey, hasProfile, hasInvitation]);
 
   if (isLoading) return <></>;
 

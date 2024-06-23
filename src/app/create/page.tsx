@@ -28,7 +28,7 @@ const Forge = () => {
     }
 
     return <GuestPassCard />;
-  }, [hasProfile]);
+  }, [hasProfile, hasInvitation]);
 
   if (isLoadingProfile) {
     return (
@@ -44,7 +44,7 @@ const Forge = () => {
         <FeaturedCard>{getFeaturedCard()}</FeaturedCard>
       </div>
 
-      <div className="grid grid-cols-3 p-8 gap-8">
+      <div className="grid grid-cols-auto md:grid-cols-2 lg:grid-cols-3 p-8 gap-8">
         <DefaultCard>
           <CoinCard />
         </DefaultCard>

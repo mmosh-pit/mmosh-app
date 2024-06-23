@@ -51,19 +51,17 @@ const Step4 = () => {
     setMintingStatus("Trying to Generating images...");
     const genesisImage = await toBlob(genesisPassRef.current!, {
       cacheBust: true,
-      skipAutoScale: true,
     });
 
     const invitationImage = await toBlob(invitationBadgeRef.current!, {
       cacheBust: true,
-      skipAutoScale: true,
     });
 
     if (
       !genesisImage ||
       (!invitationImage && thirdForm.invitation !== "none")
     ) {
-      setMintingStatus("Mint");
+      setMintingStatus("");
 
       setMessage({
         type: "error",
@@ -116,7 +114,7 @@ const Step4 = () => {
     }
 
     setMessage({ type: res.type, message: res.message });
-    setMintingStatus("Mint");
+    setMintingStatus("");
   }, []);
 
   const goBack = React.useCallback(() => {
@@ -211,7 +209,7 @@ const Step4 = () => {
                     <img alt="Coin" src={thirdForm.coin!.image} />
                   </div>
 
-                  <div className="relative pr-[1vmax] pb-[0.1vmax]">
+                  <div className="relative pr-[1vmax] pb-[0.2vmax]">
                     <p className="text-tiny text-white font-bold">
                       Genesis Pass
                     </p>
@@ -257,7 +255,7 @@ const Step4 = () => {
                       />
                     </div>
 
-                    <div className="relative pr-[1vmax] pb-[0.1vmax]">
+                    <div className="relative pr-[1vmax] pb-[0.2vmax]">
                       <p className="text-tiny text-white font-bold">
                         Invitation Badge
                       </p>

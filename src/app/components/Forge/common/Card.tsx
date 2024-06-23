@@ -27,7 +27,7 @@ const Card = ({ image, name, description, username, coinImage }: Props) => (
         <img
           src={coinImage}
           alt="Coin"
-          className="absolute left-[45%] bottom-[-15px] w-[1.5vmax] h-[1.5vmax] rounded-full"
+          className="absolute left-[37%] md:left-[45%] bottom-[-15px] w-[1.5vmax] h-[1.5vmax] rounded-full"
         />
       )}
     </div>

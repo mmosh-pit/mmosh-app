@@ -9,7 +9,7 @@ type Props = {
 
 const Search = ({ value, onChange, placeholder, darker }: Props) => (
   <div
-    className={`w-full flex items-center  ${darker ? "bg-[#38465840] border-[#FFFFFF06]" : "bg-[#38465880] border-[#FFFFFF30]"} border-[1px] rounded-full p-3`}
+    className={`w-full flex items-center  ${darker ? "bg-[#38465840] border-[#FFFFFF06]" : "bg-[#38465880] border-[#FFFFFF30]"} border-[1px] rounded-full md:p-3 p-1`}
   >
     <SearchIcon />
     <input

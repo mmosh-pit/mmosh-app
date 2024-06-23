@@ -518,24 +518,34 @@ select {
     1px 2px 4px #ff00ae,
     -0.2em 0 0.1em #0061ff;
   border-radius: 2rem;
+
+  &:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+
+    background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
+      border-box;
+
+    -webkit-mask: /*4*/
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; /*5'*/
+    mask-composite: exclude; /*5*/
+    border-radius: 2rem;
+  }
 }
 
-.community-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid transparent;
-  background-clip: padding-box;
+@media (max-width: 500px) {
+  .community-card {
+    border-radius: 1rem;
 
-  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
-    border-box;
-
-  -webkit-mask: /*4*/
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /*5'*/
-  mask-composite: exclude; /*5*/
-  border-radius: 2rem;
+    &:before {
+      border-radius: 1rem !important;
+    }
+  }
 }
 
 .community-config-card {
@@ -569,15 +579,19 @@ select {
   }
 
   &:before {
+    /* border: 5px solid; */
+    /* border-image-source: linear-gradient(135.98deg, #FFFFFF 0%, #7B559F 100%); */
+
     content: "";
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    margin: -5px; /* !importanté */
-    border-radius: inherit; /* !importanté */
+    margin: -5px;
+    border-radius: inherit;
     z-index: 0;
+    /* background: linear-gradient(135.98deg, #ffffff 45%, #7b559f 100%); */
     background: linear-gradient(
       to right,
       rgba(255, 255, 255, 0.5),
@@ -630,24 +644,6 @@ select {
   box-shadow:
     1px 2px 4px #ff00ae,
     -0.2em 0 0.1em #0061ff;
-}
-
-.community-pass-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 5px solid transparent;
-  background-clip: padding-box;
-
-  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
-    border-box;
-
-  -webkit-mask: /*4*/
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /*5'*/
-  mask-composite: exclude; /*5*/
-  border-radius: 2rem;
 }
 
 .community-page-container-card {

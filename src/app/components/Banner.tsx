@@ -29,7 +29,7 @@ const Banner = () => {
             </div>
 
             <a href="https://t.me/mmoshbot" target="_blank">
-              <button className="relative bg-[#CD068E] rounded-md px-6 py-4">
+              <button className="relative bg-[#CD068E] rounded-md px-6 py-4 mt-2">
                 <p className="text-sm text-white">Activate Bot</p>
               </button>
             </a>

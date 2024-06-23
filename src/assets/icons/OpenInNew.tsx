@@ -2,8 +2,8 @@ type Props = React.SVGProps<SVGSVGElement>;
 
 const OpenInNew = (props: Props) => (
   <svg
-    width="12"
-    height="12"
+    width="0.7vmax"
+    height="0.7vmax"
     viewBox="0 0 6 6"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

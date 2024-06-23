@@ -209,7 +209,7 @@ const Step4 = () => {
                     <img alt="Coin" src={thirdForm.coin!.image} />
                   </div>
 
-                  <div className="relative pr-[1vmax] pb-[0.1vmax]">
+                  <div className="relative pr-[1vmax] pb-[0.2vmax]">
                     <p className="text-tiny text-white font-bold">
                       Genesis Pass
                     </p>
@@ -255,7 +255,7 @@ const Step4 = () => {
                       />
                     </div>
 
-                    <div className="relative pr-[1vmax] pb-[0.1vmax]">
+                    <div className="relative pr-[1vmax] pb-[0.2vmax]">
                       <p className="text-tiny text-white font-bold">
                         Invitation Badge
                       </p>

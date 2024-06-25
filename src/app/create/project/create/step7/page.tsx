@@ -13,12 +13,18 @@ import React, { useState } from "react";
 
 export default function ProjectCreateStep7() {
     const navigate = useRouter();
-
+    const [loading, setLoading] = useState(false)
     const [fields, setFields] = useState([{
-        type: "Founder",
+        type: "Investor",
         value: 0,
-        cliff:0,
-        vesting:0
+        cliff:{
+            months: 0,
+            percentage: 0
+        },
+        vesting:{
+            months: 0,
+            percentage: 0
+        },
     }]);
 
     const [showMsg, setShowMsg] = useState(false);
@@ -35,16 +41,22 @@ export default function ProjectCreateStep7() {
     },[])
 
      const gotoStep8 = () => {
+        setLoading(true)
         for (let index = 0; index < fields.length; index++) {
             const element = fields[index];
             console.log(element)
-            if(element.cliff == 0 || element.vesting == 0) {
+            if(element.cliff.months == 0 || element.vesting.months == 0) {
                 createMessage("Vesting and Cliff Month should not be zero","danger-container");
+                return;
+            }
+
+            if((element.cliff.percentage + element.vesting.percentage) != 100) {
+                createMessage("Vesting and Cliff percentage should be 100%","danger-container");
                 return;
             }
         }
         localStorage.setItem("projectstep6",JSON.stringify(fields));
-        navigate.push("/project/create/step8");
+        navigate.push("/create/project/create/step8");
      }
 
     const goBack = () => {
@@ -56,6 +68,7 @@ export default function ProjectCreateStep7() {
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
+        setLoading(false);
         if(type == "success-container") {
           setTimeout(() => {
             setShowMsg(false);
@@ -120,28 +133,64 @@ export default function ProjectCreateStep7() {
                            {fields.map((fieldItem,i)=>(
                                 <div className="grid grid-cols-3 gap-4 text-center mb-5">
                                     <p className="text-para-font-size text-white leading-10">{fieldItem.type} {fieldItem.value}%</p>
-                                    <div className="w-12 mx-auto">
-                                        <Input
-                                            type="text"
-                                            title=""
-                                            required={false}
-                                            helperText=""
-                                            placeholder="0"
-                                            value={(fieldItem.cliff > 0 ? fieldItem.cliff.toString() : "")}
-                                            onChange={(e) => {fieldItem.cliff = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
-                                        />
+                                    <div className="flex justify-center">
+                                        <div className="pr-1">
+                                            <div className="w-12">
+                                                <Input
+                                                    type="text"
+                                                    title=""
+                                                    required={false}
+                                                    helperText=""
+                                                    placeholder="0"
+                                                    value={(fieldItem.cliff.months > 0 ? fieldItem.cliff.months.toString() : "")}
+                                                    onChange={(e) => {fieldItem.cliff.months = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="pl-1">
+                                            <div className="w-12">
+                                                <Input
+                                                    type="text"
+                                                    title=""
+                                                    required={false}
+                                                    helperText=""
+                                                    placeholder="%"
+                                                    value={(fieldItem.cliff.percentage > 0 ? fieldItem.cliff.percentage.toString() : "")}
+                                                    onChange={(e) => {fieldItem.cliff.percentage = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="w-12 mx-auto">
-                                    <Input
-                                        type="text"
-                                        title=""
-                                        required={false}
-                                        helperText=""
-                                        placeholder="0"
-                                        value={(fieldItem.vesting > 0 ? fieldItem.vesting.toString() : "")}
-                                        onChange={(e) => {fieldItem.vesting = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
-                                    />
+                                    <div className="flex justify-center">
+                                        <div className="pr-1">
+                                            <div className="w-12">
+                                                <Input
+                                                    type="text"
+                                                    title=""
+                                                    required={false}
+                                                    helperText=""
+                                                    placeholder="0"
+                                                    value={(fieldItem.vesting.months > 0 ? fieldItem.vesting.months.toString() : "")}
+                                                    onChange={(e) => {fieldItem.vesting.months = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="pl-1">
+                                            <div className="w-12">
+                                                <Input
+                                                    type="text"
+                                                    title=""
+                                                    required={false}
+                                                    helperText=""
+                                                    placeholder="%"
+                                                    value={(fieldItem.vesting.percentage > 0 ? fieldItem.vesting.percentage.toString() : "")}
+                                                    onChange={(e) => {fieldItem.vesting.percentage = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                                />
+                                            </div>
+                                        </div>
+
                                     </div>
+
                                 </div>
                            ))}
 
@@ -155,7 +204,13 @@ export default function ProjectCreateStep7() {
                 </div>
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                    <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep8}>Next</button>
+                    {!loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep8}>Next</button>
+                    }
+
+                    {loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                    }
                 </div>
             </div>
             </div>

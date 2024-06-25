@@ -11,13 +11,16 @@ import React, { useState } from "react";
 
 export default function ProjectCreateStep4() {
     const navigate = useRouter();
-
+    const [loading, setLoading] = useState(false)
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
 
     const [coinDetails, setCoinDetails] = useState({
-        preview: "",
+        image: {
+            preview: "",
+            type: ""
+        },
         name: "", 
         symbol: "",
         desc: "",
@@ -38,9 +41,10 @@ export default function ProjectCreateStep4() {
 
 
     const gotoStep5 = () => {
+        setLoading(true)
         if(validateFields()) {
             localStorage.setItem("projectstep4",JSON.stringify(fields));
-            navigate.push("/project/create/step5");
+            navigate.push("/create/project/create/step5");
         }
     }
 
@@ -76,23 +80,28 @@ export default function ProjectCreateStep4() {
             createMessage("Minimum Presale Purchases should be between 1 to 100", "danger-container");
             return false;
         }
-        
+
+        let currentDate = new Date();
         let presaleStart = new Date(fields.presaleStartDate + " "+fields.presaleStartTime)
         let presaleEnd = new Date(fields.presaleEndDate + " "+fields.presaleEndTime)
         let dexDate = new Date(fields.dexListingDate + " "+fields.dexListingTime)
 
-        console.log(getDateDiff(presaleStart, presaleEnd))
+        if(presaleStart < currentDate) {
+            createMessage("Presale date should be selected in future dates", "danger-container");
+            return false;
+        }
+
+        
         if(getDateDiff(presaleStart, presaleEnd) < 1 || getDateDiff(presaleStart, presaleEnd) > 90) {
             createMessage("Presale duration should be minmum 1 day and maximum 90 days", "danger-container");
             return false;
         }
         
         console.log(getDateDiff(presaleEnd, dexDate))
-        if(getDateDiff(presaleEnd, dexDate) < 0) {
-            createMessage("Dex list date should after presale is completed", "danger-container");
+        if(getDateDiff(presaleEnd, dexDate) < 2) {
+            createMessage("Dex list date should after 2 days of presale is completed", "danger-container");
             return false;
         }
-
         return true;
     };
 
@@ -112,6 +121,7 @@ export default function ProjectCreateStep4() {
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
+        setLoading(false);
         if(type == "success-container") {
           setTimeout(() => {
             setShowMsg(false);
@@ -147,7 +157,7 @@ export default function ProjectCreateStep4() {
                         <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20 grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                             <div className="col-span-4">
                                 <div className="rounded-full gradient-container p-1.5">
-                                   <img src={coinDetails.preview} className="object-cover rounded-full w-full" />
+                                   <img src={coinDetails.image.preview} className="object-cover rounded-full w-full" />
                                 </div>
                             </div>
                             <div className="col-span-4">
@@ -309,7 +319,13 @@ export default function ProjectCreateStep4() {
                 </div>
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                    <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep5}>Next</button>
+                    {!loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep5}>Next</button>
+                    }
+
+                    {loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                    }
                 </div>
             </div>
         </div>

@@ -18,10 +18,13 @@ export default function ProjectCreateStep9() {
      const navigate = useRouter();
      const [files, setFiles] = useState<any>([])
 
-     const uploadAction = (fileUri:any) => {
+     const uploadAction = (fileUri:any, fileType:any) => {
         let data:any = localStorage.getItem("projectstep9");
         let newFiles = localStorage.getItem("projectstep9") ? JSON.parse(data) : [];
-        newFiles.push(fileUri)
+        newFiles.push({
+            preview: fileUri,
+            type: fileType
+        })
         setFiles(newFiles);
         localStorage.setItem("projectstep9",JSON.stringify(newFiles));
      }
@@ -40,7 +43,7 @@ export default function ProjectCreateStep9() {
      }
 
      const gotoStep10 = () => {
-        navigate.push("/project/create/step10");
+        navigate.push("/create/project/create/step10");
      }
 
      const goBack = () => {
@@ -75,7 +78,7 @@ export default function ProjectCreateStep9() {
                                 {files.length == 0 &&
                                     <FilePicker file={""} isButton={false} changeFile={(file:any)=>{
                                         const objectUrl = URL.createObjectURL(file);
-                                        uploadAction(objectUrl);
+                                        uploadAction(objectUrl, file.type);
                                     }} />
                                 }
                                 {files.length > 0 &&
@@ -99,7 +102,7 @@ export default function ProjectCreateStep9() {
                                 }
                                 <FilePicker file={""} isButton={true} changeFile={(file:any)=>{
                                     const objectUrl = URL.createObjectURL(file);
-                                    uploadAction(objectUrl);
+                                    uploadAction(objectUrl, file.type);
                                 }} />
                             </div>
                         </div>

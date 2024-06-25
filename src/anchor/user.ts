@@ -28,6 +28,7 @@ const {
   sysvarInstructions,
   Seeds,
   oposToken,
+  usdcToken,
   LAMPORTS_PER_OPOS,
 } = web3Consts;
 const log = console.log;
@@ -949,11 +950,14 @@ export class Connectivity {
     const user = this.provider.publicKey;
     if (!user) throw "Wallet not found";
     const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
+    const userUSDCAta = getAssociatedTokenAddressSync(usdcToken, user);
     const infoes = await this.connection.getMultipleAccountsInfo([
       new anchor.web3.PublicKey(user.toBase58()),
       new anchor.web3.PublicKey(userOposAta.toBase58()),
+      new anchor.web3.PublicKey(userUSDCAta.toBase58()),
     ]);
     let oposTokenBalance = 0;
+    let usdcTokenBalance = 0;
     let solBalance = 0;
     if (infoes[0]) {
       solBalance = infoes[0].lamports / 1000_000_000;
@@ -964,6 +968,13 @@ export class Connectivity {
       oposTokenBalance =
         (parseInt(tokenAccount?.amount?.toString()) ?? 0) / LAMPORTS_PER_OPOS;
     }
+
+    if (infoes[2]) {
+      const tokenAccount = unpackAccount(userUSDCAta, infoes[2]);
+      usdcTokenBalance =
+        (parseInt(tokenAccount?.amount?.toString()) ?? 0) / 1000_000;
+    }
+
     let profilelineage = {
       promoter: "",
       promoterprofile: "",
@@ -1151,6 +1162,7 @@ export class Connectivity {
       const profileInfo = {
         solBalance,
         oposTokenBalance,
+        usdcTokenBalance,
         profiles,
         activationTokens,
         activationTokenBalance,
@@ -1166,6 +1178,7 @@ export class Connectivity {
       const profileInfo = {
         solBalance,
         oposTokenBalance,
+        usdcTokenBalance,
         profiles: profiles,
         activationTokens: profiles,
         activationTokenBalance: 0,

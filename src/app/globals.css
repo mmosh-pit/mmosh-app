@@ -428,3 +428,8 @@ input[type='date']::-webkit-calendar-picker-indicator, input[type='time']::-webk
   top: 0;
   width: auto;
 }
+
+.community-selection-container {
+  background: linear-gradient(92.71deg, rgba(255, 255, 255, 0.5) -5.63%, rgba(179, 103, 255, 0.5) 99.63%);
+}
+

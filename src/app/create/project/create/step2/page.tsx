@@ -7,15 +7,27 @@ import axios from "axios";
 import { Bars } from "react-loader-spinner";
 import Button from "@/app/components/common/Button";
 import TickIcon from "@/assets/icons/TickIcon";
+import Select from "@/app/components/common/Select";
 
 export default function ProjectCreateStep2() {
     const navigate = useRouter();
+    const [loading, setLoading] = useState(false)
 
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
 
     const [profileInfo] = useAtom(userWeb3Info);
+
+    const [roles] = useState<any>([
+        {label:"Investor", value: "Investor"},
+        {label:"Creator", value: "Creator"},
+        {label:"Builder", value: "Builder"},
+        {label:"Advisor", value: "Advisor"},
+        {label:"Sponsor", value: "Sponsor"},
+        {label:"Moderator", value: "Moderator"},
+        {label:"Other", value: "Moderator"},
+    ])
 
     const [communities, setCommunities] = useState([])
 
@@ -30,15 +42,16 @@ export default function ProjectCreateStep2() {
     const [isCommunityPaging, setIsCommunityPaging] = useState(false)
  
     const gotoStep3 = () => {
-        let community = ""
+        setLoading(true);
+        let selectedCommunity = []
         for (let index = 0; index < communities.length; index++) {
             const element:any = communities[index];
             if(element.selected == 1) {
-                community = element.community;
+                selectedCommunity.push(element.community) 
             }
         }
 
-        if (community == "") {
+        if (selectedCommunity.length == 0) {
             createMessage("Community selection is required", "danger-container");
             return;
         }
@@ -53,11 +66,11 @@ export default function ProjectCreateStep2() {
         }
 
         localStorage.setItem("projectstep2",JSON.stringify({
-            community,
+            communities: selectedCommunity,
             profiles: selectedProfiles
         }))
 
-        navigate.push("/project/create/step3");
+        navigate.push("/create/project/create/step3");
     }
 
     const goBack = () => {
@@ -81,10 +94,12 @@ export default function ProjectCreateStep2() {
             for (let index = 0; index < apiResult.data.users.length; index++) {
                 const element:any = apiResult.data.users[index];
                 newProfile.push({
+                    profilenft: element.profilenft,
                     wallet: element.wallet,
                     name: element.profile.username,
                     image: element.profile.image,
-                    selected: 0
+                    selected: 0,
+                    role: "Investor"
                 });
             }
             setProfiles(newProfile);
@@ -107,7 +122,6 @@ export default function ProjectCreateStep2() {
     }
 
     const onProfileSelect = (profileItem:any) => {
-
         let currentProfiles:any = profiles;
         let newProfiles:any = []
         for (let index = 0; index < currentProfiles.length; index++) {
@@ -134,7 +148,7 @@ export default function ProjectCreateStep2() {
                     newCommunity.push({
                         title: element.name,
                         symbol: element.symbol,
-                        image: element.passimg,
+                        image: element.image,
                         coinimg: element.coinimage,
                         token:element.token,
                         community:element.community,
@@ -165,10 +179,8 @@ export default function ProjectCreateStep2() {
         let newCommunties:any = []
         for (let index = 0; index < currentCommunties.length; index++) {
             if(currentCommunties[index].community == communityItem.community) {
-                currentCommunties[index].selected = 1
-            } else {
-                currentCommunties[index].selected = 0
-            }
+                currentCommunties[index].selected = currentCommunties[index].selected == 0 ? 1 : 0;
+            } 
             newCommunties.push(currentCommunties[index])
         }
         setCommunities(newCommunties);
@@ -188,10 +200,20 @@ export default function ProjectCreateStep2() {
             setShowMsg(false);
           }, 4000);
         }
-    
-      };
+        setLoading(false)
+    };
 
-
+    const onProfileRoleUpdate = (profileItem:any, role:any) => {
+        let currentProfiles:any = profiles;
+        let newProfiles:any = []
+        for (let index = 0; index < currentProfiles.length; index++) {
+            if(currentProfiles[index].wallet == profileItem.wallet) {
+                currentProfiles[index].role = role;
+            }
+            newProfiles.push(currentProfiles[index])
+        }
+        setProfiles(newProfiles);
+    }
 
     return (
         <>
@@ -213,7 +235,7 @@ export default function ProjectCreateStep2() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 backdrop-container rounded-xl p-5 border border-white border-opacity-20">
                         <div>
                             <div className="text-center pb-3">
-                                <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Genesis Pass</h3>
+                                <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Select Communities</h3>
                             </div>
                             <div className="pr-10 max-h-96 overflow-auto border-r border-white border-opacity-20">
                             {communityLoading &&
@@ -232,23 +254,18 @@ export default function ProjectCreateStep2() {
                                 {!communityLoading && communities.length > 0 &&
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                                         {communities.map((community:any) => (
-                                            <div onClick={onCommunitySelect}>
+                                            <div onClick={onCommunitySelect} className="rounded-md community-selection-container overflow-hidden">
                                                 <div className="relative">
-                                                    <img className="rounded-full object-cover w-full" src={community.image} alt="community image" />
+                                                    <img className="object-cover w-full" src={community.image} alt="community image" />
                                                     {community.selected == 1 &&
-                                                            <div className="bg-black bg-opacity-[0.56] w-full h-full rounded-full absolute left-0 top-0 flex justify-center items-center">
+                                                            <div className="bg-black bg-opacity-[0.56] w-full h-full absolute left-0 top-0 flex justify-center items-center">
                                                             <div className="w-6 h-6">
                                                                 <TickIcon />
                                                             </div>
                                                         </div>
                                                     }
                                                 </div>
-                                            
-                                                <h6 className="text-xs text-white pt-1.5 pb-1.5">{community.title}</h6>
-                                                <div className="flex">
-                                                    <img src={community.coinimg} alt="coin image" className="w-5 h-5 object-cover rounded-full" />
-                                                    <p className="text-xs text-white pl-1.5">{community.symbol}</p>
-                                                </div>
+                                                <h6 className="text-para-font-size text-white pt-1.5 pb-1.5 px-2.5 capitalize">{community.title} . <span className="text-small-font-size uppercase">{community.symbol}</span></h6>
                                             </div>
                                         ))}
                                     </div>
@@ -264,21 +281,6 @@ export default function ProjectCreateStep2() {
                                     </div>
                                 } 
                             </div>
-                        
-
-                                {communities.map((community:any) => (
-                                        <>
-                                        {community.selected == 1 &&
-                                            <div className="py-10 w-48 mx-auto">
-                                                <p className="text-xs text-white">Community to Support the Project</p>
-                                                <div className="flex">
-                                                    <img src={community.coinimg} alt="coin image" className="w-5 h-5 object-cover rounded-full" />
-                                                    <p className="text-xs text-white pl-1.5">{community.symbol}</p>
-                                                </div>
-                                            </div>
-                                        }
-                                        </>
-                                    ))}
             
                         </div>
                         <div>
@@ -316,6 +318,15 @@ export default function ProjectCreateStep2() {
                                                     </div>
                                                 
                                                     <h6 className="text-xs text-white pt-1.5 text-center">{profile.name}</h6>
+                                                    <div className="pt-1.5">
+                                                        <Select
+                                                        value={profile.role}
+                                                        onChange={(e) =>
+                                                            onProfileRoleUpdate(profile,e.target.value)
+                                                        }
+                                                        options={roles}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </>
                                         
@@ -348,9 +359,13 @@ export default function ProjectCreateStep2() {
                     </div>
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                        {profileInfo &&
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep3}>Next</button>
+                        {!loading &&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep3}>Next</button>
                         }
+                        {loading &&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                        }
+                        
 
                     </div>
                 </div>

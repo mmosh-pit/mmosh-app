@@ -11,13 +11,17 @@ export default function ProjectCreateStep3() {
     
     const navigate = useRouter();
     const [fields, setFields] = useState({
-        preview: "",
+        image: {
+            preview: "",
+            type: ""
+        },
         name: "", 
         symbol: "",
         desc: "",
         supply: 0,
         listingPrice: 0,
     })
+    const [loading, setLoading] = useState(false)
 
     const [image, setImage] = React.useState<File | null>(null);
 
@@ -28,7 +32,11 @@ export default function ProjectCreateStep3() {
     React.useEffect(() => {
         if (!image) return;
         const objectUrl = URL.createObjectURL(image);
-        setFields({ ...fields, preview: objectUrl })
+        let imageObj = {
+            preview: objectUrl,
+            type: image.type
+        }
+        setFields({ ...fields, image: imageObj })
     }, [image]);
     
     React.useEffect(()=>{
@@ -43,6 +51,7 @@ export default function ProjectCreateStep3() {
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
+        setLoading(false);
         if(type == "success-container") {
           setTimeout(() => {
             setShowMsg(false);
@@ -86,7 +95,7 @@ export default function ProjectCreateStep3() {
             return false;
         }
     
-        if(fields.preview.length == 0) {
+        if(fields.image.preview.length == 0) {
             createMessage("Community coin image is required", "danger-container");
             return false;
         }
@@ -95,9 +104,10 @@ export default function ProjectCreateStep3() {
     };
 
     const gotoStep4 = () => {
+        setLoading(true);
         if(validateFields()) {
             localStorage.setItem("projectstep3",JSON.stringify(fields));
-            navigate.push("/project/create/step4");
+            navigate.push("/create/project/create/step4");
         }
     }
 
@@ -131,7 +141,7 @@ export default function ProjectCreateStep3() {
                 <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                            <ImagePicker changeImage={setImage} image={fields.preview} />
+                            <ImagePicker changeImage={setImage} image={fields.image.preview} />
                             </div>
                             <div>
                                 <div className="form-element pt-2.5">
@@ -210,7 +220,12 @@ export default function ProjectCreateStep3() {
                     </div>
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep4}>Next</button>
+                        {!loading&&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep4}>Next</button>
+                        }
+                        {loading &&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                        }
                     </div>
                 </div>
             </div>

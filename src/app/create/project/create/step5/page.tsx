@@ -13,13 +13,16 @@ import React, { use, useState } from "react";
 
 export default function ProjectCreateStep5() {
     const navigate = useRouter();
-
+    const [loading, setLoading] = useState(false)
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
 
     const [coinDetails, setCoinDetails] = useState({
-        preview: "",
+        image: {
+            preview: "",
+            type: ""
+        },
         name: "", 
         symbol: "",
         desc: "",
@@ -39,13 +42,16 @@ export default function ProjectCreateStep5() {
     })
 
     const [passes, setPasses] = useState([{
-        preview: "",
+        image: {
+            preview: "",
+            type: ""
+        },
         name:"",
         symbol:"",
         desc:"",
         price:0,
         supply: 0,
-        tokens:0,
+        discount:0,
         listPrice:0,
         promoterRoyalty:0,
         scoutRoyalty:0,
@@ -77,13 +83,16 @@ export default function ProjectCreateStep5() {
             newPasses.push(passes[index]);
         }
         newPasses.push({
-            preview: "",
+            image: {
+              type: "",
+              preview:""
+            },
             name:"",
             symbol:"",
             desc:"",
             price:0,
             supply: 0,
-            tokens:0,
+            discount:0,
             listPrice:0,
             promoterRoyalty:0,
             scoutRoyalty:0,
@@ -125,9 +134,10 @@ export default function ProjectCreateStep5() {
     }
 
     const gotoStep6 = () => {
+        setLoading(true)
         if(validateFields()) {
             localStorage.setItem("projectstep5",JSON.stringify(passes));
-            navigate.push("/project/create/step6");
+            navigate.push("/create/project/create/step6");
         }
     }
 
@@ -141,7 +151,7 @@ export default function ProjectCreateStep5() {
         let totalTokens:any = 0;
         for (let index = 0; index < passes.length; index++) {
             const fields = passes[index];
-            if (fields.preview.length == 0) {
+            if (fields.image.preview.length == 0) {
                 createMessage("Image is required", "danger-container");
                 return false;
             }
@@ -181,18 +191,13 @@ export default function ProjectCreateStep5() {
                 return false;
               }
 
-              if (fields.listPrice == 0) {
-                createMessage("listing price is required", "danger-container");
-                return false;
-              }
-
               if (fields.supply == 0) {
                 createMessage("Supply is required", "danger-container");
                 return false;
               }
           
-              if (fields.tokens == 0) {
-                createMessage("Tokens supply is required", "danger-container");
+              if (fields.discount < 0 && fields.discount > 100) {
+                createMessage("Dex Discount price for launc pass is required", "danger-container");
                 return false;
               }
 
@@ -207,7 +212,8 @@ export default function ProjectCreateStep5() {
                 createMessage("Redemption date and time is invalid", "danger-container");
                 return false;
               }
-              totalTokens = totalTokens + fields.tokens;
+              
+              totalTokens = totalTokens + Math.ceil(fields.price / (coinDetails.listingPrice - (coinDetails.listingPrice * (fields.discount / 100))));
         }
 
         if ((coinDetails.supply *  (presaleDetails.maxPresale / 100 )) < totalTokens) {
@@ -233,6 +239,7 @@ export default function ProjectCreateStep5() {
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
+        setLoading(false)
         if(type == "success-container") {
           setTimeout(() => {
             setShowMsg(false);
@@ -288,9 +295,13 @@ export default function ProjectCreateStep5() {
                             <div className="col-span-3">
                                 <ImagePicker changeImage={(image:any)=>{
                                    const objectUrl = URL.createObjectURL(image);
-                                   passItem.preview = objectUrl;
+                                   let imageObj = {
+                                        preview: objectUrl,
+                                        type: image.type
+                                   }
+                                   passItem.image = imageObj;
                                    updatePassAction(i,passItem);
-                                }} image={passItem.preview} />
+                                }} image={passItem.image.preview} />
                             </div>
                             <div className="col-span-3">
                                 <div className="form-element pt-2.5">
@@ -361,8 +372,8 @@ export default function ProjectCreateStep5() {
                                                 required
                                                 helperText=""
                                                 placeholder="Discount of Tokens to DEX"
-                                                value={(passItem.tokens > 0 ? passItem.tokens.toString() : "")}
-                                                onChange={(e) => {passItem.tokens = prepareNumber(Number(e.target.value)); updatePassAction(i, passItem) }}
+                                                value={(passItem.discount > 0 ? passItem.discount.toString() : "")}
+                                                onChange={(e) => {passItem.discount = prepareNumber(Number(e.target.value)); updatePassAction(i, passItem) }}
                                             />
                                         </div>
                                         <div className="form-element pt-2.5">
@@ -370,10 +381,11 @@ export default function ProjectCreateStep5() {
                                                 type="text"
                                                 title="Listing Price"
                                                 required
+                                                readonly={true}
                                                 helperText=""
                                                 placeholder="Listing Price"
-                                                value={(passItem.listPrice > 0 ? passItem.listPrice.toString() : "")}
-                                                onChange={(e) => {passItem.listPrice = prepareNumber(Number(e.target.value)); updatePassAction(i, passItem) }}
+                                                value={prepareNumber(coinDetails.listingPrice - (coinDetails.listingPrice * (passItem.discount / 100))).toString()}
+                                                onChange={(e) => {}}
                                             />
                                         </div>
                                 </div>
@@ -433,22 +445,17 @@ export default function ProjectCreateStep5() {
       
                               <div>
                                 <p className="text-xs text-whilte mb-2.5 text-center">Number of Tokens Distributed upon Redemption of Launchpass</p>
-                                <p className="text-xs text-white text-center">{passItem.supply * passItem.tokens}</p>
+                                <p className="text-xs text-white text-center">{prepareNumber(Math.ceil(passItem.price / (coinDetails.listingPrice - (coinDetails.listingPrice * (passItem.discount / 100)))))}</p>
                               </div>
 
                               <div>
                                 <p className="text-xs text-whilte mb-2.5 text-center">Total Value of Launchpass at DEX Listing Price</p>
-                                <p className="text-xs text-white text-center">{(passItem.supply * passItem.tokens) * coinDetails.listingPrice}</p>
-                              </div>
-
-                              <div>
-                                <p className="text-xs text-whilte mb-2.5 text-center">Number of Tokens Distributed at Redemption.</p>
-                                <p className="text-xs text-white text-center">{passItem.tokens}</p>
+                                <p className="text-xs text-white text-center">{(coinDetails.listingPrice * (passItem.discount / 100)) * passItem.supply}</p>
                               </div>
 
                               <div>
                                 <p className="text-xs text-whilte mb-2.5 text-center">Redemption Price per Token in Launchpass</p>
-                                <p className="text-xs text-white text-center">{passItem.price}</p>
+                                <p className="text-xs text-white text-center">{coinDetails.listingPrice - (coinDetails.listingPrice * (passItem.discount / 100))}</p>
                               </div>
            
                               <div>
@@ -481,7 +488,12 @@ export default function ProjectCreateStep5() {
                 </div>
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                    <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep6}>Next</button>
+                    {!loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep6}>Next</button>
+                    }
+                    {loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                    }
                 </div>
             </div>
            </div>

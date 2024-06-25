@@ -8,12 +8,16 @@ import Select from "@/app/components/common/Select";
 import AddIcon from "@/assets/icons/AddIcon";
 import Calender from "@/assets/icons/Calender";
 import TimeIcon from "@/assets/icons/TimeIcon";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useAtom } from "jotai";
+import { userWeb3Info } from "@/app/store";
 
 export default function ProjectCreateStep8() {
     const navigate = useRouter();
-
+    const [profileInfo] = useAtom(userWeb3Info);
+    const [loading, setLoading] = useState(false)
     const [fields, setFields] = useState({
         usd: 0,
         mmosh:0,
@@ -23,27 +27,34 @@ export default function ProjectCreateStep8() {
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
+    const [solPrice, setSolPrice] = useState(0)
+    const [mmoshPrice, setMmoshPrice] = useState(0)
 
     const validateFields = () => {
-        if (fields.usd > 0) {
-          if(fields.usd < 100) {
-              createMessage("Liqudity should be greater than 100 USD", "danger-container");
-              return false;
-          }
-        }
-       
-        if (fields.sol > 0) {
-            if(fields.sol < 100) {
-                createMessage("Liqudity should be greater than 100 SOL", "danger-container");
-                return false;
-            }
+
+        if(fields.usd < 100) {
+            createMessage("Liqudity should be greater than 100 USD", "danger-container");
+            return false;
         }
 
-        if (fields.mmosh > 0) {
-            if(fields.mmosh < 100) {
-                createMessage("Liqudity should be greater than 100 MMOSH", "danger-container");
-                return false;
-            }
+        console.log("profileInfo", profileInfo)
+        
+        let usdcBalance = profileInfo?.usdcBalance ? profileInfo?.usdcBalance : 0
+        if(fields.usd >= usdcBalance) {
+            createMessage("Not enough USDC to create liquidity pool", "danger-container");
+            return false;
+        }
+
+        let mmoshBalance = profileInfo?.mmoshBalance ? profileInfo?.mmoshBalance : 0
+        if(fields.mmosh >= mmoshBalance) {
+            createMessage("Not enough MMOSH to create liquidity pool", "danger-container");
+            return false;
+        }
+
+        let solBalance = profileInfo?.solBalance ? profileInfo?.solBalance : 0
+        if(fields.sol >= solBalance) {
+            createMessage("Not enough SOL to create liquidity pool", "danger-container");
+            return false;
         }
 
         return true;
@@ -54,12 +65,25 @@ export default function ProjectCreateStep8() {
             let savedData:any = localStorage.getItem("projectstep8");
             setFields(JSON.parse(savedData));
         }
+        getPriceForSol()
     },[])
 
+    const getPriceForSol = async () => {
+        try {
+            const result = await axios.get("https://price.jup.ag/v6/price?ids=SOL,MMOSH")
+            setSolPrice(result.data.data.SOL.price);
+            setMmoshPrice(result.data.data.MMOSH.price);
+        } catch (error) {
+            console.log("getPriceForSol error", error)
+        }
+        
+    }
+
     const gotoStep9 = () => {
+        setLoading(true)
         if(validateFields()) {
             localStorage.setItem("projectstep8",JSON.stringify(fields));
-            navigate.push("/project/create/step9");
+            navigate.push("/create/project/create/step9");
         }
         
     }
@@ -73,6 +97,7 @@ export default function ProjectCreateStep8() {
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
+        setLoading(false)
         if(type == "success-container") {
           setTimeout(() => {
             setShowMsg(false);
@@ -115,8 +140,8 @@ export default function ProjectCreateStep8() {
                                 <h3 className="text-sub-title-font-size text-while font-poppins text-center pb-10">Liquidity</h3>
                                 <p className="text-header-small-font-size text-center pb-10">Set the value of the liquidity pools in USD for each trading pair, with a minimum of $100 each.</p>
 
-                                <div className="flex justify-center mb-5">
 
+                                <div className="flex justify-center mb-5">
                                     <div className="w-24 mr-3.5">
                                         <Input
                                             type="text"
@@ -125,7 +150,16 @@ export default function ProjectCreateStep8() {
                                             helperText=""
                                             placeholder="0"
                                             value={(fields.usd > 0 ? fields.usd.toString() : "")}
-                                            onChange={(e) => setFields({ ...fields, usd: prepareNumber(Number(e.target.value))})}
+                                            onChange={(e) => {
+                                                let usd = prepareNumber(Number(e.target.value));
+                  
+                                                setFields({
+                                                    usd: usd,
+                                                    sol:usd/solPrice,
+                                                    mmosh:usd/mmoshPrice
+                                                })
+                                                
+                                            }}
                                         />
                                     </div>
                                     <p className="text-para-font-size text-white leading-10 min-w-14">in USDC</p>
@@ -140,7 +174,7 @@ export default function ProjectCreateStep8() {
                                             helperText=""
                                             placeholder="0"
                                             value={(fields.sol > 0 ? fields.sol.toString() : "")}
-                                            onChange={(e) => setFields({ ...fields, sol: prepareNumber(Number(e.target.value))})}
+                                            onChange={(e) =>{}}
                                         />
                                     </div>
                                     <p className="text-para-font-size text-white leading-10 min-w-14">in SOL</p>
@@ -155,19 +189,25 @@ export default function ProjectCreateStep8() {
                                             helperText=""
                                             placeholder="0"
                                             value={(fields.mmosh > 0 ? fields.mmosh.toString() : "")}
+                                            readonly={true}
                                             onChange={(e) => setFields({ ...fields, mmosh: prepareNumber(Number(e.target.value))})}
                                         />
                                     </div>
                                     <p className="text-para-font-size text-white leading-10 min-w-14">in MMOSH</p>
                                 </div>
-    
                             </div>
                     </div>
 
                     </div>
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep9}>Next</button>
+                        {!loading &&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep9}>Next</button>
+                        }
+
+                        {loading &&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                        }
                     </div>
                 </div>
             </div>

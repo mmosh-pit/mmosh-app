@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export default function ProjectCreateStep1() {
     const navigate = useRouter();
-
+    const [loading, setLoading] = useState(false)
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
@@ -17,7 +17,10 @@ export default function ProjectCreateStep1() {
     const [image, setImage] = React.useState<File | null>(null);
 
     const [fields, setFields] = useState({
-        preview: "",
+        image: {
+            preview: "",
+            type:""
+        },
         name: "", 
         symbol: "",
         desc: "",
@@ -42,7 +45,11 @@ export default function ProjectCreateStep1() {
     React.useEffect(() => {
         if (!image) return;
         const objectUrl = URL.createObjectURL(image);
-        setFields({ ...fields, preview: objectUrl })
+        let imageObj = {
+            preview: objectUrl,
+            type: image.type
+        }
+        setFields({ ...fields, image: imageObj })
     }, [image]);
 
 
@@ -76,7 +83,7 @@ export default function ProjectCreateStep1() {
             invitationPrice = 0;
         } 
         setFields({
-            preview: fields.preview,
+            image: fields.image,
             name: fields.name, 
             symbol: fields.symbol,
             desc: fields.desc,
@@ -100,6 +107,7 @@ export default function ProjectCreateStep1() {
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
+        setLoading(false)
         if(type == "success-container") {
           setTimeout(() => {
             setShowMsg(false);
@@ -143,7 +151,7 @@ export default function ProjectCreateStep1() {
             return false;
           }
     
-        if(fields.preview.length == 0) {
+        if(fields.image.preview.length == 0) {
             createMessage("Project pass Image is required", "danger-container");
             return false;
         }
@@ -190,10 +198,11 @@ export default function ProjectCreateStep1() {
     }
     
     const gotoStep2 = () => {
+        setLoading(true);
         if(validateFields()) {
             localStorage.setItem("projectstep1",JSON.stringify(fields));
-            navigate.push("/project/create/step2");
-        }
+            navigate.push("/create/project/create/step2");
+        } 
     }
 
     const goBack = () => {
@@ -226,7 +235,7 @@ export default function ProjectCreateStep1() {
             <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-9 gap-4">
                         <div className="xl:col-span-2">
-                           <ImagePicker changeImage={setImage} image={fields.preview} />
+                           <ImagePicker changeImage={setImage} image={fields.image.preview} />
                         </div>
                         <div className="xl:col-span-2">
                             <div className="form-element pt-2.5">
@@ -470,7 +479,12 @@ export default function ProjectCreateStep1() {
                 </div>
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                    <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep2}>Next</button>
+                    {!loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep2}>Next</button>
+                    }
+                    {loading &&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                    }
                 </div>
             </div>
         </div>

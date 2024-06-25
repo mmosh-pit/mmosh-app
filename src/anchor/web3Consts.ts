@@ -13,6 +13,7 @@ export const web3Consts = {
   ),
   addressLookupTableProgram: web3.AddressLookupTableProgram.programId,
   oposToken: new web3.PublicKey(process.env.NEXT_PUBLIC_OPOS_TOKEN!),
+  usdcToken: new web3.PublicKey(process.env.NEXT_PUBLIC_USDC_TOKEN!),
   rootProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_ROOT_PROFILE!),
   profileCollection: new web3.PublicKey(process.env.NEXT_PUBLIC_APP_PROFILE_COLLECTION!),
   genesisProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_GENESIS_PROFILE!),

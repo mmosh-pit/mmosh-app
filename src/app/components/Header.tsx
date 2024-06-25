@@ -158,6 +158,7 @@ const Header = () => {
       activationToken: activation,
       solBalance: profileInfo.solBalance,
       mmoshBalance: profileInfo.oposTokenBalance,
+      usdcBalance: profileInfo.usdcTokenBalance,
       firstTimeInvitation: firstTime,
       quota,
       activationTokenBalance:

@@ -14,13 +14,13 @@ import React, { useState } from "react";
 
 export default function ProjectCreateStep6() {
     const navigate = useRouter();
-
+    const [loading, setLoading] = useState(false)
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
     
     const [coinDetails, setCoinDetails] = useState({
-        preview: "",
+        image: {preview: "", type: ""},
         name: "", 
         symbol: "",
         desc: "",
@@ -42,8 +42,14 @@ export default function ProjectCreateStep6() {
     const [fields, setFields] = useState([{
         type: "Founder",
         value: 0,
-        cliff:0,
-        vesting:0
+        cliff:{
+            months: 0,
+            percentage: 0
+        },
+        vesting:{
+            months: 0,
+            percentage: 0
+        },
     }]);
 
     React.useEffect(()=>{
@@ -64,22 +70,15 @@ export default function ProjectCreateStep6() {
          
     },[])
 
-    const [tokenomics, setTokenomics] = useState([{
-      label:"Founder",
-      value:"Founder"
-    },
-    {
-        label:"Community",
-        value:"Community"
-    },
-    {
-        label:"Treasury",
-        value:"Treasury"
-    },
-    {
-        label:"Other",
-        value:"Other"
-    }])
+    const [tokenomics, setTokenomics] = useState([
+        {label:"Investor", value: "Investor"},
+        {label:"Creator", value: "Creator"},
+        {label:"Builder", value: "Builder"},
+        {label:"Advisor", value: "Advisor"},
+        {label:"Sponsor", value: "Sponsor"},
+        {label:"Moderator", value: "Moderator"},
+        {label:"Other", value: "Moderator"}
+    ])
 
     const [distribution, setDistribution] = useState(1);
 
@@ -94,15 +93,15 @@ export default function ProjectCreateStep6() {
       }
 
      const gotoStep7 = () => {
+         setLoading(true)
          if(getTotalTokenomics() !== 100) {
-             createMessage("Total percentage is not 100%", "danger-container");
-             return
+            setLoading(false)
+            createMessage("Total percentage is not 100%", "danger-container");
+            return
          }
 
          localStorage.setItem("projectstep6",JSON.stringify(fields));
-         navigate.push("/project/create/step7");
-
-
+         navigate.push("/create/project/create/step7");
      }
 
      const goBack = () => {
@@ -156,10 +155,16 @@ export default function ProjectCreateStep6() {
             newTokenomics.push(fields[index]);
         }
         newTokenomics.push({
-            type: "Founder",
+            type: "Investor",
             value: 0,
-            cliff: 0,
-            vesting: 0
+            cliff:{
+                months: 0,
+                percentage: 0
+            },
+            vesting:{
+                months: 0,
+                percentage: 0
+            },
         })
         setFields(newTokenomics)
     }
@@ -290,7 +295,13 @@ export default function ProjectCreateStep6() {
                     </div>
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep7}>Next</button>
+                        {!loading&&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep7}>Next</button>
+                        }
+
+                        {loading &&
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                        }
                     </div>
                 </div>
             </div>

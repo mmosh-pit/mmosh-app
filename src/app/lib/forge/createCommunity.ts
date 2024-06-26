@@ -1,6 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 import { Connectivity as ProjectConn } from "@/anchor/project";
@@ -8,11 +7,11 @@ import { CreateCommunityParams } from "@/app/models/createCommunityParams";
 import { MintResultMessage } from "@/app/models/mintResultMessage";
 import { web3Consts } from "@/anchor/web3Consts";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
-import { pinImageToShadowDrive } from "../uploadImageToShdwDrive";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 import { capitalizeString } from "../capitalizeString";
 import { getPronouns } from "../getPronouns";
 import { deleteShdwDriveFile } from "../deleteShdwDriveFile";
+import { uploadImageFromBlob } from "../uploadImageFromBlob";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -70,18 +69,13 @@ export async function createCommunity({
     );
 
     setMintingStatus("Preparing Pass Image...");
-    const fileName = uuidv4() + ".png";
-    const file = new File([genesisImage], fileName, { type: "image/png" });
-    passImageUri = await pinImageToShadowDrive(file);
+
+    passImageUri = await uploadImageFromBlob(genesisImage);
 
     setMintingStatus("Preparing Invitation Image...");
 
     if (invitationImage) {
-      const invitationFileName = uuidv4() + ".png";
-      const invitationFile = new File([invitationImage], invitationFileName, {
-        type: "image/png",
-      });
-      invitationImageUri = await pinImageToShadowDrive(invitationFile);
+      invitationImageUri = await uploadImageFromBlob(invitationImage);
     }
 
     setMintingStatus("Preparing Metadata...");

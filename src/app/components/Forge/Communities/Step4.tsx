@@ -1,5 +1,4 @@
 import * as React from "react";
-import { toBlob } from "html-to-image";
 import { useAtom } from "jotai";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
@@ -22,6 +21,9 @@ import {
 import { data, userWeb3Info } from "@/app/store";
 import ArrowBack from "@/assets/icons/ArrowBack";
 import { useRouter } from "next/navigation";
+import { generateCommunityGenesisImage } from "@/app/lib/forge/generateCommunityGenesisImage";
+import { fetchImage } from "@/app/lib/forge/fetchImage";
+import { generateCommunityInvitationImage } from "@/app/lib/forge/generateCommunityInvitationImage";
 
 const Step4 = () => {
   const navigate = useRouter();
@@ -44,38 +46,44 @@ const Step4 = () => {
     type: "",
   });
 
+  const [communityGenesisCard, setCommunityGenesisCard] =
+    React.useState<Blob | null>(null);
+  const [invitationCard, setInvitationCard] = React.useState<Blob | null>(null);
+
+  const generateImages = React.useCallback(async () => {
+    const coinImage = await fetchImage(thirdForm.coin!.image);
+
+    const mainImage = await fetchImage(firstForm.preview);
+
+    const genesisImage = await generateCommunityGenesisImage(
+      mainImage,
+      coinImage,
+    );
+
+    if (thirdForm.invitation !== "none") {
+      const invitationImage = await generateCommunityInvitationImage(
+        mainImage,
+        coinImage,
+      );
+      setInvitationCard(invitationImage);
+    }
+
+    setCommunityGenesisCard(genesisImage);
+  }, [firstForm, thirdForm]);
+
+  React.useEffect(() => {
+    if (!firstForm.preview || !thirdForm.coin) return;
+    generateImages();
+  }, [thirdForm, firstForm]);
+
   const mintCommunity = React.useCallback(async () => {
     setMessage({ type: "", message: "" });
     if (!wallet || !profileInfo || !currentUser) return;
 
-    setMintingStatus("Trying to Generating images...");
-    const genesisImage = await toBlob(genesisPassRef.current!, {
-      cacheBust: true,
-    });
-
-    const invitationImage = await toBlob(invitationBadgeRef.current!, {
-      cacheBust: true,
-    });
-
-    if (
-      !genesisImage ||
-      (!invitationImage && thirdForm.invitation !== "none")
-    ) {
-      setMintingStatus("");
-
-      setMessage({
-        type: "error",
-        message:
-          "There was an error trying to generate the Pass and Badge images, please try again.",
-      });
-
-      return;
-    }
-
     const res = await createCommunity({
       wallet,
-      genesisImage,
-      invitationImage,
+      genesisImage: communityGenesisCard!,
+      invitationImage: invitationCard,
       setMintingStatus,
       name: firstForm.name,
       symbol: firstForm.symbol,
@@ -115,7 +123,15 @@ const Step4 = () => {
 
     setMessage({ type: res.type, message: res.message });
     setMintingStatus("");
-  }, []);
+  }, [
+    invitationCard,
+    communityGenesisCard,
+    firstForm,
+    thirdForm,
+    currentUser,
+    secForm,
+    telegramLink,
+  ]);
 
   const goBack = React.useCallback(() => {
     setCurrentStep(2);
@@ -175,50 +191,24 @@ const Step4 = () => {
           </div>
 
           <div className="flex md:flex-row flex-col w-full md:justify-around justify-center md:w-[75%] mt-12">
-            <div className="flex flex-col items-center">
-              <p className="text-lg text-white">Genesis Pass</p>
+            {communityGenesisCard && (
+              <div className="flex flex-col items-center">
+                <p className="text-lg text-white">Genesis Pass</p>
 
-              <div
-                className="w-[12vmax] h-[12vmax] community-genesis-card rounded-2xl"
-                ref={genesisPassRef}
-              >
-                <img
-                  alt="Genesis Pass"
-                  src={firstForm.preview}
-                  className="rounded-xl w-full h-full"
-                />
-
-                <div className="upper-card-images">
-                  <div className="relative w-[5vmax] h-[2vmax]">
-                    <img
-                      alt="Total Access"
-                      src="https://storage.googleapis.com/mmosh-assets/access.png"
-                    />
-                  </div>
-
-                  <div className="relative w-[1.5vmax] h-[1.5vmax]">
-                    <img
-                      alt="Logo"
-                      src="https://storage.googleapis.com/mmosh-assets/logo.png"
-                    />
-                  </div>
-                </div>
-
-                <div className="bottom-card-images">
-                  <div className="relative w-[1.5vmax] h-[1.5vmax] mb-[0.8vmax] ml-[0.6vmax] rounded-full">
-                    <img alt="Coin" src={thirdForm.coin!.image} />
-                  </div>
-
-                  <div className="relative pr-[1vmax] pb-[0.2vmax]">
-                    <p className="text-tiny text-white font-bold">
-                      Genesis Pass
-                    </p>
-                  </div>
+                <div
+                  className="w-[12vmax] h-[12vmax] rounded-2xl"
+                  ref={genesisPassRef}
+                >
+                  <img
+                    alt="Genesis Pass"
+                    src={URL.createObjectURL(communityGenesisCard!)}
+                    className="rounded-xl w-full h-full"
+                  />
                 </div>
               </div>
-            </div>
+            )}
 
-            {thirdForm.invitation !== "none" && (
+            {thirdForm.invitation !== "none" && invitationCard && (
               <div className="flex flex-col items-center md:my-0 my-4">
                 <p className="text-lg text-white">Invitation Badge</p>
 
@@ -228,39 +218,9 @@ const Step4 = () => {
                 >
                   <img
                     alt="Invitation Badge"
-                    src={firstForm.preview}
+                    src={URL.createObjectURL(invitationCard!)}
                     className="rounded-2xl w-full h-full"
                   />
-
-                  <div className="upper-card-images">
-                    <img
-                      alt="Total Access"
-                      src="https://storage.googleapis.com/mmosh-assets/access.png"
-                      className="w-[5vmax] h-[2vmax] rounded-full"
-                    />
-
-                    <img
-                      alt="Logo"
-                      src="https://storage.googleapis.com/mmosh-assets/logo.png"
-                      className="w-[1.5vmax] h-[1.5vmax]"
-                    />
-                  </div>
-
-                  <div className="bottom-card-image-invitation rounded-b-2xl">
-                    <div className="mb-[0.8vmax] ml-[0.6vmax]">
-                      <img
-                        alt="Coin"
-                        src={thirdForm.coin!.image}
-                        className="w-[1.5vmax] h-[1.5vmax]"
-                      />
-                    </div>
-
-                    <div className="relative pr-[1vmax] pb-[0.2vmax]">
-                      <p className="text-tiny text-white font-bold">
-                        Invitation Badge
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}

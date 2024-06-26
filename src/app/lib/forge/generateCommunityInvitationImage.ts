@@ -1,3 +1,4 @@
+import { drawImageWithRoundedCorners } from "./drawImageWithRoundedCorners";
 import { fetchImage } from "./fetchImage";
 
 export async function generateCommunityInvitationImage(
@@ -18,7 +19,7 @@ export async function generateCommunityInvitationImage(
 
   const ctx = canvas.getContext("2d");
 
-  ctx?.drawImage(image, 0, 0, width, height);
+  drawImageWithRoundedCorners(canvas, ctx!, image, 0, 0, width, height, 80);
 
   ctx?.drawImage(frameImage, 0, 0, width, height);
 

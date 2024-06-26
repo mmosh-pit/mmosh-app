@@ -202,14 +202,11 @@ const Step4 = () => {
                   <div className="flex flex-col items-center">
                     <p className="text-lg text-white">Genesis Pass</p>
 
-                    <div
-                      className="w-[12vmax] h-[12vmax] rounded-2xl"
-                      ref={genesisPassRef}
-                    >
+                    <div className="w-[12vmax] h-[12vmax]" ref={genesisPassRef}>
                       <img
                         alt="Genesis Pass"
                         src={URL.createObjectURL(communityGenesisCard!)}
-                        className="rounded-xl w-full h-full"
+                        className="w-full h-full"
                       />
                     </div>
                   </div>
@@ -220,13 +217,13 @@ const Step4 = () => {
                     <p className="text-lg text-white">Invitation Badge</p>
 
                     <div
-                      className="w-[12vmax] h-[12vmax] relative rounded-2xl"
+                      className="w-[12vmax] h-[12vmax] relative"
                       ref={invitationBadgeRef}
                     >
                       <img
                         alt="Invitation Badge"
                         src={URL.createObjectURL(invitationCard!)}
-                        className="rounded-2xl w-full h-full"
+                        className="w-full h-full"
                       />
                     </div>
                   </div>

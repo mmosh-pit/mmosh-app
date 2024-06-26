@@ -132,7 +132,10 @@ const CustomSelect = ({
             {communitiesTopics.map((topic) => {
               if (topic.type === "header") {
                 return (
-                  <h5 className="my-4 text-gray-200" key={topic.value}>
+                  <h5
+                    className="my-4 text-gray-200 capitalize"
+                    key={topic.value}
+                  >
                     {topic.label}
                   </h5>
                 );

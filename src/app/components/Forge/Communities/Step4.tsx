@@ -40,6 +40,7 @@ const Step4 = () => {
   const genesisPassRef = React.useRef<HTMLDivElement>(null);
   const invitationBadgeRef = React.useRef<HTMLDivElement>(null);
 
+  const [isLoadingImages, setIsLoadingImages] = React.useState(false);
   const [mintingStatus, setMintingStatus] = React.useState("");
   const [message, setMessage] = React.useState({
     message: "",
@@ -51,6 +52,7 @@ const Step4 = () => {
   const [invitationCard, setInvitationCard] = React.useState<Blob | null>(null);
 
   const generateImages = React.useCallback(async () => {
+    setIsLoadingImages(true);
     const coinImage = await fetchImage(thirdForm.coin!.image);
 
     const mainImage = await fetchImage(firstForm.preview);
@@ -69,6 +71,7 @@ const Step4 = () => {
     }
 
     setCommunityGenesisCard(genesisImage);
+    setIsLoadingImages(false);
   }, [firstForm, thirdForm]);
 
   React.useEffect(() => {
@@ -191,52 +194,58 @@ const Step4 = () => {
           </div>
 
           <div className="flex md:flex-row flex-col w-full md:justify-around justify-center md:w-[75%] mt-12">
-            {communityGenesisCard && (
-              <div className="flex flex-col items-center">
-                <p className="text-lg text-white">Genesis Pass</p>
+            {isLoadingImages ? (
+              <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>
+            ) : (
+              <>
+                {communityGenesisCard && (
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg text-white">Genesis Pass</p>
 
-                <div
-                  className="w-[12vmax] h-[12vmax] rounded-2xl"
-                  ref={genesisPassRef}
-                >
-                  <img
-                    alt="Genesis Pass"
-                    src={URL.createObjectURL(communityGenesisCard!)}
-                    className="rounded-xl w-full h-full"
-                  />
+                    <div
+                      className="w-[12vmax] h-[12vmax] rounded-2xl"
+                      ref={genesisPassRef}
+                    >
+                      <img
+                        alt="Genesis Pass"
+                        src={URL.createObjectURL(communityGenesisCard!)}
+                        className="rounded-xl w-full h-full"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {thirdForm.invitation !== "none" && invitationCard && (
+                  <div className="flex flex-col items-center md:my-0 my-4">
+                    <p className="text-lg text-white">Invitation Badge</p>
+
+                    <div
+                      className="w-[12vmax] h-[12vmax] relative rounded-2xl"
+                      ref={invitationBadgeRef}
+                    >
+                      <img
+                        alt="Invitation Badge"
+                        src={URL.createObjectURL(invitationCard!)}
+                        className="rounded-2xl w-full h-full"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col items-center">
+                  <p className="text-white text-lg">Community Pass</p>
+
+                  <div className="w-[12vmax] h-[12vmax] community-pass-card rounded-2xl">
+                    <Image
+                      alt="Community Image"
+                      src={firstForm.preview}
+                      layout="fill"
+                      className="rounded-2xl"
+                    />
+                  </div>
                 </div>
-              </div>
+              </>
             )}
-
-            {thirdForm.invitation !== "none" && invitationCard && (
-              <div className="flex flex-col items-center md:my-0 my-4">
-                <p className="text-lg text-white">Invitation Badge</p>
-
-                <div
-                  className="w-[12vmax] h-[12vmax] relative rounded-2xl"
-                  ref={invitationBadgeRef}
-                >
-                  <img
-                    alt="Invitation Badge"
-                    src={URL.createObjectURL(invitationCard!)}
-                    className="rounded-2xl w-full h-full"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-col items-center">
-              <p className="text-white text-lg">Community Pass</p>
-
-              <div className="w-[12vmax] h-[12vmax] community-pass-card rounded-2xl">
-                <Image
-                  alt="Community Image"
-                  src={firstForm.preview}
-                  layout="fill"
-                  className="rounded-2xl"
-                />
-              </div>
-            </div>
           </div>
 
           <div className="md:w-[45%] lg:w-[30%] w-[80%] flex flex-col items-center mt-12">

@@ -70,6 +70,10 @@ const Swap = () => {
 
     setResult({ res: response.type, message: response.message });
     setSwapLoading(false);
+
+    setTimeout(() => {
+      setResult({ res: "", message: "" });
+    }, 4000);
   }, [baseToken, targetToken, wallet]);
 
   const switchCoins = React.useCallback(() => {

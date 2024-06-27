@@ -49,6 +49,9 @@ const Swap = ({ coin }: Props) => {
     setResult({ res: response.type, message: response.message });
     onTokenSelect(response.data.token);
     setSwapLoading(false);
+    setTimeout(() => {
+      setResult({ res: "", message: "" });
+    }, 4000);
   }, [baseToken, targetToken, wallet]);
 
   const switchCoins = React.useCallback(() => {

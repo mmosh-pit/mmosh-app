@@ -1,10 +1,35 @@
 "use client";
 import Input from "@/app/components/common/Input";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PieChart } from 'reaviz';
 export default function ProjectView() {
     const navigate = useRouter();
+    const countDownDate = new Date("2024-08-27").getTime();
+    const [countDown, setCountDown] = useState(
+        countDownDate - new Date().getTime()
+    );
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+          setCountDown(countDownDate - new Date().getTime());
+        }, 1000);
+    
+        return () => clearInterval(interval);
+      }, [countDownDate]);
+
+    const getCountDownValues = (countDown:any) => {
+        // calculate time left
+        const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((countDown % (1000 * 60)) / 1000);
+      
+        return {days, hours, minutes, seconds};
+    };
+      
     const [tokenomicschart, setTokenomicsChart] = useState([{
         key: "Founder",
         data: 32
@@ -71,8 +96,8 @@ export default function ProjectView() {
                        <h2 className="text-white font-goudy font-normal text-xl mb-8 text-center">Countdown to Launch</h2>
                        <div className="flex justify-center mb-8">
                            <div>
-                               <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 leading-[64px]">
-                                   20
+                               <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                  {getCountDownValues(countDown).days}
                                </div>
                                <p className="text-header-small-font-size text-center">days</p>
                            </div>
@@ -80,8 +105,8 @@ export default function ProjectView() {
                               <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
                            </div>
                            <div>
-                               <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 leading-[64px]">
-                                   12
+                                <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                   {getCountDownValues(countDown).hours}
                                </div>
                                <p className="text-header-small-font-size text-center">Hours</p>
                            </div>
@@ -89,8 +114,8 @@ export default function ProjectView() {
                               <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
                            </div>
                            <div>
-                               <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 leading-[64px]">
-                                   45
+                                <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                {getCountDownValues(countDown).minutes}
                                </div>
                                <p className="text-header-small-font-size text-center">Minutes</p>
                            </div>
@@ -98,8 +123,8 @@ export default function ProjectView() {
                               <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
                            </div>
                            <div>
-                               <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 leading-[64px]">
-                                   56
+                                <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                  {getCountDownValues(countDown).seconds}
                                </div>
                                <p className="text-header-small-font-size text-center">Seconds</p>
                            </div>

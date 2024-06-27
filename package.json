@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@antonkolesnik/counter": "^1.0.0",
     "@coral-xyz/anchor": "^0.29.0",
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
     "@metaplex-foundation/js": "^0.20.1",

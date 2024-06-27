@@ -602,7 +602,7 @@ export default function ProjectCreateStep9() {
 
             setLoading(false)
             setButtonText("Deploy Token Presale")
-            navigate.push("/create/project/create/"+projectKeyPair.publicKey.toBase58());
+            navigate.push("/create/project/view/"+projectKeyPair.publicKey.toBase58());
         } catch (error) {
            createMessage("error processing new project","danger-container")
         }

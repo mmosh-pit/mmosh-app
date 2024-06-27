@@ -41,6 +41,7 @@ const CommunityPassMint = ({
   const [balance] = useAtom(targetTokenBalance);
 
   const mintPass = async () => {
+    if (amountToMint <= 0) return;
     setIsLoading(true);
     const res = await mintCommunityPass({
       projectInfo,
@@ -89,7 +90,7 @@ const CommunityPassMint = ({
           action={mintPass}
           isPrimary
           isLoading={isLoading}
-          disabled={isLoading}
+          disabled={isLoading || amountToMint <= 0}
         />
 
         <p className="text-white text-sm self-center text-center">

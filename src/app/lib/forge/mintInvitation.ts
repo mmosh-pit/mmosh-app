@@ -68,7 +68,10 @@ export const mintInvitation = async ({
         value: community.tokenAddress,
       });
 
-      const desc = `${capitalizeString(userName)} Cordially invites you to join ${getPronouns(pronouns)} on the ${capitalizeString(`${community.name}. The favor of a reply is requested.`)}. `;
+      const desc =
+        userName && pronouns
+          ? `${capitalizeString(userName)} Cordially invites you to join ${getPronouns(pronouns)} on the ${capitalizeString(`${community.name}. The favor of a reply is requested.`)}. `
+          : `Cordially invites you to join ${community.name}. The favor of a reply is requested.`;
 
       const body = {
         name: `Invitation from ${capitalizeString(userName)}`,

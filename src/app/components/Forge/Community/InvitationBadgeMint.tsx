@@ -42,6 +42,7 @@ const InvitationBadgeMint = ({
   });
 
   const mintInvitations = async () => {
+    if (amountToMint <= 0) return;
     setIsLoading(true);
     const res = await mintInvitation({
       projectInfo,
@@ -49,8 +50,8 @@ const InvitationBadgeMint = ({
       wallet: wallet!,
       amount: amountToMint,
       setInvitationStatus,
-      pronouns: currentUser!.profile.pronouns,
-      userName: currentUser!.profile.name,
+      pronouns: currentUser?.profile?.pronouns,
+      userName: currentUser?.profile?.name,
     });
 
     setResult({ type: res.type, message: res.message });
@@ -92,7 +93,7 @@ const InvitationBadgeMint = ({
           action={mintInvitations}
           isPrimary
           isLoading={false}
-          disabled={isLoading}
+          disabled={isLoading || amountToMint <= 0}
         />
 
         <p className="text-white text-sm self-center text-center">

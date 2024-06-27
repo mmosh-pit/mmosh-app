@@ -52,7 +52,6 @@ const Swap = () => {
 
   const onTokenSelect = React.useCallback(
     async (token: SwapCoin, isBase: boolean) => {
-      console.log("Wallet: ", wallet);
       setSwapLoading(true);
       const result = await getSwapPrices(token, wallet!, isBase);
 

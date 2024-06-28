@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-project-community");
 
-  const { communitykey, projectkey  } = await req.json();
+  const { communitykey, projectkey, name  } = await req.json();
 
   const communityDetails = await collection.findOne({
     projectkey: projectkey,
@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
 
   if (!communityDetails) {
     await collection.insertOne({
+        name,
         communitykey,
         projectkey
     });

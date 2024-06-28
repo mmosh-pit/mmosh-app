@@ -180,7 +180,7 @@ export default function ProjectCreateStep4() {
                                         </div>
                                         <div className="mb-10">
                                             <label className="text-while text-header-small-font-size block">List Price</label>
-                                            <span className="text-while text-header-small-font-size block">{coinDetails.listingPrice}</span>
+                                            <span className="text-while text-header-small-font-size block">{coinDetails.listingPrice} USD</span>
                                         </div>
                                     </div>
 

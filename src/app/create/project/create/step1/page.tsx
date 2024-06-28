@@ -320,7 +320,11 @@ export default function ProjectCreateStep1() {
                             </div>
                             <div className="flex pt-2.5">
                                  <Radio title="Create a new Community Coin" checked={true} onChoose={onRadioChange} disabled={false}/>
-                                 <Radio title="Use an Existing Coin" checked={false} onChoose={onRadioChange} disabled={true}/>
+                                 <div className="relative">
+                                    <Radio title="Use an Existing Coin" checked={false} onChoose={onRadioChange} disabled={true}/>
+                                    <span className="coming-soon">Coming Soon</span>
+                                 </div>
+                               
                             </div>
                            
                         </div>

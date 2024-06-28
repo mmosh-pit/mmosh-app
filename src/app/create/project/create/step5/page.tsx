@@ -344,10 +344,10 @@ export default function ProjectCreateStep5() {
                                         <div className="form-element pt-2.5">
                                             <Input
                                                 type="text"
-                                                title="Price of Launchpass"
+                                                title="Price of Launchpass in USD"
                                                 required
                                                 helperText=""
-                                                placeholder="Price of Launchpass"
+                                                placeholder="Price of Launchpass in USD"
                                                 value={(passItem.price > 0 ? passItem.price.toString() : "")}
                                                 onChange={(e) => {passItem.price = prepareNumber(Number(e.target.value)); updatePassAction(i, passItem) }}
                                             />
@@ -379,11 +379,11 @@ export default function ProjectCreateStep5() {
                                         <div className="form-element pt-2.5">
                                             <Input
                                                 type="text"
-                                                title="Listing Price"
+                                                title="Listing Price in USD"
                                                 required
                                                 readonly={true}
                                                 helperText=""
-                                                placeholder="Listing Price"
+                                                placeholder="Listing Price in USD"
                                                 value={prepareNumber(coinDetails.listingPrice - (coinDetails.listingPrice * (passItem.discount / 100))).toString()}
                                                 onChange={(e) => {}}
                                             />
@@ -435,6 +435,7 @@ export default function ProjectCreateStep5() {
                                             </label>
                                     </div>
                                 </div>
+                                <p className="text-small-font-size text-white">At least 30 minutes after Dex Listing • DEX Listing Set for {presaleDetails.dexListingTime} on {presaleDetails.dexListingDate}</p>
                             </div>
                         </div>
                         </div>

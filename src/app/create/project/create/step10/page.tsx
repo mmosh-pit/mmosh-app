@@ -211,6 +211,7 @@ export default function ProjectCreateStep9() {
             setButtonText("Uploading community coin image...")
             let coinImageFile = await fetch(coins.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: project.image.type }));
             let coinImageUri = await pinImageToShadowDrive(coinImageFile)
+            console.log("coinImageUri", coinImageUri)
 
             // uploading community coin metadata
             setButtonText("Uploading community coin metadata...")
@@ -226,10 +227,12 @@ export default function ProjectCreateStep9() {
                 return;
             }
             const coinMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ coinMetaHash;
+            console.log("coinMetaURI", coinMetaURI)
 
             // creating community coins
             setButtonText("Creating community coin...")
-            const mintKey = await communityConnection.createCoin(coins.name,coins.symbol, coinMetaURI, coins.supply, 9)
+            const mintKey = await communityConnection.createCoin(coins.name,coins.symbol, coinMetaURI, coins.supply * web3Consts.LAMPORTS_PER_OPOS, 9)
+            console.log("community coin key", mintKey)
 
             let passKeys = []
             let passImages = []
@@ -288,29 +291,36 @@ export default function ProjectCreateStep9() {
                 setButtonText("Creating "+passItem.name+"...")
                 const passKey = await communityConnection.createCoin(passItem.name,passItem.symbol, passMetaURI, passItem.supply, 0)
                 passKeys.push(passKey)
-
                 // creating launch pass
             }
+            console.log("passKeys ", passKeys)
+            console.log("passImages ", passImages)
 
             // stake coins for liqudity bool
             setButtonText("Staking fund for liqudity pool...")
             let stakeInfo = [{
                 coin: web3Consts.oposToken,
-                amount: liquidity.mmosh * web3Consts.LAMPORTS_PER_OPOS,
+                amount: Math.ceil(liquidity.mmosh * web3Consts.LAMPORTS_PER_OPOS),
+                type:"token"
             },{
                 coin: new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
-                amount: liquidity.sol * web3Consts.LAMPORTS_PER_OPOS,
+                amount: Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS),
+                type:"native"
             },{
                 coin: web3Consts.usdcToken,
-                amount: liquidity.usd * 1000_000,
+                amount: Math.ceil(liquidity.usd * 1000_000),
+                type:"token"
             }];
             const stakeres = await communityConnection.stakeCoin(mintKey,stakeInfo);
 
+            console.log("stake signature ", stakeres)
 
             // uploading project image
             setButtonText("Uploading project image...")
             let projectImageFile = await fetch(project.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: project.image.type }));
             let projectImageUri = await pinImageToShadowDrive(projectImageFile)
+
+            console.log("projectImageUri ", projectImageUri)
 
             // uploading project metadata
             setButtonText("Uploading project metadata...")
@@ -426,6 +436,8 @@ export default function ProjectCreateStep9() {
             });
             const genesisProfileStr = res1.Ok.info.profile
 
+            console.log("genesisProfileStr ", genesisProfileStr)
+
             setButtonText("Waiting for Confirmation...")
             await delay(15000)
             communityConnection.setMainState();
@@ -480,7 +492,7 @@ export default function ProjectCreateStep9() {
                 uri:inviteMetaURI,
                 profile: genesisProfileStr,
             });
-            console.log("badge result ", res2)
+            console.log("invite result ", res2)
 
             setButtonText("Waiting for Confirmation...")
             await delay(15000)
@@ -490,7 +502,7 @@ export default function ProjectCreateStep9() {
                 amount: 100,
                 subscriptionToken: res2.Ok.info.subscriptionToken,
             });
-            console.log("create badge result ", res3)
+            console.log("invite badge result ", res3)
 
             setButtonText("Waiting for Confirmation...")
             await delay(15000)
@@ -500,12 +512,11 @@ export default function ProjectCreateStep9() {
             console.log("register lookup result ", res4)
 
             setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
+            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
             console.log("send price result ", res5)
 
-            
             // save coins
-            await axios.post("/api/project/save-coin", {
+            await axios.post("/api/project/save-coins", {
                 name: coins.name,
                 symbol: coins.symbol,
                 image: coinImageUri,
@@ -551,6 +562,7 @@ export default function ProjectCreateStep9() {
             for (let index = 0; index < communities.profiles.length; index++) {
                 const element:any = communities.communities[index];
                 await axios.post("/api/project/save-community", {
+                    name: element.title,
                     communitykey: element.community,
                     projectkey: projectKeyPair.publicKey.toBase58()
                 });
@@ -560,8 +572,9 @@ export default function ProjectCreateStep9() {
             for (let index = 0; index < communities.profiles.length; index++) {
                 const element:any = communities.profiles[index];
                 await axios.post("/api/project/save-profile", {
+                    name: element.name,
                     profilekey: element.profilenft,
-                    role: element.profile,
+                    role: element.role,
                     projectkey: projectKeyPair.publicKey.toBase58()
                 });
             }
@@ -599,11 +612,20 @@ export default function ProjectCreateStep9() {
                 presaleenddate: presaleEnd, 
                 dexlistingdate: dexDate
             });
-
+            localStorage.removeItem("projectstep1")
+            localStorage.removeItem("projectstep2")
+            localStorage.removeItem("projectstep3")
+            localStorage.removeItem("projectstep4")
+            localStorage.removeItem("projectstep5")
+            localStorage.removeItem("projectstep6")
+            localStorage.removeItem("projectstep7")
+            localStorage.removeItem("projectstep8")
+            localStorage.removeItem("projectstep9")
             setLoading(false)
             setButtonText("Deploy Token Presale")
-            navigate.push("/create/project/view/"+projectKeyPair.publicKey.toBase58());
+            navigate.push("/create/project/"+projectKeyPair.publicKey.toBase58());
         } catch (error) {
+           console.log("error", error);
            createMessage("error processing new project","danger-container")
         }
     }
@@ -654,278 +676,291 @@ export default function ProjectCreateStep9() {
                         </div>
                     </div>
                 </div>
-                <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                        <div className="col-span-3">
-                            <div className="md:mb-3.5">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Project Pass</h3>
-                                <div>
-                                    <h3 className="text-sub-title-font-size text-while font-poppins text-center">{project.name}</h3>
-                                    <div>
-                                    <div className="rounded-md gradient-container p-1.5 mr-5">
-                                            <img src={project.image.preview}className="w-full object-cover"/>
-                                    </div>
-                                    </div>
-                                    <p className="text-header-small-font-size text-white mt-2 text-center">{project.symbol}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-span-9">
-                            <div className="mt-5">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Community Coin</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                    <div className="col-span-3">
-                                        <div className="rounded-full gradient-container p-1.5">
-                                            <img src={coins.image.preview} className="w-full rounded-full object-cover"/>
-                                        </div>
-                                    </div>
-                                    <div className="col-span-4">
-                                        <div className="grid grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Name</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.name}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Symbol</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.symbol}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Supply</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Listing Price</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.listingPrice}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Fully Diluted Value (FDV)</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.listingPrice * coins.supply}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-span-5">
-                                    <p className="text-para-font-size">Description</p>
-                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md h-full">{coins.desc}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-5">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
-                                <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                    <div>
-                                        <p className="text-para-font-size">Maximum Supply for presale</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Token Presale</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
-                                    </div>
-                                </div>
-                                <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                    <div>
-                                        <p className="text-para-font-size">Start Date</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Start Time</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">End Date</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">End Time</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Listing Date</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Listing Time</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
-                                    </div>
-                                </div>
-                                <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                    <div>
-                                        <p className="text-para-font-size">Project Website</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Project Telegram</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-para-font-size">Project Twitter</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div className="backdrop-container rounded-xl border border-white border-opacity-20 my-10 container mx-auto">
+                    <div className="border-b border-white border-opacity-20 p-3.5">
+                       <h2 className="text-center text-white font-goudy font-normal text-xl">Launch Your Community Coin</h2>
                     </div>
-
-                    {passes.map((passItem:any, i) => (
-                        <div className="pt-10">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">LaunchPass {i+1}</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                    <div className="col-span-2">
-                                        <img src={passItem.image.preview} className="w-full object-cover rounded-md"/>
-                                    </div>
-                                    <div className="col-span-6">
-                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Name</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.name}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Symbol</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.symbol}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Price of Pass</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.price}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Supply</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.supply}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Number of Tokens
-            12</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{prepareNumber(Math.ceil(passItem.price / (coins.listingPrice - (coins.listingPrice * (passItem.discount / 100)))))}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Listing Price</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{prepareNumber(coins.listingPrice - (coins.listingPrice * (passItem.discount / 100))).toString()}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Royalties to Promoter</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.promoterRoyalty}%</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Promoter Royalty to Scout</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.scoutRoyalty}%</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-span-4">
+                    <div className="p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <div className="col-span-3">
+                                <div className="md:mb-3.5">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Project Pass</h3>
+                                    <div>
+                                        <h3 className="text-sub-title-font-size text-while font-poppins text-center">{project.name}</h3>
                                         <div>
-                                            <p className="text-para-font-size">Description</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md h-full">{passItem.desc}</p>
+                                        <div className="rounded-md gradient-container p-1.5 mr-5">
+                                                <img src={project.image.preview}className="w-full object-cover"/>
                                         </div>
+                                        </div>
+                                        <p className="text-header-small-font-size text-white mt-2 text-center">{project.symbol}</p>
                                     </div>
                                 </div>
-                        </div>
-                    
-                    ))}
-
-
-                    <div className="pt-10">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                        <div className="col-span-4">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Vesting Schedule</h3>
-                                <div className="grid grid-cols-12 gap-4 mb-5">
-                                    <div className="col-span-4">
-                                        <p className="text-header-small-font-size">Distribution Plan</p>
-                                    </div>
-                                    <div className="col-span-4">
-                                        <p className="text-header-small-font-size text-center">Cliff Month</p>
-                                    </div>
-                                    <div className="col-span-4">
-                                        <p className="text-header-small-font-size text-center">Vesting Months</p>
-                                    </div>
-                                </div>
-                                {tokenomics.map((tokenomicsItem:any,i)=>(
-                                    <div className="grid grid-cols-12 gap-4">
-                                        <div className="col-span-4">
-                                            <p className="text-para-font-size">{tokenomicsItem.type} {tokenomicsItem.value}%</p>
-                                        </div>
-                                        <div className="col-span-4">
-                                            <div className="text-center">
-                                                <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.cliff.months}</p>
+                            </div>
+                            <div className="col-span-9">
+                                <div className="mt-5">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Community Coin</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                        <div className="col-span-3">
+                                            <div className="rounded-full gradient-container p-1.5">
+                                                <img src={coins.image.preview} className="w-full rounded-full object-cover"/>
                                             </div>
                                         </div>
                                         <div className="col-span-4">
-                                            <div className="text-center">
-                                                <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.vesting.months}</p>
+                                            <div className="grid grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Name</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.name}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Symbol</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.symbol}</p>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Supply</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Listing Price</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.listingPrice}</p>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Fully Diluted Value (FDV)</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.listingPrice * coins.supply}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-span-5">
+                                        <p className="text-para-font-size">Description</p>
+                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md h-full">{coins.desc}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-5">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
+                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                        <div>
+                                            <p className="text-para-font-size">Maximum Supply for presale</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Token Presale</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                        <div>
+                                            <p className="text-para-font-size">Start Date</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Start Time</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">End Date</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">End Time</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Listing Date</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Listing Time</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                        <div>
+                                            <p className="text-para-font-size">Project Website</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Project Telegram</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Project Twitter</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {passes.map((passItem:any, i) => (
+                            <div className="pt-10">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">LaunchPass {i+1}</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                        <div className="col-span-2">
+                                            <img src={passItem.image.preview} className="w-full object-cover rounded-md"/>
+                                        </div>
+                                        <div className="col-span-6">
+                                            <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Name</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.name}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Symbol</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.symbol}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Price of Pass</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.price}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Supply</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.supply}</p>
+                                                </div>
+                                            </div>
+                                            <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Number of Tokens
+                12</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{prepareNumber(Math.ceil(passItem.price / (coins.listingPrice - (coins.listingPrice * (passItem.discount / 100)))))}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Listing Price</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{prepareNumber(coins.listingPrice - (coins.listingPrice * (passItem.discount / 100))).toString()}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Royalties to Promoter</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.promoterRoyalty}%</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Promoter Royalty to Scout</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{passItem.scoutRoyalty}%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-span-4">
+                                            <div>
+                                                <p className="text-para-font-size">Description</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md h-full">{passItem.desc}</p>
                                             </div>
                                         </div>
                                     </div>
-                                ))}
-                        </div>
-                        <div className="col-span-4">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Inform our AI Bot</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                    {files.map((fileItem:any, i)=>(
+                            </div>
+                        
+                        ))}
+
+
+                        <div className="pt-10">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                            <div className="col-span-4">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Vesting Schedule</h3>
+                                    <div className="grid grid-cols-12 gap-4 mb-5">
                                         <div className="col-span-4">
-                                            <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                                                <p className="text-para-font-size light-gray-color text-center">File{i+1}.pdf</p>
-                                                <div className="w-8 mx-auto"><FileIcon /></div>          
+                                            <p className="text-header-small-font-size">Distribution Plan</p>
+                                        </div>
+                                        <div className="col-span-4">
+                                            <p className="text-header-small-font-size text-center">Cliff Month</p>
+                                        </div>
+                                        <div className="col-span-4">
+                                            <p className="text-header-small-font-size text-center">Vesting Months</p>
+                                        </div>
+                                    </div>
+                                    {tokenomics.map((tokenomicsItem:any,i)=>(
+                                        <div className="grid grid-cols-12 gap-4">
+                                            <div className="col-span-4">
+                                                <p className="text-para-font-size">{tokenomicsItem.type} {tokenomicsItem.value}%</p>
+                                            </div>
+                                            <div className="col-span-4">
+                                                <div className="text-center">
+                                                    <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.cliff.months}</p>
+                                                </div>
+                                            </div>
+                                            <div className="col-span-4">
+                                                <div className="text-center">
+                                                    <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.vesting.months}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
-                                </div>
+                            </div>
+                            <div className="col-span-4">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Inform our AI Bot</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                        {files.map((fileItem:any, i)=>(
+                                            <div className="col-span-4">
+                                                <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
+                                                    <p className="text-para-font-size light-gray-color text-center">File{i+1}.pdf</p>
+                                                    <div className="w-8 mx-auto"><FileIcon /></div>          
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                            </div>
+                            <div className="col-span-4">
+                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Tokenomics</h3>
+                                    <div>
+                                        <PieChart
+                                            className="w-full"
+                                            height={300}
+                                            data={tokenomicschart}
+                                        />
+                                    </div>
+                            </div>
                         </div>
-                        <div className="col-span-4">
-                                <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Tokenomics</h3>
-                                <div>
-                                    <PieChart
-                                        className="w-full"
-                                        height={300}
-                                        data={tokenomicschart}
-                                    />
-                                </div>
                         </div>
-                    </div>
-                    </div>
-        
-                    <h3 className="text-sub-title-font-size text-while font-poppins text-center pt-10">Summary of Costs</h3>
-                    <div className="flex justify-center mt-3.5">
-                        <p className="text-header-small-font-size text-white mr-3.5 min-w-16">USDC</p>
-                        <p className="text-header-small-font-size text-white">{liquidity.usd.toFixed(2)}</p>
-                    </div>
-                    <div className="flex justify-center mt-3.5">
-                        <p className="text-header-small-font-size text-white mr-3.5 min-w-16">SOL</p>
-                        <p className="text-header-small-font-size text-white">{liquidity.sol.toFixed(2)}</p>
-                    </div>
-                    <div className="flex justify-center mt-3.5">
-                        <p className="text-header-small-font-size text-white mr-3.5 min-w-16">MMOSH</p>
-                        <p className="text-header-small-font-size text-white">{liquidity.mmosh.toFixed(2)}</p>
-                    </div>
-                    
-                    <div className="flex justify-center mt-10">
-                        <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                        {!loading &&
-                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={submitAction}>Deploy Token Presale</button>
-                        }
+            
+                        <h3 className="text-sub-title-font-size text-while font-poppins text-center pt-10">Summary of Costs</h3>
+                        <p className="text-header-small-font-size text-white text-center mt-1.5">for Liquidity Pool</p>
+                        <div className="flex justify-center mt-3.5">
+                            <div className="flex justify-center mr-3.5">
+                                <p className="text-header-small-font-size text-white mr-1">USDC</p>
+                                <p className="text-header-small-font-size text-white">{liquidity.usd.toFixed(2)}</p>
+                            </div>
+                            <div className="flex justify-center mr-3.5">
+                                <p className="text-header-small-font-size text-white mr-1">SOL</p>
+                                <p className="text-header-small-font-size text-white">{liquidity.sol.toFixed(2)}</p>
+                            </div>
+                            <div className="flex justify-center mr-3.5">
+                                <p className="text-header-small-font-size text-white mr-1">MMOSH</p>
+                                <p className="text-header-small-font-size text-white">{liquidity.mmosh.toFixed(2)}</p>
+                            </div>
+                        </div>
 
-                        {loading&&
-                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">{buttonText}</button>
-                        }
+                        
+                        <div className="flex justify-center mt-10">
+                            <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
+                            {!loading &&
+                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={submitAction}>Deploy Token Presale</button>
+                            }
 
-                    </div>
-                    <div className="flex justify-center mt-3.5">
-                        <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
-                        <p className="text-para-font-size text-white min-w-24">{profileInfo?.usdcBalance} USDC</p>
-                    </div>
-                    <div className="flex justify-center">
-                        <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
-                        <p className="text-para-font-size text-white min-w-24">{profileInfo?.solBalance} SOL</p>
-                    </div>
-                    <div className="flex justify-center">
-                        <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
-                        <p className="text-para-font-size text-white min-w-24">{profileInfo?.mmoshBalance} MMOSH</p>
+                            {loading&&
+                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">{buttonText}</button>
+                            }
+
+                        </div>
+                        <div className="flex justify-center mt-3.5">
+                            <p className="text-para-font-size text-white min-w-24">MMOSH</p>
+                            <p className="text-para-font-size text-white min-w-24">100,000</p>
+                        </div>
+                        <div className="flex justify-center">
+                            <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
+                            <p className="text-para-font-size text-white min-w-24">{profileInfo?.usdcBalance.toFixed(2)} USDC</p>
+                        </div>
+                        <div className="flex justify-center">
+                            <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
+                            <p className="text-para-font-size text-white min-w-24">{profileInfo?.solBalance.toFixed(2)} SOL</p>
+                        </div>
+                        <div className="flex justify-center">
+                            <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
+                            <p className="text-para-font-size text-white min-w-24">{profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                        </div>
                     </div>
                 </div>
             </div>

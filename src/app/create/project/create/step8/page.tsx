@@ -32,7 +32,7 @@ export default function ProjectCreateStep8() {
 
     const validateFields = () => {
 
-        if(fields.usd < 100) {
+        if(fields.usd < 1) {
             createMessage("Liqudity should be greater than 100 USD", "danger-container");
             return false;
         }
@@ -137,7 +137,7 @@ export default function ProjectCreateStep8() {
                     <div className="grid grid-cols-12">
                     <div className="col-start-4 col-span-6">
                             <div className="backdrop-container rounded-xl py-5 px-10 border border-white border-opacity-20 mb-10 ">
-                                <h3 className="text-sub-title-font-size text-while font-poppins text-center pb-10">Liquidity</h3>
+                                <h3 className="text-sub-title-font-size text-while font-poppins text-center pb-5">Liquidity</h3>
                                 <p className="text-header-small-font-size text-center pb-10">Set the value of the liquidity pools in USD for each trading pair, with a minimum of $100 each.</p>
 
 

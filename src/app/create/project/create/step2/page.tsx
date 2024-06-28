@@ -47,7 +47,7 @@ export default function ProjectCreateStep2() {
         for (let index = 0; index < communities.length; index++) {
             const element:any = communities[index];
             if(element.selected == 1) {
-                selectedCommunity.push(element.community) 
+                selectedCommunity.push(element) 
             }
         }
 
@@ -61,7 +61,7 @@ export default function ProjectCreateStep2() {
         for (let index = 0; index < profiles.length; index++) {
             const element:any = profiles[index];
             if(element.selected == 1) {
-                selectedProfiles = element.wallet;
+                selectedProfiles.push(element);
             }
         }
 
@@ -175,6 +175,7 @@ export default function ProjectCreateStep2() {
     }
     
     const onCommunitySelect = (communityItem:any) => {
+        console.log("communityItem", communityItem)
         let currentCommunties:any = communities;
         let newCommunties:any = []
         for (let index = 0; index < currentCommunties.length; index++) {
@@ -226,8 +227,8 @@ export default function ProjectCreateStep2() {
                         <div className="max-w-md">
                             <h2 className="text-center text-white font-goudy font-normal text-xl">Launch Your Project</h2>
                             <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">Step 2</h3>
-                            <h3 className="text-center text-white font-goudy font-normal text-sub-title-font-size pt-1.5">Select Community and Profile</h3>
-                            <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">Each project will require a Project Founder to guide the  development, launch and ongoing operations of the Project and a supportive Community that will embrace and endorse the project. Both the Founder and Community may receive royalties from the Project.</p>
+                            <h3 className="text-center text-white font-goudy font-normal text-sub-title-font-size pt-1.5">Select Communities and Co-Founders</h3>
+                            <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">Each Project will require at lease one Project Founder to guide the development, launch and ongoing operations of the project. Projects also require supportive Communities that will embrace and endorse the Project. Both Co-Founders and Communities may receive royalties and other income from the Project</p>
                         </div>
                     </div>
                 </div>
@@ -254,7 +255,7 @@ export default function ProjectCreateStep2() {
                                 {!communityLoading && communities.length > 0 &&
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                                         {communities.map((community:any) => (
-                                            <div onClick={onCommunitySelect} className="rounded-md community-selection-container overflow-hidden">
+                                            <div onClick={()=>{onCommunitySelect(community)}} className="rounded-md community-selection-container overflow-hidden cursor-pointer " key={community.community}>
                                                 <div className="relative">
                                                     <img className="object-cover w-full" src={community.image} alt="community image" />
                                                     {community.selected == 1 &&
@@ -285,7 +286,7 @@ export default function ProjectCreateStep2() {
                         </div>
                         <div>
                         <div className="text-center pb-3">
-                                <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Profile NFT</h3>
+                                <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Select your Project Team Members</h3>
                             </div>
                             <div className="pl-10 max-h-96 overflow-auto">
                                 {profileLoading &&
@@ -345,16 +346,6 @@ export default function ProjectCreateStep2() {
                                 } 
         
                             </div>
-                            {profileInfo &&
-                                <div className="py-10 w-48 mx-auto">
-                                    <p className="text-xs text-white">Profile of the Project Founder</p>
-                                    <div className="flex">
-                                        <img src={profileInfo.profile.image} alt="coin image" className="w-5 h-5 object-cover rounded-full" />
-                                        <p className="text-xs text-white pl-1.5">{profileInfo.profile.name}</p>
-                                    </div>
-                                </div>
-                            }
-
                         </div>
                     </div>
                     <div className="flex justify-center mt-10">

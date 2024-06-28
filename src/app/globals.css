@@ -433,3 +433,21 @@ input[type='date']::-webkit-calendar-picker-indicator, input[type='time']::-webk
   background: linear-gradient(92.71deg, rgba(255, 255, 255, 0.5) -5.63%, rgba(179, 103, 255, 0.5) 99.63%);
 }
 
+.coming-soon {
+  position: absolute;
+  width: 41px;
+  height: 16px;
+  right: 0;
+  top: 15px;
+  font-family: "Avenir LT Std";
+  font-style: normal;
+  font-weight: 750;
+  font-size: 12px;
+  line-height: 8px;
+  text-align: center;
+  letter-spacing: -0.5px;
+  background: linear-gradient(119.74deg, #009efa 8.7%, #4d34f0 67.39%);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transform: rotate(28.39deg);
+}

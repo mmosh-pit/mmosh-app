@@ -28,6 +28,7 @@ import {
     createCreateMetadataAccountV3Instruction,
   } from "@metaplex-foundation/mpl-token-metadata";
 import { createMintInstructions } from "@strata-foundation/spl-utils";
+import { SystemProgram } from "@solana/web3.js";
 
 const {
   systemProgram,
@@ -1782,14 +1783,14 @@ export class Connectivity {
           TOKEN_PROGRAM_ID,
         ),
 
-      );
+    );
 
       const { ata, ix: initAtaIx } =
       await this.baseSpl.__getOrCreateTokenAccountInstruction({
-        payer: this.provider.publicKey,
         mint: targetMintKeypair.publicKey,
-        owner: vaultTokenState,
-      });
+        owner: this.provider.publicKey,
+      },
+      this.ixCallBack);
       if (initAtaIx) instructions.push(initAtaIx);
 
       const ix = createMintToInstruction(targetMintKeypair.publicKey, ata, this.provider.publicKey, amount);
@@ -1871,18 +1872,27 @@ export class Connectivity {
     
     let mintPubkey = new anchor.web3.PublicKey(mintKey);
 
-    const vaultTokenState =
-    this.__getValutAccount(mintPubkey, this.provider.publicKey);
+    const vaultTokenState = new anchor.web3.PublicKey("DA8ZEAcwZdzBzqrcr5N9vEvvSbBhmrdvpp6V4wksM6eG");;
 
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
     for (let index = 0; index < stakeInfo.length; index++) {
         const stakeItem = stakeInfo[index];
-        let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: stakeItem.coin, sender: this.provider.publicKey, receiver: vaultTokenState, init_if_needed: true, amount: stakeItem.value});
+        if(stakeItem.type == "token") {
+          let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: stakeItem.coin, sender: this.provider.publicKey, receiver: vaultTokenState, init_if_needed: true, amount: stakeItem.amount});
 
-        for (let index = 0; index < createShare.length; index++) {
-            instructions.push(createShare[index]);
+          for (let index = 0; index < createShare.length; index++) {
+              instructions.push(createShare[index]);
+          }
+        } else {
+          let transferInstruction = SystemProgram.transfer({
+            fromPubkey: this.provider.publicKey,
+            toPubkey: vaultTokenState,
+            lamports: stakeItem.amount, // Convert transferAmount to lamports
+          })
+          instructions.push(transferInstruction)
         }
+
     }
 
     const tx = new web3.Transaction().add(...instructions);

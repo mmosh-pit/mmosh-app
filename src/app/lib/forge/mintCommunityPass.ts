@@ -84,7 +84,7 @@ export const mintCommunityPass = async ({
     if (shadowHash === "") {
       return {
         message:
-          "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
+          "There was an error while minting your tokens. Please, try again.",
         type: "error",
       };
     }
@@ -115,7 +115,7 @@ export const mintCommunityPass = async ({
     setMintStatus("Mint");
     return {
       message:
-        "We’re sorry, there was an error while trying to mint your Pass. Check your wallet and try again.",
+        "There was an error while minting your tokens. Please, try again.",
       type: "error",
     };
   } catch (error) {
@@ -123,7 +123,7 @@ export const mintCommunityPass = async ({
     setMintStatus("Mint");
     return {
       message:
-        "We’re sorry, there was an error while trying to mint your Pass. Check your wallet and try again.",
+        "There was an error while minting your tokens. Please, try again.",
       type: "error",
     };
   }

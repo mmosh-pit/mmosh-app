@@ -42,6 +42,23 @@ const CommunityPassMint = ({
 
   const mintPass = async () => {
     if (amountToMint <= 0) return;
+
+    if (solBalance === 0) {
+      setResult({
+        type: "warn",
+        message: `Hey! We checked your wallet and you don't have enough SOL to mint.`,
+      });
+      return;
+    }
+
+    if (balance < price / 1000_000_000) {
+      setResult({
+        type: "warn",
+        message: `Hey! We checked your wallet and you don't have enough ${coin.symbol} to mint.`,
+      });
+      return;
+    }
+
     setIsLoading(true);
     const res = await mintCommunityPass({
       projectInfo,
@@ -55,6 +72,16 @@ const CommunityPassMint = ({
 
     setIsLoading(false);
   };
+
+  const getTextResultColor = React.useCallback(() => {
+    if (result.type === "success") return "text-green-500";
+
+    if (result.type === "error") return "text-red-400";
+
+    if (result.type === "warn") return "text-orange-500";
+
+    return "text-white";
+  }, [result]);
 
   return (
     <div className="community-page-container-card px-6 py-4 rounded-xl">
@@ -84,6 +111,11 @@ const CommunityPassMint = ({
       </div>
 
       <div className="flex flex-col justify-center">
+        {result.message && (
+          <p className={`text-base ${getTextResultColor()} mb-4 max-w-[80%]`}>
+            {result.message}
+          </p>
+        )}
         <Button
           title={mintStatus}
           size="large"

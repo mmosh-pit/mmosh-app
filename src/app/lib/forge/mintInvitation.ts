@@ -88,7 +88,7 @@ export const mintInvitation = async ({
       if (shdwHash === "") {
         return {
           message:
-            "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
+            "There was an error while minting your tokens. Please, try again.",
           type: "error",
         };
       }
@@ -125,14 +125,14 @@ export const mintInvitation = async ({
     console.log("mintBadge ", res);
     if (res.Ok) {
       return {
-        message: "Congrats! You have minted your Invitation(s) successfully.",
+        message: "Congrats! Your tokens have been minted successfully.",
         type: "success",
       };
     } else {
       setInvitationStatus("Mint");
       return {
         message:
-          "We’re sorry, there was an error while trying to mint your Invitation Badge(s). Check your wallet and try again.",
+          "There was an error while minting your tokens. Please, try again.",
         type: "error",
       };
     }
@@ -141,7 +141,7 @@ export const mintInvitation = async ({
     setInvitationStatus("Mint");
     return {
       message:
-        "We’re sorry, there was an error while trying to mint your Invitation Badge(s). Check your wallet and try again.",
+        "There was an error while minting your tokens. Please, try again.",
       type: "error",
     };
   }

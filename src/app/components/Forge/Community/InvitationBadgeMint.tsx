@@ -60,6 +60,8 @@ const InvitationBadgeMint = ({
       return;
     }
 
+    setResult({ type: "", message: "" });
+
     setIsLoading(true);
     const res = await mintInvitation({
       projectInfo,

@@ -213,7 +213,7 @@ const Swap = () => {
           </div>
 
           <div className="flex flex-col mt-4">
-            {result.res === "err" && (
+            {result.res === "error" && (
               <p className="text-red-600 text-center mb-2 text-sm">
                 There was an error while swapping your tokens. Please, try again
               </p>

@@ -43,6 +43,16 @@ const CommunityPassMint = ({
   const mintPass = async () => {
     if (amountToMint <= 0) return;
 
+    if (projectInfo?.profiles?.length > 0) {
+      setResult({
+        type: "info",
+        message:
+          "Hey! The wallet you've connected is already holding a Community Pass NFT. Instead of minting another, mint some Invitations to earn royalties and make your Community bigger!",
+      });
+
+      return;
+    }
+
     if (solBalance === 0) {
       setResult({
         type: "warn",
@@ -123,7 +133,7 @@ const CommunityPassMint = ({
 
       <div className="flex flex-col justify-center">
         {result.message && (
-          <p className={`text-base ${getTextResultColor()} mb-4 max-w-[80%]`}>
+          <p className={`text-xs ${getTextResultColor()} mb-4 max-w-[80%]`}>
             {result.message}
           </p>
         )}

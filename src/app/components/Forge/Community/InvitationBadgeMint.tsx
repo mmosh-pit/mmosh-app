@@ -60,6 +60,15 @@ const InvitationBadgeMint = ({
       return;
     }
 
+    if (projectInfo?.profiles?.length <= 0) {
+      setResult({
+        type: "warn",
+        message:
+          "Hey! The wallet you've connected doesn't hold a Community Pass. For minting Invitations, a Community Pass is required.",
+      });
+      return;
+    }
+
     setResult({ type: "", message: "" });
 
     setIsLoading(true);
@@ -117,7 +126,7 @@ const InvitationBadgeMint = ({
 
       <div className="flex flex-col justify-center">
         {result.message && (
-          <p className={`text-base ${getTextResultColor()} mb-4 max-w-[80%]`}>
+          <p className={`text-xs ${getTextResultColor()} mb-4 max-w-[80%]`}>
             {result.message}
           </p>
         )}

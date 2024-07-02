@@ -143,6 +143,7 @@ export const swapTokens = async (
       },
     };
   } catch (error) {
+    console.error(error);
     return {
       message:
         "There was an error while swapping your tokens. Please, try again.",

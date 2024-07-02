@@ -131,9 +131,11 @@ const CommunityPassMint = ({
         />
       </div>
 
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center items-center">
         {result.message && (
-          <p className={`text-xs ${getTextResultColor()} mb-4 max-w-[80%]`}>
+          <p
+            className={`text-tiny ${getTextResultColor()} text-center mb-4 max-w-[80%]`}
+          >
             {result.message}
           </p>
         )}

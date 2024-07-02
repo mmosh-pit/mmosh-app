@@ -124,9 +124,11 @@ const InvitationBadgeMint = ({
         />
       </div>
 
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center items-center">
         {result.message && (
-          <p className={`text-xs ${getTextResultColor()} mb-4 max-w-[80%]`}>
+          <p
+            className={`text-tiny ${getTextResultColor()} text-center mb-4 max-w-[80%]`}
+          >
             {result.message}
           </p>
         )}
@@ -140,7 +142,7 @@ const InvitationBadgeMint = ({
         />
 
         <p className="text-white text-sm self-center text-center">
-          Price {price} {coin.symbol.toUpperCase()}
+          Price {price * amountToMint} {coin.symbol.toUpperCase()}
         </p>
         <label className="text-[0.5vmax] self-center text-center">
           Plus you will be charged a small amount of SOL in transaction fees.

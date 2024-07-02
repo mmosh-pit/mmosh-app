@@ -6,8 +6,8 @@ export type MintInvitationParams = {
   amount: number;
   wallet: AnchorWallet;
   setInvitationStatus: React.Dispatch<React.SetStateAction<string>>;
-  pronouns: string;
-  userName: string;
+  pronouns?: string;
+  userName?: string;
   community: Community;
   projectInfo: any;
 };

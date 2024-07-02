@@ -99,6 +99,7 @@ export class Connectivity {
       const profileEdition = BaseMpl.getEditionAccount(profile);
       const collectionMetadata = BaseMpl.getMetadataAccount(collection);
       const collectionEdition = BaseMpl.getEditionAccount(collection);
+      // const collectionState = this.__getCollectionStateAccount(collection)
       const adminAta = getAssociatedTokenAddressSync(profile, admin);
 
       console.log("test3");
@@ -234,11 +235,16 @@ export class Connectivity {
       const genesisProfile = profileCollectionState.genesisProfile;
 
       const {
+        //profiles
+        // genesisProfile,
+        // parentProfile,
+        //
         currentGreatGrandParentProfileHolder,
         currentGgreatGrandParentProfileHolder,
         currentGrandParentProfileHolder,
         currentGenesisProfileHolder,
         currentParentProfileHolder,
+        //
         //
       } = await this.__getProfileHoldersInfo(
         parentProfileStateInfo.lineage,
@@ -246,6 +252,8 @@ export class Connectivity {
         genesisProfile,
         web3Consts.oposToken,
       );
+
+      const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
 
       const rootMainState = web3.PublicKey.findProgramAddressSync(
         [Seeds.mainState],
@@ -476,6 +484,7 @@ export class Connectivity {
           this.__getProfileStateAccount(parentProfile),
         );
       console.log("mint pass 4");
+      const lut = parentProfileStateInfo.lut;
       const parentProfileNftInfo = await this.metaplex
         .nfts()
         .findByMint({ mintAddress: parentProfile, loadJsonMetadata: false });
@@ -529,6 +538,10 @@ export class Connectivity {
       console.log("mint pass 74");
 
       console.log("mint pass 8");
+      const userOposAta = getAssociatedTokenAddressSync(
+        mainStateInfo.oposToken,
+        user,
+      );
       const parentMainState = web3.PublicKey.findProgramAddressSync(
         [Seeds.mainState],
         this.programId,
@@ -625,7 +638,7 @@ export class Connectivity {
       }
 
       console.log("mint pass 10", commonLut);
-      const commonLutInfo = (
+      const commonLutInfo = await (
         await this.connection.getAddressLookupTable(
           new anchor.web3.PublicKey(commonLut),
         )
@@ -837,9 +850,9 @@ export class Connectivity {
 
   async initBadge(input: {
     profile: web3.PublicKey | string;
-    name: string;
-    symbol: string;
-    uri: string;
+    name?: string;
+    symbol?: string;
+    uri?: string;
   }): Promise<Result<TxPassType<{ subscriptionToken: string }>, any>> {
     try {
       const user = this.provider.publicKey;
@@ -903,7 +916,7 @@ export class Connectivity {
       console.log("this.projectid is ", this.projectId);
 
       const ix = await this.program.methods
-        .initPassToken(name, symbol, uri)
+        .initPassToken(name!, symbol!, uri)
         .accounts({
           profile,
           mainState: this.mainState,
@@ -985,9 +998,8 @@ export class Connectivity {
           await this.program.account.profileState.fetch(
             this.__getProfileStateAccount(parentProfile),
           );
-        if (!parentProfileStateInfoData.activationToken)
-          throw "Subscription Token not initialised";
-        subscriptionToken = parentProfileStateInfoData.activationToken;
+        subscriptionToken = parentProfileStateInfoData.activationToken!;
+        if (!subscriptionToken) throw "Subscription Token not initialised";
         subscriptionTokenState =
           this.__getActivationTokenStateAccount(subscriptionToken);
       } else {
@@ -1005,6 +1017,11 @@ export class Connectivity {
         );
       console.log("mintBadge 3");
       parentProfile = activationTokenStateInfo.parentProfile;
+      const parentProfileState = this.__getProfileStateAccount(parentProfile);
+      console.log("mintBadge 4");
+      let parentProfileStateInfo =
+        await this.program.account.profileState.fetch(parentProfileState);
+      console.log("mintBadge 5");
       if (!receiver) receiver = user;
       if (typeof receiver == "string") receiver = new web3.PublicKey(receiver);
       const { ata: receiverAta } =
@@ -1087,9 +1104,8 @@ export class Connectivity {
           await this.program.account.profileState.fetch(
             this.__getProfileStateAccount(parentProfile),
           );
-        if (!parentProfileStateInfoData.activationToken)
-          throw "Subscription Token not initialised";
-        subscriptionToken = parentProfileStateInfoData.activationToken;
+        subscriptionToken = parentProfileStateInfoData.activationToken!;
+        if (!subscriptionToken) throw "Subscription Token not initialised";
         subscriptionTokenState =
           this.__getActivationTokenStateAccount(subscriptionToken);
       } else {
@@ -1578,6 +1594,7 @@ export class Connectivity {
 
       let activationTokenBalance: any = 0;
       let profiles: any = [];
+      let allpasses: any = [];
       const activationTokens = [];
       let totalChild = 0;
       let seniority = 0;
@@ -1588,6 +1605,11 @@ export class Connectivity {
           const metadata = await this.getProfileMetadataByProject(i?.uri);
           console.log("metadata", metadata);
           if (metadata) {
+            allpasses.push({
+              name: i.name,
+              address: nftInfo.mintAddress.toBase58(),
+              userinfo: metadata,
+            });
             if (metadata.project == projectId) {
               if (seniority == 0 || seniority > metadata.seniority) {
                 profiles = [
@@ -1618,6 +1640,10 @@ export class Connectivity {
           );
           console.log("hasInvitation ", hasInvitation);
           if (hasInvitation) {
+            const userActivationAta = getAssociatedTokenAddressSync(
+              profileStateInfo.activationToken,
+              user,
+            );
             activationTokenBalance = await this.getActivationTokenBalance(
               profileStateInfo.activationToken,
             );
@@ -1742,6 +1768,7 @@ export class Connectivity {
       }
       const profileInfo = {
         profiles,
+        allpasses,
         activationTokens,
         activationTokenBalance,
         totalChild: totalChild,
@@ -1757,6 +1784,7 @@ export class Connectivity {
       const profiles: any = [];
       const profileInfo = {
         profiles: profiles,
+        allpasses: [],
         activationTokens: profiles,
         activationTokenBalance: 0,
         totalChild: 0,

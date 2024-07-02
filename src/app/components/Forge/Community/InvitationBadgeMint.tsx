@@ -42,6 +42,35 @@ const InvitationBadgeMint = ({
   });
 
   const mintInvitations = async () => {
+    if (amountToMint <= 0) return;
+
+    if (solBalance === 0) {
+      setResult({
+        type: "warn",
+        message: `Hey! We checked your wallet and you don't have enough SOL to mint.`,
+      });
+      return;
+    }
+
+    if (balance < Number(amountToMint) * (price / 1000_000_000)) {
+      setResult({
+        type: "warn",
+        message: `Hey! We checked your wallet and you don't have enough ${coin.symbol} to mint.`,
+      });
+      return;
+    }
+
+    if (projectInfo?.profiles?.length <= 0) {
+      setResult({
+        type: "warn",
+        message:
+          "Hey! The wallet you've connected doesn't hold a Community Pass. For minting Invitations, a Community Pass is required.",
+      });
+      return;
+    }
+
+    setResult({ type: "", message: "" });
+
     setIsLoading(true);
     const res = await mintInvitation({
       projectInfo,
@@ -49,14 +78,24 @@ const InvitationBadgeMint = ({
       wallet: wallet!,
       amount: amountToMint,
       setInvitationStatus,
-      pronouns: currentUser!.profile.pronouns,
-      userName: currentUser!.profile.name,
+      pronouns: currentUser?.profile?.pronouns,
+      userName: currentUser?.profile?.name,
     });
 
     setResult({ type: res.type, message: res.message });
 
     setIsLoading(false);
   };
+
+  const getTextResultColor = React.useCallback(() => {
+    if (result.type === "success") return "text-green-500";
+
+    if (result.type === "error") return "text-red-400";
+
+    if (result.type === "warn") return "text-orange-500";
+
+    return "text-white";
+  }, [result]);
 
   return (
     <div className="community-page-container-card px-6 py-4 rounded-xl">
@@ -85,18 +124,25 @@ const InvitationBadgeMint = ({
         />
       </div>
 
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center items-center">
+        {result.message && (
+          <p
+            className={`text-tiny ${getTextResultColor()} text-center mb-4 max-w-[80%]`}
+          >
+            {result.message}
+          </p>
+        )}
         <Button
           title={invitationStatus}
           size="large"
           action={mintInvitations}
           isPrimary
           isLoading={false}
-          disabled={isLoading}
+          disabled={isLoading || amountToMint <= 0}
         />
 
         <p className="text-white text-sm self-center text-center">
-          Price {price} {coin.symbol.toUpperCase()}
+          Price {price * amountToMint} {coin.symbol.toUpperCase()}
         </p>
         <label className="text-[0.5vmax] self-center text-center">
           Plus you will be charged a small amount of SOL in transaction fees.

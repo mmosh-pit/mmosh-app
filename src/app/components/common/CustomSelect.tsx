@@ -26,6 +26,7 @@ const CustomSelect = ({
   selectedElements,
 }: Props) => {
   const divRef = React.useRef<HTMLDivElement>(null);
+  const divWrapperRef = React.useRef<HTMLDivElement>(null);
 
   const [divHeight, setDivHeight] = React.useState(50);
 
@@ -39,7 +40,7 @@ const CustomSelect = ({
       setTimeout(() => {
         setDisplayItems(false);
         animating.current = false;
-      }, 200);
+      }, 100);
       return;
     }
 
@@ -50,6 +51,18 @@ const CustomSelect = ({
     if (animating.current) return;
     setIsOpen(!isOpen);
   };
+
+  const handleClickOutside = React.useCallback(
+    (event: any) => {
+      if (
+        divWrapperRef.current &&
+        !divWrapperRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    },
+    [isOpen],
+  );
 
   React.useEffect(() => {
     const elementHeight = divRef.current?.offsetHeight || 0;
@@ -63,6 +76,13 @@ const CustomSelect = ({
     setDivHeight(height || MIN_DIV_HEIGHT);
   }, [selectedElements]);
 
+  React.useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside, true);
+    };
+  }, [divWrapperRef]);
+
   return (
     <div className="flex flex-col w-full">
       <p className="text-sm text-white">{title}</p>
@@ -72,6 +92,7 @@ const CustomSelect = ({
         style={{
           height: !isOpen ? `${divHeight}px` : "500px",
         }}
+        ref={divWrapperRef}
       >
         <div
           className="w-full flex justify-between items-center self-center"
@@ -111,7 +132,10 @@ const CustomSelect = ({
             {communitiesTopics.map((topic) => {
               if (topic.type === "header") {
                 return (
-                  <h5 className="my-4 text-gray-200" key={topic.value}>
+                  <h5
+                    className="my-4 text-gray-200 capitalize"
+                    key={topic.value}
+                  >
                     {topic.label}
                   </h5>
                 );

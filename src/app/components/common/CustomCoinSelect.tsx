@@ -25,6 +25,8 @@ const CustomCoinSelect = ({
   onSelect,
   selectedItem,
 }: Props) => {
+  const divWrapperRef = React.useRef<HTMLDivElement>(null);
+
   const [profileInfo] = useAtom(userWeb3Info);
   const [isOpen, setIsOpen] = useAtom(selectOpened);
 
@@ -67,6 +69,18 @@ const CustomCoinSelect = ({
     [profileInfo?.profile.address],
   );
 
+  const handleClickOutside = React.useCallback(
+    (event: any) => {
+      if (
+        divWrapperRef.current &&
+        !divWrapperRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    },
+    [isOpen],
+  );
+
   React.useEffect(() => {
     if (!fetching.current) {
       getCoinsLists();
@@ -92,6 +106,13 @@ const CustomCoinSelect = ({
     setDisplayItems(true);
   }, [isOpen]);
 
+  React.useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside, true);
+    };
+  }, [divWrapperRef]);
+
   const onTokenSelect = React.useCallback((value: Coin) => {
     onSelect(value);
     setIsOpen(false);
@@ -103,6 +124,7 @@ const CustomCoinSelect = ({
 
       <div
         className={`custom-select absolute px-[1vmax] ${!isOpen ? "h-[2.5vmax]" : "h-[500px] opened"} z-2 md:top-[25px] top-[15px]`}
+        ref={divWrapperRef}
       >
         <div
           className="w-full flex justify-between items-center self-center"

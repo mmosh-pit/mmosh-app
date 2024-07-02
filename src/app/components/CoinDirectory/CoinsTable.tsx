@@ -24,8 +24,10 @@ const CoinsTable = () => {
   const [volume] = useAtom(selectedVolume);
 
   const [selectedSort, setSelectedSort] = React.useState({
-    type: "coin",
-    value: "DESC",
+    // type: "coin",
+    // value: "DESC",
+    type: "",
+    value: "",
   });
   const [isLastPage, setIsLastPage] = React.useState(false);
 
@@ -40,8 +42,7 @@ const CoinsTable = () => {
       }
       source.current = axios.CancelToken.source();
 
-      const url =
-        `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}`;
+      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}`;
 
       const apiResult = await axios.get(url, {
         cancelToken: source.current.token,
@@ -78,15 +79,18 @@ const CoinsTable = () => {
     (start: number, end: number) => {
       const isIncremental = start <= end;
 
-      const iconToRender = isIncremental
-        ? <ArrowUp fill={isIncremental ? "#22C55E" : "#DC2626"} />
-        : <ArrowDown fill={isIncremental ? "#22C55E" : "#DC2626"} />;
+      const iconToRender = isIncremental ? (
+        <ArrowUp fill={isIncremental ? "#22C55E" : "#DC2626"} />
+      ) : (
+        <ArrowDown fill={isIncremental ? "#22C55E" : "#DC2626"} />
+      );
 
       const substraction = end - start;
 
-      const percentage = substraction === 0 || start === 0
-        ? "0%"
-        : `${(substraction / start) * 100}%`;
+      const percentage =
+        substraction === 0 || start === 0
+          ? "0%"
+          : `${(substraction / start) * 100}%`;
 
       return (
         <div className="flex items-center justify-evenly">
@@ -157,19 +161,21 @@ const CoinsTable = () => {
     return "#22C55E";
   }, []);
 
-  const handleSortOptionSelect = React.useCallback((type: string) => {
-    if (selectedSort.type === type) {
-      setSelectedSort(
-        {
+  const handleSortOptionSelect = React.useCallback(
+    (type: string) => {
+      return;
+      if (selectedSort.type === type) {
+        setSelectedSort({
           type,
           value: selectedSort.value === "ASC" ? "DESC" : "ASC",
-        },
-      );
-      return;
-    }
+        });
+        return;
+      }
 
-    setSelectedSort({ type, value: "DESC" });
-  }, [selectedSort]);
+      setSelectedSort({ type, value: "DESC" });
+    },
+    [selectedSort],
+  );
 
   React.useEffect(() => {
     getCoins(volume.value, searchText, 0);
@@ -185,23 +191,19 @@ const CoinsTable = () => {
           </th>
           <th align="center">
             <div
-              className="flex items-center"
+              className="flex items-center justify-center"
               onClick={() => handleSortOptionSelect("coin")}
             >
-              {selectedSort.type === "coin" && (
-                <SortIcon />
-              )}
+              {selectedSort.type === "coin" && <SortIcon />}
               <p className="text-white text-sm ml-2">Coin</p>
             </div>
           </th>
           <th align="center">
             <div
-              className="flex items-center"
+              className="flex items-center justify-center"
               onClick={() => handleSortOptionSelect("price")}
             >
-              {selectedSort.type === "price" && (
-                <SortIcon />
-              )}
+              {selectedSort.type === "price" && <SortIcon />}
               <p className="text-white text-sm">Price</p>
             </div>
           </th>
@@ -214,24 +216,20 @@ const CoinsTable = () => {
 
           <th align="center">
             <div
-              className="flex items-center"
+              className="flex items-center justify-center"
               onClick={() => handleSortOptionSelect("fdv")}
             >
-              {selectedSort.type === "fdv" && (
-                <SortIcon />
-              )}
+              {selectedSort.type === "fdv" && <SortIcon />}
               <p className="text-white text-sm">FDV%</p>
             </div>
           </th>
 
           <th align="center">
             <div
-              className="flex items-center"
+              className="flex items-center justify-center"
               onClick={() => handleSortOptionSelect("volume")}
             >
-              {selectedSort.type === "volume" && (
-                <SortIcon />
-              )}
+              {selectedSort.type === "volume" && <SortIcon />}
               <p className="text-white text-sm">Volume%</p>
             </div>
           </th>

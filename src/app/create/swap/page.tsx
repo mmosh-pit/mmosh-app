@@ -52,7 +52,6 @@ const Swap = () => {
 
   const onTokenSelect = React.useCallback(
     async (token: SwapCoin, isBase: boolean) => {
-      console.log("Wallet: ", wallet);
       setSwapLoading(true);
       const result = await getSwapPrices(token, wallet!, isBase);
 
@@ -70,6 +69,10 @@ const Swap = () => {
 
     setResult({ res: response.type, message: response.message });
     setSwapLoading(false);
+
+    setTimeout(() => {
+      setResult({ res: "", message: "" });
+    }, 4000);
   }, [baseToken, targetToken, wallet]);
 
   const switchCoins = React.useCallback(() => {
@@ -210,7 +213,7 @@ const Swap = () => {
           </div>
 
           <div className="flex flex-col mt-4">
-            {result.res === "err" && (
+            {result.res === "error" && (
               <p className="text-red-600 text-center mb-2 text-sm">
                 There was an error while swapping your tokens. Please, try again
               </p>

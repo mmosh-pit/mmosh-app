@@ -22,10 +22,10 @@ export async function GET(req: NextRequest) {
   const tokenomics = await projectTokenomicsCollection.find({projectkey:project}).toArray();
 
   const projectCollection = db.collection("mmosh-app-project");
-  const projectData = await projectCollection.findOne({projectkey:project});
+  const projectData = await projectCollection.findOne({key:project});
 
   const passCollection = db.collection("mmosh-app-project-pass");
-  const passes = await projectCollection.find({projectkey:project}).toArray();;
+  const passes = await passCollection.find({projectkey:project}).toArray();;
 
   const result = {
     coins,

@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PieChart } from 'reaviz';
 import { Bars } from "react-loader-spinner";
+import { useAtom } from "jotai";
+import { userWeb3Info } from "@/app/store";
 export default function ProjectView({ params }: { params: { address: string } }) {
     const navigate = useRouter();
+    const [profileInfo] = useAtom(userWeb3Info);
     const [projectLoading, setProjectLoading] = useState(true);
     const [projectDetail, setProjectDetail] = useState<any>(null)
     const countDownDate = new Date("2024-08-27").getTime();
@@ -121,7 +124,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                 <h4 className="text-[15px] text-white">Creator</h4>
                                                 <ul>
                                                 {projectDetail.profiles.map((profileItem:any, i:any) => (
-                                                    <li className="underline"><a href="javascript:void(0)">{profileItem.name}</a></li>
+                                                    <li className="underline"><a href="javascript:void(0)">{capitalizeString(profileItem.name)}</a></li>
                                                 ))}
                                                 </ul>
                                             </div>
@@ -129,7 +132,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                 <h4 className="text-[15px] text-white">Community</h4>
                                                 <ul>
                                                 {projectDetail.community.map((communityItem:any, i:any) => (
-                                                    <li className="underline"><a href="javascript:void(0)">{communityItem.name}</a></li>
+                                                    <li className="underline"><a href="javascript:void(0)">{capitalizeString(communityItem.name)}</a></li>
                                                 ))}
                                                 </ul>
                                             </div>
@@ -185,149 +188,142 @@ export default function ProjectView({ params }: { params: { address: string } })
                                     <p className="text-header-small-font-size text-center">Seconds</p>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                <div className="col-span-3">
-                                    <div>
-                                        <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Project Passes</h4>
-                                        <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                            <div className="border-container rounded-md">
-                                                <img src="/profile.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
-                                            </div>
-                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                Frank
-                                            </h5>
-                                            <div className="mb-10">
-                                            <p className="text-para-font-size text-center">Invitations to Mint</p>
-                                            <div className="max-w-28 mx-auto">
-                                                <Input
-                                                        type="text"
-                                                        title=""
-                                                        required={false}
-                                                        helperText=""
-                                                        placeholder="0"
-                                                        value={""}
-                                                        onChange={(e:any) =>{}}
-                                                    />
-                                            </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Mint</button>
-                                                <p className="text-para-font-size text-center leading-none mt-1">Price 5.44 MMOSH</p>
-                                                <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                <p className="text-para-font-size text-center leading-none mb-1">Current Balance
-        88.888
-        MMOSH</p>
-                                                <p className="text-para-font-size text-center leading-none">Current Balance
-        88.888
-        SOL</p>
+                            {profileInfo &&
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                    <div className="col-span-3">
+                                        <div>
+                                            <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Project Passes</h4>
+                                            <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                <div className="border-container rounded-md">
+                                                    <img src={projectDetail.project.image} alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
+                                                </div>
+                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                    {capitalizeString(projectDetail.project.name)}
+                                                </h5>
+                                                <div className="mb-10">
+                                                <p className="text-para-font-size text-center">Pass to Mint</p>
+                                                <div className="max-w-28 mx-auto">
+                                                    <Input
+                                                            type="text"
+                                                            title=""
+                                                            required={false}
+                                                            helperText=""
+                                                            placeholder="0"
+                                                            value={""}
+                                                            onChange={(e:any) =>{}}
+                                                        />
+                                                </div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Mint</button>
+                                                    <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.price} MMOSH</p>
+                                                    <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                    <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                                                    <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="col-span-3">
-                                    <div>
-                                        <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Invitation Badge</h4>
-                                        <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                            <div className="rounded-md">
-                                                <img src="/invitation.png" alt="invitation" className="w-full object-cover p-0.5 rounded-md"/>
-                                            </div>
-                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                Frank               
-                                            </h5>
-                                            <div className="mb-10">
-                                            <p className="text-para-font-size text-center">Invitations to Mint</p>
-                                            <div className="max-w-28 mx-auto">
-                                                <Input
-                                                        type="text"
-                                                        title=""
-                                                        required={false}
-                                                        helperText=""
-                                                        placeholder="0"
-                                                        value={""}
-                                                        onChange={(e:any) =>{}}
-                                                    />
-                                            </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Mint</button>
-                                                <p className="text-para-font-size text-center leading-none mt-1">Price 5.44 MMOSH</p>
-                                                <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                <p className="text-para-font-size text-center leading-none mb-1">Current Balance
-        88.888
-        MMOSH</p>
-                                                <p className="text-para-font-size text-center leading-none">Current Balance
-        88.888
-        SOL</p>
+                                    <div className="col-span-3">
+                                        <div>
+                                            <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Invitation Badge</h4>
+                                            <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                <div className="rounded-md">
+                                                    <img src={projectDetail.project.image} alt="invitation" className="w-full object-cover p-0.5 rounded-md"/>
+                                                </div>
+                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                {capitalizeString(projectDetail.project.name)}               
+                                                </h5>
+                                                <div className="mb-10">
+                                                <p className="text-para-font-size text-center">Invitations to Mint</p>
+                                                <div className="max-w-28 mx-auto">
+                                                    <Input
+                                                            type="text"
+                                                            title=""
+                                                            required={false}
+                                                            helperText=""
+                                                            placeholder="0"
+                                                            value={""}
+                                                            onChange={(e:any) =>{}}
+                                                        />
+                                                </div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Mint</button>
+                                                    <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.invitationprice - (projectDetail.project.invitationprice * (projectDetail.project.discount / 100))} MMOSH</p>
+                                                    <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                    <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                                                    <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} SOL</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="col-span-3">
-                                    <div>
-                                        <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Launch Pass 1</h4>
-                                        <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                            <div className="border-container rounded-md">
-                                                <img src="/profile.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
-                                            </div>
-                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                Frank
-                                                <div className="px-1.5 mt-1.5">
-                                                    <img src="/dot.png" className="w-1.5 h-1.5" />
+                                    {projectDetail.passes.map((passItem:any, i:any) => (
+                                        <div className="col-span-3">
+                                            <div>
+                                                <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Launch Pass 1</h4>
+                                                <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                    <div className="border-container rounded-md">
+                                                        <img src={passItem.image} alt="pass image" className="w-full object-cover p-0.5 rounded-md"/>
+                                                    </div>
+                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                        {capitalizeString(passItem.name)}
+                                                        <div className="px-1.5 mt-1.5">
+                                                            <img src="/dot.png" className="w-1.5 h-1.5" />
+                                                        </div>
+                                                    
+                                                        <span className="text-small-font-size font-poppins leading-5">{passItem.symbol.toUpperCase()}</span>
+                                                    </h5>
+                                                    <div className="mb-2.5">
+                                                    <div className="flex gap-4">
+                                                        <div>
+                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                    Price of Pass
+                                                                </h5>
+                                                                <p className="text-para-font-size">{passItem.price}</p>
+                                                        </div>
+                                                        <div>
+                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                    Supply
+                                                                </h5>
+                                                                <p className="text-para-font-size">{passItem.supply}</p>
+                                                        </div>
+                                                        <div>
+                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                    Number of Tokens
+                                                                </h5>
+                                                                <p className="text-para-font-size">{Math.ceil(passItem.price / (projectDetail.coins.listingprice - (projectDetail.coins.listingprice * (passItem.discount / 100))))}</p>
+                                                        </div>
+                                                        </div>
+                                                        <div className="flex gap-4 mt-2.5">
+                                                        <div>
+                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                    Listing Price
+                                                                </h5>
+                                                                <p className="text-para-font-size">{projectDetail.coins.listingprice} USD</p>
+                                                        </div>
+                                                        <div>
+                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                    Discount
+                                                                </h5>
+                                                                <p className="text-para-font-size">{passItem.discount}%</p>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Buy</button>
+                                                        <p className="text-para-font-size text-center leading-none mt-1">Price {passItem.price} USDC</p>
+                                                        <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                        <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.usdcBalance.toFixed(2)} USDC</p>
+                                                        <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                    </div>
                                                 </div>
-                                            
-                                                <span className="text-small-font-size font-poppins leading-5">Frankie</span>
-                                            </h5>
-                                            <div className="mb-2.5">
-                                            <div className="flex gap-4">
-                                                <div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                            Price of Pass
-                                                        </h5>
-                                                        <p className="text-para-font-size">21</p>
-                                                </div>
-                                                <div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                            Supply
-                                                        </h5>
-                                                        <p className="text-para-font-size">14</p>
-                                                </div>
-                                                <div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                            Number of Tokens
-                                                        </h5>
-                                                        <p className="text-para-font-size">12</p>
-                                                </div>
-                                                </div>
-                                                <div className="flex gap-4 mt-2.5">
-                                                <div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                            Listing Price
-                                                        </h5>
-                                                        <p className="text-para-font-size">12 USD</p>
-                                                </div>
-                                                <div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                            Discount
-                                                        </h5>
-                                                        <p className="text-para-font-size">12%</p>
-                                                </div>
-                                            </div>
-                                            </div>
-                                            <div className="text-center">
-                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Buy</button>
-                                                <p className="text-para-font-size text-center leading-none mt-1">Price 5.44 MMOSH</p>
-                                                <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                <p className="text-para-font-size text-center leading-none mb-1">Current Balance
-        88.888
-        MMOSH</p>
-                                                <p className="text-para-font-size text-center leading-none">Current Balance
-        88.888
-        SOL</p>
                                             </div>
                                         </div>
-                                    </div>
+                                    ))}
                                 </div>
-                            </div>
+                            }
+
                             </div>
                         </>
                     }

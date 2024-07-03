@@ -599,7 +599,7 @@ export default function ProjectCreateStep9() {
                 name: project.name, 
                 symbol: project.symbol, 
                 desc: project.desc, 
-                image: project.image, 
+                image: projectImageUri, 
                 key: projectKeyPair.publicKey.toBase58(), 
                 lut: res4.Ok.info.lookupTable, 
                 seniority: 0, 

@@ -6,20 +6,13 @@ export async function POST(req: NextRequest) {
 
   const { type, value, cliff, vesting, projectkey} = await req.json();
 
-  const tokenomics = await collection.findOne({
-    projectkey: projectkey,
+  await collection.insertOne({
+      type,
+      value,
+      cliff,
+      vesting,
+      projectkey
   });
+  return NextResponse.json("", { status: 200 });
 
-  if (!tokenomics) {
-    await collection.insertOne({
-        type,
-        value,
-        cliff,
-        vesting,
-        projectkey
-    });
-    return NextResponse.json("", { status: 200 });
-  } else {
-    return NextResponse.json("", { status: 200 });
-  }
 }

@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
 
   const communityDetails = await collection.findOne({
     projectkey: projectkey,
+    communitykey,
   });
 
   if (!communityDetails) {

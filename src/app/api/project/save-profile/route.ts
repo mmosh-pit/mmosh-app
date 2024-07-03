@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
 
   const profileDetails = await collection.findOne({
     projectkey: projectkey,
+    profilekey
   });
 
   if (!profileDetails) {

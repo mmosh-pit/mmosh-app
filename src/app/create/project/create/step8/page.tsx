@@ -32,7 +32,7 @@ export default function ProjectCreateStep8() {
 
     const validateFields = () => {
 
-        if(fields.usd < 1) {
+        if(fields.usd < 100) {
             createMessage("Liqudity should be greater than 100 USD", "danger-container");
             return false;
         }

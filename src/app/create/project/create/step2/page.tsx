@@ -319,7 +319,7 @@ export default function ProjectCreateStep2() {
                                                     </div>
                                                 
                                                     <h6 className="text-xs text-white pt-1.5 text-center">{profile.name}</h6>
-                                                    <div className="pt-1.5">
+                                                    <div className={profile.selected == 1 ? "visible pt-1.5" : "invisible pt-1.5"}>
                                                         <Select
                                                         value={profile.role}
                                                         onChange={(e) =>

@@ -512,7 +512,7 @@ export default function ProjectCreateStep9() {
             console.log("register lookup result ", res4)
 
             setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
+            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
             console.log("send price result ", res5)
 
             // save coins

@@ -205,44 +205,74 @@ export default function ProjectCreateStep6() {
                         </div>
                     </div>
                 </div>
+
                 <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                     <div className="grid grid-cols-12">
-                    <div className="col-start-5 col-span-4">
-                            <div className="backdrop-container rounded-xl py-5 px-10 border border-white border-opacity-20 mb-10 ">
+                    <div className="col-start-4 col-span-6">
+                            <div className="grid grid-cols-12 pb-5">
+                                <div className="col-span-6">
+                                    <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">Total number of tokens</p>
+                                    <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">{coinDetails.supply} {coinDetails.symbol.toUpperCase()}</p>
+                                </div>
+                                <div className="col-span-6">
+                                    <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">FDV</p>
+                                    <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">{coinDetails.supply * coinDetails.listingPrice} USD</p>
+                                </div>
+                            </div>
+                            <div className="backdrop-container rounded-xl py-10 px-10 border border-white border-opacity-20 mb-10 ">
                                 <h3 className="text-sub-title-font-size text-while font-poppins mb-5 text-center">Tokenomics</h3>
                                 {fields.map((fieldItem, i) => (
                                     <div className="mt-3.5">
-                                        <div className="grid grid-cols-2 gap-4">
-                                                <div className="flex">
-                                                    {i!=0 &&
-                                                        <div className="mt-1 pr-3.5 cursor-pointer" onClick={()=>{removeTokenomics(i)}}>
-                                                            <MinusIcon />
-                                                        </div>
-                                                    }
-                     
-                                          
-                                                    <Select
-                                                    value={fieldItem.type}
-                                                    onChange={(e) =>{
-                                                        fieldItem.type = e.target.value;
-                                                        updateTokenomics(i,fieldItem);
+                                        <div className="flex justify-center">
+                                            <div className="grid grid-cols-4 gap-2">
+                                                    <div className="flex">
+                                                        {i!=0 &&
+                                                            <div className="mt-1 pr-3.5 cursor-pointer" onClick={()=>{removeTokenomics(i)}}>
+                                                                <MinusIcon />
+                                                            </div>
+                                                        }
+                        
+                                            
+                                                        <Select
+                                                        value={fieldItem.type}
+                                                        onChange={(e) =>{
+                                                            fieldItem.type = e.target.value;
+                                                            updateTokenomics(i,fieldItem);
 
-                                                    }}
-                                                    options={tokenomics}
+                                                        }}
+                                                        options={tokenomics}
+                                                        />
+
+                                                    </div>
+                                                    <Input
+                                                        type="text"
+                                                        title=""
+                                                        required={false}
+                                                        helperText=""
+                                                        placeholder="%"
+                                                        value={(fieldItem.value > 0 ? fieldItem.value.toString() : "")}
+                                                        onChange={(e) => {fieldItem.value = prepareNumber(Number(e.target.value)); updateTokenomics(i, fieldItem) }}
                                                     />
-
-                                                </div>
-
-
-                                                <Input
-                                                    type="text"
-                                                    title=""
-                                                    required={false}
-                                                    helperText=""
-                                                    placeholder="%"
-                                                    value={(fieldItem.value > 0 ? fieldItem.value.toString() : "")}
-                                                    onChange={(e) => {fieldItem.value = prepareNumber(Number(e.target.value)); updateTokenomics(i, fieldItem) }}
-                                                />
+                                                    <Input
+                                                        type="text"
+                                                        title=""
+                                                        required={false}
+                                                        helperText=""
+                                                        placeholder="--"
+                                                        value={(fieldItem.value > 0 ? (coinDetails.supply * (fieldItem.value / 100)).toString() : "")}
+                                                        onChange={(e) => { }}
+                                                    />
+                                                    <Input
+                                                        type="text"
+                                                        title=""
+                                                        required={false}
+                                                        helperText=""
+                                                        placeholder="--"
+                                                        value={(fieldItem.value > 0 ? ((coinDetails.supply * (fieldItem.value / 100)) * coinDetails.listingPrice).toString() : "")}
+                                                        onChange={(e) => { }}
+                                                    />
+                                            </div>
+                                            <p className="leading-10 pl-2.5">USD</p>
                                         </div>
                                     </div>
                                 ))}

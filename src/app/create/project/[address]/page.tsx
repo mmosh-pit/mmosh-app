@@ -62,7 +62,8 @@ export default function ProjectView({ params }: { params: { address: string } })
     const [launchState, setLaunchState] = useState("")
     const [launchStatus, setLaunchStatus] = useState("Countdown to Launch")
 
-    const [enableLauncPass, setEnableLauncPass] = useState(false)
+    const [passes, setPasses] = useState([])
+
     const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
 
     useEffect(() => {
@@ -139,11 +140,9 @@ export default function ProjectView({ params }: { params: { address: string } })
                 setCountDownDate(presaleStart.getTime())
             }
 
-
             if(saleStartdiff > 0 && saleEnddiff < 0) {
                 setLaunchStatus("Countdown  to Presale End")
                 setCountDownDate(presaleEnd.getTime())
-                setEnableLauncPass(true)
             }
 
             if(saleStartdiff > 0 && saleEnddiff > 0 && dexdiff < 0) {
@@ -151,7 +150,21 @@ export default function ProjectView({ params }: { params: { address: string } })
                 setCountDownDate(dexListDate.getTime())
             }
 
-
+            const passList:any = []
+            for (let index = 0; index < listResult.data.passes.length; index++) {
+                const element = listResult.data.passes[index];
+                let redeemDate = convertUTCDateToLocalDate(new Date(element.redemptiondate))
+                let redeemdiff = new Date().getTime() - redeemDate.getTime();
+                if(saleStartdiff > 0 && saleEnddiff < 0) {
+                    element.isbuy = true;
+                    element.isclaim = false;
+                } else {
+                    element.isbuy = false;
+                    element.isclaim = redeemdiff > 0
+                }
+                passList.push(element)
+            }
+            setPasses(passList);
 
             setTokenomicsChart(tokenomics);
             setProjectLoading(false)
@@ -591,6 +604,11 @@ export default function ProjectView({ params }: { params: { address: string } })
         }
     }
 
+    const handlePassBuy = async(passItem:any) => {
+    }
+
+    const handlePassClaim = async(passItem:any) => {
+    }
 
     return (
         <>
@@ -776,73 +794,78 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                 </div>
                                             </div>
                                         }
-                                        {enableLauncPass &&
-                                           <>
-                                                {projectDetail.passes.map((passItem:any, i:any) => (
-                                                    <div className="col-span-3">
-                                                        <div>
-                                                            <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Launch Pass 1</h4>
-                                                            <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                                <div className="border-container rounded-md">
-                                                                    <img src={passItem.image} alt="pass image" className="w-full object-cover p-0.5 rounded-md"/>
-                                                                </div>
-                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                                    {capitalizeString(passItem.name)}
-                                                                    <div className="px-1.5 mt-1.5">
-                                                                        <img src="/dot.png" className="w-1.5 h-1.5" />
-                                                                    </div>
-                                                                
-                                                                    <span className="text-small-font-size font-poppins leading-5">{passItem.symbol.toUpperCase()}</span>
-                                                                </h5>
-                                                                <div className="mb-2.5">
-                                                                <div className="flex gap-4">
-                                                                    <div>
-                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                                Price of Pass
-                                                                            </h5>
-                                                                            <p className="text-para-font-size">{passItem.price}</p>
-                                                                    </div>
-                                                                    <div>
-                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                                Supply
-                                                                            </h5>
-                                                                            <p className="text-para-font-size">{passItem.supply}</p>
-                                                                    </div>
-                                                                    <div>
-                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                                Number of Tokens
-                                                                            </h5>
-                                                                            <p className="text-para-font-size">{Math.ceil(passItem.price / (projectDetail.coins.listingprice - (projectDetail.coins.listingprice * (passItem.discount / 100))))}</p>
-                                                                    </div>
-                                                                    </div>
-                                                                    <div className="flex gap-4 mt-2.5">
-                                                                    <div>
-                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                                Listing Price
-                                                                            </h5>
-                                                                            <p className="text-para-font-size">{projectDetail.coins.listingprice} USD</p>
-                                                                    </div>
-                                                                    <div>
-                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                                Discount
-                                                                            </h5>
-                                                                            <p className="text-para-font-size">{passItem.discount}%</p>
-                                                                    </div>
-                                                                </div>
-                                                                </div>
-                                                                <div className="text-center">
-                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Buy</button>
+                                        {passes.map((passItem:any, i:any) => (
+                                            <div className="col-span-3">
+                                                <div>
+                                                    <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Launch Pass {i}</h4>
+                                                    <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                        <div className="border-container rounded-md">
+                                                            <img src={passItem.image} alt="pass image" className="w-full object-cover p-0.5 rounded-md"/>
+                                                        </div>
+                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                            {capitalizeString(passItem.name)}
+                                                            <div className="px-1.5 mt-1.5">
+                                                                <img src="/dot.png" className="w-1.5 h-1.5" />
+                                                            </div>
+                                                        
+                                                            <span className="text-small-font-size font-poppins leading-5">{passItem.symbol.toUpperCase()}</span>
+                                                        </h5>
+                                                        <div className="mb-2.5">
+                                                        <div className="flex gap-4">
+                                                            <div>
+                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                        Price of Pass
+                                                                    </h5>
+                                                                    <p className="text-para-font-size">{passItem.price}</p>
+                                                            </div>
+                                                            <div>
+                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                        Supply
+                                                                    </h5>
+                                                                    <p className="text-para-font-size">{passItem.supply}</p>
+                                                            </div>
+                                                            <div>
+                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                        Number of Tokens
+                                                                    </h5>
+                                                                    <p className="text-para-font-size">{Math.ceil(passItem.price / (projectDetail.coins.listingprice - (projectDetail.coins.listingprice * (passItem.discount / 100))))}</p>
+                                                            </div>
+                                                            </div>
+                                                            <div className="flex gap-4 mt-2.5">
+                                                            <div>
+                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                        Listing Price
+                                                                    </h5>
+                                                                    <p className="text-para-font-size">{projectDetail.coins.listingprice} USD</p>
+                                                            </div>
+                                                            <div>
+                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                        Discount
+                                                                    </h5>
+                                                                    <p className="text-para-font-size">{passItem.discount}%</p>
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                        <div className="text-center">
+                                                            {passItem.isbuy &&
+                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{handlePassBuy(passItem)}}>Buy</button>
+                                                            }
+                                                            {passItem.isclaim &&
+                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{handlePassClaim(passItem)}}>Claim</button>
+                                                            }
+                                                            {(passItem.isbuy && passItem.isclaim) &&
+                                                                <>
                                                                     <p className="text-para-font-size text-center leading-none mt-1">Price {passItem.price} USDC</p>
                                                                     <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
                                                                     <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.usdcBalance.toFixed(2)} USDC</p>
                                                                     <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
-                                                                </div>
-                                                            </div>
+                                                                </>
+                                                            }
                                                         </div>
                                                     </div>
-                                                ))}
-                                           </>
-                                        }
+                                                </div>
+                                            </div>
+                                        ))}
 
                                     </div>
                                 }

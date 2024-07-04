@@ -77,7 +77,7 @@ export default function ProjectCreateStep6() {
         {label:"Advisor", value: "Advisor"},
         {label:"Sponsor", value: "Sponsor"},
         {label:"Moderator", value: "Moderator"},
-        {label:"Other", value: "Moderator"}
+        {label:"Other", value: "Other"}
     ])
 
     const [distribution, setDistribution] = useState(1);

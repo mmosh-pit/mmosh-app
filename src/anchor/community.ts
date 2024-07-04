@@ -1481,7 +1481,7 @@ export class Connectivity {
     return mintList;
   }
 
-  async getProfileMetadataByProject(uri: string) {
+  async getProfileMetadataByCommunity(uri: string) {
     try {
       const result = await axios.get(uri);
 
@@ -1494,7 +1494,7 @@ export class Connectivity {
           const element = result.data.attributes[index];
           if (element.trait_type == "Seniority") {
             userData.seniority = element.value;
-          } else if (element.trait_type == "Community" || element.trait_type == "Project") {
+          } else if (element.trait_type == "Community") {
             userData.project = element.value;
           }
         }
@@ -1531,7 +1531,7 @@ export class Connectivity {
     }
   }
 
-  async getProjectUserInfo(projectId: String) {
+  async getCommunityUserInfo(projectId: String) {
     const user = this.provider.publicKey;
     if (!user) throw "Wallet not found";
 
@@ -1567,7 +1567,7 @@ export class Connectivity {
         if (
           collectionInfo?.address.toBase58() == passCollection.toBase58()
         ) {
-          const metadata = await this.getProfileMetadataByProject(i?.uri);
+          const metadata = await this.getProfileMetadataByCommunity(i?.uri);
           console.log("metadata", metadata)
           if (metadata) {
             if(metadata.project == projectId) {
@@ -1912,6 +1912,280 @@ export class Connectivity {
     ]);
 
     return signature
+  }
+
+  async getProfileMetadataByProject(uri: string) {
+    try {
+      const result = await axios.get(uri);
+
+      if (result.data) {
+        let userData: any = {
+          seniority: "",
+          project: "",
+        };
+        for (let index = 0; index < result.data.attributes.length; index++) {
+          const element = result.data.attributes[index];
+          if (element.trait_type == "Seniority") {
+            userData.seniority = element.value;
+          } else if (element.trait_type == "Project") {
+            userData.project = element.value;
+          }
+        }
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.log("metadata error", error);
+      return null;
+    }
+  }
+
+  async getInvitationMetdataForProject(uri: string) {
+    try {
+      const result = await axios.get(uri);
+      if (result.data) {
+        let userData: any = {
+          project: "",
+        };
+        for (let index = 0; index < result.data.attributes.length; index++) {
+          const element = result.data.attributes[index];
+          if (element.trait_type == "Project") {
+            userData.project = element.value;
+          }
+        }
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.log("metadata error", error);
+      return null;
+    }
+  }
+
+  async getProjectUserInfo(projectId: String) {
+    const user = this.provider.publicKey;
+    if (!user) throw "Wallet not found";
+
+    let profilelineage = {
+      promoter: "",
+      promoterprofile:"",
+      scout: "",
+      scoutprofile:"",
+      recruiter: "",
+      recruiterprofile: "",
+      originator: "",
+      originatorprofile: "",
+    };
+    let generation = "0";
+
+    try {
+      const mainStateInfo = await this.program.account.mainState.fetch(
+        this.mainState,
+      );
+      console.log("mainStateInfo ", mainStateInfo);
+      const passCollection = web3Consts.passCollection;
+
+      const _userNfts = await this.getUserNFTs(user.toBase58());
+
+      let activationTokenBalance: any = 0;
+      let profiles: any = [];
+      const activationTokens = [];
+      let totalChild = 0;
+      let seniority = 0;
+      for (let i of _userNfts) {
+        const nftInfo: any = i;
+        const collectionInfo = i?.collection;
+        if (
+          collectionInfo?.address.toBase58() == passCollection.toBase58()
+        ) {
+          const metadata = await this.getProfileMetadataByProject(i?.uri);
+          console.log("metadata", metadata)
+          if (metadata) {
+            if(metadata.project == projectId) {
+              if (seniority == 0 || seniority > metadata.seniority) {
+                profiles = [
+                  {
+                    name: i.name,
+                    address: nftInfo.mintAddress.toBase58(),
+                    userinfo: metadata,
+                  },
+                ];
+                seniority = metadata.seniority;
+              }
+            }
+          }
+        }
+      }
+
+      if (profiles.length > 0) {
+        const genesisProfile = new anchor.web3.PublicKey(profiles[0].address);
+        const profileState = this.__getProfileStateAccount(genesisProfile);
+        const profileStateInfo:any =
+          await this.program.account.profileState.fetch(profileState);
+        console.log("profileStateInfo ", profileStateInfo);
+        let hasInvitation: any = false;
+        if (profileStateInfo.activationToken) {
+          hasInvitation = await this.isCreatorInvitation(
+            profileStateInfo.activationToken,
+            user.toBase58(),
+          );
+          console.log("hasInvitation ", hasInvitation);
+          if (hasInvitation) {
+            const userActivationAta = getAssociatedTokenAddressSync(
+              profileStateInfo.activationToken,
+              user,
+            );
+            activationTokenBalance = await this.getActivationTokenBalance(
+              profileStateInfo.activationToken,
+            );
+          }
+        }
+        totalChild = profileStateInfo.lineage.totalChild.toNumber();
+        generation = profileStateInfo.lineage.generation.toString();
+
+        for (let i of _userNfts) {
+          const collectionInfo = i?.collection;
+          if (
+            collectionInfo?.address.toBase58() ==
+              web3Consts.badgeCollection.toBase58() &&
+            hasInvitation && i?.mintAddress == profileStateInfo.activationToken.toBase58()
+          ) {
+
+            activationTokens.push({
+              name: i.name,
+              genesis: genesisProfile.toBase58(),
+              activation: hasInvitation
+                ? profileStateInfo.activationToken.toBase58()
+                : "",
+            });
+          }
+        }
+
+        if (this.getAddressString(profileState) != "") {
+          const {
+            parentProfile,
+            grandParentProfile,
+            greatGrandParentProfile,
+            ggreateGrandParentProfile,
+            currentGreatGrandParentProfileHolder,
+            currentGgreatGrandParentProfileHolder,
+            currentGrandParentProfileHolder,
+            currentParentProfileHolder,
+          } = await this.__getProfileHoldersInfo(
+            profileStateInfo.lineage,
+            genesisProfile,
+            mainStateInfo.genesisProfile,
+            mainStateInfo.oposToken
+          );
+          profilelineage = {
+            promoter: this.getAddressString(currentParentProfileHolder),
+            promoterprofile: this.getAddressString(parentProfile),
+            scout: this.getAddressString(currentGrandParentProfileHolder),
+            scoutprofile:  this.getAddressString(grandParentProfile),
+            recruiter: this.getAddressString(
+              currentGreatGrandParentProfileHolder,
+            ),
+            recruiterprofile:  this.getAddressString(greatGrandParentProfile),
+            originator: this.getAddressString(
+              currentGgreatGrandParentProfileHolder,
+            ),
+            originatorprofile:  this.getAddressString(ggreateGrandParentProfile),
+          };
+        }
+      } else {
+        for (let i of _userNfts) {
+          if (i) {
+            if (i.symbol) {
+              const collectionInfo = i?.collection;
+              if (
+                collectionInfo?.address.toBase58() ==
+                web3Consts.badgeCollection.toBase58()
+              ) {
+                let isCreator = false;
+                console.log("i.creators", i.creators);
+                for (let index = 0; index < i.creators.length; index++) {
+                  if (i.creators[index].address.toBase58() == user.toBase58()) {
+                    isCreator = true;
+                    break;
+                  }
+                }
+                if (isCreator) {
+                  continue;
+                }
+
+                const metadata = await this.getInvitationMetdataForProject(i?.uri);
+                if (metadata) {
+                  if(metadata.project != projectId) {
+                      continue;
+                  }
+                }
+
+                try {
+                  const nftInfo: any = i;
+                  console.log("token address ", nftInfo.mintAddress.toBase58());
+                  const activationTokenState =
+                    this.__getActivationTokenStateAccount(nftInfo.mintAddress);
+                  const activationTokenStateInfo =
+                    await this.program.account.activationTokenState.fetch(
+                      activationTokenState,
+                    );
+                  console.log(
+                    "activationTokenStateInfo ",
+                    activationTokenStateInfo,
+                  );
+                  const parentProfile = activationTokenStateInfo.parentProfile;
+
+                  activationTokens.push({
+                    name: i.name,
+                    genesis: parentProfile.toBase58(),
+                    activation: nftInfo.mintAddress.toBase58(),
+                  });
+                  
+                  const generationData =
+                    await this.getProfileChilds(parentProfile);
+                  totalChild = generationData.totalChild;
+                  generation = generationData.generation;
+                  profilelineage = await this.getProfileLineage(parentProfile);
+                } catch (error) {
+                  console.log("error invite ", error);
+                }
+              }
+              if (activationTokens.length > 0) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      const profileInfo = {
+        profiles,
+        activationTokens,
+        activationTokenBalance,
+        totalChild: totalChild,
+        profilelineage,
+        generation,
+        invitationPrice: mainStateInfo.invitationMintingCost.toNumber(),
+        mintPrice: mainStateInfo.profileMintingCost.toNumber()
+      };
+      console.log("projectInfo", profileInfo);
+      return profileInfo;
+    } catch (error) {
+      console.log("error profile", error);
+      const profiles: any = [];
+      const profileInfo = {
+        profiles: profiles,
+        activationTokens: profiles,
+        activationTokenBalance: 0,
+        totalChild: 0,
+        profilelineage,
+        generation,
+        invitationPrice: 0,
+        mintPrice: 0
+      };
+      return profileInfo;
+    }
   }
 
 

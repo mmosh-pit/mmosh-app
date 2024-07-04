@@ -21,10 +21,7 @@ export default function ProjectView({ params }: { params: { address: string } })
     const [profileInfo] = useAtom(userWeb3Info);
     const [projectLoading, setProjectLoading] = useState(true);
     const [projectDetail, setProjectDetail] = useState<any>(null)
-    const countDownDate = new Date("2024-08-27").getTime();
-    const [countDown, setCountDown] = useState(
-        countDownDate - new Date().getTime()
-    );
+  
     const [tokenomicschart, setTokenomicsChart] = useState([])
     const [creatorInfo, setCreatorInfo] = useState(null)
     const [isOwner, setOwner] = useState(false)
@@ -60,9 +57,18 @@ export default function ProjectView({ params }: { params: { address: string } })
     const [passSubmit, setPassSubmit] = useState(false)
     const [passButtonStatus, setPassButtonStatus] = useState("Mint")
 
+    const [countDownDate, setCountDownDate] = useState(0);
+    const [countDown, setCountDown] = useState(0);
+    const [launchState, setLaunchState] = useState("")
+    const [launchStatus, setLaunchStatus] = useState("Countdown to Launch")
+
+    const [enableLauncPass, setEnableLauncPass] = useState(false)
     const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
 
     useEffect(() => {
+        if(countDownDate == 0) {
+            return
+        }
         const interval = setInterval(() => {
           setCountDown(countDownDate - new Date().getTime());
         }, 1000);
@@ -117,12 +123,50 @@ export default function ProjectView({ params }: { params: { address: string } })
                 key: "Curator",
                 data: 1
             })
+            let presaleStart = convertUTCDateToLocalDate(new Date(listResult.data.project.presalestartdate))
+            let presaleEnd = convertUTCDateToLocalDate(new Date(listResult.data.project.presaleenddate))
+            let dexListDate = convertUTCDateToLocalDate(new Date(listResult.data.project.dexlistingdate))
+
+            console.log("presaleStart ", presaleStart)
+            console.log("presaleEnd ", presaleEnd)
+            console.log("dexListDate ", dexListDate)
+
+            let saleStartdiff = new Date().getTime() - presaleStart.getTime();
+            let saleEnddiff = new Date().getTime() - presaleEnd.getTime();
+            let dexdiff = new Date().getTime() - dexListDate.getTime();
+            if(saleStartdiff < 0) {
+                setLaunchStatus("Countdown  to Launch")
+                setCountDownDate(presaleStart.getTime())
+            }
+
+
+            if(saleStartdiff > 0 && saleEnddiff < 0) {
+                setLaunchStatus("Countdown  to Presale End")
+                setCountDownDate(presaleEnd.getTime())
+                setEnableLauncPass(true)
+            }
+
+            if(saleStartdiff > 0 && saleEnddiff > 0 && dexdiff < 0) {
+                setLaunchStatus("Countdown  to Dex Listing")
+                setCountDownDate(dexListDate.getTime())
+            }
+
+
+
             setTokenomicsChart(tokenomics);
             setProjectLoading(false)
         } catch (error) {
             setProjectLoading(false)
             setProjectDetail(null)
         }
+    }
+
+    const convertUTCDateToLocalDate = (date: any) => {
+        var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+        var offset = date.getTimezoneOffset() / 60;
+        var hours = date.getHours();
+        newDate.setHours(hours - offset);
+        return newDate;   
     }
 
     const capitalizeString = (str: any) => {
@@ -570,7 +614,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                             </div>
                         }
                         {(!projectLoading && projectDetail) &&
-                            <>
+                        <>
                                 <div className="border border-white p-2.5 rounded-xl border-opacity-20 relative min-h-[340px]">
                                     <div className="md:absolute left-2.5 top-2.5 rounded-xl sm:mb-2.5">
                                         <img src={projectDetail.coins.image} alt="coin image" className="md:w-80 md:h-80 sm:wd-full object-cover rounded-xl"/>
@@ -622,42 +666,46 @@ export default function ProjectView({ params }: { params: { address: string } })
                                     </div>
                                 </div>
                                 <div className="border-t border-white border-opacity-20 pt-8 mt-8">
-                                <h2 className="text-white font-goudy font-normal text-xl mb-8 text-center">Countdown to Launch</h2>
-                                <div className="flex justify-center mb-8">
-                                    <div>
-                                        <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
-                                            {getCountDownValues(countDown).days}
+                                    {countDown != 0 &&
+                                    <>
+                                        <h2 className="text-white font-goudy font-normal text-xl mb-8 text-center">{launchStatus}</h2>
+                                        <div className="flex justify-center mb-8">
+                                            <div>
+                                                <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                                    {getCountDownValues(countDown).days}
+                                                </div>
+                                                <p className="text-header-small-font-size text-center">days</p>
+                                            </div>
+                                            <div className="flex flex-col h-16 justify-center align-center">
+                                                <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
+                                            </div>
+                                            <div>
+                                                    <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                                    {getCountDownValues(countDown).hours}
+                                                </div>
+                                                <p className="text-header-small-font-size text-center">Hours</p>
+                                            </div>
+                                            <div className="flex flex-col h-16 justify-center align-center">
+                                                <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
+                                            </div>
+                                            <div>
+                                                    <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                                    {getCountDownValues(countDown).minutes}
+                                                </div>
+                                                <p className="text-header-small-font-size text-center">Minutes</p>
+                                            </div>
+                                            <div className="flex flex-col h-16 justify-center align-center">
+                                                <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
+                                            </div>
+                                            <div>
+                                                    <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
+                                                    {getCountDownValues(countDown).seconds}
+                                                </div>
+                                                <p className="text-header-small-font-size text-center">Seconds</p>
+                                            </div>
                                         </div>
-                                        <p className="text-header-small-font-size text-center">days</p>
-                                    </div>
-                                    <div className="flex flex-col h-16 justify-center align-center">
-                                        <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
-                                    </div>
-                                    <div>
-                                            <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
-                                            {getCountDownValues(countDown).hours}
-                                        </div>
-                                        <p className="text-header-small-font-size text-center">Hours</p>
-                                    </div>
-                                    <div className="flex flex-col h-16 justify-center align-center">
-                                        <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
-                                    </div>
-                                    <div>
-                                            <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
-                                            {getCountDownValues(countDown).minutes}
-                                        </div>
-                                        <p className="text-header-small-font-size text-center">Minutes</p>
-                                    </div>
-                                    <div className="flex flex-col h-16 justify-center align-center">
-                                        <img src="/time.png" alt="time" className="w-[6px] mx-1.5" />
-                                    </div>
-                                    <div>
-                                            <div className="w-16 h-16 font-goudy text-xl text-center text-white rounded-md border border-white border-opacity-20 flex justify-center align-center items-center">
-                                            {getCountDownValues(countDown).seconds}
-                                        </div>
-                                        <p className="text-header-small-font-size text-center">Seconds</p>
-                                    </div>
-                                </div>
+                                    </>                               
+                                    }
                                 {profileInfo &&
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                         {projectInfo.profiles.length == 0 && projectInfo.activationTokens.length > 0 &&
@@ -728,74 +776,79 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                 </div>
                                             </div>
                                         }
-                                        {projectDetail.passes.map((passItem:any, i:any) => (
-                                            <div className="col-span-3">
-                                                <div>
-                                                    <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Launch Pass 1</h4>
-                                                    <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                        <div className="border-container rounded-md">
-                                                            <img src={passItem.image} alt="pass image" className="w-full object-cover p-0.5 rounded-md"/>
-                                                        </div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                            {capitalizeString(passItem.name)}
-                                                            <div className="px-1.5 mt-1.5">
-                                                                <img src="/dot.png" className="w-1.5 h-1.5" />
+                                        {enableLauncPass &&
+                                           <>
+                                                {projectDetail.passes.map((passItem:any, i:any) => (
+                                                    <div className="col-span-3">
+                                                        <div>
+                                                            <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Launch Pass 1</h4>
+                                                            <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                                <div className="border-container rounded-md">
+                                                                    <img src={passItem.image} alt="pass image" className="w-full object-cover p-0.5 rounded-md"/>
+                                                                </div>
+                                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                                    {capitalizeString(passItem.name)}
+                                                                    <div className="px-1.5 mt-1.5">
+                                                                        <img src="/dot.png" className="w-1.5 h-1.5" />
+                                                                    </div>
+                                                                
+                                                                    <span className="text-small-font-size font-poppins leading-5">{passItem.symbol.toUpperCase()}</span>
+                                                                </h5>
+                                                                <div className="mb-2.5">
+                                                                <div className="flex gap-4">
+                                                                    <div>
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                                Price of Pass
+                                                                            </h5>
+                                                                            <p className="text-para-font-size">{passItem.price}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                                Supply
+                                                                            </h5>
+                                                                            <p className="text-para-font-size">{passItem.supply}</p>
+                                                                    </div>
+                                                                    <div>
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                                Number of Tokens
+                                                                            </h5>
+                                                                            <p className="text-para-font-size">{Math.ceil(passItem.price / (projectDetail.coins.listingprice - (projectDetail.coins.listingprice * (passItem.discount / 100))))}</p>
+                                                                    </div>
+                                                                    </div>
+                                                                    <div className="flex gap-4 mt-2.5">
+                                                                    <div>
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                                Listing Price
+                                                                            </h5>
+                                                                            <p className="text-para-font-size">{projectDetail.coins.listingprice} USD</p>
+                                                                    </div>
+                                                                    <div>
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size">
+                                                                                Discount
+                                                                            </h5>
+                                                                            <p className="text-para-font-size">{passItem.discount}%</p>
+                                                                    </div>
+                                                                </div>
+                                                                </div>
+                                                                <div className="text-center">
+                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Buy</button>
+                                                                    <p className="text-para-font-size text-center leading-none mt-1">Price {passItem.price} USDC</p>
+                                                                    <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                                    <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.usdcBalance.toFixed(2)} USDC</p>
+                                                                    <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                                </div>
                                                             </div>
-                                                        
-                                                            <span className="text-small-font-size font-poppins leading-5">{passItem.symbol.toUpperCase()}</span>
-                                                        </h5>
-                                                        <div className="mb-2.5">
-                                                        <div className="flex gap-4">
-                                                            <div>
-                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                        Price of Pass
-                                                                    </h5>
-                                                                    <p className="text-para-font-size">{passItem.price}</p>
-                                                            </div>
-                                                            <div>
-                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                        Supply
-                                                                    </h5>
-                                                                    <p className="text-para-font-size">{passItem.supply}</p>
-                                                            </div>
-                                                            <div>
-                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                        Number of Tokens
-                                                                    </h5>
-                                                                    <p className="text-para-font-size">{Math.ceil(passItem.price / (projectDetail.coins.listingprice - (projectDetail.coins.listingprice * (passItem.discount / 100))))}</p>
-                                                            </div>
-                                                            </div>
-                                                            <div className="flex gap-4 mt-2.5">
-                                                            <div>
-                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                        Listing Price
-                                                                    </h5>
-                                                                    <p className="text-para-font-size">{projectDetail.coins.listingprice} USD</p>
-                                                            </div>
-                                                            <div>
-                                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size">
-                                                                        Discount
-                                                                    </h5>
-                                                                    <p className="text-para-font-size">{passItem.discount}%</p>
-                                                            </div>
-                                                        </div>
-                                                        </div>
-                                                        <div className="text-center">
-                                                            <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">Buy</button>
-                                                            <p className="text-para-font-size text-center leading-none mt-1">Price {passItem.price} USDC</p>
-                                                            <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                            <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.usdcBalance.toFixed(2)} USDC</p>
-                                                            <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        ))}
+                                                ))}
+                                           </>
+                                        }
+
                                     </div>
                                 }
 
                                 </div>
-                            </>
+                        </>
                         }
                         {(!projectLoading && !projectDetail) &&
                             <div className="text-center">project not found</div>

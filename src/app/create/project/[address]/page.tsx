@@ -3,7 +3,6 @@ import Input from "@/app/components/common/Input";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PieChart } from 'reaviz';
 import { Bars } from "react-loader-spinner";
 import { useAtom } from "jotai";
 import { userWeb3Info } from "@/app/store";
@@ -13,6 +12,7 @@ import { Connectivity as ProjectConn } from "@/anchor/community";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
+import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function ProjectView({ params }: { params: { address: string } }) {
     const navigate = useRouter();
@@ -108,22 +108,27 @@ export default function ProjectView({ params }: { params: { address: string } })
             for (let index = 0; index < listResult.data.tokenomics.length; index++) {
                 const element = listResult.data.tokenomics[index];
                 tokenomics.push({
-                    key: element.type,
-                    data: element.value
+                    name: element.type,
+                    value: element.value,
+                    color: getDarkColor()
                 })
             }
             tokenomics.push({
-                key: "presale",
-                data: Math.ceil((listResult.data.project.presalesupply / listResult.data.coins.supply) * 100)
+                name: "presale",
+                value: Math.ceil((listResult.data.project.presalesupply / listResult.data.coins.supply) * 100),
+                color: getDarkColor()
             })
             tokenomics.push({
-                key: "MMOSH DAO",
-                data: 2
+                name: "MMOSH DAO",
+                value: 2,
+                color: getDarkColor()
             })
             tokenomics.push({
-                key: "Curator",
-                data: 1
+                name: "Curator",
+                value: 1,
+                color: getDarkColor()
             })
+
             let presaleStart = convertUTCDateToLocalDate(new Date(listResult.data.project.presalestartdate))
             let presaleEnd = convertUTCDateToLocalDate(new Date(listResult.data.project.presaleenddate))
             let dexListDate = convertUTCDateToLocalDate(new Date(listResult.data.project.dexlistingdate))
@@ -172,6 +177,14 @@ export default function ProjectView({ params }: { params: { address: string } })
             setProjectLoading(false)
             setProjectDetail(null)
         }
+    }
+
+    const getDarkColor = () => {
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += Math.floor(Math.random() * 10);
+        }
+        return color;
     }
 
     const convertUTCDateToLocalDate = (date: any) => {
@@ -641,8 +654,8 @@ export default function ProjectView({ params }: { params: { address: string } })
                                     <div>
                                         <div>
                                             <h2 className="text-white font-goudy font-normal text-xl flex">{capitalizeString(projectDetail.coins.name)}
-                                                <div className="px-2.5 mt-3">
-                                                <img src="/dot.png" className="w-1.5 h-1.5" />
+                                                <div className="px-2.5">
+                                                •
                                                 </div>
                                                 
                                                 <span className="text-header-small-font-size font-poppins leading-8">{projectDetail.coins.symbol.toUpperCase()}</span>
@@ -651,7 +664,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                         </div>
                                         <div className="flex pt-8 border-t border-white border-opacity-20">
                                             <div className="flex">
-                                                <div className="rounded-md mr-3.5"><img src="/profile.png" className="w-32 h-32 object-cover rounded-md" /></div>
+                                                <div className="rounded-md mr-3.5"><img src="https://storage.googleapis.com/mmosh-assets/profile.png" className="w-32 h-32 object-cover rounded-md" /></div>
                                                 <div className="mr-8">
                                                     <h4 className="text-[15px] text-white">Creator</h4>
                                                     <ul>
@@ -671,13 +684,38 @@ export default function ProjectView({ params }: { params: { address: string } })
                                             </div>
                                             <div>
                                                 <h4 className="text-[15px] text-white">Tokenomics</h4>
-                                                <div>
+                                                <div className="flex">
+                                                    <div>
                                                         <PieChart
-                                                            className="w-[300px]"
-                                                            height={150}
-                                                            data={tokenomicschart}
-                                                        />
+                                                            width={200}
+                                                            height={200}
+                                                        >
+                                                            <Pie
+                                                                dataKey="value"
+                                                                startAngle={360}
+                                                                endAngle={0}
+                                                                data={tokenomicschart}
+                                                                outerRadius={80}
+                                                                fill="none"
+                                                                stroke="none"
+                                                            >
+                                                                {tokenomicschart.map((entry:any, index) => (
+                                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                                ))}
+                                                            </Pie>
+                                                        </PieChart>
+                                                    </div>
+                                                    <div className="pl-5 pt-5">
+                                                       {tokenomicschart.map((tokenomicschartItem:any, i:any) => (
+                                                            <div className="flex">
+                                                                <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
+                                                                <p className="pl-2.5 text-header-small-font-size min-w-32">{tokenomicschartItem.name}</p>
+                                                                <p className="text-header-small-font-size">{tokenomicschartItem.value}%</p>
+                                                            </div>
+                                                       ))}
+                                                    </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -805,7 +843,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                         <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
                                                             {capitalizeString(passItem.name)}
                                                             <div className="px-1.5 mt-1.5">
-                                                                <img src="/dot.png" className="w-1.5 h-1.5" />
+                                                            •
                                                             </div>
                                                         
                                                             <span className="text-small-font-size font-poppins leading-5">{passItem.symbol.toUpperCase()}</span>

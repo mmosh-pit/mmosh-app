@@ -306,8 +306,8 @@ export default function ProjectCreateStep2() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
                                         {profiles.map((profile:any) => (
                                             <>
-                                                <div className="cursor-pointer" onClick={()=>{onProfileSelect(profile)}}>
-                                                    <div className="relative">
+                                                <div className="cursor-pointer">
+                                                    <div className="relative" onClick={()=>{onProfileSelect(profile)}}>
                                                         <img className="rounded-full object-cover w-full" src={profile.image} alt="profile" />
                                                         {profile.selected == 1 &&
                                                             <div className="bg-black bg-opacity-[0.56] w-full h-full rounded-full absolute left-0 top-0 flex justify-center items-center">

@@ -24,7 +24,7 @@ import { Connectivity as Community } from "../../../../../anchor/community";
 import { web3Consts } from "@/anchor/web3Consts";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import axios from "axios";
-import { PieChart } from 'reaviz';
+import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function ProjectCreateStep9() {
     const navigate = useRouter();
@@ -153,26 +153,39 @@ export default function ProjectCreateStep9() {
     useEffect(()=>{
         let chartData:any = []
         chartData.push({
-            key: "Presale",
-            data: presale.maxPresale
+            name: "Presale",
+            value: presale.maxPresale,
+            color: getDarkColor()
         })
         chartData.push({
-            key: "MMOSH DAO",
-            data: 2
+            name: "MMOSH DAO",
+            value: 2,
+            color: getDarkColor()
         })
         chartData.push({
-            key: "Curator",
-            data: 1
+            name: "Curator",
+            value: 1,
+            color: getDarkColor()
         })
         for (let index = 0; index < tokenomics.length; index++) {
             const element:any = tokenomics[index];
             chartData.push({
-                key: element.type,
-                data: element.value
+                name: element.type,
+                value: element.value,
+                color: getDarkColor()
             })
         }
         setTokenomicsChart(chartData)
     },[tokenomics])
+
+    const getDarkColor = () => {
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += Math.floor(Math.random() * 10);
+        }
+        return color;
+    }
+
 
     const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
 
@@ -184,8 +197,7 @@ export default function ProjectCreateStep9() {
 
     const submitAction = async () => {
         try {
-            setLoading(true)
-
+            
             // project key
             const projectKeyPair = anchor.web3.Keypair.generate();
 
@@ -909,12 +921,35 @@ export default function ProjectCreateStep9() {
                             </div>
                             <div className="col-span-4">
                                     <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Tokenomics</h3>
-                                    <div>
-                                        <PieChart
-                                            className="w-full"
-                                            height={300}
-                                            data={tokenomicschart}
-                                        />
+                                    <div className="flex">
+                                        <div>
+                                            <PieChart
+                                                width={200}
+                                                height={200}
+                                            >
+                                                <Pie
+                                                    dataKey="value"
+                                                    startAngle={360}
+                                                    endAngle={0}
+                                                    data={tokenomicschart}
+                                                    outerRadius={80}
+                                                    fill="none"
+                                                    stroke="none"
+                                                >
+                                                    {tokenomicschart.map((entry:any, index) => (
+                                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    ))}
+                                                </Pie>
+                                            </PieChart>
+                                        </div>
+                                        <div className="pl-5 pt-5">
+                                            {tokenomicschart.map((tokenomicschartItem:any, i:any) => (
+                                                <div className="flex">
+                                                    <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
+                                                    <p className="pl-2.5 text-header-small-font-size">{tokenomicschartItem.name}</p>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                             </div>
                         </div>

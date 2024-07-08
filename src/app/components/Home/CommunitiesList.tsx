@@ -4,8 +4,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 import { Community, CommunityAPIResult } from "@/app/models/community";
-import { data, searchBarText } from "@/app/store";
+import { data } from "@/app/store";
 import CommunityCard from "./CommunityCard";
+import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 
 const CommunitiesList = () => {
   const navigate = useRouter();
@@ -17,7 +18,8 @@ const CommunitiesList = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [currentUser] = useAtom(data);
-  const [searchText] = useAtom(searchBarText);
+  const [selectedFilters] = useAtom(selectedSearchFilter);
+  const [searchText] = useAtom(typedSearchValue);
 
   const fetching = React.useRef(false);
   const containerRef = React.useRef<any>(null);
@@ -25,17 +27,24 @@ const CommunitiesList = () => {
   const lastPageTriggered = React.useRef(false);
 
   const getCommunities = React.useCallback(async () => {
-    setIsLoading(true);
-    fetching.current = true;
-    // TODO include pagination
-    const result = await axios.get(
-      `/api/list-communities?searchText=${searchText}`,
-    );
+    if (
+      selectedFilters.includes("communities") ||
+      selectedFilters.includes("all")
+    ) {
+      setIsLoading(true);
+      fetching.current = true;
+      // TODO include pagination
+      const result = await axios.get(
+        `/api/list-communities?searchText=${searchText}`,
+      );
 
-    setCommunities(result.data);
-    fetching.current = false;
-    setIsLoading(false);
-  }, []);
+      setCommunities(result.data);
+      fetching.current = false;
+      setIsLoading(false);
+    } else {
+      setCommunities([]);
+    }
+  }, [searchText, selectedFilters]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -54,7 +63,7 @@ const CommunitiesList = () => {
   React.useEffect(() => {
     if (fetching.current) return;
     getCommunities();
-  }, [currentUser]);
+  }, [currentUser, searchText]);
 
   if (isLoading) return <></>;
 

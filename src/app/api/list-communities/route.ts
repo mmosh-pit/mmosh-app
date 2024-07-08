@@ -27,12 +27,12 @@ export async function GET(req: NextRequest) {
   if (param !== "") {
     search["$or"] = [
       {
-        name: {
+        "data.name": {
           $regex: new RegExp(param, "ig"),
         },
       },
       {
-        symbol: {
+        "data.symbol": {
           $regex: new RegExp(param, "ig"),
         },
       },

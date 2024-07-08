@@ -178,7 +178,7 @@ const Step3 = () => {
                   <div className="flex justify-between w-[40%]m mt-2">
                     <div className="flex flex-col items-center justify-center">
                       <input
-                        id="my-drawer"
+                        id="checkbox1"
                         type="checkbox"
                         className="checkbox checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
                         checked={form.invitation === "required"}
@@ -193,7 +193,7 @@ const Step3 = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center mx-4 md:mx-12">
                       <input
-                        id="my-drawer"
+                        id="checkbox2"
                         type="checkbox"
                         className="checkbox checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
                         checked={form.invitation === "optional"}
@@ -208,7 +208,7 @@ const Step3 = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center">
                       <input
-                        id="my-drawer"
+                        id="checkbox3"
                         type="checkbox"
                         className="checkbox checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
                         checked={form.invitation === "none"}

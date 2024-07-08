@@ -4,11 +4,12 @@ import Image from "next/image";
 import axios from "axios";
 import { useAtom } from "jotai";
 
-import { searchBarText } from "@/app/store";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
+import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 
 const CoinsList = () => {
-  const [searchText] = useAtom(searchBarText);
+  const [selectedFilters] = useAtom(selectedSearchFilter);
+  const [searchText] = useAtom(typedSearchValue);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const fetching = React.useRef(false);
@@ -19,31 +20,39 @@ const CoinsList = () => {
   const [usdcMmoshPrice, setUsdcMmoshPrice] = React.useState(0);
 
   const getCoins = React.useCallback(async () => {
-    setIsLoading(true);
-    fetching.current = true;
-    const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}`;
+    if (selectedFilters.includes("coins") || selectedFilters.includes("all")) {
+      setIsLoading(true);
+      fetching.current = true;
+      const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}`;
 
-    const result = await axios.get(url);
+      const result = await axios.get(url);
 
-    fetching.current = false;
+      fetching.current = false;
 
-    const newCoins = [];
-    for (let index = 0; index < result.data.length; index++) {
-      const element = result.data[index];
-      const datas = [];
+      const newCoins = [];
+      for (let index = 0; index < result.data.length; index++) {
+        const element = result.data[index];
+        const datas = [];
 
-      for (let index = 0; index < element.priceLastSevenDays.length; index++) {
-        const elementchart = element.priceLastSevenDays[index];
-        datas.push(elementchart.value);
+        for (
+          let index = 0;
+          index < element.priceLastSevenDays.length;
+          index++
+        ) {
+          const elementchart = element.priceLastSevenDays[index];
+          datas.push(elementchart.value);
+        }
+        element.priceLastSevenDays = datas;
+
+        newCoins.push(element);
       }
-      element.priceLastSevenDays = datas;
 
-      newCoins.push(element);
+      setCoins(newCoins);
+      setIsLoading(false);
+    } else {
+      setCoins([]);
     }
-
-    setCoins(newCoins);
-    setIsLoading(false);
-  }, [searchText, currentPage]);
+  }, [searchText, currentPage, selectedFilters]);
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
     const mmoshUsdcPrice = await axios.get(

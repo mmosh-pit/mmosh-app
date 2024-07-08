@@ -6,6 +6,7 @@ import Banner from "./Banner";
 import MembersList from "./Home/MembersList";
 import CoinsList from "./Home/CoinsList";
 import CommunitiesList from "./Home/CommunitiesList";
+import HomeSearch from "./HomeSearch";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -30,6 +31,10 @@ const HomePage = () => {
             ? "A MMOSH is a decentralized, permissionless and composable virtual world available through various access devices and software platforms"
             : "Welcome to MMOSH, the social protocol for connected communities. Make Money Fun!"}
         </p>
+      </div>
+
+      <div className="lg:w-[20%] md:w-[30%] sm:w-[40%] w-[50%] self-center flex justify-center my-8">
+        <HomeSearch placeholder="Type your search terms" />
       </div>
 
       <div className="flex flex-col w-full mt-8 px-12">

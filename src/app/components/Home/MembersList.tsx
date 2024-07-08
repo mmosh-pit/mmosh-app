@@ -5,12 +5,12 @@ import { useAtom } from "jotai";
 
 import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
 import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
-import { data, searchBarText } from "@/app/store";
 import { User } from "@/app/models/user";
+import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 
 const MembersList = () => {
-  const [currentUser] = useAtom(data);
-  const [searchText] = useAtom(searchBarText);
+  const [selectedFilters] = useAtom(selectedSearchFilter);
+  const [searchText] = useAtom(typedSearchValue);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const fetching = React.useRef(false);
@@ -21,43 +21,44 @@ const MembersList = () => {
   const [users, setUsers] = React.useState<User[]>([]);
 
   const getUsers = React.useCallback(async () => {
-    setIsLoading(true);
-    const result = await axios.get(`/api/get-all-users?sort=royalty&skip=0`);
+    if (
+      selectedFilters.includes("members") ||
+      selectedFilters.includes("all")
+    ) {
+      fetching.current = true;
+      setIsLoading(true);
+      const result = await axios.get(
+        `/api/get-all-users?skip=${currentPage * 10}&searchText=${searchText}`,
+      );
 
-    setUsers(result.data.users);
-    allUsers.current = result.data.users;
-    setIsLoading(false);
-  }, []);
+      if (result.data.users.length === 0) {
+        lastPageTriggered.current = true;
+      }
 
-  const filterUsers = React.useCallback(async () => {
-    fetching.current = true;
-    const result = await axios.get(
-      `/api/get-all-users?skip=${0}&searchText=${searchText}`,
-    );
-
-    setCurrentPage(0);
-    fetching.current = false;
-    lastPageTriggered.current = false;
-
-    setUsers(result.data.users);
-    allUsers.current = result.data.users;
-  }, [currentPage, searchText]);
-
-  const paginateUsers = React.useCallback(async () => {
-    fetching.current = true;
-    const result = await axios.get(
-      `/api/get-all-users?skip=${currentPage * 10}searchText=${searchText}`,
-    );
-
-    fetching.current = false;
-
-    if (result.data.users.length === 0) {
-      lastPageTriggered.current = true;
+      setUsers(result.data.users);
+      allUsers.current = result.data.users;
+      setIsLoading(false);
+      fetching.current = false;
+    } else {
+      setUsers([]);
     }
+  }, [searchText, selectedFilters, currentPage]);
 
-    setUsers((prev) => [...prev, ...result.data.users]);
-    allUsers.current = [...allUsers.current, ...result.data.users];
-  }, [currentPage, searchText]);
+  // const paginateUsers = React.useCallback(async () => {
+  //   fetching.current = true;
+  //   const result = await axios.get(
+  //     `/api/get-all-users?skip=${currentPage * 10}searchText=${searchText}`,
+  //   );
+  //
+  //   fetching.current = false;
+  //
+  //   if (result.data.users.length === 0) {
+  //     lastPageTriggered.current = true;
+  //   }
+  //
+  //   setUsers((prev) => [...prev, ...result.data.users]);
+  //   allUsers.current = [...allUsers.current, ...result.data.users];
+  // }, [currentPage, searchText]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -69,20 +70,16 @@ const MembersList = () => {
     }
   };
 
-  React.useEffect(() => {
-    filterUsers();
-  }, [searchText]);
-
-  React.useEffect(() => {
-    if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
-      paginateUsers();
-    }
-  }, [currentPage]);
+  // React.useEffect(() => {
+  //   if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
+  //     paginateUsers();
+  //   }
+  // }, [currentPage]);
 
   React.useEffect(() => {
     if (fetching.current) return;
     getUsers();
-  }, [currentUser]);
+  }, [searchText, currentPage]);
 
   if (isLoading) return <></>;
 

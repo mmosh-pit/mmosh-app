@@ -9,6 +9,7 @@ type Props = {
   required: boolean;
   helperText?: string;
   textarea?: boolean;
+  readonly?: boolean;
   onBlur?: () => void;
   error?: boolean;
 };
@@ -22,6 +23,7 @@ const Input = ({
   title,
   placeholder,
   helperText,
+  readonly,
   onChange,
   error,
 }: Props) => {
@@ -32,6 +34,7 @@ const Input = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          readOnly={readonly}
           className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full text-xs"
         ></textarea>
       );
@@ -41,6 +44,7 @@ const Input = ({
       <input
         type={type}
         value={value}
+        readOnly={readonly}
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}

@@ -135,9 +135,9 @@ const Header = () => {
     }
 
     const profileNft = profileInfo.profiles[0];
-
+    let username = "";
     if (profileNft?.address) {
-      const username = profileNft.userinfo.username;
+      username = profileNft.userinfo.username;
 
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       setCurrentUser(res.data);
@@ -156,12 +156,14 @@ const Header = () => {
       activationToken: activation,
       solBalance: profileInfo.solBalance,
       mmoshBalance: profileInfo.oposTokenBalance,
+      usdcBalance: profileInfo.usdcTokenBalance,
       firstTimeInvitation: firstTime,
       quota,
       activationTokenBalance:
         parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild ||
         0,
       profile: {
+        name: username,
         address: profileNft?.address,
         image: profileNft?.userinfo.image,
       },

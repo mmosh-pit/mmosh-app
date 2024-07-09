@@ -10,22 +10,38 @@ const config: Config = {
     themes: ["dark"],
   },
   theme: {
+    extend: {
+      colors: {
+        primary: "#CD068E",
+        purple: "#000354A8",
+        "light-gray": "#BDBCBC",
+        "theme-blue": "#180E4F",
+      },
+    },
     fontSize: {
       xs: "0.8vmax",
       sm: "0.85vmax",
       tiny: "0.60vmax",
       base: "1vmax",
       lg: "1.10vmax",
-      xl: "1.25vmax",
-      "2xl": "1.5vmax",
-      "3xl": "1.75vmax",
-      "4xl": "2vmax",
-      "5xl": "2.5vmax",
+      xl: "1.25rem",
+
+      "2xl": "1.5rem",
+      "3xl": "1.875rem",
+      "4xl": "2.25rem",
+      "5xl": "3rem",
+      "6xl": "4rem",
+      "7xl": "5rem",
+      "header-small-font-size": "0.75rem",
+      "small-font-size": "0.500rem",
+      "para-font-size": "0.625rem",
+      "sub-title-font-size": "1rem",
     },
 
     fontFamily: {
       poppins: ["Avenir", "sans-serif"],
       goudy: ["Goudy", "sans-serif"],
+      montserrat: ["Montserrat", "sans-serif"],
     },
   },
   plugins: [require("daisyui")],

@@ -30,5 +30,6 @@ export const web3Consts = {
     collectionState: utf8.encode("collection_state1"),
     activationTokenState: utf8.encode("activation_token_state1"),
     vault: utf8.encode("vault1"),
+    launchPass: utf8.encode("launch_pass"),
   },
 };

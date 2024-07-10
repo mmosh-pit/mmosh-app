@@ -12,8 +12,10 @@ export type LineageInfo = IdlTypes<Mmoshforge>[typeof lineageTypeName];
 
 const mainStateInputTypeName = "MainStateInput";
 const mintProfileByAdminInput = "MintProfileByAdminInput"
+const mintingCostDistribution = "MintingCostDistribution"
 export type MainStateInput = IdlTypes<Mmoshforge>[typeof mainStateInputTypeName];
 export type MintProfileByAdminInput = IdlTypes<Mmoshforge>[typeof mintProfileByAdminInput];
+export type MintingCostDistribution = IdlTypes<Mmoshforge>[typeof mintingCostDistribution];
 
 
 //EXTRA (Out of IDL)

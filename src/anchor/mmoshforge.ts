@@ -16,6 +16,11 @@ export type Mmoshforge = {
           "isSigner": false
         },
         {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "mint",
           "isMut": false,
           "isSigner": false
@@ -87,6 +92,11 @@ export type Mmoshforge = {
           "isSigner": false
         },
         {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "vault",
           "isMut": true,
           "isSigner": false
@@ -148,7 +158,7 @@ export type Mmoshforge = {
           "isSigner": false
         },
         {
-          "name": "owner",
+          "name": "stakeKey",
           "isMut": false,
           "isSigner": false
         },
@@ -202,6 +212,11 @@ export type Mmoshforge = {
           "name": "owner",
           "isMut": true,
           "isSigner": true
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
         },
         {
           "name": "mint",
@@ -265,10 +280,6 @@ export type Mmoshforge = {
         }
       ],
       "args": [
-        {
-          "name": "usdc",
-          "type": "publicKey"
-        },
         {
           "name": "redeemAmount",
           "type": "u64"
@@ -426,7 +437,7 @@ export type Mmoshforge = {
           "isSigner": false
         },
         {
-          "name": "authority",
+          "name": "stakeKey",
           "isMut": false,
           "isSigner": false
         },
@@ -2956,6 +2967,10 @@ export type Mmoshforge = {
             "type": "publicKey"
           },
           {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
             "name": "_bump",
             "type": "u8"
           }
@@ -4006,6 +4021,9 @@ export type Mmoshforge = {
           },
           {
             "name": "ProfileIdMissMatch"
+          },
+          {
+            "name": "TimeLockNotExpired"
           }
         ]
       }
@@ -4130,6 +4148,11 @@ export const IDL: Mmoshforge = {
           "isSigner": false
         },
         {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "mint",
           "isMut": false,
           "isSigner": false
@@ -4201,6 +4224,11 @@ export const IDL: Mmoshforge = {
           "isSigner": false
         },
         {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "vault",
           "isMut": true,
           "isSigner": false
@@ -4262,7 +4290,7 @@ export const IDL: Mmoshforge = {
           "isSigner": false
         },
         {
-          "name": "owner",
+          "name": "stakeKey",
           "isMut": false,
           "isSigner": false
         },
@@ -4316,6 +4344,11 @@ export const IDL: Mmoshforge = {
           "name": "owner",
           "isMut": true,
           "isSigner": true
+        },
+        {
+          "name": "usdc",
+          "isMut": false,
+          "isSigner": false
         },
         {
           "name": "mint",
@@ -4379,10 +4412,6 @@ export const IDL: Mmoshforge = {
         }
       ],
       "args": [
-        {
-          "name": "usdc",
-          "type": "publicKey"
-        },
         {
           "name": "redeemAmount",
           "type": "u64"
@@ -4540,7 +4569,7 @@ export const IDL: Mmoshforge = {
           "isSigner": false
         },
         {
-          "name": "authority",
+          "name": "stakeKey",
           "isMut": false,
           "isSigner": false
         },
@@ -7070,6 +7099,10 @@ export const IDL: Mmoshforge = {
             "type": "publicKey"
           },
           {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
             "name": "_bump",
             "type": "u8"
           }
@@ -8120,6 +8153,9 @@ export const IDL: Mmoshforge = {
           },
           {
             "name": "ProfileIdMissMatch"
+          },
+          {
+            "name": "TimeLockNotExpired"
           }
         ]
       }

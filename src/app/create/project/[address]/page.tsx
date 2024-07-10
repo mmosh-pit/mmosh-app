@@ -63,6 +63,11 @@ export default function ProjectView({ params }: { params: { address: string } })
     const [launchStatus, setLaunchStatus] = useState("Countdown to Launch")
 
     const [passes, setPasses] = useState([])
+    const [stakes, setStakes] = useState([])
+    const [presaleDetail, setPresaleDetail] = useState<any>()
+
+    const [claimSubmit, setClaimSubmit] = useState(false)
+    const [claimButtonStatus, setClaimButtonStatus] = useState("Claim") 
 
     const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
 
@@ -167,6 +172,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                     element.isbuy = false;
                     element.isclaim = redeemdiff > 0
                 }
+                element.isloading = false;
                 passList.push(element)
             }
             setPasses(passList);
@@ -239,8 +245,20 @@ export default function ProjectView({ params }: { params: { address: string } })
         let userConn: UserConn = new UserConn(env, web3Consts.programID);
         const profileInfo = await userConn.getUserInfo();
         setProfile(profileInfo.profiles[0].address);
+        getStakeListFromAPI();
         setProjectLoading(false)
     };
+
+    const getStakeListFromAPI = async () =>{
+        try {
+            let listResult = await axios.get(`/api/project/get-stake-list?project=${params.address}`);
+            setPresaleDetail(listResult.data.presale)
+            setStakes(listResult.data.stake)
+        } catch (error) {
+            console.log("getStakeListFromAPI error ", error)
+        }
+      
+    }
 
     const getUserData = async (address: any) => {
         try {
@@ -618,9 +636,173 @@ export default function ProjectView({ params }: { params: { address: string } })
     }
 
     const handlePassBuy = async(passItem:any) => {
+
+        if(!wallet) {
+            createMessage(
+                "Hey! We checked your wallet is not connected",
+                "warning-container",
+            );
+            return
+        }
+        try {
+            const passList:any = []
+            for (let index = 0; index < passes.length; index++) {
+                const element:any = passes[index];
+                if(element.key == passItem.key) {
+                    element.isbuy = false;
+                    element.isclaim = false;
+                    element.isloading = true;
+                }
+                passList.push(element)
+            }
+            setPasses(passList);
+
+            const env = new anchor.AnchorProvider(connection.connection, wallet, {
+                preflightCommitment: "processed",
+            });
+    
+            anchor.setProvider(env);
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            await projectConn.buyLaunchPass({
+                owner: new anchor.web3.PublicKey(projectDetail.coins.creator),
+                mint: new anchor.web3.PublicKey(passItem.key),
+                gensis: new anchor.web3.PublicKey(projectInfo.profiles[0].address),
+            })
+
+            const newPassList:any = []
+            for (let index = 0; index < passes.length; index++) {
+                const element:any = passes[index];
+                if(element.key == passItem.key) {
+                    element.isbuy = false;
+                    element.isclaim = false;
+                    element.isloading = false;
+                }
+                newPassList.push(element)
+            }
+            setPasses(newPassList);
+
+        } catch (error) {
+            createMessage(
+                "We’re sorry, there was an error while trying to buy launch Pass. Check your wallet and try again.",
+                "danger-container",
+            );
+            const passList:any = []
+            for (let index = 0; index < passes.length; index++) {
+                const element:any = passes[index];
+                if(element.key == passItem.key) {
+                    element.isbuy = true;
+                    element.isclaim = false;
+                    element.isloading = false;
+                }
+                passList.push(element)
+            }
+            setPasses(passList);
+        }
     }
 
     const handlePassClaim = async(passItem:any) => {
+        if(!wallet) {
+            createMessage(
+                "Hey! We checked your wallet is not connected",
+                "warning-container",
+            );
+            return
+        }
+        try {
+            const passList:any = []
+            for (let index = 0; index < passes.length; index++) {
+                const element:any = passes[index];
+                if(element.key == passItem.key) {
+                    element.isbuy = false;
+                    element.isclaim = false;
+                    element.isloading = true;
+                }
+                passList.push(element)
+            }
+            setPasses(passList);
+
+            const env = new anchor.AnchorProvider(connection.connection, wallet, {
+                preflightCommitment: "processed",
+            });
+    
+            anchor.setProvider(env);
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            await projectConn.redeemLaunchPass({
+                owner: new anchor.web3.PublicKey(projectDetail.coins.creator),
+                launchToken: new anchor.web3.PublicKey(passItem.key),
+                mint: new anchor.web3.PublicKey(projectDetail.coins.key),
+                stakeKey: presaleDetail.key
+            })
+
+            const newPassList:any = []
+            for (let index = 0; index < passes.length; index++) {
+                const element:any = passes[index];
+                if(element.key == passItem.key) {
+                    element.isbuy = false;
+                    element.isclaim = false;
+                    element.isloading = false;
+                }
+                newPassList.push(element)
+            }
+            setPasses(newPassList);
+
+        } catch (error) {
+            createMessage(
+                "We’re sorry, there was an error while trying to buy launch Pass. Check your wallet and try again.",
+                "danger-container",
+            );
+            const passList:any = []
+            for (let index = 0; index < passes.length; index++) {
+                const element:any = passes[index];
+                if(element.key == passItem.key) {
+                    element.isbuy = false;
+                    element.isclaim = true;
+                    element.isloading = false;
+                }
+                passList.push(element)
+            }
+            setPasses(passList);
+        }
+    }
+
+    const handleRedeemCoins = async() => {
+        if(!wallet) {
+            createMessage(
+                "Hey! We checked your wallet is not connected",
+                "warning-container",
+            );
+            return
+        }
+        try {
+            setClaimButtonStatus("Claiming...")
+            setClaimSubmit(true)
+            const env = new anchor.AnchorProvider(connection.connection, wallet, {
+                preflightCommitment: "processed",
+            });
+    
+            anchor.setProvider(env);
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            for (let index = 0; index < stakes.length; index++) {
+                const element:any = stakes[index];
+                await projectConn.unStakeCoin({
+                    amount: element.value,
+                    mint: new anchor.web3.PublicKey(element.mint),
+                    stakeKey: element.key,
+                })
+
+                await axios.put("/api/project/update-stake-account", {
+                    key: element.key,
+                });
+            }
+        } catch (error) {
+            createMessage(
+                "We’re sorry, there was an error while trying to buy launch Pass. Check your wallet and try again.",
+                "danger-container",
+            );
+            setClaimButtonStatus("Claim")
+            setClaimSubmit(false)
+        }
+
     }
 
     return (
@@ -762,6 +944,17 @@ export default function ProjectView({ params }: { params: { address: string } })
                                         </div>
                                     </>                               
                                     }
+                                    {stakes.length > 0 && 
+                                      <div className="flex justify-center mb-8">
+                                        {!claimSubmit &&
+                                           <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={handleRedeemCoins}>Claim</button>
+                                        }
+                                        {claimSubmit &&
+                                           <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{claimButtonStatus}</button>
+                                        }
+                                      </div>
+                                    } 
+                                
                                 {profileInfo &&
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                         {projectInfo.profiles.length == 0 && projectInfo.activationTokens.length > 0 &&

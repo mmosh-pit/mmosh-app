@@ -7,6 +7,7 @@ import {
   LineageInfo,
   MainStateInput,
   MintProfileByAdminInput,
+  MintingCostDistribution,
   Result,
   TxPassType,
   _MintGensisInput,
@@ -18,7 +19,7 @@ import {
 import Config from "./web3Config.json";
 import { BaseMpl } from "./base/baseMpl";
 import { web3Consts } from "./web3Consts";
-import { AuthorityType, MINT_SIZE, createInitializeMintInstruction, createMintToInstruction, createSetAuthorityInstruction, getAssociatedTokenAddress, getAssociatedTokenAddressSync, getMinimumBalanceForRentExemptAccount, mintTo, unpackAccount } from "forge-spl-token";
+import { AuthorityType, MINT_SIZE, createInitializeMintInstruction, createMintToInstruction, createSetAuthorityInstruction, createSyncNativeInstruction, getAssociatedTokenAddress, getAssociatedTokenAddressSync, getMinimumBalanceForRentExemptAccount, mintTo, unpackAccount } from "forge-spl-token";
 import { Metaplex, Metadata as MetadataM } from "@metaplex-foundation/js";
 import { BaseSpl } from "./base/baseSpl";
 import axios from "axios";
@@ -29,6 +30,7 @@ import {
   } from "@metaplex-foundation/mpl-token-metadata";
 import { createMintInstructions } from "@strata-foundation/spl-utils";
 import { SystemProgram } from "@solana/web3.js";
+import { NATIVE_MINT } from "@solana/spl-token";
 
 const {
   systemProgram,
@@ -1755,15 +1757,275 @@ export class Connectivity {
     }
   }
 
+  async createLaunchPass(input: {
+    redeemAmount: number,
+    redeemDate: number,
+    cost: number,
+    distribution: MintingCostDistribution,
+    name: string,
+    symbol: string,
+    uri: string
+  }): Promise<string> {
+    let {
+      redeemAmount,
+      redeemDate,
+      cost,
+      distribution,
+      name,
+      symbol,
+      uri
+    } = input;
+    const targetMintKeypair = web3.Keypair.generate();
+
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    const { ata, ix: initAtaIx } =
+    await this.baseSpl.__getOrCreateTokenAccountInstruction({
+      mint: targetMintKeypair.publicKey,
+      owner: this.provider.publicKey,
+    },
+    this.ixCallBack);
+    if (initAtaIx) instructions.push(initAtaIx);
+
+    const launchPass = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.launchPass,  this.provider.publicKey.toBuffer(), targetMintKeypair.publicKey.toBuffer()],
+      this.programId,
+    )[0]
+
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      targetMintKeypair.publicKey,
+      launchPass,
+      true
+    );
+
+    const activationTokenMetadata =
+    BaseMpl.getMetadataAccount(targetMintKeypair.publicKey);
+
+    const ix = await this.program.methods.initLaunchPass(
+      new BN(redeemAmount), 
+      new BN(redeemDate),
+      new BN(cost),
+      distribution,
+      name,
+      symbol,
+      uri
+    ).accounts({
+      owner: this.provider.publicKey,
+      usdc: web3Consts.usdcToken,
+      mint: targetMintKeypair.publicKey,
+      userMintAta: ata,
+      launchPass,
+      tokenAccount: nftTokenAccount,
+      activationTokenMetadata,
+      sysvarInstructions,
+      mplProgram,
+      associatedTokenProgram,
+      systemProgram,
+      tokenProgram,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+    }).instruction();
+
+    instructions.push(ix);
+    
+    const tx = new web3.Transaction().add(...instructions);
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
+    }
+    tx.add(feeIns);
+    const signature = await this.provider.sendAndConfirm(tx, [
+      targetMintKeypair,
+    ]);
+  
+    return targetMintKeypair.publicKey.toBase58();
+  }
+
+  async buyLaunchPass(input: {
+    owner: anchor.web3.PublicKey,
+    mint: anchor.web3.PublicKey,
+    gensis: anchor.web3.PublicKey,
+  }): Promise<string> {
+    let {
+      owner,
+      mint,
+      gensis
+    } = input;
+
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    const receiverAtaResult = await this.getAtaAccount(mint,this.provider.publicKey);
+    const receiverAta = receiverAtaResult.ata;
+    if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
+
+    const ownerAtaResult = await this.getAtaAccount(mint,owner);
+    const ownerAta = ownerAtaResult.ata;
+    if (ownerAtaResult.initAtaIx) instructions.push(ownerAtaResult.initAtaIx);
+
+    const senderAtaResult = await this.getAtaAccount(web3Consts.usdcToken,this.provider.publicKey);
+    const senderAta = senderAtaResult.ata;
+    if (senderAtaResult.initAtaIx) instructions.push(senderAtaResult.initAtaIx);
+
+    const launcPassState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.launchPass,  owner.toBuffer(), mint.toBuffer()],
+      this.programId,
+    )[0]
+    const profileState = this.__getProfileStateAccount(gensis);
+    const profileStateInfo:any =
+      await this.program.account.profileState.fetch(profileState);
+
+    const mainStateInfo = await this.program.account.mainState.fetch(
+      this.mainState,
+    );
+
+    const {
+      parentProfile,
+      grandParentProfile,
+      currentGrandParentProfileHolder,
+      currentParentProfileHolder,
+      currentParentProfileHolderAta,
+      currentGrandParentProfileHolderAta,
+
+    } = await this.__getProfileHoldersInfo(
+      profileStateInfo.lineage,
+      gensis,
+      mainStateInfo.genesisProfile,
+      web3Consts.usdcToken
+    );
+
+    const ix = await this.program.methods.buyLaunchPass().accounts({
+      receiver: this.provider.publicKey,
+      receiverAta,
+      owner,
+      ownerAta,
+      launcPassState,
+      senderAta,
+      usdcMint: web3Consts.usdcToken,
+      associatedTokenProgram,
+      systemProgram,
+      tokenProgram,
+      parentProfile,
+      grandParentProfile,
+      currentParentProfileHolder,
+      currentGrandParentProfileHolder,
+      currentParentProfileHolderAta,
+      currentGrandParentProfileHolderAta
+    }).instruction();
+
+    instructions.push(ix);
+    
+    const tx = new web3.Transaction().add(...instructions);
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
+    }
+    tx.add(feeIns);
+    const signature = await this.provider.sendAndConfirm(tx, []);
+  
+    return signature;
+  }
+
+  async redeemLaunchPass(input: {
+    owner: anchor.web3.PublicKey,
+    launchToken: anchor.web3.PublicKey,
+    mint: anchor.web3.PublicKey,
+    stakeKey: anchor.web3.PublicKey,
+  }): Promise<string> {
+    let {
+      owner,
+      mint,
+      launchToken,
+      stakeKey
+    } = input;
+
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    const launcPassState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.launchPass, owner.toBuffer(), launchToken.toBuffer()],
+      this.programId,
+    )[0]
+
+    const vaultState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.vault, stakeKey.toBuffer(), mint.toBuffer()],
+      this.programId,
+    )[0]
+
+    const userLaunchTokenAtaResult = await this.getAtaAccount(launchToken,this.provider.publicKey);
+    const userLaunchTokenAta = userLaunchTokenAtaResult.ata;
+    if (userLaunchTokenAtaResult.initAtaIx) instructions.push(userLaunchTokenAtaResult.initAtaIx);
+
+
+    const receiverAtaResult = await this.getAtaAccount(mint,this.provider.publicKey);
+    const receiverAta = receiverAtaResult.ata;
+    if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
+
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      mint,
+      vaultState,
+      true
+    );
+
+
+    const ix = await this.program.methods.redeemLaunchPass().accounts({
+      user: this.provider.publicKey,
+      launchToken,
+      launcPassState,
+      stakeKey,
+      vault: vaultState,
+      userLaunchTokenAta,
+      sysvarInstructions,
+      receiverAta,
+      mint,
+      tokenAccount: nftTokenAccount,
+      mplProgram,
+      associatedTokenProgram,
+      systemProgram,
+      tokenProgram,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+    }).instruction();
+
+    instructions.push(ix);
+    
+    const tx = new web3.Transaction().add(...instructions);
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
+    }
+    tx.add(feeIns);
+    const signature = await this.provider.sendAndConfirm(tx, []);
+  
+    return signature;
+  }
+
+
   async createCoin(name: any, symbol: any, url: any, amount: number, decimals: number): Promise<string> {
     const lamports = await getMinimumBalanceForRentExemptAccount(
         this.connection,
     );
 
     const targetMintKeypair = web3.Keypair.generate();
-
-    const vaultTokenState =
-    this.__getValutAccount(targetMintKeypair.publicKey, this.provider.publicKey);
 
     const instructions: anchor.web3.TransactionInstruction[] = [];
     
@@ -1809,7 +2071,7 @@ export class Connectivity {
           mint: targetMintKeypair.publicKey,
           mintAuthority: this.provider.publicKey,
           payer: this.provider.publicKey,
-          updateAuthority: vaultTokenState,
+          updateAuthority: this.provider.publicKey,
         },
         {
           createMetadataAccountArgsV3: {
@@ -1829,23 +2091,7 @@ export class Connectivity {
       );
 
       instructions.push(
-        createMetadataInstruction,
-        createSetAuthorityInstruction(
-          targetMintKeypair.publicKey,
-          this.provider.publicKey,
-          AuthorityType.MintTokens,
-          vaultTokenState,
-          [],
-          TOKEN_PROGRAM_ID,
-        ),
-        createSetAuthorityInstruction(
-          targetMintKeypair.publicKey,
-          this.provider.publicKey,
-          AuthorityType.FreezeAccount,
-          vaultTokenState,
-          [],
-          TOKEN_PROGRAM_ID,
-        ),
+        createMetadataInstruction
       );
 
       const tx = new web3.Transaction().add(...instructions);
@@ -1868,32 +2114,188 @@ export class Connectivity {
       return targetMintKeypair.publicKey.toBase58();
   }
 
-  async stakeCoin(mintKey: string, stakeInfo: any): Promise<string> {
+  async stakeCoin(element: any, stakeKey: anchor.web3.PublicKey): Promise<string> {
     
-    let mintPubkey = new anchor.web3.PublicKey(mintKey);
+    const instructions: anchor.web3.TransactionInstruction[] = [];
 
-    const vaultTokenState = new anchor.web3.PublicKey("DA8ZEAcwZdzBzqrcr5N9vEvvSbBhmrdvpp6V4wksM6eG");;
+
+    const vaultState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.vault, stakeKey.toBuffer(), element.mint.toBuffer()],
+      this.programId,
+    )[0]
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      element.mint,
+      vaultState,
+      true
+    );
+
+    if(!await this.hasStakeAccount(stakeKey.toBase58())) {
+        const ix =  await this.program.methods.initVault(new BN(element.duration)).accounts({
+          owner: this.provider.publicKey,
+          authority: element.user,
+          mint: element.mint,
+          stakeKey,
+          vault: vaultState,
+          tokenAccount: nftTokenAccount,
+          associatedTokenProgram,
+          systemProgram,
+          tokenProgram,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+        }).instruction()
+        instructions.push(ix);
+        await this.saveStakeAccount(stakeKey.toBase58(), element.mint.toBase58(),element.user.toBase58(),element.value / web3Consts.LAMPORTS_PER_OPOS, element.duration, element.type)
+    }
+    const ownerAta = getAssociatedTokenAddressSync(element.mint, this.provider.publicKey);
+
+    const ix: any =  await this.program.methods.stakeVault(new BN(element.duration)).accounts({
+      owner: this.provider.publicKey,
+      ownerAta,
+      authority: element.user,
+      mint: element.mint,
+      stakeKey,
+      vault: vaultState,
+      tokenAccount: nftTokenAccount,
+      associatedTokenProgram,
+      systemProgram,
+      tokenProgram,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+    })
+    instructions.push(ix);
+
+    const tx = new web3.Transaction().add(...instructions);
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+    feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+    });
+    } else {
+    feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+    });
+    }
+    tx.add(feeIns);
+    const signature = await this.provider.sendAndConfirm(tx, [
+    ]);
+
+    return signature
+  }
+
+  async unStakeCoin(input: {
+    amount: number,
+    mint: anchor.web3.PublicKey,
+    stakeKey: anchor.web3.PublicKey,
+  }): Promise<string> {
+    let {
+      mint,
+      stakeKey,
+      amount
+    } = input;
 
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
-    for (let index = 0; index < stakeInfo.length; index++) {
-        const stakeItem = stakeInfo[index];
-        if(stakeItem.type == "token") {
-          let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: stakeItem.coin, sender: this.provider.publicKey, receiver: vaultTokenState, init_if_needed: true, amount: stakeItem.amount});
+    const vaultState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.vault, stakeKey.toBuffer(), mint.toBuffer()],
+      this.programId,
+    )[0]
 
-          for (let index = 0; index < createShare.length; index++) {
-              instructions.push(createShare[index]);
-          }
-        } else {
-          let transferInstruction = SystemProgram.transfer({
-            fromPubkey: this.provider.publicKey,
-            toPubkey: vaultTokenState,
-            lamports: stakeItem.amount, // Convert transferAmount to lamports
-          })
-          instructions.push(transferInstruction)
-        }
+    const receiverAtaResult = await this.getAtaAccount(mint,this.provider.publicKey);
+    const receiverAta = receiverAtaResult.ata;
+    if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
 
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      mint,
+      vaultState,
+      true
+    );
+
+
+    const ix = await this.program.methods.unstakeVault(new BN(amount)).accounts({
+      receiver: this.provider.publicKey,
+      receiverAta,
+      mint,
+      stakeKey,
+      vault: vaultState,
+      tokenAccount: nftTokenAccount,
+      associatedTokenProgram,
+      systemProgram,
+      tokenProgram,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+    }).instruction();
+
+    instructions.push(ix);
+    
+    const tx = new web3.Transaction().add(...instructions);
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
     }
+    tx.add(feeIns);
+    const signature = await this.provider.sendAndConfirm(tx, []);
+  
+    return signature;
+  }
+
+
+
+  async hasStakeAccount(stakeKey: String) {
+    try {
+      const result = await axios.get("api/project/hash-stake-account?key="+stakeKey);
+      if (result.data) {
+        return true
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log("hasStakeAccount error", error);
+      return false;
+    }
+  }
+
+  async saveStakeAccount(key: String, mint: String, receiver: String, value:number, expiry: number, staketype: number) {
+    try {
+      const result = await axios.post("api/project/save-stake-account",{
+        key,
+        project: this.projectId.toBase58(),
+        mint,
+        receiver,
+        value,
+        expiry,
+        staketype
+      });
+    } catch (error) {
+      console.log("hasStakeAccount error", error);
+      return null;
+    }
+  }
+
+  async createWrappedSol(value: number): Promise<string> {
+    let ata = await getAssociatedTokenAddress(
+      NATIVE_MINT, // mint
+      this.provider.publicKey // owner
+    );
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    instructions.push(
+      // trasnfer SOL
+      SystemProgram.transfer({
+        fromPubkey: this.provider.publicKey,
+        toPubkey: ata,
+        lamports: value,
+      }),
+      // sync wrapped SOL balance
+      createSyncNativeInstruction(ata)
+    );
 
     const tx = new web3.Transaction().add(...instructions);
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
@@ -2188,5 +2590,18 @@ export class Connectivity {
     }
   }
 
+  async getAtaAccount(mint: anchor.web3.PublicKey, owner: anchor.web3.PublicKey) {
+    const { ata, ix: initAtaIx } =
+    await this.baseSpl.__getOrCreateTokenAccountInstruction({
+      mint: mint,
+      owner: owner,
+    },
+    this.ixCallBack);
+    
+    return {
+      ata,
+      initAtaIx
+    }
+  }
 
 }

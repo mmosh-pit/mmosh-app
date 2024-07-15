@@ -115,17 +115,23 @@ export class Connectivity {
         BaseMpl.getCollectionAuthorityRecordAccount(profile, this.mainState);
       const adminAta = getAssociatedTokenAddressSync(profile, admin);
 
-      console.log("test3")
+      console.log("test3", this.mainState)
 
       const parentMainState = web3.PublicKey.findProgramAddressSync(
         [Seeds.mainState],
         this.programId,
       )[0];
 
+      console.log("test4", parentMainState)
+
       let symbol:any = input.symbol;
       let name:any = input.name;
       let uri:any = input.uri;
       let info:any = input.input
+
+
+      console.log("test5", info)
+
       const ix = await this.program.methods
         .mintGenesisPass(name,symbol,uri,info)
         .accounts({
@@ -1779,26 +1785,14 @@ export class Connectivity {
 
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
-    const { ata, ix: initAtaIx } =
-    await this.baseSpl.__getOrCreateTokenAccountInstruction({
-      mint: targetMintKeypair.publicKey,
-      owner: this.provider.publicKey,
-    },
-    this.ixCallBack);
-    if (initAtaIx) instructions.push(initAtaIx);
-
     const launchPass = web3.PublicKey.findProgramAddressSync(
-      [web3Consts.Seeds.launchPass,  this.provider.publicKey.toBuffer(), targetMintKeypair.publicKey.toBuffer()],
+      [web3Consts.Seeds.launchPass, this.provider.publicKey.toBuffer(), targetMintKeypair.publicKey.toBuffer()],
       this.programId,
     )[0]
 
-    const nftTokenAccount = await getAssociatedTokenAddress(
-      targetMintKeypair.publicKey,
-      launchPass,
-      true
-    );
-
-    const activationTokenMetadata =
+    console.log("input ", input)
+    
+    const mintMetadata =
     BaseMpl.getMetadataAccount(targetMintKeypair.publicKey);
 
     const ix = await this.program.methods.initLaunchPass(
@@ -1811,12 +1805,9 @@ export class Connectivity {
       uri
     ).accounts({
       owner: this.provider.publicKey,
-      usdc: web3Consts.usdcToken,
       mint: targetMintKeypair.publicKey,
-      userMintAta: ata,
       launchPass,
-      tokenAccount: nftTokenAccount,
-      activationTokenMetadata,
+      mintMetadata,
       sysvarInstructions,
       mplProgram,
       associatedTokenProgram,
@@ -1865,18 +1856,21 @@ export class Connectivity {
     const receiverAta = receiverAtaResult.ata;
     if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
 
-    const ownerAtaResult = await this.getAtaAccount(mint,owner);
+
+    const ownerAtaResult = await this.getAtaAccount(web3Consts.usdcToken, owner);
     const ownerAta = ownerAtaResult.ata;
     if (ownerAtaResult.initAtaIx) instructions.push(ownerAtaResult.initAtaIx);
 
-    const senderAtaResult = await this.getAtaAccount(web3Consts.usdcToken,this.provider.publicKey);
+    const senderAtaResult = await this.getAtaAccount(web3Consts.usdcToken, this.provider.publicKey);
     const senderAta = senderAtaResult.ata;
     if (senderAtaResult.initAtaIx) instructions.push(senderAtaResult.initAtaIx);
 
     const launcPassState = web3.PublicKey.findProgramAddressSync(
-      [web3Consts.Seeds.launchPass,  owner.toBuffer(), mint.toBuffer()],
+      [web3Consts.Seeds.launchPass, owner.toBuffer(), mint.toBuffer()],
       this.programId,
     )[0]
+
+
     const profileState = this.__getProfileStateAccount(gensis);
     const profileStateInfo:any =
       await this.program.account.profileState.fetch(profileState);
@@ -1892,6 +1886,8 @@ export class Connectivity {
       currentParentProfileHolder,
       currentParentProfileHolderAta,
       currentGrandParentProfileHolderAta,
+      parentProfileHolderOposAta,
+      grandParentProfileHolderOposAta
 
     } = await this.__getProfileHoldersInfo(
       profileStateInfo.lineage,
@@ -1905,6 +1901,7 @@ export class Connectivity {
       receiverAta,
       owner,
       ownerAta,
+      mint,
       launcPassState,
       senderAta,
       usdcMint: web3Consts.usdcToken,
@@ -1916,7 +1913,9 @@ export class Connectivity {
       currentParentProfileHolder,
       currentGrandParentProfileHolder,
       currentParentProfileHolderAta,
-      currentGrandParentProfileHolderAta
+      currentGrandParentProfileHolderAta,
+      parentProfileHolderOposAta,
+      grandParentProfileHolderOposAta
     }).instruction();
 
     instructions.push(ix);
@@ -2114,13 +2113,13 @@ export class Connectivity {
       return targetMintKeypair.publicKey.toBase58();
   }
 
-  async stakeCoin(element: any, stakeKey: anchor.web3.PublicKey): Promise<string> {
+  async stakeCoin(element: any, stakeKey: anchor.web3.Keypair): Promise<string> {
     
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
 
     const vaultState = web3.PublicKey.findProgramAddressSync(
-      [web3Consts.Seeds.vault, stakeKey.toBuffer(), element.mint.toBuffer()],
+      [web3Consts.Seeds.vault, stakeKey.publicKey.toBuffer(), element.mint.toBuffer()],
       this.programId,
     )[0]
     const nftTokenAccount = await getAssociatedTokenAddress(
@@ -2129,31 +2128,14 @@ export class Connectivity {
       true
     );
 
-    if(!await this.hasStakeAccount(stakeKey.toBase58())) {
-        const ix =  await this.program.methods.initVault(new BN(element.duration)).accounts({
-          owner: this.provider.publicKey,
-          authority: element.user,
-          mint: element.mint,
-          stakeKey,
-          vault: vaultState,
-          tokenAccount: nftTokenAccount,
-          associatedTokenProgram,
-          systemProgram,
-          tokenProgram,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-        }).instruction()
-        instructions.push(ix);
-        await this.saveStakeAccount(stakeKey.toBase58(), element.mint.toBase58(),element.user.toBase58(),element.value / web3Consts.LAMPORTS_PER_OPOS, element.duration, element.type)
-    }
     const ownerAta = getAssociatedTokenAddressSync(element.mint, this.provider.publicKey);
 
-    const ix: any =  await this.program.methods.stakeVault(new BN(element.duration)).accounts({
+    const ix1 =  await this.program.methods.initVault(new BN(element.duration), new BN(element.value)).accounts({
       owner: this.provider.publicKey,
       ownerAta,
       authority: element.user,
       mint: element.mint,
-      stakeKey,
+      stakeKey: stakeKey.publicKey,
       vault: vaultState,
       tokenAccount: nftTokenAccount,
       associatedTokenProgram,
@@ -2161,8 +2143,8 @@ export class Connectivity {
       tokenProgram,
       rent: anchor.web3.SYSVAR_RENT_PUBKEY,
       clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-    })
-    instructions.push(ix);
+    }).instruction()
+    instructions.push(ix1);
 
     const tx = new web3.Transaction().add(...instructions);
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
@@ -2177,9 +2159,8 @@ export class Connectivity {
     });
     }
     tx.add(feeIns);
-    const signature = await this.provider.sendAndConfirm(tx, [
-    ]);
-
+    const signature = await this.provider.sendAndConfirm(tx, []);
+    await this.saveStakeAccount(stakeKey.publicKey.toBase58(), element.mint.toBase58(),element.user.toBase58(),element.value / web3Consts.LAMPORTS_PER_OPOS, element.duration, element.type)
     return signature
   }
 
@@ -2242,7 +2223,9 @@ export class Connectivity {
     }
     tx.add(feeIns);
     const signature = await this.provider.sendAndConfirm(tx, []);
-  
+    await axios.put("/api/project/update-stake-account", {
+      key: stakeKey.toBase58(),
+  });
     return signature;
   }
 
@@ -2250,7 +2233,7 @@ export class Connectivity {
 
   async hasStakeAccount(stakeKey: String) {
     try {
-      const result = await axios.get("api/project/hash-stake-account?key="+stakeKey);
+      const result = await axios.get("/api/project/hash-stake-account?key="+stakeKey);
       if (result.data) {
         return true
       } else {
@@ -2264,7 +2247,7 @@ export class Connectivity {
 
   async saveStakeAccount(key: String, mint: String, receiver: String, value:number, expiry: number, staketype: number) {
     try {
-      const result = await axios.post("api/project/save-stake-account",{
+      const result = await axios.post("/api/project/save-stake-account",{
         key,
         project: this.projectId.toBase58(),
         mint,
@@ -2285,7 +2268,7 @@ export class Connectivity {
       this.provider.publicKey // owner
     );
     const instructions: anchor.web3.TransactionInstruction[] = [];
-
+    console.log("createWrappedSol", value)
     instructions.push(
       // trasnfer SOL
       SystemProgram.transfer({

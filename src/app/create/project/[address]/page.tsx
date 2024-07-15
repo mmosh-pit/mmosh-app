@@ -231,6 +231,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                 setOwner(false)
             }
         }
+        console.log("projectInfo ", projectInfo)
         setProjectInfo(projectInfo)
         getProfileInfo()
     }
@@ -660,13 +661,19 @@ export default function ProjectView({ params }: { params: { address: string } })
             const env = new anchor.AnchorProvider(connection.connection, wallet, {
                 preflightCommitment: "processed",
             });
+
+            console.log("buyLaunchPass", {
+                owner: projectDetail.coins.creator,
+                mint: passItem.key,
+                gensis: params.address,
+            })
     
             anchor.setProvider(env);
             let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
             await projectConn.buyLaunchPass({
                 owner: new anchor.web3.PublicKey(projectDetail.coins.creator),
                 mint: new anchor.web3.PublicKey(passItem.key),
-                gensis: new anchor.web3.PublicKey(projectInfo.profiles[0].address),
+                gensis: new anchor.web3.PublicKey(params.address),
             })
 
             const newPassList:any = []
@@ -682,6 +689,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             setPasses(newPassList);
 
         } catch (error) {
+            console.log("error ", error)
             createMessage(
                 "We’re sorry, there was an error while trying to buy launch Pass. Check your wallet and try again.",
                 "danger-container",
@@ -789,10 +797,6 @@ export default function ProjectView({ params }: { params: { address: string } })
                     mint: new anchor.web3.PublicKey(element.mint),
                     stakeKey: element.key,
                 })
-
-                await axios.put("/api/project/update-stake-account", {
-                    key: element.key,
-                });
             }
         } catch (error) {
             createMessage(
@@ -846,7 +850,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                         </div>
                                         <div className="flex pt-8 border-t border-white border-opacity-20">
                                             <div className="flex">
-                                                <div className="rounded-md mr-3.5"><img src="https://storage.googleapis.com/mmosh-assets/profile.png" className="w-32 h-32 object-cover rounded-md" /></div>
+                                                <div className="rounded-md mr-3.5"><img src={projectDetail.project.image} className="w-32 h-32 object-cover rounded-md" /></div>
                                                 <div className="mr-8">
                                                     <h4 className="text-[15px] text-white">Creator</h4>
                                                     <ul>
@@ -1078,9 +1082,9 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                         </div>
                                                         </div>
                                                         <div className="text-center">
-                                                            {passItem.isbuy &&
+                                                            {/* {passItem.isbuy && */}
                                                                 <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{handlePassBuy(passItem)}}>Buy</button>
-                                                            }
+                                                            {/* } */}
                                                             {passItem.isclaim &&
                                                                 <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{handlePassClaim(passItem)}}>Claim</button>
                                                             }

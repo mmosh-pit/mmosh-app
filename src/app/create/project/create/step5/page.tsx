@@ -10,6 +10,8 @@ import MinusIcon from "@/assets/icons/MinusIcon";
 import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
 import React, { use, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 
 export default function ProjectCreateStep5() {
     const navigate = useRouter();
@@ -133,10 +135,20 @@ export default function ProjectCreateStep5() {
         return inputValue;
     }
 
-    const gotoStep6 = () => {
+    const gotoStep6 = async () => {
         setLoading(true)
         if(validateFields()) {
-            localStorage.setItem("projectstep5",JSON.stringify(passes));
+            let passList = [];
+            for (let index = 0; index < passes.length; index++) {
+                const fields = passes[index];
+                if(!isValidHttpUrl(fields.image.preview)) {
+                    let imageFile = await fetch(fields.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: fields.image.type }));
+                    let imageUri = await pinImageToShadowDrive(imageFile)
+                    fields.image.preview = imageUri;
+                }
+                passList.push(fields)
+            }
+            localStorage.setItem("projectstep5",JSON.stringify(passList));
             navigate.push("/create/project/create/step6");
         }
     }
@@ -251,6 +263,15 @@ export default function ProjectCreateStep5() {
         }
     
     };
+
+    const isValidHttpUrl = (url:any) => {
+        try {
+          const newUrl = new URL(url);
+          return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+        } catch (err) {
+          return false;
+        }
+    }
 
 
     return (

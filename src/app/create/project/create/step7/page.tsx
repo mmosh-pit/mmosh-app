@@ -156,7 +156,7 @@ export default function ProjectCreateStep7() {
                                                     helperText=""
                                                     placeholder="%"
                                                     value={(fieldItem.cliff.percentage > 0 ? fieldItem.cliff.percentage.toString() : "")}
-                                                    onChange={(e) => {fieldItem.cliff.percentage = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                                    onChange={(e) => {fieldItem.cliff.percentage = prepareNumber(Number(e.target.value)); fieldItem.vesting.percentage = 100 - fieldItem.cliff.percentage; updateVesting(i, fieldItem) }}
                                                 />
                                             </div>
                                         </div>
@@ -184,7 +184,7 @@ export default function ProjectCreateStep7() {
                                                     helperText=""
                                                     placeholder="%"
                                                     value={(fieldItem.vesting.percentage > 0 ? fieldItem.vesting.percentage.toString() : "")}
-                                                    onChange={(e) => {fieldItem.vesting.percentage = prepareNumber(Number(e.target.value)); updateVesting(i, fieldItem) }}
+                                                    onChange={(e) => {fieldItem.vesting.percentage = prepareNumber(Number(e.target.value)); fieldItem.cliff.percentage = 100 - fieldItem.vesting.percentage; updateVesting(i, fieldItem) }}
                                                 />
                                             </div>
                                         </div>

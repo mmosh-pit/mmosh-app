@@ -3,508 +3,6 @@ export type Mmoshforge = {
   "name": "mmoshforge",
   "instructions": [
     {
-      "name": "initVault",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "lockDate",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "stakeVault",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "ownerAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "unstakeVault",
-      "accounts": [
-        {
-          "name": "receiver",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "receiverAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram"
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "initLaunchPass",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "usdc",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userMintAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "launchPass",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "activationTokenMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sysvarInstructions",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mplProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "redeemAmount",
-          "type": "u64"
-        },
-        {
-          "name": "redeemDate",
-          "type": "u64"
-        },
-        {
-          "name": "cost",
-          "type": "u64"
-        },
-        {
-          "name": "distribution",
-          "type": {
-            "defined": "MintingCostDistribution"
-            }
-        },
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "symbol",
-          "type": "string"
-        },
-        {
-          "name": "uri",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "buyLaunchPass",
-      "accounts": [
-        {
-          "name": "receiver",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "receiverAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "launcPassState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ownerAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "senderAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "usdcMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "redeemLaunchPass",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "launchToken",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "launcPassState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userLaunchTokenAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sysvarInstructions",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "receiverAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mplProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "initMainState",
       "accounts": [
         {
@@ -722,90 +220,6 @@ export type Mmoshforge = {
       ]
     },
     {
-      "name": "updateCollection",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sysvarInstructions",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentCollection",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentCollectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentCollectionEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mplProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "symbol",
-          "type": "string"
-        },
-        {
-          "name": "uri",
-          "type": "string"
-        }
-      ]
-    },
-    {
       "name": "mintGenesisProfile",
       "accounts": [
         {
@@ -907,284 +321,6 @@ export type Mmoshforge = {
           }
         }
       ]
-    },
-    {
-      "name": "projectDistribution",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oposToken",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGgreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGenesisProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "greatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ggreatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "genesisProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "passDistribution",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "project",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oposToken",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGgreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGenesisProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "greatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ggreatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "genesisProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "profileDistribution",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oposToken",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGgreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGenesisProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "greatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ggreatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "genesisProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
     },
     {
       "name": "mintProfileByAt",
@@ -2946,79 +2082,505 @@ export type Mmoshforge = {
           }
         }
       ]
+    },
+    {
+      "name": "initVault",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "ownerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "lockDate",
+          "type": "u64"
+        },
+        {
+          "name": "value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "stakeVault",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "ownerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unstakeVault",
+      "accounts": [
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initLaunchPass",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "launchPass",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sysvarInstructions",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mplProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "redeemAmount",
+          "type": "u64"
+        },
+        {
+          "name": "redeemDate",
+          "type": "u64"
+        },
+        {
+          "name": "cost",
+          "type": "u64"
+        },
+        {
+          "name": "distribution",
+          "type": {
+            "defined": "MintingCostDistribution"
+          }
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "buyLaunchPass",
+      "accounts": [
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "launcPassState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ownerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "senderAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "parentProfile",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "grandParentProfile",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentParentProfileHolderAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentGrandParentProfileHolderAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentParentProfileHolder",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentGrandParentProfileHolder",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "parentProfileHolderOposAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "grandParentProfileHolderOposAta",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "redeemLaunchPass",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "launchToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "launcPassState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userLaunchTokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sysvarInstructions",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mplProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
-    {
-      "name": "VaultState",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mint",
-            "type": "publicKey"
-          },
-          {
-            "name": "lockDate",
-            "type": "u64"
-          },
-          {
-            "name": "authority",
-            "type": "publicKey"
-          },
-          {
-            "name": "owner",
-            "type": "publicKey"
-          },
-          {
-            "name": "_bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "launchPassState",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "publicKey"
-          },
-          {
-            "name": "usdc",
-            "type": "publicKey"
-          },
-          {
-            "name": "mint",
-            "type": "publicKey"
-          },
-          {
-            "name": "cost",
-            "type": "u64"
-          },
-          {
-            "name": "distribution",
-            "type": {
-              "defined": "MintingCostDistribution"
-            }
-          },
-          {
-            "name": "redeemDate",
-            "type": "u64"
-          },
-          {
-            "name": "redeemAmount",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
     {
       "name": "mainState",
       "type": {
@@ -3112,6 +2674,20 @@ export type Mmoshforge = {
       }
     },
     {
+      "name": "curveV0",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "definition",
+            "type": {
+              "defined": "PiecewiseCurve"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "programStateV0",
       "type": {
         "kind": "struct",
@@ -3135,20 +2711,6 @@ export type Mmoshforge = {
           {
             "name": "bumpSeed",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "curveV0",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "definition",
-            "type": {
-              "defined": "PiecewiseCurve"
-            }
           }
         ]
       }
@@ -3310,6 +2872,40 @@ export type Mmoshforge = {
       }
     },
     {
+      "name": "launchPassState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "cost",
+            "type": "u64"
+          },
+          {
+            "name": "distribution",
+            "type": {
+              "defined": "MintingCostDistribution"
+            }
+          },
+          {
+            "name": "redeemDate",
+            "type": "u64"
+          },
+          {
+            "name": "redeemAmount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "profileState",
       "type": {
         "kind": "struct",
@@ -3344,6 +2940,34 @@ export type Mmoshforge = {
           }
         ]
       }
+    },
+    {
+      "name": "vaultState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "lockDate",
+            "type": "u64"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     }
   ],
   "types": [
@@ -3375,22 +2999,6 @@ export type Mmoshforge = {
             "type": {
               "defined": "TradingPriceDistribution"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "BuyWithBaseV0Args",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "baseAmount",
-            "type": "u64"
-          },
-          {
-            "name": "minimumTargetAmount",
-            "type": "u64"
           }
         ]
       }
@@ -3431,6 +3039,22 @@ export type Mmoshforge = {
                 "defined": "BuyTargetAmountV0Args"
               }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BuyWithBaseV0Args",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "baseAmount",
+            "type": "u64"
+          },
+          {
+            "name": "minimumTargetAmount",
+            "type": "u64"
           }
         ]
       }
@@ -3698,6 +3322,81 @@ export type Mmoshforge = {
       }
     },
     {
+      "name": "PiecewiseCurve",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "TimeV0",
+            "fields": [
+              {
+                "name": "curves",
+                "type": {
+                  "vec": {
+                    "defined": "TimeCurveV0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrimitiveCurve",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ExponentialCurveV0",
+            "fields": [
+              {
+                "name": "c",
+                "type": "u128"
+              },
+              {
+                "name": "b",
+                "type": "u128"
+              },
+              {
+                "name": "pow",
+                "type": "u8"
+              },
+              {
+                "name": "frac",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "TimeDecayExponentialCurveV0",
+            "fields": [
+              {
+                "name": "c",
+                "type": "u128"
+              },
+              {
+                "name": "k1",
+                "type": "u128"
+              },
+              {
+                "name": "k0",
+                "type": "u128"
+              },
+              {
+                "name": "interval",
+                "type": "u32"
+              },
+              {
+                "name": "d",
+                "type": "u128"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "TimeCurveV0",
       "type": {
         "kind": "struct",
@@ -3867,172 +3566,6 @@ export type Mmoshforge = {
             "type": "publicKey"
           }
         ]
-      }
-    },
-    {
-      "name": "MintPassByAtInput",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "symbol",
-            "type": "string"
-          },
-          {
-            "name": "uriHash",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MintProfileByAtInput",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "symbol",
-            "type": "string"
-          },
-          {
-            "name": "uriHash",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
-      "name": "PrimitiveCurve",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "ExponentialCurveV0",
-            "fields": [
-              {
-                "name": "c",
-                "type": "u128"
-              },
-              {
-                "name": "b",
-                "type": "u128"
-              },
-              {
-                "name": "pow",
-                "type": "u8"
-              },
-              {
-                "name": "frac",
-                "type": "u8"
-              }
-            ]
-          },
-          {
-            "name": "TimeDecayExponentialCurveV0",
-            "fields": [
-              {
-                "name": "c",
-                "type": "u128"
-              },
-              {
-                "name": "k1",
-                "type": "u128"
-              },
-              {
-                "name": "k0",
-                "type": "u128"
-              },
-              {
-                "name": "interval",
-                "type": "u32"
-              },
-              {
-                "name": "d",
-                "type": "u128"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "PiecewiseCurve",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "TimeV0",
-            "fields": [
-              {
-                "name": "curves",
-                "type": {
-                  "vec": {
-                    "defined": "TimeCurveV0"
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "MyError",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "FirstError"
-          },
-          {
-            "name": "AlreadySet"
-          },
-          {
-            "name": "OnlyOwnerCanCall"
-          },
-          {
-            "name": "UnknownNft"
-          },
-          {
-            "name": "InvalidNftHolder"
-          },
-          {
-            "name": "GenesisNftAlreadyMinted"
-          },
-          {
-            "name": "ActivationTokenNotFound"
-          },
-          {
-            "name": "ActivationTokenAlreadyInitialize"
-          },
-          {
-            "name": "OnlyProfileHolderAllow"
-          },
-          {
-            "name": "NotEnoughTokenToMint"
-          },
-          {
-            "name": "ProfileIdMissMatch"
-          },
-          {
-            "name": "TimeLockNotExpired"
-          }
-        ]
-      }
-    },
-    {
-      "name": "InnerUint",
-      "type": {
-        "kind": "alias",
-        "value": "u128"
       }
     }
   ],
@@ -4135,508 +3668,6 @@ export const IDL: Mmoshforge = {
   "name": "mmoshforge",
   "instructions": [
     {
-      "name": "initVault",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "lockDate",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "stakeVault",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "ownerAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "unstakeVault",
-      "accounts": [
-        {
-          "name": "receiver",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "receiverAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "value",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "initLaunchPass",
-      "accounts": [
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "usdc",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userMintAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "launchPass",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "activationTokenMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sysvarInstructions",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mplProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "redeemAmount",
-          "type": "u64"
-        },
-        {
-          "name": "redeemDate",
-          "type": "u64"
-        },
-        {
-          "name": "cost",
-          "type": "u64"
-        },
-        {
-          "name": "distribution",
-          "type": {
-            "defined": "MintingCostDistribution"
-          }
-        },
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "symbol",
-          "type": "string"
-        },
-        {
-          "name": "uri",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "buyLaunchPass",
-      "accounts": [
-        {
-          "name": "receiver",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "receiverAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "launcPassState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ownerAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "senderAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "usdcMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "redeemLaunchPass",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "launchToken",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "launcPassState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "stakeKey",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "vault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "userLaunchTokenAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sysvarInstructions",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "receiverAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mplProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "clock",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "initMainState",
       "accounts": [
         {
@@ -4854,90 +3885,6 @@ export const IDL: Mmoshforge = {
       ]
     },
     {
-      "name": "updateCollection",
-      "accounts": [
-        {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collection",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "collectionEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sysvarInstructions",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentCollection",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentCollectionMetadata",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentCollectionEdition",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mplProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "symbol",
-          "type": "string"
-        },
-        {
-          "name": "uri",
-          "type": "string"
-        }
-      ]
-    },
-    {
       "name": "mintGenesisProfile",
       "accounts": [
         {
@@ -5039,284 +3986,6 @@ export const IDL: Mmoshforge = {
           }
         }
       ]
-    },
-    {
-      "name": "projectDistribution",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oposToken",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGgreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGenesisProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "greatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ggreatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "genesisProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "passDistribution",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "project",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oposToken",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGgreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGenesisProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "greatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ggreatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "genesisProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "profileDistribution",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "associatedTokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "oposToken",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mainState",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGgreatGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGenesisProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "greatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ggreatGrandParentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "genesisProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": []
     },
     {
       "name": "mintProfileByAt",
@@ -7078,79 +5747,505 @@ export const IDL: Mmoshforge = {
           }
         }
       ]
+    },
+    {
+      "name": "initVault",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "ownerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "lockDate",
+          "type": "u64"
+        },
+        {
+          "name": "value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "stakeVault",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "ownerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unstakeVault",
+      "accounts": [
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "value",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initLaunchPass",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "launchPass",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintMetadata",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sysvarInstructions",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mplProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "redeemAmount",
+          "type": "u64"
+        },
+        {
+          "name": "redeemDate",
+          "type": "u64"
+        },
+        {
+          "name": "cost",
+          "type": "u64"
+        },
+        {
+          "name": "distribution",
+          "type": {
+            "defined": "MintingCostDistribution"
+          }
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "buyLaunchPass",
+      "accounts": [
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "launcPassState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ownerAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "senderAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "parentProfile",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "grandParentProfile",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentParentProfileHolderAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentGrandParentProfileHolderAta",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentParentProfileHolder",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "currentGrandParentProfileHolder",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "parentProfileHolderOposAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "grandParentProfileHolderOposAta",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "redeemLaunchPass",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "launchToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "launcPassState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakeKey",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userLaunchTokenAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sysvarInstructions",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mplProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
-    {
-      "name": "VaultState",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mint",
-            "type": "publicKey"
-          },
-          {
-            "name": "lockDate",
-            "type": "u64"
-          },
-          {
-            "name": "authority",
-            "type": "publicKey"
-          },
-          {
-            "name": "owner",
-            "type": "publicKey"
-          },
-          {
-            "name": "_bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "launchPassState",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "publicKey"
-          },
-          {
-            "name": "usdc",
-            "type": "publicKey"
-          },
-          {
-            "name": "mint",
-            "type": "publicKey"
-          },
-          {
-            "name": "cost",
-            "type": "u64"
-          },
-          {
-            "name": "distribution",
-            "type": {
-              "defined": "MintingCostDistribution"
-            }
-          },
-          {
-            "name": "redeemDate",
-            "type": "u64"
-          },
-          {
-            "name": "redeemAmount",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    },
     {
       "name": "mainState",
       "type": {
@@ -7244,6 +6339,20 @@ export const IDL: Mmoshforge = {
       }
     },
     {
+      "name": "curveV0",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "definition",
+            "type": {
+              "defined": "PiecewiseCurve"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "programStateV0",
       "type": {
         "kind": "struct",
@@ -7267,20 +6376,6 @@ export const IDL: Mmoshforge = {
           {
             "name": "bumpSeed",
             "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "curveV0",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "definition",
-            "type": {
-              "defined": "PiecewiseCurve"
-            }
           }
         ]
       }
@@ -7442,6 +6537,40 @@ export const IDL: Mmoshforge = {
       }
     },
     {
+      "name": "launchPassState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "cost",
+            "type": "u64"
+          },
+          {
+            "name": "distribution",
+            "type": {
+              "defined": "MintingCostDistribution"
+            }
+          },
+          {
+            "name": "redeemDate",
+            "type": "u64"
+          },
+          {
+            "name": "redeemAmount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "profileState",
       "type": {
         "kind": "struct",
@@ -7476,6 +6605,34 @@ export const IDL: Mmoshforge = {
           }
         ]
       }
+    },
+    {
+      "name": "vaultState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "lockDate",
+            "type": "u64"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     }
   ],
   "types": [
@@ -7507,22 +6664,6 @@ export const IDL: Mmoshforge = {
             "type": {
               "defined": "TradingPriceDistribution"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "BuyWithBaseV0Args",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "baseAmount",
-            "type": "u64"
-          },
-          {
-            "name": "minimumTargetAmount",
-            "type": "u64"
           }
         ]
       }
@@ -7563,6 +6704,22 @@ export const IDL: Mmoshforge = {
                 "defined": "BuyTargetAmountV0Args"
               }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BuyWithBaseV0Args",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "baseAmount",
+            "type": "u64"
+          },
+          {
+            "name": "minimumTargetAmount",
+            "type": "u64"
           }
         ]
       }
@@ -7830,6 +6987,81 @@ export const IDL: Mmoshforge = {
       }
     },
     {
+      "name": "PiecewiseCurve",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "TimeV0",
+            "fields": [
+              {
+                "name": "curves",
+                "type": {
+                  "vec": {
+                    "defined": "TimeCurveV0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "PrimitiveCurve",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ExponentialCurveV0",
+            "fields": [
+              {
+                "name": "c",
+                "type": "u128"
+              },
+              {
+                "name": "b",
+                "type": "u128"
+              },
+              {
+                "name": "pow",
+                "type": "u8"
+              },
+              {
+                "name": "frac",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "TimeDecayExponentialCurveV0",
+            "fields": [
+              {
+                "name": "c",
+                "type": "u128"
+              },
+              {
+                "name": "k1",
+                "type": "u128"
+              },
+              {
+                "name": "k0",
+                "type": "u128"
+              },
+              {
+                "name": "interval",
+                "type": "u32"
+              },
+              {
+                "name": "d",
+                "type": "u128"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "TimeCurveV0",
       "type": {
         "kind": "struct",
@@ -7999,172 +7231,6 @@ export const IDL: Mmoshforge = {
             "type": "publicKey"
           }
         ]
-      }
-    },
-    {
-      "name": "MintPassByAtInput",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "symbol",
-            "type": "string"
-          },
-          {
-            "name": "uriHash",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
-      "name": "MintProfileByAtInput",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "name": "symbol",
-            "type": "string"
-          },
-          {
-            "name": "uriHash",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    {
-      "name": "PrimitiveCurve",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "ExponentialCurveV0",
-            "fields": [
-              {
-                "name": "c",
-                "type": "u128"
-              },
-              {
-                "name": "b",
-                "type": "u128"
-              },
-              {
-                "name": "pow",
-                "type": "u8"
-              },
-              {
-                "name": "frac",
-                "type": "u8"
-              }
-            ]
-          },
-          {
-            "name": "TimeDecayExponentialCurveV0",
-            "fields": [
-              {
-                "name": "c",
-                "type": "u128"
-              },
-              {
-                "name": "k1",
-                "type": "u128"
-              },
-              {
-                "name": "k0",
-                "type": "u128"
-              },
-              {
-                "name": "interval",
-                "type": "u32"
-              },
-              {
-                "name": "d",
-                "type": "u128"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "PiecewiseCurve",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "TimeV0",
-            "fields": [
-              {
-                "name": "curves",
-                "type": {
-                  "vec": {
-                    "defined": "TimeCurveV0"
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "MyError",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "FirstError"
-          },
-          {
-            "name": "AlreadySet"
-          },
-          {
-            "name": "OnlyOwnerCanCall"
-          },
-          {
-            "name": "UnknownNft"
-          },
-          {
-            "name": "InvalidNftHolder"
-          },
-          {
-            "name": "GenesisNftAlreadyMinted"
-          },
-          {
-            "name": "ActivationTokenNotFound"
-          },
-          {
-            "name": "ActivationTokenAlreadyInitialize"
-          },
-          {
-            "name": "OnlyProfileHolderAllow"
-          },
-          {
-            "name": "NotEnoughTokenToMint"
-          },
-          {
-            "name": "ProfileIdMissMatch"
-          },
-          {
-            "name": "TimeLockNotExpired"
-          }
-        ]
-      }
-    },
-    {
-      "name": "InnerUint",
-      "type": {
-        "kind": "alias",
-        "value": "u128"
       }
     }
   ],

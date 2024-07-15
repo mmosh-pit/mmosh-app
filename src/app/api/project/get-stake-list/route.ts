@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const project = searchParams.get("project");
     const receiver = searchParams.get("receiver");
-    const expiry = new Date().valueOf();
+    const expiry = new Date(new Date().toUTCString()).valueOf();
 
     const lists = await collection.find(
       {

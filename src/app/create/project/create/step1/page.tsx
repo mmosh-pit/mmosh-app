@@ -6,6 +6,8 @@ import Input from "@/app/components/common/Input";
 import Radio from "@/app/components/common/Radio";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
+import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 
 export default function ProjectCreateStep1() {
   const navigate = useRouter();
@@ -15,7 +17,6 @@ export default function ProjectCreateStep1() {
   const [msgText, setMsgText] = useState("");
 
   const [image, setImage] = React.useState<File | null>(null);
-
   const [fields, setFields] = useState({
     image: {
       preview: "",
@@ -216,9 +217,19 @@ export default function ProjectCreateStep1() {
     }
   };
 
-  const gotoStep2 = () => {
+  const gotoStep2 = async () => {
     setLoading(true);
     if (validateFields()) {
+      if (!isValidHttpUrl(fields.image.preview)) {
+        let imageFile = await fetch(fields.image.preview)
+          .then((r) => r.blob())
+          .then(
+            (blobFile) =>
+              new File([blobFile], uuidv4(), { type: fields.image.type }),
+          );
+        let imageUri = await pinImageToShadowDrive(imageFile);
+        fields.image.preview = imageUri;
+      }
       localStorage.setItem("projectstep1", JSON.stringify(fields));
       navigate.push("/create/project/create/step2");
     }
@@ -345,7 +356,7 @@ export default function ProjectCreateStep1() {
                 <Input
                   type="text"
                   title="Project Website"
-                  required={false}
+                  required
                   helperText=""
                   placeholder="Project Website"
                   value={fields.website}
@@ -358,7 +369,7 @@ export default function ProjectCreateStep1() {
                 <Input
                   type="text"
                   title="Project Telegram"
-                  required={false}
+                  required
                   helperText=""
                   placeholder="Project Telegram"
                   value={fields.telegram}
@@ -371,7 +382,7 @@ export default function ProjectCreateStep1() {
                 <Input
                   type="text"
                   title="Project Twitter"
-                  required={false}
+                  required
                   helperText=""
                   placeholder="Project Twitter"
                   value={fields.twitter}

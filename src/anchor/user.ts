@@ -1299,22 +1299,42 @@ export class Connectivity {
   async getNftProfileOwner(nftAddress: web3.PublicKey): Promise<{
     profileHolder: web3.PublicKey;
   }> {
-    const genesisProfileAta = (
-      await this.connection.getTokenLargestAccounts(nftAddress)
-    ).value[0].address;
+    try {
+      const genesisProfileAta = (
+        await this.connection.getTokenLargestAccounts(nftAddress)
+      ).value[0].address;
+  
+      const atasInfo = await this.connection.getMultipleAccountsInfo([
+        genesisProfileAta,
+      ]);
+  
+      const genesisProfileAtaHolder = unpackAccount(
+        genesisProfileAta,
+        atasInfo[0],
+      ).owner;
+  
+      return {
+        profileHolder: genesisProfileAtaHolder,
+      };
+    } catch (error) {
+      const genesisProfileAta = (
+        await this.connection.getTokenLargestAccounts(nftAddress)
+      ).value[0].address;
+  
+      const atasInfo = await this.connection.getMultipleAccountsInfo([
+        genesisProfileAta,
+      ]);
+  
+      const genesisProfileAtaHolder = unpackAccount(
+        genesisProfileAta,
+        atasInfo[0],
+      ).owner;
+  
+      return {
+        profileHolder: web3.PublicKey.default,
+      };
+    }
 
-    const atasInfo = await this.connection.getMultipleAccountsInfo([
-      genesisProfileAta,
-    ]);
-
-    const genesisProfileAtaHolder = unpackAccount(
-      genesisProfileAta,
-      atasInfo[0],
-    ).owner;
-
-    return {
-      profileHolder: genesisProfileAtaHolder,
-    };
   }
 
   async __getProfileHoldersInfo(

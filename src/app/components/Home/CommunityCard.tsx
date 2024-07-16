@@ -1,5 +1,4 @@
 import Image from "next/image";
-import * as React from "react";
 
 type Props = {
   image: string;
@@ -29,7 +28,7 @@ const CommunityCard = ({ image, name, description, coinImage }: Props) => {
         )}
       </div>
 
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col bg-[#080039A8] border-b-xl p-2">
         <p className="text-sm text-white">{name}</p>
         <p className="text-xs">{description}</p>
       </div>

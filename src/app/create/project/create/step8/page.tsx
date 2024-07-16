@@ -24,13 +24,13 @@ export default function ProjectCreateStep8() {
   const [mmoshPrice, setMmoshPrice] = useState(0);
 
   const validateFields = () => {
-    if (fields.usd < 100) {
-      createMessage(
-        "Liqudity should be greater than 100 USD",
-        "danger-container",
-      );
-      return false;
-    }
+    // if (fields.usd < 100) {
+    //   createMessage(
+    //     "Liqudity should be greater than 100 USD",
+    //     "danger-container",
+    //   );
+    //   return false;
+    // }
 
     let usdcBalance = profileInfo?.usdcBalance ? profileInfo?.usdcBalance : 0;
     if (fields.usd >= usdcBalance) {

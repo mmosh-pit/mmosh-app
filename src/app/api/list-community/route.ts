@@ -9,17 +9,21 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const skip = searchParams.get("skip");
 
-
   if (!skip) {
     return NextResponse.json("Invalid Payload", { status: 400 });
   }
 
   const data = await db
     .collection("mmosh-app-community")
-    .find({}, {
-      skip: Number(skip),
-      limit: 10,
-    })
+    .find(
+      {
+        completed: true,
+      },
+      {
+        skip: Number(skip),
+        limit: 10,
+      },
+    )
     .toArray();
 
   const result = {

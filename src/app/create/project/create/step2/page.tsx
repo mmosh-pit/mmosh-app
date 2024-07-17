@@ -149,8 +149,8 @@ export default function ProjectCreateStep2() {
 
       const newCommunity: any = page == 1 ? [] : communities;
 
-      for (let index = 0; index < apiResult.data.community.length; index++) {
-        const element: any = apiResult.data.community[index];
+      for (let index = 0; index < apiResult.data.length; index++) {
+        const element: any = apiResult.data[index];
         newCommunity.push({
           title: element.data.name,
           symbol: element.data.symbol,

@@ -9,7 +9,7 @@ import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export default function ProjectCreateStep4() {
+export default function ProjectCreateStep4({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
     const [loading, setLoading] = useState(false)
     const [showMsg, setShowMsg] = useState(false);
@@ -39,18 +39,29 @@ export default function ProjectCreateStep4() {
         minPresale: 0
     })
 
+    const [isReady, setIsReady] = useState(false)
+    const imageContainerRef = React.useRef<HTMLInputElement>(null);
+    const [imageHeight, setImageHeight] = React.useState(0)
+    
+    const [presaleStartError, setPresaleStartError] = useState("")
+    const [presaleEndError, setPresaleEndError] = useState("")
+    const [dexError, setDexError] = useState("")
 
     const gotoStep5 = () => {
         setLoading(true)
-        if(validateFields()) {
+        if(validateFields(true)) {
             localStorage.setItem("projectstep4",JSON.stringify(fields));
-            navigate.push("/create/project/create/step5");
+            onPageChange("step5")
         }
     }
 
     const goBack = () => {
-        navigate.back()
+        onPageChange("step3")
     }
+
+    React.useEffect(()=>{
+        setIsReady(validateFields(false))
+     },[fields])
 
     React.useEffect(()=>{
         if(localStorage.getItem("projectstep3")) {
@@ -61,6 +72,11 @@ export default function ProjectCreateStep4() {
             let savedData:any = localStorage.getItem("projectstep4");
             setFields(JSON.parse(savedData));
         }
+        if(imageContainerRef.current) {
+            const { width } = imageContainerRef.current.getBoundingClientRect();
+            setImageHeight(width);
+        }
+
     },[])
 
     const prepareNumber = (inputValue:any) => {
@@ -70,40 +86,69 @@ export default function ProjectCreateStep4() {
         return inputValue;
     }
 
-    const validateFields = () => {
+    const validateFields = (isMessage: boolean) => {
         if (fields.maxPresale < 10 || fields.maxPresale > 25) {
-          createMessage("Presale percentage should be between 10 to 25", "danger-container");
+            if(isMessage) {
+                createMessage("Presale percentage should be between 10 to 25", "danger-container");
+            }
+          
           return false;
         }
        
         if (fields.minPresale <= 0 || fields.minPresale > 100) {
-            createMessage("Minimum Presale Purchases should be between 1 to 100", "danger-container");
+            if(isMessage) {
+                createMessage("Minimum Presale Purchases should be between 1 to 100", "danger-container");
+            }
             return false;
         }
 
+        if(!validatePresale(isMessage)) {
+            return false
+        }
+        
+        if(!validateDex(isMessage)) {
+            return false
+        }
+
+        return true;
+    };
+
+    const validatePresale = (isMessage:any) => {
         let currentDate = new Date();
         let presaleStart = new Date(fields.presaleStartDate + " "+fields.presaleStartTime)
         let presaleEnd = new Date(fields.presaleEndDate + " "+fields.presaleEndTime)
-        let dexDate = new Date(fields.dexListingDate + " "+fields.dexListingTime)
 
         if(presaleStart < currentDate) {
-            createMessage("Presale date should be selected in future dates", "danger-container");
+            if(isMessage) {
+                setPresaleStartError("Presale date should be selected in future dates");
+            }
             return false;
         }
 
         
         if(getDateDiff(presaleStart, presaleEnd) < 1 || getDateDiff(presaleStart, presaleEnd) > 90) {
-            createMessage("Presale duration should be minmum 1 day and maximum 90 days", "danger-container");
+            if(isMessage) {
+                setPresaleEndError("Presale duration should be minmum 1 day and maximum 90 days");
+            }
             return false;
         }
-        
+
+        return true
+    }
+
+    const validateDex = (isMessage:any) => {
+        let presaleEnd = new Date(fields.presaleEndDate + " "+fields.presaleEndTime)
+        let dexDate = new Date(fields.dexListingDate + " "+fields.dexListingTime)
+
         console.log(getDateDiff(presaleEnd, dexDate))
         if(getDateDiff(presaleEnd, dexDate) < 2) {
-            createMessage("Dex list date should after 2 days of presale is completed", "danger-container");
+            if(isMessage) {
+                setDexError("Listing Date and time must be atleast 48 hours after the end of the presale");
+            }
             return false;
         }
-        return true;
-    };
+        return true
+    }
 
     const getDateDiff=(startDate:any, endDate:any)=> {
         if (endDate.getTime() - startDate.getTime() > 0) {
@@ -153,11 +198,11 @@ export default function ProjectCreateStep4() {
             </div>
             <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                 <div className="grid grid-cols-12">
-                   <div className="col-start-3 col-span-8">
+                   <div className="col-span-12 lg:col-start-3 lg:col-span-8 xl:col-start-3 xl:col-span-8">
                         <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20 grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
                             <div className="col-span-4">
-                                <div className="rounded-full gradient-container p-1.5">
-                                   <img src={coinDetails.image.preview} className="object-cover rounded-full w-full" />
+                                <div className="rounded-full gradient-container p-1.5" ref={imageContainerRef}>
+                                   <img src={coinDetails.image.preview} className="object-cover rounded-full w-full" style={{height: imageHeight + "px"}} />
                                 </div>
                             </div>
                             <div className="col-span-4">
@@ -204,13 +249,16 @@ export default function ProjectCreateStep4() {
                                <p className="text-xs text-whilte">Presale Start Date and Time</p>
                                <div className="grid grid-cols-2 gap-4">
                                    <div>
-                                        <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
+                                        <label className={"input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2" + (presaleStartError!=="" ? " border-red-600" :"")}>
                                         <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2">
                                            <Calender />
                                         </div>
                                
-                                        <input type="date" className="grow" placeholder="Start Date" value={fields.presaleStartDate} onChange={(e) => setFields({ ...fields, presaleStartDate: e.target.value })} />
+                                        <input type="date" className="grow text-base" placeholder="Start Date" value={fields.presaleStartDate} onChange={(e) => setFields({ ...fields, presaleStartDate: e.target.value })} onFocus={()=>{setPresaleStartError("")}} onBlur={()=>{validatePresale(true)}} />
                                         </label>
+                                        {presaleStartError != "" &&
+                                            <p className="text-header-small-font-size text-red-600">{presaleStartError}</p>
+                                        }
                                    </div>
                                    <div>
                                         <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
@@ -218,7 +266,7 @@ export default function ProjectCreateStep4() {
                                            <TimeIcon />
                                         </div>
                                
-                                        <input type="time" className="grow" placeholder="Time" value={fields.presaleStartTime} onChange={(e) => setFields({ ...fields, presaleStartTime: e.target.value })} />
+                                        <input type="time" className="grow text-base" placeholder="Time" value={fields.presaleStartTime} onChange={(e) => setFields({ ...fields, presaleStartTime: e.target.value })}/>
                                         </label>
                                    </div>
                                </div>
@@ -227,13 +275,16 @@ export default function ProjectCreateStep4() {
                                <p className="text-xs text-whilte">Presale End Date and Time</p>
                                <div className="grid grid-cols-2 gap-4">
                                    <div>
-                                        <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
+                                        <label className={"input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2" + (presaleEndError!=="" ? " border-red-600" :"")}>
                                         <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2">
                                            <Calender />
                                         </div>
                                
-                                        <input type="date" className="grow" placeholder="Start Date" value={fields.presaleEndDate} onChange={(e) => setFields({ ...fields, presaleEndDate: e.target.value })} />
+                                        <input type="date" className="grow text-base" placeholder="End Date" value={fields.presaleEndDate} onChange={(e) => setFields({ ...fields, presaleEndDate: e.target.value })} onFocus={()=>{setPresaleEndError("")}} onBlur={()=>{validatePresale(true)}}/>
                                         </label>
+                                        {presaleEndError != "" &&
+                                            <p className="text-header-small-font-size text-red-600">{presaleEndError}</p>
+                                        }
                                    </div>
                                    <div>
                                         <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
@@ -241,8 +292,9 @@ export default function ProjectCreateStep4() {
                                            <TimeIcon />
                                         </div>
                                
-                                        <input type="time" className="grow" placeholder="Time" value={fields.presaleEndTime} onChange={(e) => setFields({ ...fields, presaleEndTime: e.target.value })} />
+                                        <input type="time" className="grow text-base" placeholder="Time" value={fields.presaleEndTime} onChange={(e) => setFields({ ...fields, presaleEndTime: e.target.value })} />
                                         </label>
+                                        
                                    </div>
                                </div>
                                </div>
@@ -250,13 +302,16 @@ export default function ProjectCreateStep4() {
                                <p className="text-xs text-whilte">DEX Listing Date and Time</p>
                                <div className="grid grid-cols-2 gap-4">
                                    <div>
-                                        <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
-                                        <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2">
-                                           <Calender />
-                                        </div>
-                               
-                                        <input type="date" className="grow" placeholder="Start Date" value={fields.dexListingDate} onChange={(e) => setFields({ ...fields, dexListingDate: e.target.value })}/>
+                                        <label className={"input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2" + (dexError!=="" ? " border-red-600" :"")}>
+                                            <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2">
+                                            <Calender />
+                                            </div>
+                                
+                                            <input type="date" className="grow text-base" placeholder="Start Date" value={fields.dexListingDate} onChange={(e) => setFields({ ...fields, dexListingDate: e.target.value })} onFocus={()=>{setDexError("")}} onBlur={()=>{validateDex(true)}} />
                                         </label>
+                                        {dexError != "" &&
+                                            <p className="text-header-small-font-size text-red-600">{dexError}</p>
+                                        }
                                    </div>
                                    <div>
                                         <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
@@ -264,7 +319,7 @@ export default function ProjectCreateStep4() {
                                            <TimeIcon />
                                         </div>
                                
-                                        <input type="time" className="grow" placeholder="Time" value={fields.dexListingTime} onChange={(e) => setFields({ ...fields, dexListingTime: e.target.value })} />
+                                        <input type="time" className="grow text-base" placeholder="Time" value={fields.dexListingTime} onChange={(e) => setFields({ ...fields, dexListingTime: e.target.value })} />
                                         </label>
                                    </div>
                                </div>
@@ -320,7 +375,7 @@ export default function ProjectCreateStep4() {
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
                     {!loading &&
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep5}>Next</button>
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep5} disabled={!isReady}>Next</button>
                     }
 
                     {loading &&

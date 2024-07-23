@@ -19,11 +19,11 @@ const config: Config = {
       }
     },
     fontSize: {
-      xs: "0.65vmax",
-      sm: "0.8vmax",
-      tiny: "0.5vmax",
-      base: "0.85vmax",
-      lg: "1vmax",
+      xs: "0.75rem",
+      sm: "0.8rem",
+      tiny: "0.625rem",
+      base: "0.85rem",
+      lg: "1rem",
       xl: "1.25rem",
 
       "2xl": "1.5rem",

@@ -16,17 +16,18 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-export default function ProjectCreateStep9() {
+export default function ProjectCreateStep9({ onPageChange }: { onPageChange: any }) {
     const [loading, setLoading] = useState(false)
      const navigate = useRouter();
      const [files, setFiles] = useState<any>([])
 
-     const uploadAction = (fileUri:any, fileType:any) => {
+     const uploadAction = (fileUri:any, fileType:any, fileName:any) => {
         let data:any = localStorage.getItem("projectstep9");
         let newFiles = localStorage.getItem("projectstep9") ? JSON.parse(data) : [];
         newFiles.push({
             preview: fileUri,
-            type: fileType
+            type: fileType,
+            name: fileName
         })
         setFiles(newFiles);
         localStorage.setItem("projectstep9",JSON.stringify(newFiles));
@@ -58,11 +59,11 @@ export default function ProjectCreateStep9() {
         }
         localStorage.setItem("projectstep9",JSON.stringify(fileList));
         setLoading(false)
-        navigate.push("/create/project/create/step10");
+        onPageChange("step10")
      }
 
      const goBack = () => {
-        navigate.back()
+        onPageChange("step8")
      }
 
      React.useEffect(()=>{
@@ -98,13 +99,13 @@ export default function ProjectCreateStep9() {
             </div>
             <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                 <div className="grid grid-cols-12">
-                   <div className="col-start-4 col-span-6">
+                   <div className="col-span-12 xl:col-start-4 xl:col-span-6 lg:col-start-4 lg:col-span-6">
                         <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20 mb-10 ">
                             <div className="grid grid-cols-3 gap-4">
                                 {files.length == 0 &&
                                     <FilePicker file={""} isButton={false} changeFile={(file:any)=>{
                                         const objectUrl = URL.createObjectURL(file);
-                                        uploadAction(objectUrl, file.type);
+                                        uploadAction(objectUrl, file.type, file.name);
                                     }} />
                                 }
                                 {files.length > 0 &&
@@ -113,7 +114,7 @@ export default function ProjectCreateStep9() {
                                         <div>
                                             <h5 className="text-header-small-font-size text-while font-poppins text-center font-bold">File {i+1}</h5>
                                             <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                                                <p className="text-para-font-size light-gray-color text-center">File{i+1}.pdf</p>
+                                                <p className="text-para-font-size light-gray-color text-center">{fileItem.name}</p>
                                                 <div className="w-8 mx-auto"><FileIcon /></div>
                                                 <h3 className="flex justify-center mt-2.5">
                                                     <div className="cursor-pointer" onClick={()=>{removeFileAction(i)}}>
@@ -128,7 +129,7 @@ export default function ProjectCreateStep9() {
                                 }
                                 <FilePicker file={""} isButton={true} changeFile={(file:any)=>{
                                     const objectUrl = URL.createObjectURL(file);
-                                    uploadAction(objectUrl, file.type);
+                                    uploadAction(objectUrl, file.type, file.name);
                                 }} />
                             </div>
                         </div>

@@ -8,10 +8,27 @@ import { Bars } from "react-loader-spinner";
 import Button from "@/app/components/common/Button";
 import TickIcon from "@/assets/icons/TickIcon";
 import Select from "@/app/components/common/Select";
+import Modal from 'react-modal';
+import CloseIcon from "@/assets/icons/CloseIcon";
 
-export default function ProjectCreateStep2() {
+const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: '#180E4F'
+    },
+  };
+
+export default function ProjectCreateStep2({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
     const [loading, setLoading] = useState(false)
+    const [isMobile, setIsMobile]   = useState(false);
+    const [width, setWidth]   = useState(window.innerWidth);
+    const [currentMenu, setCurrentMenu] = useState("community");
 
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
@@ -19,14 +36,14 @@ export default function ProjectCreateStep2() {
 
     const [profileInfo] = useAtom(userWeb3Info);
 
-    const [roles] = useState<any>([
+    const [roles, setRoles] = useState<any>([
         {label:"Investor", value: "Investor"},
         {label:"Creator", value: "Creator"},
         {label:"Builder", value: "Builder"},
         {label:"Advisor", value: "Advisor"},
         {label:"Sponsor", value: "Sponsor"},
         {label:"Moderator", value: "Moderator"},
-        {label:"Other", value: "Moderator"},
+        {label:"Other", value: "Other"},
     ])
 
     const [communities, setCommunities] = useState([])
@@ -40,6 +57,10 @@ export default function ProjectCreateStep2() {
     const [communityLoading, setCommunityLoading] = useState(false)
     const [communityPage, setCommunityPage] = useState(0) 
     const [isCommunityPaging, setIsCommunityPaging] = useState(false)
+
+    const [modalIsOpen, setIsOpen] = React.useState(false);
+    const [currentProfile, setCurrentProfile] = useState<any>(null)
+    const [otherRole, setOtherRole] = useState("")
  
     const gotoStep3 = () => {
         setLoading(true);
@@ -65,22 +86,33 @@ export default function ProjectCreateStep2() {
             }
         }
 
+        if (selectedProfiles.length == 0) {
+            createMessage("Profile selection is required", "danger-container");
+            return;
+        }
+
         localStorage.setItem("projectstep2",JSON.stringify({
             communities: selectedCommunity,
             profiles: selectedProfiles
         }))
 
-        navigate.push("/create/project/create/step3");
+        onPageChange("step3")
     }
 
     const goBack = () => {
-        navigate.back()
+        onPageChange("step1")
     }
 
     useEffect(()=>{
         listProfile(1);
         listCommunity(1);
+        window.addEventListener("resize", updateDimensions);
+        return () => window.removeEventListener("resize", updateDimensions);
     },[])
+
+    const updateDimensions = () => {
+       setWidth(window.innerWidth)
+    }
 
     const listProfile = async(page:any) => {
         try {
@@ -205,6 +237,11 @@ export default function ProjectCreateStep2() {
     };
 
     const onProfileRoleUpdate = (profileItem:any, role:any) => {
+        if(role == "Other") {
+            setIsOpen(true);
+            setCurrentProfile(profileItem)
+            return;
+        }
         let currentProfiles:any = profiles;
         let newProfiles:any = []
         for (let index = 0; index < currentProfiles.length; index++) {
@@ -214,6 +251,74 @@ export default function ProjectCreateStep2() {
             newProfiles.push(currentProfiles[index])
         }
         setProfiles(newProfiles);
+    }
+
+    const includeNewRoleAction = (profileItem:any, role:any) => {
+        setIsOpen(false);
+        let currentRoles:any = roles;
+        currentRoles.splice(-1);
+        currentRoles.push({
+            label: role,
+            value: role
+        });
+        currentRoles.push({label:"Other", value: "Other"})
+        setRoles(currentRoles)
+
+        let currentProfiles:any = profiles;
+        let newProfiles:any = []
+        for (let index = 0; index < currentProfiles.length; index++) {
+            if(currentProfiles[index].wallet == profileItem.wallet) {
+                currentProfiles[index].role = role;
+            }
+            newProfiles.push(currentProfiles[index])
+        }
+        setProfiles(newProfiles);
+    }
+
+    useEffect(()=>{
+       setIsMobile(width < 992)
+    },[width])
+
+    const getMenuContentStyle = (menu:any) => {
+        if(!isMobile) {
+            return "block"
+        }
+        if(isMobile && currentMenu == menu) {
+            return "block"
+        }
+        return "none";
+    } 
+
+    const getPaddingForContent = () => {
+        if(!isMobile) {
+            return "0px"
+        }
+        return "20px";
+    } 
+
+    const onChangeMenu = (menu:any) => {
+        setCurrentMenu(menu)
+    }
+
+    const openModal = () => {
+        setIsOpen(true);
+    }
+
+    
+    const closeModal = () => {
+        setIsOpen(false);
+        if(currentProfile != null) {
+            let currentProfiles:any = profiles;
+            let newProfiles:any = []
+            for (let index = 0; index < currentProfiles.length; index++) {
+                if(currentProfiles[index].wallet == currentProfile.wallet) {
+                    currentProfiles[index].role = currentProfile.role;
+                }
+                newProfiles.push(currentProfiles[index])
+            }
+            setProfiles(newProfiles);
+        }
+
     }
 
     return (
@@ -233,12 +338,21 @@ export default function ProjectCreateStep2() {
                     </div>
                 </div>
                 <div className="container py-14 mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 backdrop-container rounded-xl p-5 border border-white border-opacity-20">
-                        <div>
-                            <div className="text-center pb-3">
-                                <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Select Communities</h3>
-                            </div>
-                            <div className="pr-10 max-h-96 overflow-auto border-r border-white border-opacity-20">
+                   <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20">
+                   {isMobile &&
+                        <div className="flex border-b border-white border-opacity-20 justify-evenly">
+                            <h3 className="text-header-small-font-size px-5 py-1.5 font-poppins font-normal cursor-pointer" onClick={()=>{onChangeMenu("community")}} style={{opacity:currentMenu == "community" ? 0.5 : 1}}> Select Communities</h3>
+                            <h3 className="text-header-small-font-size px-5 py-1.5 font-poppins font-normal cursor-pointer" onClick={()=>{onChangeMenu("profile")}} style={{opacity:currentMenu == "profile" ? 0.5 : 1}}>Select your Project Team Members</h3>
+                        </div>
+                    }
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2" style={{padding:getPaddingForContent()}}>
+                        <div style={{display: getMenuContentStyle("community")}}>
+                            {!isMobile &&
+                                <div className="text-center pb-3">
+                                    <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Select Communities</h3>
+                                </div>
+                            }
+                            <div className="xl:pr-10 lg:pr-10 max-h-96 overflow-auto lg:border-r xl:border-r border-white border-opacity-20">
                             {communityLoading &&
                                     <div className="flex justify-center">
                                         <Bars
@@ -253,7 +367,7 @@ export default function ProjectCreateStep2() {
                                     </div>
                                 }
                                 {!communityLoading && communities.length > 0 &&
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                                         {communities.map((community:any) => (
                                             <div onClick={()=>{onCommunitySelect(community)}} className="rounded-md community-selection-container overflow-hidden cursor-pointer " key={community.community}>
                                                 <div className="relative">
@@ -282,13 +396,14 @@ export default function ProjectCreateStep2() {
                                     </div>
                                 } 
                             </div>
-            
                         </div>
-                        <div>
-                        <div className="text-center pb-3">
-                                <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Select your Project Team Members</h3>
-                            </div>
-                            <div className="pl-10 max-h-96 overflow-auto">
+                         <div style={{display: getMenuContentStyle("profile")}}>
+                           {!isMobile &&
+                                <div className="text-center pb-3">
+                                    <h3 className="text-header-small-font-size bg-purple inline-block px-5 py-1.5 font-poppins rounded-xl font-normal">Select your Project Team Members</h3>
+                                </div>
+                            }
+                            <div className="lg:pl-10 xl:pl-10 max-h-96 overflow-auto">
                                 {profileLoading &&
                                     <div className="flex justify-center">
                                         <Bars
@@ -303,7 +418,7 @@ export default function ProjectCreateStep2() {
                                     </div>
                                 }
                                 {!profileLoading && profiles.length > 0 &&
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+                                    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
                                         {profiles.map((profile:any) => (
                                             <>
                                                 <div className="cursor-pointer">
@@ -348,6 +463,8 @@ export default function ProjectCreateStep2() {
                             </div>
                         </div>
                     </div>
+                   </div>
+
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
                         {!loading &&
@@ -360,6 +477,20 @@ export default function ProjectCreateStep2() {
 
                     </div>
                 </div>
+
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    style={customStyles}
+                >
+                    <h2 className="mb-2.5">Add Role </h2>
+                    <input type="text" placeholder="Add Role" className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container w-80 mb-2.5" onChange={(e) => setOtherRole(e.target.value)} maxLength={50}/>
+                    <div>
+                        <button type="submit" className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={()=>{includeNewRoleAction(currentProfile, otherRole)}}>Submit</button>
+                        <button type="submit" className="btn btn-primary ml-2.5 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={closeModal}>Close</button>
+                    </div>
+                    
+                </Modal>
             </div>
         </>
 

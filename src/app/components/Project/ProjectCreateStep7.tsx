@@ -11,7 +11,7 @@ import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export default function ProjectCreateStep7() {
+export default function ProjectCreateStep7({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
     const [loading, setLoading] = useState(false)
     const [fields, setFields] = useState([{
@@ -30,6 +30,7 @@ export default function ProjectCreateStep7() {
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
+    const [isReady, setIsReady] = useState(false)
 
     React.useEffect(()=>{
 
@@ -40,27 +41,20 @@ export default function ProjectCreateStep7() {
          
     },[])
 
+    React.useEffect(()=>{
+        setIsReady(validateFields(false))
+    },[fields])
+
      const gotoStep8 = () => {
         setLoading(true)
-        for (let index = 0; index < fields.length; index++) {
-            const element = fields[index];
-            console.log(element)
-            if(element.cliff.months == 0 || element.vesting.months == 0) {
-                createMessage("Vesting and Cliff Month should not be zero","danger-container");
-                return;
-            }
-
-            if((element.cliff.percentage + element.vesting.percentage) != 100) {
-                createMessage("Vesting and Cliff percentage should be 100%","danger-container");
-                return;
-            }
+        if(validateFields(true)) {
+            localStorage.setItem("projectstep6",JSON.stringify(fields));
+            onPageChange("step8")
         }
-        localStorage.setItem("projectstep6",JSON.stringify(fields));
-        navigate.push("/create/project/create/step8");
      }
 
     const goBack = () => {
-        navigate.back()
+        onPageChange("step6")
     }
 
      const createMessage = (message: any, type: any) => {
@@ -101,6 +95,27 @@ export default function ProjectCreateStep7() {
         return inputValue;
     }
 
+    const validateFields = (isMessage: any) => {
+        for (let index = 0; index < fields.length; index++) {
+            const element = fields[index];
+            console.log(element)
+            if(element.cliff.months == 0 || element.vesting.months == 0) {
+                if(isMessage) {
+                    createMessage("Vesting and Cliff Month should not be zero","danger-container");
+                }
+                return false;
+            }
+
+            if((element.cliff.percentage + element.vesting.percentage) != 100) {
+                if(isMessage) {
+                   createMessage("Vesting and Cliff percentage should be 100%","danger-container");
+                }
+                return false;
+            }
+        }
+        return true
+    }
+
 
     return (
         <>
@@ -120,7 +135,7 @@ export default function ProjectCreateStep7() {
             </div>
             <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                 <div className="grid grid-cols-12">
-                   <div className="col-start-4 col-span-6">
+                   <div className="col-span-12 lg:col-start-4 lg:col-span-6 xl:col-start-4 xl:col-span-6">
                         <div className="backdrop-container rounded-xl py-5 px-10 border border-white border-opacity-20 mb-10 ">
                             <h3 className="text-sub-title-font-size text-while font-poppins text-center pb-10">Vesting Schedule</h3>
 
@@ -135,7 +150,7 @@ export default function ProjectCreateStep7() {
                                     <p className="text-para-font-size text-white leading-10">{fieldItem.type} {fieldItem.value}%</p>
                                     <div className="flex justify-center">
                                         <div className="pr-1">
-                                            <div className="w-12">
+                                            <div className="w-16">
                                                 <Input
                                                     type="text"
                                                     title=""
@@ -148,7 +163,7 @@ export default function ProjectCreateStep7() {
                                             </div>
                                         </div>
                                         <div className="pl-1">
-                                            <div className="w-12">
+                                            <div className="w-16">
                                                 <Input
                                                     type="text"
                                                     title=""
@@ -163,7 +178,7 @@ export default function ProjectCreateStep7() {
                                     </div>
                                     <div className="flex justify-center">
                                         <div className="pr-1">
-                                            <div className="w-12">
+                                            <div className="w-16">
                                                 <Input
                                                     type="text"
                                                     title=""
@@ -176,7 +191,7 @@ export default function ProjectCreateStep7() {
                                             </div>
                                         </div>
                                         <div className="pl-1">
-                                            <div className="w-12">
+                                            <div className="w-16">
                                                 <Input
                                                     type="text"
                                                     title=""
@@ -205,7 +220,7 @@ export default function ProjectCreateStep7() {
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
                     {!loading &&
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep8}>Next</button>
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep8} disabled={!isReady}>Next</button>
                     }
 
                     {loading &&

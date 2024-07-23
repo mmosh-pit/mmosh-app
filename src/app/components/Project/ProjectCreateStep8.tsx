@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { useAtom } from "jotai";
 import { userWeb3Info } from "@/app/store";
 
-export default function ProjectCreateStep8() {
+export default function ProjectCreateStep8({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
     const [profileInfo] = useAtom(userWeb3Info);
     const [loading, setLoading] = useState(false)
@@ -33,7 +33,7 @@ export default function ProjectCreateStep8() {
     const validateFields = () => {
 
         if(fields.usd < 1) {
-            createMessage("Liqudity should be greater than 100 USD", "danger-container");
+            createMessage("Liqudity pool value should be equal or greater than 100 USD", "danger-container");
             return false;
         }
 
@@ -83,13 +83,13 @@ export default function ProjectCreateStep8() {
         setLoading(true)
         if(validateFields()) {
             localStorage.setItem("projectstep8",JSON.stringify(fields));
-            navigate.push("/create/project/create/step9");
+            onPageChange("step9")
         }
         
     }
 
     const goBack = () => {
-        navigate.back()
+        onPageChange("step7")
     }
 
      const createMessage = (message: any, type: any) => {

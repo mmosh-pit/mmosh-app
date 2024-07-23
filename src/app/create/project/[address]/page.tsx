@@ -1082,9 +1082,9 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                         </div>
                                                         </div>
                                                         <div className="text-center">
-                                                            {/* {passItem.isbuy && */}
+                                                            {passItem.isbuy &&
                                                                 <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{handlePassBuy(passItem)}}>Buy</button>
-                                                            {/* } */}
+                                                            } 
                                                             {passItem.isclaim &&
                                                                 <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{handlePassClaim(passItem)}}>Claim</button>
                                                             }

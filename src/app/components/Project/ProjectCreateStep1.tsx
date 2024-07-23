@@ -9,7 +9,11 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 
-export default function ProjectCreateStep1() {
+export default function ProjectCreateStep1({
+  onPageChange,
+}: {
+  onPageChange: any;
+}) {
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -231,7 +235,7 @@ export default function ProjectCreateStep1() {
         fields.image.preview = imageUri;
       }
       localStorage.setItem("projectstep1", JSON.stringify(fields));
-      navigate.push("/create/project/create/step2");
+      onPageChange("step2");
     }
   };
 
@@ -244,6 +248,10 @@ export default function ProjectCreateStep1() {
       return 0;
     }
     return inputValue;
+  };
+
+  const capitalizeString = (str: any) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   return (
@@ -445,7 +453,7 @@ export default function ProjectCreateStep1() {
                               )}
                             </div>
                             <p className="text-xs text-white leading-3">
-                              {invitationTypeItem}
+                              {capitalizeString(invitationTypeItem)}
                             </p>
                           </div>
                         ),

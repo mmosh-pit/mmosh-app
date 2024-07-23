@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 
-export default function ProjectCreateStep3() {
+export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any }) {
     
     const navigate = useRouter();
     const [fields, setFields] = useState({
@@ -31,6 +31,8 @@ export default function ProjectCreateStep3() {
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
 
+    const [isReady, setIsReady] = useState(false)
+
     React.useEffect(() => {
         if (!image) return;
         const objectUrl = URL.createObjectURL(image);
@@ -45,8 +47,13 @@ export default function ProjectCreateStep3() {
         if(localStorage.getItem("projectstep3")) {
           let savedData:any = localStorage.getItem("projectstep3");
           setFields(JSON.parse(savedData));
+          setIsReady(true)
         }
-      },[])
+    },[])
+
+    React.useEffect(()=>{
+       setIsReady(validateFields(false))
+    },[fields])
 
     const createMessage = (message: any, type: any) => {
         window.scrollTo(0, 0);
@@ -66,39 +73,54 @@ export default function ProjectCreateStep3() {
     
     };
 
-    const validateFields = () => {
+    const validateFields = (isMessage:boolean) => {
         if (fields.name.length == 0) {
-          createMessage("Name is required", "danger-container");
+          if(isMessage) {
+            createMessage("Name is required", "danger-container");
+          }  
+    
           return false;
         }
 
         if (fields.name.length > 50) {
-            createMessage("Name should have less than 50 characters", "danger-container");
+            if(isMessage) {
+               createMessage("Name should have less than 50 characters", "danger-container");
+            }
             return false;
         }
     
         if (fields.symbol.length == 0) {
-          createMessage("Symbol is required", "danger-container");
+            if(isMessage) {
+               createMessage("Symbol is required", "danger-container");
+            }
           return false;
         }
 
         if (fields.symbol.length > 10) {
-            createMessage("Symbol should have less than 10 characters", "danger-container");
+            if(isMessage) {
+                createMessage("Symbol should have less than 10 characters", "danger-container");
+            }
             return false;
         }
     
         if (fields.desc.length == 0) {
-          createMessage("Description is required", "danger-container");
+            if(isMessage) {
+              createMessage("Description is required", "danger-container");
+            }
           return false;
         }
 
         if (fields.desc.length > 160) {
-            createMessage("Description should have less than 160 characters", "danger-container");
+            if(isMessage) {
+                createMessage("Description should have less than 160 characters", "danger-container");
+            }
             return false;
         }
     
         if(fields.image.preview.length == 0) {
-            createMessage("Community coin image is required", "danger-container");
+            if(isMessage) {
+                createMessage("Community coin image is required", "danger-container");
+            }
             return false;
         }
 
@@ -107,19 +129,19 @@ export default function ProjectCreateStep3() {
 
     const gotoStep4 = async () => {
         setLoading(true);
-        if(validateFields()) {
+        if(validateFields(true)) {
             if(!isValidHttpUrl(fields.image.preview)) {
                 let imageFile = await fetch(fields.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: fields.image.type }));
                 let imageUri = await pinImageToShadowDrive(imageFile)
                 fields.image.preview = imageUri;
             }
             localStorage.setItem("projectstep3",JSON.stringify(fields));
-            navigate.push("/create/project/create/step4");
+            onPageChange("step4")
         }
     }
 
     const goBack = () => {
-        navigate.back()
+        onPageChange("step2")
     }
 
     const prepareNumber = (inputValue:any) => {
@@ -236,8 +258,10 @@ export default function ProjectCreateStep3() {
                     </div>
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                        {!loading&&
-                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep4}>Next</button>
+                        {!loading &&
+                            <>
+                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep4} disabled={!isReady}>Next</button>
+                            </>
                         }
                         {loading &&
                             <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>

@@ -1,6 +1,13 @@
 "use client";
 
+import ImagePicker from "@/app/components/ImagePicker";
+import Button from "@/app/components/common/Button";
 import Input from "@/app/components/common/Input";
+import Radio from "@/app/components/common/Radio";
+import Select from "@/app/components/common/Select";
+import AddIcon from "@/assets/icons/AddIcon";
+import Calender from "@/assets/icons/Calender";
+import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -46,7 +53,7 @@ export default function ProjectCreateStep7() {
         return;
       }
 
-      if (element.cliff.percentage + element.vesting.percentage !== 100) {
+      if (element.cliff.percentage + element.vesting.percentage != 100) {
         createMessage(
           "Vesting and Cliff percentage should be 100%",
           "danger-container",
@@ -197,6 +204,8 @@ export default function ProjectCreateStep7() {
                               fieldItem.cliff.percentage = prepareNumber(
                                 Number(e.target.value),
                               );
+                              fieldItem.vesting.percentage =
+                                100 - fieldItem.cliff.percentage;
                               updateVesting(i, fieldItem);
                             }}
                           />
@@ -243,6 +252,8 @@ export default function ProjectCreateStep7() {
                               fieldItem.vesting.percentage = prepareNumber(
                                 Number(e.target.value),
                               );
+                              fieldItem.cliff.percentage =
+                                100 - fieldItem.vesting.percentage;
                               updateVesting(i, fieldItem);
                             }}
                           />

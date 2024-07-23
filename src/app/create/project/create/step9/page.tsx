@@ -6,6 +6,7 @@ import Button from "@/app/components/common/Button";
 import Input from "@/app/components/common/Input";
 import Radio from "@/app/components/common/Radio";
 import Select from "@/app/components/common/Select";
+import { init, uploadFile } from "@/app/lib/firebase";
 import AddIcon from "@/assets/icons/AddIcon";
 import Calender from "@/assets/icons/Calender";
 import FileIcon from "@/assets/icons/FileIcon";
@@ -13,8 +14,10 @@ import MinusIcon from "@/assets/icons/MinusIcon";
 import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ProjectCreateStep9() {
+    const [loading, setLoading] = useState(false)
      const navigate = useRouter();
      const [files, setFiles] = useState<any>([])
 
@@ -42,7 +45,19 @@ export default function ProjectCreateStep9() {
         localStorage.setItem("projectstep9",JSON.stringify(newFiles));
      }
 
-     const gotoStep10 = () => {
+     const gotoStep10 = async () => {
+        setLoading(true)
+        let fileList = [];
+        for (let index = 0; index < files.length; index++) {
+            const fields = files[index];
+            if(!isValidHttpUrl(fields.preview)) {
+                let file = await fetch(fields.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: fields.type }));
+                fields.preview = await uploadFile(file,file.name,"bot");
+            }
+            fileList.push(fields)
+        }
+        localStorage.setItem("projectstep9",JSON.stringify(fileList));
+        setLoading(false)
         navigate.push("/create/project/create/step10");
      }
 
@@ -51,11 +66,22 @@ export default function ProjectCreateStep9() {
      }
 
      React.useEffect(()=>{
+        init()
         if(localStorage.getItem("projectstep9")) {
           let savedData:any = localStorage.getItem("projectstep9");
           setFiles(JSON.parse(savedData));
         }
       },[])
+
+      const isValidHttpUrl = (url:any) => {
+        try {
+          const newUrl = new URL(url);
+          return newUrl.protocol === 'http:' || newUrl.protocol === 'https:';
+        } catch (err) {
+          return false;
+        }
+    }
+
      
 
     return (
@@ -111,7 +137,12 @@ export default function ProjectCreateStep9() {
                 </div>
                 <div className="flex justify-center mt-10">
                     <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                    <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep10}>Next</button>
+                    {!loading&&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep10}>Next</button>
+                    }
+                    {loading&&
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                    }
                 </div>
             </div>
         </div>

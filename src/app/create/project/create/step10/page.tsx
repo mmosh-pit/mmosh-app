@@ -21,10 +21,12 @@ import { userWeb3Info } from "@/app/store";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { Connectivity as Community } from "../../../../../anchor/community";
+import { Connectivity as UserConn } from "../../../../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import axios from "axios";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { NATIVE_MINT } from "forge-spl-token";
 
 export default function ProjectCreateStep9() {
     const navigate = useRouter();
@@ -197,7 +199,8 @@ export default function ProjectCreateStep9() {
 
     const submitAction = async () => {
         try {
-            
+            setLoading(true)
+
             // project key
             const projectKeyPair = anchor.web3.Keypair.generate();
 
@@ -206,24 +209,17 @@ export default function ProjectCreateStep9() {
               });
             anchor.setProvider(env);
             let communityConnection: Community = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
-        
+            let userConn: UserConn = new UserConn(env, web3Consts.programID);
+            const myProfileInfo = await userConn.getUserInfo();
+            let stakeData:any = [];
 
-            // mmosh bot file upload
-            setButtonText("Uploading files to MMOSH Bot...")
             let botUri = []
             for (let index = 0; index < files.length; index++) {
                 const element:any = files[index];
-                let file = await fetch(element.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: element.type }));
-                botUri.push(await uploadFile(file,file.name,"bot"))
+                botUri.push(element.preview)
             }
             console.log("boturi", botUri)
 
-
-            // uploading community coin image
-            setButtonText("Uploading community coin image...")
-            let coinImageFile = await fetch(coins.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: project.image.type }));
-            let coinImageUri = await pinImageToShadowDrive(coinImageFile)
-            console.log("coinImageUri", coinImageUri)
 
             // uploading community coin metadata
             setButtonText("Uploading community coin metadata...")
@@ -231,7 +227,7 @@ export default function ProjectCreateStep9() {
                 name: coins.name,
                 symbol: coins.symbol,
                 description: coins.desc,
-                image: coinImageUri
+                image: coins.image.preview
             }
             const coinMetaHash: any = await pinFileToShadowDrive(coinBody);
             if (coinMetaHash === "") {
@@ -246,22 +242,18 @@ export default function ProjectCreateStep9() {
             const mintKey = await communityConnection.createCoin(coins.name,coins.symbol, coinMetaURI, coins.supply * web3Consts.LAMPORTS_PER_OPOS, 9)
             console.log("community coin key", mintKey)
 
-            let passKeys = []
-            let passImages = []
+
+            let passKeys:any = []
             for (let index = 0; index < passes.length; index++) {
                 const passItem:any = passes[index];
-                // uploading launcpasses image
-                setButtonText("Creating "+passItem.name+" image...")
-                let passImageFile = await fetch(passItem.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: project.image.type }));
-                let passImageUri = await pinImageToShadowDrive(passImageFile)
-                passImages.push(passImageUri)
+
                 // uploading launcpasses metadata
                 setButtonText("Creating "+passItem.name+" metadata...")
                 let passBody = {
                     name: passItem.name,
                     symbol: passItem.symbol,
                     description: passItem.desc,
-                    image: passImageUri,
+                    image: passItem.image.preview,
                     enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
                     family: "MMOSH",
                     collection: "MMOSH Pass Collection",
@@ -301,38 +293,120 @@ export default function ProjectCreateStep9() {
                 const passMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ passMetaHash;
 
                 setButtonText("Creating "+passItem.name+"...")
-                const passKey = await communityConnection.createCoin(passItem.name,passItem.symbol, passMetaURI, passItem.supply, 0)
+                let redemptionDate = new Date(new Date(passItem.redemptionDate + " "+passItem.redemptionTime).toUTCString()).valueOf()
+                const passKey = await communityConnection.createLaunchPass({
+                    name: passItem.name,
+                    symbol:passItem.symbol, 
+                    uri: passMetaURI,
+                    redeemDate:0, 
+                    redeemAmount: prepareNumber(Math.ceil(passItem.price / (coins.listingPrice - (coins.listingPrice * (passItem.discount / 100))))) * web3Consts.LAMPORTS_PER_OPOS,
+                    cost: passItem.price * 1000_000,
+                    distribution: {
+                          parent: 100 * passItem.scoutRoyalty,
+                          grandParent: 0,
+                          greatGrandParent: 0,
+                          ggreatGrandParent: 100 * project.priceDistribution.scout,
+                          genesis: 0,
+                    }
+                })
                 passKeys.push(passKey)
                 // creating launch pass
             }
             console.log("passKeys ", passKeys)
-            console.log("passImages ", passImages)
 
             // stake coins for liqudity bool
-            setButtonText("Staking fund for liqudity pool...")
-            let stakeInfo = [{
-                coin: web3Consts.oposToken,
-                amount: Math.ceil(liquidity.mmosh * web3Consts.LAMPORTS_PER_OPOS),
-                type:"token"
-            },{
-                coin: new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
-                amount: Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS),
-                type:"native"
-            },{
-                coin: web3Consts.usdcToken,
-                amount: Math.ceil(liquidity.usd * 1000_000),
-                type:"token"
-            }];
-            const stakeres = await communityConnection.stakeCoin(mintKey,stakeInfo);
+            // live only
+            // setButtonText("Converting SOL to WSOL");
+            // await communityConnection.createWrappedSol(Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS))
+            // stake coins for liqudity bool
+            setButtonText("Staking fund for liqudity pool...");
 
-            console.log("stake signature ", stakeres)
+            // live only
+            // stakeData.push({
+            //     user: wallet.publicKey,
+            //     mint: NATIVE_MINT,
+            //     value: Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS),
+            //     duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+            //     type: "liqudity"
+            // })
 
-            // uploading project image
-            setButtonText("Uploading project image...")
-            let projectImageFile = await fetch(project.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: project.image.type }));
-            let projectImageUri = await pinImageToShadowDrive(projectImageFile)
+            let mmoshOwner:any = await userConn.getNftProfileOwner(web3Consts.genesisProfile);
+            if(mmoshOwner.profileHolder != anchor.web3.PublicKey.default) {
+                stakeData.push({
+                  mint: new anchor.web3.PublicKey(mintKey),
+                  user: mmoshOwner.profileHolder,
+                  value: Math.ceil(coins.supply * (2 / 100) * web3Consts.LAMPORTS_PER_OPOS),
+                  duration: 0,
+                  type: "liqudity"
+               })
+            }
+           
+            stakeData.push({
+                mint: new anchor.web3.PublicKey(mintKey),
+                user: new anchor.web3.PublicKey(myProfileInfo.profilelineage.promoter),
+                value: Math.ceil(coins.supply * (1 / 100) * web3Consts.LAMPORTS_PER_OPOS),
+                duration: 0,
+                type: "liqudity"
+            })
 
-            console.log("projectImageUri ", projectImageUri)
+            
+            stakeData.push({
+                mint: new anchor.web3.PublicKey(mintKey),
+                user: wallet.publicKey,
+                value: Math.ceil(presale.maxPresale * web3Consts.LAMPORTS_PER_OPOS),
+                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                type: "presale"
+            })
+
+            stakeData.push({
+                user: wallet.publicKey,
+                mint: web3Consts.oposToken,
+                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                value: Math.ceil(Math.ceil(liquidity.mmosh * web3Consts.LAMPORTS_PER_OPOS)),
+                type: "liqudity"
+            })
+            
+
+            stakeData.push({
+                user: wallet.publicKey,
+                mint: web3Consts.usdcToken, 
+                value: Math.ceil(liquidity.usd * 1000_000),
+                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                type: "liqudity"
+            });
+
+            // calculate stake value from tokenomics
+            var date = new Date();
+            for (let index = 0; index < tokenomics.length; index++) {
+                const element:any = tokenomics[index];
+                for (let index = 0; index < communities.profiles.length; index++) {
+                    const element1:any = communities.profiles[index];
+                    if(element1.role == element.type) {
+                        stakeData.push({
+                            mint: new anchor.web3.PublicKey(mintKey),
+                            user: new anchor.web3.PublicKey(element1.wallet),
+                            value:Math.ceil(((coins.supply * (element.value / 100)) * (element.cliff.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
+                            duration: new Date(date.setMonth(date.getMonth() + element.cliff.months)).valueOf(),
+                            type: "tokenomics"
+                        })
+
+                        stakeData.push({
+                            mint: new anchor.web3.PublicKey(mintKey),
+                            user: new anchor.web3.PublicKey(element1.wallet),
+                            value:Math.ceil(((coins.supply * (element.value / 100)) * (element.vesting.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
+                            duration: new Date(date.setMonth(date.getMonth() + element.vesting.months)).valueOf(),
+                            type: "tokenomics"
+                        })
+                    }
+                }
+            }
+            console.log("stake Data ", stakeData)
+
+            for (let index = 0; index < stakeData.length; index++) {
+                const stakePair = anchor.web3.Keypair.generate();
+                const stakeres = await communityConnection.stakeCoin(stakeData[index], stakePair);
+                console.log("stake signature ", stakeres)
+            }
 
             // uploading project metadata
             setButtonText("Uploading project metadata...")
@@ -340,7 +414,7 @@ export default function ProjectCreateStep9() {
                 name: project.name,
                 symbol: project.symbol,
                 description: project.desc,
-                image: projectImageUri,
+                image: project.image.type,
                 enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
                 family: "MMOSH",
                 collection: "MMOSH Pass Collection",
@@ -468,8 +542,8 @@ export default function ProjectCreateStep9() {
             const invitebody = {
                 name: "Invitation from join " +  project.name,
                 symbol: project.symbol,
-                description: project.desc,
-                image:projectImageUri,
+                description: desc,
+                image: project.image.type,
                 external_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
                 minter: profileInfo?.profile.name,
                 attributes: [
@@ -524,18 +598,18 @@ export default function ProjectCreateStep9() {
             console.log("register lookup result ", res4)
 
             setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
+            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
             console.log("send price result ", res5)
 
             // save coins
             await axios.post("/api/project/save-coins", {
                 name: coins.name,
                 symbol: coins.symbol,
-                image: coinImageUri,
+                image: coins.image.preview,
                 key: mintKey,
                 desc: coins.desc,
                 supply: coins.supply,
-                creator: profileInfo?.profile.address, 
+                creator: wallet.publicKey.toBase58(), 
                 listingprice: coins.listingPrice,
                 projectkey: projectKeyPair.publicKey.toBase58()
             });
@@ -547,7 +621,7 @@ export default function ProjectCreateStep9() {
                 await axios.post("/api/project/save-pass", {
                     name: passItem.name,
                     symbol: passItem.symbol,
-                    image: passImages[index],
+                    image: passItem.image.preview,
                     key: passKeys[index],
                     desc: passItem.desc,
                     price: passItem.price,
@@ -555,7 +629,7 @@ export default function ProjectCreateStep9() {
                     discount: passItem.discount,
                     promoterroyality: passItem.promoterRoyalty,
                     scoutroyalty: passItem.scoutRoyalty,
-                    creator: profileInfo?.profile.address, 
+                    creator: wallet.publicKey.toBase58(), 
                     redemptiondate: redemptionDate,
                     projectkey: projectKeyPair.publicKey.toBase58()
                 });
@@ -611,7 +685,7 @@ export default function ProjectCreateStep9() {
                 name: project.name, 
                 symbol: project.symbol, 
                 desc: project.desc, 
-                image: projectImageUri, 
+                image: project.image.preview, 
                 key: projectKeyPair.publicKey.toBase58(), 
                 lut: res4.Ok.info.lookupTable, 
                 seniority: 0, 
@@ -645,6 +719,104 @@ export default function ProjectCreateStep9() {
            createMessage("error processing new project","danger-container")
         }
     }
+
+    // const testPrograms = async () => {
+    //     try {
+    //         setLoading(true)
+    //         setButtonText("test pass test...");
+    //         const projectKeyPair = anchor.web3.Keypair.generate();
+
+    //         const mintKey = anchor.web3.Keypair.generate().publicKey;
+
+    //         const env = new anchor.AnchorProvider(connection.connection, wallet, {
+    //             preflightCommitment: "processed",
+    //         });
+    //         anchor.setProvider(env);
+    //         let communityConnection: Community = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
+    //         let userConn: UserConn = new UserConn(env, web3Consts.programID);
+    //         const myProfileInfo = await userConn.getUserInfo();
+
+
+    //         let passKeys = []
+    //         for (let index = 0; index < passes.length; index++) {
+    //             const passItem:any = passes[index];
+
+    //             // uploading launcpasses metadata
+    //             setButtonText("Creating "+passItem.name+" metadata...")
+    //             let passBody = {
+    //                 name: passItem.name,
+    //                 symbol: passItem.symbol,
+    //                 description: passItem.desc,
+    //                 image: passItem.image.preview,
+    //                 enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
+    //                 family: "MMOSH",
+    //                 collection: "MMOSH Pass Collection",
+    //                 attributes: [
+    //                   {
+    //                     trait_type: "Primitive",
+    //                     value: "Pass",
+    //                   },
+    //                   {
+    //                     trait_type: "MMOSH",
+    //                     value: " Genesis MMOSH",
+    //                   },
+    //                   {
+    //                     trait_type: "Community Coin",
+    //                     value: mintKey,
+    //                   },
+    //                   {
+    //                     trait_type: "Founder",
+    //                     value: profileInfo?.profile.name,
+    //                   },
+    //                   {
+    //                     trait_type: "Discount",
+    //                     value: passItem.discount,
+    //                   },
+    //                   {
+    //                     trait_type: "Supply",
+    //                     value: passItem.supply,
+    //                   },
+    //                 ],
+    //             }
+
+    //             const passMetaHash: any = await pinFileToShadowDrive(passBody);
+    //             if (passMetaHash === "") {
+    //                 createMessage("We’re sorry, there was an error while trying to prepare meta url. please try again later.","danger-container")
+    //                 return;
+    //             }
+    //             const passMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ passMetaHash;
+
+    //             setButtonText("Creating "+passItem.name+"...")
+    //             let redemptionDate = new Date(new Date(passItem.redemptionDate + " "+passItem.redemptionTime).toUTCString()).valueOf()
+    //             const passKey = await communityConnection.createLaunchPass({
+    //                 name: passItem.name,
+    //                 symbol:passItem.symbol, 
+    //                 uri: passMetaURI,
+    //                 redeemDate:0, 
+    //                 redeemAmount: prepareNumber(Math.ceil(passItem.price / (coins.listingPrice - (coins.listingPrice * (passItem.discount / 100))))) * web3Consts.LAMPORTS_PER_OPOS,
+    //                 cost: passItem.price * 1000_000,
+    //                 distribution: {
+    //                       parent: 100 * passItem.scoutRoyalty,
+    //                       grandParent: 0,
+    //                       greatGrandParent: 0,
+    //                       ggreatGrandParent: 100 * project.priceDistribution.scout,
+    //                       genesis: 0,
+    //                 }
+    //             })
+    //             passKeys.push(passKey)
+    //             // creating launch pass
+    //         }
+    //         console.log("passKeys ", passKeys)
+
+
+    //         setLoading(false)
+    //         setButtonText("Deploy Token Presale")
+    //     } catch (error) {
+    //         console.log("error", error);
+    //         createMessage("error processing new project","danger-container")
+    //     }
+
+    // }
 
     const goBack = () => {
         navigate.back();

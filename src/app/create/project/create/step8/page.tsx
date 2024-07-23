@@ -1,6 +1,13 @@
 "use client";
 
+import ImagePicker from "@/app/components/ImagePicker";
+import Button from "@/app/components/common/Button";
 import Input from "@/app/components/common/Input";
+import Radio from "@/app/components/common/Radio";
+import Select from "@/app/components/common/Select";
+import AddIcon from "@/assets/icons/AddIcon";
+import Calender from "@/assets/icons/Calender";
+import TimeIcon from "@/assets/icons/TimeIcon";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -24,13 +31,15 @@ export default function ProjectCreateStep8() {
   const [mmoshPrice, setMmoshPrice] = useState(0);
 
   const validateFields = () => {
-    // if (fields.usd < 100) {
-    //   createMessage(
-    //     "Liqudity should be greater than 100 USD",
-    //     "danger-container",
-    //   );
-    //   return false;
-    // }
+    if (fields.usd < 1) {
+      createMessage(
+        "Liqudity should be greater than 100 USD",
+        "danger-container",
+      );
+      return false;
+    }
+
+    console.log("profileInfo", profileInfo);
 
     let usdcBalance = profileInfo?.usdcBalance ? profileInfo?.usdcBalance : 0;
     if (fields.usd >= usdcBalance) {

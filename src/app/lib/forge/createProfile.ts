@@ -10,7 +10,7 @@ import { getTotalMints } from "../forge/getTotalMints";
 import { getUsername } from "../forge/getUsername";
 import { updateUserData } from "../forge/updateUserData";
 import { updateTotalMints } from "../forge/updateTotalMints";
-import { oldUploadFile } from "../oldUploadFile";
+import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 
 export const createProfile = async ({
   wallet,
@@ -181,7 +181,10 @@ export const createProfile = async ({
       body.image = preview;
     }
 
-    const shadowHash: any = await oldUploadFile(body);
+    const shadowHash: any = await pinFileToShadowDrive(body);
+
+    console.log("Resulting shadow hash: ", shadowHash);
+
     if (shadowHash === "") {
       return {
         message:

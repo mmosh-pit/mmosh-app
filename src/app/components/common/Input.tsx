@@ -48,7 +48,7 @@ const Input = ({
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}
-        className="input input-bordered h-[2.5vmax] bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] text-xs"
+        className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container"
       />
     );
   };

@@ -10,7 +10,6 @@ type Props = {
 
 const ImagePicker = ({ changeImage, image }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
-
   const imageContainerRef = React.useRef<HTMLInputElement>(null);
   const [imageHeight, setImageHeight] = React.useState(0);
 
@@ -79,12 +78,12 @@ const ImagePicker = ({ changeImage, image }: Props) => {
       onDragLeave={(e) => handleDragLeave(e)}
       onDragOver={(e) => handleDragOver(e)}
       onDrop={(e) => handleDrop(e)}
-      className="flex justify-center w-full h-full"
+      className="w-full h-full"
     >
       <input
         ref={inputRef}
         type="file"
-        accept="image/png,image/jpeg"
+        accept="image/*"
         style={{ display: "none" }}
         onChange={handleChangeInput}
       />
@@ -118,7 +117,7 @@ const ImagePicker = ({ changeImage, image }: Props) => {
             1080 x 1080
           </p>
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
-            Jpg, Png. Max 100 mb
+            Jpg, Png, Gif. Max 100 mb
           </p>
           <div className="relative py-1.5">
             <Image src="/png.svg" alt="png" width={64} height={64} />

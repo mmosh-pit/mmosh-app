@@ -14,7 +14,7 @@ import SimpleInput from "@/app/components/common/SimpleInput";
 import BalanceBox from "@/app/components/common/BalanceBox";
 import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { createCoin } from "@/app/lib/forge/createCoin";
-import { data, userWeb3Info } from "@/app/store";
+import { data, isDrawerOpen, userWeb3Info } from "@/app/store";
 
 /* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */
 /* THE LIBRARY STILL WORKS WELL, SO IT IS NOT A BREAKING ERROR. RECHART DEV TEAM IS WORKING ON IT */
@@ -49,6 +49,7 @@ const CreateCoin = () => {
   const wallet = useAnchorWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser] = useAtom(data);
+  const [isDrawerShown] = useAtom(isDrawerOpen);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [message, setMessage] = React.useState({
@@ -213,7 +214,9 @@ const CreateCoin = () => {
   }, [form.multiplier, form.initialPrice, form.supply, form.bonding]);
 
   return (
-    <div className="w-full relative background-content flex flex-col items-center">
+    <div
+      className={`w-full relative background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+    >
       <MessageBanner message={message.message} type={message.type} />
       <div className="w-full flex flex-col justify-center items-center mt-20">
         <h3 className="text-center text-white font-goudy font-normal">

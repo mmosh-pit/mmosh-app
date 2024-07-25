@@ -3,7 +3,7 @@ import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
 
-import { userWeb3Info, web3InfoLoading } from "@/app/store";
+import { isDrawerOpen, userWeb3Info, web3InfoLoading } from "@/app/store";
 import Step1 from "@/app/components/Forge/Communities/Step1";
 import Step2 from "@/app/components/Forge/Communities/Step2";
 import Step3 from "@/app/components/Forge/Communities/Step3";
@@ -16,6 +16,7 @@ const StartACommunity = () => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [isLoadingProfile] = useAtom(web3InfoLoading);
+  const [isDrawerShown] = useAtom(isDrawerOpen);
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentStep, setCurrentStep] = useAtom(step);
   const [_, setStep1Form] = useAtom(step1Form);
@@ -105,7 +106,9 @@ const StartACommunity = () => {
   }
 
   return (
-    <div className="relative background-content flex justify-center">
+    <div
+      className={`relative background-content flex justify-center ${isDrawerShown ? "z-[-1]" : ""}`}
+    >
       {renderComponent()}
     </div>
   );

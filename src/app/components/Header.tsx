@@ -296,7 +296,9 @@ const Header = () => {
 
           <div className="flex justify-end items-center w-[33%]">
             {currentUser?.profile?.image && (
-              <div className="relative w-[2.5vmax] h-[2.5vmax] mr-6">
+              <div
+                className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+              >
                 <Image
                   src={currentUser.profile.image}
                   alt="Profile Image"
@@ -340,7 +342,9 @@ const Header = () => {
       </div>
 
       {pathname.includes("/create/communities/") && (
-        <div className="relative w-full flex justify-center items-end mt-12 pb-4">
+        <div
+          className={`relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : ""}`}
+        >
           <div
             className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
           >

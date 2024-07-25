@@ -493,7 +493,7 @@ input,
 textarea,
 option,
 select {
-  font-size: 0.8vmax;
+  font-size: 0.8rem;
 }
 
 @media (max-width: 500px) {

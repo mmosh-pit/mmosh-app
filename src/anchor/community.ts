@@ -341,7 +341,7 @@ export class Connectivity {
     
          for (let index = 0; index < holdermap.length; index++) {
              const element = holdermap[index];
-             let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: rootMainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: element.vallue});
+             let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: rootMainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
              for (let index = 0; index < createShare.length; index++) {
                  this.txis.push(createShare[index]);
              }
@@ -625,7 +625,7 @@ export class Connectivity {
 
      for (let index = 0; index < holdermap.length; index++) {
          const element = holdermap[index];
-         let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: element.vallue});
+         let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
          for (let index = 0; index < createShare.length; index++) {
              this.txis.push(createShare[index]);
          }
@@ -1165,7 +1165,7 @@ export class Connectivity {
       // if(this.provider.publicKey != currentGenesisProfileHolder) {
          let mintPrice =amount * (mainStateDetail.invitationMintingCost.toNumber() / 1000_000_000) * 1000_000_000
          console.log("invitation mintPrice ", mintPrice)
-         let receivedIXs:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateDetail.oposToken, sender: this.provider.publicKey, receiver: currentGenesisProfileHolder, init_if_needed: true, amount: mintPrice })
+         let receivedIXs:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateDetail.oposToken, sender: this.provider.publicKey, receiver: currentGenesisProfileHolder, init_if_needed: true, amount: Math.ceil(mintPrice) })
          for (let index = 0; index < receivedIXs.length; index++) {
             this.txis.push(receivedIXs[index]);
          }

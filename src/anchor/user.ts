@@ -388,7 +388,7 @@ export class Connectivity {
           sender: user,
           receiver: new anchor.web3.PublicKey(element.receiver),
           init_if_needed: true,
-          amount: element.vallue,
+          amount: Math.ceil(element.vallue),
         });
         for (let index = 0; index < createShare.length; index++) {
           this.txis.push(createShare[index]);

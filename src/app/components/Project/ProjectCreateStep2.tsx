@@ -371,7 +371,7 @@ export default function ProjectCreateStep2({ onPageChange }: { onPageChange: any
                                         {communities.map((community:any) => (
                                             <div onClick={()=>{onCommunitySelect(community)}} className="rounded-md community-selection-container overflow-hidden cursor-pointer " key={community.community}>
                                                 <div className="relative">
-                                                    <img className="object-cover w-full" src={community.image} alt="community image" />
+                                                    <img className="object-cover w-full aspect-square" src={community.image} alt="community image" />
                                                     {community.selected == 1 &&
                                                             <div className="bg-black bg-opacity-[0.56] w-full h-full absolute left-0 top-0 flex justify-center items-center">
                                                             <div className="w-6 h-6">
@@ -423,7 +423,7 @@ export default function ProjectCreateStep2({ onPageChange }: { onPageChange: any
                                             <>
                                                 <div className="cursor-pointer">
                                                     <div className="relative" onClick={()=>{onProfileSelect(profile)}}>
-                                                        <img className="rounded-full object-cover w-full" src={profile.image} alt="profile" />
+                                                        <img className="rounded-full object-cover w-full aspect-square" src={profile.image} alt="profile" />
                                                         {profile.selected == 1 &&
                                                             <div className="bg-black bg-opacity-[0.56] w-full h-full rounded-full absolute left-0 top-0 flex justify-center items-center">
                                                                 <div className="w-6 h-6">

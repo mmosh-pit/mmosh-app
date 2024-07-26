@@ -87,9 +87,9 @@ export default function ProjectCreateStep4({ onPageChange }: { onPageChange: any
     }
 
     const validateFields = (isMessage: boolean) => {
-        if (fields.maxPresale < 10 || fields.maxPresale > 25) {
+        if (fields.maxPresale < 1 || fields.maxPresale > 100) {
             if(isMessage) {
-                createMessage("Presale percentage should be between 10 to 25", "danger-container");
+                createMessage("Presale percentage should be between 1 to 100", "danger-container");
             }
           
           return false;

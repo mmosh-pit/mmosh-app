@@ -55,7 +55,11 @@ export default function ProjectCreateStep4({
     setLoading(true);
     if (validateFields(true)) {
       localStorage.setItem("projectstep4", JSON.stringify(fields));
-      onPageChange("step5");
+      if (fields.minPresale > 0) {
+        onPageChange("step5");
+      } else {
+        onPageChange("step6");
+      }
     }
   };
 
@@ -90,25 +94,29 @@ export default function ProjectCreateStep4({
   };
 
   const validateFields = (isMessage: boolean) => {
-    if (fields.maxPresale < 10 || fields.maxPresale > 25) {
-      if (isMessage) {
-        createMessage(
-          "Presale percentage should be between 10 to 25",
-          "danger-container",
-        );
-      }
+    if (fields.maxPresale) {
+      if (fields.maxPresale < 0 || fields.maxPresale > 100) {
+        if (isMessage) {
+          createMessage(
+            "Presale percentage should be between 1 to 100",
+            "danger-container",
+          );
+        }
 
-      return false;
+        return false;
+      }
     }
 
-    if (fields.minPresale <= 0 || fields.minPresale > 100) {
-      if (isMessage) {
-        createMessage(
-          "Minimum Presale Purchases should be between 1 to 100",
-          "danger-container",
-        );
+    if (fields.minPresale) {
+      if (fields.minPresale <= 0 || fields.minPresale > 100) {
+        if (isMessage) {
+          createMessage(
+            "Minimum Presale Purchases should be between 1 to 100",
+            "danger-container",
+          );
+        }
+        return false;
       }
-      return false;
     }
 
     if (!validatePresale(isMessage)) {

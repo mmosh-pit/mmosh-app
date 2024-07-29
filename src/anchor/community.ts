@@ -1879,6 +1879,10 @@ export class Connectivity {
       this.mainState,
     );
 
+    const launcPassStateInfo = await this.program.account.launchPassState.fetch(
+      launcPassState,
+    );
+
     const {
       parentProfile,
       grandParentProfile,
@@ -1896,30 +1900,59 @@ export class Connectivity {
       web3Consts.usdcToken
     );
 
+    let cost = launcPassStateInfo.cost.toNumber();
+        
+    let holdersfullInfo = [];
+    let finalRoyalties = (cost * ((launcPassStateInfo.distribution.parent / 100) / 100)) + (cost * ((launcPassStateInfo.distribution.grandParent / 100) / 100))
+
+    holdersfullInfo.push({
+      receiver: launcPassStateInfo.owner,
+      vallue: cost - finalRoyalties
+    })
+
+    holdersfullInfo.push({
+      receiver: currentParentProfileHolder.toBase58(),
+      vallue: cost * ((launcPassStateInfo.distribution.parent / 100) / 100)
+    })
+
+    holdersfullInfo.push({
+      receiver: currentGrandParentProfileHolder.toBase58(),
+      vallue: cost * ((launcPassStateInfo.distribution.grandParent / 100) / 100)
+   })
+
+   var holdermap:any = [];
+   holdersfullInfo.reduce(function(res:any, value:any) {
+     if (!res[value.receiver]) {
+       res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+       holdermap.push(res[value.receiver])
+     }
+     res[value.receiver].vallue += value.vallue;
+     return res;
+   }, {});
+
+   console.log("holdermap ", holdermap)
+
+   for (let index = 0; index < holdermap.length; index++) {
+       const element = holdermap[index];
+       let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: web3Consts.usdcToken, sender: this.provider.publicKey, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
+       for (let index = 0; index < createShare.length; index++) {
+           instructions.push(createShare[index]);
+       }
+   }
+
     const ix = await this.program.methods.buyLaunchPass().accounts({
       receiver: this.provider.publicKey,
       receiverAta,
       owner,
-      ownerAta,
       mint,
       launcPassState,
-      senderAta,
-      usdcMint: web3Consts.usdcToken,
       associatedTokenProgram,
       systemProgram,
       tokenProgram,
-      parentProfile,
-      grandParentProfile,
-      currentParentProfileHolder,
-      currentGrandParentProfileHolder,
-      currentParentProfileHolderAta,
-      currentGrandParentProfileHolderAta,
-      parentProfileHolderOposAta,
-      grandParentProfileHolderOposAta
     }).instruction();
 
     instructions.push(ix);
-    
+
     const tx = new web3.Transaction().add(...instructions);
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
@@ -1951,34 +1984,36 @@ export class Connectivity {
       stakeKey
     } = input;
 
+    console.log("redeemLaunchPass 1")
+
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
     const launcPassState = web3.PublicKey.findProgramAddressSync(
       [web3Consts.Seeds.launchPass, owner.toBuffer(), launchToken.toBuffer()],
       this.programId,
     )[0]
-
+    console.log("redeemLaunchPass 2")
     const vaultState = web3.PublicKey.findProgramAddressSync(
       [web3Consts.Seeds.vault, stakeKey.toBuffer(), mint.toBuffer()],
       this.programId,
     )[0]
-
+    console.log("redeemLaunchPass 3")
     const userLaunchTokenAtaResult = await this.getAtaAccount(launchToken,this.provider.publicKey);
     const userLaunchTokenAta = userLaunchTokenAtaResult.ata;
     if (userLaunchTokenAtaResult.initAtaIx) instructions.push(userLaunchTokenAtaResult.initAtaIx);
 
-
+    console.log("redeemLaunchPass 4")
     const receiverAtaResult = await this.getAtaAccount(mint,this.provider.publicKey);
     const receiverAta = receiverAtaResult.ata;
     if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
-
+    console.log("redeemLaunchPass 5")
     const nftTokenAccount = await getAssociatedTokenAddress(
       mint,
       vaultState,
       true
     );
 
-
+    console.log("redeemLaunchPass 6")
     const ix = await this.program.methods.redeemLaunchPass().accounts({
       user: this.provider.publicKey,
       launchToken,

@@ -346,15 +346,17 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 duration: 0,
                 type: "liqudity"
             })
-
+           
+            if(presale.minPresale > 0) {
+                stakeData.push({
+                    mint: new anchor.web3.PublicKey(mintKey),
+                    user: wallet.publicKey,
+                    value: Math.ceil(presale.maxPresale * web3Consts.LAMPORTS_PER_OPOS),
+                    duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                    type: "presale"
+                })
+            }
             
-            stakeData.push({
-                mint: new anchor.web3.PublicKey(mintKey),
-                user: wallet.publicKey,
-                value: Math.ceil(presale.maxPresale * web3Consts.LAMPORTS_PER_OPOS),
-                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
-                type: "presale"
-            })
 
             stakeData.push({
                 user: wallet.publicKey,
@@ -395,12 +397,16 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                             duration: new Date(date.setMonth(date.getMonth() + element.vesting.months)).valueOf(),
                             type: "tokenomics"
                         })
+                        break;
                     }
                 }
             }
             console.log("stake Data ", stakeData)
 
             for (let index = 0; index < stakeData.length; index++) {
+                if(stakeData[index].value == 0) {
+                    continue;
+                }
                 const stakePair = anchor.web3.Keypair.generate();
                 const stakeres = await communityConnection.stakeCoin(stakeData[index], stakePair);
                 console.log("stake signature ", stakeres)
@@ -594,7 +600,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             console.log("register lookup result ", res4)
 
             setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
+            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
             console.log("send price result ", res5)
 
             // save coins
@@ -923,63 +929,65 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-5">
-                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
-                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                        <div>
-                                            <p className="text-para-font-size">Maximum Supply for presale</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                {presale.minPresale > 0 &&
+                                    <div className="mt-5">
+                                        <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
+                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                            <div>
+                                                <p className="text-para-font-size">Maximum Supply for presale</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Token Presale</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-para-font-size">Token Presale</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                            <div>
+                                                <p className="text-para-font-size">Start Date</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Start Time</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">End Date</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">End Time</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Listing Date</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Listing Time</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
+                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                            <div>
+                                                <p className="text-para-font-size">Project Website</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Project Telegram</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Project Twitter</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                        <div>
-                                            <p className="text-para-font-size">Start Date</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Start Time</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">End Date</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">End Time</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Listing Date</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Listing Time</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
-                                        </div>
-                                    </div>
-                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                        <div>
-                                            <p className="text-para-font-size">Project Website</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Project Telegram</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Project Twitter</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                }
                             </div>
                         </div>
 

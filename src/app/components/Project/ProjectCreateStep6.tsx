@@ -135,7 +135,12 @@ export default function ProjectCreateStep6({ onPageChange }: { onPageChange: any
     },[fields])
 
      const goBack = () => {
-        onPageChange("step5")
+        if(presaleDetails.minPresale === 0) {
+            onPageChange("step4")
+        } else {
+            onPageChange("step5")
+        }
+   
      }
 
      const createMessage = (message: any, type: any) => {

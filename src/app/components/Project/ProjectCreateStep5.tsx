@@ -165,7 +165,7 @@ export default function ProjectCreateStep5({ onPageChange }: { onPageChange: any
         onPageChange("step4")
      }
 
-     const validateFields = (isMessage: boolean) => {
+     const validateFields = (isMessage: any) => {
         let totalTokens:any = 0;
         for (let index = 0; index < passes.length; index++) {
             const fields = passes[index];

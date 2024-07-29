@@ -69,6 +69,8 @@ export default function ProjectView({ params }: { params: { address: string } })
     const [claimSubmit, setClaimSubmit] = useState(false)
     const [claimButtonStatus, setClaimButtonStatus] = useState("Claim") 
 
+    const [creator, setCreator] = useState("")
+
     const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
 
     useEffect(() => {
@@ -109,6 +111,9 @@ export default function ProjectView({ params }: { params: { address: string } })
             setProjectLoading(true)
             let listResult = await axios.get(`/api/project/detail?project=${params.address}`);
             setProjectDetail(listResult.data)
+            
+            const creatorName = await getUserName(listResult.data.coins.creator)
+            setCreator(creatorName);
             let tokenomics:any = [];
             for (let index = 0; index < listResult.data.tokenomics.length; index++) {
                 const element = listResult.data.tokenomics[index];
@@ -145,20 +150,6 @@ export default function ProjectView({ params }: { params: { address: string } })
             let saleStartdiff = new Date().getTime() - presaleStart.getTime();
             let saleEnddiff = new Date().getTime() - presaleEnd.getTime();
             let dexdiff = new Date().getTime() - dexListDate.getTime();
-            if(saleStartdiff < 0) {
-                setLaunchStatus("Countdown  to Launch")
-                setCountDownDate(presaleStart.getTime())
-            }
-
-            if(saleStartdiff > 0 && saleEnddiff < 0) {
-                setLaunchStatus("Countdown  to Presale End")
-                setCountDownDate(presaleEnd.getTime())
-            }
-
-            if(saleStartdiff > 0 && saleEnddiff > 0 && dexdiff < 0) {
-                setLaunchStatus("Countdown  to Dex Listing")
-                setCountDownDate(dexListDate.getTime())
-            }
 
             const passList:any = []
             for (let index = 0; index < listResult.data.passes.length; index++) {
@@ -176,6 +167,23 @@ export default function ProjectView({ params }: { params: { address: string } })
                 passList.push(element)
             }
             setPasses(passList);
+
+            if(passList.length > 0) {
+                if(saleStartdiff < 0) {
+                    setLaunchStatus("Countdown  to Launch")
+                    setCountDownDate(presaleStart.getTime())
+                }
+    
+                if(saleStartdiff > 0 && saleEnddiff < 0) {
+                    setLaunchStatus("Countdown  to Presale End")
+                    setCountDownDate(presaleEnd.getTime())
+                }
+    
+                if(saleStartdiff > 0 && saleEnddiff > 0 && dexdiff < 0) {
+                    setLaunchStatus("Countdown  to Dex Listing")
+                    setCountDownDate(dexListDate.getTime())
+                }
+            }
 
             setTokenomicsChart(tokenomics);
             setProjectLoading(false)
@@ -848,22 +856,28 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                 </h2>
                                             <p className="text-header-small-font-size mt-3.5 mb-8">{projectDetail.coins.desc}</p>
                                         </div>
-                                        <div className="flex pt-8 border-t border-white border-opacity-20">
-                                            <div className="flex">
-                                                <div className="rounded-md mr-3.5"><img src={projectDetail.project.image} className="w-32 h-32 object-cover rounded-md" /></div>
-                                                <div className="mr-8">
+                                        <div className="xl:flex pt-8 border-t border-white border-opacity-20">
+                                            <div className="lg:flex xl:flex">
+                                                <div className="rounded-md mr-3.5 mb-5"><img src={projectDetail.project.image} className="w-32 h-32 object-cover rounded-md" /></div>
+                                                <div className="mr-8 mb-5">
                                                     <h4 className="text-[15px] text-white">Creator</h4>
                                                     <ul>
+                                                        <li className="underline"><a href="javascript:void(0)" className="text-header-small-font-size">{capitalizeString(creator)}</a></li>
+                                                    </ul>
+                                                </div>
+                                                <div className="mr-8 mb-5">
+                                                    <h4 className="text-[15px] text-white">Project Team</h4>
+                                                    <ul>
                                                     {projectDetail.profiles.map((profileItem:any, i:any) => (
-                                                        <li className="underline"><a href="javascript:void(0)">{capitalizeString(profileItem.name)}</a></li>
+                                                        <li className="underline"><a href="javascript:void(0)" className="text-header-small-font-size">{capitalizeString(profileItem.name)}</a></li>
                                                     ))}
                                                     </ul>
                                                 </div>
-                                                <div className="mr-20">
+                                                <div className="mr-20 mb-5">
                                                     <h4 className="text-[15px] text-white">Community</h4>
                                                     <ul>
                                                     {projectDetail.community.map((communityItem:any, i:any) => (
-                                                        <li className="underline"><a href="javascript:void(0)">{capitalizeString(communityItem.name)}</a></li>
+                                                        <li className="underline"><a href="javascript:void(0)" className="text-header-small-font-size">{capitalizeString(communityItem.name)}</a></li>
                                                     ))}
                                                     </ul>
                                                 </div>

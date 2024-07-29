@@ -32,7 +32,7 @@ export default function ProjectCreateStep8({ onPageChange }: { onPageChange: any
 
     const validateFields = () => {
 
-        if(fields.usd < 1) {
+        if(fields.usd < 100) {
             createMessage("Liqudity pool value should be equal or greater than 100 USD", "danger-container");
             return false;
         }

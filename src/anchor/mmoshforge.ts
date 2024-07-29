@@ -2411,23 +2411,8 @@ export type Mmoshforge = {
           "isSigner": false
         },
         {
-          "name": "ownerAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "senderAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "mint",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "usdcMint",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -2443,46 +2428,6 @@ export type Mmoshforge = {
         {
           "name": "systemProgram",
           "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
           "isSigner": false
         }
       ],
@@ -6076,23 +6021,8 @@ export const IDL: Mmoshforge = {
           "isSigner": false
         },
         {
-          "name": "ownerAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "senderAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "mint",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "usdcMint",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -6108,46 +6038,6 @@ export const IDL: Mmoshforge = {
         {
           "name": "systemProgram",
           "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfile",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolderAta",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "currentGrandParentProfileHolder",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "parentProfileHolderOposAta",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "grandParentProfileHolderOposAta",
-          "isMut": true,
           "isSigner": false
         }
       ],

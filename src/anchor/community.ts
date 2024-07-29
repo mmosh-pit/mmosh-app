@@ -2151,19 +2151,27 @@ export class Connectivity {
   async stakeCoin(element: any, stakeKey: anchor.web3.Keypair): Promise<string> {
     
     const instructions: anchor.web3.TransactionInstruction[] = [];
-
+    
+    console.log("stakecoin 1", element)
 
     const vaultState = web3.PublicKey.findProgramAddressSync(
       [web3Consts.Seeds.vault, stakeKey.publicKey.toBuffer(), element.mint.toBuffer()],
       this.programId,
     )[0]
+    console.log("stakecoin 2")
+
     const nftTokenAccount = await getAssociatedTokenAddress(
       element.mint,
       vaultState,
       true
     );
 
+    console.log("stakecoin 3")
+
+
     const ownerAta = getAssociatedTokenAddressSync(element.mint, this.provider.publicKey);
+
+    console.log("stakecoin 4")
 
     const ix1 =  await this.program.methods.initVault(new BN(element.duration), new BN(element.value)).accounts({
       owner: this.provider.publicKey,
@@ -2181,6 +2189,8 @@ export class Connectivity {
     }).instruction()
     instructions.push(ix1);
 
+    console.log("stakecoin 5")
+
     const tx = new web3.Transaction().add(...instructions);
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
@@ -2194,8 +2204,10 @@ export class Connectivity {
     });
     }
     tx.add(feeIns);
+    console.log("stakecoin 6")
     const signature = await this.provider.sendAndConfirm(tx, []);
     await this.saveStakeAccount(stakeKey.publicKey.toBase58(), element.mint.toBase58(),element.user.toBase58(),element.value / web3Consts.LAMPORTS_PER_OPOS, element.duration, element.type)
+    console.log("stakecoin 7")
     return signature
   }
 

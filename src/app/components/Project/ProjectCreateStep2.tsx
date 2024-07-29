@@ -429,7 +429,7 @@ export default function ProjectCreateStep2({
                         >
                           <div className="relative">
                             <img
-                              className="object-cover w-full"
+                              className="object-cover w-full aspect-square"
                               src={community.image}
                               alt="community image"
                             />
@@ -505,7 +505,7 @@ export default function ProjectCreateStep2({
                               }}
                             >
                               <img
-                                className="rounded-full object-cover w-full"
+                                className="rounded-full object-cover w-full aspect-square"
                                 src={profile.image}
                                 alt="profile"
                               />

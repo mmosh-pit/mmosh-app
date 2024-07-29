@@ -322,34 +322,34 @@ export default function ProjectCreateStep6({ onPageChange }: { onPageChange: any
                                         <p className="text-header-small-font-size text-white max-w-32 pr-2.5">
                                         Tokens allocated for the presale
                                         </p>
-                                            <span className="text-header-small-font-size text-white">
+                                            <p className="text-header-small-font-size text-white">
                                             {presaleDetails.maxPresale}%
-                                        </span>
+                                        </p>
                                     </div>
                                     <div className="flex justify-center pt-5">
-                                        <p className="text-header-small-font-size text-white min-w-32 ">
+                                        <p className="text-header-small-font-size text-white min-w-32 pr-2.5">
                                         MMOSH DAO
                                         </p>
-                                            <span className="text-header-small-font-size text-white">
+                                            <p className="text-header-small-font-size text-white">
                                             2%
-                                        </span>
+                                        </p>
                                     </div>
                                     <div className="flex justify-center pt-2.5">
-                                    <p className="text-header-small-font-size text-white min-w-32 ">
+                                    <p className="text-header-small-font-size text-white min-w-32 pr-2.5">
                                         Curator
                                         <label className="text-small-font-size text-white block"> (Founder Agent)</label>
                                         </p>
-                                            <span className="text-header-small-font-size text-white">
+                                            <p className="text-header-small-font-size text-white">
                                             1%
-                                        </span>
+                                        </p>
                                     </div>
                                     <div className="flex justify-center pt-10">
-                                        <p className="text-header-small-font-size text-white min-w-24 font-bold">
+                                        <p className="text-header-small-font-size text-white min-w-24 font-bold pr-2.5">
                                         Total
                                         </p>
-                                            <span className="text-header-small-font-size text-white font-bold">
+                                            <p className="text-header-small-font-size text-white font-bold">
                                             {getTotalTokenomics()}%
-                                        </span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>

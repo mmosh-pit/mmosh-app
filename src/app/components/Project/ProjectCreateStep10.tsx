@@ -651,7 +651,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             });
 
             // save community
-            for (let index = 0; index < communities.profiles.length; index++) {
+            for (let index = 0; index < communities.communities.length; index++) {
                 const element:any = communities.communities[index];
                 await axios.post("/api/project/save-community", {
                     name: element.title,

@@ -95,10 +95,10 @@ export default function ProjectCreateStep4({
 
   const validateFields = (isMessage: boolean) => {
     if (fields.maxPresale) {
-      if (fields.maxPresale < 0 || fields.maxPresale > 100) {
+      if (fields.maxPresale < 0 || fields.maxPresale > 97) {
         if (isMessage) {
           createMessage(
-            "Presale percentage should be between 1 to 100",
+            "Presale percentage should be between 1 to 97",
             "danger-container",
           );
         }

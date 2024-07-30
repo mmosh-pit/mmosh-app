@@ -351,7 +351,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 stakeData.push({
                     mint: new anchor.web3.PublicKey(mintKey),
                     user: wallet.publicKey,
-                    value: Math.ceil(presale.maxPresale * web3Consts.LAMPORTS_PER_OPOS),
+                    value: Math.ceil(coins.supply * (presale.maxPresale / 100)  * web3Consts.LAMPORTS_PER_OPOS),
                     duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
                     type: "presale"
                 })
@@ -600,8 +600,12 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             console.log("register lookup result ", res4)
 
             setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
-            console.log("send price result ", res5)
+            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
+            if(res5.Err) {
+                createMessage("error creating new project","danger-container")
+                return
+            }
+            console.log("send price result ", res5.Ok?.info)
 
             // save coins
             await axios.post("/api/project/save-coins", {

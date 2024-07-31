@@ -189,12 +189,12 @@ export default function ProjectCreateStep2({
       for (let index = 0; index < apiResult.data.community.length; index++) {
         const element: any = apiResult.data.community[index];
         newCommunity.push({
-          title: element.name,
-          symbol: element.symbol,
-          image: element.image,
-          coinimg: element.coinimage,
-          token: element.token,
-          community: element.community,
+          title: element.data.name,
+          symbol: element.data.symbol,
+          image: element.data.image,
+          coinimg: element.data.coinImage,
+          token: element.data.tokenAddress,
+          community: element.data.project,
           selected: 0,
         });
       }

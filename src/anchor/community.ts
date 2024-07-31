@@ -1984,7 +1984,7 @@ export class Connectivity {
       stakeKey
     } = input;
 
-    console.log("redeemLaunchPass 1")
+    console.log("redeemLaunchPass 1", input)
 
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
@@ -2016,6 +2016,7 @@ export class Connectivity {
     console.log("redeemLaunchPass 6")
     const ix = await this.program.methods.redeemLaunchPass().accounts({
       user: this.provider.publicKey,
+      owner,
       launchToken,
       launcPassState,
       stakeKey,

@@ -113,7 +113,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             setProjectDetail(listResult.data)
             
             const creatorName = await getUserName(listResult.data.coins.creator)
-            setCreator(creatorName);
+            setCreator(creatorName == "" ? listResult.data.coins.creator.substring(0, 5) +"..."+ listResult.data.coins.creator.substring(listResult.data.coins.creator.length-5) : creatorName) ;
             let tokenomics:any = [];
             for (let index = 0; index < listResult.data.tokenomics.length; index++) {
                 const element = listResult.data.tokenomics[index];
@@ -743,11 +743,17 @@ export default function ProjectView({ params }: { params: { address: string } })
     
             anchor.setProvider(env);
             let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            console.log({
+                owner: projectDetail.coins.creator,
+                launchToken: passItem.key,
+                mint: projectDetail.coins.key,
+                stakeKey: presaleDetail.key
+            })
             await projectConn.redeemLaunchPass({
                 owner: new anchor.web3.PublicKey(projectDetail.coins.creator),
                 launchToken: new anchor.web3.PublicKey(passItem.key),
                 mint: new anchor.web3.PublicKey(projectDetail.coins.key),
-                stakeKey: presaleDetail.key
+                stakeKey: new anchor.web3.PublicKey(presaleDetail.key)
             })
 
             const newPassList:any = []
@@ -763,6 +769,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             setPasses(newPassList);
 
         } catch (error) {
+            console.log("error", error)
             createMessage(
                 "We’re sorry, there was an error while trying to buy launch Pass. Check your wallet and try again.",
                 "danger-container",

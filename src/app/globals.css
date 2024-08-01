@@ -8,9 +8,8 @@ body {
 
 p {
   font-family: var(--font-poppins);
-  font-size: 0.8vmax;
-  line-height: 1vmax;
-  color: #bcbcbc;
+  font-size: 1.2vmax;
+  color: #d7d7d7;
 }
 
 a {
@@ -27,7 +26,6 @@ span {
 h2 {
   font-family: var(--font-goudy);
   font-size: 1.8vmax;
-  line-height: 1.5vmax;
   font-weight: 900;
   color: #ffffff;
 }
@@ -43,7 +41,6 @@ h3 {
 h4 {
   font-family: var(--font-goudy);
   font-size: 1.5vmax;
-  line-height: 1.2vmax;
   font-weight: 900;
   color: #ffffff;
 }
@@ -496,7 +493,7 @@ input,
 textarea,
 option,
 select {
-  font-size: 0.8vmax;
+  font-size: 0.8rem;
 }
 
 @media (max-width: 500px) {
@@ -821,4 +818,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transform: rotate(28.39deg);
+}
+
+@media (max-width: 991px) {
+  .coming-soon {
+    right: -25px;
+  }
 }

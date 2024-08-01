@@ -13,7 +13,11 @@ import React, { use, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 
-export default function ProjectCreateStep5() {
+export default function ProjectCreateStep5({
+  onPageChange,
+}: {
+  onPageChange: any;
+}) {
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -62,6 +66,12 @@ export default function ProjectCreateStep5() {
       redemptionTime: "",
     },
   ]);
+
+  const [isReady, setIsReady] = useState(false);
+
+  React.useEffect(() => {
+    setIsReady(validateFields(false));
+  }, [passes]);
 
   React.useEffect(() => {
     if (localStorage.getItem("projectstep3")) {
@@ -137,7 +147,7 @@ export default function ProjectCreateStep5() {
 
   const gotoStep6 = async () => {
     setLoading(true);
-    if (validateFields()) {
+    if (validateFields(true)) {
       let passList = [];
       for (let index = 0; index < passes.length; index++) {
         const fields = passes[index];
@@ -154,82 +164,106 @@ export default function ProjectCreateStep5() {
         passList.push(fields);
       }
       localStorage.setItem("projectstep5", JSON.stringify(passList));
-      navigate.push("/create/project/create/step6");
+      onPageChange("step6");
     }
   };
 
   const goBack = () => {
-    navigate.back();
+    onPageChange("step4");
   };
 
-  const validateFields = () => {
+  const validateFields = (isMessage: boolean) => {
     let totalTokens: any = 0;
     for (let index = 0; index < passes.length; index++) {
       const fields = passes[index];
       if (fields.image.preview.length == 0) {
-        createMessage("Image is required", "danger-container");
+        if (isMessage) {
+          createMessage("Image is required", "danger-container");
+        }
+
         return false;
       }
 
       if (fields.name.length == 0) {
-        createMessage("Name is required", "danger-container");
+        if (isMessage) {
+          createMessage("Name is required", "danger-container");
+        }
         return false;
       }
 
       if (fields.name.length > 50) {
-        createMessage(
-          "Name should have less than 50 characters",
-          "danger-container",
-        );
+        if (isMessage) {
+          createMessage(
+            "Name should have less than 50 characters",
+            "danger-container",
+          );
+        }
+
         return false;
       }
 
       if (fields.symbol.length == 0) {
-        createMessage("Symbol is required", "danger-container");
+        if (isMessage) {
+          createMessage("Symbol is required", "danger-container");
+        }
         return false;
       }
 
       if (fields.symbol.length > 10) {
-        createMessage(
-          "Symbol should have less than 10 characters",
-          "danger-container",
-        );
+        if (isMessage) {
+          createMessage(
+            "Symbol should have less than 10 characters",
+            "danger-container",
+          );
+        }
         return false;
       }
 
       if (fields.desc.length == 0) {
-        createMessage("Description is required", "danger-container");
+        if (isMessage) {
+          createMessage("Description is required", "danger-container");
+        }
         return false;
       }
 
       if (fields.desc.length > 160) {
-        createMessage(
-          "Description should have less than 160 characters",
-          "danger-container",
-        );
+        if (isMessage) {
+          createMessage(
+            "Description should have less than 160 characters",
+            "danger-container",
+          );
+        }
         return false;
       }
 
       if (fields.price == 0) {
-        createMessage("Launch pass is required", "danger-container");
+        if (isMessage) {
+          createMessage("Launch pass is required", "danger-container");
+        }
         return false;
       }
 
       if (fields.supply == 0) {
-        createMessage("Supply is required", "danger-container");
+        if (isMessage) {
+          createMessage("Supply is required", "danger-container");
+        }
         return false;
       }
 
       if (fields.discount < 0 && fields.discount > 100) {
-        createMessage(
-          "Dex Discount price for launc pass is required",
-          "danger-container",
-        );
+        if (isMessage) {
+          createMessage(
+            "Dex Discount price for launc pass is required",
+            "danger-container",
+          );
+        }
         return false;
       }
 
       if (fields.scoutRoyalty + fields.promoterRoyalty > 100) {
-        createMessage("Invalid royalty percentage", "danger-container");
+        if (isMessage) {
+          createMessage("Invalid royalty percentage", "danger-container");
+        }
         return false;
       }
 
@@ -240,10 +274,12 @@ export default function ProjectCreateStep5() {
         fields.redemptionDate + " " + fields.redemptionTime,
       );
       if (getDateDiff(dexDate, redemptionDate) < 0) {
-        createMessage(
-          "Redemption date and time is invalid",
-          "danger-container",
-        );
+        if (isMessage) {
+          createMessage(
+            "Redemption date and time is invalid",
+            "danger-container",
+          );
+        }
         return false;
       }
 
@@ -257,10 +293,12 @@ export default function ProjectCreateStep5() {
     }
 
     if (coinDetails.supply * (presaleDetails.maxPresale / 100) < totalTokens) {
-      createMessage(
-        "Total token allocated to launch pass is greator than presale allocation",
-        "danger-container",
-      );
+      if (isMessage) {
+        createMessage(
+          "Total token allocated to launch pass is greator than presale allocation",
+          "danger-container",
+        );
+      }
       return false;
     }
     return true;
@@ -560,7 +598,7 @@ export default function ProjectCreateStep5() {
 
                           <input
                             type="date"
-                            className="grow"
+                            className="grow text-base"
                             placeholder="Date"
                             value={passItem.redemptionDate}
                             onChange={(e) => {
@@ -578,7 +616,7 @@ export default function ProjectCreateStep5() {
 
                           <input
                             type="time"
-                            className="grow"
+                            className="grow text-base"
                             placeholder="Time"
                             value={passItem.redemptionTime}
                             onChange={(e) => {
@@ -696,6 +734,7 @@ export default function ProjectCreateStep5() {
             {!loading && (
               <button
                 className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white"
+                disabled={!isReady}
                 onClick={gotoStep6}
               >
                 Next

@@ -18,17 +18,17 @@ import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import * as anchor from "@coral-xyz/anchor";
 import { useAtom } from "jotai";
 import { userWeb3Info } from "@/app/store";
-import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
+import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Connectivity as Community } from "../../../../../anchor/community";
-import { Connectivity as UserConn } from "../../../../../anchor/user";
+import { Connectivity as Community } from "../../../anchor/community";
+import { Connectivity as UserConn } from "../../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import axios from "axios";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { NATIVE_MINT } from "forge-spl-token";
 
-export default function ProjectCreateStep9() {
+export default function ProjectCreateStep10({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
     const connection = useConnection();
     const wallet: any = useAnchorWallet();
@@ -229,12 +229,11 @@ export default function ProjectCreateStep9() {
                 description: coins.desc,
                 image: coins.image.preview
             }
-            const coinMetaHash: any = await pinFileToShadowDrive(coinBody);
-            if (coinMetaHash === "") {
+            const coinMetaURI: any = await pinFileToShadowDriveUrl(coinBody);
+            if (coinMetaURI === "") {
                 createMessage("We’re sorry, there was an error while trying to prepare meta url. please try again later.","danger-container")
                 return;
             }
-            const coinMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ coinMetaHash;
             console.log("coinMetaURI", coinMetaURI)
 
             // creating community coins
@@ -285,13 +284,12 @@ export default function ProjectCreateStep9() {
                     ],
                 }
 
-                const passMetaHash: any = await pinFileToShadowDrive(passBody);
-                if (passMetaHash === "") {
+                const passMetaURI: any = await pinFileToShadowDriveUrl(passBody);
+                if (passMetaURI === "") {
                     createMessage("We’re sorry, there was an error while trying to prepare meta url. please try again later.","danger-container")
                     return;
                 }
-                const passMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ passMetaHash;
-
+                
                 setButtonText("Creating "+passItem.name+"...")
                 let redemptionDate = new Date(new Date(passItem.redemptionDate + " "+passItem.redemptionTime).toUTCString()).valueOf()
                 const passKey = await communityConnection.createLaunchPass({
@@ -348,15 +346,17 @@ export default function ProjectCreateStep9() {
                 duration: 0,
                 type: "liqudity"
             })
-
+           
+            if(presale.minPresale > 0) {
+                stakeData.push({
+                    mint: new anchor.web3.PublicKey(mintKey),
+                    user: wallet.publicKey,
+                    value: Math.ceil(coins.supply * (presale.maxPresale / 100)  * web3Consts.LAMPORTS_PER_OPOS),
+                    duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                    type: "presale"
+                })
+            }
             
-            stakeData.push({
-                mint: new anchor.web3.PublicKey(mintKey),
-                user: wallet.publicKey,
-                value: Math.ceil(presale.maxPresale * web3Consts.LAMPORTS_PER_OPOS),
-                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
-                type: "presale"
-            })
 
             stakeData.push({
                 user: wallet.publicKey,
@@ -397,12 +397,16 @@ export default function ProjectCreateStep9() {
                             duration: new Date(date.setMonth(date.getMonth() + element.vesting.months)).valueOf(),
                             type: "tokenomics"
                         })
+                        break;
                     }
                 }
             }
             console.log("stake Data ", stakeData)
 
             for (let index = 0; index < stakeData.length; index++) {
+                if(stakeData[index].value == 0) {
+                    continue;
+                }
                 const stakePair = anchor.web3.Keypair.generate();
                 const stakeres = await communityConnection.stakeCoin(stakeData[index], stakePair);
                 console.log("stake signature ", stakeres)
@@ -414,7 +418,7 @@ export default function ProjectCreateStep9() {
                 name: project.name,
                 symbol: project.symbol,
                 description: project.desc,
-                image: project.image.type,
+                image: project.image.preview,
                 enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
                 family: "MMOSH",
                 collection: "MMOSH Pass Collection",
@@ -478,12 +482,13 @@ export default function ProjectCreateStep9() {
                 })
             }
 
-            const projectMetaHash: any = await pinFileToShadowDrive(projectBody);
-            if (projectMetaHash === "") {
+            const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
+            if (projectMetaURI === "") {
                 createMessage("We’re sorry, there was an error while trying to prepare meta url. please try again later.","danger-container")
                 return;
             }
-            const projectMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ projectMetaHash;            
+
+            console.log("projectMetaURI ", projectMetaURI)
 
             // creating project
             setButtonText("Creating Gensis Project Pass...")
@@ -558,20 +563,17 @@ export default function ProjectCreateStep9() {
                 ]
             };
         
-            const shdwHashInvite: any = await pinFileToShadowDrive(invitebody);
-            if (shdwHashInvite === "") {
+            const inviteMetaURI: any = await pinFileToShadowDriveUrl(invitebody);
+            if (inviteMetaURI === "") {
                 createMessage(
                     "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
                     "danger-container",
                 );
                 return;
             }
-            const inviteMetaURI = "https://shdw-drive.genesysgo.net/" +process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY +"/"+ shdwHashInvite;
-
             // creating invitation
             setButtonText("Creating Badge Account...")
         
-            const uri = shdwHashInvite;
             const res2: any = await communityConnection.initBadge({
                 name: "Invitation",
                 symbol:  "INVITE",
@@ -599,7 +601,11 @@ export default function ProjectCreateStep9() {
 
             setButtonText("Buying new Project...")
             const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
-            console.log("send price result ", res5)
+            if(res5.Err) {
+                createMessage("error creating new project","danger-container")
+                return
+            }
+            console.log("send price result ", res5.Ok?.info)
 
             // save coins
             await axios.post("/api/project/save-coins", {
@@ -645,7 +651,7 @@ export default function ProjectCreateStep9() {
             });
 
             // save community
-            for (let index = 0; index < communities.profiles.length; index++) {
+            for (let index = 0; index < communities.communities.length; index++) {
                 const element:any = communities.communities[index];
                 await axios.post("/api/project/save-community", {
                     name: element.title,
@@ -819,7 +825,7 @@ export default function ProjectCreateStep9() {
     // }
 
     const goBack = () => {
-        navigate.back();
+        onPageChange("step9")
     }
 
     const prepareNumber = (inputValue:any) => {
@@ -877,7 +883,7 @@ export default function ProjectCreateStep9() {
                                         <h3 className="text-sub-title-font-size text-while font-poppins text-center">{project.name}</h3>
                                         <div>
                                         <div className="rounded-md gradient-container p-1.5 mr-5">
-                                                <img src={project.image.preview}className="w-full object-cover"/>
+                                                <img src={project.image.preview}className="w-full object-cover aspect-square"/>
                                         </div>
                                         </div>
                                         <p className="text-header-small-font-size text-white mt-2 text-center">{project.symbol}</p>
@@ -890,7 +896,7 @@ export default function ProjectCreateStep9() {
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                         <div className="col-span-3">
                                             <div className="rounded-full gradient-container p-1.5">
-                                                <img src={coins.image.preview} className="w-full rounded-full object-cover"/>
+                                                <img src={coins.image.preview} className="w-full rounded-full aspect-square object-cover"/>
                                             </div>
                                         </div>
                                         <div className="col-span-4">
@@ -927,63 +933,65 @@ export default function ProjectCreateStep9() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mt-5">
-                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
-                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                        <div>
-                                            <p className="text-para-font-size">Maximum Supply for presale</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                {presale.minPresale > 0 &&
+                                    <div className="mt-5">
+                                        <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
+                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                            <div>
+                                                <p className="text-para-font-size">Maximum Supply for presale</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Token Presale</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-para-font-size">Token Presale</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                            <div>
+                                                <p className="text-para-font-size">Start Date</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Start Time</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">End Date</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">End Time</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Listing Date</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Listing Time</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
+                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                            <div>
+                                                <p className="text-para-font-size">Project Website</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Project Telegram</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-para-font-size">Project Twitter</p>
+                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                        <div>
-                                            <p className="text-para-font-size">Start Date</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Start Time</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">End Date</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">End Time</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Listing Date</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Listing Time</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
-                                        </div>
-                                    </div>
-                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                        <div>
-                                            <p className="text-para-font-size">Project Website</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Project Telegram</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-para-font-size">Project Twitter</p>
-                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                }
                             </div>
                         </div>
 
@@ -992,7 +1000,7 @@ export default function ProjectCreateStep9() {
                                     <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">LaunchPass {i+1}</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                         <div className="col-span-2">
-                                            <img src={passItem.image.preview} className="w-full object-cover rounded-md"/>
+                                            <img src={passItem.image.preview} className="w-full aspect-square object-cover rounded-md"/>
                                         </div>
                                         <div className="col-span-6">
                                             <div className="grid md:grid-flow-col justify-stretch gap-4">
@@ -1084,7 +1092,7 @@ export default function ProjectCreateStep9() {
                                         {files.map((fileItem:any, i)=>(
                                             <div className="col-span-4">
                                                 <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                                                    <p className="text-para-font-size light-gray-color text-center">File{i+1}.pdf</p>
+                                                    <p className="text-para-font-size light-gray-color text-center">{fileItem.name}</p>
                                                     <div className="w-8 mx-auto"><FileIcon /></div>          
                                                 </div>
                                             </div>

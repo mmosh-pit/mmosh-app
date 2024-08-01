@@ -12,12 +12,14 @@ import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export default function ProjectCreateStep6() {
+export default function ProjectCreateStep6({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
     const [loading, setLoading] = useState(false)
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
+
+    const [isReady, setIsReady] = useState(false)
     
     const [coinDetails, setCoinDetails] = useState({
         image: {preview: "", type: ""},
@@ -39,20 +41,19 @@ export default function ProjectCreateStep6() {
         minPresale: 0
     })
 
-    const [fields, setFields] = useState([{
-        type: "Founder",
-        value: 0,
-        cliff:{
-            months: 0,
-            percentage: 0
-        },
-        vesting:{
-            months: 0,
-            percentage: 0
-        },
-    }]);
+    const [fields, setFields] = useState<any>([]);
+
+    const [communities, setCommunities] = useState({
+        communities: [],
+        profiles: []
+    })
 
     React.useEffect(()=>{
+        if(localStorage.getItem("projectstep2")) {
+            let savedData:any = localStorage.getItem("projectstep2");
+            setCommunities(JSON.parse(savedData));
+        }
+
         if(localStorage.getItem("projectstep3")) {
            let savedData:any = localStorage.getItem("projectstep3");
            setCoinDetails(JSON.parse(savedData));
@@ -70,15 +71,38 @@ export default function ProjectCreateStep6() {
          
     },[])
 
-    const [tokenomics, setTokenomics] = useState([
-        {label:"Investor", value: "Investor"},
-        {label:"Creator", value: "Creator"},
-        {label:"Builder", value: "Builder"},
-        {label:"Advisor", value: "Advisor"},
-        {label:"Sponsor", value: "Sponsor"},
-        {label:"Moderator", value: "Moderator"},
-        {label:"Other", value: "Other"}
-    ])
+    React.useEffect(()=>{
+        if(communities.profiles.length > 0) {
+            let roles:any = []
+            let newTokenomics:any = []
+            for (let index = 0; index < communities.profiles.length; index++) {
+                const element:any = communities.profiles[index];
+                if(!roles.includes(element.role)) {
+                    newTokenomics.push({label:element.role, value:element.role})
+                    roles.push(element.role);
+                }
+            }
+            setTokenomics(newTokenomics)
+    
+            let newFields:any = [{
+                type: newTokenomics[0].label,
+                value: 0,
+                cliff:{
+                    months: 0,
+                    percentage: 0
+                },
+                vesting:{
+                    months: 0,
+                    percentage: 0
+                },
+            }];
+            setFields(newFields)
+        }
+
+    },[communities])
+
+
+    const [tokenomics, setTokenomics] = useState([])
 
     const [distribution, setDistribution] = useState(1);
 
@@ -92,20 +116,31 @@ export default function ProjectCreateStep6() {
         }
       }
 
+    
+
      const gotoStep7 = () => {
          setLoading(true)
          if(getTotalTokenomics() !== 100) {
             setLoading(false)
-            createMessage("Total percentage is not 100%", "danger-container");
+            createMessage("Total percentage should add up to 100%", "danger-container");
             return
          }
 
          localStorage.setItem("projectstep6",JSON.stringify(fields));
-         navigate.push("/create/project/create/step7");
+         onPageChange("step7")
      }
 
+     React.useEffect(()=>{
+        setIsReady(getTotalTokenomics() === 100)
+    },[fields])
+
      const goBack = () => {
-        navigate.back()
+        if(presaleDetails.minPresale === 0) {
+            onPageChange("step4")
+        } else {
+            onPageChange("step5")
+        }
+   
      }
 
      const createMessage = (message: any, type: any) => {
@@ -208,7 +243,7 @@ export default function ProjectCreateStep6() {
 
                 <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                     <div className="grid grid-cols-12">
-                    <div className="col-start-4 col-span-6">
+                    <div className="col-span-12 lg:col-start-4 lg:col-span-6 xl:col-start-4 xl:col-span-6">
                             <div className="grid grid-cols-12 pb-5">
                                 <div className="col-span-6">
                                     <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">Total number of tokens</p>
@@ -221,7 +256,7 @@ export default function ProjectCreateStep6() {
                             </div>
                             <div className="backdrop-container rounded-xl py-10 px-10 border border-white border-opacity-20 mb-10 ">
                                 <h3 className="text-sub-title-font-size text-while font-poppins mb-5 text-center">Tokenomics</h3>
-                                {fields.map((fieldItem, i) => (
+                                {fields.map((fieldItem:any, i:any) => (
                                     <div className="mt-3.5">
                                         <div className="flex justify-center">
                                             <div className="grid grid-cols-4 gap-2">
@@ -287,34 +322,34 @@ export default function ProjectCreateStep6() {
                                         <p className="text-header-small-font-size text-white max-w-32 pr-2.5">
                                         Tokens allocated for the presale
                                         </p>
-                                            <span className="text-header-small-font-size text-white">
+                                            <p className="text-header-small-font-size text-white">
                                             {presaleDetails.maxPresale}%
-                                        </span>
+                                        </p>
                                     </div>
                                     <div className="flex justify-center pt-5">
-                                        <p className="text-header-small-font-size text-white min-w-32 ">
+                                        <p className="text-header-small-font-size text-white min-w-32 pr-2.5">
                                         MMOSH DAO
                                         </p>
-                                            <span className="text-header-small-font-size text-white">
+                                            <p className="text-header-small-font-size text-white">
                                             2%
-                                        </span>
+                                        </p>
                                     </div>
                                     <div className="flex justify-center pt-2.5">
-                                    <p className="text-header-small-font-size text-white min-w-32 ">
+                                    <p className="text-header-small-font-size text-white min-w-32 pr-2.5">
                                         Curator
                                         <label className="text-small-font-size text-white block"> (Founder Agent)</label>
                                         </p>
-                                            <span className="text-header-small-font-size text-white">
+                                            <p className="text-header-small-font-size text-white">
                                             1%
-                                        </span>
+                                        </p>
                                     </div>
                                     <div className="flex justify-center pt-10">
-                                        <p className="text-header-small-font-size text-white min-w-24 font-bold">
+                                        <p className="text-header-small-font-size text-white min-w-24 font-bold pr-2.5">
                                         Total
                                         </p>
-                                            <span className="text-header-small-font-size text-white font-bold">
+                                            <p className="text-header-small-font-size text-white font-bold">
                                             {getTotalTokenomics()}%
-                                        </span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -326,7 +361,7 @@ export default function ProjectCreateStep6() {
                     <div className="flex justify-center mt-10">
                         <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
                         {!loading&&
-                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep7}>Next</button>
+                            <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" disabled={!isReady} onClick={gotoStep7}>Next</button>
                         }
 
                         {loading &&

@@ -341,7 +341,7 @@ export class Connectivity {
     
          for (let index = 0; index < holdermap.length; index++) {
              const element = holdermap[index];
-             let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: rootMainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: element.vallue});
+             let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: rootMainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
              for (let index = 0; index < createShare.length; index++) {
                  this.txis.push(createShare[index]);
              }
@@ -625,7 +625,7 @@ export class Connectivity {
 
      for (let index = 0; index < holdermap.length; index++) {
          const element = holdermap[index];
-         let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: element.vallue});
+         let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
          for (let index = 0; index < createShare.length; index++) {
              this.txis.push(createShare[index]);
          }
@@ -1165,7 +1165,7 @@ export class Connectivity {
       // if(this.provider.publicKey != currentGenesisProfileHolder) {
          let mintPrice =amount * (mainStateDetail.invitationMintingCost.toNumber() / 1000_000_000) * 1000_000_000
          console.log("invitation mintPrice ", mintPrice)
-         let receivedIXs:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateDetail.oposToken, sender: this.provider.publicKey, receiver: currentGenesisProfileHolder, init_if_needed: true, amount: mintPrice })
+         let receivedIXs:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateDetail.oposToken, sender: this.provider.publicKey, receiver: currentGenesisProfileHolder, init_if_needed: true, amount: Math.ceil(mintPrice) })
          for (let index = 0; index < receivedIXs.length; index++) {
             this.txis.push(receivedIXs[index]);
          }
@@ -1879,6 +1879,10 @@ export class Connectivity {
       this.mainState,
     );
 
+    const launcPassStateInfo = await this.program.account.launchPassState.fetch(
+      launcPassState,
+    );
+
     const {
       parentProfile,
       grandParentProfile,
@@ -1896,30 +1900,59 @@ export class Connectivity {
       web3Consts.usdcToken
     );
 
+    let cost = launcPassStateInfo.cost.toNumber();
+        
+    let holdersfullInfo = [];
+    let finalRoyalties = (cost * ((launcPassStateInfo.distribution.parent / 100) / 100)) + (cost * ((launcPassStateInfo.distribution.grandParent / 100) / 100))
+
+    holdersfullInfo.push({
+      receiver: launcPassStateInfo.owner,
+      vallue: cost - finalRoyalties
+    })
+
+    holdersfullInfo.push({
+      receiver: currentParentProfileHolder.toBase58(),
+      vallue: cost * ((launcPassStateInfo.distribution.parent / 100) / 100)
+    })
+
+    holdersfullInfo.push({
+      receiver: currentGrandParentProfileHolder.toBase58(),
+      vallue: cost * ((launcPassStateInfo.distribution.grandParent / 100) / 100)
+   })
+
+   var holdermap:any = [];
+   holdersfullInfo.reduce(function(res:any, value:any) {
+     if (!res[value.receiver]) {
+       res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+       holdermap.push(res[value.receiver])
+     }
+     res[value.receiver].vallue += value.vallue;
+     return res;
+   }, {});
+
+   console.log("holdermap ", holdermap)
+
+   for (let index = 0; index < holdermap.length; index++) {
+       const element = holdermap[index];
+       let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: web3Consts.usdcToken, sender: this.provider.publicKey, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
+       for (let index = 0; index < createShare.length; index++) {
+           instructions.push(createShare[index]);
+       }
+   }
+
     const ix = await this.program.methods.buyLaunchPass().accounts({
       receiver: this.provider.publicKey,
       receiverAta,
       owner,
-      ownerAta,
       mint,
       launcPassState,
-      senderAta,
-      usdcMint: web3Consts.usdcToken,
       associatedTokenProgram,
       systemProgram,
       tokenProgram,
-      parentProfile,
-      grandParentProfile,
-      currentParentProfileHolder,
-      currentGrandParentProfileHolder,
-      currentParentProfileHolderAta,
-      currentGrandParentProfileHolderAta,
-      parentProfileHolderOposAta,
-      grandParentProfileHolderOposAta
     }).instruction();
 
     instructions.push(ix);
-    
+
     const tx = new web3.Transaction().add(...instructions);
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
@@ -1951,36 +1984,39 @@ export class Connectivity {
       stakeKey
     } = input;
 
+    console.log("redeemLaunchPass 1", input)
+
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
     const launcPassState = web3.PublicKey.findProgramAddressSync(
       [web3Consts.Seeds.launchPass, owner.toBuffer(), launchToken.toBuffer()],
       this.programId,
     )[0]
-
+    console.log("redeemLaunchPass 2")
     const vaultState = web3.PublicKey.findProgramAddressSync(
       [web3Consts.Seeds.vault, stakeKey.toBuffer(), mint.toBuffer()],
       this.programId,
     )[0]
-
+    console.log("redeemLaunchPass 3")
     const userLaunchTokenAtaResult = await this.getAtaAccount(launchToken,this.provider.publicKey);
     const userLaunchTokenAta = userLaunchTokenAtaResult.ata;
     if (userLaunchTokenAtaResult.initAtaIx) instructions.push(userLaunchTokenAtaResult.initAtaIx);
 
-
+    console.log("redeemLaunchPass 4")
     const receiverAtaResult = await this.getAtaAccount(mint,this.provider.publicKey);
     const receiverAta = receiverAtaResult.ata;
     if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
-
+    console.log("redeemLaunchPass 5")
     const nftTokenAccount = await getAssociatedTokenAddress(
       mint,
       vaultState,
       true
     );
 
-
+    console.log("redeemLaunchPass 6")
     const ix = await this.program.methods.redeemLaunchPass().accounts({
       user: this.provider.publicKey,
+      owner,
       launchToken,
       launcPassState,
       stakeKey,
@@ -2116,19 +2152,27 @@ export class Connectivity {
   async stakeCoin(element: any, stakeKey: anchor.web3.Keypair): Promise<string> {
     
     const instructions: anchor.web3.TransactionInstruction[] = [];
-
+    
+    console.log("stakecoin 1", element)
 
     const vaultState = web3.PublicKey.findProgramAddressSync(
       [web3Consts.Seeds.vault, stakeKey.publicKey.toBuffer(), element.mint.toBuffer()],
       this.programId,
     )[0]
+    console.log("stakecoin 2")
+
     const nftTokenAccount = await getAssociatedTokenAddress(
       element.mint,
       vaultState,
       true
     );
 
+    console.log("stakecoin 3")
+
+
     const ownerAta = getAssociatedTokenAddressSync(element.mint, this.provider.publicKey);
+
+    console.log("stakecoin 4")
 
     const ix1 =  await this.program.methods.initVault(new BN(element.duration), new BN(element.value)).accounts({
       owner: this.provider.publicKey,
@@ -2146,6 +2190,8 @@ export class Connectivity {
     }).instruction()
     instructions.push(ix1);
 
+    console.log("stakecoin 5")
+
     const tx = new web3.Transaction().add(...instructions);
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
@@ -2159,8 +2205,10 @@ export class Connectivity {
     });
     }
     tx.add(feeIns);
+    console.log("stakecoin 6")
     const signature = await this.provider.sendAndConfirm(tx, []);
     await this.saveStakeAccount(stakeKey.publicKey.toBase58(), element.mint.toBase58(),element.user.toBase58(),element.value / web3Consts.LAMPORTS_PER_OPOS, element.duration, element.type)
+    console.log("stakecoin 7")
     return signature
   }
 

@@ -72,9 +72,9 @@ const Step3 = () => {
         form.invitation === "optional" ? form.invitationDiscount : "";
 
       const scoutRoyalties =
-        form.invitation !== "none" ? form.scoutRoyalties : 0;
+        form.invitation !== "none" ? form.scoutRoyalties : "0";
       const promoterRoyalties =
-        form.invitation !== "none" ? form.promoterRoyalties : 0;
+        form.invitation !== "none" ? form.promoterRoyalties : "0";
 
       const newFormData = {
         ...form,

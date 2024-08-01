@@ -10,6 +10,8 @@ type Props = {
 
 const ImagePicker = ({ changeImage, image }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const imageContainerRef = React.useRef<HTMLInputElement>(null);
+  const [imageHeight, setImageHeight] = React.useState(0);
 
   const handleChangeInput = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,24 +65,35 @@ const ImagePicker = ({ changeImage, image }: Props) => {
     inputRef.current.click();
   }, []);
 
+  React.useLayoutEffect(() => {
+    if (imageContainerRef.current !== null) {
+      const { width } = imageContainerRef.current.getBoundingClientRect();
+      setImageHeight(width);
+    }
+  }, [image]);
+
   return (
     <div
       onDragEnter={(e) => handleDrag(e)}
       onDragLeave={(e) => handleDragLeave(e)}
       onDragOver={(e) => handleDragOver(e)}
       onDrop={(e) => handleDrop(e)}
-      className="flex justify-center w-full h-full"
+      className="w-full h-full"
     >
       <input
         ref={inputRef}
         type="file"
-        accept="image/png,image/jpeg"
+        accept="image/*"
         style={{ display: "none" }}
         onChange={handleChangeInput}
       />
       {image ? (
         <div className="flex flex-col">
-          <div className="flex w-full sm:h-[220px] md:h-[250px] xs:h-[150px] relative">
+          <div
+            className="flex w-full relative"
+            ref={imageContainerRef}
+            style={{ height: imageHeight + "px" }}
+          >
             <Image src={image} alt="Identity" fill objectFit="cover" />
           </div>
           <div
@@ -95,14 +108,16 @@ const ImagePicker = ({ changeImage, image }: Props) => {
         </div>
       ) : (
         <div
-          className="flex flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 rounded-md select-none cursor-pointer backdrop-container py-11"
+          className="flex flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 rounded-md select-none cursor-pointer backdrop-container"
           onClick={triggerClick}
+          ref={imageContainerRef}
+          style={{ height: imageHeight + "px" }}
         >
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
             1080 x 1080
           </p>
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
-            Jpg, Png. Max 100 mb
+            Jpg, Png, Gif. Max 100 mb
           </p>
           <div className="relative py-1.5">
             <Image src="/png.svg" alt="png" width={64} height={64} />

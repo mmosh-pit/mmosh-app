@@ -84,7 +84,7 @@ const CommunitiesList = () => {
         </a>
       </div>
       <div
-        className="w-full grid grid-cols-2 lg:grid-cols-8 md:grid-cols-4 gap-8 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
+        className="w-full grid grid-cols-auto sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
         ref={containerRef}
         onScroll={handleScroll}
       >

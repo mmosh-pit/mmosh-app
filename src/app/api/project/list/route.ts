@@ -6,22 +6,35 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
+  const { searchParams } = new URL(req.url);
+  const search = searchParams.get("searchText") as string;
+
   const result = await db
     .collection("mmosh-app-project")
     .aggregate([
       {
-        $lookup: {
-          from: "mmosh-app-project-coins",
-          localField: "projectkey",
-          foreignField: "key",
-          as: "coins",
+        $match: {
+          $or: [
+            { name: { $regex: new RegExp(search, "ig") } },
+            { symbol: { $regex: new RegExp(search, "ig") } },
+            { desc: { $regex: new RegExp(search, "ig") } },
+          ],
         },
       },
       {
         $lookup: {
+          from: "mmosh-app-project-coins",
+          localField: "key",
+          foreignField: "projectkey",
+          as: "coins",
+        },
+      },
+
+      {
+        $lookup: {
           from: "mmosh-app-project-community",
-          localField: "projectkey",
-          foreignField: "key",
+          localField: "key",
+          foreignField: "projectkey",
           as: "community",
         },
       },
@@ -29,8 +42,8 @@ export async function GET(req: NextRequest) {
       {
         $lookup: {
           from: "mmosh-app-project-profiles",
-          localField: "projectkey",
-          foreignField: "key",
+          localField: "key",
+          foreignField: "projectkey",
           as: "profiles",
         },
       },
@@ -38,8 +51,8 @@ export async function GET(req: NextRequest) {
       {
         $lookup: {
           from: "mmosh-app-project-tokenomics",
-          localField: "projectkey",
-          foreignField: "key",
+          localField: "key",
+          foreignField: "projectkey",
           as: "tokenomics",
         },
       },
@@ -47,13 +60,25 @@ export async function GET(req: NextRequest) {
       {
         $lookup: {
           from: "mmosh-app-project-pass",
-          localField: "projectkey",
-          foreignField: "key",
+          localField: "key",
+          foreignField: "projectkey",
           as: "pass",
         },
       },
+
       {
         $project: {
+          name: 1,
+          symbol: 1,
+          desc: 1,
+          key: 1,
+          image: 1,
+          price: 1,
+          presalestartdate: 1,
+          presaleenddate: 1,
+          dexlistingdate: 1,
+          presalesupply: 1,
+          minpresalesupply: 1,
           coins: "$coins",
           community: "$community",
           profiles: "$profiles",

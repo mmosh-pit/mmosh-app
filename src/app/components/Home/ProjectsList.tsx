@@ -3,15 +3,15 @@ import { useAtom } from "jotai";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-import { Community, CommunityAPIResult } from "@/app/models/community";
 import { data } from "@/app/store";
-import CommunityCard from "./CommunityCard";
 import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
+import { Project } from "@/app/models/project";
+import ProjectCard from "./ProjectCard";
 
 const ProjectsList = () => {
   const navigate = useRouter();
 
-  const [projects, setProjects] = React.useState<CommunityAPIResult[]>([]);
+  const [projects, setProjects] = React.useState<Project[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -24,7 +24,7 @@ const ProjectsList = () => {
   const [currentPage, setCurrentPage] = React.useState(0);
   const lastPageTriggered = React.useRef(false);
 
-  const getCommunities = React.useCallback(async () => {
+  const getProjects = React.useCallback(async () => {
     if (
       selectedFilters.includes("projects") ||
       selectedFilters.includes("all")
@@ -33,7 +33,7 @@ const ProjectsList = () => {
       fetching.current = true;
       // TODO include pagination
       const result = await axios.get(
-        `/api/list-communities?searchText=${searchText}`,
+        `/api/project/list?searchText=${searchText}`,
       );
 
       setProjects(result.data);
@@ -54,13 +54,13 @@ const ProjectsList = () => {
     }
   };
 
-  const onCommunitySelect = (community: Community) => {
-    navigate.push(`/create/communities/${community.symbol}`);
+  const onProjectSelect = (address: string) => {
+    navigate.push(`/create/project/${address}`);
   };
 
   React.useEffect(() => {
     if (fetching.current) return;
-    getCommunities();
+    getProjects();
   }, [currentUser, searchText]);
 
   if (isLoading) return <></>;
@@ -68,36 +68,39 @@ const ProjectsList = () => {
   if (projects?.length === 0) return <></>;
 
   return (
-    <div id="communities" className="w-full flex flex-col mb-4">
+    <div id="projects" className="w-full flex flex-col mb-4">
       <div className="w-full flex justify-between px-4">
         <p className="text-white text-base">
-          Community<span className="text-gray-500"></span>
+          Projects<span className="text-gray-500"></span>
         </p>
 
         <a
           className="underline text-white cursor-pointer text-base"
-          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/communities`}
+          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/projects`}
         >
-          Go to Community Directory
+          Go to Project Directory
         </a>
       </div>
       <div
-        className="w-full grid grid-cols-2 lg:grid-cols-8 md:grid-cols-4 gap-8 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
+        className="w-full grid grid-cols-auto sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
         ref={containerRef}
         onScroll={handleScroll}
       >
         {projects.map((value) => (
           <div
             className="cursor-pointer"
-            onClick={() => onCommunitySelect(value.data)}
+            onClick={() => onProjectSelect(value.key)}
             key={value._id?.toString()}
           >
-            <CommunityCard
-              name={value.data.name}
-              image={value.data.image}
-              username={value.data.symbol}
-              description={value.data.description}
-              key={value.data.tokenAddress}
+            <ProjectCard
+              name={value.name}
+              image={value.image}
+              description={value.desc}
+              key={value.key}
+              symbol={value.symbol}
+              price={value.price.toString()}
+              launchDate={new Date(value.dexlistingdate)}
+              coinSymbol={value.coins[0]?.symbol}
             />
           </div>
         ))}

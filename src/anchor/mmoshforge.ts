@@ -1,5 +1,5 @@
 export type Mmoshforge = {
-  "address": "GQJBSNqckwApKwrjHMgvhhFtwZFxb3YCoDFFcLmYCnEA",
+  "address": "3nCuPkvDmWCG5yJBpQzxEU6BZMLDuRxNFCyoxAA4icfg",
   "metadata": {
     "name": "mmoshforge",
     "version": "0.1.0",
@@ -3595,7 +3595,7 @@ export type Mmoshforge = {
   ]
 };
 export const IDL: Mmoshforge = {
-  "address": "GQJBSNqckwApKwrjHMgvhhFtwZFxb3YCoDFFcLmYCnEA",
+  "address": "3nCuPkvDmWCG5yJBpQzxEU6BZMLDuRxNFCyoxAA4icfg",
   "metadata": {
     "name": "mmoshforge",
     "version": "0.1.0",

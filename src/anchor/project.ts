@@ -57,7 +57,7 @@ export class Connectivity {
     this.provider = provider;
     this.connection = provider.connection;
     this.programId = programId;
-    this.program = new Program(IDL, programId, this.provider);
+    this.program = new Program(IDL, this.provider);
     this.metaplex = new Metaplex(this.connection);
     this.baseSpl = new BaseSpl(this.connection);
     this.projectId = projectId;
@@ -94,6 +94,39 @@ export class Connectivity {
 
       const profile = mintKp.publicKey;
       console.log("profile is ", profile.toBase58());
+
+
+      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+        mintAuthority: admin,
+        mintKeypair: mintKp,
+        mintingInfo: {
+          tokenAmount: 1,
+          tokenReceiver: admin,
+        },
+      });
+
+      const mintTx = new web3.Transaction().add(...mintIxs);
+
+      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+      let feeInsMint;
+      if (feeEstimateMint > 0) {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimateMint,
+        });
+      } else {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      mintTx.add(feeInsMint);
+
+      this.txis = [];
+      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+        mintKp,
+      ]);
+
+      await sleep(5000)
+      
       const profileState = this.__getProfileStateAccount(profile);
       const profileMetadata = BaseMpl.getMetadataAccount(profile);
       const profileEdition = BaseMpl.getEditionAccount(profile);
@@ -495,6 +528,39 @@ export class Connectivity {
       const collectionEdition = BaseMpl.getEditionAccount(collection);
       const mintKp = web3.Keypair.generate();
       const profile = mintKp.publicKey;
+
+
+      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+        mintAuthority: user,
+        mintKeypair: mintKp,
+        mintingInfo: {
+          tokenAmount: 1,
+          tokenReceiver: user,
+        },
+      });
+
+      const mintTx = new web3.Transaction().add(...mintIxs);
+
+      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+      let feeInsMint;
+      if (feeEstimateMint > 0) {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimateMint,
+        });
+      } else {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      mintTx.add(feeInsMint);
+
+      this.txis = [];
+      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+        mintKp,
+      ]);
+
+      await sleep(5000)
+
       const userProfileAta = getAssociatedTokenAddressSync(profile, user);
       const { ata: userActivationTokenAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(

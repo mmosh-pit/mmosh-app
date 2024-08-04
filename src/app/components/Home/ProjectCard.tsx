@@ -1,4 +1,8 @@
+import * as React from "react";
 import Image from "next/image";
+import currencyFormatter from "@/app/lib/currencyFormatter";
+import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
+import ProjectCardTimer from "./ProjectCardTimer";
 
 type Props = {
   image: string;
@@ -6,22 +10,26 @@ type Props = {
   symbol: string;
   description: string;
   price: string;
-  coinSymbol: string;
   launchDate: Date;
+  supply: number;
+  soldInPresale: number;
+  fdv: number;
 };
 
 const ProjectCard = ({
   image,
   price,
-  coinSymbol,
   name,
   launchDate,
   symbol,
   description,
+  supply,
+  soldInPresale,
+  fdv,
 }: Props) => {
   return (
-    <div className="relative">
-      <div className="w-[6vmax] h-[6vmax] md:w-[10vmax] md:h-[10vmax] my-2 home-community-card-image">
+    <div className="w-full h-[250px] sm:w-[350px] sm:h-[350px] relative">
+      <div className="w-full h-[250px] sm:w-[350px] sm:h-[350px] my-2 home-community-card-image">
         <Image
           src={image}
           alt="community-image"
@@ -30,31 +38,62 @@ const ProjectCard = ({
         />
       </div>
 
-      <div className="flex w-[6vmax] absolute top-[10px] right-[5px] flex">
-        <div className="self-end flex">
-          <p className="text-white text-base mr-4">To Launch</p>
-        </div>
+      <div className="w-[100%] flex justify-end absolute top-[10px] right-[5px]">
+        <p className="text-white text-smv max-w-[22%]">Time to Listing</p>
+
+        <ProjectCardTimer launchDate={launchDate} />
       </div>
 
-      <div className="absolute bottom-[5px] right-[5px] left-[5px] flex flex-col">
-        <div className="flex flex-col bg-[#00000082] border-t-lg mb-2">
-          <h6>{name}</h6>
+      <div className="max-h-[50%] absolute bottom-[5px] right-[5px] left-[5px] flex flex-col rounded-lg bg-[#00000082] p-2">
+        <div className="flex flex-col mb-2">
+          <div className="flex justify-between">
+            <div className="flex flex-col">
+              <p className="text-white font-bold text-lgv">{name}</p>
+              <p className="text-smv font-bold">{symbol}</p>
+            </div>
+          </div>
 
-          <div className="flex flex-col mt-8">
-            <p className="text-white text-lg font-bold underline">{symbol}</p>
+          <div className="flex flex-col mt-4">
             <p className="text-xs">{description}</p>
           </div>
         </div>
 
-        <div className="w-[6vmax] w-full flex">
-          <div className="flex grow justify-center mr-[4px] bg-[#00000082] border-bl-lg py-3">
-            <p className="text-white text-base">Unit Price</p>
+        <div className="flex flex-col">
+          <div className="flex md:flex-row w-full justify-between mr-[4px]">
+            <div className="flex justify-between w-[45%]">
+              <p className="text-white text-smv font-extralight">
+                Listing Price
+              </p>
+              <p className="text-smv font-light">
+                {currencyFormatter(Number(price))}
+              </p>
+            </div>
+
+            <div className="flex justify-between w-[45%]">
+              <p className="text-white text-smv font-extralight">
+                Total Supply
+              </p>
+              <p className="text-smv font-light">{abbreviateNumber(supply)}</p>
+            </div>
           </div>
-          <div className="flex grow justify-center ml-[4px] bg-[#00000082] border-br-lg py-3">
-            <p className="text-white text-base">
-              {price}
-              <span className="font-bold">{coinSymbol}</span>
-            </p>
+
+          <div className="flex md:flex-row w-full justify-between mr-[4px] mt-2">
+            <div className="flex justify-between w-[45%]">
+              <p className="text-white text-smv font-extralight">
+                Sold in Presale
+              </p>
+              <p className="text-smv font-light">
+                {abbreviateNumber(soldInPresale)}
+              </p>
+            </div>
+
+            <div className="flex justify-between w-[45%]">
+              <p className="text-white text-smv font-extralight">FDV</p>
+              <p className="text-smv font-light">
+                {abbreviateNumber(fdv)}{" "}
+                <span className="text-tinyv font-bold">usdc</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

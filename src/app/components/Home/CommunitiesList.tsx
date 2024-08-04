@@ -84,13 +84,13 @@ const CommunitiesList = () => {
         </a>
       </div>
       <div
-        className="w-full grid grid-cols-auto sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 gap-6 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
+        className="w-full grid grid-cols-1 2xl:grid-cols-3 gap-6 px-4 flex mt-4 overflow-x-auto overflow-y-hidden"
         ref={containerRef}
         onScroll={handleScroll}
       >
         {communities.map((value) => (
           <div
-            className="cursor-pointer"
+            className="cursor-pointer flex justify-center"
             onClick={() => onCommunitySelect(value.data)}
             key={value._id?.toString()}
           >

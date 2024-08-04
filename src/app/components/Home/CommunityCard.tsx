@@ -10,8 +10,8 @@ type Props = {
 
 const CommunityCard = ({ image, name, description, coinImage }: Props) => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="w-[6vmax] h-[6vmax] md:w-[10vmax] md:h-[10vmax] my-2 home-community-card-image">
+    <div className="w-[350px] h-[350px] flex flex-col items-center justify-center">
+      <div className="w-[350px] h-[350px] my-2 home-community-card-image">
         <Image
           src={image}
           alt="community-image"

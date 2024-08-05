@@ -7,6 +7,7 @@ import MembersList from "./Home/MembersList";
 import CoinsList from "./Home/CoinsList";
 import CommunitiesList from "./Home/CommunitiesList";
 import HomeSearch from "./HomeSearch";
+import ProjectsList from "./Home/ProjectsList";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -37,8 +38,11 @@ const HomePage = () => {
         <HomeSearch placeholder="Type your search terms" />
       </div>
 
-      <div className="flex flex-col w-full mt-8 px-12">
-        <CommunitiesList />
+      <div className="flex flex-col w-full px-12">
+        <div className="w-full flex md:flex-row flex-col justify-between mt-8">
+          <ProjectsList />
+          <CommunitiesList />
+        </div>
 
         <div className="w-full flex md:flex-row flex-col justify-between mt-8">
           <MembersList />

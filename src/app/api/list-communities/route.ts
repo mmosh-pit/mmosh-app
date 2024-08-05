@@ -39,8 +39,6 @@ export async function GET(req: NextRequest) {
     ];
   }
 
-  console.log("Searching with filter: ", search);
-
   const result = await communityCollection
     .find(search, {
       projection,

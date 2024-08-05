@@ -3,17 +3,15 @@ import { useAtom } from "jotai";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-import { Community, CommunityAPIResult } from "@/app/models/community";
 import { data } from "@/app/store";
-import CommunityCard from "./CommunityCard";
 import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
+import { Project } from "@/app/models/project";
+import ProjectCard from "./ProjectCard";
 
-const CommunitiesList = () => {
+const ProjectsList = () => {
   const navigate = useRouter();
 
-  const [communities, setCommunities] = React.useState<CommunityAPIResult[]>(
-    [],
-  );
+  const [projects, setProjects] = React.useState<Project[]>([]);
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -26,23 +24,23 @@ const CommunitiesList = () => {
   const [currentPage, setCurrentPage] = React.useState(0);
   const lastPageTriggered = React.useRef(false);
 
-  const getCommunities = React.useCallback(async () => {
+  const getProjects = React.useCallback(async () => {
     if (
-      selectedFilters.includes("communities") ||
+      selectedFilters.includes("projects") ||
       selectedFilters.includes("all")
     ) {
       setIsLoading(true);
       fetching.current = true;
       // TODO include pagination
       const result = await axios.get(
-        `/api/list-communities?searchText=${searchText}`,
+        `/api/project/list?searchText=${searchText}`,
       );
 
-      setCommunities(result.data);
+      setProjects(result.data);
       fetching.current = false;
       setIsLoading(false);
     } else {
-      setCommunities([]);
+      setProjects([]);
     }
   }, [searchText, selectedFilters]);
 
@@ -56,31 +54,31 @@ const CommunitiesList = () => {
     }
   };
 
-  const onCommunitySelect = (community: Community) => {
-    navigate.push(`/create/communities/${community.symbol}`);
+  const onProjectSelect = (address: string) => {
+    navigate.push(`/create/project/${address}`);
   };
 
   React.useEffect(() => {
     if (fetching.current) return;
-    getCommunities();
+    getProjects();
   }, [currentUser, searchText]);
 
   if (isLoading) return <></>;
 
-  if (communities?.length === 0) return <></>;
+  if (projects?.length === 0) return <></>;
 
   return (
-    <div id="communities" className="w-full flex flex-col mb-4">
+    <div id="projects" className="w-full flex flex-col mb-4">
       <div className="w-full flex justify-between px-4">
         <p className="text-white text-base">
-          Community<span className="text-gray-500"></span>
+          Projects<span className="text-gray-500"></span>
         </p>
 
         <a
           className="underline text-white cursor-pointer text-base"
-          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/communities`}
+          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/projects`}
         >
-          Go to Community Directory
+          Go to Project Directory
         </a>
       </div>
       <div
@@ -88,18 +86,23 @@ const CommunitiesList = () => {
         ref={containerRef}
         onScroll={handleScroll}
       >
-        {communities.map((value) => (
+        {projects.map((value) => (
           <div
             className="cursor-pointer flex justify-center"
-            onClick={() => onCommunitySelect(value.data)}
+            onClick={() => onProjectSelect(value.key)}
             key={value._id?.toString()}
           >
-            <CommunityCard
-              name={value.data.name}
-              image={value.data.image}
-              username={value.data.symbol}
-              description={value.data.description}
-              key={value.data.tokenAddress}
+            <ProjectCard
+              name={value.name}
+              image={value.image}
+              description={value.desc}
+              key={value.key}
+              symbol={value.symbol}
+              price={value.price.toString()}
+              launchDate={new Date(value.dexlistingdate)}
+              soldInPresale={value.minpresalesupply}
+              supply={value.presalesupply}
+              fdv={value.presalesupply * value.price}
             />
           </div>
         ))}
@@ -108,4 +111,4 @@ const CommunitiesList = () => {
   );
 };
 
-export default CommunitiesList;
+export default ProjectsList;

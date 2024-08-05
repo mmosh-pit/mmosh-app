@@ -26,6 +26,13 @@ const config: Config = {
       lg: "1rem",
       xl: "1.25rem",
 
+      xsv: "0.8vmax",
+      smv: "0.85vmax",
+      tinyv: "0.75vmax",
+      basev: "0.9vmax",
+      lgv: "1vmax",
+      xlv: "1.25vmax",
+
       "2xl": "1.5rem",
       "3xl": "1.875rem",
       "4xl": "2.25rem",

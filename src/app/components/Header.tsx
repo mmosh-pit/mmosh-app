@@ -135,9 +135,9 @@ const Header = () => {
     }
 
     const profileNft = profileInfo.profiles[0];
-
+    let username = "";
     if (profileNft?.address) {
-      const username = profileNft.userinfo.username;
+      username = profileNft.userinfo.username;
 
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       setCurrentUser(res.data);
@@ -156,12 +156,14 @@ const Header = () => {
       activationToken: activation,
       solBalance: profileInfo.solBalance,
       mmoshBalance: profileInfo.oposTokenBalance,
+      usdcBalance: profileInfo.usdcTokenBalance,
       firstTimeInvitation: firstTime,
       quota,
       activationTokenBalance:
         parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild ||
         0,
       profile: {
+        name: username,
         address: profileNft?.address,
         image: profileNft?.userinfo.image,
       },
@@ -294,7 +296,9 @@ const Header = () => {
 
           <div className="flex justify-end items-center w-[33%]">
             {currentUser?.profile?.image && (
-              <div className="relative w-[2.5vmax] h-[2.5vmax] mr-6">
+              <div
+                className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+              >
                 <Image
                   src={currentUser.profile.image}
                   alt="Profile Image"
@@ -338,7 +342,9 @@ const Header = () => {
       </div>
 
       {pathname.includes("/create/communities/") && (
-        <div className="relative w-full flex justify-center items-end mt-12 pb-4">
+        <div
+          className={`relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : ""}`}
+        >
           <div
             className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
           >

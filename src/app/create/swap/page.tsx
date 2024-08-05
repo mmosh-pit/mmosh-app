@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useAtom } from "jotai";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import WalletIcon from "@/assets/icons/WalletIcon";
@@ -11,6 +12,7 @@ import Button from "@/app/components/common/Button";
 import CoinSelect from "@/app/components/Swap/CoinSelect";
 import { SwapCoin } from "@/app/models/swapCoin";
 import { getSwapPrices } from "@/app/lib/forge/getSwapPrices";
+import { isDrawerOpen } from "@/app/store";
 
 const defaultBaseToken = {
   name: "",
@@ -40,6 +42,8 @@ const defaultMMOSHToken = {
 
 const Swap = () => {
   const wallet = useAnchorWallet();
+
+  const [isDrawerShown] = useAtom(isDrawerOpen);
 
   const [swapLoading, setSwapLoading] = React.useState(false);
   const [result, setResult] = React.useState({ res: "", message: "" });
@@ -127,7 +131,9 @@ const Swap = () => {
   );
 
   return (
-    <div className="relative background-content flex flex-col items-center">
+    <div
+      className={`relative background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+    >
       <h3 className="mt-20">Swap</h3>
       <div className="swap-container-card mt-8 max-h-[550px] md:p-4 lg:p-6 rounded-xl">
         <div className="swap-container-inner mx-12 p-8">

@@ -10,12 +10,14 @@ type ProfileLineage = {
 };
 
 type Profile = {
+  name: string,
   address: string;
   image: string;
 };
 
 export type ProfileInfo = {
   mmoshBalance: number;
+  usdcBalance: number;
   solBalance: number;
   genesisToken: string;
   activationToken: string;

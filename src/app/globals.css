@@ -8,9 +8,8 @@ body {
 
 p {
   font-family: var(--font-poppins);
-  font-size: 0.8vmax;
-  line-height: 1vmax;
-  color: #bcbcbc;
+  font-size: 1.2vmax;
+  color: #d7d7d7;
 }
 
 a {
@@ -27,7 +26,6 @@ span {
 h2 {
   font-family: var(--font-goudy);
   font-size: 1.8vmax;
-  line-height: 1.5vmax;
   font-weight: 900;
   color: #ffffff;
 }
@@ -43,7 +41,6 @@ h3 {
 h4 {
   font-family: var(--font-goudy);
   font-size: 1.5vmax;
-  line-height: 1.2vmax;
   font-weight: 900;
   color: #ffffff;
 }
@@ -496,7 +493,7 @@ input,
 textarea,
 option,
 select {
-  font-size: 0.8vmax;
+  font-size: 0.8rem;
 }
 
 @media (max-width: 500px) {
@@ -740,4 +737,91 @@ input[type="number"]::-webkit-outer-spin-button {
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor; /*5'*/
   mask-composite: exclude; /*5*/
+}
+
+.backdrop-container {
+  background: rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(19.5px);
+}
+
+.gradient-container {
+  background: linear-gradient(135.98deg, #1a006d 0%, #7b559f 100%);
+}
+
+.border-container {
+  background: linear-gradient(90.66deg, #0061ff 71.76%, #ff00ae 92.51%);
+}
+
+.danger-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 0, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.warning-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 132, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.success-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.012) 0%,
+    rgba(33, 239, 0, 0.4) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+.community-selection-container {
+  background: linear-gradient(
+    92.71deg,
+    rgba(255, 255, 255, 0.5) -5.63%,
+    rgba(179, 103, 255, 0.5) 99.63%
+  );
+}
+
+.coming-soon {
+  position: absolute;
+  width: 41px;
+  height: 16px;
+  right: 0;
+  top: 15px;
+  font-family: "Avenir LT Std";
+  font-style: normal;
+  font-weight: 750;
+  font-size: 12px;
+  line-height: 8px;
+  text-align: center;
+  letter-spacing: -0.5px;
+  background: linear-gradient(119.74deg, #009efa 8.7%, #4d34f0 67.39%);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transform: rotate(28.39deg);
+}
+
+@media (max-width: 991px) {
+  .coming-soon {
+    right: -25px;
+  }
 }

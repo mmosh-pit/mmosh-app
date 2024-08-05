@@ -13,6 +13,7 @@ export const web3Consts = {
   ),
   addressLookupTableProgram: web3.AddressLookupTableProgram.programId,
   oposToken: new web3.PublicKey(process.env.NEXT_PUBLIC_OPOS_TOKEN!),
+  usdcToken: new web3.PublicKey(process.env.NEXT_PUBLIC_USDC_TOKEN!),
   rootProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_ROOT_PROFILE!),
   profileCollection: new web3.PublicKey(process.env.NEXT_PUBLIC_APP_PROFILE_COLLECTION!),
   genesisProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_GENESIS_PROFILE!),
@@ -29,5 +30,6 @@ export const web3Consts = {
     collectionState: utf8.encode("collection_state1"),
     activationTokenState: utf8.encode("activation_token_state1"),
     vault: utf8.encode("vault1"),
+    launchPass: utf8.encode("launch_pass"),
   },
 };

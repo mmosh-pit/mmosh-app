@@ -28,6 +28,7 @@ const {
   sysvarInstructions,
   Seeds,
   oposToken,
+  usdcToken,
   LAMPORTS_PER_OPOS,
 } = web3Consts;
 const log = console.log;
@@ -52,7 +53,7 @@ export class Connectivity {
     this.provider = provider;
     this.connection = provider.connection;
     this.programId = programId;
-    this.program = new Program(IDL, programId, this.provider);
+    this.program = new Program(IDL, this.provider);
     this.metaplex = new Metaplex(this.connection);
     this.baseSpl = new BaseSpl(this.connection);
     this.mainState = web3.PublicKey.findProgramAddressSync(
@@ -131,7 +132,7 @@ export class Connectivity {
             userData.nouns = element.value;
           } else if (element.trait_type == "Pronoun") {
             userData.pronouns = element.value;
-          } else if (element.trait_type == "Community") {
+          } else if (element.trait_type == "Community" || element.trait_type == "Project") {
             userData.project = element.value;
           }
         }
@@ -152,10 +153,12 @@ export class Connectivity {
         let userData: any = {
           project: "",
         };
-        for (let index = 0; index < result.data.attributes.length; index++) {
-          const element = result.data.attributes[index];
-          if (element.trait_type == "Community") {
-            userData.project = element.value;
+        if(result.data.attributes) {
+          for (let index = 0; index < result.data.attributes.length; index++) {
+            const element = result.data.attributes[index];
+            if (element.trait_type == "Community" || element.trait_type == "Project") {
+              userData.project = element.value;
+            }
           }
         }
         return userData;
@@ -272,6 +275,40 @@ export class Connectivity {
       const collectionEdition = BaseMpl.getEditionAccount(collection);
       const mintKp = web3.Keypair.generate();
       const profile = mintKp.publicKey;
+
+
+      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+        mintAuthority: user,
+        mintKeypair: mintKp,
+        mintingInfo: {
+          tokenAmount: 1,
+          tokenReceiver: user,
+        },
+      });
+
+      const mintTx = new web3.Transaction().add(...mintIxs);
+
+      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+      let feeInsMint;
+      if (feeEstimateMint > 0) {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimateMint,
+        });
+      } else {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      mintTx.add(feeInsMint);
+
+      this.txis = [];
+      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+        mintKp,
+      ]);
+
+      await sleep(5000)
+
+
       const userProfileAta = getAssociatedTokenAddressSync(profile, user);
       const { ata: userActivationTokenAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
@@ -385,7 +422,7 @@ export class Connectivity {
           sender: user,
           receiver: new anchor.web3.PublicKey(element.receiver),
           init_if_needed: true,
-          amount: element.vallue,
+          amount: Math.ceil(element.vallue),
         });
         for (let index = 0; index < createShare.length; index++) {
           this.txis.push(createShare[index]);
@@ -947,11 +984,14 @@ export class Connectivity {
     const user = this.provider.publicKey;
     if (!user) throw "Wallet not found";
     const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
+    const userUSDCAta = getAssociatedTokenAddressSync(usdcToken, user);
     const infoes = await this.connection.getMultipleAccountsInfo([
       new anchor.web3.PublicKey(user.toBase58()),
       new anchor.web3.PublicKey(userOposAta.toBase58()),
+      new anchor.web3.PublicKey(userUSDCAta.toBase58()),
     ]);
     let oposTokenBalance = 0;
+    let usdcTokenBalance = 0;
     let solBalance = 0;
     if (infoes[0]) {
       solBalance = infoes[0].lamports / 1000_000_000;
@@ -962,6 +1002,13 @@ export class Connectivity {
       oposTokenBalance =
         (parseInt(tokenAccount?.amount?.toString()) ?? 0) / LAMPORTS_PER_OPOS;
     }
+
+    if (infoes[2]) {
+      const tokenAccount = unpackAccount(userUSDCAta, infoes[2]);
+      usdcTokenBalance =
+        (parseInt(tokenAccount?.amount?.toString()) ?? 0) / 1000_000;
+    }
+
     let profilelineage = {
       promoter: "",
       promoterprofile: "",
@@ -1149,6 +1196,7 @@ export class Connectivity {
       const profileInfo = {
         solBalance,
         oposTokenBalance,
+        usdcTokenBalance,
         profiles,
         activationTokens,
         activationTokenBalance,
@@ -1164,6 +1212,7 @@ export class Connectivity {
       const profileInfo = {
         solBalance,
         oposTokenBalance,
+        usdcTokenBalance,
         profiles: profiles,
         activationTokens: profiles,
         activationTokenBalance: 0,
@@ -1284,22 +1333,42 @@ export class Connectivity {
   async getNftProfileOwner(nftAddress: web3.PublicKey): Promise<{
     profileHolder: web3.PublicKey;
   }> {
-    const genesisProfileAta = (
-      await this.connection.getTokenLargestAccounts(nftAddress)
-    ).value[0].address;
+    try {
+      const genesisProfileAta = (
+        await this.connection.getTokenLargestAccounts(nftAddress)
+      ).value[0].address;
+  
+      const atasInfo = await this.connection.getMultipleAccountsInfo([
+        genesisProfileAta,
+      ]);
+  
+      const genesisProfileAtaHolder = unpackAccount(
+        genesisProfileAta,
+        atasInfo[0],
+      ).owner;
+  
+      return {
+        profileHolder: genesisProfileAtaHolder,
+      };
+    } catch (error) {
+      const genesisProfileAta = (
+        await this.connection.getTokenLargestAccounts(nftAddress)
+      ).value[0].address;
+  
+      const atasInfo = await this.connection.getMultipleAccountsInfo([
+        genesisProfileAta,
+      ]);
+  
+      const genesisProfileAtaHolder = unpackAccount(
+        genesisProfileAta,
+        atasInfo[0],
+      ).owner;
+  
+      return {
+        profileHolder: web3.PublicKey.default,
+      };
+    }
 
-    const atasInfo = await this.connection.getMultipleAccountsInfo([
-      genesisProfileAta,
-    ]);
-
-    const genesisProfileAtaHolder = unpackAccount(
-      genesisProfileAta,
-      atasInfo[0],
-    ).owner;
-
-    return {
-      profileHolder: genesisProfileAtaHolder,
-    };
   }
 
   async __getProfileHoldersInfo(
@@ -1335,7 +1404,7 @@ export class Connectivity {
     const grandParentProfile = input.parent;
     const greatGrandParentProfile = input.grandParent;
     const ggreateGrandParentProfile = input.greatGrandParent;
-
+    
     const currentParentProfileHolderAta = (
       await this.connection.getTokenLargestAccounts(parentProfile)
     ).value[0].address;

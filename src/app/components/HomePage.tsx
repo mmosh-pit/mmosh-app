@@ -6,6 +6,8 @@ import Banner from "./Banner";
 import MembersList from "./Home/MembersList";
 import CoinsList from "./Home/CoinsList";
 import CommunitiesList from "./Home/CommunitiesList";
+import HomeSearch from "./HomeSearch";
+import ProjectsList from "./Home/ProjectsList";
 
 const HomePage = () => {
   const [currentUser] = useAtom(data);
@@ -32,8 +34,15 @@ const HomePage = () => {
         </p>
       </div>
 
-      <div className="flex flex-col w-full mt-8 px-12">
-        <CommunitiesList />
+      <div className="lg:w-[20%] md:w-[30%] sm:w-[40%] w-[50%] self-center flex justify-center my-8">
+        <HomeSearch placeholder="Type your search terms" />
+      </div>
+
+      <div className="flex flex-col w-full px-12">
+        <div className="w-full flex md:flex-row flex-col justify-between mt-8">
+          <ProjectsList />
+          <CommunitiesList />
+        </div>
 
         <div className="w-full flex md:flex-row flex-col justify-between mt-8">
           <MembersList />

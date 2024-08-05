@@ -259,6 +259,7 @@ export class BaseSpl {
 
   async transfer_token_modified(input: TranferTokenInputs) {
     this.__reinit();
+    console.log("transfer_token_modified ", input);
     let {
       mint,
       sender,
@@ -308,6 +309,62 @@ export class BaseSpl {
       const transferIx = createTransferInstruction(
         senderAta,
         receiverAta,
+        sender,
+        amount,
+      );
+      ixs.push(transferIx);
+      console.log("transfer_token_modified 5", ixs);
+      return ixs;
+    }
+  }
+
+  async transfer_token_to_pda(input: TranferTokenInputs) {
+    this.__reinit();
+    console.log("transfer_token_modified ", input);
+    let {
+      mint,
+      sender,
+      receiver,
+      amount,
+      payer,
+      init_if_needed,
+      allowOffCurveOwner,
+    } = input;
+    amount = amount ?? 1;
+    payer = payer ?? sender;
+    init_if_needed = init_if_needed ?? false;
+    allowOffCurveOwner = allowOffCurveOwner ?? false;
+    let senderAta: web3.PublicKey = getAssociatedTokenAddressSync(mint, sender);
+    console.log("transfer_token_modified 1");
+    let ixs: web3.TransactionInstruction[] = [];
+    try {
+      console.log("transfer_token_modified 2");
+      if (init_if_needed) {
+        const { ix: initIx } = await this.__getOrCreateTokenAccountInstruction({
+          mint,
+          allowOffCurveOwner,
+          payer,
+          owner: receiver,
+          checkCache: true,
+        });
+        if (initIx) {
+          ixs.push(initIx);
+        }
+      }
+      console.log("transfer_token_modified 3");
+      const transferIx = createTransferInstruction(
+        senderAta,
+        receiver,
+        sender,
+        amount,
+      );
+      ixs.push(transferIx);
+      console.log("transfer_token_modified 4", ixs);
+      return ixs;
+    } catch (error) {
+      const transferIx = createTransferInstruction(
+        senderAta,
+        receiver,
         sender,
         amount,
       );

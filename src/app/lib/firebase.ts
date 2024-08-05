@@ -19,15 +19,31 @@ export const init = () => {
   initializeApp(firebaseConfig);
 };
 
-export const uploadFile = async (file: File, name: string): Promise<string> => {
+export const uploadFile = async (file: File, name: string, folder:string): Promise<string> => {
   const storage = getStorage();
+  let extension = "png"
+  console.log("file.type", file.type)
+  if(file.type == "image/jpeg") {
+    extension = "jpg"
+  } else if(file.type == "image/png") {
+    extension = "png"
+  } else if(file.type == "image/gif") {
+    extension = "gif"
+  } else if(file.type == "application/pdf") {
+    extension = "pdf"
+  } else if(file.type == "application/msword") {
+    extension = "doc"
+  } else if(file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    extension = "docx"
+  }
 
   const storageRef = ref(
     storage,
-    `profile/${name}-${new Date().getTime()}.png`,
+    folder+`/${name}-${new Date().getTime()}.`+extension,
   );
 
   await uploadBytes(storageRef, file);
 
   return await getDownloadURL(storageRef);
 };
+

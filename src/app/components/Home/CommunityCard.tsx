@@ -1,5 +1,4 @@
 import Image from "next/image";
-import * as React from "react";
 
 type Props = {
   image: string;
@@ -11,8 +10,8 @@ type Props = {
 
 const CommunityCard = ({ image, name, description, coinImage }: Props) => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="w-[6vmax] h-[6vmax] md:w-[10vmax] md:h-[10vmax] my-2 home-community-card-image">
+    <div className="w-[350px] h-[350px] flex flex-col items-center justify-center">
+      <div className="w-[350px] h-[350px] my-2 home-community-card-image">
         <Image
           src={image}
           alt="community-image"
@@ -29,7 +28,7 @@ const CommunityCard = ({ image, name, description, coinImage }: Props) => {
         )}
       </div>
 
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col bg-[#080039A8] border-b-xl p-2">
         <p className="text-sm text-white">{name}</p>
         <p className="text-xs">{description}</p>
       </div>

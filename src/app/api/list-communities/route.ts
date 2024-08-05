@@ -27,19 +27,17 @@ export async function GET(req: NextRequest) {
   if (param !== "") {
     search["$or"] = [
       {
-        name: {
+        "data.name": {
           $regex: new RegExp(param, "ig"),
         },
       },
       {
-        symbol: {
+        "data.symbol": {
           $regex: new RegExp(param, "ig"),
         },
       },
     ];
   }
-
-  console.log("Searching with filter: ", search);
 
   const result = await communityCollection
     .find(search, {

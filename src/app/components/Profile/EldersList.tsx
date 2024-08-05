@@ -109,6 +109,7 @@ const EldersList = ({ profilenft }: { profilenft: string }) => {
     setLineageList(resultingList);
   };
 
+
   React.useEffect(() => {
     if (!profilenft) return;
     getElderValues();

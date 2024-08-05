@@ -39,7 +39,9 @@ const ProjectCard = ({
       </div>
 
       <div className="w-[100%] flex justify-end absolute top-[10px] right-[5px]">
-        <p className="text-white text-smv max-w-[22%]">Time to Listing</p>
+        <p className="text-white text-smv xl:text-sm max-w-[22%]">
+          Time to Listing
+        </p>
 
         <ProjectCardTimer launchDate={launchDate} />
       </div>
@@ -48,8 +50,8 @@ const ProjectCard = ({
         <div className="flex flex-col mb-2">
           <div className="flex justify-between">
             <div className="flex flex-col">
-              <p className="text-white font-bold text-lgv">{name}</p>
-              <p className="text-smv font-bold">{symbol}</p>
+              <p className="text-white font-bold text-lgv xl:text-lg">{name}</p>
+              <p className="text-smv xl:text-sm font-bold">{symbol}</p>
             </div>
           </div>
 
@@ -61,37 +63,41 @@ const ProjectCard = ({
         <div className="flex flex-col">
           <div className="flex md:flex-row w-full justify-between mr-[4px]">
             <div className="flex justify-between w-[45%]">
-              <p className="text-white text-smv font-extralight">
+              <p className="text-white text-smv xl:text-sm font-extralight">
                 Listing Price
               </p>
-              <p className="text-smv font-light">
+              <p className="text-smv xl:text-sm font-light">
                 {currencyFormatter(Number(price))}
               </p>
             </div>
 
             <div className="flex justify-between w-[45%]">
-              <p className="text-white text-smv font-extralight">
+              <p className="text-white text-smv xl:text-sm font-extralight">
                 Total Supply
               </p>
-              <p className="text-smv font-light">{abbreviateNumber(supply)}</p>
+              <p className="text-smv xl:text-sm font-light">
+                {abbreviateNumber(supply)}
+              </p>
             </div>
           </div>
 
           <div className="flex md:flex-row w-full justify-between mr-[4px] mt-2">
             <div className="flex justify-between w-[45%]">
-              <p className="text-white text-smv font-extralight">
+              <p className="text-white text-smv xl:text-sm font-extralight">
                 Sold in Presale
               </p>
-              <p className="text-smv font-light">
+              <p className="text-smv xl:text-sm font-light">
                 {abbreviateNumber(soldInPresale)}
               </p>
             </div>
 
             <div className="flex justify-between w-[45%]">
-              <p className="text-white text-smv font-extralight">FDV</p>
-              <p className="text-smv font-light">
+              <p className="text-white text-smv xl:text-sm font-extralight">
+                FDV
+              </p>
+              <p className="text-smv xl:text-sm font-light">
                 {abbreviateNumber(fdv)}{" "}
-                <span className="text-tinyv font-bold">usdc</span>
+                <span className="text-tinyv xl:text-tiny font-bold">usdc</span>
               </p>
             </div>
           </div>

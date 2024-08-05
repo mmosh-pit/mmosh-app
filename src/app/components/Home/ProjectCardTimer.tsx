@@ -57,20 +57,28 @@ const ProjectCardTimer = ({ launchDate }: Props) => {
   return (
     <div className="grid grid-cols-4 gap-1">
       <div className="flex flex-col bg-[#0F0D7785] justify-evenly items-center rounded-md">
-        <p className="text-white font-bold text-basev">{timeLeft.days}</p>
-        <p className="text-white text-xsv">Days</p>
+        <p className="text-white font-bold text-basev xl:text-base">
+          {timeLeft.days}
+        </p>
+        <p className="text-white text-xsv xl:text-xs">Days</p>
       </div>
       <div className="flex flex-col bg-[#0F0D7785] justify-evenly items-center rounded-md">
-        <p className="text-white font-bold text-basev">{timeLeft.hours}</p>
-        <p className="text-white text-xsv">Hours</p>
+        <p className="text-white font-bold text-basev xl:text-base">
+          {timeLeft.hours}
+        </p>
+        <p className="text-white text-xsv xl:text-xs">Hours</p>
       </div>
       <div className="flex flex-col bg-[#0F0D7785] justify-evenly items-center rounded-md">
-        <p className="text-white font-bold text-basev">{timeLeft.minutes}</p>
-        <p className="text-white text-xsv">Minutes</p>
+        <p className="text-white font-bold text-basev xl:text-base">
+          {timeLeft.minutes}
+        </p>
+        <p className="text-white text-xsv xl:text-xs">Minutes</p>
       </div>
       <div className="flex flex-col bg-[#0F0D7785] justify-evenly items-center rounded-md">
-        <p className="text-white font-bold text-basev">{timeLeft.seconds}</p>
-        <p className="text-white text-xsv">Seconds</p>
+        <p className="text-white font-bold text-basev xl:text-base">
+          {timeLeft.seconds}
+        </p>
+        <p className="text-white text-xsv xl:text-xs">Seconds</p>
       </div>
     </div>
   );

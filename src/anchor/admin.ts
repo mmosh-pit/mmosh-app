@@ -371,7 +371,7 @@ export class Connectivity {
     try {
       const mintData = await this.metaplex.nfts().findByMint({ mintAddress });
       if (
-        mintData.collection.address.toBase58() !=
+        mintData.collection?.address.toBase58() !=
         web3Consts.badgeCollection.toBase58()
       ) {
         return false;
@@ -470,7 +470,7 @@ export class Connectivity {
       symbol = symbol ?? "";
       uri = uri ?? "";
       const ix = await this.program.methods
-        .initActivationToken(name, symbol, uri)
+        .initActivationToken(name!, symbol, uri)
         .accounts({
           profile,
           mainState: this.mainState,

@@ -498,6 +498,11 @@ export class Connectivity {
 
       const tx = new web3.Transaction().add(...this.txis);
 
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;
       if (feeEstimate > 0) {
@@ -663,6 +668,11 @@ export class Connectivity {
         .instruction();
       this.txis.push(ix);
       const tx = new web3.Transaction().add(...this.txis);
+
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
 
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;

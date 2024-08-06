@@ -107,6 +107,11 @@ export class Connectivity {
 
       const mintTx = new web3.Transaction().add(...mintIxs);
 
+      mintTx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      mintTx.feePayer = this.provider.publicKey;
+
       const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
       let feeInsMint;
       if (feeEstimateMint > 0) {
@@ -540,6 +545,11 @@ export class Connectivity {
       });
 
       const mintTx = new web3.Transaction().add(...mintIxs);
+
+      mintTx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      mintTx.feePayer = this.provider.publicKey;
 
       const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
       let feeInsMint;

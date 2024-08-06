@@ -252,6 +252,11 @@ export class Connectivity {
         mintKeypair,
       });
       const tx = new web3.Transaction().add(...tokenObj.instructions);
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;
       if (feeEstimate > 0) {
@@ -391,6 +396,11 @@ export class Connectivity {
     );
 
     const tx = new web3.Transaction().add(...instructions);
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -414,6 +424,11 @@ export class Connectivity {
   ): Promise<ICreateTokenBondingOutput> {
     const tokenObj = await this.createTokenBondingInstructions(args);
     const tx = new web3.Transaction().add(...tokenObj.instructions);
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -852,6 +867,11 @@ export class Connectivity {
   ): Promise<anchor.web3.PublicKey> {
     const tokenObj = await this.initializeCurveInstructions(args);
     const tx = new web3.Transaction().add(...tokenObj.instructions);
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -910,6 +930,11 @@ export class Connectivity {
   async buy(args: IBuyArgs): Promise<string> {
     const tokenObj = await this.buyInstructions(args);
     const tx = new web3.Transaction().add(...tokenObj.instructions);
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -1156,6 +1181,11 @@ export class Connectivity {
     try {
       const tokenObj = await this.sellInstructions(args);
       const tx = new web3.Transaction().add(...tokenObj.instructions);
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+      
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;
       if (feeEstimate > 0) {

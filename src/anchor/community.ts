@@ -116,6 +116,11 @@ export class Connectivity {
 
       const mintTx = new web3.Transaction().add(...mintIxs);
 
+      mintTx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      mintTx.feePayer = this.provider.publicKey;
+
       const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
       let feeInsMint;
       if (feeEstimateMint > 0) {
@@ -549,6 +554,11 @@ export class Connectivity {
 
       const mintTx = new web3.Transaction().add(...mintIxs);
 
+      mintTx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      mintTx.feePayer = this.provider.publicKey;
+
       const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
       let feeInsMint;
       if (feeEstimateMint > 0) {
@@ -819,6 +829,7 @@ export class Connectivity {
 
     const tx = new web3.VersionedTransaction(message);
     tx.sign([mintKp]);
+    
 
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns: any = [];
@@ -1886,6 +1897,12 @@ export class Connectivity {
     instructions.push(ix);
     
     const tx = new web3.Transaction().add(...instructions);
+
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -2020,6 +2037,12 @@ export class Connectivity {
     instructions.push(ix);
 
     const tx = new web3.Transaction().add(...instructions);
+
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -2103,6 +2126,13 @@ export class Connectivity {
     instructions.push(ix);
     
     const tx = new web3.Transaction().add(...instructions);
+
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -2196,6 +2226,11 @@ export class Connectivity {
       );
 
       const tx = new web3.Transaction().add(...instructions);
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;
       if (feeEstimate > 0) {
@@ -2259,6 +2294,13 @@ export class Connectivity {
     console.log("stakecoin 5")
 
     const tx = new web3.Transaction().add(...instructions);
+
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -2324,6 +2366,13 @@ export class Connectivity {
     instructions.push(ix);
     
     const tx = new web3.Transaction().add(...instructions);
+
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -2395,6 +2444,12 @@ export class Connectivity {
     );
 
     const tx = new web3.Transaction().add(...instructions);
+    
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {

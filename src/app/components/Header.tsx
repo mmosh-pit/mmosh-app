@@ -93,7 +93,6 @@ const Header = () => {
   }, []);
 
   const getProfileInfo = async () => {
-    console.log("[HEADER]");
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
     const env = new anchor.AnchorProvider(connection, wallet!, {
       preflightCommitment: "processed",

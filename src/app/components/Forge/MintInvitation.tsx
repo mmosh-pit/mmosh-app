@@ -6,6 +6,8 @@ import { data, userWeb3Info } from "@/app/store";
 import { createSubscriptionInvitation } from "@/app/lib/forge/createSubscriptionInvitation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import MessageBanner from "../common/MessageBanner";
+import { createGenesisInvitation } from "@/app/lib/forge/createGenesisInvitation";
+import { web3Consts } from "@/anchor/web3Consts";
 
 const MintInvitation = () => {
   const wallet = useAnchorWallet();
@@ -23,16 +25,29 @@ const MintInvitation = () => {
     setMessage({ type: "", message: "" });
     setIsLoading(true);
 
-    const res = await createSubscriptionInvitation({
-      wallet: wallet!,
-      profileInfo: profileInfo!,
-      amount: amountSelected,
-      seniority: currentUser!.profile.seniority,
-      pronouns: currentUser!.profile.pronouns,
-      name: currentUser!.profile.name,
-    });
+    if (profileInfo?.profile.address == web3Consts.genesisProfile.toBase58()) {
+      const res = await createGenesisInvitation({
+        wallet: wallet!,
+        profileInfo: profileInfo!,
+        amount: amountSelected,
+        seniority: currentUser!.profile.seniority,
+        pronouns: currentUser!.profile.pronouns,
+        name: currentUser!.profile.name,
+      });
 
-    setMessage(res);
+      setMessage(res);
+    } else {
+      const res = await createSubscriptionInvitation({
+        wallet: wallet!,
+        profileInfo: profileInfo!,
+        amount: amountSelected,
+        seniority: currentUser!.profile.seniority,
+        pronouns: currentUser!.profile.pronouns,
+        name: currentUser!.profile.name,
+      });
+
+      setMessage(res);
+    }
 
     setTimeout(() => {
       setMessage({ type: "", message: "" });

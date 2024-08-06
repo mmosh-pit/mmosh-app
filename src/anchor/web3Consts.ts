@@ -3,7 +3,7 @@ import { web3 } from "@coral-xyz/anchor";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export const web3Consts = {
-  programID: new web3.PublicKey("GQJBSNqckwApKwrjHMgvhhFtwZFxb3YCoDFFcLmYCnEA"),
+  programID: new web3.PublicKey(process.env.NEXT_PUBLIC_PROGRAM_ID!),
   systemProgram: web3.SystemProgram.programId,
   sysvarInstructions: web3.SYSVAR_INSTRUCTIONS_PUBKEY,
   tokenProgram: TOKEN_PROGRAM_ID,
@@ -15,7 +15,9 @@ export const web3Consts = {
   oposToken: new web3.PublicKey(process.env.NEXT_PUBLIC_OPOS_TOKEN!),
   usdcToken: new web3.PublicKey(process.env.NEXT_PUBLIC_USDC_TOKEN!),
   rootProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_ROOT_PROFILE!),
-  profileCollection: new web3.PublicKey(process.env.NEXT_PUBLIC_APP_PROFILE_COLLECTION!),
+  profileCollection: new web3.PublicKey(
+    process.env.NEXT_PUBLIC_APP_PROFILE_COLLECTION!,
+  ),
   genesisProfile: new web3.PublicKey(process.env.NEXT_PUBLIC_GENESIS_PROFILE!),
   commonLut: new web3.PublicKey(process.env.NEXT_PUBLIC_APP_COMMON_LUT!),
   badgeCollection: new web3.PublicKey(

@@ -93,6 +93,7 @@ const Header = () => {
   }, []);
 
   const getProfileInfo = async () => {
+    console.log("[HEADER]");
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
     const env = new anchor.AnchorProvider(connection, wallet!, {
       preflightCommitment: "processed",
@@ -103,6 +104,8 @@ const Header = () => {
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const profileInfo = await userConn.getUserInfo();
+
+    console.log("[HEADER] profile info: ", profileInfo);
 
     const genesis = profileInfo.activationTokens[0]?.genesis;
     const activation = profileInfo.activationTokens[0]?.activation;

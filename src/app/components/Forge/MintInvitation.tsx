@@ -25,6 +25,14 @@ const MintInvitation = () => {
     setMessage({ type: "", message: "" });
     setIsLoading(true);
 
+    console.log("Profile info: ", profileInfo);
+
+    console.log(
+      "Profile address: ",
+      profileInfo?.profile.address,
+      web3Consts.genesisProfile.toBase58(),
+    );
+
     if (profileInfo?.profile.address == web3Consts.genesisProfile.toBase58()) {
       const res = await createGenesisInvitation({
         wallet: wallet!,

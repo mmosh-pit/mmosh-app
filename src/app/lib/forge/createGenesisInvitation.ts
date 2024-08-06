@@ -26,6 +26,8 @@ export const createGenesisInvitation = async ({
   anchor.setProvider(env);
   let userConn: AdConn = new AdConn(env, web3Consts.programID);
 
+  console.log("createGenesisInvitation starting");
+
   let isSuccess = false;
   if (firstTime) {
     let desc =
@@ -55,6 +57,8 @@ export const createGenesisInvitation = async ({
         type: "error",
       };
     }
+
+    console.log("Metadata setted up");
 
     const symbol = "INVITE";
     const uri = shdwHash;

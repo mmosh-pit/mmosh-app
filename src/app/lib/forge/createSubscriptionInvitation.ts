@@ -27,8 +27,11 @@ export const createSubscriptionInvitation = async ({
   anchor.setProvider(env);
   const userConn: UserConn = new UserConn(env, web3Consts.programID);
 
+  console.log("createSubscriptionInvitation starting");
+
   let isSuccess = false;
   if (profileInfo.firstTimeInvitation) {
+    console.log("First time mint");
     const attributes = [];
     // get promoter name
     if (profileLineage.promoter.length > 0) {
@@ -114,6 +117,8 @@ export const createSubscriptionInvitation = async ({
         " on the MMOSH. The favor of a reply is requested.";
     }
 
+    console.log("Setting up metadata");
+
     const body = {
       name: `Invitation from ${name}`,
       symbol: "INVITE",
@@ -135,6 +140,8 @@ export const createSubscriptionInvitation = async ({
       };
     }
 
+    console.log("Uploaded metadata");
+
     const symbol = "INVITE";
     const res: any = await userConn.initSubscriptionBadge({
       name: "Invitation",
@@ -143,10 +150,14 @@ export const createSubscriptionInvitation = async ({
       profile: profileInfo.profile.address,
     });
 
+    console.log("Initializing badge: ", res);
+
     const res1 = await userConn.mintSubscriptionToken({
       amount,
       subscriptionToken: res.Ok.info.subscriptionToken,
     });
+
+    console.log("Minting subscription token: ", res1);
 
     if (res1.Ok) {
       isSuccess = true;
@@ -164,15 +175,20 @@ export const createSubscriptionInvitation = async ({
       type: "error",
     };
   } else {
+    console.log("Not first time");
     const res = await userConn.initSubscriptionBadge({
       name: "Invitation",
       profile: profileInfo.profile.address,
     });
 
+    console.log("Initializing subscription badge: ", res);
+
     const res1 = await userConn.mintSubscriptionToken({
       amount,
       subscriptionToken: res.Ok?.info?.subscriptionToken,
     });
+
+    console.log("Minting subscription token", res1);
 
     if (res1.Ok) {
       isSuccess = true;

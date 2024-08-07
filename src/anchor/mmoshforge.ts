@@ -28,8 +28,19 @@ export type Mmoshforge = {
           writable: true;
         },
         {
+          name: "ownerAta";
+          writable: true;
+        },
+        {
+          name: "senderAta";
+          writable: true;
+        },
+        {
           name: "mint";
           writable: true;
+        },
+        {
+          name: "usdcMint";
         },
         {
           name: "tokenProgram";
@@ -39,6 +50,32 @@ export type Mmoshforge = {
         },
         {
           name: "systemProgram";
+        },
+        {
+          name: "parentProfile";
+        },
+        {
+          name: "grandParentProfile";
+        },
+        {
+          name: "currentParentProfileHolderAta";
+        },
+        {
+          name: "currentGrandParentProfileHolderAta";
+        },
+        {
+          name: "currentParentProfileHolder";
+        },
+        {
+          name: "currentGrandParentProfileHolder";
+        },
+        {
+          name: "parentProfileHolderOposAta";
+          writable: true;
+        },
+        {
+          name: "grandParentProfileHolderOposAta";
+          writable: true;
         },
       ];
       args: [];
@@ -1056,6 +1093,7 @@ export type Mmoshforge = {
         {
           name: "profile";
           writable: true;
+          signer: true;
         },
         {
           name: "mainState";
@@ -1254,6 +1292,7 @@ export type Mmoshforge = {
         {
           name: "profile";
           writable: true;
+          signer: true;
         },
         {
           name: "userProfileAta";
@@ -1348,6 +1387,7 @@ export type Mmoshforge = {
         {
           name: "profile";
           writable: true;
+          signer: true;
         },
         {
           name: "userProfileAta";
@@ -3226,8 +3266,19 @@ export const IDL: Mmoshforge = {
           writable: true,
         },
         {
+          name: "ownerAta",
+          writable: true,
+        },
+        {
+          name: "senderAta",
+          writable: true,
+        },
+        {
           name: "mint",
           writable: true,
+        },
+        {
+          name: "usdcMint",
         },
         {
           name: "tokenProgram",
@@ -3237,6 +3288,32 @@ export const IDL: Mmoshforge = {
         },
         {
           name: "systemProgram",
+        },
+        {
+          name: "parentProfile",
+        },
+        {
+          name: "grandParentProfile",
+        },
+        {
+          name: "currentParentProfileHolderAta",
+        },
+        {
+          name: "currentGrandParentProfileHolderAta",
+        },
+        {
+          name: "currentParentProfileHolder",
+        },
+        {
+          name: "currentGrandParentProfileHolder",
+        },
+        {
+          name: "parentProfileHolderOposAta",
+          writable: true,
+        },
+        {
+          name: "grandParentProfileHolderOposAta",
+          writable: true,
         },
       ],
       args: [],
@@ -4254,6 +4331,7 @@ export const IDL: Mmoshforge = {
         {
           name: "profile",
           writable: true,
+          signer: true,
         },
         {
           name: "mainState",
@@ -4452,6 +4530,7 @@ export const IDL: Mmoshforge = {
         {
           name: "profile",
           writable: true,
+          signer: true,
         },
         {
           name: "userProfileAta",
@@ -4546,6 +4625,7 @@ export const IDL: Mmoshforge = {
         {
           name: "profile",
           writable: true,
+          signer: true,
         },
         {
           name: "userProfileAta",

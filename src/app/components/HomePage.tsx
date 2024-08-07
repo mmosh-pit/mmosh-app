@@ -39,12 +39,12 @@ const HomePage = () => {
       </div>
 
       <div className="flex flex-col w-full px-12">
-        <div className="w-full flex md:flex-row flex-col justify-between mt-8">
+        <div className="w-full flex md:flex-row flex-col justify-between mt-8 overflow-y-auto md:max-h-[1000px]">
           <ProjectsList />
           <CommunitiesList />
         </div>
 
-        <div className="w-full flex md:flex-row flex-col justify-between mt-8">
+        <div className="w-full flex md:flex-row flex-col justify-between mt-8 overflow-y-auto md:max-h-[500px]">
           <MembersList />
 
           <CoinsList />

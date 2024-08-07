@@ -97,7 +97,7 @@ const MembersList = () => {
         </a>
       </div>
       <div
-        className="px-4 grid xs:grid-cols-auto lg:grid-cols-2 gap-4 mt-4 overflow-y-auto"
+        className="px-4 grid grid-cols-auto xs:grid-cols-1 xl:grid-cols-2 gap-4 mt-4 overflow-y-auto"
         ref={containerRef}
         onScroll={handleScroll}
       >

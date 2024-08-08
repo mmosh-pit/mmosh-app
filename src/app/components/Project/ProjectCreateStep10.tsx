@@ -28,6 +28,9 @@ import axios from "axios";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { NATIVE_MINT } from "forge-spl-token";
 import { toBlob } from "html-to-image";
+import { fetchImage } from "@/app/lib/forge/fetchImage";
+import { generateCommunityInvitationImage } from "@/app/lib/forge/generateCommunityInvitationImage";
+import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
 
 export default function ProjectCreateStep10({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
@@ -110,9 +113,6 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
     // step 9
     const [files, setFiles] = useState([])
 
-    const invitationref = useRef<HTMLDivElement>(null)
-    const [enableInvitationImage, setEnableInvitationImage] = useState(false)
-
     React.useEffect(()=>{
         init()
         if(localStorage.getItem("projectstep1")) {
@@ -192,21 +192,15 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             setLoading(true)
 
             setButtonText("Uploading Badge Image...")
-            setEnableInvitationImage(true)
-            await delay(2000)
-            if(!invitationref.current) {
-                createMessage(
-                    "We’re sorry, there was an error while trying to prepare invitation image. please try again later.",
-                    "danger-container",
-                );
-                return;
-            }
-            let invitationImage:any = await toBlob(invitationref.current, { cacheBust: true, });
-            const invitationFileName = uuidv4() + ".png";
-            const invitationFile = new File([invitationImage], invitationFileName, { type: "image/png" });
-            setEnableInvitationImage(false)
-            const invitationImageUri = await pinImageToShadowDrive(invitationFile);
+            const coinImage = await fetchImage(coins.image.preview);
+            const mainImage = await fetchImage(project.image.preview);
+            const invitationImage = await generateCommunityInvitationImage(
+                mainImage,
+                coinImage,
+              );
 
+            const invitationImageUri = await uploadImageFromBlob(invitationImage);
+            console.log("invitationImageUri ", invitationImageUri)
             if(invitationImageUri === "") {
                 createMessage(
                     "We’re sorry, there was an error while trying to upload invitation image. please try again later.",
@@ -898,36 +892,10 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                                     <div>
                                         <h3 className="text-sub-title-font-size text-while font-poppins text-center">{project.name}</h3>
                                         <div>
-                                            {enableInvitationImage &&
-                                                <div className="project-pass-collage-image-decorated" ref={invitationref}>
-                                                    <img src={project.image.preview} alt="project" className="project-pass-collage-image-decorated-main"/>
-                                                    <div className="project-pass-collage-image-decorated-left">
-                                                        <img src="/images/access.png" />
-                                                    </div>
-                                                    <div className="project-pass-collage-image-decorated-right">
-                                                        <img src="/images/logo.png" />
-                                                    </div>
-                                                    <div className="project-pass-collage-image-decorated-bottom">
-                                                        <img src="/images/passback1.png" className="project-pass-collage-image-decorated-bottom-background" />
-                                                        <div className="project-pass-collage-image-decorated-bottom-info">
-                                                        <div className="grid grid-cols-12">
-                                                            <div className="col-span-4">
-                                                                <img src={coins.image.preview} alt="project" className="project-pass-collage-image-decorated-bottom-coin"/>
-                                                            </div>
-                                                            <div className="col-span-8">
-                                                                <h3 className="text-sub-title-font-size font-poppins text-center">Invitation Badge</h3>
-                                                            </div>
-                                                        </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            }
-                                            {!enableInvitationImage &&
-                                                <div className="rounded-md gradient-container p-1.5 mr-5">
-                                                        <img src={project.image.preview}className="w-full object-cover aspect-square"/>
-                                                </div>
-                                            }
+                                            <div className="rounded-md gradient-container p-1.5 mr-5">
+                                                    <img src={project.image.preview}className="w-full object-cover aspect-square"/>
+                                            </div>
+                               
                                         </div>
                                         <p className="text-header-small-font-size text-white mt-2 text-center">{project.symbol}</p>
                                     </div>

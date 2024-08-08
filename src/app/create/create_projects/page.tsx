@@ -11,17 +11,29 @@ import ProjectCreateStep8 from "@/app/components/Project/ProjectCreateStep8";
 import ProjectCreateStep9 from "@/app/components/Project/ProjectCreateStep9";
 import ProjectCreateStep10 from "@/app/components/Project/ProjectCreateStep10";
 import { useEffect, useState } from "react";
+import next from "next";
 
 export default function ProjectCreate() {
-    const [currentStep, setCurrentStep] = useState<any>("step1")
+    const [currentStep, setCurrentStep] = useState<any>("")
 
     useEffect(()=>{
-      if(localStorage.getItem("currentprojectstep")) {
+      console.log("currentprojectstep", localStorage.getItem("currentprojectstep"))
+      if(localStorage.getItem("currentprojectstep") ) {
           setCurrentStep(localStorage.getItem("currentprojectstep"))
+      } else {
+         console.log("localStorage step1")
+          setCurrentStep("step1")
       }
     },[])
+
+    useEffect(()=>{
+      if(currentStep!=="") {
+         localStorage.setItem("currentprojectstep",currentStep)
+      }
+    },[currentStep])
     
     const onPageChange = (nextStep:any) => {
+        console.log("nett setup", nextStep)
         setCurrentStep(nextStep)
     }
 

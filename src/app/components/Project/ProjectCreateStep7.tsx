@@ -113,10 +113,20 @@ export default function ProjectCreateStep7({
         return false;
       }
 
-      if (element.cliff.percentage + element.vesting.percentage != 100) {
+      if(element.cliff.percentage < 0 || element.vesting.percentage < 0) {
         if (isMessage) {
           createMessage(
-            "Vesting and Cliff percentage should be 100%",
+            "Vesting and Cliff percentage should not equal to tokenomics value",
+            "danger-container",
+          );
+        }
+        return false;
+      }
+
+      if (element.cliff.percentage + element.vesting.percentage != element.value) {
+        if (isMessage) {
+          createMessage(
+            "Vesting and Cliff percentage should not equal to tokenomics value",
             "danger-container",
           );
         }
@@ -224,7 +234,7 @@ export default function ProjectCreateStep7({
                                 Number(e.target.value),
                               );
                               fieldItem.vesting.percentage =
-                                100 - fieldItem.cliff.percentage;
+                                fieldItem.value - fieldItem.cliff.percentage;
                               updateVesting(i, fieldItem);
                             }}
                           />
@@ -272,7 +282,7 @@ export default function ProjectCreateStep7({
                                 Number(e.target.value),
                               );
                               fieldItem.cliff.percentage =
-                                100 - fieldItem.vesting.percentage;
+                              fieldItem.value - fieldItem.vesting.percentage;
                               updateVesting(i, fieldItem);
                             }}
                           />

@@ -717,6 +717,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             localStorage.removeItem("projectstep7")
             localStorage.removeItem("projectstep8")
             localStorage.removeItem("projectstep9")
+            localStorage.removeItem("currentprojectstep")
             setLoading(false)
             setButtonText("Deploy Token Presale")
             navigate.push("/create/project/"+projectKeyPair.publicKey.toBase58());

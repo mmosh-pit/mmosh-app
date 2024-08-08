@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-project-pass");
 
-  const { name, symbol, image, desc, price, supply, discount, promoterroyality, scoutroyalty, redemptiondate, key, projectkey, creator} = await req.json();
+  const { name, symbol, image, inviteimage, desc, price, supply, discount, promoterroyality, scoutroyalty, redemptiondate, key, projectkey, creator} = await req.json();
 
   const launchpass = await collection.findOne({
     key: key,
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
         name,
         symbol,
         image,
+        inviteimage,
         key,
         desc,
         price,

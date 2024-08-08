@@ -11,7 +11,7 @@ import FileIcon from "@/assets/icons/FileIcon";
 import MinusIcon from "@/assets/icons/MinusIcon";
 import TimeIcon from "@/assets/icons/TimeIcon";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { init, uploadFile } from "@/app/lib/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
@@ -27,6 +27,7 @@ import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import axios from "axios";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { NATIVE_MINT } from "forge-spl-token";
+import { toBlob } from "html-to-image";
 
 export default function ProjectCreateStep10({ onPageChange }: { onPageChange: any }) {
     const navigate = useRouter();
@@ -109,6 +110,9 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
     // step 9
     const [files, setFiles] = useState([])
 
+    const invitationref = useRef<HTMLDivElement>(null)
+    const [enableInvitationImage, setEnableInvitationImage] = useState(false)
+
     React.useEffect(()=>{
         init()
         if(localStorage.getItem("projectstep1")) {
@@ -153,27 +157,13 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
     },[])
 
     useEffect(()=>{
+        let totlaPercentage = 100 - (3 + presale.maxPresale)
         let chartData:any = []
-        chartData.push({
-            name: "Presale",
-            value: presale.maxPresale,
-            color: getDarkColor()
-        })
-        chartData.push({
-            name: "MMOSH DAO",
-            value: 2,
-            color: getDarkColor()
-        })
-        chartData.push({
-            name: "Curator",
-            value: 1,
-            color: getDarkColor()
-        })
         for (let index = 0; index < tokenomics.length; index++) {
             const element:any = tokenomics[index];
             chartData.push({
                 name: element.type,
-                value: element.value,
+                value: element.value / totlaPercentage * 100,
                 color: getDarkColor()
             })
         }
@@ -200,6 +190,30 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
     const submitAction = async () => {
         try {
             setLoading(true)
+
+            setButtonText("Uploading Badge Image...")
+            setEnableInvitationImage(true)
+            await delay(2000)
+            if(!invitationref.current) {
+                createMessage(
+                    "We’re sorry, there was an error while trying to prepare invitation image. please try again later.",
+                    "danger-container",
+                );
+                return;
+            }
+            let invitationImage:any = await toBlob(invitationref.current, { cacheBust: true, });
+            const invitationFileName = uuidv4() + ".png";
+            const invitationFile = new File([invitationImage], invitationFileName, { type: "image/png" });
+            setEnableInvitationImage(false)
+            const invitationImageUri = await pinImageToShadowDrive(invitationFile);
+
+            if(invitationImageUri === "") {
+                createMessage(
+                    "We’re sorry, there was an error while trying to upload invitation image. please try again later.",
+                    "danger-container",
+                );
+                return;
+            }
 
             // project key
             const projectKeyPair = anchor.web3.Keypair.generate();
@@ -296,7 +310,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                     name: passItem.name,
                     symbol:passItem.symbol, 
                     uri: passMetaURI,
-                    redeemDate:0, 
+                    redeemDate:redemptionDate, 
                     redeemAmount: prepareNumber(Math.ceil(passItem.price / (coins.listingPrice - (coins.listingPrice * (passItem.discount / 100))))) * web3Consts.LAMPORTS_PER_OPOS,
                     cost: passItem.price * 1000_000,
                     distribution: {
@@ -385,7 +399,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                         stakeData.push({
                             mint: new anchor.web3.PublicKey(mintKey),
                             user: new anchor.web3.PublicKey(element1.wallet),
-                            value:Math.ceil(((coins.supply * (element.value / 100)) * (element.cliff.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
+                            value:Math.ceil((coins.supply * (element.cliff.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
                             duration: new Date(date.setMonth(date.getMonth() + element.cliff.months)).valueOf(),
                             type: "tokenomics"
                         })
@@ -393,7 +407,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                         stakeData.push({
                             mint: new anchor.web3.PublicKey(mintKey),
                             user: new anchor.web3.PublicKey(element1.wallet),
-                            value:Math.ceil(((coins.supply * (element.value / 100)) * (element.vesting.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
+                            value:Math.ceil(((coins.supply * (element.vesting.percentage / 100))) * web3Consts.LAMPORTS_PER_OPOS),
                             duration: new Date(date.setMonth(date.getMonth() + element.vesting.months)).valueOf(),
                             type: "tokenomics"
                         })
@@ -548,7 +562,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 name: "Invitation from join " +  project.name,
                 symbol: project.symbol,
                 description: desc,
-                image: project.image.type,
+                image: invitationImageUri,
                 external_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
                 minter: profileInfo?.profile.name,
                 attributes: [
@@ -600,7 +614,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             console.log("register lookup result ", res4)
 
             setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,1);
+            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
             if(res5.Err) {
                 createMessage("error creating new project","danger-container")
                 return
@@ -692,6 +706,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 symbol: project.symbol, 
                 desc: project.desc, 
                 image: project.image.preview, 
+                inviteimage: invitationImageUri, 
                 key: projectKeyPair.publicKey.toBase58(), 
                 lut: res4.Ok.info.lookupTable, 
                 seniority: 0, 
@@ -883,9 +898,36 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                                     <div>
                                         <h3 className="text-sub-title-font-size text-while font-poppins text-center">{project.name}</h3>
                                         <div>
-                                        <div className="rounded-md gradient-container p-1.5 mr-5">
-                                                <img src={project.image.preview}className="w-full object-cover aspect-square"/>
-                                        </div>
+                                            {enableInvitationImage &&
+                                                <div className="project-pass-collage-image-decorated" ref={invitationref}>
+                                                    <img src={project.image.preview} alt="project" className="project-pass-collage-image-decorated-main"/>
+                                                    <div className="project-pass-collage-image-decorated-left">
+                                                        <img src="/images/access.png" />
+                                                    </div>
+                                                    <div className="project-pass-collage-image-decorated-right">
+                                                        <img src="/images/logo.png" />
+                                                    </div>
+                                                    <div className="project-pass-collage-image-decorated-bottom">
+                                                        <img src="/images/passback1.png" className="project-pass-collage-image-decorated-bottom-background" />
+                                                        <div className="project-pass-collage-image-decorated-bottom-info">
+                                                        <div className="grid grid-cols-12">
+                                                            <div className="col-span-4">
+                                                                <img src={coins.image.preview} alt="project" className="project-pass-collage-image-decorated-bottom-coin"/>
+                                                            </div>
+                                                            <div className="col-span-8">
+                                                                <h3 className="text-sub-title-font-size font-poppins text-center">Invitation Badge</h3>
+                                                            </div>
+                                                        </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            {!enableInvitationImage &&
+                                                <div className="rounded-md gradient-container p-1.5 mr-5">
+                                                        <img src={project.image.preview}className="w-full object-cover aspect-square"/>
+                                                </div>
+                                            }
                                         </div>
                                         <p className="text-header-small-font-size text-white mt-2 text-center">{project.symbol}</p>
                                     </div>

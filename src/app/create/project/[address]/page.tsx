@@ -115,29 +115,31 @@ export default function ProjectView({ params }: { params: { address: string } })
             const creatorName = await getUserName(listResult.data.coins.creator)
             setCreator(creatorName == "" ? listResult.data.coins.creator.substring(0, 5) +"..."+ listResult.data.coins.creator.substring(listResult.data.coins.creator.length-5) : creatorName) ;
             let tokenomics:any = [];
+            let totlaPercentage = 100 - (3 + Math.ceil((listResult.data.project.presalesupply / listResult.data.coins.supply) * 100))
             for (let index = 0; index < listResult.data.tokenomics.length; index++) {
                 const element = listResult.data.tokenomics[index];
                 tokenomics.push({
                     name: element.type,
-                    value: element.value,
+                    value: element.value / totlaPercentage * 100,
+                    orginalValue: element.value,
                     color: getDarkColor()
                 })
             }
-            tokenomics.push({
-                name: "presale",
-                value: Math.ceil((listResult.data.project.presalesupply / listResult.data.coins.supply) * 100),
-                color: getDarkColor()
-            })
-            tokenomics.push({
-                name: "MMOSH DAO",
-                value: 2,
-                color: getDarkColor()
-            })
-            tokenomics.push({
-                name: "Curator",
-                value: 1,
-                color: getDarkColor()
-            })
+            // tokenomics.push({
+            //     name: "presale",
+            //     value: Math.ceil((listResult.data.project.presalesupply / listResult.data.coins.supply) * 100),
+            //     color: getDarkColor()
+            // })
+            // tokenomics.push({
+            //     name: "MMOSH DAO",
+            //     value: 2,
+            //     color: getDarkColor()
+            // })
+            // tokenomics.push({
+            //     name: "Curator",
+            //     value: 1,
+            //     color: getDarkColor()
+            // })
 
             let presaleStart = convertUTCDateToLocalDate(new Date(listResult.data.project.presalestartdate))
             let presaleEnd = convertUTCDateToLocalDate(new Date(listResult.data.project.presaleenddate))
@@ -849,7 +851,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                         <>
                                 <div className="border border-white p-2.5 rounded-xl border-opacity-20 relative min-h-[340px]">
                                     <div className="md:absolute left-2.5 top-2.5 rounded-xl sm:mb-2.5">
-                                        <img src={projectDetail.coins.image} alt="coin image" className="md:w-80 md:h-80 sm:wd-full object-cover rounded-xl"/>
+                                        <img src={projectDetail.project.image} alt="coin image" className="md:w-80 md:h-80 sm:wd-full object-cover rounded-xl"/>
                                     </div>
                                     <div className="md:ml-[335px]">
                                     <div>
@@ -865,18 +867,18 @@ export default function ProjectView({ params }: { params: { address: string } })
                                         </div>
                                         <div className="xl:flex pt-8 border-t border-white border-opacity-20">
                                             <div className="lg:flex xl:flex">
-                                                <div className="rounded-md mr-3.5 mb-5"><img src={projectDetail.project.image} className="w-32 h-32 object-cover rounded-md" /></div>
+                                                <div className="rounded-md mr-3.5 mb-5"><img src={projectDetail.coins.image} className="w-32 h-32 object-cover rounded-md" /></div>
                                                 <div className="mr-8 mb-5">
                                                     <h4 className="text-[15px] text-white">Creator</h4>
                                                     <ul>
-                                                        <li className="underline"><a href="javascript:void(0)" className="text-header-small-font-size">{capitalizeString(creator)}</a></li>
+                                                        <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + creator} className="text-header-small-font-size" target="_blank">{capitalizeString(creator)}</a></li>
                                                     </ul>
                                                 </div>
                                                 <div className="mr-8 mb-5">
                                                     <h4 className="text-[15px] text-white">Project Team</h4>
                                                     <ul>
                                                     {projectDetail.profiles.map((profileItem:any, i:any) => (
-                                                        <li className="underline"><a href="javascript:void(0)" className="text-header-small-font-size">{capitalizeString(profileItem.name)}</a></li>
+                                                        <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + creator} className="text-header-small-font-size" target="_blank">{capitalizeString(profileItem.name)}</a></li>
                                                     ))}
                                                     </ul>
                                                 </div>
@@ -884,7 +886,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                     <h4 className="text-[15px] text-white">Community</h4>
                                                     <ul>
                                                     {projectDetail.community.map((communityItem:any, i:any) => (
-                                                        <li className="underline"><a href="javascript:void(0)" className="text-header-small-font-size">{capitalizeString(communityItem.name)}</a></li>
+                                                        <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + "create/communities/" + communityItem.name} className="text-header-small-font-size" target="_blank">{capitalizeString(communityItem.name)}</a></li>
                                                     ))}
                                                     </ul>
                                                 </div>
@@ -917,7 +919,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                             <div className="flex">
                                                                 <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
                                                                 <p className="pl-2.5 text-header-small-font-size min-w-32">{tokenomicschartItem.name}</p>
-                                                                <p className="text-header-small-font-size">{tokenomicschartItem.value}%</p>
+                                                                <p className="text-header-small-font-size">{tokenomicschartItem.orginalValue}%</p>
                                                             </div>
                                                        ))}
                                                     </div>
@@ -982,74 +984,83 @@ export default function ProjectView({ params }: { params: { address: string } })
                                 
                                 {profileInfo &&
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                        {projectInfo.profiles.length == 0 && projectInfo.activationTokens.length > 0 &&
-                                            <div className="col-span-3">
-                                                <div>
-                                                    <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Project Passes</h4>
-                                                    <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                        <div className="border-container rounded-md">
-                                                            <img src={projectDetail.project.image} alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
-                                                        </div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-10">
-                                                            {capitalizeString(projectDetail.project.name)}
-                                                        </h5>
-                                                        <div className="text-center">
-                                                            {!passSubmit &&
-                                                               <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={passAction}>Mint</button>
-                                                            }
-                                                            {passSubmit &&
-                                                               <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{passButtonStatus}</button>
-                                                            }
-                                                            <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.price} MMOSH</p>
-                                                            <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                            <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
-                                                            <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
-                                                        </div>
+
+                                        <div className="col-span-3">
+                                            <div>
+                                                <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Project Passes</h4>
+                                                <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                    <div className="border-container rounded-md">
+                                                        <img src={projectDetail.project.image} alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
+                                                    </div>
+                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-10">
+                                                        {capitalizeString(projectDetail.project.name)}
+                                                    </h5>
+                                                    <div className="text-center">
+                                                       {projectInfo.profiles.length == 0 && projectInfo.activationTokens.length > 0 &&
+                                                            <>
+                                                                {!passSubmit &&
+                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={passAction}>Mint</button>
+                                                                }
+                                                                {passSubmit &&
+                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{passButtonStatus}</button>
+                                                                }
+                                                            </>
+                                                        }
+                                                        <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.price} MMOSH</p>
+                                                        <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                        <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                                                        <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                        }
-                                        {projectInfo.profiles.length > 0 &&
-                                            <div className="col-span-3">
-                                                <div>
-                                                    <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Invitation Badge</h4>
-                                                    <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                        <div className="rounded-md">
-                                                            <img src={projectDetail.project.image} alt="invitation" className="w-full object-cover p-0.5 rounded-md"/>
-                                                        </div>
-                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                        {capitalizeString(projectDetail.project.name)}               
-                                                        </h5>
-                                                        <div className="mb-10">
-                                                        <p className="text-para-font-size text-center">Invitations to Mint</p>
-                                                        <div className="max-w-28 mx-auto">
-                                                            <Input
-                                                                    type="text"
-                                                                    title=""
-                                                                    required={false}
-                                                                    helperText=""
-                                                                    placeholder="0"
-                                                                    value={inputValue}
-                                                                    onChange={(e) => setInputValue(prepareNumber(Number(e.target.value)))}
-                                                                />
-                                                        </div>
-                                                        </div>
-                                                        <div className="text-center">
+                                        </div>
+                         
+                                       
+                                        <div className="col-span-3">
+                                            <div>
+                                                <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Invitation Badge</h4>
+                                                <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                    <div className="rounded-md">
+                                                        <img src={projectDetail.project.inviteimage?projectDetail.project.inviteimage: projectDetail.project.image} alt="invitation" className="w-full object-cover p-0.5 rounded-md"/>
+                                                    </div>
+                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                    {capitalizeString(projectDetail.project.name)}               
+                                                    </h5>
+                                                    <div className="mb-10">
+                                                    <p className="text-para-font-size text-center">Invitations to Mint</p>
+                                                    <div className="max-w-28 mx-auto">
+                                                        <Input
+                                                                type="text"
+                                                                title=""
+                                                                required={false}
+                                                                helperText=""
+                                                                placeholder="0"
+                                                                value={inputValue}
+                                                                onChange={(e) => setInputValue(prepareNumber(Number(e.target.value)))}
+                                                            />
+                                                    </div>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        {projectInfo.profiles.length > 0 &&
+                                                        <>
                                                             {!inviteSubmit &&
                                                                 <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={inviteAction}>Mint</button>
                                                             }
                                                             {inviteSubmit &&
                                                                 <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{inviteButtonStatus}</button>
                                                             }
-                                                            <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.invitationprice - (projectDetail.project.invitationprice * (projectDetail.project.discount / 100))} MMOSH</p>
-                                                            <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                            <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
-                                                            <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
-                                                        </div>
+                                                        </>
+                                                        }
+                                                        <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.invitationprice - (projectDetail.project.invitationprice * (projectDetail.project.discount / 100))} MMOSH</p>
+                                                        <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                        <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                                                        <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
-                                        }
+                                        </div>
+               
                                         {passes.map((passItem:any, i:any) => (
                                             <div className="col-span-3">
                                                 <div>

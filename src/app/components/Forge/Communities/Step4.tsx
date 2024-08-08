@@ -86,7 +86,7 @@ const Step4 = () => {
 
     if (profileInfo.solBalance < 0.06) {
       setMessage({
-        type: "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
+        type: "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get more than 0.06 Solana and try again!",
         message: "warn",
       });
       setMintingStatus("");

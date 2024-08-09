@@ -10,6 +10,7 @@ import CommunityCard from "../components/Forge/MainPage/CommunityCard";
 import InvitationCard from "../components/Forge/MainPage/InvitationCard";
 import ProfileCard from "../components/Forge/MainPage/ProfileCard";
 import { userWeb3Info, web3InfoLoading } from "../store";
+import ProjectCard from "../components/Forge/MainPage/ProjectCard";
 
 const Forge = () => {
   const [profileData] = useAtom(userWeb3Info);
@@ -51,6 +52,10 @@ const Forge = () => {
 
         <DefaultCard>
           <CommunityCard />
+        </DefaultCard>
+
+        <DefaultCard>
+          <ProjectCard />
         </DefaultCard>
 
         {!hasProfile && (

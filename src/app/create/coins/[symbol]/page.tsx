@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import axios from "axios";
+import { useAtom } from "jotai";
 import Image from "next/image";
 
 import ArrowBack from "@/assets/icons/ArrowBack";
@@ -9,9 +10,12 @@ import { Coin } from "@/app/models/coin";
 import Graphics from "@/app/components/Forge/CoinPage/Graphics";
 import Stats from "@/app/components/Forge/CoinPage/Stats";
 import TransactionsTable from "@/app/components/Forge/CoinPage/TransactionsTable";
+import { selectedUSDCCoin } from "@/app/store/coins";
 
 const Page = ({ params }: { params: { symbol: string } }) => {
   const navigate = useRouter();
+
+  const [isUSDCSelected, setIsUSDCSelected] = useAtom(selectedUSDCCoin);
 
   const rendered = React.useRef(false);
 
@@ -73,12 +77,28 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
           <div className="flex items-center">
             <div className="relative w-[1.5vmax] h-[1.5vmax]">
-              <Image alt={coin.symbol} src={coin.image} layout="fill" />
+              <Image
+                alt={coin.symbol}
+                src={coin.image}
+                layout="fill"
+                className="rounded-full"
+              />
             </div>
 
             <h6 className="mx-2">{coin.name}</h6>
             <p className="text-tiny self-end">{coin.symbol}</p>
           </div>
+        </div>
+
+        <div className="flex items-center mr-8">
+          <p className="text-sm">MMOSH</p>
+          <input
+            type="checkbox"
+            className="toggle [--tglbg:#1A1750] hover:bg-[#EF01A4] bg-[#EF01A4] mx-4"
+            checked={isUSDCSelected}
+            onChange={(e) => setIsUSDCSelected(e.target.checked)}
+          />
+          <p className="text-sm">USDC</p>
         </div>
       </div>
       <div className="w-full flex flex-col md:flex-row justify-between">

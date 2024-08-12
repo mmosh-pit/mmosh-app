@@ -126,7 +126,12 @@ const TransactionsTable = ({ coin }: Props) => {
                       {item.price}
                     </p>
                     <div className="relative w-[1vmax] h-[1vmax] mx-2">
-                      <Image src={item.targetimg} alt="mmosh" layout="fill" />
+                      <Image
+                        src={item.targetimg}
+                        alt="mmosh"
+                        layout="fill"
+                        className="rounded-full"
+                      />
                     </div>
                     <p className="text-white font-normal text-sm">
                       {item.targetsymbol}

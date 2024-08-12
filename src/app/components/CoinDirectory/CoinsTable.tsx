@@ -266,6 +266,7 @@ const CoinsTable = () => {
                       src={coin.image}
                       layout="fill"
                       alt={`${coin.name} image`}
+                      className="rounded-full"
                     />
                   </div>
                   <p className="text-white text-sm ml-1">{coin.name}</p>

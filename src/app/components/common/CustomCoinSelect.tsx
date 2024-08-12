@@ -138,6 +138,7 @@ const CustomCoinSelect = ({
                     src={selectedItem.image}
                     alt={`${selectedItem.symbol} image`}
                     layout="fill"
+                    className="rounded-full"
                   />
                 </div>
                 <p className="text-sm text-white ml-2">{selectedItem.symbol}</p>

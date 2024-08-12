@@ -39,16 +39,16 @@ const Graphics = ({ coin }: Props) => {
 
   const renderGraphicType = React.useCallback(() => {
     if (selectedGraphicType.value === "tvl")
-      return <TVL bonding={coin.bonding} />;
+      return <TVL bonding={coin.bonding} height={400} />;
 
     if (selectedGraphicType.value === "volume")
-      return <Volume bonding={coin.bonding} />;
+      return <Volume bonding={coin.bonding} height={400} />;
 
-    return <Price />;
+    return <Price height={400} />;
   }, [coin, selectedGraphicType]);
 
   return (
-    <div className="w-full flex flex-col bg-[#040241] rounded-xl py-1">
+    <div className="w-full flex flex-col bg-[#040241] rounded-xl py-1 px-6 md:mr-4">
       <div className="w-full flex justify-end mt-4 px-12">
         <div className="flex items-center self-end">
           <div className="dropdown rounded-lg py-1 ml-4">

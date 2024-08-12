@@ -28,7 +28,7 @@ const Stats = ({ coin }: Props) => {
   }, [coin]);
 
   return (
-    <div className="w-full flex flex-col bg-[#04024185] backdrop-blur-[10px] rounded-xl p-12">
+    <div className="w-full flex flex-col bg-[#04024185] backdrop-blur-[10px] rounded-xl p-12 md:ml-4">
       <h5>Stats</h5>
 
       <div className="flex flex-col my-4">

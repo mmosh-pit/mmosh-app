@@ -7,9 +7,10 @@ import DateTypeSelector from "../common/DateTypeSelector";
 
 type Props = {
   bonding?: string;
+  height?: number;
 };
 
-const Volume = ({ bonding }: Props) => {
+const Volume = ({ bonding, height }: Props) => {
   const [data, setData] = React.useState([]);
   const [total, setTotal] = React.useState("0");
 
@@ -44,10 +45,10 @@ const Volume = ({ bonding }: Props) => {
 
         <DateTypeSelector type={type} setType={setType} />
       </div>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={height || 200}>
         <BarChart
           width={500}
-          height={300}
+          height={height || 300}
           data={data}
           margin={{
             top: 5,

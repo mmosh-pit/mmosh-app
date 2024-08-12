@@ -1,10 +1,7 @@
 import * as React from "react";
-import Image from "next/image";
 import axios from "axios";
 import { useAtom } from "jotai";
 
-import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
-import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
 import { User } from "@/app/models/user";
 import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 import MemberCard from "./MemberCard";
@@ -34,6 +31,9 @@ const MembersList = () => {
 
       if (result.data.users.length === 0) {
         lastPageTriggered.current = true;
+        setIsLoading(false);
+        fetching.current = false;
+        return;
       }
 
       setUsers(result.data.users);
@@ -45,37 +45,16 @@ const MembersList = () => {
     }
   }, [searchText, selectedFilters, currentPage]);
 
-  // const paginateUsers = React.useCallback(async () => {
-  //   fetching.current = true;
-  //   const result = await axios.get(
-  //     `/api/get-all-users?skip=${currentPage * 10}searchText=${searchText}`,
-  //   );
-  //
-  //   fetching.current = false;
-  //
-  //   if (result.data.users.length === 0) {
-  //     lastPageTriggered.current = true;
-  //   }
-  //
-  //   setUsers((prev) => [...prev, ...result.data.users]);
-  //   allUsers.current = [...allUsers.current, ...result.data.users];
-  // }, [currentPage, searchText]);
-
   const handleScroll = () => {
     if (!containerRef.current) return;
     if (
       containerRef.current.scrollHeight - containerRef.current.scrollTop <=
-      containerRef.current.clientHeight + 50
+        containerRef.current.clientHeight + 50 &&
+      !lastPageTriggered.current
     ) {
       setCurrentPage(currentPage + 1);
     }
   };
-
-  // React.useEffect(() => {
-  //   if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
-  //     paginateUsers();
-  //   }
-  // }, [currentPage]);
 
   React.useEffect(() => {
     if (fetching.current) return;
@@ -98,7 +77,7 @@ const MembersList = () => {
         </a>
       </div>
       <div
-        className="px-4 grid grid-cols-auto xs:grid-cols-1 xl:grid-cols-2 gap-4 mt-4 overflow-y-auto"
+        className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 xl:grid-cols-2 gap-4 mt-4 overflow-y-auto"
         ref={containerRef}
         onScroll={handleScroll}
       >

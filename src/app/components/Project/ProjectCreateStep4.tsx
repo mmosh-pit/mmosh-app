@@ -534,7 +534,7 @@ export default function ProjectCreateStep4({
                         {fields.maxPresale > 0 && (
                           <p className="text-right text-header-small-font-size mt-7">
                             {coinDetails.supply * (fields.maxPresale / 100)}{" "}
-                            Coin12
+                            {coinDetails.symbol}
                           </p>
                         )}
                       </div>
@@ -568,7 +568,7 @@ export default function ProjectCreateStep4({
                             {coinDetails.supply *
                               (fields.maxPresale / 100) *
                               (fields.minPresale / 100)}{" "}
-                            Coin12
+                            {coinDetails.symbol}
                           </p>
                         )}
                       </div>

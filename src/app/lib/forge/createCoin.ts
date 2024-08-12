@@ -179,7 +179,7 @@ export const createCoin = async ({
 
       return {
         message:
-          "Congrats! Your coin is minted and tradable in [swap](https://www.mmosh.app/swap)",
+          "Congrats! Your coin is minted and tradable in [swap](https://www.mmosh.app/create/swap)",
         type: "success",
       };
     } else {

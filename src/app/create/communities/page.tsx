@@ -49,7 +49,7 @@ const Communities = () => {
   }, [searchText]);
 
   return (
-    <div className="relative background-content flex justify-center">
+    <div className="background-content flex justify-center">
       <div className="w-full flex flex-col items-center mt-20">
         <div className="flex flex-col items-center lg:w-[30%] md:w-[50%] sm:w-[60%] w-[85%]">
           <h4 className="my-12">Community Directory</h4>

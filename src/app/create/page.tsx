@@ -33,14 +33,14 @@ const Forge = () => {
 
   if (isLoadingProfile) {
     return (
-      <div className="relative background-content flex w-full justify-center items-center">
+      <div className="background-content flex w-full justify-center items-center">
         <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-full flex flex-col background-content pt-20">
+    <div className="w-full h-full flex flex-col background-content pt-20">
       <div className="self-center">
         <FeaturedCard>{getFeaturedCard()}</FeaturedCard>
       </div>

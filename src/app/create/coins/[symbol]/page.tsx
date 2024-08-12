@@ -47,7 +47,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
   if (isLoading) {
     return (
-      <div className="relative background-content flex w-full justify-center items-center">
+      <div className="background-content flex w-full justify-center items-center">
         <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
       </div>
     );
@@ -55,12 +55,12 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
   if (!coin) {
     return (
-      <div className="background-content relative flex flex-col max-h-full pt-20 px-12" />
+      <div className="background-content flex flex-col max-h-full pt-20 px-12" />
     );
   }
 
   return (
-    <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
+    <div className="background-content flex flex-col max-h-full pt-20 px-12">
       <div className="w-full flex justify-between">
         <div className="flex items-center mb-8 ml-4">
           <div
@@ -82,13 +82,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         </div>
       </div>
       <div className="w-full flex flex-col md:flex-row justify-between">
-        <div className="md:w-[50%] w-[90%]">
-          <Graphics coin={coin} />
-        </div>
-
-        <div className="md:w-[35%] w-[90%]">
-          <Stats coin={coin} />
-        </div>
+        <Graphics coin={coin} />
+        <Stats coin={coin} />
       </div>
 
       <div className="w-full px-12 mt-20">

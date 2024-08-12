@@ -218,7 +218,7 @@ export default function ProjectCreateStep4({
           {msgText}
         </div>
       )}
-      <div className="relative background-content">
+      <div className="background-content">
         <div className="flex flex-col items-center justify-center w-full">
           <div className="relative w-full flex flex-col justify-center items-center pt-5">
             <div className="max-w-md">

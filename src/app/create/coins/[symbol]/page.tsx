@@ -86,7 +86,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             </div>
 
             <h6 className="mx-2">{coin.name}</h6>
-            <p className="text-tiny self-end">{coin.symbol}</p>
+            <p className="text-sm self-end">{coin.symbol}</p>
           </div>
         </div>
 

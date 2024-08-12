@@ -56,7 +56,7 @@ const Price = ({ height }: Props) => {
   ];
 
   return (
-    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
+    <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
       <div className="flex flex-col ml-6 mt-4">
         <p className="text-sm">MMOSH Price</p>
         <h6 className="my-2">$12.2M</h6>

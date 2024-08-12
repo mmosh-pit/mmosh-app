@@ -2056,7 +2056,9 @@ export class Connectivity {
     }
     tx.add(feeIns);
     const signature = await this.provider.sendAndConfirm(tx, []);
-  
+    await axios.put("/api/project/buy-pass", {
+      key: mint.toBase58(),
+    });
     return signature;
   }
 
@@ -2388,7 +2390,7 @@ export class Connectivity {
     const signature = await this.provider.sendAndConfirm(tx, []);
     await axios.put("/api/project/update-stake-account", {
       key: stakeKey.toBase58(),
-  });
+    });
     return signature;
   }
 

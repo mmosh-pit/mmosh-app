@@ -51,6 +51,8 @@ export async function POST(req: NextRequest) {
       presalestartdate,
       presaleenddate,
       dexlistingdate,
+      created_date: new Date(),
+      updated_date: new Date(),
     });
     return NextResponse.json("", { status: 200 });
   } else {

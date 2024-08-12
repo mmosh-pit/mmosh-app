@@ -20,12 +20,15 @@ export async function POST(req: NextRequest) {
         desc,
         price,
         supply,
+        sold: 0,
         discount,
         promoterroyality,
         scoutroyalty,
         creator, 
         redemptiondate,
-        projectkey
+        projectkey,
+        created_date: new Date(),
+        updated_date: new Date(),
     });
     return NextResponse.json("", { status: 200 });
   } else {

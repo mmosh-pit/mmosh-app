@@ -825,3 +825,18 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     right: -25px;
   }
 }
+
+
+/* Rectangle 18105 */
+.search-container {
+  background: rgba(1, 6, 35, 0.15);
+  border: 1px solid rgba(194, 194, 194, 0.16);
+  backdrop-filter: blur(9px);
+  /* Note: backdrop-filter has minimal browser support */
+  border-radius: 28px;
+}
+
+.project-card-background {
+  background: rgba(0, 0, 0, 0.51);
+  backdrop-filter: blur(11.5px);
+}

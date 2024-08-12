@@ -60,7 +60,7 @@ const TransactionsTable = ({ coin }: Props) => {
         <h5>Transactions</h5>
       </div>
 
-      <table className="w-full bg-[#100E5242] rounded-md">
+      <table className="w-full bg-[#100E5242] rounded-md overflow-x-auto">
         <thead>
           <tr>
             <th align="center">

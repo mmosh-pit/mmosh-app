@@ -183,7 +183,7 @@ const CoinsTable = () => {
   }, [searchText, volume]);
 
   return (
-    <table className="w-full bg-[#100E5242] rounded-md">
+    <table className="w-full bg-[#100E5242] rounded-md overflow-x-auto">
       <thead>
         <tr>
           <th>

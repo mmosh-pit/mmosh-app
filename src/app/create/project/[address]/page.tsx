@@ -829,7 +829,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             {showMsg && (
                 <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
             )}
-            <div className="relative background-content">
+            <div className="background-content">
                 <div className="container mx-auto">
                     <div className="backdrop-container rounded-xl border border-white border-opacity-20 my-10 p-5">
                         {projectLoading &&

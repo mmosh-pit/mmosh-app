@@ -144,14 +144,14 @@ const Step1 = () => {
 
             <Input
               title="Description"
-              placeholder="Describe your Community within 160 characters"
+              placeholder="Describe your Community within 5000 characters"
               type="text"
               value={form.description}
               required={false}
               onChange={(e) => {
                 const value = e.target.value;
 
-                if (value.length > 160) return;
+                if (value.length > 5000) return;
 
                 setForm({ ...form, description: value });
               }}

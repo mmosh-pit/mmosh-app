@@ -99,7 +99,7 @@ const StartACommunity = () => {
 
   if (isLoadingProfile || isLoading) {
     return (
-      <div className="relative background-content flex w-full justify-center items-center">
+      <div className="background-content flex w-full justify-center items-center">
         <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
       </div>
     );
@@ -107,7 +107,7 @@ const StartACommunity = () => {
 
   return (
     <div
-      className={`relative background-content flex justify-center ${isDrawerShown ? "z-[-1]" : ""}`}
+      className={`background-content flex justify-center ${isDrawerShown ? "z-[-1]" : ""}`}
     >
       {renderComponent()}
     </div>

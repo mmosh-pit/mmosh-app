@@ -132,7 +132,7 @@ const Swap = () => {
 
   return (
     <div
-      className={`relative background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+      className={`background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
     >
       <h3 className="mt-20">Swap</h3>
       <div className="swap-container-card mt-8 max-h-[550px] md:p-4 lg:p-6 rounded-xl">

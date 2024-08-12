@@ -2,7 +2,7 @@
 import CreateProfile from "@/app/components/Forge/CreateProfile";
 
 const Profile = () => (
-  <div className="relative background-content">
+  <div className="background-content">
     <CreateProfile />
   </div>
 );

@@ -86,7 +86,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
   if (isLoading) {
     return (
-      <div className="relative background-content flex w-full justify-center items-center">
+      <div className="background-content flex w-full justify-center items-center">
         <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
       </div>
     );
@@ -94,11 +94,11 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
   if (!community)
     return (
-      <div className="background-content relative flex flex-col max-h-full" />
+      <div className="background-content flex flex-col max-h-full" />
     );
 
   return (
-    <div className="background-content relative flex flex-col items-center max-h-full">
+    <div className="background-content flex flex-col items-center max-h-full">
       <div className="w-full relative flex flex-col lg:flex-row justify-around px-16 md:px-0 w-[80%] md:w-[70%] lg:w-full">
         <div className="flex flex-col">
           <div className="w-[12vmax] h-[12vmax] relative self-center rounded-xl">

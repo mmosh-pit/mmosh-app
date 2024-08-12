@@ -15,6 +15,7 @@ import BalanceBox from "@/app/components/common/BalanceBox";
 import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { createCoin } from "@/app/lib/forge/createCoin";
 import { data, isDrawerOpen, userWeb3Info } from "@/app/store";
+import { useRouter } from "next/navigation";
 
 /* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */
 /* THE LIBRARY STILL WORKS WELL, SO IT IS NOT A BREAKING ERROR. RECHART DEV TEAM IS WORKING ON IT */
@@ -40,12 +41,14 @@ const defaultFormState = {
   symbol: "",
   description: "",
   bonding: "exponential",
-  multiplier: 1,
-  initialPrice: 1,
+  multiplier: 2,
+  initialPrice: 2,
   supply: 1000,
 };
 
 const CreateCoin = () => {
+  const navigate = useRouter();
+
   const wallet = useAnchorWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser] = useAtom(data);
@@ -152,6 +155,10 @@ const CreateCoin = () => {
     setMintingStatus("Mint and Swap");
 
     if (res.type === "success") {
+      setTimeout(() => {
+        navigate.push(`/create/coins/${params.symbol}`);
+      }, 5000);
+
       setForm({ ...defaultFormState });
       setImage(null);
       setPreview("");
@@ -215,16 +222,29 @@ const CreateCoin = () => {
 
   return (
     <div
-      className={`w-full relative background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+      className={`w-full background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
     >
       <MessageBanner message={message.message} type={message.type} />
       <div className="w-full flex flex-col justify-center items-center mt-20">
         <h3 className="text-center text-white font-goudy font-normal">
-          Create your own Coin!
+          Create your own Memecoin!
         </h3>
         <p className="text-center text-sm mt-1">
-          With your own Coin, you can build community to launch and scale your
-          own projects. Get started now!
+          With a memecoin, you can build community and rally support for your
+          projects. In the MMOSH, memecoins are traded on bonding curves, where
+          the price of the coin is directly related to number of tokens in
+          circulation. This means that as more tokens are bought, the price will
+          go up, and when they are sold the price goes down.
+        </p>
+
+        <p className="text-center text-sm">
+          As a memecoin creator, you can set the type of bonding curve and the
+          slope, making it relatively more volatile or stable.
+        </p>
+        <p className="text-center text-sm">
+          Only DAO members can creatememecoins on the MMOSH. There is no cost to
+          create memecoins, but you will be asked to buy the first 1000 coins at
+          the initial price.
         </p>
       </div>
 
@@ -298,16 +318,20 @@ const CreateCoin = () => {
           </div>
 
           {form.bonding === "linear" ? (
-            <div className="lg:mt-8 md:mt-4 sm:mt-2">
+            <div className="flex flex-col lg:mt-8 md:mt-4 sm:mt-2">
+              <p className="text-white text-tiny">
+                Adjust the slope for your Bonding Curve by changing the
+                multiplier
+              </p>
               <Input
-                title="Enter MMOSH Price"
+                title=""
                 value={form.initialPrice.toString()}
                 onChange={(e) => {
                   const value = Number(e.target.value);
 
                   if (Number.isNaN(value)) return;
 
-                  if (value < 0) return;
+                  if (value < 1) return;
 
                   if (value > 9000) return;
 
@@ -425,7 +449,7 @@ const CreateCoin = () => {
 
                 if (Number.isNaN(value)) return;
 
-                if (value < 0) return;
+                if (value < 1000) return;
 
                 if (form.multiplier >= 3 && value > 15850) return;
 

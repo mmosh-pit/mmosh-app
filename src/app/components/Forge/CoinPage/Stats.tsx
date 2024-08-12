@@ -28,22 +28,22 @@ const Stats = ({ coin }: Props) => {
   }, [coin]);
 
   return (
-    <div className="w-full flex flex-col bg-[#04024185] backdrop-blur-[10px] rounded-xl p-12">
+    <div className="w-full flex flex-col bg-[#04024185] backdrop-blur-[10px] rounded-xl p-12 md:ml-4">
       <h5>Stats</h5>
 
       <div className="flex flex-col my-4">
         <div className="w-full flex justify-between">
           <div className="flex flex-col">
-            <p>TVL</p>
+            <p className="text-base">TVL</p>
             <p className="text-white">
-              {stats.total} <span className="ml-1 text-xs">MMOSH</span>
+              {stats.total} <span className="ml-1 text-sm">MMOSH</span>
             </p>
           </div>
 
           <div className="flex flex-col">
-            <p>1 Day Volume</p>
+            <p className="text-base">1 Day Volume</p>
             <p className="text-white">
-              {stats.dayVolume} <span className="ml-1 text-xs">MMOSH</span>
+              {stats.dayVolume} <span className="ml-1 text-sm">MMOSH</span>
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@ const Stats = ({ coin }: Props) => {
 
         <div className="flex flex-col mt-8">
           <h5>Info</h5>
-          <p className="my-2">{coin.desc}</p>
+          <p className="my-2 text-sm">{coin.desc}</p>
           {coinOwner && (
             <div className="bg-[#7420E8] md:max-w-[35%] max-w-[40%] lg:max-w-[25%] rounded-2xl p-4">
               <p className="text-white text-sm">{coinOwner.profile.name}</p>

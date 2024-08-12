@@ -7,9 +7,10 @@ import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 
 type Props = {
   bonding?: string;
+  height?: number;
 };
 
-const TVL = ({ bonding }: Props) => {
+const TVL = ({ bonding, height }: Props) => {
   const rendered = React.useRef(false);
 
   const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
@@ -47,10 +48,10 @@ const TVL = ({ bonding }: Props) => {
         <p className="text-sm mb-2">TVL</p>
         <h6>{total} MMOSH</h6>
       </div>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={height || 200}>
         <AreaChart
           width={500}
-          height={200}
+          height={height || 200}
           data={data}
           margin={{
             top: 10,

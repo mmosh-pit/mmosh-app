@@ -44,7 +44,7 @@ const HomePage = () => {
           <CommunitiesList />
         </div>
 
-        <div className="w-full flex md:flex-row flex-col justify-between mt-8 overflow-y-auto md:max-h-[500px]">
+        <div className="w-full flex md:flex-row flex-col justify-between mt-8 overflow-y-auto md:max-h-[600px] pb-12 py-8">
           <MembersList />
 
           <CoinsList />

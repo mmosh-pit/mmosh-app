@@ -15,7 +15,12 @@ const RecentCoin = (props: Props) => {
       onClick={chooseToken}
     >
       <div className="relative w-[1.5vmax] h-[1.5vmax] mr-1">
-        <Image src={props.image} alt="coin" layout="fill" />
+        <Image
+          src={props.image}
+          alt="coin"
+          layout="fill"
+          className="rounded-full"
+        />
       </div>
       <p className="text-sm text-white">{props.symbol}</p>
     </div>

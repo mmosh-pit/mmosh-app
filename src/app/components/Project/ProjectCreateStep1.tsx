@@ -50,6 +50,7 @@ export default function ProjectCreateStep1({
     "optional",
     "none",
   ]);
+  const [isReady, setIsReady] = useState(false);
 
   React.useEffect(() => {
     if (!image) return;
@@ -67,6 +68,11 @@ export default function ProjectCreateStep1({
       setFields(JSON.parse(savedData));
     }
   }, []);
+
+
+  React.useEffect(() => {
+    setIsReady(validateFields(false));
+  }, [fields]);
 
   const onRadioChange = () => {};
 
@@ -132,58 +138,77 @@ export default function ProjectCreateStep1({
     }
   };
 
-  const validateFields = () => {
+  const validateFields = (isMessage: boolean) => {
     if (fields.name.length == 0) {
-      createMessage("Name is required", "danger-container");
+      if(isMessage) {
+        createMessage("Name is required", "danger-container");
+      }
+
       return false;
     }
 
     if (fields.name.length > 50) {
-      createMessage(
-        "Name should have less than 50 characters",
-        "danger-container",
-      );
+      if(isMessage) {
+        createMessage(
+          "Name should have less than 50 characters",
+          "danger-container",
+        );
+      }
       return false;
     }
 
     if (fields.symbol.length == 0) {
-      createMessage("Symbol is required", "danger-container");
+      if(isMessage) {
+         createMessage("Symbol is required", "danger-container");
+      }
       return false;
     }
 
     if (fields.symbol.length > 10) {
-      createMessage(
-        "Symbol should have less than 10 characters",
-        "danger-container",
-      );
+      if(isMessage) {
+        createMessage(
+          "Symbol should have less than 10 characters",
+          "danger-container",
+        );
+      }
       return false;
     }
 
     if (fields.desc.length == 0) {
-      createMessage("Description is required", "danger-container");
+      if(isMessage) {
+         createMessage("Description is required", "danger-container");
+      }
       return false;
     }
 
     if (fields.desc.length > 160) {
-      createMessage(
-        "Description should have less than 160 characters",
-        "danger-container",
-      );
+      if(isMessage) {
+        createMessage(
+          "Description should have less than 160 characters",
+          "danger-container",
+        );
+      }
       return false;
     }
 
     if (fields.image.preview.length == 0) {
-      createMessage("Project pass Image is required", "danger-container");
+      if(isMessage) {
+        createMessage("Project pass Image is required", "danger-container");
+      }
       return false;
     }
 
     if (fields.website.length > 0 && !isValidHttpUrl(fields.website)) {
-      createMessage("Invalid website url", "danger-container");
+      if(isMessage) {
+        createMessage("Invalid website url", "danger-container");
+      }
       return false;
     }
 
     if (fields.passPrice == 0) {
-      createMessage("Pass price not mentioned", "danger-container");
+      if(isMessage) {
+        createMessage("Pass price not mentioned", "danger-container");
+      }
       return false;
     }
 
@@ -192,20 +217,26 @@ export default function ProjectCreateStep1({
       fields.invitationType == "optional"
     ) {
       if (fields.invitationPrice == 0) {
-        createMessage("Invitation price not mentioned", "danger-container");
+        if(isMessage) {
+          createMessage("Invitation price not mentioned", "danger-container");
+        }
         return false;
       }
     }
 
     if (fields.invitationType == "optional") {
       if (fields.discount == 0) {
-        createMessage("Discount not mentioned", "danger-container");
+        if(isMessage) {
+          createMessage("Discount not mentioned", "danger-container");
+        }
         return false;
       }
     }
 
     if (getTotalPercentage() != 100) {
-      createMessage("Price distribution is not 100%", "danger-container");
+      if(isMessage) {
+        createMessage("Price distribution is not 100%", "danger-container");
+      }
       return false;
     }
 
@@ -223,7 +254,7 @@ export default function ProjectCreateStep1({
 
   const gotoStep2 = async () => {
     setLoading(true);
-    if (validateFields()) {
+    if (validateFields(true)) {
       if (!isValidHttpUrl(fields.image.preview)) {
         let imageFile = await fetch(fields.image.preview)
           .then((r) => r.blob())
@@ -343,22 +374,27 @@ export default function ProjectCreateStep1({
             </div>
             <div className="xl:col-span-2">
               <div className="form-element pt-2.5">
-                <Input
-                  type="text"
-                  title="Project Pass Price"
-                  required
-                  helperText=""
-                  placeholder="0"
-                  value={
-                    fields.passPrice > 0 ? fields.passPrice.toString() : ""
-                  }
-                  onChange={(e) =>
-                    setFields({
-                      ...fields,
-                      passPrice: prepareNumber(Number(e.target.value)),
-                    })
-                  }
-                />
+              <div className="grid grid-cols-12 gap-4">
+                <div className="form-element col-span-9">
+                  <Input
+                      type="text"
+                      title="Project Pass Price"
+                      required
+                      helperText=""
+                      placeholder="0"
+                      value={
+                        fields.passPrice > 0 ? fields.passPrice.toString() : ""
+                      }
+                      onChange={(e) =>
+                        setFields({
+                          ...fields,
+                          passPrice: prepareNumber(Number(e.target.value)),
+                        })
+                      }
+                    />
+                </div>
+                <div className="col-span-3 mt-7 text-white text-header-small-font-size">USD</div>
+              </div>
               </div>
               <div className="form-element pt-2.5">
                 <Input
@@ -659,6 +695,7 @@ export default function ProjectCreateStep1({
               <button
                 className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white"
                 onClick={gotoStep2}
+                disabled={!isReady}
               >
                 Next
               </button>

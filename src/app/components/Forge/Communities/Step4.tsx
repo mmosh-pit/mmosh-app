@@ -79,9 +79,19 @@ const Step4 = () => {
     generateImages();
   }, [thirdForm, firstForm]);
 
+
   const mintCommunity = React.useCallback(async () => {
     setMessage({ type: "", message: "" });
     if (!wallet || !profileInfo || !currentUser) return;
+
+    if (profileInfo.solBalance < 0.06) {
+      setMessage({
+        type: "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get more than 0.06 Solana and try again!",
+        message: "warn",
+      });
+      setMintingStatus("");
+      return;
+    }
 
     const res = await createCommunity({
       wallet,

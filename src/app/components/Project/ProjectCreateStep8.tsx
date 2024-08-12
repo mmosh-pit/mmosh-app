@@ -35,7 +35,7 @@ export default function ProjectCreateStep8({
   const [mmoshPrice, setMmoshPrice] = useState(0);
 
   const validateFields = () => {
-    if (fields.usd < 1) {
+    if (fields.usd < 100) {
       createMessage(
         "Liqudity pool value should be equal or greater than 100 USD",
         "danger-container",
@@ -215,7 +215,15 @@ export default function ProjectCreateStep8({
                       helperText=""
                       placeholder="0"
                       value={fields.sol > 0 ? fields.sol.toString() : ""}
-                      onChange={(e) => {}}
+                      onChange={(e) => {
+                        let sol = prepareNumber(Number(e.target.value));
+                        let usdPercentage = solPrice/1
+                        setFields({
+                          usd: sol * usdPercentage,
+                          sol: sol,
+                          mmosh: (sol * usdPercentage) / mmoshPrice,
+                        });
+                      }}
                     />
                   </div>
                   <p className="text-para-font-size text-white leading-10 min-w-14">
@@ -232,12 +240,15 @@ export default function ProjectCreateStep8({
                       helperText=""
                       placeholder="0"
                       value={fields.mmosh > 0 ? fields.mmosh.toString() : ""}
-                      readonly={true}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        let mmosh = prepareNumber(Number(e.target.value));
+                        let usdPercentage = mmoshPrice/1
                         setFields({
-                          ...fields,
-                          mmosh: prepareNumber(Number(e.target.value)),
-                        })
+                          usd: mmosh * usdPercentage,
+                          sol: (mmosh * usdPercentage) / solPrice,
+                          mmosh: mmosh,
+                        });
+                      }
                       }
                     />
                   </div>

@@ -7,20 +7,48 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
+  const type = searchParams.get("type") as string;
   const search = searchParams.get("searchText") as string;
+  let match = {$match: {}};
+  if(search && type === "directory") {
+     match = {
+      $match: {
+        $or: [
+          { name: { $regex: new RegExp(search, "ig") } },
+          { symbol: { $regex: new RegExp(search, "ig") } },
+          { desc: { $regex: new RegExp(search, "ig") } },
+        ],
+      },
+    }
+  }
+
+  if(type !== "directory") {
+    const dexExpiry = new Date().toISOString();
+    if(search) {
+      match = {
+        $match: {
+          $and: [
+            {"dexlistingdate": {$gt: dexExpiry}},
+            {
+              $or: [
+                { name: { $regex: new RegExp(search, "ig") } },
+                { symbol: { $regex: new RegExp(search, "ig") } },
+                { desc: { $regex: new RegExp(search, "ig") } },
+              ],
+            }
+          ]
+        },
+      }
+    } else {
+      match = { $match: { dexlistingdate: { $gt: dexExpiry } } }
+    }
+
+  }
 
   const result = await db
     .collection("mmosh-app-project")
     .aggregate([
-      {
-        $match: {
-          $or: [
-            { name: { $regex: new RegExp(search, "ig") } },
-            { symbol: { $regex: new RegExp(search, "ig") } },
-            { desc: { $regex: new RegExp(search, "ig") } },
-          ],
-        },
-      },
+     match,
       {
         $lookup: {
           from: "mmosh-app-project-coins",
@@ -29,7 +57,6 @@ export async function GET(req: NextRequest) {
           as: "coins",
         },
       },
-
       {
         $lookup: {
           from: "mmosh-app-project-community",
@@ -38,7 +65,6 @@ export async function GET(req: NextRequest) {
           as: "community",
         },
       },
-
       {
         $lookup: {
           from: "mmosh-app-project-profiles",
@@ -47,7 +73,6 @@ export async function GET(req: NextRequest) {
           as: "profiles",
         },
       },
-
       {
         $lookup: {
           from: "mmosh-app-project-tokenomics",
@@ -56,7 +81,6 @@ export async function GET(req: NextRequest) {
           as: "tokenomics",
         },
       },
-
       {
         $lookup: {
           from: "mmosh-app-project-pass",
@@ -65,7 +89,6 @@ export async function GET(req: NextRequest) {
           as: "pass",
         },
       },
-
       {
         $project: {
           name: 1,
@@ -86,8 +109,9 @@ export async function GET(req: NextRequest) {
           pass: "$pass",
         },
       },
+      {$sort: {created_date: -1}},
     ])
+    .limit(100)
     .toArray();
-
   return NextResponse.json(result, { status: 200 });
 }

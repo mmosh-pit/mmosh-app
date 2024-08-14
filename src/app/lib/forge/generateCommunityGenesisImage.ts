@@ -1,3 +1,4 @@
+import { drawCoinWithRoundedCorners } from "./drawCoinWithRoundedCorners";
 import { drawImageWithRoundedCorners } from "./drawImageWithRoundedCorners";
 import { fetchImage } from "./fetchImage";
 
@@ -23,7 +24,7 @@ export async function generateCommunityGenesisImage(
 
   ctx?.drawImage(frameImage, 0, 0, width, height);
 
-  ctx?.drawImage(coinImage, 52, height * 0.8 - 10, 160, 160);
+  drawCoinWithRoundedCorners(ctx!, coinImage, 50, height * 0.8 - 5);
 
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {

@@ -60,6 +60,7 @@ export async function createCommunity({
     if (discount !== "") {
       invPrice = invPrice - invPrice * (Number(discount) / 100);
     }
+    console.log("invPrice ", invPrice)
 
     const profileMintingCost = new anchor.BN(
       calcNonDecimalValue(profileCost, 9),
@@ -72,11 +73,13 @@ export async function createCommunity({
 
     passImageUri = await uploadImageFromBlob(genesisImage);
 
-    setMintingStatus("Preparing Invitation Image...");
-
-    if (invitationImage) {
-      invitationImageUri = await uploadImageFromBlob(invitationImage);
+    if(invPrice > 0) {
+      setMintingStatus("Preparing Invitation Image...");
+      if (invitationImage) {
+        invitationImageUri = await uploadImageFromBlob(invitationImage);
+      }
     }
+
 
     setMintingStatus("Preparing Metadata...");
     const body = {
@@ -174,71 +177,72 @@ export async function createCommunity({
 
     projectConn.setMainState();
 
-    setMintingStatus("Preparing Badge Metadata...");
 
-    let desc =
-      "Cordially invites you to join on the " +
-      capitalizeString(name) +
-      ". The favor of a reply is requested.";
-    if (name != "") {
-      desc =
+
+    if(invPrice > 0) {
+
+      setMintingStatus("Preparing Badge Metadata...");
+      let desc =
+        "Cordially invites you to join on the " +
         capitalizeString(name) +
-        " cordially invites you to join " +
-        getPronouns(pronouns) +
-        " on the MMOSH. The favor of a reply is requested.";
-    }
-
-    const inviteBody = {
-      name: name != "" ? "Invitation from join " + name : "Invitation",
-      symbol: symbol,
-      description: desc,
-      image: invitationImageUri,
-      external_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
-      minter: minterUsername,
-      attributes: [
-        {
-          trait_type: "Community",
-          value: projectKeyPair.publicKey.toBase58(),
-        },
-        {
-          trait_type: "Seniority",
-          value: "0",
-        },
-      ],
-    };
-
-    shdwHashInvite = await pinFileToShadowDrive(inviteBody);
-
-    if (shdwHashInvite === "") {
-      return {
-        type: "error",
-        message:
-          "We’re sorry. An error occurred while trying to deploy your community and mint your assets. Please check your wallet and try again.",
+        ". The favor of a reply is requested.";
+      if (name != "") {
+        desc =
+          capitalizeString(name) +
+          " cordially invites you to join " +
+          getPronouns(pronouns) +
+          " on the MMOSH. The favor of a reply is requested.";
+      }
+      const inviteBody = {
+        name: name != "" ? "Invitation from join " + name : "Invitation",
+        symbol: symbol,
+        description: desc,
+        image: invitationImageUri,
+        external_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
+        minter: minterUsername,
+        attributes: [
+          {
+            trait_type: "Community",
+            value: projectKeyPair.publicKey.toBase58(),
+          },
+          {
+            trait_type: "Seniority",
+            value: "0",
+          },
+        ],
       };
+      shdwHashInvite = await pinFileToShadowDrive(inviteBody);
+      if (shdwHashInvite === "") {
+        return {
+          type: "error",
+          message:
+            "We’re sorry. An error occurred while trying to deploy your community and mint your assets. Please check your wallet and try again.",
+        };
+      }
+      setMintingStatus("Creating Badge Account...");
+      const uri = shdwHashInvite;
+      const res2: any = await projectConn.initBadge({
+        name: "Invitation",
+        symbol: "INVITE",
+        uri,
+        profile: genesisProfileStr!,
+      });
+
+      setMintingStatus("Waiting for Confirmation...");
+      await delay(15000);
+
+      setMintingStatus("Minting Badges...");
+
+      await projectConn.createBadge({
+        amount: 100,
+        subscriptionToken: res2.Ok.info.subscriptionToken,
+      });
+
+      setMintingStatus("Waiting for Confirmation...");
+      await delay(15000);
+
     }
 
-    setMintingStatus("Creating Badge Account...");
-
-    const uri = shdwHashInvite;
-    const res2: any = await projectConn.initBadge({
-      name: "Invitation",
-      symbol: "INVITE",
-      uri,
-      profile: genesisProfileStr!,
-    });
-
-    setMintingStatus("Waiting for Confirmation...");
-    await delay(15000);
-
-    setMintingStatus("Minting Badges...");
-
-    await projectConn.createBadge({
-      amount: 100,
-      subscriptionToken: res2.Ok.info.subscriptionToken,
-    });
-
-    setMintingStatus("Waiting for Confirmation...");
-    await delay(15000);
 
     setMintingStatus("Creating LUT Registration...");
     const res4: any = await projectConn.registerCommonLut();

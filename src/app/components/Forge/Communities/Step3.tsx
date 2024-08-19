@@ -76,8 +76,16 @@ const Step3 = () => {
       const promoterRoyalties =
         form.invitation !== "none" ? form.promoterRoyalties : "0";
 
+      let invPrice = form.invitationPrice
+      if(form.invitation === "none") {
+        invPrice = "0"
+      }
+
+      console.log("invPrice ", invPrice)
+
       const newFormData = {
         ...form,
+        invitationPrice: invPrice,
         invitationDiscount: finalDiscount,
         scoutRoyalties,
         promoterRoyalties,

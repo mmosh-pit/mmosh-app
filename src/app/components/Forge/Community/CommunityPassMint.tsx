@@ -69,13 +69,15 @@ const CommunityPassMint = ({
       return;
     }
 
-    if (projectInfo?.activationTokens?.length <= 0) {
-      setResult({
-        type: "info",
-        message:
-          "Hey! An Invitation from this Community is required to mint a Community Pass and join.",
-      });
-      return;
+    if(projectInfo?.invitationPrice > 0) {
+      if (projectInfo?.activationTokens?.length <= 0) {
+        setResult({
+          type: "info",
+          message:
+            "Hey! An Invitation from this Community is required to mint a Community Pass and join.",
+        });
+        return;
+      }
     }
 
     setResult({ type: "", message: "" });

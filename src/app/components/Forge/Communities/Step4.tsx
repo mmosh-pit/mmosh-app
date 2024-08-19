@@ -203,7 +203,7 @@ const Step4 = () => {
             </div>
           </div>
 
-          <div className="flex md:flex-row flex-col w-full md:justify-around justify-center md:w-[75%] mt-12">
+          <div className="flex md:flex-row flex-col w-full justify-center md:w-[75%] mt-12 gap-4">
             {isLoadingImages ? (
               <span className="loading loading-spinner loading-lg bg-[#BEEF00]"></span>
             ) : (

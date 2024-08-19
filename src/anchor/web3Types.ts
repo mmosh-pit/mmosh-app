@@ -51,6 +51,14 @@ export type _MintProfileByAtInput = {
   commonLut: web3.PublicKey;
 };
 
+export type _MintGuestPass = {
+  name: string;
+  symbol?: string;
+  uriHash?: string;
+  genesisProfile: string | web3.PublicKey;
+  commonLut: web3.PublicKey;
+};
+
 export type _RegisterCommonLut = {
   activationToken: string | web3.PublicKey;
   genesisProfile: string | web3.PublicKey;

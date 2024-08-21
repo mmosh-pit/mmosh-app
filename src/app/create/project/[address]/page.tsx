@@ -608,15 +608,25 @@ export default function ProjectView({ params }: { params: { address: string } })
             })
 
             console.log("profile ", profile)
-
-            const res = await projectConn.mintPass({
-                name: projectDetail.project.name,
-                symbol: projectDetail.project.symbol,
-                uriHash: passMetaURI,
-                activationToken,
-                genesisProfile,
-                commonLut: projectDetail.project.lut
-            },profile);
+            let res;
+            if(projectInfo.invitationPrice > 0) {
+                res = await projectConn.mintPass({
+                    name: projectDetail.project.name,
+                    symbol: projectDetail.project.symbol,
+                    uriHash: passMetaURI,
+                    activationToken,
+                    genesisProfile,
+                    commonLut: projectDetail.project.lut
+                },profile);
+            } else {
+                res = await projectConn.mintGuestPass({
+                    name: projectDetail.project.name,
+                    symbol: projectDetail.project.symbol,
+                    uriHash: passMetaURI,
+                    genesisProfile,
+                    commonLut: projectDetail.project.lut
+                },profile);
+            }
 
             if(res.Ok) {
                 setPassButtonStatus("Waiting for confirmations...")
@@ -982,7 +992,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                       </div>
                                     } 
                                 
-                                {profileInfo &&
+                                {profileInfo  &&
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
 
                                         <div className="col-span-3">
@@ -996,7 +1006,7 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                         {capitalizeString(projectDetail.project.name)}
                                                     </h5>
                                                     <div className="text-center">
-                                                       {projectInfo.profiles.length == 0 && projectInfo.activationTokens.length > 0 &&
+                                                       {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
                                                             <>
                                                                 {!passSubmit &&
                                                                     <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={passAction}>Mint</button>
@@ -1014,52 +1024,53 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                 </div>
                                             </div>
                                         </div>
-                         
                                        
-                                        <div className="col-span-3">
-                                            <div>
-                                                <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Invitation Badge</h4>
-                                                <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                    <div className="rounded-md">
-                                                        <img src={projectDetail.project.inviteimage?projectDetail.project.inviteimage: projectDetail.project.image} alt="invitation" className="w-full object-cover p-0.5 rounded-md"/>
-                                                    </div>
-                                                    <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
-                                                    {capitalizeString(projectDetail.project.name)}               
-                                                    </h5>
-                                                    <div className="mb-10">
-                                                    <p className="text-para-font-size text-center">Invitations to Mint</p>
-                                                    <div className="max-w-28 mx-auto">
-                                                        <Input
-                                                                type="text"
-                                                                title=""
-                                                                required={false}
-                                                                helperText=""
-                                                                placeholder="0"
-                                                                value={inputValue}
-                                                                onChange={(e) => setInputValue(prepareNumber(Number(e.target.value)))}
-                                                            />
-                                                    </div>
-                                                    </div>
-                                                    <div className="text-center">
-                                                        {projectInfo.profiles.length > 0 &&
-                                                        <>
-                                                            {!inviteSubmit &&
-                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={inviteAction}>Mint</button>
+                                       {projectInfo.invitationPrice > 0 &&
+                                            <div className="col-span-3">
+                                                <div>
+                                                    <h4 className="text-header-small-font-size font-normal text-white mt-2.5 pl-2.5">Invitation Badge</h4>
+                                                    <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                        <div className="rounded-md">
+                                                            <img src={projectDetail.project.inviteimage?projectDetail.project.inviteimage: projectDetail.project.image} alt="invitation" className="w-full object-cover p-0.5 rounded-md"/>
+                                                        </div>
+                                                        <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-6">
+                                                        {capitalizeString(projectDetail.project.name)}               
+                                                        </h5>
+                                                        <div className="mb-10">
+                                                        <p className="text-para-font-size text-center">Invitations to Mint</p>
+                                                        <div className="max-w-28 mx-auto">
+                                                            <Input
+                                                                    type="text"
+                                                                    title=""
+                                                                    required={false}
+                                                                    helperText=""
+                                                                    placeholder="0"
+                                                                    value={inputValue}
+                                                                    onChange={(e) => setInputValue(prepareNumber(Number(e.target.value)))}
+                                                                />
+                                                        </div>
+                                                        </div>
+                                                        <div className="text-center">
+                                                            {projectInfo.profiles.length > 0 &&
+                                                            <>
+                                                                {!inviteSubmit &&
+                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={inviteAction}>Mint</button>
+                                                                }
+                                                                {inviteSubmit &&
+                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{inviteButtonStatus}</button>
+                                                                }
+                                                            </>
                                                             }
-                                                            {inviteSubmit &&
-                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{inviteButtonStatus}</button>
-                                                            }
-                                                        </>
-                                                        }
-                                                        <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.invitationprice - (projectDetail.project.invitationprice * (projectDetail.project.discount / 100))} MMOSH</p>
-                                                        <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                        <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
-                                                        <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
-                                                        
+                                                            <p className="text-para-font-size text-center leading-none mt-1">Price {projectDetail.project.invitationprice - (projectDetail.project.invitationprice * (projectDetail.project.discount / 100))} MMOSH</p>
+                                                            <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                                            <p className="text-para-font-size text-center leading-none mb-1">Current Balance {profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                                                            <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                            
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                       }
                
                                         {passes.map((passItem:any, i:any) => (
                                             <div className="col-span-3">

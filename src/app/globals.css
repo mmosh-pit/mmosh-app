@@ -851,3 +851,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   background: rgba(0, 0, 0, 0.51);
   backdrop-filter: blur(11.5px);
 }
+
+.project-card-graph .caret-down {
+  color: #DC2626;
+  width: 12px;
+}
+
+.project-card-graph .caret-up {
+  color: #22C55E;
+  width: 12px;
+}
+.crate-up-container span{
+  color: #22C55E;
+}
+
+.crate-down-container span {
+  color: #DC2626;
+}

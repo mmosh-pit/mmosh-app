@@ -21,9 +21,15 @@ export const mintCommunityPass = async ({
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
 
     const genesisProfile = community.project;
-    const activationToken = new anchor.web3.PublicKey(
-      projectInfo.activationTokens[0].activation,
-    );
+    let activationToken;
+    if(projectInfo.activationTokens > 0) {
+      activationToken = new anchor.web3.PublicKey(
+        projectInfo.activationTokens[0].activation,
+      );
+    } else {
+      activationToken = anchor.web3.PublicKey.default
+    }
+
     const env = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: "processed",
     });
@@ -45,7 +51,7 @@ export const mintCommunityPass = async ({
       attributes: [
         {
           trait_type: "Community",
-          value: community.tokenAddress,
+          value: community.project,
         },
         {
           trait_type: "Primitive",
@@ -90,17 +96,32 @@ export const mintCommunityPass = async ({
     }
     setMintStatus("Minting Pass...");
 
-    const res = await projectConn.mintPass(
-      {
-        name: community.name,
-        symbol: community.symbol,
-        uriHash: shadowHash,
-        activationToken,
-        genesisProfile,
-        commonLut: new PublicKey(community.lut),
-      },
-      profile,
-    );
+    let res;
+    if(projectInfo.invitationPrice > 0) {
+       res = await projectConn.mintPass(
+        {
+          name: community.name,
+          symbol: community.symbol,
+          uriHash: shadowHash,
+          activationToken,
+          genesisProfile,
+          commonLut: new PublicKey(community.lut),
+        },
+        profile,
+      );
+    } else {
+      res = await projectConn.mintGuestPass(
+        {
+          name: community.name,
+          symbol: community.symbol,
+          uriHash: shadowHash,
+          genesisProfile,
+          commonLut: new PublicKey(community.lut),
+        },
+        profile,
+      );
+    }
+
 
     if (res.Ok) {
       setMintStatus("Waiting for confirmations...");

@@ -1312,6 +1312,97 @@ export type Mmoshforge = {
       ];
     },
     {
+      name: "mintGuestPass";
+      discriminator: [251, 208, 29, 0, 56, 134, 80, 136];
+      accounts: [
+        {
+          name: "user";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "mplProgram";
+        },
+        {
+          name: "tokenProgram";
+        },
+        {
+          name: "associatedTokenProgram";
+        },
+        {
+          name: "systemProgram";
+        },
+        {
+          name: "project";
+        },
+        {
+          name: "mainState";
+          writable: true;
+        },
+        {
+          name: "parentMainState";
+          writable: true;
+        },
+        {
+          name: "profile";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "userProfileAta";
+          writable: true;
+        },
+        {
+          name: "profileState";
+          writable: true;
+        },
+        {
+          name: "profileMetadata";
+          writable: true;
+        },
+        {
+          name: "profileEdition";
+          writable: true;
+        },
+        {
+          name: "parentProfileState";
+          writable: true;
+        },
+        {
+          name: "collection";
+          writable: true;
+        },
+        {
+          name: "collectionMetadata";
+          writable: true;
+        },
+        {
+          name: "collectionEdition";
+          writable: true;
+        },
+        {
+          name: "sysvarInstructions";
+        },
+        {
+          name: "parentProfile";
+        },
+      ];
+      args: [
+        {
+          name: "name";
+          type: "string";
+        },
+        {
+          name: "symbol";
+          type: "string";
+        },
+        {
+          name: "uriHash";
+          type: "string";
+        },
+      ];
+    },
+    {
       name: "mintProfileByAt";
       discriminator: [100, 237, 109, 44, 36, 6, 29, 147];
       accounts: [
@@ -4451,6 +4542,97 @@ export const IDL: Mmoshforge = {
         },
         {
           name: "activationToken",
+          writable: true,
+        },
+        {
+          name: "profile",
+          writable: true,
+          signer: true,
+        },
+        {
+          name: "userProfileAta",
+          writable: true,
+        },
+        {
+          name: "profileState",
+          writable: true,
+        },
+        {
+          name: "profileMetadata",
+          writable: true,
+        },
+        {
+          name: "profileEdition",
+          writable: true,
+        },
+        {
+          name: "parentProfileState",
+          writable: true,
+        },
+        {
+          name: "collection",
+          writable: true,
+        },
+        {
+          name: "collectionMetadata",
+          writable: true,
+        },
+        {
+          name: "collectionEdition",
+          writable: true,
+        },
+        {
+          name: "sysvarInstructions",
+        },
+        {
+          name: "parentProfile",
+        },
+      ],
+      args: [
+        {
+          name: "name",
+          type: "string",
+        },
+        {
+          name: "symbol",
+          type: "string",
+        },
+        {
+          name: "uriHash",
+          type: "string",
+        },
+      ],
+    },
+    {
+      name: "mintGuestPass",
+      discriminator: [251, 208, 29, 0, 56, 134, 80, 136],
+      accounts: [
+        {
+          name: "user",
+          writable: true,
+          signer: true,
+        },
+        {
+          name: "mplProgram",
+        },
+        {
+          name: "tokenProgram",
+        },
+        {
+          name: "associatedTokenProgram",
+        },
+        {
+          name: "systemProgram",
+        },
+        {
+          name: "project",
+        },
+        {
+          name: "mainState",
+          writable: true,
+        },
+        {
+          name: "parentMainState",
           writable: true,
         },
         {

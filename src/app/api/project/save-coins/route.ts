@@ -20,10 +20,17 @@ export async function POST(req: NextRequest) {
         supply,
         creator, 
         listingprice,
-        projectkey
+        projectkey,
+        history,
+        prices: [],
+        pricepercentage: 0,
+        coingeckoid: "",
+        created_date: new Date(),
+        updated_date: new Date()
     });
     return NextResponse.json("", { status: 200 });
   } else {
     return NextResponse.json("", { status: 200 });
   }
 }
+

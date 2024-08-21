@@ -1,5 +1,8 @@
 "use client"
-import { useEffect, useState } from "react"
+import CaretDown from "@/assets/icons/CaretDown";
+import CaretUp from "@/assets/icons/CaretUp";
+import React, { useEffect, useState } from "react"
+import { Line, LineChart, ResponsiveContainer } from "recharts";
 const ProjectCard = (projectData: any) => {
     const [totalSold, setTotalSold] = useState(0)
     const [countDownDate, setCountDownDate] = useState(0);
@@ -25,6 +28,7 @@ const ProjectCard = (projectData: any) => {
             }
        }
        setTotalSold(totalSoldValue)
+       console.log("projectData ", projectData)
     },[])
 
     const convertUTCDateToLocalDate = (date: any) => {
@@ -62,6 +66,14 @@ const ProjectCard = (projectData: any) => {
         return (n < 10 ? '0' : '') + n;
     }
 
+    const getChartColor = React.useCallback((prices: number[]) => {
+        if (Number(prices[prices.length - 1]) < Number(prices[prices.length - 2])) {
+          return "#DC2626";
+        }
+    
+        return "#22C55E";
+      }, []);
+
     return (
         <>
         {projectData &&
@@ -75,7 +87,7 @@ const ProjectCard = (projectData: any) => {
                         </div>
                         {countDown != 0 && projectData.showTimer &&
 
-                        <div className="col-span-8 flex flex-1 justify-end">
+                            <div className="col-span-8 flex flex-1 justify-end">
                                                    <div className="project-card-head-right col-span-8 flex">
                        <p className="text-tiny text-gray-300 text-ellipsis whitespace-nowrap overflow-hidden">Time to<br/> Listing</p>
                        <div className="timer flex">
@@ -99,6 +111,45 @@ const ProjectCard = (projectData: any) => {
                        </div>
                             </div>
 
+                        }
+
+                        {countDown == 0  &&
+                          <div className="col-span-8 flex flex-1 justify-end project-card-graph">
+                            <div>
+                                <h4 className="text-base text-white leading-4 capitalize text-ellipsis whitespace-nowrap overflow-hidden">{projectData.data.coins[0].name}</h4>
+                                <p className="text-tiny text-gray-300 inline-block capitalize">{projectData.data.coins[0].symbol}</p>
+                            </div>
+                            {projectData.data.coins[0].prices.length > 0 &&
+                                <div className="text-right pl-3.5">
+                                    <p className="text-tiny text-white">24h</p>
+                                    <div>
+                                        <ResponsiveContainer width={50} height={30}>
+                                            <LineChart
+                                            width={50}
+                                            height={30}
+                                            data={[1,3,4,5,6,9].map((val) => ({ value: val }))}
+                                            >
+                                            <Line
+                                                type="monotone"
+                                                dataKey="value"
+                                                stroke={getChartColor([1,3,4,5,6,9])}
+                                                dot={false}
+                                                strokeWidth={2}
+                                            />
+                                            </LineChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    {projectData.data.coins[0].pricepercentage < 0 &&
+                                       <p className="text-small-font-size flex justify-end crate-down-container"><CaretDown /><span className="ml-1">{projectData.data.coins[0].pricepercentage}%</span></p>
+                                    }
+
+                                    {projectData.data.coins[0].pricepercentage >= 0 &&
+                                       <p className="text-small-font-size flex justify-end crate-up-container"><CaretUp /><span className="ml-1">{projectData.data.coins[0].pricepercentage}%</span></p>
+                                    }
+                                </div>
+                            }
+
+                          </div>
                         }
                     </div>
                     <div className="project-card-desc text-tiny text-gray-300 py-2.5">

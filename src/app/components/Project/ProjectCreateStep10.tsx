@@ -65,6 +65,13 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
         invitationType: "required",
         invitationPrice: 0,
         discount: 0.0,
+        isExternalCoin: false,
+        externalCoin: {
+          name: "",
+          address: "",
+          image: "",
+          symbol: ""
+        }
     })
 
     // step2
@@ -115,19 +122,26 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
 
     React.useEffect(()=>{
         init()
+        let projectData:any = null
         if(localStorage.getItem("projectstep1")) {
-            let savedData:any = localStorage.getItem("projectstep1");
-            setProject(JSON.parse(savedData));
+            let projectstep1:any = localStorage.getItem("projectstep1")
+            projectData = JSON.parse(projectstep1);
+            setProject(projectData);
         }
 
         if(localStorage.getItem("projectstep2")) {
             let savedData:any = localStorage.getItem("projectstep2");
             setCommunities(JSON.parse(savedData));
         }
-
-        if(localStorage.getItem("projectstep3")) {
-            let savedData:any = localStorage.getItem("projectstep3");
-            setCoins(JSON.parse(savedData));
+        console.log("projectData ", projectData) 
+        if(projectData.isExternalCoin) {
+            setButtonText("Deploy Token");
+            getCoinFromAPI(projectData)
+        } else {
+            if(localStorage.getItem("projectstep3")) {
+                let savedData:any = localStorage.getItem("projectstep3");
+                setCoins(JSON.parse(savedData));
+            }
         }
 
         if(localStorage.getItem("projectstep4")) {
@@ -191,23 +205,30 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
         try {
             setLoading(true)
 
-            setButtonText("Uploading Badge Image...")
-            const coinImage = await fetchImage(coins.image.preview);
-            const mainImage = await fetchImage(project.image.preview);
-            const invitationImage = await generateCommunityInvitationImage(
-                mainImage,
-                coinImage,
-              );
 
-            const invitationImageUri = await uploadImageFromBlob(invitationImage);
-            console.log("invitationImageUri ", invitationImageUri)
-            if(invitationImageUri === "") {
-                createMessage(
-                    "We’re sorry, there was an error while trying to upload invitation image. please try again later.",
-                    "danger-container",
+            let invitationImageUri = "";
+
+            if(project.invitationPrice > 0) {
+                setButtonText("Uploading Badge Image...")
+                const coinImage = await fetchImage(coins.image.preview);
+                const mainImage = await fetchImage(project.image.preview);
+                const invitationImage = await generateCommunityInvitationImage(
+                    mainImage,
+                    coinImage,
                 );
-                return;
+    
+                invitationImageUri = await uploadImageFromBlob(invitationImage);
+                console.log("invitationImageUri ", invitationImageUri)
+                if(invitationImageUri === "") {
+                    createMessage(
+                        "We’re sorry, there was an error while trying to upload invitation image. please try again later.",
+                        "danger-container",
+                    );
+                    return;
+                }
             }
+            
+
 
             // project key
             const projectKeyPair = anchor.web3.Keypair.generate();
@@ -227,26 +248,29 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 botUri.push(element.preview)
             }
             console.log("boturi", botUri)
+            let mintKey:any = null
+            if(project.isExternalCoin) {
+                mintKey = project.externalCoin.address
+            } else {
+                // uploading community coin metadata
+                setButtonText("Uploading community coin metadata...")
+                let coinBody = {
+                    name: coins.name,
+                    symbol: coins.symbol,
+                    description: coins.desc,
+                    image: coins.image.preview
+                }
+                const coinMetaURI: any = await pinFileToShadowDriveUrl(coinBody);
+                if (coinMetaURI === "") {
+                    createMessage("We’re sorry, there was an error while trying to prepare meta url. please try again later.","danger-container")
+                    return;
+                }
+                console.log("coinMetaURI", coinMetaURI)
 
-
-            // uploading community coin metadata
-            setButtonText("Uploading community coin metadata...")
-            let coinBody = {
-                name: coins.name,
-                symbol: coins.symbol,
-                description: coins.desc,
-                image: coins.image.preview
+                // creating community coins
+                setButtonText("Creating community coin...")
+                mintKey = await communityConnection.createCoin(coins.name,coins.symbol, coinMetaURI, coins.supply * web3Consts.LAMPORTS_PER_OPOS, 9)
             }
-            const coinMetaURI: any = await pinFileToShadowDriveUrl(coinBody);
-            if (coinMetaURI === "") {
-                createMessage("We’re sorry, there was an error while trying to prepare meta url. please try again later.","danger-container")
-                return;
-            }
-            console.log("coinMetaURI", coinMetaURI)
-
-            // creating community coins
-            setButtonText("Creating community coin...")
-            const mintKey = await communityConnection.createCoin(coins.name,coins.symbol, coinMetaURI, coins.supply * web3Consts.LAMPORTS_PER_OPOS, 9)
             console.log("community coin key", mintKey)
 
 
@@ -320,104 +344,106 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             }
             console.log("passKeys ", passKeys)
 
-            // stake coins for liqudity bool
-            // live only
-            // setButtonText("Converting SOL to WSOL");
-            // await communityConnection.createWrappedSol(Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS))
-            // stake coins for liqudity bool
-            setButtonText("Staking fund for liqudity pool...");
+            if(!project.isExternalCoin) {
+                // stake coins for liqudity bool
+                // live only
+                // setButtonText("Converting SOL to WSOL");
+                // await communityConnection.createWrappedSol(Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS))
+                // stake coins for liqudity bool
+                setButtonText("Staking fund for liqudity pool...");
 
-            // live only
-            // stakeData.push({
-            //     user: wallet.publicKey,
-            //     mint: NATIVE_MINT,
-            //     value: Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS),
-            //     duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
-            //     type: "liqudity"
-            // })
+                // live only
+                // stakeData.push({
+                //     user: wallet.publicKey,
+                //     mint: NATIVE_MINT,
+                //     value: Math.ceil(liquidity.sol * web3Consts.LAMPORTS_PER_OPOS),
+                //     duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                //     type: "liqudity"
+                // })
 
-            let mmoshOwner:any = await userConn.getNftProfileOwner(web3Consts.genesisProfile);
-            if(mmoshOwner.profileHolder != anchor.web3.PublicKey.default) {
-                stakeData.push({
-                  mint: new anchor.web3.PublicKey(mintKey),
-                  user: mmoshOwner.profileHolder,
-                  value: Math.ceil(coins.supply * (2 / 100) * web3Consts.LAMPORTS_PER_OPOS),
-                  duration: 0,
-                  type: "liqudity"
-               })
-            }
-           
-            stakeData.push({
-                mint: new anchor.web3.PublicKey(mintKey),
-                user: new anchor.web3.PublicKey(myProfileInfo.profilelineage.promoter),
-                value: Math.ceil(coins.supply * (1 / 100) * web3Consts.LAMPORTS_PER_OPOS),
-                duration: 0,
-                type: "liqudity"
-            })
-           
-            if(presale.minPresale > 0) {
+                let mmoshOwner:any = await userConn.getNftProfileOwner(web3Consts.genesisProfile);
+                if(mmoshOwner.profileHolder != anchor.web3.PublicKey.default) {
+                    stakeData.push({
+                    mint: new anchor.web3.PublicKey(mintKey),
+                    user: mmoshOwner.profileHolder,
+                    value: Math.ceil(coins.supply * (2 / 100) * web3Consts.LAMPORTS_PER_OPOS),
+                    duration: 0,
+                    type: "liqudity"
+                })
+                }
+            
                 stakeData.push({
                     mint: new anchor.web3.PublicKey(mintKey),
-                    user: wallet.publicKey,
-                    value: Math.ceil(coins.supply * (presale.maxPresale / 100)  * web3Consts.LAMPORTS_PER_OPOS),
-                    duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
-                    type: "presale"
+                    user: new anchor.web3.PublicKey(myProfileInfo.profilelineage.promoter),
+                    value: Math.ceil(coins.supply * (1 / 100) * web3Consts.LAMPORTS_PER_OPOS),
+                    duration: 0,
+                    type: "liqudity"
                 })
-            }
             
+                if(presale.minPresale > 0) {
+                    stakeData.push({
+                        mint: new anchor.web3.PublicKey(mintKey),
+                        user: wallet.publicKey,
+                        value: Math.ceil(coins.supply * (presale.maxPresale / 100)  * web3Consts.LAMPORTS_PER_OPOS),
+                        duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                        type: "presale"
+                    })
+                }
+                
 
-            stakeData.push({
-                user: wallet.publicKey,
-                mint: web3Consts.oposToken,
-                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
-                value: Math.ceil(Math.ceil(liquidity.mmosh * web3Consts.LAMPORTS_PER_OPOS)),
-                type: "liqudity"
-            })
-            
+                stakeData.push({
+                    user: wallet.publicKey,
+                    mint: web3Consts.oposToken,
+                    duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                    value: Math.ceil(Math.ceil(liquidity.mmosh * web3Consts.LAMPORTS_PER_OPOS)),
+                    type: "liqudity"
+                })
+                
 
-            stakeData.push({
-                user: wallet.publicKey,
-                mint: web3Consts.usdcToken, 
-                value: Math.ceil(liquidity.usd * 1000_000),
-                duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
-                type: "liqudity"
-            });
+                stakeData.push({
+                    user: wallet.publicKey,
+                    mint: web3Consts.usdcToken, 
+                    value: Math.ceil(liquidity.usd * 1000_000),
+                    duration: new Date(new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()).valueOf(),
+                    type: "liqudity"
+                });
 
-            // calculate stake value from tokenomics
-            var date = new Date();
-            for (let index = 0; index < tokenomics.length; index++) {
-                const element:any = tokenomics[index];
-                for (let index = 0; index < communities.profiles.length; index++) {
-                    const element1:any = communities.profiles[index];
-                    if(element1.role == element.type) {
-                        stakeData.push({
-                            mint: new anchor.web3.PublicKey(mintKey),
-                            user: new anchor.web3.PublicKey(element1.wallet),
-                            value:Math.ceil((coins.supply * (element.cliff.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
-                            duration: new Date(date.setMonth(date.getMonth() + element.cliff.months)).valueOf(),
-                            type: "tokenomics"
-                        })
+                // calculate stake value from tokenomics
+                var date = new Date();
+                for (let index = 0; index < tokenomics.length; index++) {
+                    const element:any = tokenomics[index];
+                    for (let index = 0; index < communities.profiles.length; index++) {
+                        const element1:any = communities.profiles[index];
+                        if(element1.role == element.type) {
+                            stakeData.push({
+                                mint: new anchor.web3.PublicKey(mintKey),
+                                user: new anchor.web3.PublicKey(element1.wallet),
+                                value:Math.ceil((coins.supply * (element.cliff.percentage / 100)) * web3Consts.LAMPORTS_PER_OPOS),
+                                duration: new Date(date.setMonth(date.getMonth() + element.cliff.months)).valueOf(),
+                                type: "tokenomics"
+                            })
 
-                        stakeData.push({
-                            mint: new anchor.web3.PublicKey(mintKey),
-                            user: new anchor.web3.PublicKey(element1.wallet),
-                            value:Math.ceil(((coins.supply * (element.vesting.percentage / 100))) * web3Consts.LAMPORTS_PER_OPOS),
-                            duration: new Date(date.setMonth(date.getMonth() + element.vesting.months)).valueOf(),
-                            type: "tokenomics"
-                        })
-                        break;
+                            stakeData.push({
+                                mint: new anchor.web3.PublicKey(mintKey),
+                                user: new anchor.web3.PublicKey(element1.wallet),
+                                value:Math.ceil(((coins.supply * (element.vesting.percentage / 100))) * web3Consts.LAMPORTS_PER_OPOS),
+                                duration: new Date(date.setMonth(date.getMonth() + element.vesting.months)).valueOf(),
+                                type: "tokenomics"
+                            })
+                            break;
+                        }
                     }
                 }
-            }
-            console.log("stake Data ", stakeData)
+                console.log("stake Data ", stakeData)
 
-            for (let index = 0; index < stakeData.length; index++) {
-                if(stakeData[index].value == 0) {
-                    continue;
+                for (let index = 0; index < stakeData.length; index++) {
+                    if(stakeData[index].value == 0) {
+                        continue;
+                    }
+                    const stakePair = anchor.web3.Keypair.generate();
+                    const stakeres = await communityConnection.stakeCoin(stakeData[index], stakePair);
+                    console.log("stake signature ", stakeres)
                 }
-                const stakePair = anchor.web3.Keypair.generate();
-                const stakeres = await communityConnection.stakeCoin(stakeData[index], stakePair);
-                console.log("stake signature ", stakeres)
             }
 
             // uploading project metadata
@@ -514,7 +540,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 uri: projectMetaURI,
                 mintKp: projectKeyPair,
                 input:{
-                  oposToken: web3Consts.oposToken,
+                  oposToken: web3Consts.usdcToken,
                   profileMintingCost,
                   invitationMintingCost,
                   mintingCostDistribution: {
@@ -541,67 +567,70 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             await delay(15000)
             communityConnection.setMainState();
 
-            // create invite metadata
+            if(project.invitationPrice > 0) {
 
-            setButtonText("Preparing Badge Metadata...")
-            let desc =
-            "Cordially invites you to join on the "+capitalizeString(project.name)+". The favor of a reply is requested.";
-            if (project.name != "") {
-                desc =
-                capitalizeString(project.name) +
-                " cordially invites you to join "+ capitalizeString(project.name)+" on the MMOSH. The favor of a reply is requested.";
+                // create invite metadata
+
+                setButtonText("Preparing Badge Metadata...")
+                let desc =
+                "Cordially invites you to join on the "+capitalizeString(project.name)+". The favor of a reply is requested.";
+                if (project.name != "") {
+                    desc =
+                    capitalizeString(project.name) +
+                    " cordially invites you to join "+ capitalizeString(project.name)+" on the MMOSH. The favor of a reply is requested.";
+                }
+
+                const invitebody = {
+                    name: "Invitation from join " +  project.name,
+                    symbol: project.symbol,
+                    description: desc,
+                    image: invitationImageUri,
+                    external_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
+                    minter: profileInfo?.profile.name,
+                    attributes: [
+                        {
+                            trait_type: "Project",
+                            value: projectKeyPair.publicKey.toBase58(),
+                        },
+                        {
+                        trait_type: "Seniority",
+                        value: "0",
+                        },
+                    ]
+                };
+            
+                const inviteMetaURI: any = await pinFileToShadowDriveUrl(invitebody);
+                if (inviteMetaURI === "") {
+                    createMessage(
+                        "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
+                        "danger-container",
+                    );
+                    return;
+                }
+                // creating invitation
+                setButtonText("Creating Badge Account...")
+            
+                const res2: any = await communityConnection.initBadge({
+                    name: "Invitation",
+                    symbol:  "INVITE",
+                    uri:inviteMetaURI,
+                    profile: genesisProfileStr,
+                });
+                console.log("invite result ", res2)
+
+                setButtonText("Waiting for Confirmation...")
+                await delay(15000)
+
+                setButtonText("Minting Badges...")
+                const res3 = await communityConnection.createBadge({
+                    amount: 100,
+                    subscriptionToken: res2.Ok.info.subscriptionToken,
+                });
+                console.log("invite badge result ", res3)
+
+                setButtonText("Waiting for Confirmation...")
+                await delay(15000)
             }
-
-            const invitebody = {
-                name: "Invitation from join " +  project.name,
-                symbol: project.symbol,
-                description: desc,
-                image: invitationImageUri,
-                external_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
-                minter: profileInfo?.profile.name,
-                attributes: [
-                    {
-                        trait_type: "Project",
-                        value: projectKeyPair.publicKey.toBase58(),
-                    },
-                    {
-                      trait_type: "Seniority",
-                      value: "0",
-                    },
-                ]
-            };
-        
-            const inviteMetaURI: any = await pinFileToShadowDriveUrl(invitebody);
-            if (inviteMetaURI === "") {
-                createMessage(
-                    "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
-                    "danger-container",
-                );
-                return;
-            }
-            // creating invitation
-            setButtonText("Creating Badge Account...")
-        
-            const res2: any = await communityConnection.initBadge({
-                name: "Invitation",
-                symbol:  "INVITE",
-                uri:inviteMetaURI,
-                profile: genesisProfileStr,
-            });
-            console.log("invite result ", res2)
-
-            setButtonText("Waiting for Confirmation...")
-            await delay(15000)
-
-            setButtonText("Minting Badges...")
-            const res3 = await communityConnection.createBadge({
-                amount: 100,
-                subscriptionToken: res2.Ok.info.subscriptionToken,
-            });
-            console.log("invite badge result ", res3)
-
-            setButtonText("Waiting for Confirmation...")
-            await delay(15000)
 
             setButtonText("Creating LUT Registration...")
             const res4:any = await communityConnection.registerCommonLut();
@@ -649,14 +678,15 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 });
             }
 
-
-            // save liquidity
-            await axios.post("/api/project/save-liquidity", {
-                sol: liquidity.sol,
-                usdc: liquidity.usd,
-                mmosh: liquidity.mmosh,
-                projectkey: projectKeyPair.publicKey.toBase58()
-            });
+            if(!project.isExternalCoin) {
+                // save liquidity
+                await axios.post("/api/project/save-liquidity", {
+                    sol: liquidity.sol,
+                    usdc: liquidity.usd,
+                    mmosh: liquidity.mmosh,
+                    projectkey: projectKeyPair.publicKey.toBase58()
+                });
+            }
 
             // save community
             for (let index = 0; index < communities.communities.length; index++) {
@@ -679,18 +709,20 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 });
             }
 
-            // save tokenomics
-            for (let index = 0; index < tokenomics.length; index++) {
-                const element:any = tokenomics[index];
-                await axios.post("/api/project/save-tokenomics", {
-                    type: element.type,
-                    value: element.value,
-                    cliff: element.cliff,
-                    vesting: element.vesting,
-                    projectkey: projectKeyPair.publicKey.toBase58()
-                });
+            if(!project.isExternalCoin) {
+                // save tokenomics
+                for (let index = 0; index < tokenomics.length; index++) {
+                    const element:any = tokenomics[index];
+                    await axios.post("/api/project/save-tokenomics", {
+                        type: element.type,
+                        value: element.value,
+                        cliff: element.cliff,
+                        vesting: element.vesting,
+                        projectkey: projectKeyPair.publicKey.toBase58()
+                    });
+                }
             }
-   
+    
             // save project
             let presaleStart = new Date(presale.presaleStartDate + " "+presale.presaleStartTime).toUTCString()
             let presaleEnd = new Date(presale.presaleEndDate + " "+presale.presaleEndTime).toUTCString()
@@ -728,7 +760,12 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             localStorage.removeItem("projectstep9")
             localStorage.removeItem("currentprojectstep")
             setLoading(false)
-            setButtonText("Deploy Token Presale")
+            if(project.isExternalCoin) {
+                setButtonText("Deploy Token")
+            } else {
+                setButtonText("Deploy Token Presale")
+            }
+ 
             navigate.push("/create/project/"+projectKeyPair.publicKey.toBase58());
         } catch (error) {
            console.log("error", error);
@@ -850,7 +887,12 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
         setMsgText(message);
         setMsgClass(type);
         setShowMsg(true);
-        setButtonText("Deploy Token Presale")
+        if(project.isExternalCoin) {
+            setButtonText("Deploy Token")
+        } else {
+            setButtonText("Deploy Token Presale")
+        }
+     
         setLoading(false)
         if(type == "success-container") {
           setTimeout(() => {
@@ -863,6 +905,25 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
         }
     };
 
+    const getCoinFromAPI = async(projectData:any) => {
+       try {
+           const result = await axios("/api/project/external-coin-detail?coin="+projectData.externalCoin.address)
+           if(result.data.token) {
+               const coinDetaildata:any = result.data.token.data.attributes
+                setCoins({
+                    image: {preview: projectData.externalCoin.image, type:""},
+                    name: projectData.externalCoin.name, 
+                    symbol: projectData.externalCoin.symbol,
+                    desc: "",
+                    supply: coinDetaildata.total_supply,
+                    listingPrice: coinDetaildata.price_usd,
+                })
+           }
+       } catch (error) {
+          console.log("getCoinFromAPI ", error)
+       }
+    }
+
 
     return (
         <>
@@ -874,7 +935,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                     <div className="relative w-full flex flex-col justify-center items-center pt-5">
                         <div className="max-w-md">
                             <h2 className="text-center text-white font-goudy font-normal text-xl">Launch Your Project</h2>
-                            <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">Step 10</h3>
+                            <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">Step {project.isExternalCoin ? "4" : "10"}</h3>
                             <h3 className="text-center text-white font-goudy font-normal text-sub-title-font-size pt-1.5">Deploy Your Project</h3>
                             <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">When you deploy your Project, your Launchpasses will appear on the launchpad and your Project will appear in the directory. While we do not censor Projects, listings on our web app and in our telegram bot are guided by our <span className="underline">community standards.</span></p>
                         </div>
@@ -938,71 +999,78 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-span-5">
-                                        <p className="text-para-font-size">Description</p>
-                                        <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md h-full">{coins.desc}</p>
+                                        {!project.isExternalCoin &&
+                                            <div className="col-span-5">
+                                            <p className="text-para-font-size">Description</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md h-full">{coins.desc}</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                   
+                                <div className="mt-5">
+                                    {presale.minPresale > 0 &&
+                                        <>
+                                            <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
+                                            <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Maximum Supply for presale</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Token Presale</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                                <div>
+                                                    <p className="text-para-font-size">Start Date</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Start Time</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">End Date</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">End Time</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Listing Date</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-para-font-size">Listing Time</p>
+                                                    <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
+                                                </div>
+                                            </div>
+                                        </>
+                                    }
+
+
+                                    <div className="grid md:grid-flow-col justify-stretch gap-4">
+                                        <div>
+                                            <p className="text-para-font-size">Project Website</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Project Telegram</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-para-font-size">Project Twitter</p>
+                                            <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
                                         </div>
                                     </div>
                                 </div>
-                                {presale.minPresale > 0 &&
-                                    <div className="mt-5">
-                                        <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Presale Supply</h3>
-                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Maximum Supply for presale</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Token Presale</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{coins.supply * (presale.maxPresale/100)}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Minimum tokens sold required to close presale</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{(coins.supply * (presale.maxPresale/100)) * (presale.minPresale/100)}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Start Date</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartDate}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Start Time</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleStartTime}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">End Date</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndDate}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">End Time</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.presaleEndTime}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Listing Date</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingDate}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Listing Time</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{presale.dexListingTime}</p>
-                                            </div>
-                                        </div>
-                                        <div className="grid md:grid-flow-col justify-stretch gap-4">
-                                            <div>
-                                                <p className="text-para-font-size">Project Website</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.website}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Project Telegram</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.telegram}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-para-font-size">Project Twitter</p>
-                                                <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">{project.twitter}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
                             </div>
                         </div>
 
@@ -1066,108 +1134,117 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
 
                         <div className="pt-10">
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                            <div className="col-span-4">
-                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Vesting Schedule</h3>
-                                    <div className="grid grid-cols-12 gap-4 mb-5">
-                                        <div className="col-span-4">
-                                            <p className="text-header-small-font-size">Distribution Plan</p>
-                                        </div>
-                                        <div className="col-span-4">
-                                            <p className="text-header-small-font-size text-center">Cliff Month</p>
-                                        </div>
-                                        <div className="col-span-4">
-                                            <p className="text-header-small-font-size text-center">Vesting Months</p>
-                                        </div>
-                                    </div>
-                                    {tokenomics.map((tokenomicsItem:any,i)=>(
-                                        <div className="grid grid-cols-12 gap-4">
+                            {!project.isExternalCoin &&
+                                <div className="col-span-4">
+                                        <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Vesting Schedule</h3>
+                                        <div className="grid grid-cols-12 gap-4 mb-5">
                                             <div className="col-span-4">
-                                                <p className="text-para-font-size">{tokenomicsItem.type} {tokenomicsItem.value}%</p>
+                                                <p className="text-header-small-font-size">Distribution Plan</p>
                                             </div>
                                             <div className="col-span-4">
-                                                <div className="text-center">
-                                                    <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.cliff.months}</p>
+                                                <p className="text-header-small-font-size text-center">Cliff Month</p>
+                                            </div>
+                                            <div className="col-span-4">
+                                                <p className="text-header-small-font-size text-center">Vesting Months</p>
+                                            </div>
+                                        </div>
+                                        {tokenomics.map((tokenomicsItem:any,i)=>(
+                                            <div className="grid grid-cols-12 gap-4">
+                                                <div className="col-span-4">
+                                                    <p className="text-para-font-size">{tokenomicsItem.type} {tokenomicsItem.value}%</p>
                                                 </div>
-                                            </div>
-                                            <div className="col-span-4">
-                                                <div className="text-center">
-                                                    <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.vesting.months}</p>
+                                                <div className="col-span-4">
+                                                    <div className="text-center">
+                                                        <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.cliff.months}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                            </div>
-                            <div className="col-span-4">
-                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Inform our AI Bot</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                                        {files.map((fileItem:any, i)=>(
-                                            <div className="col-span-4">
-                                                <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                                                    <p className="text-para-font-size light-gray-color text-center">{fileItem.name}</p>
-                                                    <div className="w-8 mx-auto"><FileIcon /></div>          
+                                                <div className="col-span-4">
+                                                    <div className="text-center">
+                                                        <p className="text-para-font-size text-center bg-black bg-opacity-[0.2] px-3.5 py-2.5 inline-block">{tokenomicsItem.vesting.months}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
-                                    </div>
-                            </div>
-                            <div className="col-span-4">
-                                    <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Tokenomics</h3>
-                                    <div className="flex">
-                                        <div>
-                                            <PieChart
-                                                width={200}
-                                                height={200}
-                                            >
-                                                <Pie
-                                                    dataKey="value"
-                                                    startAngle={360}
-                                                    endAngle={0}
-                                                    data={tokenomicschart}
-                                                    outerRadius={80}
-                                                    fill="none"
-                                                    stroke="none"
-                                                >
-                                                    {tokenomicschart.map((entry:any, index) => (
-                                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                                    ))}
-                                                </Pie>
-                                            </PieChart>
-                                        </div>
-                                        <div className="pl-5 pt-5">
-                                            {tokenomicschart.map((tokenomicschartItem:any, i:any) => (
-                                                <div className="flex">
-                                                    <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
-                                                    <p className="pl-2.5 text-header-small-font-size">{tokenomicschartItem.name}</p>
+                                </div>
+                            }
+                            {files.length > 0 &&
+                                <div className="col-span-4">
+                                        <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Inform our AI Bot</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                            {files.map((fileItem:any, i)=>(
+                                                <div className="col-span-4">
+                                                    <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
+                                                        <p className="text-para-font-size light-gray-color text-center">{fileItem.name}</p>
+                                                        <div className="w-8 mx-auto"><FileIcon /></div>          
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
+                                </div>
+                            }
+                            {!project.isExternalCoin &&
+                                <div className="col-span-4">
+                                        <h3 className="text-sub-title-font-size text-while font-poppins mb-3.5">Tokenomics</h3>
+                                        <div className="flex">
+                                            <div>
+                                                <PieChart
+                                                    width={200}
+                                                    height={200}
+                                                >
+                                                    <Pie
+                                                        dataKey="value"
+                                                        startAngle={360}
+                                                        endAngle={0}
+                                                        data={tokenomicschart}
+                                                        outerRadius={80}
+                                                        fill="none"
+                                                        stroke="none"
+                                                    >
+                                                        {tokenomicschart.map((entry:any, index) => (
+                                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                                        ))}
+                                                    </Pie>
+                                                </PieChart>
+                                            </div>
+                                            <div className="pl-5 pt-5">
+                                                {tokenomicschart.map((tokenomicschartItem:any, i:any) => (
+                                                    <div className="flex">
+                                                        <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
+                                                        <p className="pl-2.5 text-header-small-font-size">{tokenomicschartItem.name}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                </div>
+                            }
+                        </div>
+                        </div>
+                        {!project.isExternalCoin &&
+                            <>
+                                <h3 className="text-sub-title-font-size text-while font-poppins text-center pt-10">Summary of Costs</h3>
+                                <p className="text-header-small-font-size text-white text-center mt-1.5">for Liquidity Pool</p>
+                                <div className="flex justify-center mt-3.5">
+                                    <div className="flex justify-center mr-3.5">
+                                        <p className="text-header-small-font-size text-white mr-1">USDC</p>
+                                        <p className="text-header-small-font-size text-white">{liquidity.usd.toFixed(2)}</p>
                                     </div>
-                            </div>
-                        </div>
-                        </div>
-            
-                        <h3 className="text-sub-title-font-size text-while font-poppins text-center pt-10">Summary of Costs</h3>
-                        <p className="text-header-small-font-size text-white text-center mt-1.5">for Liquidity Pool</p>
-                        <div className="flex justify-center mt-3.5">
-                            <div className="flex justify-center mr-3.5">
-                                <p className="text-header-small-font-size text-white mr-1">USDC</p>
-                                <p className="text-header-small-font-size text-white">{liquidity.usd.toFixed(2)}</p>
-                            </div>
-                            <div className="flex justify-center mr-3.5">
-                                <p className="text-header-small-font-size text-white mr-1">SOL</p>
-                                <p className="text-header-small-font-size text-white">{liquidity.sol.toFixed(2)}</p>
-                            </div>
-                            <div className="flex justify-center mr-3.5">
-                                <p className="text-header-small-font-size text-white mr-1">MMOSH</p>
-                                <p className="text-header-small-font-size text-white">{liquidity.mmosh.toFixed(2)}</p>
-                            </div>
-                        </div>
+                                    <div className="flex justify-center mr-3.5">
+                                        <p className="text-header-small-font-size text-white mr-1">SOL</p>
+                                        <p className="text-header-small-font-size text-white">{liquidity.sol.toFixed(2)}</p>
+                                    </div>
+                                    <div className="flex justify-center mr-3.5">
+                                        <p className="text-header-small-font-size text-white mr-1">MMOSH</p>
+                                        <p className="text-header-small-font-size text-white">{liquidity.mmosh.toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            </>
+                        }
 
                         
                         <div className="flex justify-center mt-10">
                             <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
                             {!loading &&
-                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={submitAction}>Deploy Token Presale</button>
+                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={submitAction}>{buttonText}</button>
                             }
 
                             {loading&&
@@ -1175,22 +1252,27 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                             }
 
                         </div>
+                
                         <div className="flex justify-center mt-3.5">
-                            <p className="text-para-font-size text-white min-w-24">MMOSH</p>
+                            <p className="text-para-font-size text-white min-w-24 mr-3.5">MMOSH</p>
                             <p className="text-para-font-size text-white min-w-24">100,000</p>
                         </div>
-                        <div className="flex justify-center">
-                            <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
-                            <p className="text-para-font-size text-white min-w-24">{profileInfo?.usdcBalance.toFixed(2)} USDC</p>
-                        </div>
+                        {!project.isExternalCoin &&
+                            <div className="flex justify-center">
+                                <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
+                                <p className="text-para-font-size text-white min-w-24">{profileInfo?.usdcBalance.toFixed(2)} USDC</p>
+                            </div>
+                        }
                         <div className="flex justify-center">
                             <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
                             <p className="text-para-font-size text-white min-w-24">{profileInfo?.solBalance.toFixed(2)} SOL</p>
                         </div>
-                        <div className="flex justify-center">
-                            <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
-                            <p className="text-para-font-size text-white min-w-24">{profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
-                        </div>
+                        {!project.isExternalCoin &&
+                            <div className="flex justify-center">
+                                <p className="text-para-font-size text-white mr-3.5">Current Balance</p>
+                                <p className="text-para-font-size text-white min-w-24">{profileInfo?.mmoshBalance.toFixed(2)} MMOSH</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

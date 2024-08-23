@@ -66,6 +66,34 @@ export default function ProjectCreateStep2({
   const [currentProfile, setCurrentProfile] = useState<any>(null);
   const [otherRole, setOtherRole] = useState("");
 
+  const [project, setProject] = useState({
+    image: {preview: "", type: ""},
+    name: "", 
+    symbol: "",
+    desc: "",
+    passPrice: 0,
+    website: "",
+    telegram: "",
+    twitter:"",
+    priceDistribution: {
+        echosystem: 3,
+        curator: 2,
+        creator: 70,
+        promoter: 20,
+        scout: 5,
+    },
+    invitationType: "required",
+    invitationPrice: 0,
+    discount: 0.0,
+    isExternalCoin: false,
+    externalCoin: {
+      name: "",
+      address: "",
+      image: "",
+      symbol: ""
+    }
+})
+
   const gotoStep3 = () => {
     setLoading(true);
     let selectedCommunity = [];
@@ -76,13 +104,14 @@ export default function ProjectCreateStep2({
       }
     }
 
-    if (selectedCommunity.length == 0) {
-      createMessage("Community selection is required", "danger-container");
-      return;
+    if(!project.isExternalCoin) {
+      if (selectedCommunity.length == 0) {
+        createMessage("Community selection is required", "danger-container");
+        return;
+      }
     }
 
     let selectedProfiles = [];
-
     for (let index = 0; index < profiles.length; index++) {
       const element: any = profiles[index];
       if (element.selected == 1) {
@@ -90,9 +119,11 @@ export default function ProjectCreateStep2({
       }
     }
 
-    if (selectedProfiles.length == 0) {
-      createMessage("Profile selection is required", "danger-container");
-      return;
+    if(!project.isExternalCoin) {
+      if (selectedProfiles.length == 0) {
+        createMessage("Profile selection is required", "danger-container");
+        return;
+      }  
     }
 
     localStorage.setItem(
@@ -102,8 +133,12 @@ export default function ProjectCreateStep2({
         profiles: selectedProfiles,
       }),
     );
+    if(project.isExternalCoin) {
+      onPageChange("step9");
+    } else {
+      onPageChange("step3");
+    }
 
-    onPageChange("step3");
   };
 
   const goBack = () => {
@@ -111,6 +146,10 @@ export default function ProjectCreateStep2({
   };
 
   useEffect(() => {
+    if(localStorage.getItem("projectstep1")) {
+      let savedData:any = localStorage.getItem("projectstep1");
+      setProject(JSON.parse(savedData));
+    }
     listProfile(1);
     listCommunity(1);
     window.addEventListener("resize", updateDimensions);

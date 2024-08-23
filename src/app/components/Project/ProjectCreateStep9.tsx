@@ -21,6 +21,34 @@ export default function ProjectCreateStep9({ onPageChange }: { onPageChange: any
      const navigate = useRouter();
      const [files, setFiles] = useState<any>([])
 
+     const [project, setProject] = useState({
+        image: {preview: "", type: ""},
+        name: "", 
+        symbol: "",
+        desc: "",
+        passPrice: 0,
+        website: "",
+        telegram: "",
+        twitter:"",
+        priceDistribution: {
+            echosystem: 3,
+            curator: 2,
+            creator: 70,
+            promoter: 20,
+            scout: 5,
+        },
+        invitationType: "required",
+        invitationPrice: 0,
+        discount: 0.0,
+        isExternalCoin: false,
+        externalCoin: {
+          name: "",
+          address: "",
+          image: "",
+          symbol: ""
+        }
+    })
+
      const uploadAction = (fileUri:any, fileType:any, fileName:any) => {
         let data:any = localStorage.getItem("projectstep9");
         let newFiles = localStorage.getItem("projectstep9") ? JSON.parse(data) : [];
@@ -63,11 +91,20 @@ export default function ProjectCreateStep9({ onPageChange }: { onPageChange: any
      }
 
      const goBack = () => {
-        onPageChange("step8")
+        if(project.isExternalCoin) {
+            onPageChange("step2")
+        } else {
+            onPageChange("step8")
+        }
+
      }
 
      React.useEffect(()=>{
         init()
+        if(localStorage.getItem("projectstep1")) {
+            let savedData:any = localStorage.getItem("projectstep1");
+            setProject(JSON.parse(savedData));
+        }
         if(localStorage.getItem("projectstep9")) {
           let savedData:any = localStorage.getItem("projectstep9");
           setFiles(JSON.parse(savedData));
@@ -91,7 +128,7 @@ export default function ProjectCreateStep9({ onPageChange }: { onPageChange: any
                 <div className="relative w-full flex flex-col justify-center items-center pt-5">
                     <div className="max-w-md">
                         <h2 className="text-center text-white font-goudy font-normal text-xl">Launch Your Project</h2>
-                        <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">Step 9</h3>
+                        <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">Step {project.isExternalCoin ? "3" : "9"}</h3>
                         <h3 className="text-center text-white font-goudy font-normal text-sub-title-font-size pt-1.5">Inform our AI Bot</h3>
                         <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">Upload your white paper and other materials to inform MMOSH Bot about your project. MMOSH Bot will answer questions and inform the community.</p>
                     </div>

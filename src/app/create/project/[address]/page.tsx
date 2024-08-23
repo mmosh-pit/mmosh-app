@@ -884,58 +884,64 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                         <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + creator} className="text-header-small-font-size" target="_blank">{capitalizeString(creator)}</a></li>
                                                     </ul>
                                                 </div>
-                                                <div className="mr-8 mb-5">
-                                                    <h4 className="text-[15px] text-white">Project Team</h4>
-                                                    <ul>
-                                                    {projectDetail.profiles.map((profileItem:any, i:any) => (
-                                                        <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + creator} className="text-header-small-font-size" target="_blank">{capitalizeString(profileItem.name)}</a></li>
-                                                    ))}
-                                                    </ul>
-                                                </div>
-                                                <div className="mr-20 mb-5">
-                                                    <h4 className="text-[15px] text-white">Community</h4>
-                                                    <ul>
-                                                    {projectDetail.community.map((communityItem:any, i:any) => (
-                                                        <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + "create/communities/" + communityItem.name} className="text-header-small-font-size" target="_blank">{capitalizeString(communityItem.name)}</a></li>
-                                                    ))}
-                                                    </ul>
-                                                </div>
+                                                {projectDetail.profiles.length > 0 &&
+                                                    <div className="mr-8 mb-5">
+                                                        <h4 className="text-[15px] text-white">Project Team</h4>
+                                                        <ul>
+                                                        {projectDetail.profiles.map((profileItem:any, i:any) => (
+                                                            <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + creator} className="text-header-small-font-size" target="_blank">{capitalizeString(profileItem.name)}</a></li>
+                                                        ))}
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                {projectDetail.community.length > 0 &&
+                                                    <div className="mr-20 mb-5">
+                                                        <h4 className="text-[15px] text-white">Community</h4>
+                                                        <ul>
+                                                        {projectDetail.community.map((communityItem:any, i:any) => (
+                                                            <li className="underline"><a href={process.env.NEXT_PUBLIC_APP_MAIN_URL + "create/communities/" + communityItem.name} className="text-header-small-font-size" target="_blank">{capitalizeString(communityItem.name)}</a></li>
+                                                        ))}
+                                                        </ul>
+                                                    </div>
+                                                }
                                             </div>
-                                            <div>
-                                                <h4 className="text-[15px] text-white">Tokenomics</h4>
-                                                <div className="flex">
-                                                    <div>
-                                                        <PieChart
-                                                            width={200}
-                                                            height={200}
-                                                        >
-                                                            <Pie
-                                                                dataKey="value"
-                                                                startAngle={360}
-                                                                endAngle={0}
-                                                                data={tokenomicschart}
-                                                                outerRadius={80}
-                                                                fill="none"
-                                                                stroke="none"
+                                            {tokenomicschart.length > 0 &&
+                                                <div>
+                                                    <h4 className="text-[15px] text-white">Tokenomics</h4>
+                                                    <div className="flex">
+                                                        <div>
+                                                            <PieChart
+                                                                width={200}
+                                                                height={200}
                                                             >
-                                                                {tokenomicschart.map((entry:any, index) => (
-                                                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                                                ))}
-                                                            </Pie>
-                                                        </PieChart>
+                                                                <Pie
+                                                                    dataKey="value"
+                                                                    startAngle={360}
+                                                                    endAngle={0}
+                                                                    data={tokenomicschart}
+                                                                    outerRadius={80}
+                                                                    fill="none"
+                                                                    stroke="none"
+                                                                >
+                                                                    {tokenomicschart.map((entry:any, index) => (
+                                                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                                                    ))}
+                                                                </Pie>
+                                                            </PieChart>
+                                                        </div>
+                                                        <div className="pl-5 pt-5">
+                                                        {tokenomicschart.map((tokenomicschartItem:any, i:any) => (
+                                                                <div className="flex">
+                                                                    <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
+                                                                    <p className="pl-2.5 text-header-small-font-size min-w-32">{tokenomicschartItem.name}</p>
+                                                                    <p className="text-header-small-font-size">{tokenomicschartItem.orginalValue}%</p>
+                                                                </div>
+                                                        ))}
+                                                        </div>
                                                     </div>
-                                                    <div className="pl-5 pt-5">
-                                                       {tokenomicschart.map((tokenomicschartItem:any, i:any) => (
-                                                            <div className="flex">
-                                                                <div className={"w-2.5 h-2.5 rounded-full relative top-1"} style={{"backgroundColor":tokenomicschartItem.color}}></div>
-                                                                <p className="pl-2.5 text-header-small-font-size min-w-32">{tokenomicschartItem.name}</p>
-                                                                <p className="text-header-small-font-size">{tokenomicschartItem.orginalValue}%</p>
-                                                            </div>
-                                                       ))}
-                                                    </div>
-                                                </div>
 
-                                            </div>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                     </div>

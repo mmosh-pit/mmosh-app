@@ -1,6 +1,6 @@
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { ShdwDrive } from "@shadow-drive/sdk";
-import { Connection, Keypair } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import bs58 from "bs58";
 import { v4 as uuidv4 } from "uuid";
 import Config from "./../../anchor/web3Config.json";
@@ -21,7 +21,8 @@ export const pinFileToShadowDrive = async (jsonData: any) => {
     ).init();
 
     const accounts = await drive.getStorageAccounts();
-    const acc = accounts[0].publicKey;
+    let acc_str:any = process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY;
+    const acc = new PublicKey(acc_str);
 
     const blobData = new Blob([JSON.stringify(jsonData, null, 2)], {
       type: "application/json",
@@ -54,8 +55,9 @@ export const pinFileToShadowDriveUrl = async (jsonData: any) => {
     ).init();
 
     const accounts = await drive.getStorageAccounts();
-    const acc = accounts[0].publicKey;
-
+    let acc_str:any = process.env.NEXT_PUBLIC_SHDW_DRIVE_PUB_KEY;
+    const acc = new PublicKey(acc_str);
+    
     const blobData = new Blob([JSON.stringify(jsonData, null, 2)], {
       type: "application/json",
     });

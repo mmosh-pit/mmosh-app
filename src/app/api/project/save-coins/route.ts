@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
         creator, 
         listingprice,
         projectkey,
-        history,
         prices: [],
         pricepercentage: 0,
         coingeckoid: "",

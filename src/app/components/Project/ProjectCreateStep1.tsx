@@ -75,7 +75,8 @@ export default function ProjectCreateStep1({
       name: "",
       address: "",
       image: "",
-      symbol: ""
+      symbol: "",
+      decimals: 0
     }
   });
 
@@ -373,7 +374,8 @@ export default function ProjectCreateStep1({
         name: token.name,
         address: token.address,
         image: token.logoURI,
-        symbol: token.symbol
+        symbol: token.symbol,
+        decimals: token.decimals
       }})
       closeModal()
   }

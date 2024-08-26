@@ -13,5 +13,6 @@ export type CreateCoinParams = {
   supply: number;
   initialPrice: number;
   type: string;
+  baseToken: any
   setMintingStatus: React.Dispatch<React.SetStateAction<string>>;
 };

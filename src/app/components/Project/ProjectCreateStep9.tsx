@@ -45,7 +45,8 @@ export default function ProjectCreateStep9({ onPageChange }: { onPageChange: any
           name: "",
           address: "",
           image: "",
-          symbol: ""
+          symbol: "",
+          decimals: 0
         }
     })
 

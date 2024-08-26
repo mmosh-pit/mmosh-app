@@ -70,7 +70,8 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
           name: "",
           address: "",
           image: "",
-          symbol: ""
+          symbol: "",
+          decimals: 0
         }
     })
 
@@ -652,6 +653,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 key: mintKey,
                 desc: coins.desc,
                 supply: coins.supply,
+                decimals: project.isExternalCoin ? project.externalCoin.decimals : 9,
                 creator: wallet.publicKey.toBase58(), 
                 listingprice: coins.listingPrice,
                 projectkey: projectKeyPair.publicKey.toBase58()

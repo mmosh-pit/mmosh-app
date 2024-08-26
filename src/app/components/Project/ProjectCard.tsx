@@ -162,18 +162,18 @@ const ProjectCard = (projectData: any) => {
                         </div>
                         <div className="project-card-detail-item flex">
                             <label className="text-xs text-white pr-1.5 leading-none">Total Supply</label>
-                            <span className="text-xs text-gray-300 leading-none">{projectData.data.coins[0].supply.toLocaleString()}</span>
+                            <span className="text-xs text-gray-300 leading-none overflow-hidden text-ellipsis">{projectData.data.coins[0].supply.toLocaleString()}</span>
                         </div>
                         {countDown != 0 &&
                             <div className="project-card-detail-item flex">
                                 <label className="text-xs text-white pr-1.5 leading-none">Sold in Presale</label>
-                                <span className="text-xs text-gray-300 leading-none">{totalSold.toLocaleString()}</span>
+                                <span className="text-xs text-gray-300 leading-none overflow-hidden text-ellipsis">{totalSold.toLocaleString()}</span>
                             </div>
                         }
 
                         <div className="project-card-detail-item flex">
                             <label className="text-xs text-white pr-1.5 leading-none">Fully Diluted Value</label>
-                            <span className="text-xs text-gray-300 leading-none">{(projectData.data.coins[0].listingprice * projectData.data.coins[0].supply).toLocaleString()} <label className="text-tiny text-white font-bold">USDC</label>
+                            <span className="text-xs text-gray-300 leading-none overflow-hidden text-ellipsis">{(projectData.data.coins[0].listingprice * projectData.data.coins[0].supply).toLocaleString()} <label className="text-tiny text-white font-bold">USDC</label>
                             </span>
                         </div>
                     </div>

@@ -30,6 +30,7 @@ export const createCoin = async ({
   type,
   setMintingStatus,
   username,
+  baseToken
 }: CreateCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
@@ -123,7 +124,7 @@ export const createCoin = async ({
       symbol,
       url: shdwHash,
       curve: curve,
-      baseMint: web3Consts.oposToken,
+      baseMint: new anchor.web3.PublicKey(baseToken.address),
       generalAuthority: wallet.publicKey,
       reserveAuthority: wallet.publicKey,
       buyBaseRoyaltyPercentage: 0,
@@ -145,11 +146,10 @@ export const createCoin = async ({
 
     if (buyres) {
       const directoryParams = {
-        basekey: web3Consts.oposToken.toBase58(),
-        basename: "MMOSH: The Stoked Token",
-        basesymbol: "MMOSH",
-        baseimg:
-          "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+        basekey: baseToken.address,
+        basename: baseToken.name,
+        basesymbol: baseToken.symbol,
+        baseimg: baseToken.logoURI,
         bonding: res.tokenBonding.toBase58(),
         targetkey: targetMint,
         targetname: name,

@@ -1376,6 +1376,20 @@ export class Connectivity {
 
   }
 
+  async getUserBalance(tokenData: any) {
+    const user = this.provider.publicKey;
+    if (!user) throw "Wallet not found";
+    const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.address), user);
+    const infoes = await this.connection.getMultipleAccountsInfo([
+      new anchor.web3.PublicKey(userOposAta.toBase58()),
+    ]);
+    let tokenBalance = 0;
+    if (infoes[0]) {
+      tokenBalance = infoes[0].lamports / tokenData.decimals;
+    }
+    return tokenBalance
+  }
+
   async __getProfileHoldersInfo(
     input: LineageInfo,
     parentProfile: web3.PublicKey,

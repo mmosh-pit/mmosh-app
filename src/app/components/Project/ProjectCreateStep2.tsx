@@ -90,7 +90,8 @@ export default function ProjectCreateStep2({
       name: "",
       address: "",
       image: "",
-      symbol: ""
+      symbol: "",
+      decimals: 9
     }
 })
 

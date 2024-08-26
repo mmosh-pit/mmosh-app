@@ -5,12 +5,14 @@ import {
   CryptoElements,
   OnrampElement,
 } from "../components/atm/StripeCryptoElements";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 const stripeOnrampPromise = loadStripeOnramp(
   process.env.NEXT_PUBLIC_STRIPE_KEY!,
 );
 
 const Page = () => {
+  const wallet = useAnchorWallet();
   const [clientSecret, setClientSecret] = React.useState("");
 
   React.useEffect(() => {
@@ -20,9 +22,7 @@ const Page = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         transaction_details: {
-          destination_currency: "usdc",
-          destination_exchange_amount: "13.37",
-          destination_network: "solana",
+          wallet_address: wallet?.publicKey.toString(),
         },
       }),
     })

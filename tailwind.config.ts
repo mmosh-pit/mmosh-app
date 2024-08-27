@@ -14,6 +14,7 @@ const config: Config = {
       colors: {
         primary: "#CD068E",
         purple: "#000354A8",
+        "search": "#5A00FF",
         "light-gray": "#BDBCBC",
         "theme-blue": "#180E4F",
       },

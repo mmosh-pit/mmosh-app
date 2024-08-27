@@ -80,7 +80,7 @@ const Step1 = () => {
       setMessage({
         type: "info",
         message:
-          "This feature is for MMOSH DAO members only. [Create a Profile](https://www.mmosh.app/create/profile) to join the DAO",
+          "This feature is for MMOSH DAO members only. [Create a Profile](https://www.mmosh.app/create/create_profile) to join the DAO",
       });
     } else {
       setMessage({ type: "", message: "" });

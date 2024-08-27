@@ -17,7 +17,7 @@ const Coins = () => {
   const renderGraphicComponent = React.useCallback(() => {
     if (selectedTab === "tvl") return <TVL />;
 
-    if (selectedTab === "volume") return <Volume />;
+    if (selectedTab === "volume") return <Volume withFilters />;
 
     return <Price />;
   }, [selectedTab]);
@@ -28,7 +28,7 @@ const Coins = () => {
         <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
           <TVL />
 
-          <Volume />
+          <Volume withFilters />
 
           <Price />
         </div>

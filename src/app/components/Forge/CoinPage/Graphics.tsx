@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 
 import DateTypeSelector from "../../common/DateTypeSelector";
 import { Coin } from "@/app/models/coin";
-import { coinStats } from "@/app/store/coins";
+import { coinStats, selectedDateType } from "@/app/store/coins";
 import TVL from "../../CoinDirectory/TVL";
 import Volume from "../../CoinDirectory/Volume";
 import Price from "../../CoinDirectory/Price";
@@ -30,7 +30,7 @@ type Props = {
 const Graphics = ({ coin }: Props) => {
   const [stats] = useAtom(coinStats);
 
-  const [type, setType] = React.useState("day");
+  const [type, setType] = useAtom(selectedDateType);
 
   const [selectedGraphicType, setSelectedGraphicType] = React.useState({
     label: "TVL",
@@ -51,9 +51,9 @@ const Graphics = ({ coin }: Props) => {
     <div className="w-full flex flex-col bg-[#040241] rounded-xl py-1 px-6 md:mr-4">
       <div className="w-full flex justify-end mt-4 px-12">
         <div className="flex items-center self-end">
-          <div className="dropdown rounded-lg py-1 ml-4">
+          <div className="dropdown rounded-lg py-1 ml-4 mr-6">
             <div tabIndex={0} role="button" className="btn m-1">
-              {selectedGraphicType.label}
+              <p className="text-base">{selectedGraphicType.label}</p>
             </div>
             <ul
               tabIndex={0}
@@ -61,11 +61,13 @@ const Graphics = ({ coin }: Props) => {
             >
               {typeOptions.map((value) => (
                 <li onClick={() => setSelectedGraphicType(value)}>
-                  <p>{value.label}</p>
+                  <p className="text-base">{value.label}</p>
                 </li>
               ))}
             </ul>
           </div>
+
+          <DateTypeSelector type={type} setType={setType} />
         </div>
       </div>
       {renderGraphicType()}

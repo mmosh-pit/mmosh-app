@@ -42,7 +42,7 @@ const calculatePriceForCurve = (
     index += currentSupply
   ) {
     labels.push(index);
-    const num = curveConfig.buyWithBaseAmount(
+    const num = curveConfig.buyTargetAmount(
       Number(index),
       percent(0)!,
       percent(0)!,

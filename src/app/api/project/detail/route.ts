@@ -12,6 +12,12 @@ export async function GET(req: NextRequest) {
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
   const coins = await projectCoinCollection.findOne({ projectkey: project });
 
+  const updated_date = new Date();
+  const communityCoinAccount = await projectCoinCollection.findOne({
+    projectkey: project,
+    updated_date: {$lt: updated_date},
+  });
+
   const projectCommunityCollection = db.collection(
     "mmosh-app-project-community",
   );

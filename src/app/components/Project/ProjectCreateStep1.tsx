@@ -8,6 +8,27 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
+import ArrowDown from "@/assets/icons/ArrowDown";
+import Modal from "react-modal";
+import SearchIcon from "@/assets/icons/SearchIcon";
+import axios from "axios";
+import { Bars } from "react-loader-spinner";
+import TokenCard from "./TokenCard";
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#180E4F",
+    minWidth: "300px",
+    maxWidth: "500px",
+    width: "100%"
+  },
+};
 
 export default function ProjectCreateStep1({
   onPageChange,
@@ -21,6 +42,12 @@ export default function ProjectCreateStep1({
   const [msgText, setMsgText] = useState("");
 
   const [image, setImage] = React.useState<File | null>(null);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [keyword, setKeyword] = React.useState("");
+  const [coinLoader, setCoinLoader] = React.useState(false);
+  const [coinAllList, setCoinAllList] = React.useState([]);
+  const [coinList, setCoinList] = React.useState([]);
+
   const [fields, setFields] = useState({
     image: {
       preview: "",
@@ -43,6 +70,14 @@ export default function ProjectCreateStep1({
     invitationType: "required",
     invitationPrice: 0,
     discount: 0.0,
+    isExternalCoin: false,
+    externalCoin: {
+      name: "",
+      address: "",
+      image: "",
+      symbol: "",
+      decimals: 0
+    }
   });
 
   const [invitationTypes, setInvitationTypes] = React.useState([
@@ -50,6 +85,7 @@ export default function ProjectCreateStep1({
     "optional",
     "none",
   ]);
+  const [isReady, setIsReady] = useState(false);
 
   React.useEffect(() => {
     if (!image) return;
@@ -68,7 +104,14 @@ export default function ProjectCreateStep1({
     }
   }, []);
 
-  const onRadioChange = () => {};
+  React.useEffect(() => {
+    setIsReady(validateFields(false));
+  }, [fields]);
+
+  const onRadioChange = (value: any) => {
+    console.log("radio change ", value)
+    setFields({ ...fields, isExternalCoin: value });
+  };
 
   const chooseInvitationType = (currentInvitationType: any) => {
     let invitationPrice = fields.invitationPrice;
@@ -102,6 +145,8 @@ export default function ProjectCreateStep1({
       invitationType: currentInvitationType,
       invitationPrice: invitationPrice,
       discount: fields.discount,
+      isExternalCoin: fields.isExternalCoin,
+      externalCoin: fields.externalCoin
     });
   };
 
@@ -132,58 +177,70 @@ export default function ProjectCreateStep1({
     }
   };
 
-  const validateFields = () => {
+  const validateFields = (isMessage: boolean) => {
     if (fields.name.length == 0) {
-      createMessage("Name is required", "danger-container");
+      if(isMessage) {
+        createMessage("Name is required", "danger-container");
+      }
+
       return false;
     }
 
     if (fields.name.length > 50) {
-      createMessage(
-        "Name should have less than 50 characters",
-        "danger-container",
-      );
+      if(isMessage) {
+        createMessage(
+          "Name should have less than 50 characters",
+          "danger-container",
+        );
+      }
       return false;
     }
 
     if (fields.symbol.length == 0) {
-      createMessage("Symbol is required", "danger-container");
+      if(isMessage) {
+         createMessage("Symbol is required", "danger-container");
+      }
       return false;
     }
 
     if (fields.symbol.length > 10) {
-      createMessage(
-        "Symbol should have less than 10 characters",
-        "danger-container",
-      );
+      if(isMessage) {
+        createMessage(
+          "Symbol should have less than 10 characters",
+          "danger-container",
+        );
+      }
       return false;
     }
 
     if (fields.desc.length == 0) {
-      createMessage("Description is required", "danger-container");
+      if(isMessage) {
+         createMessage("Description is required", "danger-container");
+      }
       return false;
     }
 
     if (fields.desc.length > 160) {
-      createMessage(
-        "Description should have less than 160 characters",
-        "danger-container",
-      );
+      if(isMessage) {
+        createMessage(
+          "Description should have less than 160 characters",
+          "danger-container",
+        );
+      }
       return false;
     }
 
     if (fields.image.preview.length == 0) {
-      createMessage("Project pass Image is required", "danger-container");
+      if(isMessage) {
+        createMessage("Project pass Image is required", "danger-container");
+      }
       return false;
     }
 
     if (fields.website.length > 0 && !isValidHttpUrl(fields.website)) {
-      createMessage("Invalid website url", "danger-container");
-      return false;
-    }
-
-    if (fields.passPrice == 0) {
-      createMessage("Pass price not mentioned", "danger-container");
+      if(isMessage) {
+        createMessage("Invalid website url", "danger-container");
+      }
       return false;
     }
 
@@ -192,22 +249,40 @@ export default function ProjectCreateStep1({
       fields.invitationType == "optional"
     ) {
       if (fields.invitationPrice == 0) {
-        createMessage("Invitation price not mentioned", "danger-container");
+        if(isMessage) {
+          createMessage("Invitation price not mentioned", "danger-container");
+        }
         return false;
       }
     }
 
     if (fields.invitationType == "optional") {
       if (fields.discount == 0) {
-        createMessage("Discount not mentioned", "danger-container");
+        if(isMessage) {
+          createMessage("Discount not mentioned", "danger-container");
+        }
         return false;
       }
     }
 
+    if (fields.isExternalCoin === true) {
+      if (fields.externalCoin.address === "") {
+        if(isMessage) {
+          createMessage("Coin not choosed", "danger-container");
+        }
+        return false;
+      }
+    }
+
+
     if (getTotalPercentage() != 100) {
-      createMessage("Price distribution is not 100%", "danger-container");
+      if(isMessage) {
+        createMessage("Price distribution is not 100%", "danger-container");
+      }
       return false;
     }
+
+    
 
     return true;
   };
@@ -223,7 +298,7 @@ export default function ProjectCreateStep1({
 
   const gotoStep2 = async () => {
     setLoading(true);
-    if (validateFields()) {
+    if (validateFields(true)) {
       if (!isValidHttpUrl(fields.image.preview)) {
         let imageFile = await fetch(fields.image.preview)
           .then((r) => r.blob())
@@ -253,6 +328,58 @@ export default function ProjectCreateStep1({
   const capitalizeString = (str: any) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
+
+  const openJupiterCoins = () => {
+    setIsOpen(true)
+    getCoinsFromJupiter();
+  }
+
+  const getCoinsFromJupiter = async() => {
+    try {
+      setCoinLoader(true)
+      const result = await axios.get("https://token.jup.ag/strict")
+      setCoinAllList(result.data)
+      setCoinList(result.data)
+      setCoinLoader(false)
+    } catch (error) {
+      setCoinLoader(false)
+      setCoinList([])
+      setCoinAllList([])
+    }
+  }  
+
+  const closeModal = () => {
+    setIsOpen(false)
+    setKeyword("")
+    setCoinList([])
+    setCoinAllList([])
+  }
+
+  const onCoinSearch = (event:any) => {
+    setKeyword(event.target.value)
+    console.log(event.target.value)
+    if(event.target.value.trim().length == 0) {
+      setCoinList(coinAllList)
+    } else {
+      let newCoinList = coinAllList.filter((item: any) =>
+        item.name.toLowerCase().includes(event.target.value.trim().toLowerCase()) || item.symbol.toLowerCase().includes(event.target.value.trim().toLowerCase()) || item.symbol.toLowerCase().includes(event.target.value.trim().toLowerCase()),
+      );
+      setCoinList(newCoinList)
+    }
+
+  }
+
+  const onTokenSelect = (token:any) => {
+      setFields({ ...fields, externalCoin: {
+        name: token.name,
+        address: token.address,
+        image: token.logoURI,
+        symbol: token.symbol,
+        decimals: token.decimals
+      }})
+      closeModal()
+  }
+
 
   return (
     <>
@@ -343,22 +470,27 @@ export default function ProjectCreateStep1({
             </div>
             <div className="xl:col-span-2">
               <div className="form-element pt-2.5">
-                <Input
-                  type="text"
-                  title="Project Pass Price"
-                  required
-                  helperText=""
-                  placeholder="0"
-                  value={
-                    fields.passPrice > 0 ? fields.passPrice.toString() : ""
-                  }
-                  onChange={(e) =>
-                    setFields({
-                      ...fields,
-                      passPrice: prepareNumber(Number(e.target.value)),
-                    })
-                  }
-                />
+              <div className="grid grid-cols-12 gap-4">
+                <div className="form-element col-span-9">
+                  <Input
+                      type="text"
+                      title="Project Pass Price"
+                      required
+                      helperText=""
+                      placeholder="0"
+                      value={
+                        fields.passPrice > 0 ? fields.passPrice.toString() : ""
+                      }
+                      onChange={(e) =>
+                        setFields({
+                          ...fields,
+                          passPrice: prepareNumber(Number(e.target.value)),
+                        })
+                      }
+                    />
+                </div>
+                <div className="col-span-3 mt-7 text-white text-header-small-font-size">USD</div>
+              </div>
               </div>
               <div className="form-element pt-2.5">
                 <Input
@@ -399,21 +531,40 @@ export default function ProjectCreateStep1({
                   }
                 />
               </div>
+              {fields.isExternalCoin &&
+                  <div className="form-element pt-2.5">
+                    <p className="text-xs text-whilte">
+                        Select Coin
+                    </p>
+
+                      <p className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer" onClick={openJupiterCoins}>
+                          {fields.externalCoin.name !=="" &&
+                            <>
+                              <span>{fields.externalCoin.name}</span>
+                            </>
+                          }
+                          {fields.externalCoin.name ==="" &&
+                                <span className="text-white text-opacity-[0.3]"> Select Coin</span>
+                          }
+                          <label className="mr-2.5"><ArrowDown /></label>
+                      </p>
+                  </div>
+              }
+
               <div className="flex pt-2.5">
                 <Radio
                   title="Create a new Community Coin"
-                  checked={true}
-                  onChoose={onRadioChange}
+                  checked={!fields.isExternalCoin}
+                  onChoose={()=>{onRadioChange(false)}}
                   disabled={false}
                 />
                 <div className="relative">
                   <Radio
                     title="Use an Existing Coin"
-                    checked={false}
-                    onChoose={onRadioChange}
-                    disabled={true}
+                    checked={fields.isExternalCoin}
+                    onChoose={()=>{onRadioChange(true)}}
+                    disabled={false}
                   />
-                  <span className="coming-soon">Coming Soon</span>
                 </div>
               </div>
             </div>
@@ -659,6 +810,7 @@ export default function ProjectCreateStep1({
               <button
                 className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white"
                 onClick={gotoStep2}
+                disabled={!isReady}
               >
                 Next
               </button>
@@ -671,6 +823,57 @@ export default function ProjectCreateStep1({
           </div>
         </div>
       </div>
+      <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+        >
+          <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">Coin List </h2>
+          <div>
+            {!coinLoader &&
+              <>
+                <div className="search-container">
+                  <label
+                    className={
+                      "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
+                    }
+                  >
+                    <div className="p-2">
+                      <SearchIcon />
+                    </div>
+                    <input
+                      type="text"
+                      className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
+                      placeholder="Search by Coin Name"
+                      value={keyword}
+                      onChange={onCoinSearch}
+                    />
+                  </label>
+                </div>
+                <div className="overflow-y-auto" style={{maxHeight: window.innerHeight * 0.7 + "px"}}>
+                   {coinList.map((coinItem: any) => (
+                      <TokenCard data={coinItem} onChoose={onTokenSelect} />
+                   ))}
+                </div>
+              </>
+            }
+
+            {coinLoader &&
+              <div className="flex justify-center">
+                <Bars
+                  height="80"
+                  width="80"
+                  color="rgba(255, 0, 199, 1)"
+                  ariaLabel="bars-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="bars-loading"
+                  visible={true}
+                />
+              </div>
+            }
+
+          </div>
+        </Modal>
     </>
   );
 }

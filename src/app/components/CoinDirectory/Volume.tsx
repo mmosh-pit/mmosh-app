@@ -4,17 +4,20 @@ import * as React from "react";
 
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 import DateTypeSelector from "../common/DateTypeSelector";
+import { useAtom } from "jotai";
+import { selectedDateType } from "@/app/store/coins";
 
 type Props = {
   bonding?: string;
   height?: number;
+  withFilters?: boolean;
 };
 
-const Volume = ({ bonding, height }: Props) => {
+const Volume = ({ bonding, height, withFilters }: Props) => {
   const [data, setData] = React.useState([]);
   const [total, setTotal] = React.useState("0");
 
-  const [type, setType] = React.useState("day");
+  const [type, setType] = useAtom(selectedDateType);
 
   const getVolume = async () => {
     try {
@@ -35,7 +38,7 @@ const Volume = ({ bonding, height }: Props) => {
   }, [type]);
 
   return (
-    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
+    <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
       <div className="w-full flex justify-between">
         <div className="flex flex-col ml-6 mt-4">
           <p className="text-sm">Volume</p>
@@ -43,7 +46,7 @@ const Volume = ({ bonding, height }: Props) => {
           <p className="text-tiny">Past Month</p>
         </div>
 
-        <DateTypeSelector type={type} setType={setType} />
+        {withFilters && <DateTypeSelector type={type} setType={setType} />}
       </div>
       <ResponsiveContainer width="100%" height={height || 200}>
         <BarChart

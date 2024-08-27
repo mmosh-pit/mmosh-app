@@ -12,6 +12,7 @@
     "@coral-xyz/anchor": "^0.30.0",
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
     "@metaplex-foundation/js": "^0.20.1",
+    "@meteora-ag/dlmm-sdk": "^0.7.7",
     "@shadow-drive/sdk": "^5.0.0",
     "@solana-developers/node-helpers": "^1.2.2",
     "@solana/spl-token": "^0.4.0",
@@ -37,7 +38,10 @@
     "react-modal": "^3.16.1",
     "react-telegram-login": "^1.1.2",
     "recharts": "^2.12.7",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "@stripe/crypto": "^0.0.4",
+    "@stripe/stripe-js": "^4.3.0",
+    "stripe": "^16.8.0"
   },
   "devDependencies": {
     "@types/node": "^20",

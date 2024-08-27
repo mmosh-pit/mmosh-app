@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 import DateTypeSelector from "../common/DateTypeSelector";
+import { Coin } from "@/app/models/coin";
 
 type Props = {
   bonding?: string;

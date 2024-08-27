@@ -25,9 +25,10 @@ const typeOptions = [
 
 type Props = {
   coin: Coin;
+  base: Coin;
 };
 
-const Graphics = ({ coin }: Props) => {
+const Graphics = ({ coin, base }: Props) => {
   const [stats] = useAtom(coinStats);
 
   const [type, setType] = React.useState("day");
@@ -39,7 +40,7 @@ const Graphics = ({ coin }: Props) => {
 
   const renderGraphicType = React.useCallback(() => {
     if (selectedGraphicType.value === "tvl")
-      return <TVL bonding={coin.bonding} />;
+      return <TVL bonding={coin.bonding} base={base}  />;
 
     if (selectedGraphicType.value === "volume")
       return <Volume bonding={coin.bonding} />;

@@ -9,18 +9,61 @@ import { Coin } from "@/app/models/coin";
 import Graphics from "@/app/components/Forge/CoinPage/Graphics";
 import Stats from "@/app/components/Forge/CoinPage/Stats";
 import TransactionsTable from "@/app/components/Forge/CoinPage/TransactionsTable";
+import * as anchor from "@coral-xyz/anchor";
+import { Connection } from "@solana/web3.js";
+import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { web3Consts } from "@/anchor/web3Consts";
 
 const Page = ({ params }: { params: { symbol: string } }) => {
   const navigate = useRouter();
-
+  const wallet = useAnchorWallet();
   const rendered = React.useRef(false);
 
+  const [baseCoin, setBaseCoin] = React.useState<Coin | null>(null);
   const [coin, setCoin] = React.useState<Coin | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const goBack = React.useCallback(() => {
     navigate.back();
   }, []);
+
+  const getBaseToken = async(bondingKey: string) => {
+
+    if(!wallet) {
+      return
+    }
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+
+    const env = new anchor.AnchorProvider(connection, wallet, {
+      preflightCommitment: "processed",
+    });
+  
+    anchor.setProvider(env);
+    const curveConn = new CurveConn(env, web3Consts.programID);
+    const bondingResult = await curveConn.getTokenBonding(
+      new anchor.web3.PublicKey(bondingKey),
+    );
+  
+    if(!bondingResult) {
+      return null
+    }
+  
+    const mintDetail = await curveConn.metaplex
+    .nfts()
+    .findByMint({ mintAddress: bondingResult?.baseMint });
+  
+    setBaseCoin({
+      name: mintDetail.name,
+      symbol: mintDetail.symbol,
+      desc: mintDetail.json?.description ? mintDetail.json?.description : "",
+      token: mintDetail.address.toBase58(),
+      image: mintDetail.json?.image ? mintDetail.json?.image : "",
+      bonding: coin?.bonding ? coin.bonding : "",
+      creatorUsername: coin?.creatorUsername ? coin.creatorUsername : ""
+    })
+
+  }
 
   const fetchCoinData = React.useCallback(async () => {
     try {
@@ -29,7 +72,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       const result = await axios.get<Coin>(
         `/api/get-token-by-symbol?symbol=${params.symbol}`,
       );
-
       setIsLoading(false);
       setCoin(result.data);
     } catch (err) {
@@ -45,6 +87,12 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     }
   }, [params]);
 
+  React.useEffect(() => {
+    if(wallet && coin) {
+      getBaseToken(coin?.bonding)
+    }
+  },[wallet, coin])
+
   if (isLoading) {
     return (
       <div className="relative background-content flex w-full justify-center items-center">
@@ -53,48 +101,53 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     );
   }
 
-  if (!coin) {
+  if (!coin && !baseCoin) {
     return (
       <div className="background-content relative flex flex-col max-h-full pt-20 px-12" />
     );
   }
 
   return (
-    <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
-      <div className="w-full flex justify-between">
-        <div className="flex items-center mb-8 ml-4">
-          <div
-            className="flex items-center mr-4 cursor-pointer"
-            onClick={goBack}
-          >
-            <ArrowBack />
-            <p className="text-white text-sm">Back</p>
-          </div>
+    <>
+      {coin && baseCoin &&
+        <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
+          <div className="w-full flex justify-between">
+            <div className="flex items-center mb-8 ml-4">
+              <div
+                className="flex items-center mr-4 cursor-pointer"
+                onClick={goBack}
+              >
+                <ArrowBack />
+                <p className="text-white text-sm">Back</p>
+              </div>
 
-          <div className="flex items-center">
-            <div className="relative w-[1.5vmax] h-[1.5vmax]">
-              <Image alt={coin.symbol} src={coin.image} layout="fill" />
+              <div className="flex items-center">
+                <div className="relative w-[1.5vmax] h-[1.5vmax]">
+                  <Image alt={coin.symbol} src={coin.image} layout="fill" />
+                </div>
+
+                <h6 className="mx-2">{coin.name}</h6>
+                <p className="text-tiny self-end">{coin.symbol}</p>
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex flex-col md:flex-row justify-between">
+            <div className="md:w-[50%] w-[90%]">
+              <Graphics coin={coin} base={baseCoin}/>
             </div>
 
-            <h6 className="mx-2">{coin.name}</h6>
-            <p className="text-tiny self-end">{coin.symbol}</p>
+            <div className="md:w-[35%] w-[90%]">
+              <Stats coin={coin} base={baseCoin}/>
+            </div>
+          </div>
+
+          <div className="w-full px-12 mt-20">
+            <TransactionsTable coin={coin} base={baseCoin} />
           </div>
         </div>
-      </div>
-      <div className="w-full flex flex-col md:flex-row justify-between">
-        <div className="md:w-[50%] w-[90%]">
-          <Graphics coin={coin} />
-        </div>
+      }
+    </>
 
-        <div className="md:w-[35%] w-[90%]">
-          <Stats coin={coin} />
-        </div>
-      </div>
-
-      <div className="w-full px-12 mt-20">
-        <TransactionsTable coin={coin} />
-      </div>
-    </div>
   );
 };
 

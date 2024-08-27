@@ -4,12 +4,14 @@ import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
+import { Coin } from "@/app/models/coin";
 
 type Props = {
   bonding?: string;
+  base: Coin
 };
 
-const TVL = ({ bonding }: Props) => {
+const TVL = ({ bonding, base }: Props) => {
   const rendered = React.useRef(false);
 
   const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
@@ -45,7 +47,7 @@ const TVL = ({ bonding }: Props) => {
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
       <div className="flex flex-col ml-6 mt-4">
         <p className="text-sm mb-2">TVL</p>
-        <h6>{total} MMOSH</h6>
+        <h6>{total} {base.symbol}</h6>
       </div>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart

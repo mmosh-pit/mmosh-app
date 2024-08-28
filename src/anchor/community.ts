@@ -938,63 +938,66 @@ export class Connectivity {
 
       let cost = mainStateInfo.profileMintingCost.toNumber();
 
-      let holdersfullInfo = [];
+      if(cost > 0) {
+        let holdersfullInfo = [];
 
-      holdersfullInfo.push({
-        receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-        vallue:
-          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
-      });
-
-      holdersfullInfo.push({
-        receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-        vallue:
-          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
-      });
-
-      holdersfullInfo.push({
-        receiver: currentGenesisProfileHolder.toBase58(),
-        vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
-      });
-
-      holdersfullInfo.push({
-        receiver: currentParentProfileHolder.toBase58(),
-        vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
-      });
-
-      holdersfullInfo.push({
-        receiver: currentGrandParentProfileHolder.toBase58(),
-        vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-      });
-
-      const holdermap: any = [];
-      holdersfullInfo.reduce(function (res: any, value) {
-        if (!res[value.receiver]) {
-          res[value.receiver] = { receiver: value.receiver, vallue: 0 };
-          holdermap.push(res[value.receiver]);
-        }
-        res[value.receiver].vallue += value.vallue;
-        return res;
-      }, {});
-
-      for (let index = 0; index < holdermap.length; index++) {
-        const element = holdermap[index];
-        let createShare: any = await this.baseSpl.transfer_token_modified({
-          mint: mainStateInfo.oposToken,
-          sender: user,
-          receiver: new anchor.web3.PublicKey(element.receiver),
-          init_if_needed: true,
-          amount: element.vallue,
+        holdersfullInfo.push({
+          receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+          vallue:
+            cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
         });
-        for (let index = 0; index < createShare.length; index++) {
-          this.txis.push(createShare[index]);
+  
+        holdersfullInfo.push({
+          receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+          vallue:
+            cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+        });
+  
+        holdersfullInfo.push({
+          receiver: currentGenesisProfileHolder.toBase58(),
+          vallue:
+            cost *
+            (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+        });
+  
+        holdersfullInfo.push({
+          receiver: currentParentProfileHolder.toBase58(),
+          vallue:
+            cost *
+            (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+        });
+  
+        holdersfullInfo.push({
+          receiver: currentGrandParentProfileHolder.toBase58(),
+          vallue:
+            cost *
+            (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+        });
+  
+        const holdermap: any = [];
+        holdersfullInfo.reduce(function (res: any, value) {
+          if (!res[value.receiver]) {
+            res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+            holdermap.push(res[value.receiver]);
+          }
+          res[value.receiver].vallue += value.vallue;
+          return res;
+        }, {});
+  
+        for (let index = 0; index < holdermap.length; index++) {
+          const element = holdermap[index];
+          let createShare: any = await this.baseSpl.transfer_token_modified({
+            mint: mainStateInfo.oposToken,
+            sender: user,
+            receiver: new anchor.web3.PublicKey(element.receiver),
+            init_if_needed: true,
+            amount: element.vallue,
+          });
+          for (let index = 0; index < createShare.length; index++) {
+            this.txis.push(createShare[index]);
+          }
         }
+  
       }
 
       console.log("mint pass 10", commonLut);
@@ -1034,48 +1037,49 @@ export class Connectivity {
       // log({ txLen, luts: lutsInfo.length });
 
       const signature = await this.provider.sendAndConfirm(tx as any);
-
-      await this.storeRoyalty(
-        user.toBase58(),
-        [
-          {
-            receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.genesis / 10000),
-          },
-          {
-            receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.parent / 10000),
-          },
-          {
-            receiver: currentGenesisProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.grandParent / 10000),
-          },
-          {
-            receiver: currentParentProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
-          },
-          {
-            receiver: currentGrandParentProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
-          },
-        ],
-        mainStateInfo.oposToken.toBase58(),
-      );
+      if(cost > 0) {
+        await this.storeRoyalty(
+          user.toBase58(),
+          [
+            {
+              receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.genesis / 10000),
+            },
+            {
+              receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.parent / 10000),
+            },
+            {
+              receiver: currentGenesisProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.grandParent / 10000),
+            },
+            {
+              receiver: currentParentProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
+            },
+            {
+              receiver: currentGrandParentProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
+            },
+          ],
+          mainStateInfo.oposToken.toBase58(),
+        );
+      }
 
       console.log("mint pass 15");
       return {

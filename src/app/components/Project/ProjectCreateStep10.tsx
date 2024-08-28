@@ -448,6 +448,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             }
 
             // uploading project metadata
+            
             setButtonText("Uploading project metadata...")
             let projectBody = {
                 name: project.name,
@@ -463,20 +464,16 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                     value: "Pass",
                   },
                   {
-                    trait_type: "MMOSH",
-                    value: " Genesis MMOSH",
+                    trait_type: "Ecosystem",
+                    value: " MMOSH",
                   },
                   {
                     trait_type: "Project",
                     value: projectKeyPair.publicKey.toBase58(),
                   },
                   {
-                    trait_type: "Seniority",
-                    value: "0",
-                  },
-                  {
                     trait_type: "Founder",
-                    value: profileInfo?.profile.name,
+                    value: "Moto",
                   },
                   {
                     trait_type: "Website",

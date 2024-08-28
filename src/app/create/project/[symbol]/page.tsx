@@ -14,7 +14,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-export default function ProjectView({ params }: { params: { address: string } }) {
+export default function ProjectView({ params }: { params: { symbol: string } }) {
     const navigate = useRouter();
     const connection = useConnection();
     const wallet = useAnchorWallet();
@@ -101,15 +101,15 @@ export default function ProjectView({ params }: { params: { address: string } })
     },[])
 
     useEffect(()=>{
-        if(wallet) {
+        if(wallet && projectDetail) {
             getUserProfileInfo()
         }
-    },[wallet])
+    },[wallet, projectDetail])
 
     const getProjectDetailFromAPI = async() => {
         try {
             setProjectLoading(true)
-            let listResult = await axios.get(`/api/project/detail?project=${params.address}`);
+            let listResult = await axios.get(`/api/project/detail?symbol=${params.symbol}`);
             setProjectDetail(listResult.data)
             
             const creatorName = await getUserName(listResult.data.coins.creator)
@@ -225,17 +225,17 @@ export default function ProjectView({ params }: { params: { address: string } })
         });
 
         anchor.setProvider(env);
-        let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
-        let projectInfo = await projectConn.getProjectUserInfo(params.address);
+        let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
+        let projectInfo = await projectConn.getProjectUserInfo(projectDetail.project.key);
 
         let tokenInfo = await projectConn.metaplex.nfts().findByMint({
-            mintAddress: new anchor.web3.PublicKey(params.address) 
+            mintAddress: new anchor.web3.PublicKey(projectDetail.project.key) 
         })
         let creator = tokenInfo.creators[0].address.toBase58()
         let userInfo = await getUserData(creator);
         setCreatorInfo(userInfo);
         if(projectInfo.profiles.length > 0) {
-            if(projectInfo.profiles[0].address == params.address) {
+            if(projectInfo.profiles[0].address == projectDetail.project.key) {
                 setOwner(true)
             } else {
                 setOwner(false)
@@ -262,7 +262,7 @@ export default function ProjectView({ params }: { params: { address: string } })
 
     const getStakeListFromAPI = async () =>{
         try {
-            let listResult = await axios.get(`/api/project/get-stake-list?project=${params.address}`);
+            let listResult = await axios.get(`/api/project/get-stake-list?project=${projectDetail.project.key}`);
             setPresaleDetail(listResult.data.presale)
             setStakes(listResult.data.stake)
         } catch (error) {
@@ -354,7 +354,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             });
             setInviteSubmit(true)
             anchor.setProvider(env);
-            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
             let activationToken;
             if(projectInfo.activationTokens.length == 0) {
                 setInviteButtonStatus("Preparing Metadata ...")
@@ -388,7 +388,7 @@ export default function ProjectView({ params }: { params: { address: string } })
 
                 attributes.push({
                     trait_type: "Project",
-                    value: params.address,
+                    value: projectDetail.project.key,
                 });
 
                 let desc =
@@ -490,7 +490,7 @@ export default function ProjectView({ params }: { params: { address: string } })
         }, 4000);
     };
 
-    const passAction = async () => {
+    const passAction = async (type:any) => {
         if(!profileInfo) {
             createMessage(
                 "Hey! We checked your wallet is not connected",
@@ -535,32 +535,54 @@ export default function ProjectView({ params }: { params: { address: string } })
             const env = new anchor.AnchorProvider(connection.connection, wallet, {
               preflightCommitment: "processed",
             });
-            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
             setPassButtonStatus("Preparing Metadata...")
+
+            let name = "Pump The Vote Blue"
             const body = {
-                name:  projectDetail.project.name,
-                symbol: projectDetail.project.symbol,
-                description: projectDetail.project.desc,
-                image: projectDetail.project.image,
-                enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
+                name:  type === "Red" ? "Pump The Vote Red" : "Pump The Vote Blue",
+                symbol: type === "Red" ? "PTVR" : "PTVB",
+                description: type === "Red" ? "Pump The Vote is a PolitiFi project within the MMOSH ecosystem. The Pump The Vote Red project pass is for conservatives united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability." : "Pump The Vote is a PolitiFi project within the MMOSH ecosystem. The Pump The Vote Blue project pass is for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.",
+                image: type === "Red" ? "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png" : "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
+                enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL + "create/project/" + projectDetail.project.symbol,
                 family: "MMOSH",
                 collection: "MMOSH Pass Collection",
                 attributes: [
                   {
                     trait_type: "Project",
-                    value:params.address,
+                    value:projectDetail.project.key,
                   },
                   {
                     trait_type: "Primitive",
                     value:"Pass",
                   },
                   {
-                    trait_type: "MMOSH",
-                    value:"Genesis MMOSH",
+                    trait_type: "Ecosystem",
+                    value:"MMOSH",
+                  },
+                  {
+                    trait_type: "Founder",
+                    value:"Moto",
+                  },
+                  {
+                    trait_type: "Party",
+                    value: type,
                   },
                   {
                     trait_type: "Seniority",
-                    value:"0",
+                    value:projectDetail.project.seniority + 1,
+                  },
+                  {
+                    trait_type: "Website",
+                    value:type === "Red" ? "https://www.pumpthevote.red" : "https://www.pumpthevote.blue",
+                  },
+                  {
+                    trait_type: "Telegram",
+                    value:projectDetail.project.telegram,
+                  },
+                  {
+                    trait_type: "X",
+                    value:projectDetail.project.twitter,
                   },
                 ],
             };
@@ -628,9 +650,14 @@ export default function ProjectView({ params }: { params: { address: string } })
                 },profile);
             }
 
+
+
             if(res.Ok) {
                 setPassButtonStatus("Waiting for confirmations...")
                 await delay(15000)
+                await axios.post("/api/project/update-seniority", {
+                    key: projectDetail.project.key,
+                });
                 createMessage(
                     "Congrats! You have minted your Pass successfully.",
                     "success-container",
@@ -655,6 +682,8 @@ export default function ProjectView({ params }: { params: { address: string } })
             setPassButtonStatus("Mint")
         }
     }
+
+    
 
     const handlePassBuy = async(passItem:any) => {
 
@@ -685,15 +714,15 @@ export default function ProjectView({ params }: { params: { address: string } })
             console.log("buyLaunchPass", {
                 owner: projectDetail.coins.creator,
                 mint: passItem.key,
-                gensis: params.address,
+                gensis: projectDetail.project.key,
             })
     
             anchor.setProvider(env);
-            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
             await projectConn.buyLaunchPass({
                 owner: new anchor.web3.PublicKey(projectDetail.coins.creator),
                 mint: new anchor.web3.PublicKey(passItem.key),
-                gensis: new anchor.web3.PublicKey(params.address),
+                gensis: new anchor.web3.PublicKey(projectDetail.project.key),
             })
 
             const newPassList:any = []
@@ -754,7 +783,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             });
     
             anchor.setProvider(env);
-            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
             console.log({
                 owner: projectDetail.coins.creator,
                 launchToken: passItem.key,
@@ -816,7 +845,7 @@ export default function ProjectView({ params }: { params: { address: string } })
             });
     
             anchor.setProvider(env);
-            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(params.address));
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
             for (let index = 0; index < stakes.length; index++) {
                 const element:any = stakes[index];
                 await projectConn.unStakeCoin({
@@ -1015,7 +1044,10 @@ export default function ProjectView({ params }: { params: { address: string } })
                                                        {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
                                                             <>
                                                                 {!passSubmit &&
-                                                                    <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={passAction}>Mint</button>
+                                                                    <>
+                                                                        <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{passAction("Blue")}}>Blue Vote</button></p>
+                                                                        <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{passAction("Red")}}>Red Vote</button></p>
+                                                                    </>
                                                                 }
                                                                 {passSubmit &&
                                                                     <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{passButtonStatus}</button>

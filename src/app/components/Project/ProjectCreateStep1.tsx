@@ -299,6 +299,13 @@ export default function ProjectCreateStep1({
   const gotoStep2 = async () => {
     setLoading(true);
     if (validateFields(true)) {
+      const result = await axios.get(
+        `/api/project/check-project?symbol=${fields.symbol}`,
+      );
+      if (result.data) {
+        createMessage("Symbol already exist", "danger-container");
+        return
+      }
       if (!isValidHttpUrl(fields.image.preview)) {
         let imageFile = await fetch(fields.image.preview)
           .then((r) => r.blob())

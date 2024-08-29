@@ -8,8 +8,8 @@ import { Coin } from "@/app/models/coin";
 
 type Props = {
   bonding?: string;
-  base: Coin;
   height?: number;
+  base?: Coin;
 };
 
 const TVL = ({ bonding, base, height }: Props) => {
@@ -49,7 +49,7 @@ const TVL = ({ bonding, base, height }: Props) => {
       <div className="flex flex-col ml-6 mt-4">
         <p className="text-sm mb-2">TVL</p>
         <h6>
-          {total} {base.symbol}
+          {total} {base?.symbol}
         </h6>
       </div>
       <ResponsiveContainer width="100%" height={height || 200}>

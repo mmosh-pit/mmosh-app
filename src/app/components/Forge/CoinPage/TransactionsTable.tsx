@@ -13,9 +13,10 @@ import currencyFormatter from "@/app/lib/currencyFormatter";
 
 type Props = {
   coin: Coin;
+  base: Coin;
 };
 
-const TransactionsTable = ({ coin }: Props) => {
+const TransactionsTable = ({ coin, base }: Props) => {
   const [_, setStats] = useAtom(coinStats);
 
   const [isLastPage, setIsLastPage] = React.useState(false);
@@ -73,7 +74,7 @@ const TransactionsTable = ({ coin }: Props) => {
               <p className="text-white text-sm">Type</p>
             </th>
             <th align="center">
-              <p className="text-white text-sm">MMOSH</p>
+              <p className="text-white text-sm">{base.symbol}</p>
             </th>
 
             <th align="center">

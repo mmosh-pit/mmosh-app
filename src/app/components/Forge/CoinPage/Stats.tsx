@@ -8,9 +8,10 @@ import { User } from "@/app/models/user";
 
 type Props = {
   coin: Coin;
+  base: Coin;
 };
 
-const Stats = ({ coin }: Props) => {
+const Stats = ({ coin, base }: Props) => {
   const [stats] = useAtom(coinStats);
 
   const [coinOwner, setCoinOwner] = React.useState<User | null>(null);
@@ -36,14 +37,15 @@ const Stats = ({ coin }: Props) => {
           <div className="flex flex-col">
             <p className="text-base">TVL</p>
             <p className="text-white">
-              {stats.total} <span className="ml-1 text-sm">MMOSH</span>
+              {stats.total} <span className="ml-1 text-xs">{base.symbol}</span>
             </p>
           </div>
 
           <div className="flex flex-col">
             <p className="text-base">1 Day Volume</p>
             <p className="text-white">
-              {stats.dayVolume} <span className="ml-1 text-sm">MMOSH</span>
+              {stats.dayVolume}{" "}
+              <span className="ml-1 text-xs">{base.symbol}</span>
             </p>
           </div>
         </div>

@@ -598,21 +598,7 @@ export class Connectivity {
         mainStateInfo.oposToken,
       );
 
-      console.log("mint pass 71", userProfile);
-      console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
-      let myProfile = new anchor.web3.PublicKey(userProfile);
-      const myProfileState = this.__getProfileStateAccount(myProfile);
-      console.log("mint pass 72");
-      let myProfileStateInfo =
-        await this.program.account.profileState.fetch(myProfileState);
-      console.log("mint pass 73");
-      const profileHolderInfo = await this.__getProfileHoldersInfo(
-        myProfileStateInfo.lineage,
-        myProfile,
-        web3Consts.genesisProfile,
-        mainStateInfo.oposToken,
-      );
-      console.log("mint pass 74");
+
 
       console.log("mint pass 8");
       const userOposAta = getAssociatedTokenAddressSync(
@@ -654,6 +640,23 @@ export class Connectivity {
       this.txis.push(ix);
 
       let cost = mainStateInfo.profileMintingCost.toNumber();
+      let profileHolderInfo;
+      if(cost > 0) {
+        console.log("mint pass 71", userProfile);
+        console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
+        let myProfile = new anchor.web3.PublicKey(userProfile);
+        const myProfileState = this.__getProfileStateAccount(myProfile);
+        console.log("mint pass 72");
+        let myProfileStateInfo =
+          await this.program.account.profileState.fetch(myProfileState);
+        console.log("mint pass 73");
+        profileHolderInfo = await this.__getProfileHoldersInfo(
+          myProfileStateInfo.lineage,
+          myProfile,
+          web3Consts.genesisProfile,
+          mainStateInfo.oposToken,
+        );
+        console.log("mint pass 74");
 
       let holdersfullInfo = [];
 
@@ -713,6 +716,7 @@ export class Connectivity {
           this.txis.push(createShare[index]);
         }
       }
+      }
 
       console.log("mint pass 10", commonLut);
       const commonLutInfo = await (
@@ -751,48 +755,51 @@ export class Connectivity {
       // log({ txLen, luts: lutsInfo.length });
 
       const signature = await this.provider.sendAndConfirm(tx as any);
+      
+      if(cost > 0 && profileHolderInfo) {
+        await this.storeRoyalty(
+          user.toBase58(),
+          [
+            {
+              receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.genesis / 10000),
+            },
+            {
+              receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.parent / 10000),
+            },
+            {
+              receiver: currentGenesisProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.grandParent / 10000),
+            },
+            {
+              receiver: currentParentProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
+            },
+            {
+              receiver: currentGrandParentProfileHolder.toBase58(),
+              amount:
+                (mainStateInfo.profileMintingCost.toNumber() /
+                  web3Consts.LAMPORTS_PER_OPOS) *
+                (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
+            },
+          ],
+          mainStateInfo.oposToken.toBase58(),
+        );
+      }
 
-      await this.storeRoyalty(
-        user.toBase58(),
-        [
-          {
-            receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.genesis / 10000),
-          },
-          {
-            receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.parent / 10000),
-          },
-          {
-            receiver: currentGenesisProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.grandParent / 10000),
-          },
-          {
-            receiver: currentParentProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
-          },
-          {
-            receiver: currentGrandParentProfileHolder.toBase58(),
-            amount:
-              (mainStateInfo.profileMintingCost.toNumber() /
-                web3Consts.LAMPORTS_PER_OPOS) *
-              (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
-          },
-        ],
-        mainStateInfo.oposToken.toBase58(),
-      );
 
       console.log("mint pass 15");
       return {
@@ -910,22 +917,6 @@ export class Connectivity {
         mainStateInfo.oposToken,
       );
 
-      console.log("mint pass 71", userProfile);
-      console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
-      let myProfile = new anchor.web3.PublicKey(userProfile);
-      const myProfileState = this.__getProfileStateAccount(myProfile);
-      console.log("mint pass 72");
-      let myProfileStateInfo =
-        await this.program.account.profileState.fetch(myProfileState);
-      console.log("mint pass 73");
-      const profileHolderInfo = await this.__getProfileHoldersInfo(
-        myProfileStateInfo.lineage,
-        myProfile,
-        web3Consts.genesisProfile,
-        mainStateInfo.oposToken,
-      );
-      console.log("mint pass 74");
-
       console.log("mint pass 8");
       const userOposAta = getAssociatedTokenAddressSync(
         mainStateInfo.oposToken,
@@ -963,6 +954,23 @@ export class Connectivity {
       this.txis.push(ix);
 
       let cost = mainStateInfo.profileMintingCost.toNumber();
+      let profileHolderInfo;
+      if(cost > 0) {
+        console.log("mint pass 71", userProfile);
+        console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
+        let myProfile = new anchor.web3.PublicKey(userProfile);
+        const myProfileState = this.__getProfileStateAccount(myProfile);
+        console.log("mint pass 72");
+        let myProfileStateInfo =
+          await this.program.account.profileState.fetch(myProfileState);
+        console.log("mint pass 73");
+        profileHolderInfo = await this.__getProfileHoldersInfo(
+          myProfileStateInfo.lineage,
+          myProfile,
+          web3Consts.genesisProfile,
+          mainStateInfo.oposToken,
+        );
+        console.log("mint pass 74");
 
       let holdersfullInfo = [];
 
@@ -1022,6 +1030,7 @@ export class Connectivity {
           this.txis.push(createShare[index]);
         }
       }
+    }
 
       console.log("mint pass 10", commonLut);
       const commonLutInfo = await (
@@ -1060,7 +1069,7 @@ export class Connectivity {
       // log({ txLen, luts: lutsInfo.length });
 
       const signature = await this.provider.sendAndConfirm(tx as any);
-
+      if(cost > 0 && profileHolderInfo) {
       await this.storeRoyalty(
         user.toBase58(),
         [
@@ -1102,6 +1111,7 @@ export class Connectivity {
         ],
         mainStateInfo.oposToken.toBase58(),
       );
+    }
 
       console.log("mint pass 15");
       return {
@@ -2117,6 +2127,8 @@ export class Connectivity {
                     if (metadata.project != projectId) {
                       continue;
                     }
+                  } else {
+                    continue
                   }
   
                   try {

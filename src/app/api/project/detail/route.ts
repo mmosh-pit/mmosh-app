@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const symbol = searchParams.get("symbol");
 
   const projectCollection = db.collection("mmosh-app-project");
-  const projectData:any = await projectCollection.findOne({ key: symbol });
+  const projectData:any = await projectCollection.findOne({ symbol: symbol });
 
   if(!projectData) {
     return NextResponse.json(null, {
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
 
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
-  const coins = await projectCoinCollection.findOne({ projectkey: projectData.key });
+  const coins = await projectCoinCollection.find({ projectkey: projectData.key }).toArray();
 
   const updated_date = new Date();
   const communityCoinAccount = await projectCoinCollection.findOne({

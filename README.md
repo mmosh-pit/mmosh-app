@@ -44,3 +44,16 @@ Licensed under the GNU License, Version 3.0 (the "License"); you may not use thi
 https://www.gnu.org/licenses/agpl-3.0.en.html
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+
+## pumb the vote details
+
+Pumb the vote Coins
+
+Devnet
+PTVB - ExV3Uvf3gYewjMBsakGv6waREX5zHhYrdHsR2CDEGEp5
+PTVR - EJqdJEJCQ2MbAfH21TqogMX3auBPta9vXvhHioeLz8G7
+
+Mainnet
+PTVB - https://explorer.solana.com/address/CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX
+PTVR - https://explorer.solana.com/address/H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd

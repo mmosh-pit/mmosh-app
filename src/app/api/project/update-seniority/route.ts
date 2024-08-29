@@ -17,7 +17,7 @@ export async function PUT(req: NextRequest) {
         },
         {
           $set: {
-              sold: project.seniority + 1,
+            seniority: project.seniority + 1,
           },
         },
       );

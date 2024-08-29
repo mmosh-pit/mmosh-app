@@ -1164,6 +1164,8 @@ export class Connectivity {
                   if (metadata.project != "") {
                     continue;
                   }
+                } else {
+                  continue
                 }
 
                 try {

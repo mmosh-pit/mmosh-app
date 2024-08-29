@@ -35,7 +35,7 @@ export default function ProjectCreateStep8({
   const [mmoshPrice, setMmoshPrice] = useState(0);
 
   const validateFields = () => {
-    if (fields.usd < 100) {
+    if (fields.usd < 1) {
       createMessage(
         "Liqudity pool value should be equal or greater than 100 USD",
         "danger-container",

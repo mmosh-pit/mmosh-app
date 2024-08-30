@@ -69,7 +69,9 @@ const StatesSelect = ({ onChange, selectedElement }: Props) => {
           onClick={toggleContainer}
         >
           <div className="flex flex-wrap" ref={divRef}>
-            <p className="text-xs text-gray-300">{selectedElement || "All"}</p>
+            <p className="text-xs text-gray-300">
+              {states[selectedElement] || "All"}
+            </p>
           </div>
 
           {isOpen ? <ArrowUp /> : <ArrowDown />}

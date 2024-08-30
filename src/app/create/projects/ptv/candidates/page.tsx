@@ -142,7 +142,7 @@ const Candidates = () => {
               <span className="text-base">({filteredCandidates.length})</span>
             </p>
 
-            <div className="mt-4 grid grid-cols-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="mt-4 grid grid-cols-auto md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {filteredCandidates.map((candidate) => (
                 <CandidateCard
                   key={candidate.CANDIDATE_ID}

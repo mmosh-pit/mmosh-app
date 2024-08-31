@@ -1,6 +1,7 @@
 "use client";
 import CandidateCard from "@/app/components/Project/Candidates/CandidateCard";
 import CandidateFilters from "@/app/components/Project/Candidates/CandidateFilters";
+import DistrictSelect from "@/app/components/Project/Candidates/DistrictSelect";
 import PartyFilters from "@/app/components/Project/Candidates/PartyFilters";
 import SearchBar from "@/app/components/Project/Candidates/SearchBar";
 import StatesSelect from "@/app/components/Project/Candidates/StatesSelect";
@@ -26,11 +27,10 @@ const Candidates = () => {
   const [searchText, setSearchText] = React.useState("");
 
   const [selectedState, setSelectedState] = React.useState("");
+  const [selectedDistrict, setSelectedDistrict] = React.useState("");
 
   const getCandidates = React.useCallback(async () => {
     const response = await axios.get("/api/get-candidates");
-
-    console.log("Got response here: ", response);
 
     setCandidates(response.data);
     setFilteredCandidates(response.data);
@@ -85,7 +85,10 @@ const Candidates = () => {
         matchesCandidateFilter &&
         matchesPartyFilter &&
         value.CANDIDATE_NAME.toLowerCase().includes(searchText.toLowerCase()) &&
-        (selectedState === "" ? true : value.REG_ABBR === selectedState)
+        (selectedState === "" ? true : value.REG_ABBR === selectedState) &&
+        (selectedState !== "" && selectedDistrict !== ""
+          ? value.DISTRICT === Number(selectedDistrict)
+          : true)
       );
     });
 
@@ -97,11 +100,18 @@ const Candidates = () => {
     candidates,
     searchText,
     selectedState,
+    selectedDistrict,
   ]);
 
   React.useEffect(() => {
     filterCandidates();
-  }, [selectedCandidateFilter, selectedPartyFilter, searchText, selectedState]);
+  }, [
+    selectedCandidateFilter,
+    selectedPartyFilter,
+    searchText,
+    selectedState,
+    selectedDistrict,
+  ]);
 
   React.useEffect(() => {
     getCandidates();
@@ -116,11 +126,18 @@ const Candidates = () => {
             handleChangeFilterValue={handleChangeFilterValue}
           />
 
-          <div className="flex flex-col w-[25%]">
+          <div className="flex w-[25%]">
             <StatesSelect
               selectedElement={selectedState}
               onChange={setSelectedState}
             />
+
+            {selectedState !== "" && (
+              <DistrictSelect
+                selectedElement={selectedDistrict}
+                onChange={setSelectedDistrict}
+              />
+            )}
           </div>
 
           <div className="flex flex-col">

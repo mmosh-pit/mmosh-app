@@ -6,7 +6,5 @@ export async function GET(req: NextRequest) {
 
   const candidates = await collection.find().toArray();
 
-  console.log("Result here! ", candidates);
-
   return NextResponse.json(candidates);
 }

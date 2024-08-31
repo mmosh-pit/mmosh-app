@@ -843,30 +843,37 @@ export class Connectivity {
 
       const mintTx = new web3.Transaction().add(...mintIxs);
 
-      mintTx.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      mintTx.feePayer = this.provider.publicKey;
+      // mintTx.recentBlockhash = (
+      //   await this.connection.getLatestBlockhash()
+      // ).blockhash;
+      // mintTx.feePayer = this.provider.publicKey;
 
-      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
-      let feeInsMint;
-      if (feeEstimateMint > 0) {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimateMint,
-        });
-      } else {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
-      }
-      mintTx.add(feeInsMint);
+      // const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+      // let feeInsMint;
+      // if (feeEstimateMint > 0) {
+      //   feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+      //     microLamports: feeEstimateMint,
+      //   });
+      // } else {
+      //   feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+      //     units: 1_400_000,
+      //   });
+      // }
+      // mintTx.add(feeInsMint);
 
       this.txis = [];
-      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
-        mintKp,
-      ]);
 
-      await sleep(5000)
+      for (let index = 0; index < mintIxs.length; index++) {
+        const element = mintIxs[index];
+        this.txis.push(element)
+      }
+
+
+      // const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+      //   mintKp,
+      // ]);
+
+      // await sleep(5000)
 
       const userProfileAta = getAssociatedTokenAddressSync(profile, user);
 

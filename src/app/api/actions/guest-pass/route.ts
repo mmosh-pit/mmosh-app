@@ -32,7 +32,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
   
   export const GET = async (req: Request) => {
     try {
-      let projectInfo:any = await axios.get("/api/project/detail?symbol=PTVG")
+      let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG")
       const requestUrl = new URL(req.url);
       const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.data);
 
@@ -44,48 +44,34 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
         });
       }
   
-      const baseHref = new URL(
-        `/api/actions/guest-pass?referer=${requestUrl.searchParams.get("referer")}`,
-        requestUrl.origin,
-      ).toString();
+      const baseHref = process.env.NEXT_PUBLIC_APP_MAIN_URL + `/api/actions/guest-pass?referer=${requestUrl.searchParams.get("referer")}`
+
   
       const payload: ActionGetResponse = {
         type: "action",
         title: "Pump The Vote and Earn Crypto Rewards!",
-        icon: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png",
+        icon: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/guestpass.png",
         description: `Pump The Vote is the world’s first PolitiFi Super PAC. Mint your free Guest Pass, create your own political memecoins (free!) and earn 3% of all the trading fees!. Enter your first name or alias and email address, and we’ll send you details on how to claim $20 in crypto to start trading political memecoins today. Not only that, you’ll get your own Blink In Bio that you can share for additional crypto referral rewards. Drop us your Telegram and X usernames for extra valuable giveaways!`,
         label: "Mint Option", // this value will be ignored since `links.actions` exists
         links: {
           actions: [
             {
-              label: "Stake 1 SOL", // button text
-              href: `${baseHref}&amount=${"1"}`,
-            },
-            {
-              label: "Stake 5 SOL", // button text
-              href: `${baseHref}&amount=${"5"}`,
-            },
-            {
-              label: "Stake 10 SOL", // button text
-              href: `${baseHref}&amount=${"10"}`,
-            },
-            {
-              label: "Mint Pass", // button text
+              label: "Mint Pump The Vote Guest Pass", // button text
               href: `${baseHref}&name={name}&email={email}&telegram={telegram}&twitter={twitter}&type={type}`, // this href will have a text input
               parameters: [
                 {
-                  type: "select",
+                  type: "radio",
                   name: "type", 
                   label: "Pass type", 
                   required: true,
                   options:[{
-                    label: "Mint Blue Pass",
-                    value: "Blue",
-                    selected: true
-                  },{
-                    label: "Mint Red Pass",
+                    label: "Red Pass (Republican)",
                     value: "Red",
-                    selected: true
+                    selected: false
+                  }, {
+                    label: " Blue Pass (Democrat)",
+                    value: "Blue",
+                    selected: false
                   }]
                 },
                 {
@@ -103,13 +89,13 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
                 {
                   type: "url",
                   name: "telegram", 
-                  label: "Enter your Telegram username for bonus rewards", 
+                  label: "Enter your complete Telegram URL for bonus rewards", 
                   required: false,
                 },
                 {
                   type: "url",
                   name: "twitter", 
-                  label: "Enter your X username for extra bonus rewards", 
+                  label: "Enter your complete X URL for extra bonus rewards", 
                   required: false,
                 },
               ],
@@ -138,7 +124,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
   
   export const POST = async (req: Request) => {
     try {
-      let projectInfo:any = await axios.get("/api/project/detail?symbol=PTVG")
+      let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG")
       const requestUrl = new URL(req.url);
       const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.info);
       if(!isValid) {
@@ -255,32 +241,39 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
   
   async function validatedQueryParams(requestUrl: URL, projectInfo:any) {
     try {
-      if (requestUrl.searchParams.get("referer")) {
-        let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-        let connection = new Connection(rpcUrl)
-        let wallet = new NodeWallet(new Keypair());
-        const env = new anchor.AnchorProvider(connection, wallet, {
-          preflightCommitment: "processed",
-        });
-        let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectInfo.project.key));
-        let pass = new PublicKey(requestUrl.searchParams.get("referer")!);
-        let tokenInfo = await projectConn.metaplex.nfts().findByMint({
-          mintAddress: pass
-        })
-        let creator = tokenInfo.creators[0].address
-        let userInFo:any = await axios.get("/api/get-wallet-data?wallet="+creator)
-        if(userInFo.data.profilenft) {
-          return {
-            isValid: true,
-            tokenInfo: tokenInfo
-          }
+      let referer = requestUrl.searchParams.get("referer") ? requestUrl.searchParams.get("referer") : projectInfo.project.key
+
+      let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
+      let connection = new Connection(rpcUrl)
+      let wallet = new NodeWallet(new Keypair());
+      const env = new anchor.AnchorProvider(connection, wallet, {
+        preflightCommitment: "processed",
+      });
+      let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectInfo.project.key));
+      let pass = new PublicKey(referer);
+      let tokenInfo = await projectConn.metaplex.nfts().findByMint({
+        mintAddress: pass
+      })
+      let creator = tokenInfo.creators[0].address
+      if(!requestUrl.searchParams.get("referer")) {
+        return {
+          isValid: true,
+          tokenInfo: tokenInfo
         }
-      } 
+      }
+      let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
+      if(userInFo.data.profilenft) {
+        return {
+          isValid: true,
+          tokenInfo: tokenInfo
+        }
+      }
       return {
         isValid: false,
         tokenInfo: null
       }
     } catch (err) {
+      console.log("test", err)
       return {
         isValid: false,
         tokenInfo: null

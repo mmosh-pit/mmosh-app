@@ -285,7 +285,7 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                   },
                   {
                     trait_type: "Seniority",
-                    value:projectDetail.project.seniority + 1,
+                    value: projectDetail.project.seniority + 1,
                   },
                   {
                     trait_type: "Website",
@@ -364,6 +364,7 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                     commonLut: projectDetail.project.lut
                 },profile);
             } else {
+                console.log("guest pass implementation")
                 res = await projectConn.mintGuestPass({
                     name: body.name,
                     symbol: body.symbol,

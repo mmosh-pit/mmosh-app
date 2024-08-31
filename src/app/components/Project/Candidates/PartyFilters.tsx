@@ -13,11 +13,12 @@ const PartyFilters = ({
     <div className="w-full flex items-center justify-start mt-4">
       <div className="flex items-center justify-center mr-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedPartyFilter.includes("DEM")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangePartyFilterValue("DEM");
           }}
         />
@@ -26,11 +27,12 @@ const PartyFilters = ({
 
       <div className="flex items-center justify-center mx-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedPartyFilter.includes("REP")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangePartyFilterValue("REP");
           }}
         />
@@ -39,11 +41,12 @@ const PartyFilters = ({
 
       <div className="flex items-center justify-center mx-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedPartyFilter.includes("IND")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangePartyFilterValue("IND");
           }}
         />
@@ -52,11 +55,12 @@ const PartyFilters = ({
 
       <div className="flex items-center justify-center mx-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedPartyFilter.includes("GRE")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangePartyFilterValue("GRE");
           }}
         />
@@ -65,11 +69,12 @@ const PartyFilters = ({
 
       <div className="flex items-center justify-center mx-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedPartyFilter.includes("LIB")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangePartyFilterValue("LIB");
           }}
         />
@@ -78,11 +83,12 @@ const PartyFilters = ({
 
       <div className="flex items-center justify-center mx-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedPartyFilter.includes("OTHER")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangePartyFilterValue("OTHER");
           }}
         />

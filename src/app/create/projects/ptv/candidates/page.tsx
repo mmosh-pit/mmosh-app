@@ -9,6 +9,8 @@ import { Candidate } from "@/app/models/candidate";
 import axios from "axios";
 import * as React from "react";
 
+const OTHER_PARTIES = ["CON", "UNK", "DFL", "CONST", "UN"];
+
 const Candidates = () => {
   const [candidates, setCandidates] = React.useState<Candidate[]>([]);
 
@@ -38,10 +40,12 @@ const Candidates = () => {
 
   const handleChangeFilterValue = React.useCallback(
     (value: string) => {
+      console.log("Value: ", value);
       setSelectedCandidateFilter((prev) => {
         let newItems = [...prev];
 
         if (newItems.includes(value)) {
+          console.log("Included! going to remove");
           newItems = newItems.filter((element) => element !== value);
         } else {
           newItems.push(value);
@@ -76,6 +80,9 @@ const Candidates = () => {
         selectedCandidateFilter.length > 0
           ? selectedCandidateFilter.includes(value.CANDIDATE_ID.at(0)!)
           : true;
+
+      const partyFilterOther = selectedPartyFilter.includes("OTHER");
+
       const matchesPartyFilter =
         selectedPartyFilter.length > 0
           ? selectedPartyFilter.includes(value.PARTY)
@@ -83,7 +90,9 @@ const Candidates = () => {
 
       return (
         matchesCandidateFilter &&
-        matchesPartyFilter &&
+        (partyFilterOther
+          ? OTHER_PARTIES.includes(value.PARTY) || matchesPartyFilter
+          : matchesPartyFilter) &&
         value.CANDIDATE_NAME.toLowerCase().includes(searchText.toLowerCase()) &&
         (selectedState === "" ? true : value.REG_ABBR === selectedState) &&
         (selectedState !== "" && selectedDistrict !== ""
@@ -140,7 +149,7 @@ const Candidates = () => {
             )}
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col w-[20%]">
             <SearchBar setSearchText={setSearchText} />
           </div>
         </div>
@@ -154,9 +163,11 @@ const Candidates = () => {
 
         <div className="w-full flex flex-col mt-12">
           <div className="w-full flex flex-col self-start">
-            <p className="text-base text-white">
+            <p className="text-xl text-white font-bold">
               Candidates{" "}
-              <span className="text-base">({filteredCandidates.length})</span>
+              <span className="text-base font-normal">
+                ({filteredCandidates.length})
+              </span>
             </p>
 
             <div className="mt-4 grid grid-cols-auto md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">

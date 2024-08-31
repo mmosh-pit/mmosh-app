@@ -15,7 +15,7 @@ const SearchBar = ({ setSearchText }: Props) => {
 
   return (
     <div className="w-full flex justify-between px-8">
-      <div className="flex items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
+      <div className="w-full flex items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
         <button
           className="flex bg-[#5A00FF] rounded-full p-4 items-center"
           onClick={executeSearch}

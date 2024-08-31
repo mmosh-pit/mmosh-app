@@ -13,11 +13,12 @@ const CandidateFilters = ({
     <div className="flex items-center mt-4">
       <div className="flex items-center justify-center">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedCandidateFilter.includes("P")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangeFilterValue("P");
           }}
         />
@@ -26,11 +27,12 @@ const CandidateFilters = ({
 
       <div className="flex items-center justify-center mx-4">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedCandidateFilter.includes("S")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangeFilterValue("S");
           }}
         />
@@ -39,11 +41,12 @@ const CandidateFilters = ({
 
       <div className="flex items-center justify-center ml-2">
         <input
-          id="checkbox1"
-          type="checkbox"
-          className="checkbox checked:border-[#F4F4F4] [--chkbg:theme(#645EBE)]"
+          id="radio1"
+          type="radio"
+          className="radio radio-secondary"
           checked={selectedCandidateFilter.includes("H")}
-          onChange={(_) => {
+          onChange={() => {}}
+          onClick={(_) => {
             handleChangeFilterValue("H");
           }}
         />

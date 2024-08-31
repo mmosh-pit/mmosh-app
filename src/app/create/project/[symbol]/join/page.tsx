@@ -265,7 +265,7 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                 attributes: [
                   {
                     trait_type: "Project",
-                    value:projectDetail.project.key,
+                    value: projectDetail.project.key,
                   },
                   {
                     trait_type: "Primitive",

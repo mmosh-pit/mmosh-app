@@ -1116,7 +1116,7 @@ export class Connectivity {
     try {
       this.reinit();
       this.baseSpl.__reinit();
-      const user = this.provider.publicKey;
+      const user = new anchor.web3.PublicKey(userProfile);
       if (!user) throw "Wallet not found";
       let {
         name,
@@ -1233,7 +1233,7 @@ export class Connectivity {
 
       const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
       const message = new web3.TransactionMessage({
-        payerKey: this.provider.publicKey,
+        payerKey: user,
         recentBlockhash: blockhash,
         instructions: [...this.txis],
       }).compileToV0Message(lutsInfo);
@@ -2037,7 +2037,6 @@ export class Connectivity {
       mintList = await this.metaplex
         .nfts()
         .findAllByMintList({ mints: mintKeys });
-      console.log(mintList);
     }
     return mintList;
   }

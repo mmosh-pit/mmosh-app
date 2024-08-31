@@ -19,13 +19,14 @@ import {
     PublicKey,
     StakeProgram,
     Transaction,
+    VersionedTransaction,
   } from "@solana/web3.js";
   import { Connectivity as ProjectConn } from "@/anchor/community";
   import * as anchor from "@coral-xyz/anchor";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
+import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/lib/uploadFileToShdwDrive";
   
 
   const headers = createActionHeaders();
@@ -35,6 +36,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
       let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG")
       const requestUrl = new URL(req.url);
       const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.data);
+      let referer = requestUrl.searchParams.get("referer") ? requestUrl.searchParams.get("referer") : projectInfo.data.project.key
 
       if(!isValid) {
         let actionError: ActionError = { message: "Project validation failed" };
@@ -44,7 +46,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
         });
       }
   
-      const baseHref = process.env.NEXT_PUBLIC_APP_MAIN_URL + `/api/actions/guest-pass?referer=${requestUrl.searchParams.get("referer")}`
+      const baseHref = process.env.NEXT_PUBLIC_APP_MAIN_URL + `/api/actions/guest-pass?referer=${referer}`
 
   
       const payload: ActionGetResponse = {
@@ -124,9 +126,11 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
   
   export const POST = async (req: Request) => {
     try {
+      console.log("test1")
       let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG")
       const requestUrl = new URL(req.url);
-      const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.info);
+      console.log("test2 ")
+      const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.data);
       if(!isValid) {
         let actionError: ActionError = { message: "Project validation failed" };
         return Response.json(actionError, {
@@ -134,6 +138,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
           headers,
         });
       }
+      console.log("test3")
   
       const body: ActionPostRequest = await req.json();
   
@@ -144,13 +149,40 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
       } catch (err) {
         throw 'Invalid "account" provided';
       }
+      console.log("test4")
       let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
       let connection = new Connection(rpcUrl)
       let wallet = new NodeWallet(new Keypair());
       const env = new anchor.AnchorProvider(connection, wallet, {
         preflightCommitment: "processed",
       });
-      let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectInfo.project.key));
+      console.log("test5")
+      let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectInfo.data.project.key));
+      console.log("test6")
+      const passCollection = web3Consts.passCollection;
+      const userNfts = await projectConn.getUserNFTs(body.account);
+
+      // for (let i of userNfts) {
+
+      //   const collectionInfo = i?.collection;
+      //   if (
+      //     collectionInfo?.address.toBase58() == passCollection.toBase58()
+      //   ) {
+      //     const metadata = await projectConn.getProfileMetadataByProject(i?.uri);
+      //     if (metadata) {
+      //       if(metadata.project == projectInfo.data.project.key) {
+      //         let actionError: ActionError = { message: "User already have pass minted in his account" };
+      //         return Response.json(actionError, {
+      //           status: 400,
+      //           headers,
+      //         });
+      //       }
+      //     }
+      //   }
+      // }
+      
+      console.log("test7")
+      
       let type= requestUrl.searchParams.get("type")
       const metaBody = {
         name:  type === "Red" ? "Pump The Vote Red" : "Pump The Vote Blue",
@@ -197,27 +229,96 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
             trait_type: "X",
             value:projectInfo.data.project.twitter,
           },
+          {
+            trait_type: "USER.Email",
+            value: requestUrl.searchParams.get("email"),
+          },
+          {
+            trait_type: "USER.Name",
+            value: requestUrl.searchParams.get("name"),
+          }
         ],
-    };
+      };
 
-    const passMetaURI: any = await pinFileToShadowDrive(metaBody);
+      if(requestUrl.searchParams.get("twitter")) {
+        metaBody.attributes.push({
+          trait_type: "USER.Twitter",
+          value: requestUrl.searchParams.get("twitter"),
+        })
+      }
 
-    let result = await projectConn.mintGuestPassTx({
-      name: metaBody.name,
-      symbol: metaBody.symbol,
-      uriHash: passMetaURI,
-      genesisProfile: projectInfo.data.project.key,
-      commonLut: projectInfo.data.projec.lut
-    },"");
+
+      if(requestUrl.searchParams.get("telegram")) {
+        metaBody.attributes.push({
+          trait_type: "USER.Telegram",
+          value: requestUrl.searchParams.get("telegram"),
+        })
+      }
+
+      if(requestUrl.searchParams.get("referer")) {
+        let parentPass:any = requestUrl.searchParams.get("referer");
+        let parentInfo = await projectConn.metaplex.nfts().findByMint({
+          mintAddress:  new anchor.web3.PublicKey(parentPass)
+        })
+        metaBody.attributes.push({
+          trait_type: "USER.Parent",
+          value: parentPass
+        });
+
+        if(parentInfo.json?.attributes) {
+            for (let index = 0; index < parentInfo.json?.attributes.length; index++) {
+              const element = parentInfo.json?.attributes[index];
+              if(element.trait_type === "USER.Parent") {
+                metaBody.attributes.push({
+                    trait_type: "USER.GrandParent",
+                    value: element.value
+                  });
+              }
+              if(element.trait_type === "USER.GrandParent") {
+                metaBody.attributes.push({
+                  trait_type: "USER.GreatGrandParent",
+                  value: element.value
+                });
+              }
+
+              if(element.trait_type === "USER.GreatGrandParent") {
+                metaBody.attributes.push({
+                  trait_type: "USER.GGreatGrandParent",
+                  value: element.value
+                });
+              }
+            }
+        }
+        
+      }
+
+
+      const passMetaURI: any = await pinFileToShadowDriveWithFileName(metaBody, body.account);
+
+      if(passMetaURI==="") {
+        let actionError: ActionError = { message: "Creating metadata failed" };
+        return Response.json(actionError, {
+          status: 400,
+          headers,
+        });
+      }
+
+      console.log("meta image ", passMetaURI)
+
+      let result = await projectConn.mintGuestPassTx({
+        name: metaBody.name,
+        symbol: metaBody.symbol,
+        uriHash: passMetaURI,
+        genesisProfile: projectInfo.data.project.key,
+        commonLut: projectInfo.data.project.lut
+      },body.account);
+
+      console.log("test8")
 
     if(result.Ok?.info?.profile) {
-      const payload: ActionPostResponse = await createPostResponse({
-        fields: {
-          transaction: result.Ok?.info?.profile,
-          message: ``,
-        },
-        signers: [],
-      });
+      let transaction: VersionedTransaction = result.Ok?.info?.profile;
+      const serialized = Buffer.from(transaction.serialize()).toString('base64');
+      const payload: ActionPostResponse = {transaction: serialized};
       return Response.json(payload, {
         headers,
       });
@@ -261,13 +362,13 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
           tokenInfo: tokenInfo
         }
       }
-      let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
-      if(userInFo.data.profilenft) {
+      // let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
+      // if(userInFo.data.profilenft) {
         return {
           isValid: true,
           tokenInfo: tokenInfo
         }
-      }
+      // }
       return {
         isValid: false,
         tokenInfo: null

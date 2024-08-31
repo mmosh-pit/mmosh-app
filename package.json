@@ -24,6 +24,7 @@
     "@solana/web3.js": "^1.87.6",
     "@strata-foundation/spl-utils": "^3.11.2",
     "@types/uuid": "^9.0.8",
+    "@web-std/file": "^3.0.3",
     "axios": "^1.6.2",
     "bs58": "^5.0.0",
     "firebase": "^10.7.1",

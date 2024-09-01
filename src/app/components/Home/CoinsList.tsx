@@ -113,7 +113,7 @@ const CoinsList = () => {
         </a>
       </div>
       <div
-        className="w-full px-4 grid xs:grid-cols-auto lg:grid-cols-2 gap-8 mt-4"
+        className="w-full px-4 py-2 grid grid-cols-auto xs:grid-cols-1 xl:grid-cols-2 gap-8 mt-4"
         ref={containerRef}
         onScroll={handleScroll}
       >

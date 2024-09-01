@@ -17,18 +17,18 @@ const Coins = () => {
   const renderGraphicComponent = React.useCallback(() => {
     if (selectedTab === "tvl") return <TVL />;
 
-    if (selectedTab === "volume") return <Volume />;
+    if (selectedTab === "volume") return <Volume withFilters />;
 
     return <Price />;
   }, [selectedTab]);
 
   return (
-    <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
+    <div className="background-content flex flex-col max-h-full pt-20 px-12">
       {!isMobile && (
         <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
           <TVL />
 
-          <Volume />
+          <Volume withFilters />
 
           <Price />
         </div>

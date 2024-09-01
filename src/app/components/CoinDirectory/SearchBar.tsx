@@ -48,7 +48,7 @@ const SearchBar = () => {
     <div className="w-full flex justify-between px-8">
       {!isMobile && <div className="w-[33%]" />}
 
-      <div className="w-[33%] flex items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
+      <div className="w-[50%] md:w-[33%] flex items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
         <button
           className="flex bg-[#5A00FF] rounded-full px-12 py-4 items-center"
           onClick={executeSearch}
@@ -71,7 +71,7 @@ const SearchBar = () => {
         />
       </div>
 
-      <div className="w-[33%] flex items-center justify-end">
+      <div className="w-[50%] md:w-[33%] flex items-center justify-end">
         <div className="flex items-center mr-8">
           <p className="text-sm">MMOSH</p>
           <input

@@ -28,31 +28,30 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     navigate.back();
   }, []);
 
-  const getBaseToken = async(bondingKey: string) => {
-
-    if(!wallet) {
-      return
+  const getBaseToken = async (bondingKey: string) => {
+    if (!wallet) {
+      return;
     }
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
 
     const env = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: "processed",
     });
-  
+
     anchor.setProvider(env);
     const curveConn = new CurveConn(env, web3Consts.programID);
     const bondingResult = await curveConn.getTokenBonding(
       new anchor.web3.PublicKey(bondingKey),
     );
-  
-    if(!bondingResult) {
-      return null
+
+    if (!bondingResult) {
+      return null;
     }
-  
+
     const mintDetail = await curveConn.metaplex
-    .nfts()
-    .findByMint({ mintAddress: bondingResult?.baseMint });
-  
+      .nfts()
+      .findByMint({ mintAddress: bondingResult?.baseMint });
+
     setBaseCoin({
       name: mintDetail.name,
       symbol: mintDetail.symbol,
@@ -60,10 +59,9 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       token: mintDetail.address.toBase58(),
       image: mintDetail.json?.image ? mintDetail.json?.image : "",
       bonding: coin?.bonding ? coin.bonding : "",
-      creatorUsername: coin?.creatorUsername ? coin.creatorUsername : ""
-    })
-
-  }
+      creatorUsername: coin?.creatorUsername ? coin.creatorUsername : "",
+    });
+  };
 
   const fetchCoinData = React.useCallback(async () => {
     try {
@@ -88,14 +86,14 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   }, [params]);
 
   React.useEffect(() => {
-    if(wallet && coin) {
-      getBaseToken(coin?.bonding)
+    if (wallet && coin) {
+      getBaseToken(coin?.bonding);
     }
-  },[wallet, coin])
+  }, [wallet, coin]);
 
   if (isLoading) {
     return (
-      <div className="relative background-content flex w-full justify-center items-center">
+      <div className="background-content flex w-full justify-center items-center">
         <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
       </div>
     );
@@ -103,13 +101,13 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
   if (!coin && !baseCoin) {
     return (
-      <div className="background-content relative flex flex-col max-h-full pt-20 px-12" />
+      <div className="background-content flex flex-col max-h-full pt-20 px-12" />
     );
   }
 
   return (
     <>
-      {coin && baseCoin &&
+      {coin && baseCoin && (
         <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
           <div className="w-full flex justify-between">
             <div className="flex items-center mb-8 ml-4">
@@ -133,11 +131,11 @@ const Page = ({ params }: { params: { symbol: string } }) => {
           </div>
           <div className="w-full flex flex-col md:flex-row justify-between">
             <div className="md:w-[50%] w-[90%]">
-              <Graphics coin={coin} base={baseCoin}/>
+              <Graphics coin={coin} base={baseCoin} />
             </div>
 
             <div className="md:w-[35%] w-[90%]">
-              <Stats coin={coin} base={baseCoin}/>
+              <Stats coin={coin} base={baseCoin} />
             </div>
           </div>
 
@@ -145,9 +143,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             <TransactionsTable coin={coin} base={baseCoin} />
           </div>
         </div>
-      }
+      )}
     </>
-
   );
 };
 

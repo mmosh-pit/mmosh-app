@@ -183,7 +183,7 @@ const CoinsTable = () => {
   }, [searchText, volume]);
 
   return (
-    <table className="w-full bg-[#100E5242] rounded-md">
+    <table className="w-full bg-[#100E5242] rounded-md overflow-x-auto">
       <thead>
         <tr>
           <th>
@@ -266,6 +266,7 @@ const CoinsTable = () => {
                       src={coin.image}
                       layout="fill"
                       alt={`${coin.name} image`}
+                      className="rounded-full"
                     />
                   </div>
                   <p className="text-white text-sm ml-1">{coin.name}</p>

@@ -61,7 +61,7 @@ const TransactionsTable = ({ coin, base }: Props) => {
         <h5>Transactions</h5>
       </div>
 
-      <table className="w-full bg-[#100E5242] rounded-md">
+      <table className="w-full bg-[#100E5242] rounded-md overflow-x-auto">
         <thead>
           <tr>
             <th align="center">
@@ -127,7 +127,12 @@ const TransactionsTable = ({ coin, base }: Props) => {
                       {item.price}
                     </p>
                     <div className="relative w-[1vmax] h-[1vmax] mx-2">
-                      <Image src={item.targetimg} alt={base.symbol} layout="fill" />
+                      <Image
+                        src={item.targetimg}
+                        alt="mmosh"
+                        layout="fill"
+                        className="rounded-full"
+                      />
                     </div>
                     <p className="text-white font-normal text-sm">
                       {item.targetsymbol}

@@ -8,6 +8,7 @@ import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import MessageBanner from "../common/MessageBanner";
 import { createGenesisInvitation } from "@/app/lib/forge/createGenesisInvitation";
 import { web3Consts } from "@/anchor/web3Consts";
+import { getPronouns } from "@/app/lib/getPronouns";
 
 const MintInvitation = () => {
   const wallet = useAnchorWallet();
@@ -82,9 +83,10 @@ const MintInvitation = () => {
                 Invitation from {currentUser?.profile.username}
               </p>
               <p className="text-sm mt-2">
-                {currentUser?.profile.username} cordially invites you to join
-                him on Moral Panic, the Genesis MMOSH. The favor of a reply is
-                requested
+                {currentUser?.profile.username} cordially invites you to join{" "}
+                {getPronouns(currentUser?.profile.pronouns || "")} on the MMOSH,
+                the Genesis Ecosystem on the Social Crypto Syndication protocol
+                from Liquid Hearts Club. The favor of a reply is requested.
               </p>
             </div>
 

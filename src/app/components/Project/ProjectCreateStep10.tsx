@@ -954,7 +954,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             {showMsg && (
                 <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
             )}
-            <div className="relative background-content">
+            <div className="background-content">
                 <div className="flex flex-col items-center justify-center w-full">
                     <div className="relative w-full flex flex-col justify-center items-center pt-5">
                         <div className="max-w-md">

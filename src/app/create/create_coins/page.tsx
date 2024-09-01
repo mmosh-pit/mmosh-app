@@ -65,7 +65,7 @@ const customStyles = {
     backgroundColor: "#180E4F",
     minWidth: "300px",
     maxWidth: "500px",
-    width: "100%"
+    width: "100%",
   },
 };
 
@@ -95,15 +95,19 @@ const CreateCoin = () => {
   const [coinLoader, setCoinLoader] = React.useState(false);
   const [coinAllList, setCoinAllList] = React.useState<any>([]);
   const [coinList, setCoinList] = React.useState<any>([]);
-  const [selectedCommunityCoin, setSelectedCommunityCoin] = React.useState<any>({
-    address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
-    name: "MMOSH: The Stoked Token",
-    symbol: "MMOSH",
-    logoURI: "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-    decimals: 9
-  });
+  const [selectedCommunityCoin, setSelectedCommunityCoin] = React.useState<any>(
+    {
+      address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
+      name: "MMOSH: The Stoked Token",
+      symbol: "MMOSH",
+      logoURI:
+        "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+      decimals: 9,
+    },
+  );
 
-  const [selectedCommunityBalance, setSelectedCommunityBalance] = React.useState(0)
+  const [selectedCommunityBalance, setSelectedCommunityBalance] =
+    React.useState(0);
 
   const tickXFormat = React.useCallback(
     (value: number) => {
@@ -183,7 +187,7 @@ const CreateCoin = () => {
       wallet: wallet!,
       setMintingStatus,
       username: currentUser!.profile.username,
-      baseToken: selectedCommunityCoin
+      baseToken: selectedCommunityCoin,
     };
 
     const res = await createCoin(params);
@@ -212,49 +216,48 @@ const CreateCoin = () => {
   }, [form.symbol]);
 
   const getCommunityCoins = async () => {
-     try {
-        setCoinLoader(true)
-        let newCommunityCoins = [];
-        let mmosh = process.env.NEXT_PUBLIC_OPOS_TOKEN;
-        newCommunityCoins.push({
-          address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
-          name: "MMOSH: The Stoked Token",
-          symbol: "MMOSH",
-          logoURI: "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-          decimals: 9
-        })
-        const result:any = await axios.get("/api/project/list-coins");
-        if(result.data) {
-          let newCoinList = result.data.filter((item: any) =>
-            item.key !== mmosh,
-          );
-          let finalList = newCoinList.reduce((unique:any, o:any) => {
-            if(!unique.some((obj:any) => obj.key === o.key)) {
-              unique.push(o);
-            }
-            return unique;
-          },[]);
-
-          for (let index = 0; index < finalList.length; index++) {
-            const element = finalList[index];
-            newCommunityCoins.push({
-              address: element.key,
-              name: element.name,
-              symbol: element.symbol,
-              logoURI: element.image,
-              decimals: element.decimals
-            })
+    try {
+      setCoinLoader(true);
+      let newCommunityCoins = [];
+      let mmosh = process.env.NEXT_PUBLIC_OPOS_TOKEN;
+      newCommunityCoins.push({
+        address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
+        name: "MMOSH: The Stoked Token",
+        symbol: "MMOSH",
+        logoURI:
+          "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+        decimals: 9,
+      });
+      const result: any = await axios.get("/api/project/list-coins");
+      if (result.data) {
+        let newCoinList = result.data.filter((item: any) => item.key !== mmosh);
+        let finalList = newCoinList.reduce((unique: any, o: any) => {
+          if (!unique.some((obj: any) => obj.key === o.key)) {
+            unique.push(o);
           }
+          return unique;
+        }, []);
+
+        for (let index = 0; index < finalList.length; index++) {
+          const element = finalList[index];
+          newCommunityCoins.push({
+            address: element.key,
+            name: element.name,
+            symbol: element.symbol,
+            logoURI: element.image,
+            decimals: element.decimals,
+          });
         }
-        setCoinAllList(newCommunityCoins)
-        setCoinList(newCommunityCoins)
-        setCoinLoader(false)
-     } catch (error) {
-        setCoinLoader(false)
-        setCoinList([])
-        setCoinAllList([])
-     }
-  }
+      }
+      setCoinAllList(newCommunityCoins);
+      setCoinList(newCommunityCoins);
+      setCoinLoader(false);
+    } catch (error) {
+      setCoinLoader(false);
+      setCoinList([]);
+      setCoinAllList([]);
+    }
+  };
 
   React.useEffect(() => {
     if (!image) return;
@@ -298,47 +301,56 @@ const CreateCoin = () => {
     setCoinPrice(res.coinPrice);
   }, [form.multiplier, form.initialPrice, form.supply, form.bonding]);
 
-  React.useEffect(()=>{
-    if(wallet) {
-      getTokenBalance()
+  React.useEffect(() => {
+    if (wallet) {
+      getTokenBalance();
     }
-  },[selectedCommunityCoin, wallet])
+  }, [selectedCommunityCoin, wallet]);
 
-  React.useEffect(()=>{
-    console.log("currentUser ", currentUser)
-  },[currentUser])
+  React.useEffect(() => {
+    console.log("currentUser ", currentUser);
+  }, [currentUser]);
 
   const openCommunityCoins = () => {
-    setIsOpen(true)
+    setIsOpen(true);
     getCommunityCoins();
-  }
+  };
 
   const closeModal = () => {
-    setIsOpen(false)
-    setKeyword("")
-    setCoinList([])
-    setCoinAllList([])
-  }
+    setIsOpen(false);
+    setKeyword("");
+    setCoinList([]);
+    setCoinAllList([]);
+  };
 
-  const onCoinSearch = (event:any) => {
-    setKeyword(event.target.value)
-    console.log(event.target.value)
-    if(event.target.value.trim().length == 0) {
-      setCoinList(coinAllList)
+  const onCoinSearch = (event: any) => {
+    setKeyword(event.target.value);
+    console.log(event.target.value);
+    if (event.target.value.trim().length == 0) {
+      setCoinList(coinAllList);
     } else {
-      let newCoinList = coinAllList.filter((item: any) =>
-        item.name.toLowerCase().includes(event.target.value.trim().toLowerCase()) || item.symbol.toLowerCase().includes(event.target.value.trim().toLowerCase()) || item.symbol.toLowerCase().includes(event.target.value.trim().toLowerCase()),
+      let newCoinList = coinAllList.filter(
+        (item: any) =>
+          item.name
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()) ||
+          item.symbol
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()) ||
+          item.symbol
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()),
       );
-      setCoinList(newCoinList)
+      setCoinList(newCoinList);
     }
-  }
+  };
 
-  const onTokenSelect = (token:any) => {
-    setSelectedCommunityCoin(token)
-    closeModal()
-  }
+  const onTokenSelect = (token: any) => {
+    setSelectedCommunityCoin(token);
+    closeModal();
+  };
 
-  const getTokenBalance = async() => {
+  const getTokenBalance = async () => {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
     const env = new anchor.AnchorProvider(connection, wallet!, {
       preflightCommitment: "processed",
@@ -346,9 +358,8 @@ const CreateCoin = () => {
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const balance = await userConn.getUserBalance(selectedCommunityCoin);
-    setSelectedCommunityBalance(balance)
-  }
-
+    setSelectedCommunityBalance(balance);
+  };
 
   return (
     <>
@@ -502,7 +513,11 @@ const CreateCoin = () => {
                 >
                   <defs>
                     <linearGradient id="gradient" x1="1" y1="1" x2="2" y2="2">
-                      <stop offset="100%" stopColor="#0765FF" stopOpacity={0.6} />
+                      <stop
+                        offset="100%"
+                        stopColor="#0765FF"
+                        stopOpacity={0.6}
+                      />
                       <stop offset="30%" stopColor="#09073A" stopOpacity={0} />
                     </linearGradient>
                   </defs>
@@ -573,27 +588,35 @@ const CreateCoin = () => {
                 }}
               />
             </div>
-            
+
             <div className="form-element mr-2.5">
-                <p className="input input-bordered h-[2vmax] text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer" onClick={openCommunityCoins}>
-                    <span>{selectedCommunityCoin.symbol}</span>
-                    {selectedCommunityCoin.name ==="" &&
-                          <span className="text-white text-opacity-[0.3]"> Select Coin</span>
-                    }
-                    <label className="mr-2.5"><ArrowDown /></label>
-                </p>
-              </div>
+              <p
+                className="input input-bordered h-[2vmax] text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer"
+                onClick={openCommunityCoins}
+              >
+                <span>{selectedCommunityCoin.symbol}</span>
+                {selectedCommunityCoin.name === "" && (
+                  <span className="text-white text-opacity-[0.3]">
+                    {" "}
+                    Select Coin
+                  </span>
+                )}
+                <label className="mr-2.5">
+                  <ArrowDown />
+                </label>
+              </p>
+            </div>
 
             <p className="text-xs text-gray-300">
-              for{" "}
-              <span className="text-xs text-gray-500">{form.supply}</span> 
-              {form.symbol !== "" ? "$"+form.symbol : ""}
+              for <span className="text-xs text-gray-500">{form.supply}</span>
+              {form.symbol !== "" ? "$" + form.symbol : ""}
             </p>
           </div>
 
           <p className="text-xs text-gray-300 text-center max-w-[80%]">
             Enter the amount of your initial Swap. You will swap{" "}
-            <span className="font-bold text-white">{form.supply}</span> {selectedCommunityCoin.symbol} for{" "}
+            <span className="font-bold text-white">{form.supply}</span>{" "}
+            {selectedCommunityCoin.symbol} for{" "}
             <span className="font-bold text-white">{form.supply}</span>{" "}
             {form.symbol} and you will be charged a small amount of SOL in
             transaction fees.
@@ -606,7 +629,9 @@ const CreateCoin = () => {
                 <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
                   {selectedCommunityBalance || 0}
                 </div>
-                <p className="text-sm text-white">{selectedCommunityCoin.symbol}</p>
+                <p className="text-sm text-white">
+                  {selectedCommunityCoin.symbol}
+                </p>
               </div>
 
               <div className="flex items-center mt-2">
@@ -621,55 +646,59 @@ const CreateCoin = () => {
         </div>
       </div>
       <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          style={customStyles}
-        >
-          <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">Coin List </h2>
-          <div>
-            {!coinLoader &&
-              <>
-                <div className="search-container">
-                  <label
-                    className={
-                      "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
-                    }
-                  >
-                    <div className="p-2">
-                      <SearchIcon />
-                    </div>
-                    <input
-                      type="text"
-                      className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
-                      placeholder="Search by Coin Name"
-                      value={keyword}
-                      onChange={onCoinSearch}
-                    />
-                  </label>
-                </div>
-                <div className="overflow-y-auto" style={{maxHeight: window.innerHeight * 0.7 + "px"}}>
-                   {coinList.map((coinItem: any) => (
-                      <TokenCard data={coinItem} onChoose={onTokenSelect} />
-                   ))}
-                </div>
-              </>
-            }
-
-            {coinLoader &&
-              <div className="flex justify-center">
-                <Bars
-                  height="80"
-                  width="80"
-                  color="rgba(255, 0, 199, 1)"
-                  ariaLabel="bars-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="bars-loading"
-                  visible={true}
-                />
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+      >
+        <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">
+          Coin List{" "}
+        </h2>
+        <div>
+          {!coinLoader && (
+            <>
+              <div className="search-container">
+                <label
+                  className={
+                    "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
+                  }
+                >
+                  <div className="p-2">
+                    <SearchIcon />
+                  </div>
+                  <input
+                    type="text"
+                    className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
+                    placeholder="Search by Coin Name"
+                    value={keyword}
+                    onChange={onCoinSearch}
+                  />
+                </label>
               </div>
-            }
+              <div
+                className="overflow-y-auto"
+                style={{ maxHeight: window.innerHeight * 0.7 + "px" }}
+              >
+                {coinList.map((coinItem: any) => (
+                  <TokenCard data={coinItem} onChoose={onTokenSelect} />
+                ))}
+              </div>
+            </>
+          )}
 
-          </div>
+          {coinLoader && (
+            <div className="flex justify-center">
+              <Bars
+                height="80"
+                width="80"
+                color="rgba(255, 0, 199, 1)"
+                ariaLabel="bars-loading"
+                wrapperStyle={{}}
+                wrapperClass="bars-loading"
+                visible={true}
+              />
+            </div>
+          )}
+        </div>
       </Modal>
     </>
   );

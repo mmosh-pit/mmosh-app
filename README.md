@@ -57,3 +57,10 @@ PTVR - EJqdJEJCQ2MbAfH21TqogMX3auBPta9vXvhHioeLz8G7
 Mainnet
 PTVB - https://explorer.solana.com/address/CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX
 PTVR - https://explorer.solana.com/address/H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd
+
+## karta details
+
+API BASE: https://app.kartra.com/api
+App ID: qanlZUBexdYt
+API key: qpwOScIF
+API password: IJXBZYzaiwoL

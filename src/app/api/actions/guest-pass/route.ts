@@ -162,24 +162,23 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
       const passCollection = web3Consts.passCollection;
       const userNfts = await projectConn.getUserNFTs(body.account);
 
-      // for (let i of userNfts) {
-
-      //   const collectionInfo = i?.collection;
-      //   if (
-      //     collectionInfo?.address.toBase58() == passCollection.toBase58()
-      //   ) {
-      //     const metadata = await projectConn.getProfileMetadataByProject(i?.uri);
-      //     if (metadata) {
-      //       if(metadata.project == projectInfo.data.project.key) {
-      //         let actionError: ActionError = { message: "User already have pass minted in his account" };
-      //         return Response.json(actionError, {
-      //           status: 400,
-      //           headers,
-      //         });
-      //       }
-      //     }
-      //   }
-      // }
+      for (let i of userNfts) {
+        const collectionInfo = i?.collection;
+        if (
+          collectionInfo?.address.toBase58() == passCollection.toBase58()
+        ) {
+          const metadata = await projectConn.getProfileMetadataByProject(i?.uri);
+          if (metadata) {
+            if(metadata.project == projectInfo.data.project.key) {
+              let actionError: ActionError = { message: "User already have pass minted in his account" };
+              return Response.json(actionError, {
+                status: 400,
+                headers,
+              });
+            }
+          }
+        }
+      }
       
       console.log("test7")
       
@@ -188,7 +187,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
         name:  type === "Red" ? "Pump The Vote Red" : "Pump The Vote Blue",
         symbol: type === "Red" ? "PTVR" : "PTVB",
         description: type === "Red" ? "Pump The Vote is a PolitiFi project within the MMOSH ecosystem. The Pump The Vote Red project pass is for conservatives united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability." : "Pump The Vote is a PolitiFi project within the MMOSH ecosystem. The Pump The Vote Blue project pass is for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.",
-        image: type === "Blue" ? "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png" : "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Red.png",
+        image: type === "Red" ? "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Red.png" : "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png",
         enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL + "create/project/" + projectInfo.data.project.symbol,
         family: "MMOSH",
         collection: "MMOSH Pass Collection",
@@ -293,7 +292,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
       }
 
 
-      const passMetaURI: any = await pinFileToShadowDriveWithFileName(metaBody, body.account);
+      const passMetaURI: any = await pinFileToShadowDriveWithFileName(metaBody, body.account + "_"+type);
 
       if(passMetaURI==="") {
         let actionError: ActionError = { message: "Creating metadata failed" };
@@ -362,13 +361,13 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
           tokenInfo: tokenInfo
         }
       }
-      // let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
-      // if(userInFo.data.profilenft) {
+      let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
+      if(userInFo.data.profilenft) {
         return {
           isValid: true,
           tokenInfo: tokenInfo
         }
-      // }
+      }
       return {
         isValid: false,
         tokenInfo: null

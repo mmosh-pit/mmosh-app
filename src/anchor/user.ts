@@ -1358,19 +1358,6 @@ export class Connectivity {
         profileHolder: genesisProfileAtaHolder,
       };
     } catch (error) {
-      const genesisProfileAta = (
-        await this.connection.getTokenLargestAccounts(nftAddress)
-      ).value[0].address;
-  
-      const atasInfo = await this.connection.getMultipleAccountsInfo([
-        genesisProfileAta,
-      ]);
-  
-      const genesisProfileAtaHolder = unpackAccount(
-        genesisProfileAta,
-        atasInfo[0],
-      ).owner;
-  
       return {
         profileHolder: web3.PublicKey.default,
       };

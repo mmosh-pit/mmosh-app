@@ -5,11 +5,11 @@ export async function GET(req: NextRequest) {
     const collection = db.collection("mmosh-app-ptv");
 
     const { searchParams } = new URL(req.url);
-    const wallet = searchParams.get("wallet");
+    const pass = searchParams.get("pass");
   
     const ptvAccount = await collection.findOne(
       {
-        wallet,
+        pass,
       },
     );
   

@@ -249,7 +249,7 @@ const rewardByType = (lineage: String) => {
         },
         {
           "cmd": "assign_tag",
-          "tag_name": "BIB Blink"
+          "tag_name": "BIB Blink In Bio API"
         }
       ],
     }

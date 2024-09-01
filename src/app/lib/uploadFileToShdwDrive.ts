@@ -95,7 +95,7 @@ export const pinFileToShadowDriveWithFileName = async (jsonData: any, name:any) 
       type: "application/json",
     });
     const arrayBuffer = await blobData.arrayBuffer();
-    const fileName = name + "_ptv.json";
+    const fileName = uuidv4() + ".json";
     const fileToUpload: ShadowFile = {
       name: fileName,
       file: Buffer.from(arrayBuffer),

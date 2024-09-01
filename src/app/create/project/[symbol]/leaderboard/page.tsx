@@ -115,8 +115,8 @@ const PTVLeaderBoard = () => {
                                <div className="pl-20">
                                  <div className="pl-3.5">
                                     <h3 className="text-white font-goudy text-header-small-font-size capitalize">{leaderItem.name}</h3>
-                                    <p className="text-white text-para-font-size">Total Reward: {leaderItem.reward} {coinType == "Red" ? "PTVR": "PTVB"}</p>
-                                    <p className="text-white text-para-font-size">Total Claimed: {leaderItem.claimed} {coinType == "Red" ? "PTVR": "PTVB"}</p>
+                                    <p className="text-white text-para-font-size">PTVB Rewards: {leaderItem.bluereward} PTVB</p>
+                                    <p className="text-white text-para-font-size">PTVR Rewards: {leaderItem.redreward} PTVR</p>
                                     <div className="mt-3.5 flex gap-4">
                                         <Button
                                             isPrimary={false}

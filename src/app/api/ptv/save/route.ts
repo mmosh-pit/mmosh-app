@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
 
   const ptv = await collection.findOne({
     wallet: nftData.nftOwner,
-    type: nftData.type
   });
 
 
@@ -85,8 +84,7 @@ export async function POST(req: NextRequest) {
     }
 
     const lineageptv = await collection.findOne({
-        wallet: lineageNftDetails.nftOwner,
-        type: nftData.type
+        wallet: lineageNftDetails.nftOwner
     });
 
 

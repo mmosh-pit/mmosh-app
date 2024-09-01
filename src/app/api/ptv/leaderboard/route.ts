@@ -50,14 +50,16 @@ export async function GET(req: NextRequest) {
           twitter: 1,
           telegram: 1,
           type: 1,
-          reward: 1,
-          claimed: 1,
+          bluereward: 1,
+          blueclaimed: 1,
+          redreward: 1,
+          redclaimed: 1,
           project: 1,
           pass: 1,
           profiles: "$profiles",
         },
       },
-      {$sort: {reward: -1}},
+      {$sort: {created_date: -1}},
     ])
     .limit(100)
     .toArray();

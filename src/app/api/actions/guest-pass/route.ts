@@ -71,7 +71,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
                     value: "Red",
                     selected: false
                   }, {
-                    label: " Blue Pass (Democrat)",
+                    label: "Blue Pass (Democrat)",
                     value: "Blue",
                     selected: false
                   }]
@@ -361,13 +361,14 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
           tokenInfo: tokenInfo
         }
       }
-      let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
-      if(userInFo.data.profilenft) {
+      // let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
+      // console.log("userinfor ", userInFo.data)
+      // if(userInFo.data.profilenft) {
         return {
           isValid: true,
           tokenInfo: tokenInfo
         }
-      }
+      // }
       return {
         isValid: false,
         tokenInfo: null

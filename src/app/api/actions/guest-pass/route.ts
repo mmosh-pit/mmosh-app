@@ -35,14 +35,9 @@ const headers = createActionHeaders();
 
 export const GET = async (req: Request) => {
   try {
-    console.log(
-      "GOING TO GET WITH URL: ",
-      process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG",
-    );
     let projectInfo: any = await axios.get(
       process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG",
     );
-    console.log("Project info GET: ", projectInfo);
     const requestUrl = new URL(req.url);
     const { isValid, tokenInfo } = await validatedQueryParams(
       requestUrl,
@@ -145,14 +140,9 @@ export const OPTIONS = async () => Response.json(null, { headers });
 export const POST = async (req: Request) => {
   try {
     console.log("test1");
-    console.log(
-      "GOING TO GET WITH URL: ",
-      process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG",
-    );
     let projectInfo: any = await axios.get(
       process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG",
     );
-    console.log("Project info: ", projectInfo);
     const requestUrl = new URL(req.url);
     console.log("test2 ");
     const { isValid, tokenInfo } = await validatedQueryParams(
@@ -401,13 +391,8 @@ async function validatedQueryParams(requestUrl: URL, projectInfo: any) {
       : projectInfo.project.key;
 
     let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-
-    console.log("RPC URL: ", rpcUrl);
-
     let connection = new Connection(rpcUrl);
     let wallet = new NodeWallet(new Keypair());
-
-    console.log("1");
     const env = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: "processed",
     });
@@ -416,12 +401,10 @@ async function validatedQueryParams(requestUrl: URL, projectInfo: any) {
       web3Consts.programID,
       new anchor.web3.PublicKey(projectInfo.project.key),
     );
-    console.log("2");
     let pass = new PublicKey(referer);
     let tokenInfo = await projectConn.metaplex.nfts().findByMint({
       mintAddress: pass,
     });
-    console.log("3");
     let creator = tokenInfo.creators[0].address;
     if (!requestUrl.searchParams.get("referer")) {
       return {

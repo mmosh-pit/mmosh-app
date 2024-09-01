@@ -10,14 +10,18 @@ const PTVLeaderBoard = () => {
     const [leaderLoading, setLeaderLoading] = useState(true);
     const [keyword, setKeyword] = useState("")
     const [leaders, setLeaders] = useState([]);
-    const [coinType, setCoinType] = useState("Blue");
+    const [coinType, setCoinType] = useState("");
     const coinList = [
         {
-          label: "Blue Pass (Democrat)",
+          label: "Both Teams",
+          value: "",
+        },
+        {
+          label: "Blue Team",
           value: "Blue",
         },
         {
-          label: "Red Pass (Republican)",
+          label: "Red Team",
           value: "Red",
         }
       ];
@@ -40,7 +44,10 @@ const PTVLeaderBoard = () => {
             }
             source = axios.CancelToken.source();
             setLeaderLoading(true)
-            let url = "/api/ptv/leaderboard?type="+coinType
+            let url = "/api/ptv/leaderboard"
+            if(coinType !=="") {
+                url = url + "?type="+coinType
+            }
             if(keyword.length > 0) {
                 url = url + "&&searchText=" + keyword
             }
@@ -59,11 +66,15 @@ const PTVLeaderBoard = () => {
         window.open("https://dial.to/?action=solana-action:"+process.env.NEXT_PUBLIC_APP_MAIN_URL+"/api/actions/guest-pass?referer="+leaderItem.pass, "_blank")
     }
 
+    const onViewTwitter = (leaderItem:any) => {
+        window.open(leaderItem.twitter, "_blank")
+    }
+
     return (
         <div className="relative background-content">
             <div className="container mx-auto my-10">
                 <div className="relative w-full md:flex justify-between">
-                    <h2 className="text-center text-white font-goudy font-normal text-xl leading-10 py-0.5">PTV LeaderBoard</h2>
+                    <h2 className="text-center text-white font-goudy font-normal text-xl leading-10 py-0.5">Pump The Vote Leaderboard</h2>
                     <div className="flex">
                         <div className="relative flex search-container">
                             <button className="btn btn-circle bg-search h-11 w-11 min-h-0">
@@ -98,7 +109,7 @@ const PTVLeaderBoard = () => {
                                     <img src={leaderItem.profiles[0].profile.image} alt="profile" className="w-20 h-20 rounded-full" />
                                 }
                                 {leaderItem.profiles.length === 0 &&
-                                    <img src="/images/user.png" alt="profile" className="w-20 h-20 rounded-full" />
+                                    <img src="https://storage.googleapis.com/mmosh-assets/ptv/logo.jpg" alt="profile" className="w-20 h-20 rounded-full" />
                                 }
                                </div>
                                <div className="pl-20">
@@ -106,7 +117,15 @@ const PTVLeaderBoard = () => {
                                     <h3 className="text-white font-goudy text-header-small-font-size capitalize">{leaderItem.name}</h3>
                                     <p className="text-white text-para-font-size">Total Reward: {leaderItem.reward} {coinType == "Red" ? "PTVR": "PTVB"}</p>
                                     <p className="text-white text-para-font-size">Total Claimed: {leaderItem.claimed} {coinType == "Red" ? "PTVR": "PTVB"}</p>
-                                    <div className="mt-3.5">
+                                    <div className="mt-3.5 flex gap-4">
+                                        <Button
+                                            isPrimary={false}
+                                            action={()=>{onViewTwitter(leaderItem)}}
+                                            title="Follow on X"
+                                            size="small"
+                                            disabled={false}
+                                            isLoading={false}
+                                        />
                                         <Button
                                             isPrimary={false}
                                             action={()=>{onViewBlink(leaderItem)}}

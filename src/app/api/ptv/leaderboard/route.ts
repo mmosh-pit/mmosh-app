@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type") as string;
   const search = searchParams.get("searchText") as string;
   let match = {$match: {}};
-  if(search) {
+  if(search && type) {
     match = {
         $match: {
           $and: [
@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
         },
     }
   } else {
-    match = { $match: { type: type } }
+    if(type) {
+      match = { $match: { type: type } }
+    }
+  
   }
 
 

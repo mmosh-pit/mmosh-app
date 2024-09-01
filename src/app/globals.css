@@ -119,9 +119,8 @@ h6 {
   overflow-x: hidden;
   min-height: 100vh;
   /* position: relative; */
-  /* background: rgba(0, 0, 0, 0.5) */
-  /*   url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png"); */
-  background: #09073a;
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: rgba(9, 7, 58, 0.7);
   /* background: radial-gradient( */
   /*   circle at 50% 15%, */
   /*   #081c6c 1%, */
@@ -130,7 +129,7 @@ h6 {
   /*   #030064 100% */
   /* ); */
 
-  /* mix-blend-mode: hard-light; */
+  mix-blend-mode: hard-light;
 
   /* background-size: auto; */
   /* background-repeat: repeat; */
@@ -429,6 +428,20 @@ h6 {
     width: 12vmax !important;
     height: 10vmax !important;
   }
+}
+
+.states-select {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-flow: column;
+  backdrop-filter: blur(19.5px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #00000012;
+
+  border-radius: 1rem;
+  z-index: 2;
+  transition: all 0.2s linear;
 }
 
 .custom-select {
@@ -837,7 +850,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
 }
 
-
 /* Rectangle 18105 */
 .search-container {
   background: rgba(1, 6, 35, 0.15);
@@ -853,18 +865,38 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .project-card-graph .caret-down {
-  color: #DC2626;
+  color: #dc2626;
   width: 12px;
 }
 
 .project-card-graph .caret-up {
-  color: #22C55E;
+  color: #22c55e;
   width: 12px;
 }
-.crate-up-container span{
-  color: #22C55E;
+.crate-up-container span {
+  color: #22c55e;
 }
 
 .crate-down-container span {
   color: #DC2626;
+}
+
+.leader-container {
+  background: rgba(1, 6, 35, 0.15);
+  border: 1px solid rgba(194, 194, 194, 0.16);
+  backdrop-filter: blur(9px);
+  /* Note: backdrop-filter has minimal browser support */
+  border-radius: 10px;
+}
+
+.republican-border-color {
+  border: 1px solid #ff002e;
+}
+
+.democrat-border-color {
+  border: 1px solid #0061ff;
+}
+
+.other-border-color {
+  border: 1px solid #0c0054;
 }

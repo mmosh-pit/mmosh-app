@@ -7,14 +7,24 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const project = searchParams.get("project");
+  const symbol = searchParams.get("symbol");
+
+  const projectCollection = db.collection("mmosh-app-project");
+  const projectData:any = await projectCollection.findOne({ symbol: symbol });
+
+  if(!projectData) {
+    return NextResponse.json(null, {
+      status: 200,
+    });
+  }
+
 
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
-  const coins = await projectCoinCollection.findOne({ projectkey: project });
+  const coins = await projectCoinCollection.find({ projectkey: projectData.key }).toArray();
 
   const updated_date = new Date();
   const communityCoinAccount = await projectCoinCollection.findOne({
-    projectkey: project,
+    projectkey: projectData.key,
     updated_date: {$lt: updated_date},
   });
 
@@ -22,26 +32,23 @@ export async function GET(req: NextRequest) {
     "mmosh-app-project-community",
   );
   const community = await projectCommunityCollection
-    .find({ projectkey: project })
+    .find({ projectkey: projectData.key })
     .toArray();
 
   const projectProfileCollection = db.collection("mmosh-app-project-profiles");
   const profiles = await projectProfileCollection
-    .find({ projectkey: project })
+    .find({ projectkey: projectData.key })
     .toArray();
 
   const projectTokenomicsCollection = db.collection(
     "mmosh-app-project-tokenomics",
   );
   const tokenomics = await projectTokenomicsCollection
-    .find({ projectkey: project })
+    .find({ projectkey: projectData.key })
     .toArray();
 
-  const projectCollection = db.collection("mmosh-app-project");
-  const projectData = await projectCollection.findOne({ key: project });
-
   const passCollection = db.collection("mmosh-app-project-pass");
-  const passes = await passCollection.find({ projectkey: project }).toArray();
+  const passes = await passCollection.find({ projectkey: projectData.key }).toArray();
 
   const result = {
     coins,

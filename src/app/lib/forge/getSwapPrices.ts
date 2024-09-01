@@ -19,11 +19,43 @@ export const getSwapPrices = async (
 
   anchor.setProvider(env);
   const curveConn = new CurveConn(env, web3Consts.programID);
+  const bondingResult = await curveConn.getTokenBonding(
+    new anchor.web3.PublicKey(token.bonding),
+  );
+
+  if(!bondingResult) {
+    return null
+  }
+
+  const mintDetail = await curveConn.metaplex
+  .nfts()
+  .findByMint({ mintAddress: bondingResult?.baseMint });
+
 
   const balances = await curveConn.getTokenBalance(
     token.token,
-    web3Consts.oposToken.toBase58(),
+    bondingResult?.baseMint.toBase58(),
   );
+
+
+
+  const base = {
+    name: mintDetail.name,
+    symbol: mintDetail.symbol,
+    token: bondingResult?.baseMint.toBase58(),
+    image: mintDetail.json?.image,
+    balance: balances.target,
+    bonding: token.bonding,
+    desc: "",
+    creatorUsername: "",
+    value: 0,
+  };
+
+
+
+
+  console.log("bondingResult ", bondingResult)
+  console.log("basemint ", bondingResult?.baseMint.toBase58())
 
   const target = {
     name: token.name,
@@ -37,18 +69,9 @@ export const getSwapPrices = async (
     value: 0,
   };
 
-  const base = {
-    name: "MMOSH: The Stoked Token",
-    symbol: "MMOSH",
-    token: web3Consts.oposToken.toBase58(),
-    image:
-      "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-    balance: balances.target,
-    bonding: token.bonding,
-    desc: "",
-    creatorUsername: "",
-    value: 0,
-  };
+
+
+
 
   const curve = await curveConn.getPricing(
     new anchor.web3.PublicKey(token.bonding),

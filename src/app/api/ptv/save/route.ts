@@ -10,11 +10,22 @@ import axios from "axios";
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-ptv");
   const projectCollection = db.collection("mmosh-app-project");
+  const project = await projectCollection.findOne({
+    symbol: "PTVG",
+  });
+
+
   const {
    pass,
   } = await req.json();
 
   let nftData = await getNFTDetails(new anchor.web3.PublicKey(pass),"root");
+  if(project) {
+    if(project.key !== nftData.project || project.key === pass) {
+      return NextResponse.json("", { status: 400 });
+    }
+  }
+
 
   const ptv = await collection.findOne({
     wallet: nftData.nftOwner,
@@ -73,9 +84,6 @@ export async function POST(req: NextRequest) {
     const element:any = nftData.lineageData[index];
     let reward = rewardByType(element.type)
     let lineageNftDetails  = await getNFTDetails(new anchor.web3.PublicKey(element.value),"")
-    const project = await projectCollection.findOne({
-      symbol: "PTVG",
-    });
 
     if(project) {
       if(project.key === element.value) {

@@ -27,8 +27,10 @@ export async function POST(req: NextRequest) {
       wallet: nftData.nftOwner,
       pass,
       project: nftData.project,
-      reward: 20000,
-      claimed: 0,
+      redreward: nftData.type === "Red" ? 20000 : 0,
+      bluereward: nftData.type === "Blue" ? 20000 : 0,
+      redclaimed: 0,
+      blueclaimed: 0,
       type: nftData.type,
       name: nftData.name,
       email: nftData.email,
@@ -40,16 +42,30 @@ export async function POST(req: NextRequest) {
     await sendKartaNotification(nftData)
     await increaseSeniority(nftData.project)
   } else {
-    await collection.updateOne(
+    if(nftData.type === "Red") {
+      await collection.updateOne(
         {
           _id: ptv._id,
         },
         {
-        $set: {
-          reward: ptv.reward + 20000,
+          $set: {
+            redreward: ptv.redreward + 20000,
+          },
         },
+      );
+    } else {
+      await collection.updateOne(
+        {
+          _id: ptv._id,
         },
-    );
+        {
+          $set: {
+            bluereward: ptv.bluereward + 20000,
+          },
+        },
+      );
+    }
+
   }
 
   console.log("lineageData ",  nftData.lineageData)
@@ -80,8 +96,10 @@ export async function POST(req: NextRequest) {
           wallet: lineageNftDetails.nftOwner,
           pass: element.value,
           project: nftData.project,
-          reward: reward,
-          claimed: 0,
+          redreward: nftData.type === "Red" ? reward : 0,
+          bluereward: nftData.type === "Blue" ? reward : 0,
+          redclaimed: 0,
+          blueclaimed: 0,
           type: nftData.type,
           name: lineageNftDetails.name,
           email: lineageNftDetails.email,
@@ -91,16 +109,29 @@ export async function POST(req: NextRequest) {
           updated_date: new Date(),
         });
       } else {
-        await collection.updateOne(
+        if(nftData.type === "Red") {
+          await collection.updateOne(
             {
               _id: lineageptv._id,
             },
             {
                 $set: {
-                  reward: lineageptv.reward + reward,
+                  redreward: lineageptv.redreward + reward,
                 },
             },
-        );
+          );
+        } else {
+          await collection.updateOne(
+            {
+              _id: lineageptv._id,
+            },
+            {
+                $set: {
+                  bluereward: lineageptv.bluereward + reward,
+                },
+            },
+          );
+        }
       }
   }
   return NextResponse.json("", { status: 200 });

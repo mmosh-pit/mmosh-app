@@ -53,7 +53,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
         type: "action",
         title: "Pump The Vote and Earn Crypto Rewards!",
         icon: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/guestpass.png",
-        description: `Pump The Vote is the world’s first PolitiFi Super PAC. Mint your free Guest Pass, create your own political memecoins (free!) and earn 3% of all the trading fees!. Enter your first name or alias and email address, and we’ll send you details on how to claim $20 in crypto to start trading political memecoins today. Not only that, you’ll get your own Blink In Bio that you can share for additional crypto referral rewards. Drop us your Telegram and X usernames for extra valuable giveaways!`,
+        description: `Pump The Vote is the world’s first PolitiFi Super PAC. Mint your free Guest Pass, create your own political memecoins (free!) and earn 3% of all the trading fees! Enter your first name or alias and email address, and we’ll send you details on how to claim $20 in crypto to start trading political memecoins today. Not only that, you’ll get your own Blink In Bio that you can share for additional crypto referral rewards. Drop us your Telegram and X usernames for extra valuable giveaways!`,
         label: "Mint Option", // this value will be ignored since `links.actions` exists
         links: {
           actions: [
@@ -91,13 +91,13 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
                 {
                   type: "url",
                   name: "telegram", 
-                  label: "Enter your complete Telegram URL for bonus rewards", 
+                  label: "Enter your Telegram link for bonus rewards", 
                   required: false,
                 },
                 {
                   type: "url",
                   name: "twitter", 
-                  label: "Enter your complete X URL for extra bonus rewards", 
+                  label: "Enter your X link for bonus rewards", 
                   required: false,
                 },
               ],

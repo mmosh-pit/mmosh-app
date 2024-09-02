@@ -33,7 +33,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
   
   export const GET = async (req: Request) => {
     try {
-      let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG")
+      let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTV")
       const requestUrl = new URL(req.url);
       const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.data);
       let referer = requestUrl.searchParams.get("referer") ? requestUrl.searchParams.get("referer") : projectInfo.data.project.key
@@ -127,7 +127,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
   export const POST = async (req: Request) => {
     try {
       console.log("test1")
-      let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTVG")
+      let projectInfo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/project/detail?symbol=PTV")
       const requestUrl = new URL(req.url);
       console.log("test2 ")
       const {isValid, tokenInfo} = await validatedQueryParams(requestUrl, projectInfo.data);

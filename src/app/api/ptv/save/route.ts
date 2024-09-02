@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-ptv");
   const projectCollection = db.collection("mmosh-app-project");
   const project = await projectCollection.findOne({
-    symbol: "PTVG",
+    symbol: "PTV",
   });
 
 

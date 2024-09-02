@@ -111,10 +111,10 @@ const PTVLeaderBoard = () => {
                                <div className="absolute">
                                 {leaderItem.profiles.length > 0 &&
                                    <>
-                                      {leaderItem.profiles[0].profile.image &&
+                                      {leaderItem.profiles[0].profile &&
                                         <img src={leaderItem.profiles[0].profile.image} alt="profile" className="w-20 h-20 rounded-full" />
                                       }
-                                      {!leaderItem.profiles[0].profile.image &&
+                                      {!leaderItem.profiles[0].profile &&
                                         <img src="https://storage.googleapis.com/mmosh-assets/ptv/logo.jpg" alt="profile" className="w-20 h-20 rounded-full" />
                                       }
 

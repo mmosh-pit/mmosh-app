@@ -317,7 +317,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
     if(result.Ok?.info?.profile) {
       let transaction: VersionedTransaction = result.Ok?.info?.profile;
       const serialized = Buffer.from(transaction.serialize()).toString('base64');
-      const payload: ActionPostResponse = {transaction: serialized};
+      const payload: ActionPostResponse = {transaction: serialized, message: "Congratulations on minting your free guest pass! Learn how to earn referrals rewards by sharing your personalized blink at https://www.blinkinbio.agency/."};
       return Response.json(payload, {
         headers,
       });

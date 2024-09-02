@@ -69,7 +69,7 @@ const DistrictSelect = ({ onChange, selectedElement }: Props) => {
           onClick={toggleContainer}
         >
           <div className="flex flex-wrap" ref={divRef}>
-            <p className="text-xs text-gray-300">
+            <p className="text-xs text-white font-bold">
               {districts[selectedElement]?.toString().padStart(2, "0") || "All"}
             </p>
           </div>
@@ -100,7 +100,7 @@ const DistrictSelect = ({ onChange, selectedElement }: Props) => {
                     toggleContainer();
                   }}
                 >
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-white text-xs">
                     {value.toString().padStart(2, "0")}
                   </p>
                 </div>

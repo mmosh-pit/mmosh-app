@@ -1,7 +1,7 @@
 /**
  * Solana Actions Example
  */
-
+import { BlinksightsClient } from 'blinksights-sdk';
 import {
     ActionPostResponse,
     createPostResponse,
@@ -27,7 +27,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/lib/uploadFileToShdwDrive";
-  
+
 
   const headers = createActionHeaders();
   
@@ -47,9 +47,10 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
       }
   
       const baseHref = process.env.NEXT_PUBLIC_APP_MAIN_URL + `/api/actions/guest-pass?referer=${referer}`
-
+      let apiKey:any = process.env.BLINK_INSIGHT_KEY
+      const client = new BlinksightsClient(apiKey);
   
-      const payload: ActionGetResponse = {
+      const payload: ActionGetResponse = await client.createActionGetResponseV1(baseHref,{
         type: "action",
         title: "Pump The Vote and Earn Crypto Rewards!",
         icon: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/guestpass.png",
@@ -104,7 +105,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
             },
           ],
         },
-      };
+      });
   
       return Response.json(payload, {
         headers,
@@ -315,6 +316,9 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
       console.log("test8")
 
     if(result.Ok?.info?.profile) {
+      let apiKey:any = process.env.BLINK_INSIGHT_KEY
+      const client = new BlinksightsClient(apiKey);
+      await client.trackActionV2(body.account, req.url)
       let transaction: VersionedTransaction = result.Ok?.info?.profile;
       const serialized = Buffer.from(transaction.serialize()).toString('base64');
       const payload: ActionPostResponse = {transaction: serialized, message: "Congratulations on minting your free guest pass! Learn how to earn referrals rewards by sharing your personalized blink at https://www.blinkinbio.agency/."};

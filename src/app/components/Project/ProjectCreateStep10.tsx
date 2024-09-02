@@ -634,13 +634,13 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             const res4:any = await communityConnection.registerCommonLut();
             console.log("register lookup result ", res4)
 
-            setButtonText("Buying new Project...")
-            const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
-            if(res5.Err) {
-                createMessage("error creating new project","danger-container")
-                return
-            }
-            console.log("send price result ", res5.Ok?.info)
+            // setButtonText("Buying new Project...")
+            // const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
+            // if(res5.Err) {
+            //     createMessage("error creating new project","danger-container")
+            //     return
+            // }
+            // console.log("send price result ", res5.Ok?.info)
 
             // pump the vote changes
             await axios.post("/api/project/save-coins", {

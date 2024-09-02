@@ -49,8 +49,12 @@ const PTVLeaderBoard = () => {
                 url = url + "?type="+coinType
             }
             if(keyword.length > 0) {
-                url = url + "&&searchText=" + keyword
-            }
+                if(coinType !== "") {
+                    url = url + "&&searchText=" + keyword
+                } else {
+                    url = url + "?searchText=" + keyword
+                }
+            } 
             const listResult = await axios.get(url,{
                 cancelToken: source.token
             });

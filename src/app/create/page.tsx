@@ -10,6 +10,7 @@ import CommunityCard from "../components/Forge/MainPage/CommunityCard";
 import InvitationCard from "../components/Forge/MainPage/InvitationCard";
 import ProfileCard from "../components/Forge/MainPage/ProfileCard";
 import { userWeb3Info, web3InfoLoading } from "../store";
+import ProjectCard from "../components/Forge/MainPage/ProjectCard";
 
 const Forge = () => {
   const [profileData] = useAtom(userWeb3Info);
@@ -32,14 +33,14 @@ const Forge = () => {
 
   if (isLoadingProfile) {
     return (
-      <div className="relative background-content flex w-full justify-center items-center">
+      <div className="background-content flex w-full justify-center items-center">
         <span className="loading loading-spinner w-[8vmax] h-[8vmax] loading-lg bg-[#BEEF00]"></span>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-full flex flex-col background-content pt-20">
+    <div className="w-full h-full flex flex-col background-content pt-20">
       <div className="self-center">
         <FeaturedCard>{getFeaturedCard()}</FeaturedCard>
       </div>
@@ -51,6 +52,10 @@ const Forge = () => {
 
         <DefaultCard>
           <CommunityCard />
+        </DefaultCard>
+
+        <DefaultCard>
+          <ProjectCard />
         </DefaultCard>
 
         {!hasProfile && (

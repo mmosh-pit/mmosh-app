@@ -2,7 +2,12 @@ import * as React from "react";
 
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
-const Price = () => {
+type Props = {
+  bonding?: string;
+  height?: number;
+};
+
+const Price = ({ height }: Props) => {
   // const [data, setData] = React.useState([]);
 
   const data = [
@@ -51,16 +56,16 @@ const Price = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col bg-[#04024185] rounded-xl py-4">
+    <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
       <div className="flex flex-col ml-6 mt-4">
         <p className="text-sm">MMOSH Price</p>
         <h6 className="my-2">$12.2M</h6>
         <h6>USDC 12.2M</h6>
       </div>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={height || 200}>
         <AreaChart
           width={500}
-          height={200}
+          height={height || 200}
           data={data}
           margin={{
             top: 10,

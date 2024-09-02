@@ -123,7 +123,7 @@ const CustomCoinSelect = ({
       <p className="text-sm text-white">{title}</p>
 
       <div
-        className={`custom-select absolute px-[1vmax] ${!isOpen ? "h-[2.5vmax]" : "h-[500px] opened"} z-2 md:top-[25px] top-[15px]`}
+        className={`custom-select absolute px-[1vmax] ${!isOpen ? "h-[2.2vmax]" : "h-[500px] opened"} z-2 md:top-[25px] top-[16px] md:top-[15px]`}
         ref={divWrapperRef}
       >
         <div
@@ -138,6 +138,7 @@ const CustomCoinSelect = ({
                     src={selectedItem.image}
                     alt={`${selectedItem.symbol} image`}
                     layout="fill"
+                    className="rounded-full"
                   />
                 </div>
                 <p className="text-sm text-white ml-2">{selectedItem.symbol}</p>

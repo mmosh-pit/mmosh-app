@@ -11,3 +11,5 @@ export const coinStats = atom({
   yearVolume: "",
   total: "",
 });
+
+export const selectedDateType = atom("day");

@@ -22,7 +22,12 @@ const CoinListItem = (props: Props) => {
   return (
     <div className="flex cursor-pointer" onClick={chooseToken}>
       <div className="relative w-[1.5vmax] h-[1.5vmax] mt-2 mr-1">
-        <Image src={props.image} alt="coin" layout="fill" />
+        <Image
+          src={props.image}
+          alt="coin"
+          layout="fill"
+          className="rounded-full"
+        />
       </div>
       <div className="flex flex-col">
         <p className="text-sm text-white">{props.symbol}</p>

@@ -2,7 +2,7 @@
 import MintInvitation from "@/app/components/Forge/MintInvitation";
 
 const Invitation = () => (
-  <div className="relative background-content">
+  <div className="background-content">
     <MintInvitation />
   </div>
 );

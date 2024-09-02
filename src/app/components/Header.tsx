@@ -282,6 +282,15 @@ const Header = () => {
                 Swap
               </a>
 
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() => {
+                  router.push("/atm");
+                }}
+              >
+                ATM
+              </a>
+
               {currentUser?.profilenft && (
                 <a
                   className="text-base text-white cursor-pointer"

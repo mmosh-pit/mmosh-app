@@ -80,7 +80,7 @@ const Step1 = () => {
       setMessage({
         type: "info",
         message:
-          "This feature is for MMOSH DAO members only. [Create a Profile](https://www.mmosh.app/create/profile) to join the DAO",
+          "This feature is for MMOSH DAO members only. [Create a Profile](https://www.mmosh.app/create/create_profile) to join the DAO",
       });
     } else {
       setMessage({ type: "", message: "" });
@@ -144,14 +144,14 @@ const Step1 = () => {
 
             <Input
               title="Description"
-              placeholder="Describe your Community within 160 characters"
+              placeholder="Describe your Community within 5000 characters"
               type="text"
               value={form.description}
               required={false}
               onChange={(e) => {
                 const value = e.target.value;
 
-                if (value.length > 160) return;
+                if (value.length > 5000) return;
 
                 setForm({ ...form, description: value });
               }}

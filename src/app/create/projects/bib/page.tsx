@@ -78,7 +78,7 @@ const PTVLeaderBoard = () => {
         <div className="relative background-content">
             <div className="container mx-auto my-10">
                 <div className="relative w-full md:flex justify-between">
-                    <h2 className="text-center text-white font-goudy font-normal text-xl leading-10 py-0.5">Pump The Vote Leaderboard</h2>
+                    <h2 className="text-center text-white font-goudy font-normal text-xl leading-10 py-0.5"> Blink In Bio leaderboard</h2>
                     <div className="flex">
                         <div className="relative flex search-container">
                             <button className="btn btn-circle bg-search h-11 w-11 min-h-0">
@@ -170,7 +170,7 @@ const PTVLeaderBoard = () => {
 
 
                 {(leaders.length == 0 && !leaderLoading) &&
-                    <div className="text-center text-xs">Leaders not available</div>
+                    <div className="text-center text-xs">Data not available</div>
                 }
             </div>
         </div>

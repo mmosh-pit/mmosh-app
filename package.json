@@ -23,9 +23,12 @@
     "@solana/wallet-adapter-wallets": "^0.19.24",
     "@solana/web3.js": "^1.87.6",
     "@strata-foundation/spl-utils": "^3.11.2",
+    "@stripe/crypto": "^0.0.4",
+    "@stripe/stripe-js": "^4.3.0",
     "@types/uuid": "^9.0.8",
     "@web-std/file": "^3.0.3",
     "axios": "^1.6.2",
+    "blinksights-sdk": "^1.0.14",
     "bs58": "^5.0.0",
     "firebase": "^10.7.1",
     "forge-spl-token": "git+https://github.com/mmosh-pit/forge-spl-token.git",
@@ -40,10 +43,8 @@
     "react-modal": "^3.16.1",
     "react-telegram-login": "^1.1.2",
     "recharts": "^2.12.7",
-    "uuid": "^9.0.1",
-    "@stripe/crypto": "^0.0.4",
-    "@stripe/stripe-js": "^4.3.0",
-    "stripe": "^16.8.0"
+    "stripe": "^16.8.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

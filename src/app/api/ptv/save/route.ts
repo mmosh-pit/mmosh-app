@@ -242,32 +242,79 @@ const increaseSeniority = async (key: any) => {
   }
 };
 
-const sendKartaNotification = async (nftDetails: any) => {
-  const data = {
-    app_id: process.env.KARTA_APP_ID,
-    api_key: process.env.KARTA_API_KEY,
-    api_password: process.env.KARTA_API_PASSWORD,
-    lead: {
-      email: nftDetails.email,
-      first_name: nftDetails.name,
-    },
-    actions: [
-      {
-        cmd: "create_lead",
+ const hasKartaNotification = async(nftDetails:any) => {
+  try {
+      const data = {
+          "app_id": process.env.KARTA_APP_ID,
+          "api_key": process.env.KARTA_API_KEY,
+          "api_password": process.env.KARTA_API_PASSWORD,
+          "get_lead": {
+            "email": nftDetails.email,
+          }
+        }
+        const result = await axios({
+          method: "post",
+          url: process.env.KARTA_API_BASE,
+          headers: {
+            "Content-Type": `application/x-www-form-urlencoded`,
+          },
+          data,
+        })
+        console.log("sendKartaNotification ", result.data)
+        return result.data.status === "Success"
+  } catch (error) {
+      return false
+  }
+
+}
+
+ const sendKartaNotification = async(nftDetails:any) => {
+  const has_lead = await hasKartaNotification(nftDetails)
+  let data;
+  if(has_lead) {
+      data = {
+          "app_id": process.env.KARTA_APP_ID,
+          "api_key": process.env.KARTA_API_KEY,
+          "api_password": process.env.KARTA_API_PASSWORD,
+          "lead": {
+            "email": nftDetails.email,
+          },
+          "actions": [
+            {
+              "cmd": "assign_tag",
+              "tag_name": "BIB Blink In Bio API"
+            }
+          ],
+      }
+  } else {
+      data = {
+          "app_id": process.env.KARTA_APP_ID,
+          "api_key": process.env.KARTA_API_KEY,
+          "api_password": process.env.KARTA_API_PASSWORD,
+          "lead": {
+            "email": nftDetails.email,
+            "first_name": nftDetails.name
+          },
+          "actions": [
+            {
+              "cmd": "create_lead"
+            },
+            {
+              "cmd": "assign_tag",
+              "tag_name": "BIB Blink In Bio API"
+            }
+          ],
+      }
+  }
+
+    const result = await axios({
+      method: "post",
+      url: process.env.KARTA_API_BASE,
+      headers: {
+        "Content-Type": `application/x-www-form-urlencoded`,
       },
-      {
-        cmd: "assign_tag",
-        tag_name: "BIB Blink In Bio API",
-      },
-    ],
-  };
-  const result = await axios({
-    method: "post",
-    url: process.env.KARTA_API_BASE,
-    headers: {
-      "Content-Type": `application/x-www-form-urlencoded`,
-    },
-    data,
-  });
-  console.log("sendKartaNotification ", result.data);
-};
+      data,
+    })
+    console.log("sendKartaNotification ", result.data)
+}
+

@@ -69,7 +69,7 @@ const StatesSelect = ({ onChange, selectedElement }: Props) => {
           onClick={toggleContainer}
         >
           <div className="flex flex-wrap" ref={divRef}>
-            <p className="text-xs text-gray-300">
+            <p className="text-xs text-white font-bold">
               {states[selectedElement] || "All"}
             </p>
           </div>
@@ -90,7 +90,7 @@ const StatesSelect = ({ onChange, selectedElement }: Props) => {
                     toggleContainer();
                   }}
                 >
-                  <p className="text-gray-400 text-xs">{value}</p>
+                  <p className="text-white text-xs">{value}</p>
                 </div>
               );
             })}

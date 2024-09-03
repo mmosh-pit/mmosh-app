@@ -20,11 +20,11 @@ const Candidates = () => {
 
   const [selectedCandidateFilter, setSelectedCandidateFilter] = React.useState<
     string[]
-  >([]);
+  >(["P", "S", "H"]);
 
   const [selectedPartyFilter, setSelectedPartyFilter] = React.useState<
     string[]
-  >([]);
+  >(["DEM", "REP", "IND", "GRE", "LIB", "OTHER"]);
 
   const [searchText, setSearchText] = React.useState("");
 

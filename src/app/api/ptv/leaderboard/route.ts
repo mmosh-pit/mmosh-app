@@ -59,7 +59,8 @@ export async function GET(req: NextRequest) {
           profiles: "$profiles",
         },
       },
-      {$sort: {created_date: -1}},
+      { $addFields: { "totalearned": { $sum: [ "$bluereward", "$redreward"] } } },
+      { $sort: { "totalearned": -1 } }
     ])
     .limit(100)
     .toArray();

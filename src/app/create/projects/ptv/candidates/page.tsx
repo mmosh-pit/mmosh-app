@@ -1,17 +1,24 @@
 "use client";
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+
 import CandidateCard from "@/app/components/Project/Candidates/CandidateCard";
 import CandidateFilters from "@/app/components/Project/Candidates/CandidateFilters";
 import DistrictSelect from "@/app/components/Project/Candidates/DistrictSelect";
 import PartyFilters from "@/app/components/Project/Candidates/PartyFilters";
 import SearchBar from "@/app/components/Project/Candidates/SearchBar";
 import StatesSelect from "@/app/components/Project/Candidates/StatesSelect";
+import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { Candidate } from "@/app/models/candidate";
-import axios from "axios";
-import * as React from "react";
 
 const OTHER_PARTIES = ["CON", "UNK", "DFL", "CONST", "UN"];
 
 const Candidates = () => {
+  const isMobile = useCheckMobileScreen();
+
+  const navigate = useRouter();
+
   const [candidates, setCandidates] = React.useState<Candidate[]>([]);
 
   const [filteredCandidates, setFilteredCandidates] = React.useState<
@@ -40,12 +47,10 @@ const Candidates = () => {
 
   const handleChangeFilterValue = React.useCallback(
     (value: string) => {
-      console.log("Value: ", value);
       setSelectedCandidateFilter((prev) => {
         let newItems = [...prev];
 
         if (newItems.includes(value)) {
-          console.log("Included! going to remove");
           newItems = newItems.filter((element) => element !== value);
         } else {
           newItems.push(value);
@@ -126,9 +131,49 @@ const Candidates = () => {
     getCandidates();
   }, [getCandidates]);
 
-  return (
-    <div className="w-full h-full background-content">
-      <div className="w-full h-full flex flex-col px-16 mt-16 relative">
+  const getFiltersByDeviceSize = React.useCallback(() => {
+    if (isMobile) {
+      return (
+        <>
+          <div className="w-full flex justify-between mb-4">
+            <div className="w-[30%]">
+              <StatesSelect
+                selectedElement={selectedState}
+                onChange={setSelectedState}
+              />
+            </div>
+
+            {selectedState !== "" && (
+              <div className="w-[30%]">
+                <DistrictSelect
+                  selectedElement={selectedDistrict}
+                  onChange={setSelectedDistrict}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="self-center w-[60%] my-4">
+            <SearchBar setSearchText={setSearchText} />
+          </div>
+
+          <div className="mb-2">
+            <CandidateFilters
+              selectedCandidateFilter={selectedCandidateFilter}
+              handleChangeFilterValue={handleChangeFilterValue}
+            />
+          </div>
+
+          <PartyFilters
+            handleChangePartyFilterValue={handleChangePartyFilterValue}
+            selectedPartyFilter={selectedPartyFilter}
+          />
+        </>
+      );
+    }
+
+    return (
+      <>
         <div className="w-full flex justify-between">
           <CandidateFilters
             selectedCandidateFilter={selectedCandidateFilter}
@@ -160,7 +205,20 @@ const Candidates = () => {
             selectedPartyFilter={selectedPartyFilter}
           />
         </div>
+      </>
+    );
+  }, [
+    isMobile,
+    selectedPartyFilter,
+    selectedCandidateFilter,
+    selectedDistrict,
+    selectedState,
+  ]);
 
+  return (
+    <div className="w-full h-full background-content">
+      <div className="w-full h-full flex flex-col md:px-16 px-4 mt-16 relative">
+        {getFiltersByDeviceSize()}
         <div className="w-full flex flex-col mt-12">
           <div className="w-full flex flex-col self-start">
             <p className="text-xl text-white font-bold">
@@ -172,10 +230,20 @@ const Candidates = () => {
 
             <div className="mt-4 grid grid-cols-auto md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {filteredCandidates.map((candidate) => (
-                <CandidateCard
+                <div
+                  onClick={() => {
+                    navigate.push(
+                      `/create/projects/ptv/candidates/${candidate.CANDIDATE_ID}`,
+                    );
+                  }}
+                  className="cursor-pointer"
                   key={candidate.CANDIDATE_ID}
-                  candidate={candidate}
-                />
+                >
+                  <CandidateCard
+                    key={candidate.CANDIDATE_ID}
+                    candidate={candidate}
+                  />
+                </div>
               ))}
             </div>
           </div>

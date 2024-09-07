@@ -102,6 +102,18 @@ h6 {
   background-attachment: fixed;
 }
 
+.bg-without-picture {
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: radial-gradient(
+    circle at 50% 15%,
+    #174aff40 0%,
+    #174aff25 2%,
+    #174aff10 10%,
+    #030064 40%,
+    #030064 100%
+  );
+}
+
 .common-bg:before {
   mix-blend-mode: color-dodge;
 }
@@ -118,22 +130,9 @@ h6 {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100vh;
-  /* position: relative; */
   background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
   background: rgba(9, 7, 58, 0.7);
-  /* background: radial-gradient( */
-  /*   circle at 50% 15%, */
-  /*   #081c6c 1%, */
-  /*   #081c6c 30%, */
-  /*   #081c6c 60%, */
-  /*   #030064 100% */
-  /* ); */
-
   mix-blend-mode: hard-light;
-
-  /* background-size: auto; */
-  /* background-repeat: repeat; */
-  /* background-attachment: fixed; */
 }
 
 /* .background-content > * { */
@@ -440,6 +439,11 @@ h6 {
   background: #00000012;
 
   border-radius: 1rem;
+
+  @media (max-width: 768px) {
+    border-radius: 0.5rem;
+  }
+
   z-index: 2;
   transition: all 0.2s linear;
 }
@@ -878,7 +882,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .crate-down-container span {
-  color: #DC2626;
+  color: #dc2626;
 }
 
 .leader-container {
@@ -899,4 +903,52 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 .other-border-color {
   border: 1px solid #0c0054;
+}
+
+.candidates-checkboxes {
+  transform: scale(1);
+
+  @media (max-width: 768px) {
+    transform: scale(0.7);
+  }
+}
+
+
+
+
+
+.candidates-select {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-flow: column;
+  backdrop-filter: blur(19.5px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #00000012;
+
+  border-radius: 0.5rem;
+  z-index: 2;
+  transition: all 0.2s linear;
+}
+
+.candidates-select.opened {
+  margin-top: 0.25rem;
+  justify-content: start
+}
+
+.candidates-select-open {
+  display: flex;
+  flex-flow: column;
+  overflow-y: auto;
+  max-height: 90%;
+}
+
+.candidates-select::webkit-scrollbar {
+  width: 5px;
+}
+
+.candidates-select::-webkit-scrollbar-track {
+  /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  */
+  border-radius: 10px;
+  border: 1px solid rgba(135, 135, 135, 0.32);
 }

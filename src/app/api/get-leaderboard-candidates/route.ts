@@ -10,9 +10,13 @@ export async function GET(req: NextRequest) {
 
   const typesParam = searchParams.get("types") as string;
 
+  const page = searchParams.get("page") as string;
+
+  const currentPage = page ? Number(page) : 0;
+
   if (typesParam === "") return NextResponse.json([]);
 
-  const candidateTypes = typesParam.split(",") ?? [];
+  const candidateTypes = typesParam?.split(",") ?? [];
 
   const filterCondition: Filter<Document> = {};
 
@@ -42,6 +46,7 @@ export async function GET(req: NextRequest) {
   const candidates = await collection
     .find(filterCondition, {
       limit: 10,
+      skip: 10 * currentPage,
     })
     .toArray();
 

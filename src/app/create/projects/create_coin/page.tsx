@@ -2,17 +2,13 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import ImagePicker from "@/app/components/ImagePicker";
 import MessageBanner from "@/app/components/common/MessageBanner";
 import Input from "@/app/components/common/Input";
-import Select from "@/app/components/common/Select";
 import Button from "@/app/components/common/Button";
 import SimpleInput from "@/app/components/common/SimpleInput";
-import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
-import { createCoin } from "@/app/lib/forge/createCoin";
 import { data, isDrawerOpen, userWeb3Info } from "@/app/store";
 import ArrowDown from "@/assets/icons/ArrowDown";
 import Modal from "react-modal";
@@ -23,33 +19,15 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
-
-/* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */
-/* THE LIBRARY STILL WORKS WELL, SO IT IS NOT A BREAKING ERROR. RECHART DEV TEAM IS WORKING ON IT */
-const error = console.error;
-console.error = (...args: any) => {
-  if (/defaultProps/.test(args[0])) return;
-  error(...args);
-};
-
-const bondingSelectOptions = [
-  {
-    label: "Exponential",
-    value: "exponential",
-  },
-  {
-    label: "Linear",
-    value: "linear",
-  },
-];
+import CoinsCandidatesSelect from "@/app/components/Project/Candidates/CoinsCandidatesSelect";
 
 const defaultFormState = {
   name: "",
   symbol: "",
+  candidate: "",
+  position: "for",
+  bonding: "PTVB",
   description: "",
-  bonding: "exponential",
-  multiplier: 1,
-  initialPrice: 1,
   supply: 1000,
 };
 
@@ -83,8 +61,6 @@ const CreateCoin = () => {
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
 
-  const [datasets, setDatasets] = React.useState<{ data: number }[]>([]);
-  const [coinPrice, setCoinPrice] = React.useState(0);
   const [mintingStatus, setMintingStatus] = React.useState("Mint and Swap");
 
   const [error, setError] = React.useState<string | null>(null);
@@ -107,15 +83,6 @@ const CreateCoin = () => {
 
   const [selectedCommunityBalance, setSelectedCommunityBalance] =
     React.useState(0);
-
-  const tickXFormat = React.useCallback(
-    (value: number) => {
-      if (value === datasets.length - 1) return "Supply = x";
-
-      return "";
-    },
-    [datasets],
-  );
 
   const validateFields = () => {
     if (profileInfo!.solBalance <= 0) {
@@ -168,19 +135,12 @@ const CreateCoin = () => {
 
     setMessage({ type: "", message: "" });
 
-    const multiplier = form.bonding === "linear" ? 0 : form.multiplier;
-    const initialPrice = form.bonding === "linear" ? form.initialPrice : 0;
-
     setIsLoading(true);
 
     const params = {
-      type: form.bonding,
-      multiplier,
-      supply: coinPrice,
       name: form.name,
       description: form.description,
       symbol: form.symbol,
-      initialPrice,
       preview,
       imageFile: image,
       wallet: wallet!,
@@ -189,16 +149,16 @@ const CreateCoin = () => {
       baseToken: selectedCommunityCoin,
     };
 
-    const res = await createCoin(params);
+    // const res = await createCoin(params);
     setIsLoading(false);
-    setMessage({ type: res.type, message: res.message });
-    setMintingStatus("Mint and Swap");
-
-    if (res.type === "success") {
-      setForm({ ...defaultFormState });
-      setImage(null);
-      setPreview("");
-    }
+    // setMessage({ type: res.type, message: res.message });
+    // setMintingStatus("Mint and Swap");
+    //
+    // if (res.type === "success") {
+    //   setForm({ ...defaultFormState });
+    //   setImage(null);
+    //   setPreview("");
+    // }
   };
 
   const checkSymbolExists = React.useCallback(async () => {
@@ -265,42 +225,6 @@ const CreateCoin = () => {
   }, [image]);
 
   React.useEffect(() => {
-    const isLinear = form.bonding === "linear";
-    const isExponential = form.bonding === "exponential";
-
-    if (
-      form.supply <= 0 ||
-      (isLinear && form.initialPrice === 0) ||
-      (isExponential && form.multiplier === 0)
-    ) {
-      setDatasets([]);
-      return;
-    }
-
-    const multiplier = isLinear ? 0 : form.multiplier;
-
-    const initialPrice = isLinear ? form.initialPrice : 0;
-
-    const res = getCoinPrice(
-      form.supply,
-      initialPrice.toString(),
-      form.bonding,
-      multiplier,
-    );
-
-    const datasetsValue = res.data.map((value) => ({
-      data: value,
-    }));
-
-    const datasetsResult = isLinear
-      ? [{ data: 0 }, ...datasetsValue]
-      : datasetsValue;
-
-    setDatasets(datasetsResult);
-    setCoinPrice(res.coinPrice);
-  }, [form.multiplier, form.initialPrice, form.supply, form.bonding]);
-
-  React.useEffect(() => {
     if (wallet) {
       getTokenBalance();
     }
@@ -359,7 +283,9 @@ const CreateCoin = () => {
   return (
     <>
       <div
-        className={`w-full relative flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+        className={`w-full relative flex flex-col items-center ${
+          isDrawerShown ? "z-[-1]" : ""
+        }`}
       >
         <MessageBanner message={message.message} type={message.type} />
         <div className="w-full flex flex-col justify-center items-center mt-20">
@@ -428,110 +354,10 @@ const CreateCoin = () => {
               <p className="text-xs text-white">
                 Choose a Bonding Curve for your Coin
               </p>
-              <Select
-                value={form.bonding}
-                onChange={(e) => {
-                  setForm({ ...form, bonding: e.target.value });
-                }}
-                options={bondingSelectOptions}
+              <CoinsCandidatesSelect
+                value={form.candidate}
+                onChangeValue={(val) => setForm({ ...form, candidate: val })}
               />
-            </div>
-
-            {form.bonding === "linear" ? (
-              <div className="lg:mt-8 md:mt-4 sm:mt-2">
-                <Input
-                  title="Enter MMOSH Price"
-                  value={form.initialPrice.toString()}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-
-                    if (Number.isNaN(value)) return;
-
-                    if (value < 0) return;
-
-                    if (value > 9000) return;
-
-                    setForm({
-                      ...form,
-                      initialPrice: value,
-                    });
-                  }}
-                  type="text"
-                  required={false}
-                  placeholder="0"
-                />
-              </div>
-            ) : (
-              <div className="flex flex-col lg:mt-8 md:mt-4 sm:mt-2">
-                <p className="text-white text-tiny">
-                  Adjust the slope for your Bonding Curve by changing the
-                  multiplier
-                </p>
-                <div className="max-w-[50%]">
-                  <Input
-                    title=""
-                    value={form.multiplier.toString()}
-                    onChange={(e) => {
-                      const value = Number(e.target.value);
-
-                      if (Number.isNaN(value)) return;
-
-                      if (value < 0) return;
-
-                      if (value >= 3 && form.supply > 15850) return;
-
-                      if (value >= 4 && form.supply > 1450) return;
-
-                      setForm({ ...form, multiplier: value });
-                    }}
-                    type="text"
-                    required={false}
-                    placeholder="0"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="w-full h-full mt-4">
-              <ResponsiveContainer width="85%" height={200} className="pt-2">
-                <AreaChart
-                  width={150}
-                  height={200}
-                  data={datasets}
-                  margin={{
-                    top: 30,
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="gradient" x1="1" y1="1" x2="2" y2="2">
-                      <stop
-                        offset="100%"
-                        stopColor="#0765FF"
-                        stopOpacity={0.6}
-                      />
-                      <stop offset="30%" stopColor="#09073A" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis tickFormatter={tickXFormat} tickLine={false} />
-                  <YAxis
-                    width={5}
-                    tick={false}
-                    tickLine={false}
-                    label={{
-                      value: "Price = Y",
-                      position: "top",
-                      offset: 5,
-                      dx: 30,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="data"
-                    stroke="#0047FF"
-                    fill="url(#gradient)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
             </div>
           </div>
         </div>
@@ -570,10 +396,6 @@ const CreateCoin = () => {
                   if (Number.isNaN(value)) return;
 
                   if (value < 0) return;
-
-                  if (form.multiplier >= 3 && value > 15850) return;
-
-                  if (form.multiplier >= 4 && value > 1450) return;
 
                   setForm({ ...form, supply: value });
                 }}

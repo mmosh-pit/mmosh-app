@@ -11,7 +11,6 @@ import Input from "@/app/components/common/Input";
 import Select from "@/app/components/common/Select";
 import Button from "@/app/components/common/Button";
 import SimpleInput from "@/app/components/common/SimpleInput";
-import BalanceBox from "@/app/components/common/BalanceBox";
 import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { createCoin } from "@/app/lib/forge/createCoin";
 import { data, isDrawerOpen, userWeb3Info } from "@/app/store";
@@ -22,7 +21,7 @@ import TokenCard from "@/app/components/Project/TokenCard";
 import { Bars } from "react-loader-spinner";
 import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
-import { Connectivity as UserConn } from "../../../anchor/user";
+import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 
 /* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */

@@ -17,6 +17,8 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
   });
 
   const getClassName = () => {
+    if (pathname.includes("create_")) return "bg-without-picture";
+
     if (pathname.includes("create")) return "common-bg";
 
     if (pathname !== "/" || isOnSettings) {
@@ -40,7 +42,10 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
         type="text/javascript"
         src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
       ></Script>
-      <ConnectionProvider endpoint={endpoint} config={{confirmTransactionInitialTimeout:120000}}>
+      <ConnectionProvider
+        endpoint={endpoint}
+        config={{ confirmTransactionInitialTimeout: 120000 }}
+      >
         <WalletProvider autoConnect>
           <div className={getClassName()}>{children}</div>
         </WalletProvider>

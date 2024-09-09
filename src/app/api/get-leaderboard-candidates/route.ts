@@ -1,0 +1,55 @@
+import { db } from "@/app/lib/mongoClient";
+import { Document, Filter } from "mongodb";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(req: NextRequest) {
+  const collection = db.collection("candidates");
+
+  const { searchParams } = new URL(req.url);
+  const searchText = searchParams.get("search") as string;
+  const typesParam = searchParams.get("types") as string;
+  const page = searchParams.get("page") as string;
+  const count = searchParams.get("count") as string;
+  const currentPage = page ? Number(page) : 0;
+
+  if (typesParam === "") return NextResponse.json([]);
+
+  const candidateTypes = typesParam?.split(",") ?? [];
+
+  const filterCondition: Filter<Document> = {};
+
+  if (searchText !== "") {
+    filterCondition.$or = [
+      {
+        REGION: {
+          $regex: new RegExp(searchText, "ig"),
+        },
+      },
+
+      {
+        CANDIDATE_NAME: {
+          $regex: new RegExp(searchText, "ig"),
+        },
+      },
+    ];
+  }
+
+  if (candidateTypes.length > 0) {
+    filterCondition.$and = [
+      {
+        CANDIDATE_ID: {
+          $in: candidateTypes.map((val) => new RegExp(val, "ig")),
+        },
+      },
+    ];
+  }
+
+  const candidates = await collection
+    .find(filterCondition, {
+      limit: Number(count) ?? 10,
+      skip: 10 * currentPage,
+    })
+    .toArray();
+
+  return NextResponse.json(candidates);
+}

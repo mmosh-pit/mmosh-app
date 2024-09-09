@@ -307,10 +307,6 @@ const CreateCoin = () => {
     }
   }, [selectedCommunityCoin, wallet]);
 
-  React.useEffect(() => {
-    console.log("currentUser ", currentUser);
-  }, [currentUser]);
-
   const openCommunityCoins = () => {
     setIsOpen(true);
     getCommunityCoins();
@@ -364,17 +360,13 @@ const CreateCoin = () => {
   return (
     <>
       <div
-        className={`w-full relative background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+        className={`w-full relative flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
       >
         <MessageBanner message={message.message} type={message.type} />
         <div className="w-full flex flex-col justify-center items-center mt-20">
-          <h3 className="text-center text-white font-goudy font-normal">
-            Create your own Coin!
-          </h3>
-          <p className="text-center text-sm mt-1">
-            With your own Coin, you can build community to launch and scale your
-            own projects. Get started now!
-          </p>
+          <h4 className="text-center text-white font-goudy font-normal">
+            Create a Political Memecoin!
+          </h4>
         </div>
 
         <div className="flex md:flex-row flex-col justify-center w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] mt-12">

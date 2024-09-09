@@ -10,40 +10,23 @@ import Input from "@/app/components/common/Input";
 import Button from "@/app/components/common/Button";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import { data, isDrawerOpen, userWeb3Info } from "@/app/store";
-import ArrowDown from "@/assets/icons/ArrowDown";
-import Modal from "react-modal";
-import SearchIcon from "@/assets/icons/SearchIcon";
-import TokenCard from "@/app/components/Project/TokenCard";
-import { Bars } from "react-loader-spinner";
 import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import CoinsCandidatesSelect from "@/app/components/Project/Candidates/CoinsCandidatesSelect";
+import { CandidateCoinForm } from "@/app/models/candidateCoinForm";
+import FilePicker from "@/app/components/Project/PTV/FilePicker";
+import { createCoin } from "@/app/lib/forge/createCoin";
 
 const defaultFormState = {
   name: "",
   symbol: "",
-  candidate: "",
+  candidate: null,
   position: "for",
   bonding: "PTVB",
   description: "",
   supply: 1000,
-};
-
-const customStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "#180E4F",
-    minWidth: "300px",
-    maxWidth: "500px",
-    width: "100%",
-  },
 };
 
 const CreateCoin = () => {
@@ -57,7 +40,9 @@ const CreateCoin = () => {
     message: "",
     type: "",
   });
-  const [form, setForm] = React.useState({ ...defaultFormState });
+  const [form, setForm] = React.useState<CandidateCoinForm>({
+    ...defaultFormState,
+  });
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
 
@@ -65,24 +50,7 @@ const CreateCoin = () => {
 
   const [error, setError] = React.useState<string | null>(null);
 
-  const [modalIsOpen, setIsOpen] = React.useState(false);
-  const [keyword, setKeyword] = React.useState("");
-  const [coinLoader, setCoinLoader] = React.useState(false);
-  const [coinAllList, setCoinAllList] = React.useState<any>([]);
-  const [coinList, setCoinList] = React.useState<any>([]);
-  const [selectedCommunityCoin, setSelectedCommunityCoin] = React.useState<any>(
-    {
-      address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
-      name: "MMOSH: The Stoked Token",
-      symbol: "MMOSH",
-      logoURI:
-        "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-      decimals: 9,
-    },
-  );
-
-  const [selectedCommunityBalance, setSelectedCommunityBalance] =
-    React.useState(0);
+  const [files, setFiles] = React.useState<File[]>([]);
 
   const validateFields = () => {
     if (profileInfo!.solBalance <= 0) {
@@ -130,6 +98,30 @@ const CreateCoin = () => {
     return true;
   };
 
+  const addFiles = React.useCallback(
+    (newFiles: FileList) => {
+      const listOfFiles: File[] = [];
+
+      for (const file of newFiles) {
+        listOfFiles.push(file);
+      }
+
+      setFiles([...files, ...listOfFiles]);
+    },
+    [files],
+  );
+
+  const deleteFile = React.useCallback(
+    (index: number) => {
+      setFiles((prev) => {
+        prev.splice(index, 1);
+
+        return prev;
+      });
+    },
+    [files],
+  );
+
   const startCreatingCoin = async () => {
     if (!validateFields()) return;
 
@@ -146,7 +138,6 @@ const CreateCoin = () => {
       wallet: wallet!,
       setMintingStatus,
       username: currentUser!.profile.username,
-      baseToken: selectedCommunityCoin,
     };
 
     // const res = await createCoin(params);
@@ -174,50 +165,6 @@ const CreateCoin = () => {
     }
   }, [form.symbol]);
 
-  const getCommunityCoins = async () => {
-    try {
-      setCoinLoader(true);
-      let newCommunityCoins = [];
-      let mmosh = process.env.NEXT_PUBLIC_OPOS_TOKEN;
-      newCommunityCoins.push({
-        address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
-        name: "MMOSH: The Stoked Token",
-        symbol: "MMOSH",
-        logoURI:
-          "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-        decimals: 9,
-      });
-      const result: any = await axios.get("/api/project/list-coins");
-      if (result.data) {
-        let newCoinList = result.data.filter((item: any) => item.key !== mmosh);
-        let finalList = newCoinList.reduce((unique: any, o: any) => {
-          if (!unique.some((obj: any) => obj.key === o.key)) {
-            unique.push(o);
-          }
-          return unique;
-        }, []);
-
-        for (let index = 0; index < finalList.length; index++) {
-          const element = finalList[index];
-          newCommunityCoins.push({
-            address: element.key,
-            name: element.name,
-            symbol: element.symbol,
-            logoURI: element.image,
-            decimals: element.decimals,
-          });
-        }
-      }
-      setCoinAllList(newCommunityCoins);
-      setCoinList(newCommunityCoins);
-      setCoinLoader(false);
-    } catch (error) {
-      setCoinLoader(false);
-      setCoinList([]);
-      setCoinAllList([]);
-    }
-  };
-
   React.useEffect(() => {
     if (!image) return;
     const objectUrl = URL.createObjectURL(image);
@@ -228,46 +175,17 @@ const CreateCoin = () => {
     if (wallet) {
       getTokenBalance();
     }
-  }, [selectedCommunityCoin, wallet]);
+  }, [wallet]);
 
-  const openCommunityCoins = () => {
-    setIsOpen(true);
-    getCommunityCoins();
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    setKeyword("");
-    setCoinList([]);
-    setCoinAllList([]);
-  };
-
-  const onCoinSearch = (event: any) => {
-    setKeyword(event.target.value);
-    console.log(event.target.value);
-    if (event.target.value.trim().length == 0) {
-      setCoinList(coinAllList);
+  React.useEffect(() => {
+    if (form.candidate?.PARTY === "DEM") {
+      setForm({ ...form, bonding: "ptvb" });
+    } else if (form.candidate?.PARTY === "REP") {
+      setForm({ ...form, bonding: "ptvb" });
     } else {
-      let newCoinList = coinAllList.filter(
-        (item: any) =>
-          item.name
-            .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()) ||
-          item.symbol
-            .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()) ||
-          item.symbol
-            .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()),
-      );
-      setCoinList(newCoinList);
+      setForm({ ...form, bonding: "" });
     }
-  };
-
-  const onTokenSelect = (token: any) => {
-    setSelectedCommunityCoin(token);
-    closeModal();
-  };
+  }, [form.candidate]);
 
   const getTokenBalance = async () => {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
@@ -275,9 +193,6 @@ const CreateCoin = () => {
       preflightCommitment: "processed",
     });
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
-
-    const balance = await userConn.getUserBalance(selectedCommunityCoin);
-    setSelectedCommunityBalance(balance);
   };
 
   return (
@@ -349,18 +264,115 @@ const CreateCoin = () => {
             />
           </div>
 
-          <div className="w-full flex flex-col md:ml-8">
-            <div className="flex flex-col">
-              <p className="text-xs text-white">
-                Choose a Bonding Curve for your Coin
+          <div className="w-full grid gap-6 md:ml-8">
+            <CoinsCandidatesSelect
+              value={form.candidate}
+              onChangeValue={(val) => setForm({ ...form, candidate: val })}
+            />
+
+            {form.candidate !== null && (
+              <div className="w-full flex-col mt-8">
+                <p className="text-sm text-white">
+                  Are you For or Against this Candidate?
+                </p>
+
+                <div className="w-full flex">
+                  <div
+                    className="flex items-center justify-center cursor-pointer"
+                    onClick={(_) => {
+                      setForm({ ...form, position: "for" });
+                    }}
+                  >
+                    <input
+                      id="radio1"
+                      type="radio"
+                      className="radio radio-secondary candidates-checkboxes"
+                      checked={form.position === "for"}
+                      onChange={() => {}}
+                    />
+                    <p className="text-white text-base md:ml-2">For</p>
+                  </div>
+
+                  <div
+                    className="flex items-center justify-center ml-6 cursor-pointer"
+                    onClick={(_) => {
+                      setForm({ ...form, position: "against" });
+                    }}
+                  >
+                    <input
+                      id="radio1"
+                      type="radio"
+                      className="radio radio-secondary candidates-checkboxes"
+                      checked={form.position === "against"}
+                      onChange={() => {}}
+                    />
+                    <p className="text-white text-base md:ml-2">Against</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!["DEM", "REP"].includes(form.candidate?.PARTY ?? "") &&
+              form.candidate !== null && (
+                <div className="w-full flex-col">
+                  <p className="text-sm text-white">
+                    Which coin will you use as the trading pair?
+                  </p>
+
+                  <div className="w-full flex">
+                    <div
+                      className="flex items-center justify-center cursor-pointer"
+                      onClick={(_) => {
+                        setForm({ ...form, bonding: "ptvr" });
+                      }}
+                    >
+                      <input
+                        id="radio1"
+                        type="radio"
+                        className="radio radio-secondary candidates-checkboxes"
+                        checked={form.bonding === "ptvr"}
+                        onChange={() => {}}
+                      />
+                      <p className="text-white text-base md:ml-2">PTVR</p>
+                    </div>
+
+                    <div
+                      className="flex items-center justify-center ml-6 cursor-pointer"
+                      onClick={(_) => {
+                        setForm({ ...form, bonding: "ptvb" });
+                      }}
+                    >
+                      <input
+                        id="radio1"
+                        type="radio"
+                        className="radio radio-secondary candidates-checkboxes"
+                        checked={form.bonding === "ptvb"}
+                        onChange={() => {}}
+                      />
+                      <p className="text-white text-base md:ml-2">PTVB</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            <div className="w-full flex flex-col">
+              <p className="text-base text-white">
+                Inform the AI bot about this candidate
               </p>
-              <CoinsCandidatesSelect
-                value={form.candidate}
-                onChangeValue={(val) => setForm({ ...form, candidate: val })}
+
+              <FilePicker
+                addFiles={addFiles}
+                files={files}
+                deleteFile={deleteFile}
               />
             </div>
           </div>
         </div>
+
+        <p className="text-sm text-gray-300 mt-12">
+          Set the amount of {form.bonding.toUpperCase()} you want to swap for{" "}
+          {form.symbol}
+        </p>
 
         <div className="w-full flex flex-col justify-around items-center mt-12">
           <div className="flex flex-col mb-1">
@@ -379,15 +391,11 @@ const CreateCoin = () => {
                 !wallet
               }
             />
-
-            <p className="text-xs text-gray-300">
-              Minimum 1,000 initial purchase
-            </p>
           </div>
 
           <div className="flex items-center mt-4 mb-2">
-            <p className="text-xs text-white">Exchange</p>
-            <div className="mx-2 max-w-[5vmax]">
+            <p className="text-xs text-white">Swap</p>
+            <div className="mx-2 max-w-[4vmax]">
               <SimpleInput
                 value={form.supply.toString()}
                 onChange={(e) => {
@@ -402,117 +410,19 @@ const CreateCoin = () => {
               />
             </div>
 
-            <div className="form-element mr-2.5">
-              <p
-                className="input input-bordered h-[2vmax] text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer"
-                onClick={openCommunityCoins}
-              >
-                <span>{selectedCommunityCoin.symbol}</span>
-                {selectedCommunityCoin.name === "" && (
-                  <span className="text-white text-opacity-[0.3]">
-                    {" "}
-                    Select Coin
-                  </span>
-                )}
-                <label className="mr-2.5">
-                  <ArrowDown />
-                </label>
-              </p>
-            </div>
-
-            <p className="text-xs text-gray-300">
-              for <span className="text-xs text-gray-500">{form.supply}</span>
+            <p className="text-xs">
+              for <span className="text-xs">{form.supply}</span>
               {form.symbol !== "" ? "$" + form.symbol : ""}
             </p>
           </div>
 
-          <p className="text-xs text-gray-300 text-center max-w-[80%]">
-            Enter the amount of your initial Swap. You will swap{" "}
-            <span className="font-bold text-white">{form.supply}</span>{" "}
-            {selectedCommunityCoin.symbol} for{" "}
-            <span className="font-bold text-white">{form.supply}</span>{" "}
-            {form.symbol} and you will be charged a small amount of SOL in
-            transaction fees.
+          <p className="text-xs text-center max-w-[60%] md:max-w-[30%] lg:max-w-[15%] xl:max-w-[10%]">
+            You will be swapping {form.supply} {form.bonding.toUpperCase()}
+            for {form.supply} {form.symbol} and you will pay a small amount of
+            SOL in network fees
           </p>
-
-          <div className="mt-2">
-            <div className="flex flex-col">
-              <div className="flex items-center">
-                <p className="text-sm text-white">Current balance</p>
-                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                  {selectedCommunityBalance || 0}
-                </div>
-                <p className="text-sm text-white">
-                  {selectedCommunityCoin.symbol}
-                </p>
-              </div>
-
-              <div className="flex items-center mt-2">
-                <p className="text-sm text-white">Current balance</p>
-                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                  {profileInfo?.solBalance || 0}
-                </div>
-                <p className="text-sm text-white">SOL</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
-      >
-        <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">
-          Coin List{" "}
-        </h2>
-        <div>
-          {!coinLoader && (
-            <>
-              <div className="search-container">
-                <label
-                  className={
-                    "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
-                  }
-                >
-                  <div className="p-2">
-                    <SearchIcon />
-                  </div>
-                  <input
-                    type="text"
-                    className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
-                    placeholder="Search by Coin Name"
-                    value={keyword}
-                    onChange={onCoinSearch}
-                  />
-                </label>
-              </div>
-              <div
-                className="overflow-y-auto"
-                style={{ maxHeight: window.innerHeight * 0.7 + "px" }}
-              >
-                {coinList.map((coinItem: any) => (
-                  <TokenCard data={coinItem} onChoose={onTokenSelect} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {coinLoader && (
-            <div className="flex justify-center">
-              <Bars
-                height="80"
-                width="80"
-                color="rgba(255, 0, 199, 1)"
-                ariaLabel="bars-loading"
-                wrapperStyle={{}}
-                wrapperClass="bars-loading"
-                visible={true}
-              />
-            </div>
-          )}
-        </div>
-      </Modal>
     </>
   );
 };

@@ -7,11 +7,9 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const searchText = searchParams.get("search") as string;
-
   const typesParam = searchParams.get("types") as string;
-
   const page = searchParams.get("page") as string;
-
+  const count = searchParams.get("count") as string;
   const currentPage = page ? Number(page) : 0;
 
   if (typesParam === "") return NextResponse.json([]);
@@ -26,6 +24,9 @@ export async function GET(req: NextRequest) {
         REGION: {
           $regex: new RegExp(searchText, "ig"),
         },
+      },
+
+      {
         CANDIDATE_NAME: {
           $regex: new RegExp(searchText, "ig"),
         },
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
 
   const candidates = await collection
     .find(filterCondition, {
-      limit: 10,
+      limit: Number(count) ?? 10,
       skip: 10 * currentPage,
     })
     .toArray();

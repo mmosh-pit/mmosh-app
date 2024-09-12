@@ -31,6 +31,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       CANDIDATE_ID: {
         $regex: new RegExp(`^${candidate.CANDIDATE_ID.at(0)}`, "i"),
       },
+      DISTRICT: candidate.DISTRICT,
+      REGION: candidate.REGION,
     });
   } else if (candidate.PARTY == "REP") {
     firstOponent = await collection.findOne<Candidate>({
@@ -38,6 +40,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       CANDIDATE_ID: {
         $regex: new RegExp(`^${candidate.CANDIDATE_ID.at(0)}`, "i"),
       },
+      DISTRICT: candidate.DISTRICT,
+      REGION: candidate.REGION,
     });
   } else {
     firstOponent = await collection.findOne<Candidate>({
@@ -45,6 +49,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       CANDIDATE_ID: {
         $regex: new RegExp(`^${candidate.CANDIDATE_ID.at(0)}`, "i"),
       },
+      DISTRICT: candidate.DISTRICT,
+      REGION: candidate.REGION,
     });
   }
 
@@ -63,6 +69,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     CANDIDATE_ID: {
       $regex: new RegExp(`^${candidate.CANDIDATE_ID.at(0)}`, "i"),
     },
+    DISTRICT: candidate.DISTRICT,
+    REGION: candidate.REGION,
   });
 
   response.secondOponent = secondOponent;

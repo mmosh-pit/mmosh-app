@@ -10,14 +10,10 @@ import Input from "@/app/components/common/Input";
 import Button from "@/app/components/common/Button";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import { data, isDrawerOpen, userWeb3Info } from "@/app/store";
-import * as anchor from "@coral-xyz/anchor";
-import { Connection } from "@solana/web3.js";
-import { Connectivity as UserConn } from "@/anchor/user";
-import { web3Consts } from "@/anchor/web3Consts";
 import CoinsCandidatesSelect from "@/app/components/Project/Candidates/CoinsCandidatesSelect";
 import { CandidateCoinForm } from "@/app/models/candidateCoinForm";
 import FilePicker from "@/app/components/Project/PTV/FilePicker";
-import { createCoin } from "@/app/lib/forge/createCoin";
+import { createProjectCoin } from "@/app/lib/forge/createProjectCoin";
 
 const defaultFormState = {
   name: "",
@@ -138,18 +134,25 @@ const CreateCoin = () => {
       wallet: wallet!,
       setMintingStatus,
       username: currentUser!.profile.username,
+      multiplier: 1,
+      initialPrice: 0,
+      supply: form.supply,
+      type: "exponential",
+      baseToken: form.bonding,
+      position: form.position,
+      candidate: form.candidate!,
     };
 
-    // const res = await createCoin(params);
+    const res = await createProjectCoin(params);
     setIsLoading(false);
-    // setMessage({ type: res.type, message: res.message });
-    // setMintingStatus("Mint and Swap");
-    //
-    // if (res.type === "success") {
-    //   setForm({ ...defaultFormState });
-    //   setImage(null);
-    //   setPreview("");
-    // }
+    setMessage({ type: res.type, message: res.message });
+    setMintingStatus("Mint and Swap");
+
+    if (res.type === "success") {
+      setForm({ ...defaultFormState });
+      setImage(null);
+      setPreview("");
+    }
   };
 
   const checkSymbolExists = React.useCallback(async () => {
@@ -172,12 +175,6 @@ const CreateCoin = () => {
   }, [image]);
 
   React.useEffect(() => {
-    if (wallet) {
-      getTokenBalance();
-    }
-  }, [wallet]);
-
-  React.useEffect(() => {
     if (form.candidate?.PARTY === "DEM") {
       setForm({ ...form, bonding: "ptvb" });
     } else if (form.candidate?.PARTY === "REP") {
@@ -186,14 +183,6 @@ const CreateCoin = () => {
       setForm({ ...form, bonding: "" });
     }
   }, [form.candidate]);
-
-  const getTokenBalance = async () => {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
-  };
 
   return (
     <>
@@ -211,7 +200,7 @@ const CreateCoin = () => {
 
         <div className="flex md:flex-row flex-col justify-center w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] mt-12">
           <div className="w-[100%] sm:w-[85%] lg:w-[50%]">
-            <ImagePicker changeImage={setImage} image={preview} />
+            <ImagePicker changeImage={setImage} image={preview} rounded />
           </div>
 
           <div className="w-full flex flex-col md:ml-8">
@@ -374,7 +363,7 @@ const CreateCoin = () => {
           {form.symbol}
         </p>
 
-        <div className="w-full flex flex-col justify-around items-center mt-12">
+        <div className="w-full flex flex-col justify-around items-center mt-4">
           <div className="flex flex-col mb-1">
             <Button
               title={mintingStatus}
@@ -387,6 +376,8 @@ const CreateCoin = () => {
                 form.supply < 1000 ||
                 !form.name ||
                 !form.symbol ||
+                !form.candidate ||
+                !form.bonding ||
                 !!error ||
                 !wallet
               }
@@ -411,7 +402,7 @@ const CreateCoin = () => {
             </div>
 
             <p className="text-xs">
-              for <span className="text-xs">{form.supply}</span>
+              for <span className="text-xs">{form.supply} </span>
               {form.symbol !== "" ? "$" + form.symbol : ""}
             </p>
           </div>

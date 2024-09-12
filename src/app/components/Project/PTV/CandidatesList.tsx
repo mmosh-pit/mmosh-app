@@ -13,7 +13,7 @@ const CandidatesList = () => {
 
   const getCandidates = React.useCallback(async () => {
     const res = await axios.get(
-      `/api/get-leaderboard-candidates?search=${searchText}&types=${campaigns.join(",")}`,
+      `/api/get-leaderboard-candidates?search=${searchText}&types=${campaigns.join(",")}&count=10`,
     );
 
     setCandidates(res.data);

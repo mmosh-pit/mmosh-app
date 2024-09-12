@@ -5,6 +5,7 @@ import axios from "axios";
 import CandidateCard from "@/app/components/Project/Candidates/CandidateCard";
 import AIChat from "@/app/components/Project/Candidates/CandidatePage/AIChat";
 import { CandidateInfo } from "@/app/models/candidateInfo";
+import Coins from "@/app/components/Project/Candidates/CandidatePage/Coins";
 
 const Candidate = ({ params }: { params: { candidate: string } }) => {
   const [selectedTab, setSelectedTab] = React.useState(1);
@@ -29,6 +30,18 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
   React.useEffect(() => {
     getCandidateInfo();
   }, [params.candidate]);
+
+  const getCandidateColor = () => {
+    if (candidateInfo.candidate?.PARTY === "DEM") {
+      return "#0061ff";
+    }
+
+    if (candidateInfo.candidate?.PARTY === "REP") {
+      return "#ff002e";
+    }
+
+    return "#0c0054";
+  };
 
   if (isLoading) {
     return (
@@ -82,6 +95,12 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
             </p>
           </div>
           {selectedTab === 1 && <AIChat candidateInfo={candidateInfo} />}
+          {selectedTab === 0 && (
+            <Coins
+              candidate={candidateInfo.candidate?.CANDIDATE_ID ?? ""}
+              color={getCandidateColor()}
+            />
+          )}
         </div>
       </div>
     </div>

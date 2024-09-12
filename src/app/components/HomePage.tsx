@@ -17,7 +17,7 @@ const HomePage = () => {
     <div
       className={`w-full min-h-screen flex flex-col items-center background-content ${
         isDrawerShown ? "z-[-1]" : ""
-      }`}
+      } mix-blend-hard-light`}
     >
       <Banner />
       <div className="self-center md:max-w-[50%] max-w-[80%]">

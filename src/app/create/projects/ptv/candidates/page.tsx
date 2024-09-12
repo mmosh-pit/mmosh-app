@@ -221,7 +221,7 @@ const Candidates = () => {
 
   return (
     <div
-      className="w-full h-full background-content max-h-[500px]"
+      className="w-full h-full background-content max-h-[500px] mix-blend-hard-light"
       onScroll={handleScroll}
       ref={containerRef}
     >

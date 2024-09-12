@@ -12,23 +12,21 @@ import StatesSelect from "@/app/components/Project/Candidates/StatesSelect";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { Candidate } from "@/app/models/candidate";
 
-const OTHER_PARTIES = ["CON", "UNK", "DFL", "CONST", "UN"];
-
 const Candidates = () => {
   const isMobile = useCheckMobileScreen();
 
   const navigate = useRouter();
 
+  const fetching = React.useRef(false);
+  const containerRef = React.useRef<any>(null);
+  const lastPageTriggered = React.useRef(false);
+
+  const [totalCandidates, setTotalCandidates] = React.useState(0);
   const [candidates, setCandidates] = React.useState<Candidate[]>([]);
-
-  const [filteredCandidates, setFilteredCandidates] = React.useState<
-    Candidate[]
-  >([]);
-
+  const [currentPage, setCurrentPage] = React.useState(0);
   const [selectedCandidateFilter, setSelectedCandidateFilter] = React.useState<
     string[]
   >(["P", "S", "H"]);
-
   const [selectedPartyFilter, setSelectedPartyFilter] = React.useState<
     string[]
   >(["DEM", "REP", "IND", "GRE", "LIB", "OTHER"]);
@@ -39,10 +37,9 @@ const Candidates = () => {
   const [selectedDistrict, setSelectedDistrict] = React.useState("");
 
   const getCandidates = React.useCallback(async () => {
-    const response = await axios.get("/api/get-candidates");
+    const response = await axios.get("/api/get-candidates-total");
 
-    setCandidates(response.data);
-    setFilteredCandidates(response.data);
+    setTotalCandidates(response.data);
   }, []);
 
   const handleChangeFilterValue = React.useCallback(
@@ -79,57 +76,64 @@ const Candidates = () => {
     [selectedCandidateFilter, setSelectedCandidateFilter],
   );
 
-  const filterCandidates = React.useCallback(() => {
-    const newCandidates = candidates.filter((value) => {
-      const matchesCandidateFilter =
-        selectedCandidateFilter.length > 0
-          ? selectedCandidateFilter.includes(value.CANDIDATE_ID.at(0)!)
-          : true;
-
-      const partyFilterOther = selectedPartyFilter.includes("OTHER");
-
-      const matchesPartyFilter =
-        selectedPartyFilter.length > 0
-          ? selectedPartyFilter.includes(value.PARTY)
-          : true;
-
-      return (
-        matchesCandidateFilter &&
-        (partyFilterOther
-          ? OTHER_PARTIES.includes(value.PARTY) || matchesPartyFilter
-          : matchesPartyFilter) &&
-        value.CANDIDATE_NAME.toLowerCase().includes(searchText.toLowerCase()) &&
-        (selectedState === "" ? true : value.REG_ABBR === selectedState) &&
-        (selectedState !== "" && selectedDistrict !== ""
-          ? value.DISTRICT === Number(selectedDistrict)
-          : true)
+  const filterCandidates = React.useCallback(
+    async (page: number) => {
+      fetching.current = true;
+      const resultingCandidates = await axios.get(
+        `/api/get-leaderboard-candidates?search=${searchText}&types=${selectedCandidateFilter.join(",")}&parties=${selectedPartyFilter.join(",")}&page=${page}&count=20`,
       );
-    });
 
-    setFilteredCandidates(newCandidates);
-  }, [
-    selectedCandidateFilter,
-    selectedPartyFilter,
-    filteredCandidates,
-    candidates,
-    searchText,
-    selectedState,
-    selectedDistrict,
-  ]);
+      setCurrentPage(page + 1);
+
+      if (resultingCandidates.data.length === 0) {
+        lastPageTriggered.current = true;
+      }
+
+      setCandidates((prev) => {
+        return [...prev, ...resultingCandidates.data];
+      });
+      fetching.current = false;
+    },
+    [
+      selectedCandidateFilter,
+      selectedPartyFilter,
+      candidates,
+      searchText,
+      selectedState,
+      selectedDistrict,
+      currentPage,
+    ],
+  );
 
   React.useEffect(() => {
-    filterCandidates();
+    lastPageTriggered.current = false;
+    if (!fetching.current) {
+      filterCandidates(0);
+    }
   }, [
     selectedCandidateFilter,
     selectedPartyFilter,
     searchText,
     selectedState,
     selectedDistrict,
+    searchText,
   ]);
 
   React.useEffect(() => {
     getCandidates();
-  }, [getCandidates]);
+  }, [fetching.current]);
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    if (
+      containerRef.current.scrollHeight - containerRef.current.scrollTop <=
+        containerRef.current.clientHeight + 50 &&
+      !lastPageTriggered.current &&
+      !fetching.current
+    ) {
+      filterCandidates(currentPage);
+    }
+  };
 
   const getFiltersByDeviceSize = React.useCallback(() => {
     if (isMobile) {
@@ -216,20 +220,22 @@ const Candidates = () => {
   ]);
 
   return (
-    <div className="w-full h-full background-content">
+    <div
+      className="w-full h-full background-content max-h-[500px] mix-blend-hard-light"
+      onScroll={handleScroll}
+      ref={containerRef}
+    >
       <div className="w-full h-full flex flex-col md:px-16 px-4 mt-16 relative">
         {getFiltersByDeviceSize()}
         <div className="w-full flex flex-col mt-12">
           <div className="w-full flex flex-col self-start">
             <p className="text-xl text-white font-bold">
               Candidates{" "}
-              <span className="text-base font-normal">
-                ({filteredCandidates.length})
-              </span>
+              <span className="text-base font-normal">({totalCandidates})</span>
             </p>
 
             <div className="mt-4 grid grid-cols-auto md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
-              {filteredCandidates.map((candidate) => (
+              {candidates.map((candidate) => (
                 <div
                   onClick={() => {
                     navigate.push(

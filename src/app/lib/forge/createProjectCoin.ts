@@ -2,7 +2,7 @@ import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import axios from "axios";
 
-import { CreateCoinParams } from "@/app/models/createCoinParams";
+import { CreateProjectCoinParams } from "@/app/models/createCoinParams";
 import { MintResultMessage } from "@/app/models/mintResultMessage";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
@@ -17,7 +17,44 @@ import { deleteShdwDriveFile } from "../deleteShdwDriveFile";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const createCoin = async ({
+const ptvrToken = {
+  address: process.env.NEXT_PUBLIC_PTVR_TOKEN!,
+  name: "Pump The Vote Red",
+  symbol: "PTVR",
+  logoURI:
+    "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
+};
+
+const ptvbToken = {
+  address: process.env.NEXT_PUBLIC_PTVB_TOKEN!,
+  name: "Pump The Vote Blue",
+  symbol: "PTVB",
+  logoURI:
+    "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
+};
+
+// const ptvrToken = {
+//   address: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
+//   name: "Pump The Vote Red",
+//   symbol: "PTVR",
+//   logoURI:
+//     "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
+// };
+//
+// const ptvbToken = {
+//   address: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
+//   name: "Pump The Vote Blue",
+//   symbol: "PTVB",
+//   logoURI:
+//     "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
+// };
+
+const symbols = {
+  ptvr: ptvrToken,
+  ptvb: ptvbToken,
+};
+
+export const createProjectCoin = async ({
   name,
   symbol,
   description,
@@ -31,7 +68,9 @@ export const createCoin = async ({
   setMintingStatus,
   username,
   baseToken,
-}: CreateCoinParams): Promise<MintResultMessage> => {
+  candidate,
+  position,
+}: CreateProjectCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
@@ -114,17 +153,17 @@ export const createCoin = async ({
     setMintingStatus("Creating Token...");
     await delay(15000);
     const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash);
-    // setIsSubmit(false);
-    // return
 
     setMintingStatus("Creating Bonding Curve...");
+
+    const token = symbols[baseToken as keyof typeof symbols];
 
     const res = await curveConn.createTokenBonding({
       name,
       symbol,
       url: shdwHash,
       curve: curve,
-      baseMint: new anchor.web3.PublicKey(baseToken.address),
+      baseMint: new anchor.web3.PublicKey(token.address),
       generalAuthority: wallet.publicKey,
       reserveAuthority: wallet.publicKey,
       buyBaseRoyaltyPercentage: 0,
@@ -146,10 +185,10 @@ export const createCoin = async ({
 
     if (buyres) {
       const directoryParams = {
-        basekey: baseToken.address,
-        basename: baseToken.name,
-        basesymbol: baseToken.symbol,
-        baseimg: baseToken.logoURI,
+        basekey: token.address,
+        basename: token.name,
+        basesymbol: token.symbol,
+        baseimg: token.logoURI,
         bonding: res.tokenBonding.toBase58(),
         targetkey: targetMint,
         targetname: name,
@@ -159,6 +198,8 @@ export const createCoin = async ({
         price: curveConfig.current(),
         type: "sell",
         wallet: wallet.publicKey.toBase58(),
+        position,
+        candidate,
       };
 
       const tokenParams = {
@@ -169,13 +210,15 @@ export const createCoin = async ({
         tokenAddress: res.targetMint.toBase58(),
         bondingAddress: res.tokenBonding.toBase58(),
         creatorUsername: username,
+        position,
+        candidate,
       };
 
-      await axios.post("/api/save-directory", directoryParams);
+      await axios.post("/api/save-project-coin-directory", directoryParams);
 
       setMintingStatus("Saving Token...");
 
-      await axios.post("/api/save-token", tokenParams);
+      await axios.post("/api/save-project-coin-token", tokenParams);
 
       return {
         message:

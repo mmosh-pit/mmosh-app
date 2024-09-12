@@ -68,7 +68,7 @@ const Header = () => {
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8 ";
+      "w-full flex flex-col justify-center items-center py-6 px-8 relative z-10 ";
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
@@ -246,7 +246,6 @@ const Header = () => {
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
                 padding: "0 2em",
                 borderRadius: 15,
-                position: "relative",
               }}
             >
               <p className="text-lg text-white">

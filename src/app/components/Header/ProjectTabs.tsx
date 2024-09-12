@@ -10,7 +10,8 @@ const ProjectTabs = () => {
   const [isOnSettings] = useAtom(settings);
 
   const getHeaderBackground = React.useCallback(() => {
-    let defaultClass = "w-full flex justify-center items-center py-6 px-8 ";
+    let defaultClass =
+      "w-full flex justify-center items-center py-6 px-8 relative z-0 ";
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";

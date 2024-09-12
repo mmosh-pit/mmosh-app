@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Candidate } from "@/app/models/candidate";
 import { states } from "@/utils/states";
 import { politicalParties } from "@/utils/politicalParties";
+import { CandidateCoinsData } from "@/app/models/candidateCoinsData";
+import axios from "axios";
 
 type Props = {
   candidate: Candidate;
@@ -11,6 +13,10 @@ type Props = {
 };
 
 const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
+  const [coinsData, setCoinsData] = React.useState<CandidateCoinsData | null>(
+    null,
+  );
+
   const getColor = () => {
     switch (candidate.PARTY) {
       case "DEM":
@@ -105,6 +111,16 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
     return "rounded-xl";
   }, [borderRight, noBorder]);
 
+  const getCandidateCoinsData = React.useCallback(async () => {
+    const result = await axios.get("/api/get-candidate-fdv-values");
+
+    setCoinsData(result.data);
+  }, [candidate]);
+
+  React.useEffect(() => {
+    getCandidateCoinsData();
+  }, [candidate]);
+
   return (
     <div className="relative grid w-full">
       <div
@@ -122,8 +138,10 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
             </div>
           </div>
 
-          <p className="text-base text-white underline">Whitehouse</p>
-          <p className="text-sm">HouseWhite</p>
+          <p className="text-base text-white underline">
+            {coinsData?.coin.name}
+          </p>
+          <p className="text-sm">{coinsData?.coin.symbol}</p>
         </div>
 
         <div className="flex flex-col justify-start grow">
@@ -143,21 +161,23 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
           <div className="flex items-center">
             <p className="text-sm mr-2">All</p>
             <p className="text-sm text-white">
-              234.32 <span className="text-tiny">USDC</span>
+              {coinsData?.total} <span className="text-tiny ml-1">USDC</span>
             </p>
           </div>
 
           <div className="flex items-center my-4">
             <p className="text-sm mr-2">For</p>
             <p className="text-sm text-white">
-              7.36 <span className="text-tiny">USDC</span>
+              {coinsData?.forResult}
+              <span className="text-tiny ml-1">USDC</span>
             </p>
           </div>
 
           <div className="flex items-center">
             <p className="text-sm mr-2">Against</p>
             <p className="text-sm text-white">
-              13.48 <span className="text-tiny">USDC</span>
+              {coinsData?.againstResult}
+              <span className="text-tiny ml-1">USDC</span>
             </p>
           </div>
         </div>

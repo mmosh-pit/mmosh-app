@@ -73,7 +73,8 @@ export async function POST(req: NextRequest) {
         let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
         let balance = await userConn.getUserBalance({
-            address: tokenAddress,
+            address: wallet.publicKey,
+            token: tokenAddress,
             decimals: web3Consts.LAMPORTS_PER_OPOS
         })
 

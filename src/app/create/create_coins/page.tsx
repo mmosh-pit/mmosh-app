@@ -357,7 +357,11 @@ const CreateCoin = () => {
     });
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-    const balance = await userConn.getUserBalance(selectedCommunityCoin);
+    const balance = await userConn.getUserBalance({
+      address: wallet?.publicKey,
+      token: selectedCommunityCoin.address,
+      decimals: selectedCommunityCoin.decimals
+    });
     setSelectedCommunityBalance(balance);
   };
 

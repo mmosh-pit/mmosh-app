@@ -45,13 +45,13 @@ export async function GET(req: NextRequest) {
         rewardField = "$bluereward"
     }
 
-    const claimTotal = await collection.aggregate([{ $match: {type} },
+    const claimTotal = await collection.aggregate([
     { $group: { _id : null, sum : { $sum: claimField } } }]).toArray();
 
-    const rewardTotal = await collection.aggregate([{ $match: {type} },
+    const rewardTotal = await collection.aggregate([
         { $group: { _id : null, sum : { $sum: rewardField } } }]).toArray();
 
-    const availableTotal = await collection.aggregate([{ $match: {type} },
+    const availableTotal = await collection.aggregate([
         { $group: { _id : null, sum : { $sum: availableField } } }]).toArray();
   
     return NextResponse.json({

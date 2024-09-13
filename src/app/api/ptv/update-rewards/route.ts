@@ -57,6 +57,32 @@ export async function POST(req: NextRequest) {
                 );
             }
 
+        } else if(method === "unstake") {
+          if(type === "Blue" ) {
+            await collection.updateOne(
+              {
+                _id: ptvData._id,
+              },
+              {
+                $set: {
+                  blueavailable: 0,
+                  blueclaimed: ptvData.blueclaimed + ptvData.blueavailable
+                },
+              },
+            );
+          } else {
+            await collection.updateOne(
+              {
+                _id: ptvData._id,
+              },
+              {
+                $set: {
+                  redavailable: 0,
+                  redclaimed: ptvData.redclaimed + ptvData.redavailable
+                },
+              },
+            );
+          }
         } else {
             let available = 0;
             if(type === "Blue" ) {

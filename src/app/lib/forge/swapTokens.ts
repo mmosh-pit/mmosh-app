@@ -227,11 +227,15 @@ export const swapTokens = async (
           if(baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
             tokenType = "Red"
           }
+          const curve = await curveConn.getPricing(
+            new anchor.web3.PublicKey(targetToken.bonding),
+          );
+          const value = targetToken.value;
           await axios.post("/api/ptv/update-rewards",{
             type: tokenType,
             wallet: wallet.publicKey.toBase58(),
             method: "sell",
-            value: supply
+            value: curve!.sellTargetAmount(value - value * 0.06)
           })
         }
       }

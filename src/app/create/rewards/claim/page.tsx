@@ -8,8 +8,10 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { useRouter } from "next/navigation";
 
 const ClaimPage = () => {
+  const navigate = useRouter();
   const wallet = useAnchorWallet();
   const [countDownDate, setCountDownDate] = useState(0);
   const [countDown, setCountDown] = useState(0);
@@ -211,7 +213,7 @@ const ClaimPage = () => {
                 <div className="text-center">
                   <div className="bg-black bg-opacity-[0.2] text-header-small-font-size text-white font-poppins py-2.5 px-10 inline-block font-semibold mb-2.5">{blueDetails.claimable} PTVB</div>
                   <div>
-                    <button className="btn-sm bg-primary text-white border-none hover:bg-primary hover:text-white w-32 rounded-md">Claim PTVB</button>
+                    <button className="btn-sm bg-primary text-white border-none hover:bg-primary hover:text-white w-32 rounded-md" onClick={()=>{navigate.push(`/create/swap`);}}>Claim PTVB</button>
                   </div>
 
                 </div>
@@ -221,7 +223,7 @@ const ClaimPage = () => {
                 <div className="text-center">
                   <div className="bg-black bg-opacity-[0.2] text-header-small-font-size text-white font-poppins py-2.5 px-10 inline-block font-semibold mb-2.5">{redDetails.claimable} PTVR</div>
                   <div>
-                    <button className="btn-sm bg-primary text-white border-none hover:bg-primary hover:text-white w-32 rounded-md">Claim PTVR</button>
+                    <button className="btn-sm bg-primary text-white border-none hover:bg-primary hover:text-white w-32 rounded-md" onClick={()=>{navigate.push(`/create/swap`);}}>Claim PTVR</button>
                   </div>
                 </div>
 

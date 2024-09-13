@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
         });
         let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-        let balance = await userConn.getUserBalance({
+        let balance:any = await userConn.getUserBalance({
             address: wallet.publicKey,
             token: tokenAddress,
             decimals: web3Consts.LAMPORTS_PER_OPOS
@@ -92,29 +92,30 @@ export async function POST(req: NextRequest) {
         for (let index = 0; index < clamInstructions.length; index++) {
             txis.push(clamInstructions[index]);
         }
-        const tx = new anchor.web3.Transaction().add(...txis);
+
+        const freezeInstructions = await calculatePriorityFee(
+            txis,
+            ptvOwner,
+            userConn
+          );
     
-        tx.recentBlockhash = (
-            await userConn.connection.getLatestBlockhash()
-        ).blockhash;
-        tx.feePayer = new anchor.web3.PublicKey(address);
-
-        const feeEstimate = await userConn.getPriorityFeeEstimate(tx);
-        let feeIns;
-        if (feeEstimate > 0) {
-            feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
-                microLamports: feeEstimate,
-            });
-        } else {
-            feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
-                units: 1_400_000,
-            });
+        console.log("mint pass 12");
+        for (let index = 0; index < freezeInstructions.length; index++) {
+        const element = freezeInstructions[index];
+        txis.push(element);
         }
-        tx.add(feeIns);
 
-        const signeTx = await wallet.signTransaction(tx)
+        const blockhash = (await connection.getLatestBlockhash()).blockhash;
+        const message = new anchor.web3.TransactionMessage({
+            payerKey: new anchor.web3.PublicKey(address),
+            recentBlockhash: blockhash,
+            instructions: [...txis],
+          }).compileToV0Message([]);
 
-        const serialized = Buffer.from(signeTx.serialize()).toString('base64');
+        const tx = new anchor.web3.VersionedTransaction(message);
+        tx.sign([ptvOwner])
+        
+        const serialized = Buffer.from(tx.serialize()).toString('base64');
 
         return NextResponse.json(
             {
@@ -141,4 +142,41 @@ const convertUTCDateToLocalDate = (date: any) => {
     var hours = date.getHours();
     newDate.setHours(hours - offset);
     return newDate;   
+}
+
+const calculatePriorityFee = async (ixs: any, mintKp: any, userConn: UserConn) => {
+    let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
+    let connection = new Connection(rpcUrl);
+    const blockhash = (await connection.getLatestBlockhash()).blockhash;
+    const message = new anchor.web3.TransactionMessage({
+        payerKey: userConn.provider.publicKey,
+        recentBlockhash: blockhash,
+        instructions: [...ixs],
+      }).compileToV0Message([]);
+
+    const tx = new anchor.web3.VersionedTransaction(message);
+    tx.sign([mintKp]);
+
+    const feeEstimate = await userConn.getPriorityFeeEstimate(tx);
+    let feeIns: any = [];
+    if (feeEstimate > 0) {
+      feeIns.push(
+        anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        }),
+      );
+      feeIns.push(
+        anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        }),
+      );
+    } else {
+      feeIns.push(
+        anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        }),
+      );
+    }
+
+    return feeIns;
 }

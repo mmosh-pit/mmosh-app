@@ -1366,17 +1366,17 @@ export class Connectivity {
   }
 
   async getUserBalance(tokenData: any) {
-    const user = this.provider.publicKey;
-    if (!user) throw "Wallet not found";
-    const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.address), user);
-    const infoes = await this.connection.getMultipleAccountsInfo([
-      new anchor.web3.PublicKey(userOposAta.toBase58()),
-    ]);
-    let tokenBalance = 0;
-    if (infoes[0]) {
-      tokenBalance = infoes[0].lamports / tokenData.decimals;
+    try {
+      const user = tokenData.address;
+      if (!user) throw "Wallet not found";
+      const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.token), user);
+      const infoes = await this.connection.getTokenAccountBalance(userOposAta);
+      console.log("infoes ", infoes)
+      return infoes.value.uiAmount
+    } catch (error) {
+      return 0
     }
-    return tokenBalance
+
   }
 
   async __getProfileHoldersInfo(

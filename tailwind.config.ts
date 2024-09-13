@@ -17,6 +17,7 @@ const config: Config = {
         "search": "#5A00FF",
         "light-gray": "#BDBCBC",
         "theme-blue": "#180E4F",
+        "claim-color": "#6537BB"
       },
     },
     fontSize: {

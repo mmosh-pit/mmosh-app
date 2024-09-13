@@ -5,6 +5,7 @@ import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { SwapCoin } from "@/app/models/swapCoin";
 import { web3Consts } from "@/anchor/web3Consts";
+import axios from "axios";
 
 export const getSwapPrices = async (
   token: SwapCoin,
@@ -31,27 +32,33 @@ export const getSwapPrices = async (
   .nfts()
   .findByMint({ mintAddress: bondingResult?.baseMint });
 
-
   const balances = await curveConn.getTokenBalance(
     token.token,
     bondingResult?.baseMint.toBase58(),
   );
-
-
+  let baseBalance = 0
+  if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
+    baseBalance = balances.target
+  } else {
+    let type = "Red"
+    if(bondingResult?.baseMint.toBase58() === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+      type = "Blue"
+    }
+    let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
+    baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+  }
 
   const base = {
     name: mintDetail.name,
     symbol: mintDetail.symbol,
     token: bondingResult?.baseMint.toBase58(),
     image: mintDetail.json?.image,
-    balance: balances.target,
+    balance: baseBalance,
     bonding: token.bonding,
     desc: "",
     creatorUsername: "",
     value: 0,
   };
-
-
 
 
   console.log("bondingResult ", bondingResult)
@@ -68,9 +75,6 @@ export const getSwapPrices = async (
     creatorUsername: token.creatorUsername,
     value: 0,
   };
-
-
-
 
 
   const curve = await curveConn.getPricing(

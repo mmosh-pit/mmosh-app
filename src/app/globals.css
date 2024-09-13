@@ -947,3 +947,24 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border-radius: 10px;
   border: 1px solid rgba(135, 135, 135, 0.32);
 }
+
+.background-content-claim {
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* position: relative; */
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: rgba(9, 7, 58, 0.7);
+  /* background: radial-gradient( */
+  /*   circle at 50% 15%, */
+  /*   #081c6c 1%, */
+  /*   #081c6c 30%, */
+  /*   #081c6c 60%, */
+  /*   #030064 100% */
+  /* ); */
+
+  mix-blend-mode: hard-light;
+
+  /* background-size: auto; */
+  /* background-repeat: repeat; */
+  /* background-attachment: fixed; */
+}

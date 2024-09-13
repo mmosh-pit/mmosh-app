@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         const { address, type } = await req.json();
 
         let claimDate = convertUTCDateToLocalDate(new Date("2024-11-05"))
-        let dateDiff = new Date().getTime() - claimDate.getTime();
+        let dateDiff = claimDate.getTime() - new Date().getTime() ;
         if(dateDiff > 0) {
             return NextResponse.json({status: false, message: "Pls try cliam after Nov 5th 2024"}, { status: 200 });
         }
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
         }
 
         let txis = []
-        let clamInstructions:any =  await userConn.baseSpl.transfer_token_modified({ mint: new anchor.web3.PublicKey(tokenAddress), sender: wallet.publicKey, receiver: new anchor.web3.PublicKey(address), init_if_needed: true, amount: Math.ceil(amount)});
+        let clamInstructions:any =  await userConn.baseSpl.transfer_token_modified({ mint: new anchor.web3.PublicKey(tokenAddress), sender: wallet.publicKey, receiver: new anchor.web3.PublicKey(address), init_if_needed: true, amount: Math.ceil(amount * web3Consts.LAMPORTS_PER_OPOS)});
         for (let index = 0; index < clamInstructions.length; index++) {
             txis.push(clamInstructions[index]);
         }

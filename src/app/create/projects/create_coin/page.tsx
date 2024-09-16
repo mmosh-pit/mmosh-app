@@ -152,15 +152,27 @@ const CreateCoin = () => {
     const fileUrls = [];
 
     for (const file of files) {
-      const fileUrl = await uploadFile(file, file.name, "political_coins");
+      const fileUrl = await uploadFile(file, file.name, "political_memecoins");
       fileUrls.push(fileUrl);
     }
 
     const formData = new FormData();
-    formData.append("name", "");
-    formData.append("url", "");
+    formData.append("name", form.candidate!.CANDIDATE_NAME);
+    formData.append(
+      "metadata",
+      JSON.stringify({
+        ...form.candidate,
+        name: form.name,
+        symbol: form.symbol,
+      }),
+    );
 
-    await axios.post("https://mmoshapi-uodcouqmia-uc.a.run.app/upload");
+    fileUrls.forEach((val) => formData.append("urls", val));
+
+    await axios.post(
+      "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+      formData,
+    );
 
     if (res.type === "success") {
       setForm({ ...defaultFormState });

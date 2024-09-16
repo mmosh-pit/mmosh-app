@@ -14,6 +14,7 @@ import CoinsCandidatesSelect from "@/app/components/Project/Candidates/CoinsCand
 import { CandidateCoinForm } from "@/app/models/candidateCoinForm";
 import FilePicker from "@/app/components/Project/PTV/FilePicker";
 import { createProjectCoin } from "@/app/lib/forge/createProjectCoin";
+import { uploadFile } from "@/app/lib/firebase";
 
 const defaultFormState = {
   name: "",
@@ -147,6 +148,31 @@ const CreateCoin = () => {
     setIsLoading(false);
     setMessage({ type: res.type, message: res.message });
     setMintingStatus("Mint and Swap");
+
+    const fileUrls = [];
+
+    for (const file of files) {
+      const fileUrl = await uploadFile(file, file.name, "political_memecoins");
+      fileUrls.push(fileUrl);
+    }
+
+    const formData = new FormData();
+    formData.append("name", form.candidate!.CANDIDATE_NAME);
+    formData.append(
+      "metadata",
+      JSON.stringify({
+        ...form.candidate,
+        name: form.name,
+        symbol: form.symbol,
+      }),
+    );
+
+    fileUrls.forEach((val) => formData.append("urls", val));
+
+    await axios.post(
+      "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+      formData,
+    );
 
     if (res.type === "success") {
       setForm({ ...defaultFormState });

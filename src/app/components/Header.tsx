@@ -288,67 +288,12 @@ const Header = () => {
       )}
 
       {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12 pb-4">
-          {!isMobileScreen && (
-            <div className="flex w-[33%]">
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Members
-                  </p>
-                </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {totalAccounts}
-                </p>
-              </div>
-
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Royalties
-                  </p>
-                </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {formatNumber(totalRoyalties)}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div
-            className={`relative w-[16vmax] h-[16vmax] ${isDrawerShown && "z-[-1]"}`}
-          >
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              layout="fill"
-            />
-          </div>
-
-          {!isMobileScreen && (
-            <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-              <button
-                className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
-                onClick={executeSearch}
-              >
-                <SearchIcon />
-
-                <p className="text-white font-bold text-base ml-4">Search</p>
-              </button>
-
-              <input
-                placeholder="Type your search terms"
-                className="ml-4 w-full bg-transparent outline-none"
-                value={localText}
-                onChange={(e) => setLocalText(e.target.value)}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    executeSearch();
-                  }
-                }}
-              />
-            </div>
-          )}
+        <div className="w-full flex flex-col justify-center items-center mt-12 pb-4">
+          <h6>Welcome Home {currentUser?.profile.name}</h6>
+          <p className="text-base">
+            The MMOSH is a Massively Multiplayer On-chain Shared Hallucination.
+          </p>
+          <p className="text-base">Make Money Fun!</p>
         </div>
       )}
     </header>

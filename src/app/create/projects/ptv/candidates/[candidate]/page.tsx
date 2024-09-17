@@ -53,7 +53,7 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
 
   return (
     <div className="w-full h-full background-content mix-blend-hard-light">
-      <div className="w-full h-full flex flex-col md:px-16 px-4 mt-16 relative">
+      <div className="w-full h-full flex flex-col md:px-16 px-4 mt-16 justify-between relative">
         <div className="w-full flex justify-evenly">
           {candidateInfo.candidate && (
             <div className="w-[35%]">
@@ -78,7 +78,7 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
           </div>
         )}
 
-        <div className="w-full flex items-start flex-col mt-16">
+        <div className="w-full flex items-start justify-between flex-col mt-16">
           <div className="flex">
             <p
               className={`text-base ${selectedTab === 0 ? "text-white font-bold" : ""} mr-4`}

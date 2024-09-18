@@ -8,7 +8,6 @@ body {
 
 p {
   font-family: var(--font-poppins);
-  font-size: 1.2vmax;
   color: #d7d7d7;
 }
 
@@ -20,43 +19,34 @@ a {
 span {
   color: #d7d7d7;
   font-size: 0.8vmax;
-  line-height: 1vmax;
 }
 
 h2 {
   font-family: var(--font-goudy);
-  font-size: 1.8vmax;
   font-weight: 900;
   color: #ffffff;
 }
 
 h3 {
   font-family: var(--font-goudy);
-  font-size: 1.6vmax;
-  line-height: 1.3vmax;
   font-weight: 900;
   color: #ffffff;
 }
 
 h4 {
   font-family: var(--font-goudy);
-  font-size: 1.5vmax;
   font-weight: 900;
   color: #ffffff;
 }
 
 h5 {
   font-family: var(--font-goudy);
-  font-size: 1.2vmax;
-  line-height: 1vmax;
   font-weight: 700;
   color: #ffffff;
 }
 
 h6 {
   font-family: var(--font-goudy);
-  font-size: 1vmax;
-  line-height: 0.8vmax;
   font-weight: 700;
   color: #ffffff;
 }

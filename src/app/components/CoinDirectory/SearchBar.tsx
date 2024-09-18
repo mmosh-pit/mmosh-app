@@ -48,14 +48,14 @@ const SearchBar = () => {
     <div className="w-full flex justify-between px-8">
       {!isMobile && <div className="w-[33%]" />}
 
-      <div className="w-[50%] md:w-[33%] flex items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
+      <div className="w-[50%] md:w-[33%] flex md:items-center bg-[#010623] bg-opacity-[0.15] border-[1px] border-[#C2C2C229] rounded-full p-1 backdrop-filter backdrop-blur-[10px]">
         <button
-          className="flex bg-[#5A00FF] rounded-full px-12 py-4 items-center"
+          className="flex bg-[#5A00FF] rounded-full px-6 py-4 items-center"
           onClick={executeSearch}
         >
-          <SearchIcon />
+          <SearchIcon width={24} height={24} />
 
-          <p className="text-white font-bold text-base ml-4">Search</p>
+          <p className="text-white font-bold text-base ml-2.5 md:block hidden">Search</p>
         </button>
 
         <input
@@ -72,7 +72,7 @@ const SearchBar = () => {
       </div>
 
       <div className="w-[50%] md:w-[33%] flex items-center justify-end">
-        <div className="flex items-center mr-8">
+        {/* <div className="flex items-center mr-8">
           <p className="text-sm">MMOSH</p>
           <input
             type="checkbox"
@@ -81,7 +81,7 @@ const SearchBar = () => {
             onChange={(e) => setIsUSDCSelected(e.target.checked)}
           />
           <p className="text-sm">USDC</p>
-        </div>
+        </div> */}
 
         <div className="dropdown rounded-lg py-1 mr-8">
           <div tabIndex={0} role="button" className="btn m-1">

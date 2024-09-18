@@ -110,7 +110,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       {coin && baseCoin && (
         <div className="background-content relative flex flex-col max-h-full pt-20 px-12">
           <div className="w-full flex justify-between">
-            <div className="flex items-center mb-8 ml-4">
+            <div className="flex items-center mb-4 ml-4">
               <div
                 className="flex items-center mr-4 cursor-pointer"
                 onClick={goBack}
@@ -120,26 +120,26 @@ const Page = ({ params }: { params: { symbol: string } }) => {
               </div>
 
               <div className="flex items-center">
-                <div className="relative w-[1.5vmax] h-[1.5vmax]">
-                  <Image alt={coin.symbol} src={coin.image} layout="fill" />
+                <div className="relative">
+                  <img src={coin.image} className="w-10 h-10 rounded-full object-cover"/>
                 </div>
 
                 <h6 className="mx-2">{coin.name}</h6>
-                <p className="text-tiny self-end">{coin.symbol}</p>
+                <p className="text-tiny">{coin.symbol}</p>
               </div>
             </div>
           </div>
-          <div className="w-full flex flex-col md:flex-row justify-between">
-            <div className="md:w-[50%] w-[90%]">
+          <div className="grid grid-cols-1 md:grid-cols-12">
+            <div className="col-span-7">
               <Graphics coin={coin} base={baseCoin} />
             </div>
 
-            <div className="md:w-[35%] w-[90%]">
+            <div className="col-span-5 mt-5 md:mt-0">
               <Stats coin={coin} base={baseCoin} />
             </div>
           </div>
 
-          <div className="w-full px-12 mt-20">
+          <div className="w-full py-10 overflow-x-auto">
             <TransactionsTable coin={coin} base={baseCoin} />
           </div>
         </div>

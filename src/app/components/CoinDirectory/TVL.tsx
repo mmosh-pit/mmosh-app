@@ -52,10 +52,10 @@ const TVL = ({ bonding, base, height }: Props) => {
           {total} {base?.symbol}
         </h6>
       </div>
-      <ResponsiveContainer width="100%" height={height || 200}>
+      <ResponsiveContainer width="100%" height={height || 220}>
         <AreaChart
           width={500}
-          height={height || 200}
+          height={height || 220}
           data={data}
           margin={{
             top: 10,

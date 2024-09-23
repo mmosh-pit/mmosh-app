@@ -97,11 +97,12 @@ const Code = () => {
       <div className="w-[75%] md:w-[40%] lg:w-[25%] flex justify-center my-4">
         {formCodes.map((val, index) => (
           <div className="flex justify-center items-center" key={index}>
-            <div className={`max-w-[2vmax] mx-1 ${getBorderByValue(val)}`}>
+            <div className={`max-w-[4vmax] mx-1 ${getBorderByValue(val)}`}>
               <SimpleInput
                 value={val ?? ""}
                 reference={divRefs[index]}
                 maxLength={1}
+                height="4vmax"
                 onPaste={(e) => {
                   handlePastingCode(e.clipboardData.getData("Text"));
                 }}

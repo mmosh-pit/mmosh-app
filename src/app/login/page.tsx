@@ -89,6 +89,7 @@ const Login = () => {
           isPrimary
           type="submit"
           isLoading={false}
+          disabled={!email || !password}
         />
       </div>
 

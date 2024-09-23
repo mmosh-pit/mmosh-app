@@ -16,30 +16,28 @@ export async function POST(req: NextRequest) {
     to: data.email,
     from: "admin@liquidhearts.app",
     subject: "Email Verification",
-    html: `Hey there!<br /> Here's your code to verify your Email and finish your registration into Liquid Hearts Club!<br /> <strong>${code}</strong>`,
+    html:
+      `Hey there!<br /> Here's your code to verify your Email and finish your registration into Liquid Hearts Club!<br /> <strong>${code}</strong>`,
   };
 
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("Email sent");
-    })
-    .catch((error) => {
-      console.error(error);
+  try {
+    await sgMail.send(msg);
+
+    const existingData = await collection.findOne({
+      email: data.email,
     });
 
-  const existingData = await collection.findOne({
-    email: data.email,
-  });
+    if (existingData) {
+      await collection.deleteOne({ _id: existingData._id });
+    }
 
-  if (existingData) {
-    await collection.deleteOne({ _id: existingData._id });
+    await collection.insertOne({
+      ...data,
+      code,
+    });
+
+    return NextResponse.json("");
+  } catch (_) {
+    return NextResponse.json("", { status: 500 });
   }
-
-  await collection.insertOne({
-    ...data,
-    code,
-  });
-
-  return NextResponse.json("");
 }

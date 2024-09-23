@@ -52,7 +52,7 @@ const SignUp = () => {
 
   return (
     <form
-      className="w-full min-h-full flex flex-col items-center background-content pt-32 relative"
+      className="w-full min-h-full flex flex-col items-center background-content py-6 relative"
       onSubmit={submit}
     >
       <div className="flex flex-col items-center my-6">
@@ -127,6 +127,7 @@ const SignUp = () => {
           type="submit"
           isPrimary
           isLoading={isLoading}
+          disabled={!form.name || !form.email || !form.password || !form.confirmPassword}
         />
       </div>
 

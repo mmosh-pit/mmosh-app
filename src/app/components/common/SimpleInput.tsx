@@ -7,6 +7,7 @@ type Props = {
   reference?: LegacyRef<HTMLInputElement>;
   onPaste?: ClipboardEventHandler<HTMLInputElement>;
   maxLength?: number;
+  height?: string;
 };
 
 const SimpleInput = ({
@@ -16,6 +17,7 @@ const SimpleInput = ({
   reference,
   onPaste,
   maxLength,
+  height
 }: Props) => (
   <input
     ref={reference}
@@ -24,7 +26,7 @@ const SimpleInput = ({
     onChange={onChange}
     onPaste={onPaste}
     placeholder={placeholder}
-    className="input input-bordered h-[2vmax] max-w-[100%] text-center text-xs bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] p-0"
+    className={`input input-bordered ${height ? `h-[${height}]` : "h-[2vmax]"} max-w-[100%] text-center text-xs bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] p-0`}
   />
 );
 

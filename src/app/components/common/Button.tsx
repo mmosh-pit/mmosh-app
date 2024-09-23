@@ -4,6 +4,7 @@ type Props = {
   isPrimary: boolean;
   isLoading: boolean;
   size: "small" | "large";
+  type?: "button" | "submit";
   disabled?: boolean;
 };
 
@@ -14,9 +15,11 @@ const Button = ({
   isPrimary,
   size,
   disabled,
+  type = "button",
 }: Props) => (
   <button
     className={`${isPrimary ? "bg-[#CD068E]" : "bg-[#6536BB]"} ${size === "small" ? "py-2 px-4" : "w-full py-4 px-8"} rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
+    type={type}
     onClick={action}
     disabled={disabled}
   >

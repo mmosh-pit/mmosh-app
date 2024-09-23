@@ -13,6 +13,7 @@
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
     "@metaplex-foundation/js": "^0.20.1",
     "@meteora-ag/dlmm-sdk": "^0.7.7",
+    "@sendgrid/mail": "^8.1.3",
     "@shadow-drive/sdk": "^5.0.0",
     "@solana-developers/node-helpers": "^1.2.2",
     "@solana/actions": "^1.6.4",
@@ -23,8 +24,11 @@
     "@solana/wallet-adapter-wallets": "^0.19.24",
     "@solana/web3.js": "^1.87.6",
     "@strata-foundation/spl-utils": "^3.11.2",
+    "@stripe/crypto": "^0.0.4",
+    "@stripe/stripe-js": "^4.3.0",
     "@types/uuid": "^9.0.8",
     "@web-std/file": "^3.0.3",
+    "argon2": "^0.41.1",
     "axios": "^1.6.2",
     "bs58": "^5.0.0",
     "firebase": "^10.7.1",
@@ -40,10 +44,8 @@
     "react-modal": "^3.16.1",
     "react-telegram-login": "^1.1.2",
     "recharts": "^2.12.7",
-    "uuid": "^9.0.1",
-    "@stripe/crypto": "^0.0.4",
-    "@stripe/stripe-js": "^4.3.0",
-    "stripe": "^16.8.0"
+    "stripe": "^16.8.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

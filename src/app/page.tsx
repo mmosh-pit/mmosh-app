@@ -3,14 +3,14 @@
 import * as React from "react";
 import axios from "axios";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
 
 import { UserStatus, data, incomingWallet, settings, status } from "./store";
-import HomePage from "./components/HomePage";
 import { init } from "./lib/firebase";
 import { fetchUserData } from "./lib/fetchUserData";
 import Settings from "./components/Settings";
+import HomePage from "./components/HomePage";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -20,6 +20,7 @@ export default function Home() {
   const [_, setUserData] = useAtom(data);
   const [isOnSettings] = useAtom(settings);
   const wallet = useAnchorWallet();
+  const router = useRouter();
 
   const getUserData = React.useCallback(async () => {
     const result = await fetchUserData(wallet!);
@@ -53,6 +54,14 @@ export default function Home() {
     return <HomePage />;
   };
 
+  const checkIfIsAuthenticated = React.useCallback(async () => {
+    const result = await axios.get("/api/is-auth");
+
+    if (!result.data) {
+      router.replace("/login");
+    }
+  }, []);
+
   React.useEffect(() => {
     if (wallet?.publicKey) {
       getUserData();
@@ -68,6 +77,7 @@ export default function Home() {
         setIncomingWalletToken(param);
       }
       rendered.current = true;
+      checkIfIsAuthenticated();
     }
   }, []);
 

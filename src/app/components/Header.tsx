@@ -3,7 +3,7 @@
 import React from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
@@ -11,19 +11,15 @@ import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import {
   UserStatus,
-  accounts,
   data,
   incomingWallet,
   isDrawerOpen,
-  points,
-  searchBarText,
   settings,
   status,
   userWeb3Info,
   web3InfoLoading,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
@@ -31,40 +27,34 @@ import { Connection } from "@solana/web3.js";
 import { pageCommunity } from "../store/community";
 import Tabs from "./Header/Tabs";
 import ProjectTabs from "./Header/ProjectTabs";
-
-const formatNumber = (value: number) => {
-  const units = ["", "K", "M", "B", "T"];
-
-  let absValue = Math.abs(value);
-
-  let exponent = 0;
-  while (absValue > 1000 && exponent < units.length - 1) {
-    absValue /= 1000;
-    exponent++;
-  }
-
-  const formattedNumber = absValue.toFixed(2);
-
-  return `${formattedNumber}${units[exponent]}`;
-};
+import { incomingReferAddress } from "../store/signup";
 
 const Header = () => {
+  const searchParams = useSearchParams();
   const pathname = usePathname();
   const wallet = useAnchorWallet();
+
   const renderedUserInfo = React.useRef(false);
+  const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [userStatus] = useAtom(status);
   const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
-  const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const [totalRoyalties, setTotalRoyalties] = useAtom(points);
-  const [_, setSearchText] = useAtom(searchBarText);
-  const [localText, setLocalText] = React.useState("");
   const isMobileScreen = useCheckMobileScreen();
+
+  const param = searchParams.get("refer");
+
+  React.useEffect(() => {
+    if (param) {
+      setReferAddress(param);
+    } else {
+      setReferAddress(process.env.NEXT_PUBLIC_DEFAULT_REFER_ADDRESS!);
+    }
+  }, [param]);
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
@@ -81,18 +71,6 @@ const Header = () => {
     return defaultClass;
   }, [userStatus, pathname]);
 
-  const executeSearch = React.useCallback(() => {
-    const text = localText.replace("@", "");
-    setSearchText(text);
-  }, [localText]);
-
-  const getTotals = React.useCallback(async () => {
-    const res = await axios.get("/api/get-header-analytics");
-
-    setTotalAccounts(res.data.members);
-    setTotalRoyalties(res.data.royalties);
-  }, []);
-
   const getProfileInfo = async () => {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
     const env = new anchor.AnchorProvider(connection, wallet!, {
@@ -104,8 +82,6 @@ const Header = () => {
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const profileInfo = await userConn.getUserInfo();
-
-    console.log("[HEADER] profile info: ", profileInfo);
 
     const genesis = profileInfo.activationTokens[0]?.genesis;
     const activation = profileInfo.activationTokens[0]?.activation;
@@ -175,12 +151,6 @@ const Header = () => {
   };
 
   React.useEffect(() => {
-    if (userStatus === UserStatus.fullAccount && pathname === "/") {
-      getTotals();
-    }
-  }, [userStatus]);
-
-  React.useEffect(() => {
     if (wallet?.publicKey && !renderedUserInfo.current) {
       renderedUserInfo.current = true;
       getProfileInfo();
@@ -202,6 +172,10 @@ const Header = () => {
       })();
     }
   }, [wallet, incomingWalletToken]);
+
+  if (pathname.includes("sign-up") || pathname.includes("login")) {
+    return <></>;
+  }
 
   return (
     <header className="flex flex-col">
@@ -288,9 +262,9 @@ const Header = () => {
       )}
 
       {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex flex-col justify-center items-center mt-12 pb-4">
+        <div className="w-full flex flex-col justify-center items-center pb-4 my-16">
           <h6>Welcome Home {currentUser?.profile.name}</h6>
-          <p className="text-base">
+          <p className="text-base mt-4">
             The MMOSH is a Massively Multiplayer On-chain Shared Hallucination.
           </p>
           <p className="text-base">Make Money Fun!</p>

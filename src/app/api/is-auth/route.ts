@@ -15,12 +15,8 @@ export async function GET(req: NextRequest) {
   }
 
   const user = await collection.findOne({
-    sessions: session,
+    sessions: session!.value,
   });
 
-  if (user === null) {
-    return NextResponse.json(false);
-  }
-
-  return NextResponse.json(true);
+  return NextResponse.json(user !== null);
 }

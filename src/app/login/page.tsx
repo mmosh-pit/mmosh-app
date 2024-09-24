@@ -22,18 +22,22 @@ const Login = () => {
     }
   }, []);
 
-  const submit = React.useCallback(async () => {
-    setIsLoading(true);
-    try {
-      await axios.post("/ali/login", {
-        email,
-        password,
-      });
-      router.replace("/");
-    } catch (_) {}
+  const submit = React.useCallback(
+    async (e: any) => {
+      e.preventDefault();
+      setIsLoading(true);
+      try {
+        await axios.post("/ali/login", {
+          email,
+          password,
+        });
+        router.replace("/");
+      } catch (_) {}
 
-    setIsLoading(false);
-  }, [email, password]);
+      setIsLoading(false);
+    },
+    [email, password],
+  );
 
   React.useEffect(() => {
     checkIfIsAuthenticated();

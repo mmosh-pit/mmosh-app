@@ -39,3 +39,6 @@ export const incomingWallet = atom("");
 // Web3 info
 export const userWeb3Info = atom<ProfileInfo | null>(null);
 export const web3InfoLoading = atom(true);
+
+export const isAuth = atom(false);
+export const isAuthOverlayOpen = atom(true);

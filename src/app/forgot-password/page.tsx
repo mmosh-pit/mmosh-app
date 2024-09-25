@@ -6,13 +6,13 @@ import Button from "../components/common/Button";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-const Login = () => {
+const ForgotPassword = () => {
   const router = useRouter();
 
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const [success, setSuccess] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await axios.get("/api/is-auth");
@@ -27,16 +27,15 @@ const Login = () => {
       e.preventDefault();
       setIsLoading(true);
       try {
-        await axios.post("/api/login", {
+        await axios.post("/api/forgot-password-verification", {
           email,
-          password,
         });
-        router.replace("/");
+        setSuccess(true);
       } catch (_) {}
 
       setIsLoading(false);
     },
-    [email, password],
+    [email],
   );
 
   React.useEffect(() => {
@@ -61,7 +60,7 @@ const Login = () => {
         </p>
       </div>
 
-      <h6 className="my-4">Log In</h6>
+      <h6 className="my-4">Reset your Password</h6>
 
       <div className="w-[75%] md:w-[40%] lg:w-[25%] flex flex-col my-4">
         <Input
@@ -73,44 +72,31 @@ const Login = () => {
           required={false}
         />
 
-        <div className="my-2" />
-
-        <Input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          placeholder="Enter your password..."
-          title="Password"
-          required={false}
-        />
-      </div>
-
-      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex items-center justify-end">
-        <a
-          className="text-sm underline"
-          onClick={() => router.push("/forgot-password")}
-        >
-          Forgot Password?
-        </a>
+        {success && (
+          <p className="text-sm text-white">
+            We sent you a link to the entered email address, please check your
+            inbox! Make sure to check the Spam folder
+          </p>
+        )}
       </div>
 
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
-          title="Log In"
+          title="Reset your Password!"
           action={() => {}}
           size="large"
           isPrimary
           type="submit"
           isLoading={isLoading}
-          disabled={!email || !password}
+          disabled={!email}
         />
       </div>
 
       <div className="w-[60%] md:w-[35%] lg:w-[20%] my-2">
         <Button
-          title="Create new Account"
+          title="Go Back"
           action={() => {
-            router.push("/sign-up");
+            router.back();
           }}
           size="large"
           isPrimary={false}
@@ -122,4 +108,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

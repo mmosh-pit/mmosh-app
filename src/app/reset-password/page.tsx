@@ -3,13 +3,17 @@ import * as React from "react";
 import Image from "next/image";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 
-const Login = () => {
+const ResetPassword = () => {
   const router = useRouter();
 
-  const [email, setEmail] = React.useState("");
+  const searchParams = useSearchParams();
+
+  const search = searchParams.get("code");
+
+  const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -25,23 +29,30 @@ const Login = () => {
   const submit = React.useCallback(
     async (e: any) => {
       e.preventDefault();
+
+      if (passwordConfirmation !== password) return;
+
       setIsLoading(true);
       try {
-        await axios.post("/api/login", {
-          email,
+        await axios.post("/api/reset-password", {
           password,
+          code: search,
         });
-        router.replace("/");
+        router.replace("/login");
       } catch (_) {}
 
       setIsLoading(false);
     },
-    [email, password],
+    [passwordConfirmation, password],
   );
 
   React.useEffect(() => {
     checkIfIsAuthenticated();
   }, [router]);
+
+  if (!search) {
+    router.replace("/login");
+  }
 
   return (
     <form
@@ -61,65 +72,47 @@ const Login = () => {
         </p>
       </div>
 
-      <h6 className="my-4">Log In</h6>
+      <h6 className="my-4">Reset your Password</h6>
 
       <div className="w-[75%] md:w-[40%] lg:w-[25%] flex flex-col my-4">
         <Input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="text"
-          placeholder="Enter your email address..."
-          title="Email address"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          placeholder="Enter your new password..."
+          title="New Password"
           required={false}
         />
 
         <div className="my-2" />
 
         <Input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={passwordConfirmation}
+          onChange={(e) => setPasswordConfirmation(e.target.value)}
           type="password"
-          placeholder="Enter your password..."
-          title="Password"
+          placeholder="Confirm your Password"
+          title="Confirm your Password"
           required={false}
         />
       </div>
 
-      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex items-center justify-end">
-        <a
-          className="text-sm underline"
-          onClick={() => router.push("/forgot-password")}
-        >
-          Forgot Password?
-        </a>
-      </div>
-
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
-          title="Log In"
+          title="Reset your Password"
           action={() => {}}
           size="large"
           isPrimary
           type="submit"
           isLoading={isLoading}
-          disabled={!email || !password}
-        />
-      </div>
-
-      <div className="w-[60%] md:w-[35%] lg:w-[20%] my-2">
-        <Button
-          title="Create new Account"
-          action={() => {
-            router.push("/sign-up");
-          }}
-          size="large"
-          isPrimary={false}
-          isLoading={false}
-          disabled={isLoading}
+          disabled={
+            !passwordConfirmation ||
+            !password ||
+            passwordConfirmation !== password
+          }
         />
       </div>
     </form>
   );
 };
 
-export default Login;
+export default ResetPassword;

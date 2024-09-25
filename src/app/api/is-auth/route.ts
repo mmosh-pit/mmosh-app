@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   }
 
   const user = await collection.findOne({
-    sessions: session!.value,
+    sessions: session?.value,
   });
 
   return NextResponse.json(user !== null);

@@ -14,6 +14,8 @@ const SignUp = () => {
 
   const [form, setForm] = useAtom(storeFormAtom);
 
+  const [acceptedTerms, setAcceptedTerms] = React.useState(false);
+
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -119,6 +121,20 @@ const SignUp = () => {
         />
       </div>
 
+      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex items-center">
+        <input
+          id="my-drawer"
+          type="checkbox"
+          className="checkbox mr-2 checked:border-[#645EBE] [--chkbg:theme(#645EBE)]"
+          checked={acceptedTerms}
+          onChange={(e) => {
+            setAcceptedTerms(e.target.checked);
+          }}
+        />
+
+        <a className="text-sm underline">Agree to Terms</a>
+      </div>
+
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
           title="Sign Up"
@@ -127,7 +143,9 @@ const SignUp = () => {
           type="submit"
           isPrimary
           isLoading={isLoading}
-          disabled={!form.name || !form.email || !form.password || !form.confirmPassword}
+          disabled={
+            !form.name || !form.email || !form.password || !form.confirmPassword
+          }
         />
       </div>
 

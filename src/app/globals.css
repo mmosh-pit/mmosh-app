@@ -12,13 +12,11 @@ p {
 }
 
 a {
-  font-size: 0.8vmax;
   font-weight: bold;
 }
 
 span {
   color: #d7d7d7;
-  font-size: 0.8vmax;
 }
 
 h2 {
@@ -912,3 +910,5 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   /* background-repeat: repeat; */
   /* background-attachment: fixed; */
 }
+
+.connection-content {min-height: 56px;}

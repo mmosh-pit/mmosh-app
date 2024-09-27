@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter } from "next/navigation";
@@ -29,6 +29,7 @@ import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
 import { pageCommunity } from "../store/community";
+import Notification from "./Notification/Notification";
 
 const formatNumber = (value: number) => {
   const units = ["", "K", "M", "B", "T"];
@@ -65,9 +66,12 @@ const Header = () => {
   const [localText, setLocalText] = React.useState("");
   const isMobileScreen = useCheckMobileScreen();
 
+  const [badge, setBadge] = useState(0)
+  const [notifications, setNotifications] = useState([])
+
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8 ";
+      "w-full flex flex-col justify-center items-center py-6 px-8 z-10 ";
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
@@ -143,6 +147,10 @@ const Header = () => {
 
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       setCurrentUser(res.data);
+      
+      const notificationResult = await axios.get('api/notifications?wallet='+wallet?.publicKey.toBase58())
+      setBadge(notificationResult.data.unread)
+      setNotifications(notificationResult.data.data)
     } else {
       const res = await axios.get(
         `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
@@ -202,6 +210,12 @@ const Header = () => {
     }
   }, [wallet, incomingWalletToken]);
 
+  const resetNotification = async () => {
+    const notificationResult = await axios.put('api/notifications/update',{
+      wallet: wallet?.publicKey.toBase58()
+    })
+    setBadge(0)
+  }
   return (
     <header className="flex flex-col">
       <div className={getHeaderBackground()}>
@@ -306,6 +320,32 @@ const Header = () => {
           )}
 
           <div className="flex justify-end items-center w-[33%]">
+           {currentUser?.profilenft && (
+             <div className="dropdown pr-6">
+                <a className="text-base text-white cursor-pointer relative" tabIndex={0} href="javascript:void(0)" onClick={resetNotification}>
+                        <img src="/images/alert.png" alt="notification" className="max-w-4 w-4"/>
+                        {badge > 0 &&
+                          <span className="bg-[#FF0000] text-white w-6 h-6 rounded-full absolute text-center leading-6  right-[-11px] top-[-13px]">{badge}</span>
+                        }
+                </a>
+                {notifications &&
+                  <div className="dropdown-content z-[999999999] top-[72px]" tabIndex={0}>
+                    <div className="w-64 bg-black bg-opacity-[0.56] backdrop-blur-[2px] p-5 max-h-96 overflow-y-auto">
+                      {notifications.length > 0 &&
+                        <div>
+                          {notifications.map((value:any) => (
+                            <Notification data={value} key={value._id}  />
+                          ))}
+                        </div>
+                      } 
+                      {notifications.length == 0 &&
+                          <p className="text-base">You don't have any notification</p>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            )}
             {currentUser?.profile?.image && (
               <div
                 className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
@@ -354,7 +394,7 @@ const Header = () => {
 
       {pathname.includes("/create/communities/") && (
         <div
-          className={`relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : ""}`}
+          className={`relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"}`}
         >
           <div
             className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}

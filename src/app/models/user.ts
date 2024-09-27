@@ -16,6 +16,13 @@ type Profile = {
   seniority: number;
   descriptor: string;
   nouns: string;
+  following: number;
+  follower: number;
+  connectionnft: string;
+  connectionbadge: string
+  connection: number
+  isprivate: boolean
+  request: boolean
 };
 
 type Telegram = {

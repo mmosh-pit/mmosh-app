@@ -21,7 +21,7 @@ import Config from "./web3Config.json";
 import { BaseMpl } from "./base/baseMpl";
 import { web3Consts } from "./web3Consts";
 import { AuthorityType, MINT_SIZE, createInitializeMintInstruction, createMintToInstruction, createSetAuthorityInstruction, createSyncNativeInstruction, getAssociatedTokenAddress, getAssociatedTokenAddressSync, getMinimumBalanceForRentExemptAccount, mintTo, unpackAccount } from "forge-spl-token";
-import { Metaplex, Metadata as MetadataM } from "@metaplex-foundation/js";
+import { Metaplex, Metadata as MetadataM, token } from "@metaplex-foundation/js";
 import { BaseSpl } from "./base/baseSpl";
 import axios from "axios";
 
@@ -1585,7 +1585,6 @@ export class Connectivity {
           project: this.projectId,
           minter: user,
           receiverAta,
-          //NOTE: Profile minting cost distributaion account
           systemProgram,
           associatedTokenProgram,
         })
@@ -1616,6 +1615,53 @@ export class Connectivity {
       log({ error });
       return { Err: error };
     }
+  }
+
+  async transferBadge(input: _MintSubscriptionToken) {
+    try {
+      let receiver = input.receiver
+      if (typeof receiver == "string") receiver = new web3.PublicKey(receiver);
+  
+      if (!receiver) {
+         return { Err: "receiver not available" };
+      }
+  
+      let subscriptionToken:any = input.subscriptionToken;
+      if (typeof subscriptionToken == "string")
+        subscriptionToken = new web3.PublicKey(subscriptionToken);
+  
+      let receivedIXs:any =  await this.baseSpl.transfer_token_modified({ mint: subscriptionToken, sender: this.provider.publicKey, receiver: receiver, init_if_needed: true, amount: 1 })
+      for (let index = 0; index < receivedIXs.length; index++) {
+         this.txis.push(receivedIXs[index]);
+      }
+      const tx = new web3.Transaction().add(...this.txis);
+  
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+  
+      const feeEstimate = await this.getPriorityFeeEstimate(tx);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      tx.add(feeIns);
+  
+      this.txis = [];
+      const signature = await this.provider.sendAndConfirm(tx);
+      return { Ok: { signature, info: {} } };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+
   }
 
   async mintBadge(
@@ -2039,6 +2085,20 @@ export class Connectivity {
         .findAllByMintList({ mints: mintKeys });
     }
     return mintList;
+  }
+
+  async getUserBalance(tokenData: any) {
+    try {
+      const user = tokenData.address;
+      if (!user) throw "Wallet not found";
+      const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.token), user);
+      const infoes = await this.connection.getTokenAccountBalance(userOposAta);
+      console.log("infoes ", infoes)
+      return infoes.value.uiAmount
+    } catch (error) {
+      console.log("getUserBalance ",error)
+      return 0
+    }
   }
 
   async getProfileMetadataByCommunity(uri: string) {

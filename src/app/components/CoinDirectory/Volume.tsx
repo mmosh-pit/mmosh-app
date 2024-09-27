@@ -45,8 +45,10 @@ const Volume = ({ bonding, height, withFilters }: Props) => {
           <h6 className="my-2">${total}</h6>
           <p className="text-tiny">Past Month</p>
         </div>
-
-        {withFilters && <DateTypeSelector type={type} setType={setType} />}
+        <div className="mt-4 mr-4">
+           {withFilters && <DateTypeSelector type={type} setType={setType} />}
+        </div>
+     
       </div>
       <ResponsiveContainer width="100%" height={height || 200}>
         <BarChart

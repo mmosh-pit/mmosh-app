@@ -49,26 +49,28 @@ const Graphics = ({ coin, base }: Props) => {
   }, [coin, selectedGraphicType]);
 
   return (
-    <div className="w-full flex flex-col bg-[#040241] rounded-xl py-1 px-6 md:mr-4">
-      <div className="w-full flex justify-end mt-4 px-12">
-        <div className="flex items-center self-end">
-          <div className="dropdown rounded-lg py-1 ml-4 mr-6">
-            <div tabIndex={0} role="button" className="btn m-1">
-              <p className="text-base">{selectedGraphicType.label}</p>
+    <div className="w-full flex flex-col bg-[#040241] rounded-xl py-1 px-6 md:mr-4 relative">
+      <div className="absolute right-4 top-0">
+        <div className="w-full flex justify-end mt-4">
+          <div className="flex items-center self-end">
+            <div className="dropdown rounded-lg py-1 ml-4 mr-6">
+              <div tabIndex={0} role="button" className="btn m-1">
+                <p className="text-base">{selectedGraphicType.label}</p>
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                {typeOptions.map((value) => (
+                  <li onClick={() => setSelectedGraphicType(value)}>
+                    <p className="text-base">{value.label}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              {typeOptions.map((value) => (
-                <li onClick={() => setSelectedGraphicType(value)}>
-                  <p className="text-base">{value.label}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          <DateTypeSelector type={type} setType={setType} />
+            <DateTypeSelector type={type} setType={setType} />
+          </div>
         </div>
       </div>
       {renderGraphicType()}

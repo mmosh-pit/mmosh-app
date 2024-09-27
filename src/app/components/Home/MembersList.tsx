@@ -5,8 +5,9 @@ import { useAtom } from "jotai";
 import { User } from "@/app/models/user";
 import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 import MemberCard from "./MemberCard";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
-const MembersList = () => {
+const MembersList = (props:any) => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(typedSearchValue);
 
@@ -17,6 +18,8 @@ const MembersList = () => {
   const allUsers = React.useRef<User[]>([]);
   const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
+  const wallet = useAnchorWallet();
+  const connection = useConnection();
 
   const getUsers = React.useCallback(async () => {
     if (
@@ -25,8 +28,13 @@ const MembersList = () => {
     ) {
       fetching.current = true;
       setIsLoading(true);
+      let url = `/api/get-all-users?skip=${currentPage * 10}&searchText=${searchText}`
+      if(wallet) {
+        url = url + "&requester=" + wallet.publicKey.toBase58()
+      }
+
       const result = await axios.get(
-        `/api/get-all-users?skip=${currentPage * 10}&searchText=${searchText}`,
+        url,
       );
 
       if (result.data.users.length === 0) {
@@ -43,7 +51,7 @@ const MembersList = () => {
     } else {
       setUsers([]);
     }
-  }, [searchText, selectedFilters, currentPage]);
+  }, [searchText, selectedFilters, currentPage, wallet]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -58,8 +66,11 @@ const MembersList = () => {
 
   React.useEffect(() => {
     if (fetching.current) return;
-    getUsers();
-  }, [searchText, currentPage]);
+    if(wallet) {
+      getUsers();
+    }
+   
+  }, [searchText, currentPage, wallet]);
 
   if (isLoading) return <></>;
 
@@ -82,7 +93,7 @@ const MembersList = () => {
         onScroll={handleScroll}
       >
         {users.map((user) => (
-          <MemberCard user={user} />
+          <MemberCard user={user} wallet={wallet} currentuser={props.currentuser} connection={connection.connection} />
         ))}
       </div>
     </div>

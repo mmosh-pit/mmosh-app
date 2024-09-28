@@ -5,9 +5,13 @@ import SearchIcon from "@/assets/icons/SearchIcon";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import {
   coinTextSearch,
+  pair,
   selectedUSDCCoin,
   selectedVolume,
 } from "@/app/store/coins";
+import HomeMenuIcon from "@/assets/icons/HomeMenu";
+import { selectedCoinsMode } from "@/app/store/home";
+import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 
 const volumeOptions = [
   {
@@ -32,6 +36,8 @@ const volumeOptions = [
   },
 ];
 
+const tradingPairOptions = ["All", "PTVB", "PTVR"];
+
 const SearchBar = () => {
   const isMobile = useCheckMobileScreen();
   const [localText, setLocalText] = React.useState("");
@@ -39,6 +45,8 @@ const SearchBar = () => {
   const [_, setSearchText] = useAtom(coinTextSearch);
   const [isUSDCSelected, setIsUSDCSelected] = useAtom(selectedUSDCCoin);
   const [volume, setVolume] = useAtom(selectedVolume);
+  const [tradingPair, setTradingPair] = useAtom(pair);
+  const [coinsMode, setCoinsMode] = useAtom(selectedCoinsMode);
 
   const executeSearch = () => {
     setSearchText(localText);
@@ -72,6 +80,15 @@ const SearchBar = () => {
       </div>
 
       <div className="w-[50%] md:w-[33%] flex items-center justify-end">
+        <button
+          onClick={() => {
+            setCoinsMode(coinsMode === "list" ? "card" : "list");
+          }}
+          className="mr-8"
+        >
+          {coinsMode === "list" ? <HomeMenuIcon /> : <HamburgerIcon />}
+        </button>
+
         <div className="flex items-center mr-8">
           <p className="text-sm">MMOSH</p>
           <input
@@ -85,7 +102,23 @@ const SearchBar = () => {
 
         <div className="dropdown rounded-lg py-1 mr-8">
           <div tabIndex={0} role="button" className="btn m-1">
-            {volume.label}
+            <p className="text-base text-white">Trading Pair • {tradingPair}</p>
+          </div>
+          <ul
+            tabIndex={0}
+            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            {tradingPairOptions.map((value) => (
+              <li onClick={() => setTradingPair(value)}>
+                <p className="text-base text-white">{value}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="dropdown rounded-lg py-1 mr-8">
+          <div tabIndex={0} role="button" className="btn m-1">
+            <p className="text-base text-white">{volume.label}</p>
           </div>
           <ul
             tabIndex={0}
@@ -93,7 +126,7 @@ const SearchBar = () => {
           >
             {volumeOptions.map((value) => (
               <li onClick={() => setVolume(value)}>
-                <p>{value.label}</p>
+                <p className="text-base text-white">{value.label}</p>
               </li>
             ))}
           </ul>

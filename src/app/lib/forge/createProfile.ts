@@ -183,8 +183,6 @@ export const createProfile = async ({
 
     const shadowHash: any = await pinFileToShadowDrive(body);
 
-    console.log("Resulting shadow hash: ", shadowHash);
-
     if (shadowHash === "") {
       return {
         message:

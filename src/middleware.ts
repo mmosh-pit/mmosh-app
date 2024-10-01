@@ -6,7 +6,8 @@ export default async function middleware(req: NextRequest) {
     req.method !== "GET" &&
     !req.url.includes("signup") &&
     !req.url.includes("request-verification") &&
-    !req.url.includes("login")
+    !req.url.includes("login") &&
+    !req.url.includes("onramp-session")
   ) {
     const cookie = cookies().get("session")?.value;
 

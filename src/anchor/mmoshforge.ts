@@ -1403,6 +1403,67 @@ export type Mmoshforge = {
       ];
     },
     {
+      "name": "updateProfile",
+      "discriminator": [
+        98,
+        67,
+        99,
+        206,
+        86,
+        115,
+        175,
+        1
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mplProgram"
+        },
+        {
+          "name": "tokenProgram"
+        },
+        {
+          "name": "associatedTokenProgram"
+        },
+        {
+          "name": "systemProgram"
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "mainState",
+          "writable": true
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "sysvarInstructions"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uriHash",
+          "type": "string"
+        }
+      ]
+    },
+    {
       name: "mintProfileByAt";
       discriminator: [100, 237, 109, 44, 36, 6, 29, 147];
       accounts: [
@@ -4693,6 +4754,67 @@ export const IDL: Mmoshforge = {
           type: "string",
         },
       ],
+    },
+    {
+      "name": "updateProfile",
+      "discriminator": [
+        98,
+        67,
+        99,
+        206,
+        86,
+        115,
+        175,
+        1
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "mplProgram"
+        },
+        {
+          "name": "tokenProgram"
+        },
+        {
+          "name": "associatedTokenProgram"
+        },
+        {
+          "name": "systemProgram"
+        },
+        {
+          "name": "mint",
+          "writable": true
+        },
+        {
+          "name": "mainState",
+          "writable": true
+        },
+        {
+          "name": "metadata",
+          "writable": true
+        },
+        {
+          "name": "sysvarInstructions"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uriHash",
+          "type": "string"
+        }
+      ]
     },
     {
       name: "mintProfileByAt",

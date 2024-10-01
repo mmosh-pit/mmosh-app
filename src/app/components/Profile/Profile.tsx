@@ -30,9 +30,11 @@ import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import InBoundHeart from "./InBoundHeart";
+import EditIcon from "@/assets/icons/EditIcon";
 
 const Profile = ({ username }: { username: any }) => {
   const isMobile = useCheckMobileScreen();
+  const router = useRouter();
   const rendered = React.useRef(false);
   const wallet = useAnchorWallet();
   const [isOnSettings] = useAtom(settings);
@@ -438,6 +440,11 @@ const Profile = ({ username }: { username: any }) => {
                             <span className="cursor-pointer relative top-[-4px]" onClick={sendConnectionRequest}><InBoundHeart /></span>
                         }
                         
+                      </>
+                    }
+                    {(wallet && (wallet.publicKey.toBase58() == userData.wallet) && currentUser.profilenft && !loader)  && 
+                      <>
+                        <span className="cursor-pointer ml-1 mt-1" onClick={()=>{router.push("/create/edit-profile")}}><EditIcon /></span>
                       </>
                     }
                     </>

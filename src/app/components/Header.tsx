@@ -123,9 +123,8 @@ const Header = () => {
 
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       setCurrentUser(res.data);
-
       const notificationResult = await axios.get(
-        "api/notifications?wallet=" + wallet?.publicKey.toBase58(),
+        "/api/notifications?wallet=" + wallet?.publicKey.toBase58(),
       );
       setBadge(notificationResult.data.unread);
       setNotifications(notificationResult.data.data);

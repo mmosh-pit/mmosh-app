@@ -26,7 +26,7 @@ import {
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/lib/uploadFileToShdwDrive";
+import { pinFileToShadowDrive, pinFileToShadowDriveBackend } from "@/app/lib/uploadFileToShdwDrive";
 
 
   const headers = createActionHeaders();
@@ -293,7 +293,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveWithFileName } from "@/app/li
       }
 
 
-      const passMetaURI: any = await pinFileToShadowDriveWithFileName(metaBody, body.account + "_"+type);
+      const passMetaURI: any = await pinFileToShadowDriveBackend(metaBody, body.account + "_"+type);
 
       if(passMetaURI==="") {
         let actionError: ActionError = { message: "Creating metadata failed" };

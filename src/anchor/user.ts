@@ -17,7 +17,7 @@ import { BaseMpl } from "./base/baseMpl";
 import { web3Consts } from "./web3Consts";
 import { getAssociatedTokenAddressSync, unpackAccount } from "forge-spl-token";
 import { Metaplex } from "@metaplex-foundation/js";
-import { BaseSpl } from "./base/baseSpl";
+import { BaseSpl, UpdateToken } from "./base/baseSpl";
 import axios from "axios";
 
 const {
@@ -1501,5 +1501,56 @@ export class Connectivity {
         currentGenesisProfileHolder,
       ),
     };
+  }
+
+  async updateToken(input: UpdateToken): Promise<Result<TxPassType<any>, any>> {
+    try {
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      const profileMetadata = BaseMpl.getMetadataAccount(input.mint);
+      const ix = await this.program.methods
+        .updateProfile(input.name, input.symbol, input.uri)
+        .accounts({
+          user,
+          mplProgram, // 8
+          tokenProgram,
+          associatedTokenProgram,
+          systemProgram,
+          mint: input.mint,
+          mainState: this.mainState, // 6
+          metadata: profileMetadata,
+          sysvarInstructions
+        })
+        .instruction();
+      this.txis.push(ix)
+      const tx = new web3.Transaction().add(...this.txis);
+  
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+  
+      const feeEstimate = await this.getPriorityFeeEstimate(tx);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      tx.add(feeIns);
+  
+      this.txis = [];
+      const signature = await this.provider.sendAndConfirm(tx);
+      return { Ok: { signature, info: {} } };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+
   }
 }

@@ -17,8 +17,17 @@ const SignUp = () => {
   const [acceptedTerms, setAcceptedTerms] = React.useState(false);
 
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
+  const [emailError, setEmailError] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      );
+  };
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await axios.get("/api/is-auth");
@@ -36,10 +45,15 @@ const SignUp = () => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password) return;
 
+    if (!validateEmail(form.email)) {
+      setEmailError(true);
+    }
+
     if (form.password !== form.confirmPassword) {
       setConfirmPasswordError(true);
       return;
     }
+    setEmailError(false);
     setConfirmPasswordError(false);
     setIsLoading(true);
 
@@ -90,6 +104,8 @@ const SignUp = () => {
           type="text"
           placeholder="Enter your email address..."
           title="Email address"
+          error={emailError}
+          helperText={emailError ? "Invalid Email Address" : ""}
           required={false}
         />
 

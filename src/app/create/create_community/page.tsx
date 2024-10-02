@@ -4,13 +4,14 @@ import axios from "axios";
 import { useAtom } from "jotai";
 
 import { isDrawerOpen, userWeb3Info, web3InfoLoading } from "@/app/store";
-import Step1 from "@/app/components/Forge/Communities/Step1";
-import Step2 from "@/app/components/Forge/Communities/Step2";
-import Step3 from "@/app/components/Forge/Communities/Step3";
-import Step4 from "@/app/components/Forge/Communities/Step4";
+// import Step1 from "@/app/components/Forge/Communities/Step1";
+// import Step2 from "@/app/components/Forge/Communities/Step2";
+// import Step3 from "@/app/components/Forge/Communities/Step3";
+// import Step4 from "@/app/components/Forge/Communities/Step4";
 import { step, step1Form, step2Form, step3Form } from "@/app/store/community";
+import CreateCommunity from "@/app/components/Forge/Communities/CreateCommunity";
 
-const componentsList = [<Step1 />, <Step2 />, <Step3 />, <Step4 />];
+// const componentsList = [<Step1 />, <Step2 />, <Step3 />, <Step4 />];
 
 const StartACommunity = () => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -88,7 +89,8 @@ const StartACommunity = () => {
   };
 
   const renderComponent = React.useCallback(() => {
-    return componentsList[currentStep];
+    // return componentsList[currentStep];
+    return <CreateCommunity />;
   }, [currentStep]);
 
   React.useEffect(() => {

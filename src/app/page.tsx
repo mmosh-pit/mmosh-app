@@ -3,7 +3,7 @@
 import * as React from "react";
 import axios from "axios";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
 
 import {

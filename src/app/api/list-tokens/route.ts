@@ -1,19 +1,13 @@
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
-const defaultCoin = {
-  name: "MMOSH: The Stoked Token",
-  symbol: "MMOSH",
-  address: "",
-  image: "",
-  bonding: "",
-};
-
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
 
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("search") as string;
+
+  console.log("Searching with param: ", param);
 
   if (param != "") {
     let search = {

@@ -4,12 +4,14 @@ import Image from "next/image";
 import Button from "../../components/common/Button";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
-import { storeFormAtom } from "@/app/store/signup";
+import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 
 const Code = () => {
   const router = useRouter();
 
   const [form, setForm] = useAtom(storeFormAtom);
+
+  const [referAddress] = useAtom(incomingReferAddress);
 
   React.useEffect(() => {
     if (!form.name) {
@@ -27,12 +29,15 @@ const Code = () => {
             layout="fill"
           />
         </div>
-        <p className="text-base mt-4"></p>
+        <p className="text-base mt-4">
+          Is a Web3 Social Network on Telegram. Activate the MMOSH Bot on
+          Telegram to continue.
+        </p>
       </div>
 
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
-          title="Link"
+          title="Activate Liquid Hearts Bot"
           action={() => {
             setForm({
               name: "",
@@ -41,7 +46,7 @@ const Code = () => {
               confirmPassword: "",
             });
             window.open(
-              `https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}`,
+              `https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}?start=${referAddress}`,
               "_newtab",
             );
             router.replace("/");

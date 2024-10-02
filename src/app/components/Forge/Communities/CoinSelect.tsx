@@ -63,7 +63,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
   return (
     <>
       <div
-        className="flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-black bg-opacity-[0.07] cursor-pointer border-[1px] border-[#FFFFFF20] rounded-lg px-2 mx-1"
+        className="flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-black bg-opacity-[0.07] cursor-pointer border-[1px] border-[#FFFFFF30] rounded-lg px-2 mx-1"
         onClick={() => {
           return (document.getElementById("coin_modal") as any)?.showModal();
         }}
@@ -84,10 +84,8 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
             <SimpleArrowDown />
           </>
         ) : (
-          <div className="w-full flex items-center justify-between">
-            <p className="text-base text-gray-500">Coins</p>
-
-            <SimpleArrowDown />
+          <div className="w-full flex items-center justify-center">
+            <p className="text-base text-gray-500">Set the Coin</p>
           </div>
         )}
       </div>

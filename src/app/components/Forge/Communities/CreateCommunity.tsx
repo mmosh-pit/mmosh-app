@@ -10,6 +10,9 @@ import AddIcon from "@/assets/icons/AddIcon";
 import MinusIcon from "@/assets/icons/MinusIcon";
 import { SwapCoin } from "@/app/models/swapCoin";
 import CoinSelect from "./CoinSelect";
+import axios from "axios";
+import { generateGroupCommunityPass } from "@/app/lib/forge/generateGroupCommunityPass";
+import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
 
 const CreateCommunity = () => {
   const router = useRouter();
@@ -30,8 +33,20 @@ const CreateCommunity = () => {
     ],
   });
 
-  const createCommunity = () => {
+  const createCommunity = async () => {
+    if (!selectedCoin) return;
     setIsLoading(true);
+
+    const communityPassImage = await generateGroupCommunityPass(
+      selectedCoin!.image,
+    );
+
+    const imageUri = await uploadImageFromBlob(communityPassImage);
+
+    await axios.post("/api/create-group-community", {
+      ...form,
+      passImage: imageUri,
+    });
 
     setIsLoading(false);
   };

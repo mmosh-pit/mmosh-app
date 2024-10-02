@@ -6,4 +6,4 @@ const client = new MongoClient(uri);
 
 client.connect();
 
-export const db = client.db("live_forge");
+export const db = client.db(process.env.DATABASE_NAME!);

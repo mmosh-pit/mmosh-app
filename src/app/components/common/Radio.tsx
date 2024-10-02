@@ -2,7 +2,8 @@ type Props = {
   checked: boolean;
   onChoose: () => void;
   title: string;
-  name: string;
+  name?: string;
+  disabled?: boolean;
 };
 
 const Radio = ({ checked, onChoose, title, name }: Props) => (

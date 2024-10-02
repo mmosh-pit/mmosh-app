@@ -26,7 +26,7 @@ const customStyles = {
     backgroundColor: "#180E4F",
     minWidth: "300px",
     maxWidth: "500px",
-    width: "100%"
+    width: "100%",
   },
 };
 
@@ -76,8 +76,8 @@ export default function ProjectCreateStep1({
       address: "",
       image: "",
       symbol: "",
-      decimals: 0
-    }
+      decimals: 0,
+    },
   });
 
   const [invitationTypes, setInvitationTypes] = React.useState([
@@ -109,7 +109,7 @@ export default function ProjectCreateStep1({
   }, [fields]);
 
   const onRadioChange = (value: any) => {
-    console.log("radio change ", value)
+    console.log("radio change ", value);
     setFields({ ...fields, isExternalCoin: value });
   };
 
@@ -146,7 +146,7 @@ export default function ProjectCreateStep1({
       invitationPrice: invitationPrice,
       discount: fields.discount,
       isExternalCoin: fields.isExternalCoin,
-      externalCoin: fields.externalCoin
+      externalCoin: fields.externalCoin,
     });
   };
 
@@ -179,7 +179,7 @@ export default function ProjectCreateStep1({
 
   const validateFields = (isMessage: boolean) => {
     if (fields.name.length == 0) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage("Name is required", "danger-container");
       }
 
@@ -187,7 +187,7 @@ export default function ProjectCreateStep1({
     }
 
     if (fields.name.length > 50) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage(
           "Name should have less than 50 characters",
           "danger-container",
@@ -197,14 +197,14 @@ export default function ProjectCreateStep1({
     }
 
     if (fields.symbol.length == 0) {
-      if(isMessage) {
-         createMessage("Symbol is required", "danger-container");
+      if (isMessage) {
+        createMessage("Symbol is required", "danger-container");
       }
       return false;
     }
 
     if (fields.symbol.length > 10) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage(
           "Symbol should have less than 10 characters",
           "danger-container",
@@ -214,14 +214,14 @@ export default function ProjectCreateStep1({
     }
 
     if (fields.desc.length == 0) {
-      if(isMessage) {
-         createMessage("Description is required", "danger-container");
+      if (isMessage) {
+        createMessage("Description is required", "danger-container");
       }
       return false;
     }
 
     if (fields.desc.length > 160) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage(
           "Description should have less than 160 characters",
           "danger-container",
@@ -231,14 +231,14 @@ export default function ProjectCreateStep1({
     }
 
     if (fields.image.preview.length == 0) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage("Project pass Image is required", "danger-container");
       }
       return false;
     }
 
     if (fields.website.length > 0 && !isValidHttpUrl(fields.website)) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage("Invalid website url", "danger-container");
       }
       return false;
@@ -249,7 +249,7 @@ export default function ProjectCreateStep1({
       fields.invitationType == "optional"
     ) {
       if (fields.invitationPrice == 0) {
-        if(isMessage) {
+        if (isMessage) {
           createMessage("Invitation price not mentioned", "danger-container");
         }
         return false;
@@ -258,7 +258,7 @@ export default function ProjectCreateStep1({
 
     if (fields.invitationType == "optional") {
       if (fields.discount == 0) {
-        if(isMessage) {
+        if (isMessage) {
           createMessage("Discount not mentioned", "danger-container");
         }
         return false;
@@ -267,22 +267,19 @@ export default function ProjectCreateStep1({
 
     if (fields.isExternalCoin === true) {
       if (fields.externalCoin.address === "") {
-        if(isMessage) {
+        if (isMessage) {
           createMessage("Coin not choosed", "danger-container");
         }
         return false;
       }
     }
 
-
     if (getTotalPercentage() != 100) {
-      if(isMessage) {
+      if (isMessage) {
         createMessage("Price distribution is not 100%", "danger-container");
       }
       return false;
     }
-
-    
 
     return true;
   };
@@ -304,7 +301,7 @@ export default function ProjectCreateStep1({
       );
       if (result.data) {
         createMessage("Symbol already exist", "danger-container");
-        return
+        return;
       }
       if (!isValidHttpUrl(fields.image.preview)) {
         let imageFile = await fetch(fields.image.preview)
@@ -337,56 +334,66 @@ export default function ProjectCreateStep1({
   };
 
   const openJupiterCoins = () => {
-    setIsOpen(true)
+    setIsOpen(true);
     getCoinsFromJupiter();
-  }
+  };
 
-  const getCoinsFromJupiter = async() => {
+  const getCoinsFromJupiter = async () => {
     try {
-      setCoinLoader(true)
-      const result = await axios.get("https://token.jup.ag/strict")
-      setCoinAllList(result.data)
-      setCoinList(result.data)
-      setCoinLoader(false)
+      setCoinLoader(true);
+      const result = await axios.get("https://token.jup.ag/strict");
+      setCoinAllList(result.data);
+      setCoinList(result.data);
+      setCoinLoader(false);
     } catch (error) {
-      setCoinLoader(false)
-      setCoinList([])
-      setCoinAllList([])
+      setCoinLoader(false);
+      setCoinList([]);
+      setCoinAllList([]);
     }
-  }  
+  };
 
   const closeModal = () => {
-    setIsOpen(false)
-    setKeyword("")
-    setCoinList([])
-    setCoinAllList([])
-  }
+    setIsOpen(false);
+    setKeyword("");
+    setCoinList([]);
+    setCoinAllList([]);
+  };
 
-  const onCoinSearch = (event:any) => {
-    setKeyword(event.target.value)
-    console.log(event.target.value)
-    if(event.target.value.trim().length == 0) {
-      setCoinList(coinAllList)
+  const onCoinSearch = (event: any) => {
+    setKeyword(event.target.value);
+    console.log(event.target.value);
+    if (event.target.value.trim().length == 0) {
+      setCoinList(coinAllList);
     } else {
-      let newCoinList = coinAllList.filter((item: any) =>
-        item.name.toLowerCase().includes(event.target.value.trim().toLowerCase()) || item.symbol.toLowerCase().includes(event.target.value.trim().toLowerCase()) || item.symbol.toLowerCase().includes(event.target.value.trim().toLowerCase()),
+      let newCoinList = coinAllList.filter(
+        (item: any) =>
+          item.name
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()) ||
+          item.symbol
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()) ||
+          item.symbol
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()),
       );
-      setCoinList(newCoinList)
+      setCoinList(newCoinList);
     }
+  };
 
-  }
-
-  const onTokenSelect = (token:any) => {
-      setFields({ ...fields, externalCoin: {
+  const onTokenSelect = (token: any) => {
+    setFields({
+      ...fields,
+      externalCoin: {
         name: token.name,
         address: token.address,
         image: token.logoURI,
         symbol: token.symbol,
-        decimals: token.decimals
-      }})
-      closeModal()
-  }
-
+        decimals: token.decimals,
+      },
+    });
+    closeModal();
+  };
 
   return (
     <>
@@ -477,9 +484,9 @@ export default function ProjectCreateStep1({
             </div>
             <div className="xl:col-span-2">
               <div className="form-element pt-2.5">
-              <div className="grid grid-cols-12 gap-4">
-                <div className="form-element col-span-9">
-                  <Input
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="form-element col-span-9">
+                    <Input
                       type="text"
                       title="Project Pass Price"
                       required
@@ -495,9 +502,11 @@ export default function ProjectCreateStep1({
                         })
                       }
                     />
+                  </div>
+                  <div className="col-span-3 mt-7 text-white text-header-small-font-size">
+                    USD
+                  </div>
                 </div>
-                <div className="col-span-3 mt-7 text-white text-header-small-font-size">USD</div>
-              </div>
               </div>
               <div className="form-element pt-2.5">
                 <Input
@@ -538,38 +547,48 @@ export default function ProjectCreateStep1({
                   }
                 />
               </div>
-              {fields.isExternalCoin &&
-                  <div className="form-element pt-2.5">
-                    <p className="text-xs text-whilte">
-                        Select Coin
-                    </p>
+              {fields.isExternalCoin && (
+                <div className="form-element pt-2.5">
+                  <p className="text-xs text-whilte">Select Coin</p>
 
-                      <p className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer" onClick={openJupiterCoins}>
-                          {fields.externalCoin.name !=="" &&
-                            <>
-                              <span>{fields.externalCoin.name}</span>
-                            </>
-                          }
-                          {fields.externalCoin.name ==="" &&
-                                <span className="text-white text-opacity-[0.3]"> Select Coin</span>
-                          }
-                          <label className="mr-2.5"><ArrowDown /></label>
-                      </p>
-                  </div>
-              }
+                  <p
+                    className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer"
+                    onClick={openJupiterCoins}
+                  >
+                    {fields.externalCoin.name !== "" && (
+                      <>
+                        <span>{fields.externalCoin.name}</span>
+                      </>
+                    )}
+                    {fields.externalCoin.name === "" && (
+                      <span className="text-white text-opacity-[0.3]">
+                        {" "}
+                        Select Coin
+                      </span>
+                    )}
+                    <label className="mr-2.5">
+                      <ArrowDown />
+                    </label>
+                  </p>
+                </div>
+              )}
 
               <div className="flex pt-2.5">
                 <Radio
                   title="Create a new Community Coin"
                   checked={!fields.isExternalCoin}
-                  onChoose={()=>{onRadioChange(false)}}
+                  onChoose={() => {
+                    onRadioChange(false);
+                  }}
                   disabled={false}
                 />
                 <div className="relative">
                   <Radio
                     title="Use an Existing Coin"
                     checked={fields.isExternalCoin}
-                    onChoose={()=>{onRadioChange(true)}}
+                    onChoose={() => {
+                      onRadioChange(true);
+                    }}
                     disabled={false}
                   />
                 </div>
@@ -831,56 +850,60 @@ export default function ProjectCreateStep1({
         </div>
       </div>
       <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          style={customStyles}
-        >
-          <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">Coin List </h2>
-          <div>
-            {!coinLoader &&
-              <>
-                <div className="search-container">
-                  <label
-                    className={
-                      "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
-                    }
-                  >
-                    <div className="p-2">
-                      <SearchIcon />
-                    </div>
-                    <input
-                      type="text"
-                      className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
-                      placeholder="Search by Coin Name"
-                      value={keyword}
-                      onChange={onCoinSearch}
-                    />
-                  </label>
-                </div>
-                <div className="overflow-y-auto" style={{maxHeight: window.innerHeight * 0.7 + "px"}}>
-                   {coinList.map((coinItem: any) => (
-                      <TokenCard data={coinItem} onChoose={onTokenSelect} />
-                   ))}
-                </div>
-              </>
-            }
-
-            {coinLoader &&
-              <div className="flex justify-center">
-                <Bars
-                  height="80"
-                  width="80"
-                  color="rgba(255, 0, 199, 1)"
-                  ariaLabel="bars-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="bars-loading"
-                  visible={true}
-                />
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+      >
+        <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">
+          Coin List{" "}
+        </h2>
+        <div>
+          {!coinLoader && (
+            <>
+              <div className="search-container">
+                <label
+                  className={
+                    "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
+                  }
+                >
+                  <div className="p-2">
+                    <SearchIcon />
+                  </div>
+                  <input
+                    type="text"
+                    className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
+                    placeholder="Search by Coin Name"
+                    value={keyword}
+                    onChange={onCoinSearch}
+                  />
+                </label>
               </div>
-            }
+              <div
+                className="overflow-y-auto"
+                style={{ maxHeight: window.innerHeight * 0.7 + "px" }}
+              >
+                {coinList.map((coinItem: any) => (
+                  <TokenCard data={coinItem} onChoose={onTokenSelect} />
+                ))}
+              </div>
+            </>
+          )}
 
-          </div>
-        </Modal>
+          {coinLoader && (
+            <div className="flex justify-center">
+              <Bars
+                height="80"
+                width="80"
+                color="rgba(255, 0, 199, 1)"
+                ariaLabel="bars-loading"
+                wrapperStyle={{}}
+                wrapperClass="bars-loading"
+                visible={true}
+              />
+            </div>
+          )}
+        </div>
+      </Modal>
     </>
   );
 }

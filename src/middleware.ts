@@ -9,7 +9,10 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("login") &&
     !req.url.includes("onramp-session")
   ) {
+    console.log("Going to authorize");
     const cookie = cookies().get("session")?.value;
+
+    console.log("We have cookie");
 
     if (!cookie) {
       return NextResponse.json("", { status: 401 });
@@ -19,14 +22,17 @@ export default async function middleware(req: NextRequest) {
       `${process.env.NEXT_PUBLIC_APP_MAIN_URL}/api/is-auth`,
       {
         method: "GET",
+        credentials: "include",
         headers: {
           // Forward cookie to Route Handler
-          cookie: cookie,
+          cookie: `session=${cookie}`,
         },
       },
     );
 
     const data = await response.json();
+
+    console.log("We've got a response here: ", data);
 
     if (!data) {
       return NextResponse.json("", { status: 401 });

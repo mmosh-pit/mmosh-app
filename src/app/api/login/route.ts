@@ -36,7 +36,9 @@ export async function POST(req: NextRequest) {
   await collection.updateOne(
     { _id: user!._id },
     {
-      sessions: [...(user!.sessions ?? []), session],
+      $set: {
+        sessions: [...(user!.sessions ?? []), session],
+      },
     },
   );
 

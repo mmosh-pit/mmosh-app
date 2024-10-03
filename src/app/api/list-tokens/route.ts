@@ -7,8 +7,6 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("search") as string;
 
-  console.log("Searching with param: ", param);
-
   if (param != "") {
     let search = {
       $or: [

@@ -13,6 +13,8 @@ import {
   UserStatus,
   data,
   incomingWallet,
+  isAuth,
+  isAuthOverlayOpen,
   isDrawerOpen,
   settings,
   status,
@@ -39,6 +41,8 @@ const Header = () => {
   const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
+  const [____, setIsUserAuthenticated] = useAtom(isAuth);
+  const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [userStatus] = useAtom(status);
   const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
@@ -165,6 +169,7 @@ const Header = () => {
     } else {
       setIsLoadingProfile(false);
     }
+    checkIfIsAuthenticated();
   }, [wallet]);
 
   React.useEffect(() => {
@@ -191,6 +196,13 @@ const Header = () => {
     });
     setBadge(0);
   };
+
+  const checkIfIsAuthenticated = React.useCallback(async () => {
+    const result = await axios.get("/api/is-auth");
+
+    setShowAuthOverlay(!result.data);
+    setIsUserAuthenticated(!result.data);
+  }, []);
 
   return (
     <header className="flex flex-col">

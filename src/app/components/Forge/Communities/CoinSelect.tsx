@@ -10,7 +10,6 @@ import Search from "../../common/Search";
 import RecentCoin from "../../common/RecentCoin";
 import CoinListItem from "../../common/CoinListItem";
 import { SwapCoin } from "@/app/models/swapCoin";
-import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import CloseIcon from "@/assets/icons/CloseIcon";
 
 type Props = {
@@ -29,6 +28,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
   const [searchText, setSearchText] = React.useState("");
 
   const getRecentCoins = React.useCallback(async () => {
+    if (!profileInfo) return;
     const result = await axios.get(
       `/api/get-recent-coins?profile=${profileInfo?.profile.address}`,
     );
@@ -63,13 +63,13 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
   return (
     <>
       <div
-        className="flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-black bg-opacity-[0.07] cursor-pointer border-[1px] border-[#FFFFFF30] rounded-lg px-2 mx-1"
+        className="w-full flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-black bg-opacity-[0.07] cursor-pointer border-[1px] border-[#FFFFFF30] rounded-lg px-2 mx-1"
         onClick={() => {
           return (document.getElementById("coin_modal") as any)?.showModal();
         }}
       >
         {selectedCoin ? (
-          <>
+          <div className="w-full flex justify-center items-center">
             <div className="w-[1.2vmax] h-[1.2vmax] relative flex items-center">
               <Image
                 src={selectedCoin!.image}
@@ -80,9 +80,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
             <p className="text-white text-sm ml-1 mr-2">
               {selectedCoin!.symbol.toUpperCase()}
             </p>
-
-            <SimpleArrowDown />
-          </>
+          </div>
         ) : (
           <div className="w-full flex items-center justify-center">
             <p className="text-base text-gray-500">Set the Coin</p>

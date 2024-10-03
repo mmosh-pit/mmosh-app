@@ -13,6 +13,7 @@ import CoinSelect from "./CoinSelect";
 import axios from "axios";
 import { generateGroupCommunityPass } from "@/app/lib/forge/generateGroupCommunityPass";
 import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
+import { deleteShdwDriveFile } from "@/app/lib/deleteShdwDriveFile";
 
 const CreateCommunity = () => {
   const router = useRouter();
@@ -34,8 +35,9 @@ const CreateCommunity = () => {
   });
 
   const createCommunity = async () => {
-    if (!selectedCoin) return;
     setIsLoading(true);
+
+    if (!selectedCoin) return;
 
     const communityPassImage = await generateGroupCommunityPass(
       selectedCoin!.image,
@@ -43,10 +45,14 @@ const CreateCommunity = () => {
 
     const imageUri = await uploadImageFromBlob(communityPassImage);
 
-    await axios.post("/api/create-group-community", {
-      ...form,
-      passImage: imageUri,
-    });
+    try {
+      await axios.post("/api/create-group-community", {
+        ...form,
+        passImage: imageUri,
+      });
+    } catch (_) {
+      await deleteShdwDriveFile(imageUri);
+    }
 
     setIsLoading(false);
   };
@@ -106,6 +112,13 @@ The group will only available to your coin holders, and you can set the level. F
                 }
               />
 
+              <div className="w-[50%] md:w-[40%] lg:w-[30%] my-4">
+                <CoinSelect
+                  selectedCoin={selectedCoin}
+                  onTokenSelect={setSelectedCoin}
+                />
+              </div>
+
               <div className="my-4" />
 
               {form.groups.map((group, index) => (
@@ -145,15 +158,6 @@ The group will only available to your coin holders, and you can set the level. F
                       </button>
                     )}
                   </div>
-
-                  {index === 0 && (
-                    <div className="w-[40%] my-4">
-                      <CoinSelect
-                        selectedCoin={selectedCoin}
-                        onTokenSelect={setSelectedCoin}
-                      />
-                    </div>
-                  )}
 
                   <div className="flex items-center my-4">
                     <Radio
@@ -197,37 +201,37 @@ The group will only available to your coin holders, and you can set the level. F
                       }}
                       name={`radio-coin-${index}`}
                     />
+
+                    {form.groups[index].privacy !== "open" && (
+                      <div className="flex">
+                        <Input
+                          value={form.groups[index].assetPrice.toString()}
+                          title={
+                            form.groups[index].privacy === "pass"
+                              ? "Community Pass Price"
+                              : "Amount of coins to join Telegram Group"
+                          }
+                          onChange={(e) => {
+                            if (!Number(e.target.value)) return;
+                            if (Number(e.target.value) < 0) return;
+
+                            setForm((prev) => {
+                              const newValue = { ...prev };
+
+                              newValue.groups[index].assetPrice = Number(
+                                e.target.value,
+                              );
+
+                              return newValue;
+                            });
+                          }}
+                          required={false}
+                          placeholder="0"
+                          type="text"
+                        />
+                      </div>
+                    )}
                   </div>
-
-                  {form.groups[index].privacy !== "open" && (
-                    <div className="flex">
-                      <Input
-                        value={form.groups[index].assetPrice.toString()}
-                        title={
-                          form.groups[index].privacy === "pass"
-                            ? "Community Pass Price"
-                            : "Amount of coins to join Telegram Group"
-                        }
-                        onChange={(e) => {
-                          if (!Number(e.target.value)) return;
-                          if (Number(e.target.value) < 0) return;
-
-                          setForm((prev) => {
-                            const newValue = { ...prev };
-
-                            newValue.groups[index].assetPrice = Number(
-                              e.target.value,
-                            );
-
-                            return newValue;
-                          });
-                        }}
-                        required={false}
-                        placeholder="0"
-                        type="text"
-                      />
-                    </div>
-                  )}
                 </div>
               ))}
 
@@ -269,41 +273,40 @@ The group will only available to your coin holders, and you can set the level. F
             />
           </div>
         </div>
+        {shouldShowRoyalties && (
+          <div className="flex flex-col">
+            <p className="text-base text-white">
+              Community Pass Royalties will be distributed as follows
+            </p>
+            <p className="text-sm text-white my-1">
+              Creator{" "}
+              <span className="text-sm text-gray-500">
+                70% of your royalties as the Community Founder
+              </span>
+            </p>
+            <p className="text-sm text-white my-1">
+              Operative{" "}
+              <span className="text-sm text-gray-500">
+                20% promotes your Community to their referrals
+              </span>
+            </p>
+            <p className="text-sm text-white my-1">
+              Organizer{" "}
+              <span className="text-sm text-gray-500">
+                5% Organizes, encourages, trains and motivates
+              </span>
+            </p>
+            <p className="text-sm text-white my-1">
+              Ecosystem{" "}
+              <span className="text-sm text-gray-500">3% MMOSH DAO</span>
+            </p>
+            <p className="text-sm text-white my-1">
+              Project{" "}
+              <span className="text-sm text-gray-500">2% Pump the Vote</span>
+            </p>
+          </div>
+        )}
       </div>
-
-      {shouldShowRoyalties && (
-        <div className="flex flex-col">
-          <p className="text-base text-white">
-            Community Pass Royalties will be distributed as follows
-          </p>
-          <p className="text-sm text-white my-1">
-            Creator{" "}
-            <span className="text-sm text-gray-500">
-              70% of your royalties as the Community Founder
-            </span>
-          </p>
-          <p className="text-sm text-white my-1">
-            Operative{" "}
-            <span className="text-sm text-gray-500">
-              20% promotes your Community to their referrals
-            </span>
-          </p>
-          <p className="text-sm text-white my-1">
-            Organizer{" "}
-            <span className="text-sm text-gray-500">
-              5% Organizes, encourages, trains and motivates
-            </span>
-          </p>
-          <p className="text-sm text-white my-1">
-            Ecosystem{" "}
-            <span className="text-sm text-gray-500">3% MMOSH DAO</span>
-          </p>
-          <p className="text-sm text-white my-1">
-            Project{" "}
-            <span className="text-sm text-gray-500">2% Pump the Vote</span>
-          </p>
-        </div>
-      )}
     </div>
   );
 };

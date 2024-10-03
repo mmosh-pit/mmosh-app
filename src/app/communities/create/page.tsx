@@ -1,3 +1,4 @@
+"use client";
 import CreateCommunity from "@/app/components/Forge/Communities/CreateCommunity";
 import { isDrawerOpen } from "@/app/store";
 import { useAtom } from "jotai";

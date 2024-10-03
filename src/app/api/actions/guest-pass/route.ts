@@ -311,7 +311,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveBackend } from "@/app/lib/upl
         uriHash: passMetaURI,
         genesisProfile: projectInfo.data.project.key,
         commonLut: projectInfo.data.project.lut
-      },body.account);
+      },body.account, body.account);
 
       console.log("test8")
 

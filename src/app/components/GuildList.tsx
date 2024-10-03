@@ -4,8 +4,10 @@ import { useAtom } from "jotai";
 import { User } from "../models/user";
 import UserCard from "./UserCard";
 import UserSortTabs from "./UserSortTabs";
-import { lineage, sortDirection, sortOption } from "../store";
+import { connectionTypes, data, lineage, sortDirection, sortOption } from "../store";
 import LineageFilterOptions from "./Profile/LineageFilterOptions";
+import ConnectionFilterOptions from "./Profile/ConnectionFilterOptions";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
 const GuildList = ({
   profilenft,
@@ -16,6 +18,10 @@ const GuildList = ({
   isMyProfile: boolean;
   userName: string;
 }) => {
+  const wallet = useAnchorWallet();
+  const connection = useConnection();
+  const [currentUser] = useAtom(data);
+
   const [currentPage, setCurrentPage] = React.useState(0);
   const [users, setUsers] = React.useState<User[]>([]);
 
@@ -27,6 +33,7 @@ const GuildList = ({
 
   const fetching = React.useRef(false);
   const containerRef = React.useRef<any>(null);
+  const [connectionOptions] = useAtom(connectionTypes);
 
   const filterGuild = React.useCallback(async () => {
     if (!profilenft) return;
@@ -38,9 +45,20 @@ const GuildList = ({
       }
     });
 
+    const connectionArr: string[] = [];
+    connectionOptions.forEach((val) => {
+      if (val.selected) {
+        connectionArr.push(val.value);
+      }
+    });
+
     fetching.current = true;
+    let url = `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`
+    if(currentUser) {
+      url = url + "&requester="+currentUser.wallet
+    }
     const result = await axios.get(
-      `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}`,
+      `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`,
     );
     fetching.current = false;
     lastPageTriggered.current = false;
@@ -48,7 +66,7 @@ const GuildList = ({
     setCurrentPage(0);
 
     setUsers(result.data);
-  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage]);
+  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage, currentUser]);
 
   const paginateGuild = React.useCallback(async () => {
     if (!profilenft) return;
@@ -60,11 +78,23 @@ const GuildList = ({
       }
     });
 
+    const connectionArr: string[] = [];
+    connectionOptions.forEach((val) => {
+      if (val.selected) {
+        connectionArr.push(val.value);
+      }
+    });
+
     fetching.current = true;
+    let url = `/api/get-user-guild?address=${profilenft}&skip=${
+      currentPage * 10
+    }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&connection=${connectionArr.join(",")}&gens=${gensArr.join(",")}`
+    if(currentUser) {
+      url = url + "&requester="+currentUser.wallet
+    }
+
     const result = await axios.get(
-      `/api/get-user-guild?address=${profilenft}&skip=${
-        currentPage * 10
-      }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}`,
+      url
     );
     fetching.current = false;
 
@@ -73,7 +103,7 @@ const GuildList = ({
     }
 
     setUsers((prev) => [...prev, ...result.data]);
-  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage]);
+  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage, currentUser]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -107,8 +137,10 @@ const GuildList = ({
         <p className="text-lg text-white font-bold font-goudy">
           {isMyProfile ? "Your Guild" : `${userName}'s Guild`}
         </p>
-
-        <LineageFilterOptions />
+        <div className="xl:flex">
+           <LineageFilterOptions />
+           <ConnectionFilterOptions />
+        </div>
 
         <UserSortTabs />
       </div>
@@ -127,6 +159,9 @@ const GuildList = ({
               user={value}
               key={value.profile.username}
               isHome={false}
+              currentuser={currentUser ? currentUser : undefined}
+              connection={connection.connection}
+              wallet={wallet}
             />
           ))}
         </div>

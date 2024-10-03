@@ -455,7 +455,7 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
                 symbol: project.symbol,
                 description: project.desc,
                 image: project.image.preview,
-                enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"create/projects/"+projectKeyPair.publicKey.toBase58(),
+                enternal_url: "https://liquidhearts.app",
                 family: "MMOSH",
                 collection: "MMOSH Pass Collection",
                 attributes: [
@@ -643,31 +643,31 @@ export default function ProjectCreateStep10({ onPageChange }: { onPageChange: an
             // console.log("send price result ", res5.Ok?.info)
 
             // pump the vote changes
-            await axios.post("/api/project/save-coins", {
-                name: "Pump The Vote Blue",
-                symbol: "PTVB",
-                image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
-                key: process.env.NEXT_PUBLIC_PTVB_TOKEN,
-                desc: "Pump The Vote Blue is a MMOSH Community Coin for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.",
-                supply: 1000000000,
-                decimals: 9,
-                creator: "FBxcKW6maxysrYSHNLYPDg3qVga9g9DysSVEYoSmfN2A", 
-                listingprice: 1,
-                projectkey: projectKeyPair.publicKey.toBase58()
-            });
+            // await axios.post("/api/project/save-coins", {
+            //     name: "Pump The Vote Blue",
+            //     symbol: "PTVB",
+            //     image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
+            //     key: process.env.NEXT_PUBLIC_PTVB_TOKEN,
+            //     desc: "Pump The Vote Blue is a MMOSH Community Coin for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.",
+            //     supply: 1000000000,
+            //     decimals: 9,
+            //     creator: "FBxcKW6maxysrYSHNLYPDg3qVga9g9DysSVEYoSmfN2A", 
+            //     listingprice: 1,
+            //     projectkey: projectKeyPair.publicKey.toBase58()
+            // });
 
-            await axios.post("/api/project/save-coins", {
-                name: "Pump The Vote Red",
-                symbol: "PTVR",
-                image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
-                key: process.env.NEXT_PUBLIC_PTVR_TOKEN,
-                desc: "Pump The Vote Red is a MMOSH Community Coin for conservatives who are we are united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability.",
-                supply: 1000000000,
-                decimals: 9,
-                creator: "FBxcKW6maxysrYSHNLYPDg3qVga9g9DysSVEYoSmfN2A", 
-                listingprice: 1,
-                projectkey: projectKeyPair.publicKey.toBase58()
-            });
+            // await axios.post("/api/project/save-coins", {
+            //     name: "Pump The Vote Red",
+            //     symbol: "PTVR",
+            //     image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
+            //     key: process.env.NEXT_PUBLIC_PTVR_TOKEN,
+            //     desc: "Pump The Vote Red is a MMOSH Community Coin for conservatives who are we are united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability.",
+            //     supply: 1000000000,
+            //     decimals: 9,
+            //     creator: "FBxcKW6maxysrYSHNLYPDg3qVga9g9DysSVEYoSmfN2A", 
+            //     listingprice: 1,
+            //     projectkey: projectKeyPair.publicKey.toBase58()
+            // });
 
             // await axios.post("/api/project/save-coins", {
             //     name: coins.name,

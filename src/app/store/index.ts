@@ -30,6 +30,13 @@ export const lineage = atom([
   { label: "Originated", value: "gen4", selected: true, subLabel: "Gen 4" },
 ]);
 
+export const connectionTypes = atom([
+  { label: "unlinked", value: "unlinked", selected: true, subLabel: "" },
+  { label: "follower", value: "follower", selected: true, subLabel: "" },
+  { label: "following", value: "following", selected: true, subLabel: "" },
+  { label: "linked", value: "linked", selected: true, subLabel: "" },
+]);
+
 export const userType = atom("all");
 
 export const settings = atom(false);

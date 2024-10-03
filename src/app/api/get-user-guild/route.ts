@@ -15,15 +15,18 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("address");
   const gens = searchParams.get("gens");
+  const connections = searchParams.get("connection");
   const skip = searchParams.get("skip");
   const sortValue = searchParams.get("sort") as string;
   const sortDirection = searchParams.get("sortDir") as string;
+  const requester = searchParams.get("requester") as string;
 
-  if (!param || !gens || !skip || !sortValue || !sortDirection) {
+  if (!param || !gens || !skip || !sortValue || !sortDirection || !connections) {
     return NextResponse.json("Invalid Payload", { status: 400 });
   }
 
   const gensDecoded: GuildFilter[] = gens.split(",") as GuildFilter[];
+  const connectionOptions = connections.split(",")
 
   const filter = {
     $or: [] as Guild[],
@@ -67,8 +70,84 @@ export async function GET(req: NextRequest) {
     lineagesMap[value.profile] = lineageValue;
   }
 
+  let profileArray = Object.keys(lineagesMap);
+  for (let index = 0; index < connectionOptions.length; index++) {
+    const element:any = connectionOptions[index];
+    let params;
+    if (element === "unlinked") {
+        params = {
+          sender: requester,
+          status: 3
+        };
+    } else if (element === "follower") {
+      params = {
+        receiver: requester,
+        status: 1
+      };
+    } else if (element === "following") {
+      params = {
+        sender: requester,
+        status: 1
+      };
+    } else if (element === "linked") { 
+      params = {
+        sender: requester,
+        status: 2
+      };
+    }
+    if(params) {
+      let match = {$match: params};
+      const connectArray = await db
+      .collection("mmosh-app-connections")
+      .aggregate([
+       match,
+        {
+          $lookup: {
+            from: "mmosh-app-profiles",
+            localField: "receiver_id",
+            foreignField: "wallet",
+            as: "receiver",
+          },
+        },
+        {
+          $lookup: {
+            from: "mmosh-app-profiles",
+            localField: "sender_id",
+            foreignField: "wallet",
+            as: "sender",
+          },
+        },
+        {
+          $project: {
+            key: 1,
+            created_date: 1,
+            receiver: "$receiver",
+            sender: "$sender",
+          },
+        },
+      ])
+      .toArray();
+  
+      for (let index = 0; index < connectArray.length; index++) {
+        const connectionObj = connectArray[index];
+        let user;
+        if (element === "follower") {
+          user = connectionObj.sender
+        } else {
+          user = connectionObj.receiver
+        }
+        if(user.profilenft) {
+           if(!profileArray.includes(user.profilenft)) {
+              profileArray.push(user.profilenft)
+           }
+        }
+      }
+    }
+  }
+    
+
   const profilesFilter = {
-    profilenft: { $in: Object.keys(lineagesMap) },
+    profilenft: { $in: profileArray },
   };
 
   const sortDirectionValue = sortDirection === "desc" ? -1 : 1;
@@ -95,7 +174,114 @@ export async function GET(req: NextRequest) {
     value.lineageValue = lineagesMap[value.profilenft];
   }
 
+  if(requester) {
+    const user = await db.collection("mmosh-app-profiles").findOne(
+      {
+       wallet: requester,
+      }
+    );
+    if(user) {
+      if (user.profilenft) {
+        for (let index = 0; index < profiles.length; index++) {
+          profiles[index].profile.connection = await getConnectionStatus(user, profiles[index])
+          profiles[index].profile.request = await getHasRequest(user, profiles[index])
+        }
+      }
+    }
+  }
+
   return NextResponse.json(profiles, {
     status: 200,
   });
+}
+
+
+const getConnectionStatus = async (requester:any, user:any) => {
+  if(requester.wallet !== user.wallet) {
+   // check has linked
+   const hasLinked = await db.collection("mmosh-app-connections").findOne(
+     {
+      sender: requester.wallet,
+      receiver: user.wallet,
+      status: 2
+     }
+   );
+   if(hasLinked) {
+     return 4
+   }
+
+   // check has outbound
+   const hasfollowing = await db.collection("mmosh-app-connections").findOne(
+     {
+      sender: requester.wallet,
+      receiver: user.wallet,
+      status: 1
+     }
+   );
+
+   if(hasfollowing) {
+     return 2
+   }
+
+   // check has inbound
+   const hasfollower = await db.collection("mmosh-app-connections").findOne(
+     {
+       sender: user.wallet,
+       receiver: requester.wallet,
+       status: 1
+     }
+   );
+
+   if(hasfollower) {
+     return 3
+   }
+
+
+
+
+   // check has idle connection
+   const hasRequest = await db.collection("mmosh-app-connections").findOne(
+     {
+       sender: requester.wallet,
+       receiver: user.wallet,
+       status: 0
+     }
+   );
+
+   if(hasRequest) {
+     return 1
+   }
+   
+   // check has idle connection
+   const hasConnection = await db.collection("mmosh-app-connections").findOne(
+     {
+       sender: requester.wallet,
+       receiver: user.wallet,
+       status: 3
+     }
+   );
+
+   if(hasConnection) {
+     return 5
+   }
+  }
+  return 0
+}
+
+const getHasRequest = async (requester:any, user:any) => {
+ if(requester.wallet !== user.wallet) {
+  // check has linked
+  const hasRequest = await db.collection("mmosh-app-connections").findOne(
+    {
+     sender: user.wallet,
+     receiver: requester.wallet,
+     status: 0
+    }
+  );
+  if(hasRequest) {
+    return true
+  }
+ }
+
+  return false
 }

@@ -78,6 +78,13 @@ const Header = () => {
     return defaultClass;
   }, [userStatus, pathname]);
 
+  const checkIfIsAuthenticated = React.useCallback(async () => {
+    const result = await axios.get("/api/is-auth");
+
+    setShowAuthOverlay(!result.data);
+    setIsUserAuthenticated(!result.data);
+  }, []);
+
   const getProfileInfo = async () => {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
     const env = new anchor.AnchorProvider(connection, wallet!, {
@@ -196,13 +203,6 @@ const Header = () => {
     });
     setBadge(0);
   };
-
-  const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await axios.get("/api/is-auth");
-
-    setShowAuthOverlay(!result.data);
-    setIsUserAuthenticated(!result.data);
-  }, []);
 
   return (
     <header className="flex flex-col">

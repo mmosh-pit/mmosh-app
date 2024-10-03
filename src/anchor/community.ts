@@ -1112,12 +1112,15 @@ export class Connectivity {
   async mintGuestPassTx(
     input: _MintGuestPass,
     userProfile: string,
+    payerProfile: string
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
     try {
       this.reinit();
       this.baseSpl.__reinit();
       const user = new anchor.web3.PublicKey(userProfile);
+      const payer = new anchor.web3.PublicKey(payerProfile);
       if (!user) throw "Wallet not found";
+      if (!payer) throw "Payer wallet not found";
       let {
         name,
         symbol,
@@ -1233,7 +1236,7 @@ export class Connectivity {
 
       const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
       const message = new web3.TransactionMessage({
-        payerKey: user,
+        payerKey: payer,
         recentBlockhash: blockhash,
         instructions: [...this.txis],
       }).compileToV0Message(lutsInfo);

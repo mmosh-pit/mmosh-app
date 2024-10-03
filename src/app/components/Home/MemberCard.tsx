@@ -35,7 +35,6 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
   const [connectionStatus, setConnectionStatus] = React.useState(0)
   const [hasRequest, setHasRequest] = React.useState(false)
   const [___, setCurrentUser] = useAtom(data);
-
   const [requestloader, setReqestLoader] = React.useState(false);
 
 

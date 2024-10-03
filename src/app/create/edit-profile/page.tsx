@@ -98,6 +98,15 @@ const EditProfile = () => {
     const validateFields = () => {
       console.log("validateFields 1", profileInfo)
         if (!profileInfo) return;
+
+        if (!profileInfo.profile.address) {
+          createMessage(
+            "Hey! We checked your wallet and you don’t have profile nft",
+            "warn",
+          );
+          return false;
+        }
+
         console.log("validateFields 2")
         if (profileInfo.solBalance < 0.04) {
           createMessage(

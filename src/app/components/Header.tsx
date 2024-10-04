@@ -26,11 +26,12 @@ import MobileDrawer from "./Profile/MobileDrawer";
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
-import { pageCommunity } from "../store/community";
+// import { pageCommunity } from "../store/community";
 import Tabs from "./Header/Tabs";
 import ProjectTabs from "./Header/ProjectTabs";
 import { incomingReferAddress } from "../store/signup";
 import Notification from "./Notification/Notification";
+import { currentGroupCommunity } from "../store/community";
 
 const Header = () => {
   const searchParams = useSearchParams();
@@ -44,7 +45,7 @@ const Header = () => {
   const [____, setIsUserAuthenticated] = useAtom(isAuth);
   const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [userStatus] = useAtom(status);
-  const [community] = useAtom(pageCommunity);
+  // const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
@@ -52,6 +53,8 @@ const Header = () => {
   const isMobileScreen = useCheckMobileScreen();
   const [badge, setBadge] = useState(0);
   const [notifications, setNotifications] = useState([]);
+
+  const [community] = useAtom(currentGroupCommunity);
 
   const param = searchParams.get("refer");
 
@@ -316,16 +319,16 @@ const Header = () => {
 
       {!isMobileScreen && <ProjectTabs />}
 
-      {pathname.includes("/create/communities/") && (
+      {pathname.includes("/communities/") && community !== null && (
         <div
-          className={`relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"}`}
+          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"}`}
         >
           <div
-            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
+            className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"} py-20`}
           >
-            <h2 className="text-center">
-              Mint this pass to join {community?.name}
-            </h2>
+            <h2 className="text-center">{community.name}</h2>
+
+            <p className="text-base my-4">{community.description}</p>
           </div>
         </div>
       )}

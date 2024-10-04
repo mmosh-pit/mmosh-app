@@ -29,10 +29,10 @@ const Tabs = () => {
         <a
           className="text-base text-white cursor-pointer"
           onClick={() => {
-            router.push("/create");
+            router.push("/communities");
           }}
         >
-          Create
+          Communities
         </a>
 
         <a

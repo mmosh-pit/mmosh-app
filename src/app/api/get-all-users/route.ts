@@ -54,17 +54,18 @@ export async function GET(req: NextRequest) {
     })
     .toArray();
 
-  if(requester) {
-    const user = await db.collection("mmosh-app-profiles").findOne(
-      {
-       wallet: requester,
-      }
-    );
-    if(user) {
+  if (requester) {
+    const user = await db.collection("mmosh-app-profiles").findOne({
+      wallet: requester,
+    });
+    if (user) {
       if (user.profilenft) {
         for (let index = 0; index < data.length; index++) {
-          data[index].profile.connection = await getConnectionStatus(user, data[index])
-          data[index].profile.request = await getHasRequest(user, data[index])
+          data[index].profile.connection = await getConnectionStatus(
+            user,
+            data[index],
+          );
+          data[index].profile.request = await getHasRequest(user, data[index]);
         }
       }
     }
@@ -87,93 +88,77 @@ export async function GET(req: NextRequest) {
   });
 }
 
-
-const getConnectionStatus = async (requester:any, user:any) => {
-   if(requester.wallet !== user.wallet) {
+const getConnectionStatus = async (requester: any, user: any) => {
+  if (requester.wallet !== user.wallet) {
     // check has linked
-    const hasLinked = await db.collection("mmosh-app-connections").findOne(
-      {
-       sender: requester.wallet,
-       receiver: user.wallet,
-       status: 2
-      }
-    );
-    if(hasLinked) {
-      return 4
+    const hasLinked = await db.collection("mmosh-app-connections").findOne({
+      sender: requester.wallet,
+      receiver: user.wallet,
+      status: 2,
+    });
+    if (hasLinked) {
+      return 4;
     }
 
     // check has outbound
-    const hasfollowing = await db.collection("mmosh-app-connections").findOne(
-      {
-       sender: requester.wallet,
-       receiver: user.wallet,
-       status: 1
-      }
-    );
+    const hasfollowing = await db.collection("mmosh-app-connections").findOne({
+      sender: requester.wallet,
+      receiver: user.wallet,
+      status: 1,
+    });
 
-    if(hasfollowing) {
-      return 2
+    if (hasfollowing) {
+      return 2;
     }
 
     // check has inbound
-    const hasfollower = await db.collection("mmosh-app-connections").findOne(
-      {
-        sender: user.wallet,
-        receiver: requester.wallet,
-        status: 1
-      }
-    );
-
-    if(hasfollower) {
-      return 3
-    }
-
-
- 
-
-    // check has idle connection
-    const hasRequest = await db.collection("mmosh-app-connections").findOne(
-      {
-        sender: requester.wallet,
-        receiver: user.wallet,
-        status: 0
-      }
-    );
-
-    if(hasRequest) {
-      return 1
-    }
-    
-    // check has idle connection
-    const hasConnection = await db.collection("mmosh-app-connections").findOne(
-      {
-        sender: requester.wallet,
-        receiver: user.wallet,
-        status: 3
-      }
-    );
-
-    if(hasConnection) {
-      return 5
-    }
-   }
-   return 0
-}
-
-const getHasRequest = async (requester:any, user:any) => {
-  if(requester.wallet !== user.wallet) {
-   // check has linked
-   const hasRequest = await db.collection("mmosh-app-connections").findOne(
-     {
+    const hasfollower = await db.collection("mmosh-app-connections").findOne({
       sender: user.wallet,
       receiver: requester.wallet,
-      status: 0
-     }
-   );
-   if(hasRequest) {
-     return true
-   }
+      status: 1,
+    });
+
+    if (hasfollower) {
+      return 3;
+    }
+
+    // check has idle connection
+    const hasRequest = await db.collection("mmosh-app-connections").findOne({
+      sender: requester.wallet,
+      receiver: user.wallet,
+      status: 0,
+    });
+
+    if (hasRequest) {
+      return 1;
+    }
+
+    // check has idle connection
+    const hasConnection = await db.collection("mmosh-app-connections").findOne({
+      sender: requester.wallet,
+      receiver: user.wallet,
+      status: 3,
+    });
+
+    if (hasConnection) {
+      return 5;
+    }
+  }
+  return 0;
+};
+
+const getHasRequest = async (requester: any, user: any) => {
+  if (requester.wallet !== user.wallet) {
+    // check has linked
+    const hasRequest = await db.collection("mmosh-app-connections").findOne({
+      sender: user.wallet,
+      receiver: requester.wallet,
+      status: 0,
+    });
+    if (hasRequest) {
+      return true;
+    }
   }
 
-   return false
-}
+  return false;
+};

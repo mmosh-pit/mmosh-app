@@ -11,6 +11,9 @@ import {
   createBurnInstruction,
 } from "forge-spl-token";
 import { web3 } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
+import { web3Consts } from "../web3Consts";
+import { UpdateMetadataAccountV2InstructionArgs, UpdateMetadataAccountV2InstructionAccounts, createUpdateMetadataAccountV2Instruction } from '@metaplex-foundation/mpl-token-metadata';
 
 const log = console.log;
 
@@ -69,6 +72,16 @@ export type MintToken = {
   /** default (`0`) */
   decimal?: number;
 };
+
+export type UpdateToken = {
+  mint: web3.PublicKey;
+  authority: web3.PublicKey;
+  payer: web3.PublicKey;
+  name: string;
+  symbol: string;
+  uri: string;
+};
+
 
 export class BaseSpl {
   __connection: web3.Connection;
@@ -400,5 +413,41 @@ export class BaseSpl {
     this.__splIxs.push(ix);
 
     return { ixs: this.__splIxs };
+  }
+
+  async updateToken(input: UpdateToken) {
+    this.__reinit();
+    const [metadata] = PublicKey.findProgramAddressSync([
+      Buffer.from("metadata"),
+      web3Consts.mplProgram.toBytes(),
+      input.mint.toBytes()
+    ], web3Consts.mplProgram);
+
+    const accounts: UpdateMetadataAccountV2InstructionAccounts = {
+      metadata: metadata,
+      updateAuthority: input.payer
+  }
+
+    const args: UpdateMetadataAccountV2InstructionArgs = {
+      updateMetadataAccountArgsV2: {
+        data: {
+          name: input.name,
+          symbol: input.symbol,
+          uri: input.uri,
+          sellerFeeBasisPoints: 0,
+          collection: null,
+          creators: null,
+          uses: null
+      },
+      isMutable: true,
+      updateAuthority: input.payer,
+      primarySaleHappened: null,
+      }
+    }
+    let ixs: web3.TransactionInstruction[] = [];
+    const ix = createUpdateMetadataAccountV2Instruction(accounts, args);
+    this.__splIxs.push(ix);
+    ixs.push(ix)
+    return ixs
   }
 }

@@ -7,10 +7,10 @@ import { useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
 
 import { UserStatus, data, incomingWallet, settings, status } from "./store";
-import HomePage from "./components/HomePage";
 import { init } from "./lib/firebase";
 import { fetchUserData } from "./lib/fetchUserData";
 import Settings from "./components/Settings";
+import HomePage from "./components/HomePage";
 
 export default function Home() {
   const searchParams = useSearchParams();

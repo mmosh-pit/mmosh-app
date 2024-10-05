@@ -6,9 +6,10 @@ import ImageIcon from "@/assets/icons/ImageIcon";
 type Props = {
   changeImage: (file: File | null) => void;
   image: string;
+  rounded?: boolean;
 };
 
-const ImagePicker = ({ changeImage, image }: Props) => {
+const ImagePicker = ({ changeImage, image, rounded }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const imageContainerRef = React.useRef<HTMLInputElement>(null);
   const [imageHeight, setImageHeight] = React.useState(0);
@@ -94,7 +95,13 @@ const ImagePicker = ({ changeImage, image }: Props) => {
             ref={imageContainerRef}
             style={{ height: imageHeight + "px" }}
           >
-            <Image src={image} alt="Identity" fill objectFit="cover" />
+            <Image
+              src={image}
+              alt="Identity"
+              fill
+              objectFit="cover"
+              className={rounded ? "rounded-full" : ""}
+            />
           </div>
           <div
             className="flex items-center relative mt-2 cursor-pointer"

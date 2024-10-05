@@ -39,14 +39,16 @@ const Volume = ({ bonding, height, withFilters }: Props) => {
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
-      <div className="w-full flex justify-between">
-        <div className="flex flex-col ml-6 mt-4">
+      <div className="w-full flex justify-between px-4 pt-8">
+        <div className="flex flex-col">
           <p className="text-sm">Volume</p>
           <h6 className="my-2">${total}</h6>
           <p className="text-tiny">Past Month</p>
         </div>
-
-        {withFilters && <DateTypeSelector type={type} setType={setType} />}
+        <div className="mt-4 mr-4">
+           {withFilters && <DateTypeSelector type={type} setType={setType} />}
+        </div>
+     
       </div>
       <ResponsiveContainer width="100%" height={height || 200}>
         <BarChart

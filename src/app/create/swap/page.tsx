@@ -87,7 +87,7 @@ const Swap = () => {
 
     if (targetToken!.value > targetToken!.balance) {
       const isMMOSHBase =
-        targetToken?.token === web3Consts.oposToken.toBase58();
+        targetToken?.token === web3Consts.oposToken.toBase58() || targetToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN || targetToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN;
 
       const value = targetToken!.balance;
 
@@ -120,7 +120,7 @@ const Swap = () => {
 
       if (value > baseToken!.balance) return;
 
-      const isMMOSHBase = baseToken?.token === web3Consts.oposToken.toBase58();
+      const isMMOSHBase = (baseToken?.token === web3Consts.oposToken.toBase58() || baseToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN || baseToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN);
 
       setBaseToken({ ...baseToken!, value });
 

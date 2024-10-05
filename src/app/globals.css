@@ -8,55 +8,43 @@ body {
 
 p {
   font-family: var(--font-poppins);
-  font-size: 1.2vmax;
   color: #d7d7d7;
 }
 
 a {
-  font-size: 0.8vmax;
   font-weight: bold;
 }
 
 span {
   color: #d7d7d7;
-  font-size: 0.8vmax;
-  line-height: 1vmax;
 }
 
 h2 {
   font-family: var(--font-goudy);
-  font-size: 1.8vmax;
   font-weight: 900;
   color: #ffffff;
 }
 
 h3 {
   font-family: var(--font-goudy);
-  font-size: 1.6vmax;
-  line-height: 1.3vmax;
   font-weight: 900;
   color: #ffffff;
 }
 
 h4 {
   font-family: var(--font-goudy);
-  font-size: 1.5vmax;
   font-weight: 900;
   color: #ffffff;
 }
 
 h5 {
   font-family: var(--font-goudy);
-  font-size: 1.2vmax;
-  line-height: 1vmax;
   font-weight: 700;
   color: #ffffff;
 }
 
 h6 {
   font-family: var(--font-goudy);
-  font-size: 1vmax;
-  line-height: 0.8vmax;
   font-weight: 700;
   color: #ffffff;
 }
@@ -102,6 +90,18 @@ h6 {
   background-attachment: fixed;
 }
 
+.bg-without-picture {
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: radial-gradient(
+    circle at 50% 15%,
+    #174aff40 0%,
+    #174aff25 2%,
+    #174aff10 10%,
+    #030064 40%,
+    #030064 100%
+  );
+}
+
 .common-bg:before {
   mix-blend-mode: color-dodge;
 }
@@ -118,46 +118,30 @@ h6 {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100vh;
-  /* position: relative; */
   background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
-  background: rgba(9, 7, 58, 0.7);
-  /* background: radial-gradient( */
-  /*   circle at 50% 15%, */
-  /*   #081c6c 1%, */
-  /*   #081c6c 30%, */
-  /*   #081c6c 60%, */
-  /*   #030064 100% */
-  /* ); */
-
-  mix-blend-mode: hard-light;
-
-  /* background-size: auto; */
-  /* background-repeat: repeat; */
-  /* background-attachment: fixed; */
+  /* background: #09073a; */
+  background: radial-gradient(
+    circle at 50% 15%,
+    #133ad550 1%,
+    #06067680 10%,
+    #00005285 60%,
+    #00000090 100%
+  );
 }
 
-/* .background-content > * { */
-/*   position: relative; */
-/* } */
-
-/* .background-content:before { */
-/*   content: ""; */
-/*   display: block; */
-/*   height: 100%; */
-/*   position: absolute; */
-/*   top: 0; */
-/*   left: 0; */
-/*   width: 100%; */
-/*   filter: blur(100px); */
-/*   background: radial-gradient( */
-/*     circle at 50% 15%, */
-/*     #133ad5 1%, */
-/*     #102da1 30%, */
-/*     #102a95 60%, */
-/*     #030064 100% */
-/*   ); */
-/*   mix-blend-mode: hard-light; */
-/* } */
+.background-content-full-bg {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 100vh;
+  /* background: #09073a; */
+  background: radial-gradient(
+    circle at 50% 15%,
+    #133ad5 1%,
+    #060676 10%,
+    #000052 60%,
+    #000000 100%
+  );
+}
 
 .bg-profile::before {
   content: "";
@@ -440,6 +424,11 @@ h6 {
   background: #00000012;
 
   border-radius: 1rem;
+
+  @media (max-width: 768px) {
+    border-radius: 0.5rem;
+  }
+
   z-index: 2;
   transition: all 0.2s linear;
 }
@@ -878,7 +867,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .crate-down-container span {
-  color: #DC2626;
+  color: #dc2626;
 }
 
 .leader-container {
@@ -899,4 +888,73 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 .other-border-color {
   border: 1px solid #0c0054;
+}
+
+.candidates-checkboxes {
+  transform: scale(1);
+
+  @media (max-width: 768px) {
+    transform: scale(0.7);
+  }
+}
+
+.candidates-select {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-flow: column;
+  backdrop-filter: blur(19.5px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #00000012;
+
+  border-radius: 0.5rem;
+  z-index: 2;
+  transition: all 0.2s linear;
+}
+
+.candidates-select.opened {
+  margin-top: 0.25rem;
+  justify-content: start;
+}
+
+.candidates-select-open {
+  display: flex;
+  flex-flow: column;
+  overflow-y: auto;
+  max-height: 90%;
+}
+
+.candidates-select::webkit-scrollbar {
+  width: 5px;
+}
+
+.candidates-select::-webkit-scrollbar-track {
+  /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);  */
+  border-radius: 10px;
+  border: 1px solid rgba(135, 135, 135, 0.32);
+}
+
+.background-content-claim {
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* position: relative; */
+  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: rgba(9, 7, 58, 0.7);
+  /* background: radial-gradient( */
+  /*   circle at 50% 15%, */
+  /*   #081c6c 1%, */
+  /*   #081c6c 30%, */
+  /*   #081c6c 60%, */
+  /*   #030064 100% */
+  /* ); */
+
+  mix-blend-mode: hard-light;
+
+  /* background-size: auto; */
+  /* background-repeat: repeat; */
+  /* background-attachment: fixed; */
+}
+
+.connection-content {
+  min-height: 56px;
 }

@@ -1,13 +1,22 @@
+import * as React from "react";
 import Image from "next/image";
 import { Candidate } from "@/app/models/candidate";
 import { states } from "@/utils/states";
 import { politicalParties } from "@/utils/politicalParties";
+import { CandidateCoinsData } from "@/app/models/candidateCoinsData";
+import axios from "axios";
 
 type Props = {
   candidate: Candidate;
+  borderRight?: boolean;
+  noBorder?: boolean;
 };
 
-const CandidateCard = ({ candidate }: Props) => {
+const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
+  const [coinsData, setCoinsData] = React.useState<CandidateCoinsData | null>(
+    null,
+  );
+
   const getColor = () => {
     switch (candidate.PARTY) {
       case "DEM":
@@ -90,14 +99,36 @@ const CandidateCard = ({ candidate }: Props) => {
     return "";
   };
 
+  const getBorderRadiusClassName = React.useCallback(() => {
+    if (borderRight) {
+      return "md:rounded-tr-[4vmax] rounded-tr-[5vmax] rounded-tl-xl rounded-b-xl";
+    }
+
+    if (!borderRight && !noBorder) {
+      return "md:rounded-tl-[4vmax] rounded-tl-[5vmax] rounded-tr-xl rounded-b-xl";
+    }
+
+    return "rounded-xl";
+  }, [borderRight, noBorder]);
+
+  const getCandidateCoinsData = React.useCallback(async () => {
+    const result = await axios.get("/api/get-candidate-fdv-values");
+
+    setCoinsData(result.data);
+  }, [candidate]);
+
+  React.useEffect(() => {
+    getCandidateCoinsData();
+  }, [candidate]);
+
   return (
-    <div className="relative grid">
+    <div className="relative grid w-full">
       <div
-        className={`flex justify-between bg-[#030007] bg-opacity-40 px-4 py-4 rounded-tl-[5.5rem] rounded-b-xl rounded-tr-xl ${getBorderClassName()}`}
+        className={`flex justify-between bg-[#030007] bg-opacity-40 px-4 py-4 ${getBorderRadiusClassName()} ${getBorderClassName()}`}
       >
         <div className="flex flex-col">
           <div className="max-w-[30%] mr-4 mb-2">
-            <div className="relative w-[5vmax] h-[5vmax]">
+            <div className="relative md:w-[5vmax] md:h-[5vmax] w-[6vmax] h-[6vmax]">
               <Image
                 src={getImage()}
                 alt="Profile Image"
@@ -107,8 +138,10 @@ const CandidateCard = ({ candidate }: Props) => {
             </div>
           </div>
 
-          <p className="text-base text-white underline">Whitehouse</p>
-          <p className="text-sm">HouseWhite</p>
+          <p className="text-base text-white underline">
+            {coinsData?.coin.name}
+          </p>
+          <p className="text-sm">{coinsData?.coin.symbol}</p>
         </div>
 
         <div className="flex flex-col justify-start grow">
@@ -128,21 +161,23 @@ const CandidateCard = ({ candidate }: Props) => {
           <div className="flex items-center">
             <p className="text-sm mr-2">All</p>
             <p className="text-sm text-white">
-              234.32 <span className="text-tiny">USDC</span>
+              {coinsData?.total} <span className="text-tiny ml-1">USDC</span>
             </p>
           </div>
 
           <div className="flex items-center my-4">
             <p className="text-sm mr-2">For</p>
             <p className="text-sm text-white">
-              7.36 <span className="text-tiny">USDC</span>
+              {coinsData?.forResult}
+              <span className="text-tiny ml-1">USDC</span>
             </p>
           </div>
 
           <div className="flex items-center">
             <p className="text-sm mr-2">Against</p>
             <p className="text-sm text-white">
-              13.48 <span className="text-tiny">USDC</span>
+              {coinsData?.againstResult}
+              <span className="text-tiny ml-1">USDC</span>
             </p>
           </div>
         </div>

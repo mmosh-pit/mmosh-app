@@ -30,7 +30,7 @@ export const createCoin = async ({
   type,
   setMintingStatus,
   username,
-  baseToken
+  baseToken,
 }: CreateCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
@@ -136,13 +136,45 @@ export const createCoin = async ({
 
     setMintingStatus("Swapping Token...");
     await delay(15000);
-    const buyres = await curveConn.buy({
-      tokenBonding: res.tokenBonding,
-      desiredTargetAmount: new anchor.BN(
-        Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
-      ),
-      slippage: 0.5,
-    });
+    let buyres
+    if(baseToken.address === web3Consts.oposToken.toBase58()) {
+      buyres = await curveConn.buy({
+        tokenBonding: res.tokenBonding,
+        desiredTargetAmount: new anchor.BN(
+          Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
+        ),
+        slippage: 0.5,
+      });
+    } else {
+      const buytx = await axios.post("/api/ptv/swap",{
+        bonding: res.tokenBonding,
+        supply: Number(supply),
+        address: wallet.publicKey.toBase58()
+      })
+      if(buytx.data.status) {
+        const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(buytx.data.transaction,"base64"))
+        buyres = await curveConn.provider.sendAndConfirm(tx)
+        if(buyres) {
+            let tokenType = "Blue"
+            if(baseToken.address === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+              tokenType = "Red"
+            }
+           await axios.post("/api/ptv/update-rewards",{
+              type: tokenType,
+              wallet: wallet.publicKey.toBase58(),
+              method: "buy",
+              value: Number(supply)
+            })
+        }
+      } else {
+        return {
+          message:
+            "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
+          type: "error",
+        };
+      }
+    }
+
 
     if (buyres) {
       const directoryParams = {

@@ -1,14 +1,6 @@
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
-const defaultCoin = {
-  name: "MMOSH: The Stoked Token",
-  symbol: "MMOSH",
-  address: "",
-  image: "",
-  bonding: "",
-};
-
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
 

@@ -35,7 +35,7 @@ const Input = ({
           value={value}
           onChange={onChange}
           readOnly={readonly}
-          className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full text-xs"
+          className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full text-xs backdrop-container"
         ></textarea>
       );
     }
@@ -48,7 +48,7 @@ const Input = ({
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}
-        className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container"
+        className={`input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container ${error && "border-red-500"}`}
       />
     );
   };
@@ -63,7 +63,7 @@ const Input = ({
       </p>
       {getTextType()}
       {helperText && (
-        <p className={`text-tiny ${error && "text-red"}`}>{helperText}</p>
+        <p className={`text-tiny ${error && "text-red-500"}`}>{helperText}</p>
       )}
     </div>
   );

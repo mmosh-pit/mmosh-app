@@ -2,6 +2,7 @@ import * as React from "react";
 import ArrowDown from "@/assets/icons/ArrowDown";
 import ArrowUp from "@/assets/icons/ArrowUp";
 import { districts } from "@/utils/districts";
+import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 
 type Props = {
   onChange: (value: string) => void;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 const DistrictSelect = ({ onChange, selectedElement }: Props) => {
+  const isMobile = useCheckMobileScreen();
   const divRef = React.useRef<HTMLDivElement>(null);
   const divWrapperRef = React.useRef<HTMLDivElement>(null);
 
@@ -58,9 +60,11 @@ const DistrictSelect = ({ onChange, selectedElement }: Props) => {
       <h6>District</h6>
 
       <div
-        className={`states-select absolute top-[10px] px-4 mt-4`}
+        className={`states-select absolute md:top-[10px] px-4 mt-4`}
         style={{
-          height: !isOpen ? `50px` : "500px",
+          height: !isOpen
+            ? `${isMobile ? "30px" : "50px"}`
+            : `${isMobile ? "300px" : "500px"}`,
         }}
         ref={divWrapperRef}
       >

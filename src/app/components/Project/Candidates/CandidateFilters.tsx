@@ -10,47 +10,53 @@ const CandidateFilters = ({
   <div className="flex flex-col">
     <h6>Campaigns</h6>
 
-    <div className="flex items-center mt-4">
-      <div className="flex items-center justify-center">
+    <div className="flex items-center mt-2">
+      <div
+        className="flex items-center justify-center"
+        onClick={(_) => {
+          handleChangeFilterValue("P");
+        }}
+      >
         <input
           id="radio1"
           type="radio"
-          className="radio radio-secondary"
+          className="radio radio-secondary candidates-checkboxes"
           checked={selectedCandidateFilter.includes("P")}
           onChange={() => {}}
-          onClick={(_) => {
-            handleChangeFilterValue("P");
-          }}
         />
-        <p className="text-white text-base ml-2">Presidential</p>
+        <p className="text-white text-base md:ml-2">Presidential</p>
       </div>
 
-      <div className="flex items-center justify-center mx-4">
+      <div
+        className="flex items-center justify-center mx-4"
+        onClick={(_) => {
+          handleChangeFilterValue("S");
+        }}
+      >
         <input
           id="radio1"
           type="radio"
-          className="radio radio-secondary"
+          className="radio radio-secondary candidates-checkboxes"
           checked={selectedCandidateFilter.includes("S")}
           onChange={() => {}}
-          onClick={(_) => {
-            handleChangeFilterValue("S");
-          }}
         />
-        <p className="text-white text-base ml-2">Senatorial</p>
+        <p className="text-white text-base md:ml-2">Senatorial</p>
       </div>
 
-      <div className="flex items-center justify-center ml-2">
+      <div
+        className="flex items-center justify-center md:ml-2"
+        onClick={(_) => {
+          handleChangeFilterValue("H");
+        }}
+      >
         <input
           id="radio1"
           type="radio"
-          className="radio radio-secondary"
+          className="radio radio-secondary candidates-checkboxes"
           checked={selectedCandidateFilter.includes("H")}
           onChange={() => {}}
-          onClick={(_) => {
-            handleChangeFilterValue("H");
-          }}
         />
-        <p className="text-white text-base ml-2">Congressional</p>
+        <p className="text-white text-base md:ml-2">Congressional</p>
       </div>
     </div>
   </div>

@@ -4,6 +4,7 @@ import { Inter, Poppins } from "next/font/google";
 import ConfigHOC from "./components/ConfigHOC";
 import Header from "./components/Header";
 import "./globals.css";
+import AuthOverlay from "./components/common/AuthOverlay";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,12 +40,16 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/mmosh.ico" sizes="any" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"></link>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+        ></link>
       </head>
       <body className={inter.className}>
         <ConfigHOC>
           <Header />
           <main className="min-h-screen">{children}</main>
+          <AuthOverlay />
         </ConfigHOC>
       </body>
     </html>

@@ -46,16 +46,16 @@ const TVL = ({ bonding, base, height }: Props) => {
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
-      <div className="flex flex-col ml-6 mt-4">
+      <div className="flex flex-col pl-6 pt-8">
         <p className="text-sm mb-2">TVL</p>
         <h6>
           {total} {base?.symbol}
         </h6>
       </div>
-      <ResponsiveContainer width="100%" height={height || 200}>
+      <ResponsiveContainer width="100%" height={height || 220}>
         <AreaChart
           width={500}
-          height={height || 200}
+          height={height || 220}
           data={data}
           margin={{
             top: 10,

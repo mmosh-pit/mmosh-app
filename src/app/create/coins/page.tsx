@@ -25,7 +25,7 @@ const Coins = () => {
   return (
     <div className="background-content flex flex-col max-h-full pt-20 px-12">
       {!isMobile && (
-        <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
+        <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto">
           <TVL />
 
           <Volume withFilters />
@@ -83,7 +83,7 @@ const Coins = () => {
         <SearchBar />
       </div>
 
-      <div className="w-full mt-8">
+      <div className="w-full mt-8 overflow-x-auto">
         <CoinsTable />
       </div>
     </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
@@ -11,63 +11,64 @@ import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import {
   UserStatus,
-  accounts,
   data,
   incomingWallet,
+  isAuth,
+  isAuthOverlayOpen,
   isDrawerOpen,
-  points,
-  searchBarText,
   settings,
   status,
   userWeb3Info,
   web3InfoLoading,
 } from "../store";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import SearchIcon from "@/assets/icons/SearchIcon";
 import MobileDrawer from "./Profile/MobileDrawer";
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
-import { pageCommunity } from "../store/community";
-
-const formatNumber = (value: number) => {
-  const units = ["", "K", "M", "B", "T"];
-
-  let absValue = Math.abs(value);
-
-  let exponent = 0;
-  while (absValue > 1000 && exponent < units.length - 1) {
-    absValue /= 1000;
-    exponent++;
-  }
-
-  const formattedNumber = absValue.toFixed(2);
-
-  return `${formattedNumber}${units[exponent]}`;
-};
+// import { pageCommunity } from "../store/community";
+import Tabs from "./Header/Tabs";
+import ProjectTabs from "./Header/ProjectTabs";
+import { incomingReferAddress } from "../store/signup";
+import Notification from "./Notification/Notification";
+import { currentGroupCommunity } from "../store/community";
 
 const Header = () => {
+  const searchParams = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
   const wallet = useAnchorWallet();
+
   const renderedUserInfo = React.useRef(false);
+  const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
+  const [____, setIsUserAuthenticated] = useAtom(isAuth);
+  const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [userStatus] = useAtom(status);
-  const [community] = useAtom(pageCommunity);
+  // const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
-  const [totalAccounts, setTotalAccounts] = useAtom(accounts);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const [totalRoyalties, setTotalRoyalties] = useAtom(points);
-  const [_, setSearchText] = useAtom(searchBarText);
-  const [localText, setLocalText] = React.useState("");
   const isMobileScreen = useCheckMobileScreen();
+  const [badge, setBadge] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+
+  const [community] = useAtom(currentGroupCommunity);
+
+  const param = searchParams.get("refer");
+
+  React.useEffect(() => {
+    if (param) {
+      setReferAddress(param);
+    } else {
+      setReferAddress(process.env.NEXT_PUBLIC_DEFAULT_REFER_ADDRESS!);
+    }
+  }, [param]);
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8 ";
+      "w-full flex flex-col justify-center items-center py-6 px-8 relative z-10 ";
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
@@ -80,16 +81,11 @@ const Header = () => {
     return defaultClass;
   }, [userStatus, pathname]);
 
-  const executeSearch = React.useCallback(() => {
-    const text = localText.replace("@", "");
-    setSearchText(text);
-  }, [localText]);
+  const checkIfIsAuthenticated = React.useCallback(async () => {
+    const result = await axios.get("/api/is-auth");
 
-  const getTotals = React.useCallback(async () => {
-    const res = await axios.get("/api/get-header-analytics");
-
-    setTotalAccounts(res.data.members);
-    setTotalRoyalties(res.data.royalties);
+    setShowAuthOverlay(!result.data);
+    setIsUserAuthenticated(!result.data);
   }, []);
 
   const getProfileInfo = async () => {
@@ -103,8 +99,6 @@ const Header = () => {
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const profileInfo = await userConn.getUserInfo();
-
-    console.log("[HEADER] profile info: ", profileInfo);
 
     const genesis = profileInfo.activationTokens[0]?.genesis;
     const activation = profileInfo.activationTokens[0]?.activation;
@@ -143,6 +137,11 @@ const Header = () => {
 
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       setCurrentUser(res.data);
+      const notificationResult = await axios.get(
+        "/api/notifications?wallet=" + wallet?.publicKey.toBase58(),
+      );
+      setBadge(notificationResult.data.unread);
+      setNotifications(notificationResult.data.data);
     } else {
       const res = await axios.get(
         `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
@@ -174,18 +173,13 @@ const Header = () => {
   };
 
   React.useEffect(() => {
-    if (userStatus === UserStatus.fullAccount && pathname === "/") {
-      getTotals();
-    }
-  }, [userStatus]);
-
-  React.useEffect(() => {
     if (wallet?.publicKey && !renderedUserInfo.current) {
       renderedUserInfo.current = true;
       getProfileInfo();
     } else {
       setIsLoadingProfile(false);
     }
+    checkIfIsAuthenticated();
   }, [wallet]);
 
   React.useEffect(() => {
@@ -202,110 +196,82 @@ const Header = () => {
     }
   }, [wallet, incomingWalletToken]);
 
+  if (pathname.includes("sign-up") || pathname.includes("login")) {
+    return <></>;
+  }
+
+  const resetNotification = async () => {
+    await axios.put("api/notifications/update", {
+      wallet: wallet?.publicKey.toBase58(),
+    });
+    setBadge(0);
+  };
+
   return (
     <header className="flex flex-col">
       <div className={getHeaderBackground()}>
         <div className="flex w-full justify-between items-center mx-8">
-          {isMobileScreen ? (
-            <MobileDrawer />
-          ) : (
-            <div className="w-[33%]">
-              <Image
-                src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png"
-                alt="logo"
-                className="ml-8"
-                width={isMobileScreen ? 40 : 80}
-                height={isMobileScreen ? 40 : 80}
-              />
-            </div>
-          )}
+          <div className="flex w-[33%] justify-start items-center">
+            {isMobileScreen ? (
+              <MobileDrawer />
+            ) : (
+              <div className="w-[33%]">
+                <Image
+                  src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png"
+                  alt="logo"
+                  className="ml-8"
+                  width={isMobileScreen ? 40 : 80}
+                  height={isMobileScreen ? 40 : 80}
+                />
+              </div>
+            )}
+          </div>
 
-          {!isMobileScreen && (
-            <div className="flex w-[75%] justify-between items-center">
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => router.replace("/")}
-              >
-                Home
-              </a>
-
-              <a
-                target="_blank"
-                href="https://www.mmosh.ai"
-                className="text-base text-white cursor-pointer"
-              >
-                Website
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  router.push("/create");
-                }}
-              >
-                Create
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  router.push("/create");
-                }}
-              >
-                Members
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  router.push("/create/communities");
-                }}
-              >
-                Communities
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  router.push("/create/coins");
-                }}
-              >
-                Coins
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  router.push("/create/swap");
-                }}
-              >
-                Swap
-              </a>
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  router.push("/atm");
-                }}
-              >
-                ATM
-              </a>
-
-              {currentUser?.profilenft && (
-                <a
-                  className="text-base text-white cursor-pointer"
-                  onClick={() => {
-                    if (isOnSettings) return setIsOnSettings(false);
-                    router.push(`/${currentUser?.profile.username}`);
-                  }}
-                >
-                  My Profile
-                </a>
-              )}
-            </div>
-          )}
+          {!isMobileScreen && <Tabs />}
 
           <div className="flex justify-end items-center w-[33%]">
+            {currentUser?.profilenft && (
+              <div className="dropdown pr-6">
+                <a
+                  className="text-base text-white cursor-pointer relative"
+                  tabIndex={0}
+                  href="javascript:void(0)"
+                  onClick={resetNotification}
+                >
+                  <img
+                    src="/images/alert.png"
+                    alt="notification"
+                    className="max-w-4 w-4"
+                  />
+                  {badge > 0 && (
+                    <span className="bg-[#FF0000] text-white w-6 h-6 rounded-full absolute text-center leading-6  right-[-11px] top-[-13px]">
+                      {badge}
+                    </span>
+                  )}
+                </a>
+                {notifications && (
+                  <div
+                    className="dropdown-content z-[999999999] top-[72px]"
+                    tabIndex={0}
+                  >
+                    <div className="w-64 bg-black bg-opacity-[0.56] backdrop-blur-[2px] p-5 max-h-96 overflow-y-auto">
+                      {notifications.length > 0 && (
+                        <div>
+                          {notifications.map((value: any) => (
+                            <Notification data={value} key={value._id} />
+                          ))}
+                        </div>
+                      )}
+                      {notifications.length == 0 && (
+                        <p className="text-base">
+                          You don't have any notification
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             {currentUser?.profile?.image && (
               <div
                 className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
@@ -326,7 +292,6 @@ const Header = () => {
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
                 padding: "0 2em",
                 borderRadius: 15,
-                position: "relative",
               }}
             >
               <p className="text-lg text-white">
@@ -352,82 +317,29 @@ const Header = () => {
         </div>
       </div>
 
-      {pathname.includes("/create/communities/") && (
+      {!isMobileScreen && <ProjectTabs />}
+
+      {pathname.includes("/communities/") && community !== null && (
         <div
-          className={`relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : ""}`}
+          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"}`}
         >
           <div
-            className={`flex justify-center items-center ${isDrawerShown && "z-[-1]"} py-40`}
+            className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"} py-20`}
           >
-            <h2 className="text-center">
-              Mint this pass to join {community?.name}
-            </h2>
+            <h2 className="text-center">{community.name}</h2>
+
+            <p className="text-base my-4">{community.description}</p>
           </div>
         </div>
       )}
 
       {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex justify-center lg:justify-between items-end mt-12 pb-4">
-          {!isMobileScreen && (
-            <div className="flex w-[33%]">
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Members
-                  </p>
-                </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {totalAccounts}
-                </p>
-              </div>
-
-              <div className="flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 ml-8 backdrop-filter backdrop-blur-[5px]">
-                <div className="bg-[#3C00FF] rounded-full px-8 py-4">
-                  <p className="text-white font-bold text-base">
-                    Total Royalties
-                  </p>
-                </div>
-                <p className="text-white font-bold text-base ml-4 px-8">
-                  {formatNumber(totalRoyalties)}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div
-            className={`relative w-[16vmax] h-[16vmax] ${isDrawerShown && "z-[-1]"}`}
-          >
-            <Image
-              src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/mmosh_box.jpeg"
-              alt="mmosh"
-              layout="fill"
-            />
-          </div>
-
-          {!isMobileScreen && (
-            <div className="w-[33%] flex items-center bg-[#F4F4F4] bg-opacity-[0.15] border-[1px] border-[#C2C2C2] rounded-full p-1 backdrop-filter backdrop-blur-[5px]">
-              <button
-                className="flex bg-[#3C00FF] rounded-full px-12 py-4 items-center"
-                onClick={executeSearch}
-              >
-                <SearchIcon />
-
-                <p className="text-white font-bold text-base ml-4">Search</p>
-              </button>
-
-              <input
-                placeholder="Type your search terms"
-                className="ml-4 w-full bg-transparent outline-none"
-                value={localText}
-                onChange={(e) => setLocalText(e.target.value)}
-                onKeyUp={(e) => {
-                  if (e.key === "Enter") {
-                    executeSearch();
-                  }
-                }}
-              />
-            </div>
-          )}
+        <div className="w-full flex flex-col justify-center items-center pb-4 my-16">
+          <h6>Welcome Home {currentUser?.profile.name}</h6>
+          <p className="text-base mt-4">
+            The MMOSH is a Massively Multiplayer On-chain Shared Hallucination.
+          </p>
+          <p className="text-base">Make Money Fun!</p>
         </div>
       )}
     </header>

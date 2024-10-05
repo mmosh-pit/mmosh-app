@@ -13,3 +13,5 @@ export const coinStats = atom({
 });
 
 export const selectedDateType = atom("day");
+
+export const pair = atom("All");

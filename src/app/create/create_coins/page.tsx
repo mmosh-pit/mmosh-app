@@ -128,14 +128,26 @@ const CreateCoin = () => {
       return false;
     }
 
-    if (profileInfo!.mmoshBalance < form.supply) {
-      setMessage({
-        type: "warn",
-        message:
-          "Hey! We checked your wallet and you don’t have enough MMOSH to mint. [Get some MMOSH here](https://jup.ag/swap/SOL-MMOSH)",
-      });
-      return false;
+    if(selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
+      if (profileInfo!.mmoshBalance < form.supply) {
+        setMessage({
+          type: "warn",
+          message:
+            "Hey! We checked your wallet and you don’t have enough MMOSH to mint. [Get some MMOSH here](https://jup.ag/swap/SOL-MMOSH)",
+        });
+        return false;
+      }
+    } else {
+      if (selectedCommunityBalance < form.supply) {
+        setMessage({
+          type: "warn",
+          message:
+            "Hey! We checked your wallet and you don’t have enough Community coin to mint",
+        });
+        return false;
+      }
     }
+
 
     if (!form.name) {
       setMessage({
@@ -186,7 +198,7 @@ const CreateCoin = () => {
       imageFile: image,
       wallet: wallet!,
       setMintingStatus,
-      username: currentUser!.profile.username,
+      username: currentUser ? currentUser!.profile.username : "",
       baseToken: selectedCommunityCoin,
     };
 
@@ -307,10 +319,6 @@ const CreateCoin = () => {
     }
   }, [selectedCommunityCoin, wallet]);
 
-  React.useEffect(() => {
-    console.log("currentUser ", currentUser);
-  }, [currentUser]);
-
   const openCommunityCoins = () => {
     setIsOpen(true);
     getCommunityCoins();
@@ -351,30 +359,39 @@ const CreateCoin = () => {
   };
 
   const getTokenBalance = async () => {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
-
-    const balance = await userConn.getUserBalance(selectedCommunityCoin);
-    setSelectedCommunityBalance(balance);
+    if(selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
+      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+      const env = new anchor.AnchorProvider(connection, wallet!, {
+        preflightCommitment: "processed",
+      });
+      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+  
+      const balance = await userConn.getUserBalance({
+        address: wallet?.publicKey,
+        token: selectedCommunityCoin.address,
+        decimals: selectedCommunityCoin.decimals
+      });
+      setSelectedCommunityBalance(balance ? balance : 0);
+    } else {
+      let type = "Red"
+      if(selectedCommunityCoin.address === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+        type = "Blue"
+      }
+      let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
+      setSelectedCommunityBalance(coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0);
+    } 
   };
 
   return (
     <>
       <div
-        className={`w-full relative background-content flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+        className={`w-full relative flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
       >
         <MessageBanner message={message.message} type={message.type} />
         <div className="w-full flex flex-col justify-center items-center mt-20">
-          <h3 className="text-center text-white font-goudy font-normal">
-            Create your own Coin!
-          </h3>
-          <p className="text-center text-sm mt-1">
-            With your own Coin, you can build community to launch and scale your
-            own projects. Get started now!
-          </p>
+          <h4 className="text-center text-white font-goudy font-normal">
+            Create a Political Memecoin!
+          </h4>
         </div>
 
         <div className="flex md:flex-row flex-col justify-center w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] mt-12">

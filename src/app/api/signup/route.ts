@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   await collection.insertOne({
     ...filteredData,
     password,
-    address,
+    address: address.publicKey.toBase58(),
     privateKey: encryptedKey,
     sessions: [session],
   });

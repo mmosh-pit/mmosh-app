@@ -12,42 +12,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!username) {
     return {
-      title: "MMOSH App Home",
+      title: "Liquid Hearts Club",
       description:
-        "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
+        "Go deeper. Join us on the privacy superdapp for an epic adventure beyond time, space and the death-grip of global civilization.",
       openGraph: {
-        images: [
-          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
-        ],
+        images: ["https://storage.googleapis.com/mmosh-assets/metadata.png"],
       },
     };
   }
 
-  const user = await getUserDataForMetadata(username);
+  // const user = await getUserDataForMetadata(username);
 
-  if (!user) {
-    return {
-      title: "MMOSH App Home",
-      description:
-        "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
-      openGraph: {
-        images: [
-          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
-        ],
-      },
-    };
-  }
-
+  // if (!user) {
   return {
-    title: `MMOSH App ${user?.profile?.username} Hideout`,
-    description: user?.profile?.bio,
+    title: "Liquid Hearts Club",
+    description:
+      "Go deeper. Join us on the privacy superdapp for an epic adventure beyond time, space and the death-grip of global civilization.",
     openGraph: {
-      images: [
-        user?.profile?.image ||
-          "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
-      ],
+      images: ["https://storage.googleapis.com/mmosh-assets/metadata.png"],
     },
   };
+  // }
+
+  // return {
+  //   title: `MMOSH App ${user?.profile?.username} Hideout`,
+  //   description: user?.profile?.bio,
+  //   openGraph: {
+  //     images: [
+  //       user?.profile?.image ||
+  //         "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
+  //     ],
+  //   },
+  // };
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

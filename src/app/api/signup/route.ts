@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   await sendKartaNotification(filteredData.name, filteredData.email);
 
-  return NextResponse.json("");
+  return NextResponse.json(address.publicKey.toBase58());
 }
 
 const sendKartaNotification = async (name: string, email: string) => {

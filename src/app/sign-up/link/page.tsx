@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 
-const Code = () => {
+const Link = () => {
   const router = useRouter();
 
   const [form, setForm] = useAtom(storeFormAtom);
@@ -44,9 +44,10 @@ const Code = () => {
               email: "",
               password: "",
               confirmPassword: "",
+              address: "",
             });
             window.open(
-              `https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}?start=${referAddress}`,
+              `https://t.me/${process.env.NEXT_PUBLIC_BOT_NAME}?start=${referAddress},${form.address}`,
               "_newtab",
             );
             router.replace("/");
@@ -60,4 +61,4 @@ const Code = () => {
   );
 };
 
-export default Code;
+export default Link;

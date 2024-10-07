@@ -5,6 +5,7 @@ export const storeFormAtom = atom({
   email: "",
   password: "",
   confirmPassword: "",
+  address: "",
 });
 
 export const incomingReferAddress = atom("");

@@ -24,7 +24,7 @@ const Code = () => {
     React.useRef<HTMLInputElement>(null),
   ];
 
-  const [form] = useAtom(storeFormAtom);
+  const [form, setForm] = useAtom(storeFormAtom);
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -51,11 +51,12 @@ const Code = () => {
     setIsLoading(true);
     setHasError(false);
     try {
-      await axios.post("/api/signup", {
+      const response = await axios.post("/api/signup", {
         ...form,
         referredBy: referAddress,
         code: formCodes.join(""),
       });
+      setForm({ ...form, address: response.data });
       router.replace("/sign-up/link");
     } catch (_) {
       setHasError(true);

@@ -13,26 +13,11 @@ const Tabs = () => {
       <div className="flex w-[75%] justify-between items-center">
         <a
           className="text-base text-white cursor-pointer"
-          onClick={() => router.replace("/")}
-        >
-          Home
-        </a>
-
-        <a
-          target="_blank"
-          href="https://www.mmosh.ai"
-          className="text-base text-white cursor-pointer"
-        >
-          Website
-        </a>
-
-        <a
-          className="text-base text-white cursor-pointer"
           onClick={() => {
-            router.push("/communities");
+            router.push("/");
           }}
         >
-          Communities
+          Coins
         </a>
 
         <a
@@ -46,9 +31,14 @@ const Tabs = () => {
 
         <a
           className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/create/communities");
-          }}
+          onClick={() => router.push("/create/projects")}
+        >
+          Projects
+        </a>
+
+        <a
+          className="text-base text-white cursor-pointer"
+          onClick={() => router.push("/communities")}
         >
           Communities
         </a>
@@ -56,19 +46,10 @@ const Tabs = () => {
         <a
           className="text-base text-white cursor-pointer"
           onClick={() => {
-            router.push("/create/coins");
+            router.push("/");
           }}
         >
-          Coins
-        </a>
-
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/create/swap");
-          }}
-        >
-          Swap
+          Rewards
         </a>
 
         <a
@@ -91,6 +72,15 @@ const Tabs = () => {
             My Profile
           </a>
         )}
+
+        <a
+          className="text-base text-white cursor-pointer"
+          onClick={() => {
+            router.push("/");
+          }}
+        >
+          Training
+        </a>
       </div>
     </div>
   );

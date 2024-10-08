@@ -26,7 +26,7 @@ const ProjectTabs = () => {
 
   return (
     <div className={getHeaderBackground()}>
-      <div className="w-[50%] flex justify-between">
+      <div className="w-[50%] flex justify-center">
         <div
           className="relative w-[1.5vmax] h-[1.5vmax] cursor-pointer"
           onClick={() => router.replace("/create/projects/ptv")}
@@ -38,47 +38,25 @@ const ProjectTabs = () => {
           />
         </div>
 
+        <div className="mx-6" />
+
         <a
           className="text-base text-white cursor-pointer self-center"
           onClick={() => router.replace("/create/projects/ptv")}
         >
-          Leaderboard
+          Pump the Vote
         </a>
 
+        <div className="mx-6" />
+
         <a
-          target="_blank"
           onClick={() => router.replace("/create/projects/ptv/candidates")}
           className="text-base text-white cursor-pointer self-center"
         >
           Candidates
         </a>
 
-        <a
-          className="text-base text-white cursor-pointer self-center"
-          onClick={() => {
-            router.push("/create/create_coins");
-          }}
-        >
-          Coins
-        </a>
-
-        <a
-          className="text-base text-white cursor-pointer self-center"
-          onClick={() => {
-            router.push("/create/create_community");
-          }}
-        >
-          Communities
-        </a>
-
-        <a
-          className="text-base text-white cursor-pointer self-center"
-          onClick={() => {
-            // router.push("/create/communities");
-          }}
-        >
-          Rewards
-        </a>
+        <div className="mx-6" />
 
         <a
           className="text-base text-white cursor-pointer self-center"
@@ -87,15 +65,6 @@ const ProjectTabs = () => {
           }}
         >
           Join
-        </a>
-
-        <a
-          className="text-base text-white cursor-pointer self-center"
-          onClick={() => {
-            router.push("/atm");
-          }}
-        >
-          PTV Training
         </a>
       </div>
     </div>

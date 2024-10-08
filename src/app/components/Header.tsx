@@ -32,6 +32,7 @@ import ProjectTabs from "./Header/ProjectTabs";
 import { incomingReferAddress } from "../store/signup";
 import Notification from "./Notification/Notification";
 import { currentGroupCommunity } from "../store/community";
+import LHCIcon from "@/assets/icons/LHCIcon";
 
 const Header = () => {
   const searchParams = useSearchParams();
@@ -216,13 +217,7 @@ const Header = () => {
               <MobileDrawer />
             ) : (
               <div className="w-[33%]">
-                <Image
-                  src="https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/logo.png"
-                  alt="logo"
-                  className="ml-8"
-                  width={isMobileScreen ? 40 : 80}
-                  height={isMobileScreen ? 40 : 80}
-                />
+                <LHCIcon />
               </div>
             )}
           </div>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
@@ -35,6 +35,7 @@ import { currentGroupCommunity } from "../store/community";
 import LHCIcon from "@/assets/icons/LHCIcon";
 
 const Header = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const wallet = useAnchorWallet();
@@ -84,6 +85,10 @@ const Header = () => {
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await axios.get("/api/is-auth");
+
+    if (!result.data && pathname === "/") {
+      router.replace("/login");
+    }
 
     setShowAuthOverlay(!result.data);
     setIsUserAuthenticated(!result.data);

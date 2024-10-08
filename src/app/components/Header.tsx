@@ -330,11 +330,10 @@ const Header = () => {
 
       {pathname === "/" && !isOnSettings && (
         <div className="w-full flex flex-col justify-center items-center pb-4 my-16">
-          <h6>Welcome Home {currentUser?.profile.name}</h6>
+          <h6>Go Deeper {currentUser?.profile.name}</h6>
           <p className="text-base mt-4">
-            The MMOSH is a Massively Multiplayer On-chain Shared Hallucination.
+            Welcome to Liquid Hearts Club, the privacy superdapp.
           </p>
-          <p className="text-base">Make Money Fun!</p>
         </div>
       )}
     </header>

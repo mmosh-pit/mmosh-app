@@ -23,7 +23,7 @@ const Tabs = () => {
         <a
           className="text-base text-white cursor-pointer"
           onClick={() => {
-            router.push("/create");
+            router.push("/create/create_profile");
           }}
         >
           Members

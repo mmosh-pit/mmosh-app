@@ -44,6 +44,7 @@ const CreateProfile = () => {
     description: "",
     descriptor: "",
     noun: "",
+    link: "",
     pronouns: "they/them",
   });
 
@@ -228,6 +229,8 @@ const CreateProfile = () => {
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
 
+              <div className="my-2" />
+
               <Input
                 type="text"
                 title="Last Name"
@@ -237,6 +240,8 @@ const CreateProfile = () => {
                 value={form.lastName}
                 onChange={(e) => setForm({ ...form, lastName: e.target.value })}
               />
+
+              <div className="my-2" />
 
               <Input
                 type="text"
@@ -255,6 +260,8 @@ const CreateProfile = () => {
                 placeholder="Username"
               />
 
+              <div className="my-2" />
+
               <div className="flex flex-col">
                 <p className="text-xs text-white">
                   Pronouns<sup>*</sup>
@@ -272,15 +279,28 @@ const CreateProfile = () => {
             <div className="flex flex-col mt-4 md:mt-4 w-[85%] lg:w-fit">
               <Input
                 type="text"
-                title="Description"
+                title="Bio"
                 required={false}
-                placeholder="Tell us about yourself in up to 160 characters"
+                placeholder="Tell us about yourself in one paragraph or less"
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
                 textarea
               />
+
+              <div className="my-2" />
+
+              <Input
+                type="text"
+                title="Web Link"
+                required
+                placeholder="Web Link"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, link: e.target.value })}
+              />
+
+              <div className="my-2" />
 
               <div className="flex flex-col mt-4 w-full md:w-fit">
                 <p className="text-xs text-white">Superhero Identity</p>

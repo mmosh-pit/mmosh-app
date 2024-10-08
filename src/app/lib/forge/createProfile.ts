@@ -213,6 +213,7 @@ export const createProfile = async ({
         image: body.image,
         descriptor: form.descriptor,
         nouns: form.noun,
+        link: form.link,
         seniority: seniority,
       };
 

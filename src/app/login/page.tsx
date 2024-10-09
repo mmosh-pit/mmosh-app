@@ -87,7 +87,7 @@ const Login = () => {
 
       <div className="w-[75%] md:w-[40%] lg:w-[25%] flex items-center justify-end">
         <a
-          className="text-sm underline"
+          className="text-sm underline cursor-pointer"
           onClick={() => router.push("/forgot-password")}
         >
           Forgot Password?

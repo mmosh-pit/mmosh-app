@@ -96,7 +96,7 @@ const ForgotPassword = () => {
         <Button
           title="Go Back"
           action={() => {
-            router.back();
+            router.replace("/login");
           }}
           size="large"
           isPrimary={false}

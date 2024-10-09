@@ -14,8 +14,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(false);
   }
 
-  console.log("Querying with session value: ", session);
-
   const user = await collection.findOne({
     sessions: session?.value,
   });

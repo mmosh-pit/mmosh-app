@@ -87,6 +87,7 @@ const Header = () => {
     const result = await axios.get("/api/is-auth");
 
     if (!result.data && pathname === "/") {
+      console.log("Redirecting to login...");
       router.replace("/login");
     }
 

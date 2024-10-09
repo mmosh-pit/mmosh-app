@@ -6,22 +6,12 @@ import SearchBar from "./CoinDirectory/SearchBar";
 import Graphics from "./Home/Graphics";
 import { selectedCoinsMode } from "../store/home";
 import CoinsList from "./Home/CoinsList";
-import { isAuth } from "../store";
-import { useRouter } from "next/navigation";
 
 const HomePage = () => {
   // const [currentUser] = useAtom(data);
   // const [isDrawerShown] = useAtom(isDrawerOpen);
-  const router = useRouter();
 
   const [coinsMode] = useAtom(selectedCoinsMode);
-  const [isAuthenticated] = useAtom(isAuth);
-
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [isAuthenticated]);
 
   return (
     <div className="background-content flex flex-col max-h-full pt-20 px-12 w-full">

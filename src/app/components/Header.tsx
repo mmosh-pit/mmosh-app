@@ -202,7 +202,11 @@ const Header = () => {
     }
   }, [wallet, incomingWalletToken]);
 
-  if (pathname.includes("sign-up") || pathname.includes("login")) {
+  if (
+    pathname.includes("sign-up") ||
+    pathname.includes("login") ||
+    pathname.includes("password")
+  ) {
     return <></>;
   }
 

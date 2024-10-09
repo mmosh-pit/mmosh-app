@@ -9,8 +9,16 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-users-email-verification");
 
+  const userCollection = db.collection("mmosh-users");
+
   const data = await req.json();
   const code = generateCode();
+
+  const existingUser = await userCollection.findOne({
+    email: data.email,
+  });
+
+  if (!existingUser) return NextResponse.json("");
 
   const link = `${process.env.NEXT_PUBLIC_APP_MAIN_URL}/reset-password?code=${code}`;
 

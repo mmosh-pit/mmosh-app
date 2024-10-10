@@ -1,4 +1,5 @@
 import { web3Consts } from "@/anchor/web3Consts";
+import Config from "@/anchor/web3Config.json";
 import axios from "axios";
 
 export type JupQuoteParams = {
@@ -28,8 +29,42 @@ export const getquote = async (params: JupQuoteParams) => {
    }  
 }
 
+const getPriorityFeeEstimate = async () => {
+  try {
+    const response = await fetch(Config.rpcURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "1",
+        method: "getPriorityFeeEstimate",
+        params: [
+          {
+            "accountKeys": ["JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"],
+            "options": {
+                "recommended": true
+            }
+          },
+        ],
+      }),
+    });
+    const data = await response.json();
+    console.log(
+      "Fee in function for",
+      "HIGH",
+      " :",
+      data.result.priorityFeeEstimate,
+    );
+    return Math.floor(data.result.priorityFeeEstimate);
+  } catch (error) {
+    console.log("getPriorityFeeEstimate ", error);
+    return 0;
+  }
+}
+
 export const getSwapTransaction = async (params: JupSwapParams) => {
     try {
+        const maxLamports = await getPriorityFeeEstimate()
         const result = await axios(process.env.NEXT_PUBLIC_JUPITER_API + "/v6/swap",
             {
                 method: "post",
@@ -42,7 +77,7 @@ export const getSwapTransaction = async (params: JupSwapParams) => {
                     // auto wrap and unwrap SOL. default is true
                     wrapAndUnwrapSol: true,
                     prioritizationFeeLamports: {
-                      autoMultiplier: 2,
+                      priorityLevelWithMaxLamports: {priorityLevel: "high", "maxLamports": maxLamports}
                     },
                   })
             }

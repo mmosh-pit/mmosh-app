@@ -167,10 +167,7 @@ const Swap = () => {
         
           const userConn: UserConn = new UserConn(env, web3Consts.programID);
           const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(txHex,"base64"))
-          const signature = await userConn.provider.sendAndConfirm(tx,[],{
-            skipPreflight: false,
-            maxRetries: 5
-          })
+          const signature = await userConn.provider.sendAndConfirm(tx)
   
           console.log("signature", signature)
           setResult({ res: "success", message: "Congrats! Your token have been swapped successfully"});

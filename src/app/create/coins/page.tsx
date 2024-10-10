@@ -160,6 +160,22 @@ const CreateCoin = () => {
     setIsLoading(true);
 
     if (selectedCoin.symbol !== "MMOSH") {
+      let position = "";
+
+      if (
+        (selectedCoin.symbol === "PTVB" && form.candidate!.PARTY === "DEM") ||
+        (selectedCoin.symbol === "PTVR" && form.candidate!.PARTY === "REP")
+      ) {
+        position = "for";
+      } else if (
+        (selectedCoin.symbol === "PTVB" && form.candidate!.PARTY === "REP") ||
+        (selectedCoin.symbol === "PTVR" && form.candidate!.PARTY === "DEM")
+      ) {
+        position = "against";
+      } else {
+        position = form.position;
+      }
+
       const params = {
         name: form.name,
         description: form.description,
@@ -174,7 +190,7 @@ const CreateCoin = () => {
         supply: form.supply,
         type: "exponential",
         baseToken: form.bonding,
-        position: form.position,
+        position,
         candidate: form.candidate!,
       };
 
@@ -413,47 +429,50 @@ const CreateCoin = () => {
                   onChangeValue={(val) => setForm({ ...form, candidate: val })}
                 />
 
-                {form.candidate !== null && (
-                  <div className="w-full flex-col mt-16">
-                    <p className="text-sm text-white">
-                      Are you For or Against this Candidate?
-                    </p>
+                {form.candidate !== null &&
+                  !["DEM", "REP"].includes(form.candidate.PARTY) && (
+                    <div className="w-full flex-col mt-16">
+                      <p className="text-sm text-white">
+                        Are you For or Against this Candidate?
+                      </p>
 
-                    <div className="w-full flex">
-                      <div
-                        className="flex items-center justify-center cursor-pointer"
-                        onClick={(_) => {
-                          setForm({ ...form, position: "for" });
-                        }}
-                      >
-                        <input
-                          id="radio1"
-                          type="radio"
-                          className="radio radio-secondary candidates-checkboxes"
-                          checked={form.position === "for"}
-                          onChange={() => {}}
-                        />
-                        <p className="text-white text-base md:ml-2">For</p>
-                      </div>
+                      <div className="w-full flex">
+                        <div
+                          className="flex items-center justify-center cursor-pointer"
+                          onClick={(_) => {
+                            setForm({ ...form, position: "for" });
+                          }}
+                        >
+                          <input
+                            id="radio1"
+                            type="radio"
+                            className="radio radio-secondary candidates-checkboxes"
+                            checked={form.position === "for"}
+                            onChange={() => {}}
+                          />
+                          <p className="text-white text-base md:ml-2">For</p>
+                        </div>
 
-                      <div
-                        className="flex items-center justify-center ml-6 cursor-pointer"
-                        onClick={(_) => {
-                          setForm({ ...form, position: "against" });
-                        }}
-                      >
-                        <input
-                          id="radio1"
-                          type="radio"
-                          className="radio radio-secondary candidates-checkboxes"
-                          checked={form.position === "against"}
-                          onChange={() => {}}
-                        />
-                        <p className="text-white text-base md:ml-2">Against</p>
+                        <div
+                          className="flex items-center justify-center ml-6 cursor-pointer"
+                          onClick={(_) => {
+                            setForm({ ...form, position: "against" });
+                          }}
+                        >
+                          <input
+                            id="radio1"
+                            type="radio"
+                            className="radio radio-secondary candidates-checkboxes"
+                            checked={form.position === "against"}
+                            onChange={() => {}}
+                          />
+                          <p className="text-white text-base md:ml-2">
+                            Against
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {!["DEM", "REP"].includes(form.candidate?.PARTY ?? "") &&
                   form.candidate !== null && (

@@ -22,10 +22,12 @@ export const getSwapTokenInfo = async (
 
   const balances = await curveConn.getTokenBalance(
     token.token,
+    9,
     web3Consts.oposToken.toBase58(),
+    9
   );
 
-  const target = {
+  const target = 
     name: token.name,
     symbol: token.symbol,
     token: token.token,

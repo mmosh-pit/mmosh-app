@@ -27,7 +27,7 @@ export const getSwapTokenInfo = async (
     9
   );
 
-  const target = 
+  const target = {
     name: token.name,
     symbol: token.symbol,
     token: token.token,

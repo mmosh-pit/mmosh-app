@@ -8,4 +8,6 @@ export type CandidateCoinForm = {
   bonding: string;
   description: string;
   supply: number;
+  multiplier: number;
+  initialPrice: number;
 };

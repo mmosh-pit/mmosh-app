@@ -128,7 +128,7 @@ const CreateCoin = () => {
       return false;
     }
 
-    if(selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
+    if (selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
       if (profileInfo!.mmoshBalance < form.supply) {
         setMessage({
           type: "warn",
@@ -147,7 +147,6 @@ const CreateCoin = () => {
         return false;
       }
     }
-
 
     if (!form.name) {
       setMessage({
@@ -359,27 +358,38 @@ const CreateCoin = () => {
   };
 
   const getTokenBalance = async () => {
-    if(selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
-      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    if (selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
+      const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+      );
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",
       });
       let userConn: UserConn = new UserConn(env, web3Consts.programID);
-  
+
       const balance = await userConn.getUserBalance({
         address: wallet?.publicKey,
         token: selectedCommunityCoin.address,
-        decimals: selectedCommunityCoin.decimals
+        decimals: selectedCommunityCoin.decimals,
       });
       setSelectedCommunityBalance(balance ? balance : 0);
     } else {
-      let type = "Red"
-      if(selectedCommunityCoin.address === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
-        type = "Blue"
+      let type = "Red";
+      if (
+        selectedCommunityCoin.address === process.env.NEXT_PUBLIC_PTVB_TOKEN
+      ) {
+        type = "Blue";
       }
-      let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
-      setSelectedCommunityBalance(coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0);
-    } 
+      let coinData = await axios(
+        "/api/ptv/rewards?type=" +
+          type +
+          "&&wallet=" +
+          wallet?.publicKey.toBase58(),
+      );
+      setSelectedCommunityBalance(
+        coinData.data ? coinData.data.claimable + coinData.data.unstakable : 0,
+      );
+    }
   };
 
   return (

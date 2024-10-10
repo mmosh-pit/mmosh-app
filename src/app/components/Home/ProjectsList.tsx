@@ -98,7 +98,7 @@ const ProjectsList = () => {
               description={value.desc}
               key={value.key}
               symbol={value.symbol}
-              price={value.price.toString()}
+              price={value.price ? value.price.toString() : "0"}
               launchDate={new Date(value.dexlistingdate)}
               soldInPresale={value.minpresalesupply}
               supply={value.presalesupply}

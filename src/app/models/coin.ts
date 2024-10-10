@@ -6,4 +6,6 @@ export type Coin = {
   image: string;
   bonding: string;
   creatorUsername: string;
+  decimals?: number;
+  iscoin?: boolean;
 };

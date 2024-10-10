@@ -11,8 +11,13 @@ import { web3Consts } from "@/anchor/web3Consts";
 import Button from "@/app/components/common/Button";
 import CoinSelect from "@/app/components/Swap/CoinSelect";
 import { SwapCoin } from "@/app/models/swapCoin";
-import { getSwapPrices } from "@/app/lib/forge/getSwapPrices";
+import { getSwapPrices, getSwapPricesForJup } from "@/app/lib/forge/getSwapPrices";
 import { isDrawerOpen } from "@/app/store";
+import { getquote, getSwapTransaction, jupCoins } from "@/app/lib/forge/jupiter";
+
+import { Connection } from "@solana/web3.js";
+import * as anchor from "@coral-xyz/anchor";
+import { Connectivity as UserConn } from "@/anchor/user";
 
 const defaultBaseToken = {
   name: "",
@@ -25,20 +30,11 @@ const defaultBaseToken = {
   value: 0,
   desc: "",
   creatorUsername: "",
+  decimals: 9,
+  iscoin: false
 };
 
-const defaultMMOSHToken = {
-  name: "MMOSH: The Stoked Token",
-  symbol: "MMOSH",
-  token: web3Consts.oposToken.toBase58(),
-  image:
-    "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-  balance: 0,
-  bonding: "",
-  value: 0,
-  desc: "",
-  creatorUsername: "",
-};
+
 
 const Swap = () => {
   const wallet = useAnchorWallet();
@@ -50,36 +46,150 @@ const Swap = () => {
 
   const [baseToken, setBaseToken] = React.useState<SwapCoin>(defaultBaseToken);
   const [targetToken, setTargetToken] =
-    React.useState<SwapCoin>(defaultMMOSHToken);
+    React.useState<SwapCoin>(jupCoins[0]);
 
   const [curve, setCurve] = React.useState<BondingPricing>();
+  const [isJupiter, setIsJupiter] = React.useState(false)
 
-  const onTokenSelect = React.useCallback(
-    async (token: SwapCoin, isBase: boolean) => {
-      setSwapLoading(true);
-      const result:any = await getSwapPrices(token, wallet!, isBase);
+//   React.useEffect(()=>{
+//     getquote({
+//      inputMint: "So11111111111111111111111111111111111111112",
+//      outputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+//      lamportValue: 100000000
+//     })
+//  },[])
 
-      if(result) {
-        setBaseToken(result.baseToken);
-        setTargetToken(result.targetToken);
-        setCurve(result.curve);
+
+  const onTokenSelect = async (token: SwapCoin, isBase: boolean) => {
+      if(isBase) {
+        setBaseToken(token)
+      } else {
+        setTargetToken(token)
+      }
+      if(token.iscoin) {
+        if(isBase) {
+          if(targetToken.token == ""){
+            return
+          }
+          if(!targetToken.iscoin) {
+             console.log("onTokenSelect targetToken.iscoin", targetToken)
+             setTargetToken(defaultBaseToken)
+             return
+          }
+        } else {
+          if(baseToken.token == ""){
+            return
+          }
+          if(!baseToken.iscoin) {
+            console.log("onTokenSelect baseToken.iscoin", baseToken)
+            setBaseToken(defaultBaseToken)
+            return
+         }
+        }
+
+      } else {
+        await loadMemecoin(token,isBase)
       }
 
-      setSwapLoading(false);
-    },
-    [wallet],
-  );
+
+      let isCurve = true;
+      if(isBase) {
+        setBaseToken(token)
+        if(targetToken?.iscoin && token.iscoin) {
+           isCurve = false
+        }
+      } else {
+        setTargetToken(token)
+        if(baseToken?.iscoin && token.iscoin) {
+          isCurve = false
+        }
+      }
+      
+
+      if(isCurve) {
+        await loadMemecoin(token,isBase)
+      } else {
+        let base;
+        let target;
+        if(isBase) {
+          base = token
+          target = targetToken
+        } else {
+          base = baseToken
+          target = token
+        }
+        const result:any = await getSwapPricesForJup(base, target, wallet!);
+        console.log("jup result ", result)
+        setIsJupiter(true)
+        setBaseToken(result.baseToken);
+        setTargetToken(result.targetToken);
+      }
+  };
+
+  const loadMemecoin = async (token: SwapCoin, isBase: boolean) => {
+    setSwapLoading(true);
+    const result:any = await getSwapPrices(token, wallet!, isBase);
+    if(result) {
+      setIsJupiter(false)
+      setBaseToken(result.baseToken);
+      setTargetToken(result.targetToken);
+      setCurve(result.curve);
+    }
+    setSwapLoading(false);
+  }
 
   const executeSwap = React.useCallback(async () => {
-    setSwapLoading(true);
-    const response = await swapTokens(targetToken, baseToken, wallet!);
+    if(!wallet) {
+      setResult({ res: "error", message: "wallet is not connected"});
+      return
+    }
+    try {
+      setSwapLoading(true);
+      if(baseToken.iscoin && targetToken.iscoin) {
+        const result = await getquote({
+          inputMint: baseToken.token,
+          outputMint: targetToken.token,
+          lamportValue: baseToken.value * (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000)
+        })
+        if(result.status){
+          const swapResult = await getSwapTransaction({
+            quote: result.data,
+            wallet: wallet?.publicKey.toBase58(),
+          })
+          let txHex = swapResult.data
+  
+          const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+          const env = new anchor.AnchorProvider(connection, wallet, {
+            preflightCommitment: "processed",
+          });
+        
+          anchor.setProvider(env);
+        
+          const userConn: UserConn = new UserConn(env, web3Consts.programID);
+          const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(txHex,"base64"))
+          const signature = await userConn.provider.sendAndConfirm(tx)
+  
+          console.log("signature", signature)
+          setResult({ res: "success", message: "Congrats! Your token have been swapped successfully"});
+          setBaseToken(defaultBaseToken)
+          setTargetToken(jupCoins[0])
+          setSwapLoading(false);
+        } else {
+          setResult({ res: "error", message: "error on jupiter swap"});
+          setSwapLoading(false);
+        }
+      } else {
+        const response = await swapTokens(targetToken, baseToken, wallet!);
+        setResult({ res: response.type, message: response.message });
+        setSwapLoading(false);
+      }
+      setTimeout(() => {
+        setResult({ res: "", message: "" });
+      }, 4000);
+    } catch (error) {
+      console.log("swap error ", error)
+    }
 
-    setResult({ res: response.type, message: response.message });
-    setSwapLoading(false);
-
-    setTimeout(() => {
-      setResult({ res: "", message: "" });
-    }, 4000);
   }, [baseToken, targetToken, wallet]);
 
   const switchCoins = React.useCallback(() => {
@@ -105,7 +215,7 @@ const Swap = () => {
   }, [baseToken, targetToken]);
 
   const onChangeValue = React.useCallback(
-    (value: number) => {
+    async (value: number) => {
       if (value === 0) {
         setBaseToken({ ...baseToken!, value });
         setTargetToken({ ...targetToken!, value });
@@ -120,15 +230,34 @@ const Swap = () => {
 
       if (value > baseToken!.balance) return;
 
-      const isMMOSHBase = (baseToken?.token === web3Consts.oposToken.toBase58() || baseToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN || baseToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN);
+      if(baseToken.token == "" || targetToken.token == "") return
 
-      setBaseToken({ ...baseToken!, value });
+      if(baseToken.iscoin || targetToken.iscoin) {
+        console.log("baseToken.decimals", baseToken.decimals)
+        setBaseToken({ ...baseToken!, value });
+        const result = await getquote({
+          inputMint: baseToken.token,
+          outputMint: targetToken.token,
+          lamportValue: value * (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000)
+        })
+        if(result.status) {
+          console.log(targetToken.decimals)
 
-      const buyValue = isMMOSHBase
-        ? curve!.buyWithBaseAmount(value - value * 0.06)
-        : curve!.sellTargetAmount(value - value * 0.06);
+          setTargetToken({ ...targetToken!, value: result.data.outAmount / (targetToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000) });
+        }
+      } else {
+        const isMMOSHBase = (baseToken?.token === web3Consts.oposToken.toBase58() || baseToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN || baseToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN);
 
-      setTargetToken({ ...targetToken!, value: buyValue });
+        setBaseToken({ ...baseToken!, value });
+  
+        const buyValue = isMMOSHBase
+          ? curve!.buyWithBaseAmount(value - value * 0.06)
+          : curve!.sellTargetAmount(value - value * 0.06);
+  
+        setTargetToken({ ...targetToken!, value: buyValue });
+      }
+
+
     },
     [baseToken, targetToken],
   );
@@ -156,10 +285,12 @@ const Swap = () => {
 
             <div className="w-full flex justify-between px-1 py-2 bg-[#00000021] rounded-md border-white border-opacity-[0.05] border-[1px]">
               <CoinSelect
+                key={"base"}
                 selectedCoin={baseToken}
                 onTokenSelect={onTokenSelect}
-                isBase
-                readonly={baseToken?.symbol.toLowerCase() === "mmosh"}
+                otherToken={targetToken}
+                isBase={true}
+                readonly={false}
               />
 
               <div className="w-[25%] flex justify-end">
@@ -204,10 +335,12 @@ const Swap = () => {
 
             <div className="w-full flex justify-between px-1 py-2 bg-[#DEDDFC12] rounded-md border-white border-opacity-[0.05] border-[1px]">
               <CoinSelect
+                key={"target"}
                 selectedCoin={targetToken}
                 onTokenSelect={onTokenSelect}
                 isBase={false}
-                readonly={targetToken?.symbol.toLowerCase() === "mmosh"}
+                otherToken={baseToken}
+                readonly={false}
               />
 
               <div className="w-[25%] flex justify-end">

@@ -1639,7 +1639,7 @@ export class Connectivity {
     }
   }
 
-  async getTokenBalance(baseAddress: string, targetAddress: any) {
+  async getTokenBalance(baseAddress: string, baseDecimal: number, targetAddress: any, targetDecimal: number) {
     try {
       const userbasetokenAta = getAssociatedTokenAddressSync(
         new anchor.web3.PublicKey(baseAddress),
@@ -1662,14 +1662,14 @@ export class Connectivity {
         const tokenBaseAccount = unpackAccount(userbasetokenAta, infoes[0]);
         baseBalance =
           (parseInt(tokenBaseAccount?.amount?.toString()) ?? 0) /
-          web3Consts.LAMPORTS_PER_OPOS;
+          baseDecimal == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000;
       }
 
       if (infoes[1]) {
         const tokenTargetAccount = unpackAccount(usertargettokenAta, infoes[1]);
         targetBalance =
           (parseInt(tokenTargetAccount?.amount?.toString()) ?? 0) /
-          web3Consts.LAMPORTS_PER_OPOS;
+          targetDecimal == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000;
       }
 
       if (infoes[2]) {

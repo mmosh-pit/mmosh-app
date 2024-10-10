@@ -187,6 +187,7 @@ const Swap = () => {
         setResult({ res: "", message: "" });
       }, 4000);
     } catch (error) {
+      setSwapLoading(false)
       console.log("swap error ", error)
     }
 

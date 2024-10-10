@@ -42,7 +42,7 @@ const getPriorityFeeEstimate = async () => {
           {
             "accountKeys": ["JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"],
             "options": {
-                "recommended": true
+               "priorityLevel": "High"
             }
           },
         ],
@@ -76,6 +76,8 @@ export const getSwapTransaction = async (params: JupSwapParams) => {
                     userPublicKey: params.wallet,
                     // auto wrap and unwrap SOL. default is true
                     wrapAndUnwrapSol: true,
+                    asLegacyTransaction: false,
+                    dynamicComputeUnitLimit: true,
                     prioritizationFeeLamports: {
                       priorityLevelWithMaxLamports: {priorityLevel: "high", "maxLamports": maxLamports}
                     },

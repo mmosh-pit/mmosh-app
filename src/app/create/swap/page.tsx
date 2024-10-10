@@ -169,7 +169,6 @@ const Swap = () => {
           const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(txHex,"base64"))
           const signature = await userConn.provider.sendAndConfirm(tx,[],{
             skipPreflight: false,
-            preflightCommitment: 'singleGossip',
             maxRetries: 5
           })
   

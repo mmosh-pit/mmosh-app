@@ -1641,39 +1641,22 @@ export class Connectivity {
 
   async getTokenBalance(baseAddress: string, baseDecimal: number, targetAddress: any, targetDecimal: number) {
     try {
-      const userbasetokenAta = getAssociatedTokenAddressSync(
-        new anchor.web3.PublicKey(baseAddress),
-        this.provider.publicKey,
-      );
-      const usertargettokenAta = getAssociatedTokenAddressSync(
-        new anchor.web3.PublicKey(targetAddress),
-        this.provider.publicKey,
-      );
       const infoes = await this.connection.getMultipleAccountsInfo([
-        new anchor.web3.PublicKey(userbasetokenAta.toBase58()),
-        new anchor.web3.PublicKey(usertargettokenAta.toBase58()),
         new anchor.web3.PublicKey(this.provider.publicKey.toBase58()),
       ]);
       console.log("getTokenBalance ", infoes);
-      let baseBalance = 0;
-      let targetBalance = 0;
+      let baseBalance = await this.getUserBalance({
+        address: this.provider.publicKey,
+        token: baseAddress
+      });
+      let targetBalance = await this.getUserBalance({
+        address: this.provider.publicKey,
+        token: targetAddress
+      });
       let solBalance = 0;
+
       if (infoes[0]) {
-        const tokenBaseAccount = unpackAccount(userbasetokenAta, infoes[0]);
-        baseBalance =
-          (parseInt(tokenBaseAccount?.amount?.toString()) ?? 0) /
-          baseDecimal == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000;
-      }
-
-      if (infoes[1]) {
-        const tokenTargetAccount = unpackAccount(usertargettokenAta, infoes[1]);
-        targetBalance =
-          (parseInt(tokenTargetAccount?.amount?.toString()) ?? 0) /
-          targetDecimal == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000;
-      }
-
-      if (infoes[2]) {
-        solBalance = infoes[2].lamports / 1000_000_000;
+        solBalance = infoes[0].lamports / 1000_000_000;
       }
 
       return {
@@ -1688,6 +1671,20 @@ export class Connectivity {
         target: 0,
         sol: 0,
       };
+    }
+  }
+
+  async getUserBalance(tokenData: any) {
+    try {
+      const user = tokenData.address;
+      if (!user) throw "Wallet not found";
+      const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.token), user);
+      const infoes = await this.connection.getTokenAccountBalance(userOposAta);
+      console.log("infoes ", infoes)
+      return infoes.value.uiAmount ? infoes.value.uiAmount : 0
+    } catch (error) {
+      console.log("getUserBalance ",error)
+      return 0
     }
   }
 }

@@ -41,6 +41,9 @@ export const getSwapTransaction = async (params: JupSwapParams) => {
                     userPublicKey: params.wallet,
                     // auto wrap and unwrap SOL. default is true
                     wrapAndUnwrapSol: true,
+                    prioritizationFeeLamports: {
+                      autoMultiplier: 2,
+                    },
                   })
             }
         )

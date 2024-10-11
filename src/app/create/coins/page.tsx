@@ -92,7 +92,10 @@ const CreateCoin = () => {
       return false;
     }
 
-    if (profileInfo!.mmoshBalance < form.supply) {
+    if (
+      selectedCoin.symbol.toUpperCase() === "MMOSH" &&
+      profileInfo!.mmoshBalance < form.supply
+    ) {
       setMessage({
         type: "warn",
         message:

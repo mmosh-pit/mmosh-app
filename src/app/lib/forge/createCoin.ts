@@ -136,8 +136,8 @@ export const createCoin = async ({
 
     setMintingStatus("Swapping Token...");
     await delay(15000);
-    let buyres
-    if(baseToken.address === web3Consts.oposToken.toBase58()) {
+    let buyres;
+    if (baseToken.address === web3Consts.oposToken.toBase58()) {
       buyres = await curveConn.buy({
         tokenBonding: res.tokenBonding,
         desiredTargetAmount: new anchor.BN(
@@ -146,25 +146,27 @@ export const createCoin = async ({
         slippage: 0.5,
       });
     } else {
-      const buytx = await axios.post("/api/ptv/swap",{
+      const buytx = await axios.post("/api/ptv/swap", {
         bonding: res.tokenBonding,
         supply: Number(supply),
-        address: wallet.publicKey.toBase58()
-      })
-      if(buytx.data.status) {
-        const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(buytx.data.transaction,"base64"))
-        buyres = await curveConn.provider.sendAndConfirm(tx)
-        if(buyres) {
-            let tokenType = "Blue"
-            if(baseToken.address === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-              tokenType = "Red"
-            }
-           await axios.post("/api/ptv/update-rewards",{
-              type: tokenType,
-              wallet: wallet.publicKey.toBase58(),
-              method: "buy",
-              value: Number(supply)
-            })
+        address: wallet.publicKey.toBase58(),
+      });
+      if (buytx.data.status) {
+        const tx = anchor.web3.VersionedTransaction.deserialize(
+          Buffer.from(buytx.data.transaction, "base64"),
+        );
+        buyres = await curveConn.provider.sendAndConfirm(tx);
+        if (buyres) {
+          let tokenType = "Blue";
+          if (baseToken.address === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+            tokenType = "Red";
+          }
+          await axios.post("/api/ptv/update-rewards", {
+            type: tokenType,
+            wallet: wallet.publicKey.toBase58(),
+            method: "buy",
+            value: Number(supply),
+          });
         }
       } else {
         return {
@@ -174,7 +176,6 @@ export const createCoin = async ({
         };
       }
     }
-
 
     if (buyres) {
       const directoryParams = {
@@ -211,7 +212,7 @@ export const createCoin = async ({
 
       return {
         message:
-          "Congrats! Your coin is minted and tradable in [swap](https://www.mmosh.app/create/swap)",
+          "Congrats! Your coin is minted and tradable in [swap](https://www.liquidhearts.app/swap)",
         type: "success",
       };
     } else {

@@ -151,7 +151,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
                     title={group.privacy === "coin" ? "Swap" : "Mint"}
                     action={() => {
                       if (group.privacy === "coin") {
-                        router.push("/create/swap");
+                        router.push("/swap");
                         return;
                       }
                     }}

@@ -1,11 +1,15 @@
 import * as React from "react";
+import { useRouter } from "next/navigation";
 
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import TVL from "./TVL";
 import Volume from "./Volume";
 import Price from "./Price";
+import Button from "../common/Button";
 
 const Graphics = () => {
+  const router = useRouter();
+
   const [selectedTab, setSelectedTab] = React.useState("tvl");
   const [selectedCoin, setSelectedCoin] = React.useState("mmosh");
 
@@ -21,53 +25,67 @@ const Graphics = () => {
 
   return (
     <>
-      <div className="flex items-center mt-4 mb-6">
-        <div
-          className="flex items-center justify-center"
-          onClick={(_) => {
-            setSelectedCoin("mmosh");
-          }}
-        >
-          <input
-            id="radio1"
-            type="radio"
-            className="radio radio-secondary candidates-checkboxes"
-            checked={selectedCoin === "mmosh"}
-            onChange={() => {}}
-          />
-          <p className="text-white text-base md:ml-2">MMOSH</p>
+      <div className="w-full flex justify-between">
+        <div className="flex items-center mt-4 mb-6">
+          <div
+            className="flex items-center justify-center"
+            onClick={(_) => {
+              setSelectedCoin("mmosh");
+            }}
+          >
+            <input
+              id="radio1"
+              type="radio"
+              className="radio radio-secondary candidates-checkboxes"
+              checked={selectedCoin === "mmosh"}
+              onChange={() => {}}
+            />
+            <p className="text-white text-base md:ml-2">MMOSH</p>
+          </div>
+
+          <div
+            className="flex items-center justify-center mx-8"
+            onClick={(_) => {
+              setSelectedCoin("ptvb");
+            }}
+          >
+            <input
+              id="radio1"
+              type="radio"
+              className="radio radio-secondary candidates-checkboxes"
+              checked={selectedCoin === "ptvb"}
+              onChange={() => {}}
+            />
+            <p className="text-white text-base md:ml-2">PTVB</p>
+          </div>
+
+          <div
+            className="flex items-center justify-center mx-4"
+            onClick={(_) => {
+              setSelectedCoin("ptvr");
+            }}
+          >
+            <input
+              id="radio1"
+              type="radio"
+              className="radio radio-secondary candidates-checkboxes"
+              checked={selectedCoin === "ptvr"}
+              onChange={() => {}}
+            />
+            <p className="text-white text-base md:ml-2">PTVR</p>
+          </div>
         </div>
 
-        <div
-          className="flex items-center justify-center mx-8"
-          onClick={(_) => {
-            setSelectedCoin("ptvb");
-          }}
-        >
-          <input
-            id="radio1"
-            type="radio"
-            className="radio radio-secondary candidates-checkboxes"
-            checked={selectedCoin === "ptvb"}
-            onChange={() => {}}
+        <div className="">
+          <Button
+            title="Create a Coin"
+            isPrimary
+            size="small"
+            action={() => {
+              router.push("/create/coins");
+            }}
+            isLoading={false}
           />
-          <p className="text-white text-base md:ml-2">PTVB</p>
-        </div>
-
-        <div
-          className="flex items-center justify-center mx-4"
-          onClick={(_) => {
-            setSelectedCoin("ptvr");
-          }}
-        >
-          <input
-            id="radio1"
-            type="radio"
-            className="radio radio-secondary candidates-checkboxes"
-            checked={selectedCoin === "ptvr"}
-            onChange={() => {}}
-          />
-          <p className="text-white text-base md:ml-2">PTVR</p>
         </div>
       </div>
 

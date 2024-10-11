@@ -45,7 +45,7 @@ const MobileDrawer = () => {
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
-                router.push("/create/create_profile");
+                router.push("/members");
               }}
             >
               Members
@@ -97,9 +97,8 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => {
-                router.push("/");
-              }}
+              href="https://www.liquidhearts.club"
+              target="_blank"
             >
               Training
             </a>

@@ -7,7 +7,7 @@ import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 import MemberCard from "./MemberCard";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
-const MembersList = (props:any) => {
+const MembersList = (props: any) => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(typedSearchValue);
 
@@ -28,14 +28,12 @@ const MembersList = (props:any) => {
     ) {
       fetching.current = true;
       setIsLoading(true);
-      let url = `/api/get-all-users?skip=${currentPage * 10}&searchText=${searchText}`
-      if(wallet) {
-        url = url + "&requester=" + wallet.publicKey.toBase58()
+      let url = `/api/get-all-users?skip=${currentPage * 10}&searchText=${searchText}`;
+      if (wallet) {
+        url = url + "&requester=" + wallet.publicKey.toBase58();
       }
 
-      const result = await axios.get(
-        url,
-      );
+      const result = await axios.get(url);
 
       if (result.data.users.length === 0) {
         lastPageTriggered.current = true;
@@ -66,11 +64,8 @@ const MembersList = (props:any) => {
 
   React.useEffect(() => {
     if (fetching.current) return;
-    if(wallet) {
-      getUsers();
-    }
-   
-  }, [searchText, currentPage, wallet]);
+    getUsers();
+  }, [searchText, currentPage]);
 
   if (isLoading) return <></>;
 
@@ -88,12 +83,17 @@ const MembersList = (props:any) => {
         </a>
       </div>
       <div
-        className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 xl:grid-cols-2 gap-4 mt-4 overflow-y-auto"
+        className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 overflow-y-auto"
         ref={containerRef}
         onScroll={handleScroll}
       >
         {users.map((user) => (
-          <MemberCard user={user} wallet={wallet} currentuser={props.currentuser} connection={connection.connection} />
+          <MemberCard
+            user={user}
+            wallet={wallet}
+            currentuser={props.currentuser}
+            connection={connection.connection}
+          />
         ))}
       </div>
     </div>

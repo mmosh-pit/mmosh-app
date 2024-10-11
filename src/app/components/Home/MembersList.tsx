@@ -3,13 +3,14 @@ import axios from "axios";
 import { useAtom } from "jotai";
 
 import { User } from "@/app/models/user";
-import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
+import { selectedSearchFilter } from "@/app/store/home";
 import MemberCard from "./MemberCard";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { textSearch } from "@/app/store/membership";
 
 const MembersList = (props: any) => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
-  const [searchText] = useAtom(typedSearchValue);
+  const [searchText] = useAtom(textSearch);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const fetching = React.useRef(false);

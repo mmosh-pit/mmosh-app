@@ -3,13 +3,11 @@ import "../globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "MMOSH App Forge",
+    title: "Liquid Hearts Club",
     description:
-      "MMOSH: The Stoked Token. Join us for an epic adventure beyond time, space and the death-grip of global civilization. Let’s make money fun!",
+      "Go deeper. Join us on the privacy superdapp for an epic adventure beyond time, space and the death-grip of global civilization.",
     openGraph: {
-      images: [
-        "https://storage.googleapis.com/mmosh-assets/metadata_image.png",
-      ],
+      images: ["https://storage.googleapis.com/mmosh-assets/metadata.png"],
     },
   };
 }

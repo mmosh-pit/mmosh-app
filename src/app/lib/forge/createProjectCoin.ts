@@ -222,7 +222,7 @@ export const createProjectCoin = async ({
 
       return {
         message:
-          "Congrats! Your coin is minted and tradable in [swap](https://www.mmosh.app/create/swap)",
+          "Congrats! Your coin is minted and tradable in [swap](https://www.liquidhearts.app/swap)",
         type: "success",
       };
     } else {

@@ -4,6 +4,8 @@ import sgMail from "@sendgrid/mail";
 import { db } from "@/app/lib/mongoClient";
 import { generateCode } from "@/utils/generateCode";
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-users-email-verification");
 
@@ -34,7 +36,8 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json("");
-  } catch (_) {
+  } catch (err) {
+    console.error(err);
     return NextResponse.json("", { status: 500 });
   }
 }

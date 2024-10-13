@@ -147,103 +147,136 @@ export const swapTokens = async (
               })
           }
         } else {
-          return {
-            message:
-              "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
-            type: "error",
-          };
+          let userConn: UserConn = new UserConn(env, web3Consts.programID);
+          const balance = await userConn.getUserBalance({
+            address: wallet.publicKey,
+            token: targetToken.token,
+            decimals: web3Consts.LAMPORTS_PER_OPOS
+          });
+          if(balance > targetToken.value) {
+            buyres = await curveConn.buy({
+              tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+              desiredTargetAmount: new anchor.BN(
+                baseToken.value * web3Consts.LAMPORTS_PER_OPOS,
+              ),
+              slippage: 0.5,
+            });
+          } else {
+            return {
+              message:
+                "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
+              type: "error",
+            };
+          }
+
         }
       }
       console.log("buyres ", buyres);
     } else {
-      let supply = Math.ceil((targetToken.value - targetToken.value * 0.06))
-      let sellres
-      console.log("baseToken.token ", baseToken.token)
-      if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN || baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-        let stakePublicKey:any = process.env.NEXT_PUBLIC_PTV_WALLET_KEY;
-
-        userConn.txis = []
-        let txis = [];
-        const { ata: destination } =
-        await userConn.baseSpl.__getOrCreateTokenAccountInstruction(
-          { mint: new anchor.web3.PublicKey(baseToken.token), owner: new anchor.web3.PublicKey(stakePublicKey) },
-          (userConn.ixCallBack),
-        );
-
-        for (let index = 0; index < userConn.txis.length; index++) {
-          const element = userConn.txis[index];
-          txis.push(element)
-        }
-        userConn.txis = []
-
-        let tokenObj = await curveConn.sellInstructions({
-          tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
-          targetAmount: new anchor.BN(
-            supply * web3Consts.LAMPORTS_PER_OPOS,
-          ),
-          slippage: 0.5,
-          destination: destination
-        });
-
-        for (let index = 0; index < tokenObj.instructions.length; index++) {
-          const element = tokenObj.instructions[index];
-          txis.push(element)
-        }
-
-        const tx = new anchor.web3.Transaction().add(...txis);
-        tx.recentBlockhash = (
-          await curveConn.connection.getLatestBlockhash()
-        ).blockhash;
-        tx.feePayer = curveConn.provider.publicKey;
-        
-        const feeEstimate = await curveConn.getPriorityFeeEstimate(tx);
-        let feeIns;
-        if (feeEstimate > 0) {
-          feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
-            microLamports: feeEstimate,
-          });
-        } else {
-          feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
-            units: 1_400_000,
-          });
-        }
-        tx.add(feeIns);
-        sellres = await curveConn.provider.sendAndConfirm(
-          tx,
-          tokenObj.signers,
-        );
-      } else {
-        sellres = await curveConn.sell({
-          tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
-          targetAmount: new anchor.BN(
-            supply * web3Consts.LAMPORTS_PER_OPOS,
-          ),
-          slippage: 0.5
-        });
-      }
-      if(sellres) {
+        let supply = Math.ceil((targetToken.value - targetToken.value * 0.06))
+        let sellres
+        console.log("baseToken.token ", baseToken.token)
         if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN || baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-          let tokenType = "Blue"
-          if(baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-            tokenType = "Red"
+          let type = "Red"
+          if(baseToken.token === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+            type = "Blue"
           }
-          const curve = await curveConn.getPricing(
-            new anchor.web3.PublicKey(targetToken.bonding),
-          );
-          const value = targetToken.value;
-          await axios.post("/api/ptv/update-rewards",{
-            type: tokenType,
-            wallet: wallet.publicKey.toBase58(),
-            method: "sell",
-            value: curve!.sellTargetAmount(value - value * 0.06)
-          })
+          let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
+          if(coinData.data.swapped > targetToken.value) {
+            let stakePublicKey:any = process.env.NEXT_PUBLIC_PTV_WALLET_KEY;
+            userConn.txis = []
+            let txis = [];
+            const { ata: destination } =
+            await userConn.baseSpl.__getOrCreateTokenAccountInstruction(
+              { mint: new anchor.web3.PublicKey(baseToken.token), owner: new anchor.web3.PublicKey(stakePublicKey) },
+              (userConn.ixCallBack),
+            );
+    
+            for (let index = 0; index < userConn.txis.length; index++) {
+              const element = userConn.txis[index];
+              txis.push(element)
+            }
+            userConn.txis = []
+    
+            let tokenObj = await curveConn.sellInstructions({
+              tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+              targetAmount: new anchor.BN(
+                supply * web3Consts.LAMPORTS_PER_OPOS,
+              ),
+              slippage: 0.5,
+              destination: destination
+            });
+    
+            for (let index = 0; index < tokenObj.instructions.length; index++) {
+              const element = tokenObj.instructions[index];
+              txis.push(element)
+            }
+  
+            const tx = new anchor.web3.Transaction().add(...txis);
+            tx.recentBlockhash = (
+              await curveConn.connection.getLatestBlockhash()
+            ).blockhash;
+            tx.feePayer = curveConn.provider.publicKey;
+            
+            const feeEstimate = await curveConn.getPriorityFeeEstimate(tx);
+            let feeIns;
+            if (feeEstimate > 0) {
+              feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
+                microLamports: feeEstimate,
+              });
+            } else {
+              feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
+                units: 1_400_000,
+              });
+            }
+            tx.add(feeIns);
+            sellres = await curveConn.provider.sendAndConfirm(
+              tx,
+              tokenObj.signers,
+            );
+            if(sellres) {
+              if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN || baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+                let tokenType = "Blue"
+                if(baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+                  tokenType = "Red"
+                }
+                const curve = await curveConn.getPricing(
+                  new anchor.web3.PublicKey(targetToken.bonding),
+                );
+                const value = targetToken.value;
+                await axios.post("/api/ptv/update-rewards",{
+                  type: tokenType,
+                  wallet: wallet.publicKey.toBase58(),
+                  method: "sell",
+                  value: curve!.sellTargetAmount(value - value * 0.06)
+                })
+              }
+            }
+          } else {
+            sellres = await curveConn.sell({
+              tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+              targetAmount: new anchor.BN(
+                supply * web3Consts.LAMPORTS_PER_OPOS,
+              ),
+              slippage: 0.5
+            });
+          }
+        } else {
+          sellres = await curveConn.sell({
+            tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+            targetAmount: new anchor.BN(
+              supply * web3Consts.LAMPORTS_PER_OPOS,
+            ),
+            slippage: 0.5
+          });
         }
-      }
-      console.log("sellres ", sellres);
+        console.log("sellres ", sellres);
+
+
     }
 
     let params;
-    if (targetToken.token == web3Consts.oposToken.toBase58()) {
+    if (targetToken.token == web3Consts.oposToken.toBase58() || targetToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN  || targetToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN) {
       params = {
         basekey: targetToken.token,
         basename: targetToken.name,

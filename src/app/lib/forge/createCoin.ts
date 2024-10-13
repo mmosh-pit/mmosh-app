@@ -182,18 +182,6 @@ export const createCoin = async ({
             ),
             slippage: 0.5,
           });
-          if(buyres) {
-            let tokenType = "Blue"
-            if(baseToken.address === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-              tokenType = "Red"
-            }
-            await axios.post("/api/ptv/update-rewards",{
-              type: tokenType,
-              wallet: wallet.publicKey.toBase58(),
-              method: "buy",
-              value: Number(supply)
-            })
-          }
         } else{
           return {
             message:

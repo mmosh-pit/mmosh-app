@@ -3,6 +3,8 @@ import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { Connection } from "@solana/web3.js";
+import * as anchor from "@coral-xyz/anchor";
 
 import ImagePicker from "@/app/components/ImagePicker";
 import MessageBanner from "@/app/components/common/MessageBanner";
@@ -21,6 +23,8 @@ import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import Select from "@/app/components/common/Select";
 import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { createCoin } from "@/app/lib/forge/createCoin";
+import { web3Consts } from "@/anchor/web3Consts";
+import { Connectivity as UserConn } from "../../../anchor/user";
 
 const defaultFormState = {
   name: "",
@@ -82,6 +86,8 @@ const CreateCoin = () => {
   const [datasets, setDatasets] = React.useState<{ data: number }[]>([]);
   const [coinPrice, setCoinPrice] = React.useState(0);
 
+  const [selectedCoinBalance, setSelectedCoinBalance] = React.useState(0);
+
   const validateFields = () => {
     if (profileInfo!.solBalance <= 0) {
       setMessage({
@@ -93,13 +99,25 @@ const CreateCoin = () => {
     }
 
     if (
-      selectedCoin.symbol.toUpperCase() === "MMOSH" &&
+      selectedCoin.token === web3Consts.oposToken.toBase58() &&
       profileInfo!.mmoshBalance < form.supply
     ) {
       setMessage({
         type: "warn",
         message:
           "Hey! We checked your wallet and you don’t have enough MMOSH to mint. [Get some MMOSH here](https://jup.ag/swap/SOL-MMOSH)",
+      });
+      return false;
+    }
+
+    if (
+      selectedCoin.token === web3Consts.oposToken.toBase58() &&
+      selectedCoinBalance < form.supply
+    ) {
+      setMessage({
+        type: "warn",
+        message:
+          "Hey! We checked your wallet and you don’t have enough Community coin to mint",
       });
       return false;
     }
@@ -292,6 +310,45 @@ const CreateCoin = () => {
     },
     [datasets],
   );
+
+  React.useEffect(() => {
+    if (wallet) {
+      getTokenBalance();
+    }
+  }, [selectedCoin, wallet]);
+
+  const getTokenBalance = async () => {
+    if (selectedCoin.token === web3Consts.oposToken.toBase58()) {
+      const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+      );
+      const env = new anchor.AnchorProvider(connection, wallet!, {
+        preflightCommitment: "processed",
+      });
+      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+      const balance = await userConn.getUserBalance({
+        address: wallet?.publicKey,
+        token: selectedCoin.token,
+        decimals: selectedCoin.decimals,
+      });
+      setSelectedCoinBalance(balance ? balance : 0);
+    } else {
+      let type = "Red";
+      if (selectedCoin.token === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+        type = "Blue";
+      }
+      let coinData = await axios(
+        "/api/ptv/rewards?type=" +
+          type +
+          "&&wallet=" +
+          wallet?.publicKey.toBase58(),
+      );
+      setSelectedCoinBalance(
+        coinData.data ? coinData.data.claimable + coinData.data.unstakable : 0,
+      );
+    }
+  };
 
   React.useEffect(() => {
     const isLinear = form.bonding === "linear";

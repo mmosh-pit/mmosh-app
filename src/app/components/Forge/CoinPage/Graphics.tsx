@@ -45,7 +45,7 @@ const Graphics = ({ coin, base }: Props) => {
     if (selectedGraphicType.value === "volume")
       return <Volume bonding={coin.bonding} height={400} />;
 
-    return <Price height={400} />;
+    return <Price base={base} />;
   }, [coin, selectedGraphicType]);
 
   return (

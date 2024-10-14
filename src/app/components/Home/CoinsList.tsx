@@ -5,9 +5,10 @@ import axios from "axios";
 import { useAtom } from "jotai";
 
 import { DirectoryCoin } from "@/app/models/directoryCoin";
-import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
+import { selectedDirectory, selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 
 const CoinsList = () => {
+  const [selectedCoinDirectory] = useAtom(selectedDirectory);
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(typedSearchValue);
 
@@ -23,7 +24,7 @@ const CoinsList = () => {
     if (selectedFilters.includes("coins") || selectedFilters.includes("all")) {
       setIsLoading(true);
       fetching.current = true;
-      const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}`;
+      const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}&symbol=${selectedCoinDirectory}`;
 
       const result = await axios.get(url);
 
@@ -55,11 +56,25 @@ const CoinsList = () => {
   }, [searchText, currentPage, selectedFilters]);
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-    const mmoshUsdcPrice = await axios.get(
-      `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
-    );
-
-    setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0);
+    if(selectedCoinDirectory === "PTVB") {
+      const mmoshUsdcPrice = await axios.get(
+        `https://price.jup.ag/v6/price?ids=PTVB&vsToken=USDC`,
+      );
+  
+      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVB?.price || 0.003);
+    } else if(selectedCoinDirectory === "PTVR") {
+      const mmoshUsdcPrice = await axios.get(
+        `https://price.jup.ag/v6/price?ids=PTVR&vsToken=USDC`,
+      );
+  
+      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVR?.price || 0.003);
+    } else {
+      const mmoshUsdcPrice = await axios.get(
+        `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
+      );
+  
+      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
+    }
   }, []);
 
   const getChartColor = React.useCallback((prices: string[]) => {

@@ -5,22 +5,32 @@ import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 import { Coin } from "@/app/models/coin";
+import { selectedDirectory } from "@/app/store/home";
+import { useAtom } from "jotai";
 
 type Props = {
   bonding?: string;
   height?: number;
   base?: Coin;
+  symbol?: string;
 };
 
-const TVL = ({ bonding, base, height }: Props) => {
+const TVL = ({ bonding, base, height, symbol }: Props) => {
   const rendered = React.useRef(false);
+  const [selectedCoinDirectory] = useAtom(selectedDirectory);
 
   const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
   const [total, setTotal] = React.useState("0");
 
   const getTVL = async () => {
     try {
-      const tvlResult = await axios.get(`/api/tvl?bonding=${bonding}`);
+      let tvlResult;
+      if(bonding) {
+        tvlResult = await axios.get(`/api/tvl?bonding=${bonding}`);
+      } else {
+        tvlResult = await axios.get(`/api/tvl?symbol=${symbol}`);
+      }
+   
       const data = [];
 
       for (let index = 0; index < tvlResult.data.labels.length; index++) {
@@ -38,11 +48,8 @@ const TVL = ({ bonding, base, height }: Props) => {
   };
 
   React.useEffect(() => {
-    if (!rendered.current) {
       getTVL();
-      rendered.current = true;
-    }
-  }, []);
+  }, [selectedCoinDirectory]);
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">

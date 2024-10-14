@@ -14,8 +14,10 @@ import SortIcon from "@/assets/icons/SortIcon";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import ArrowUp from "@/assets/icons/ArrowUp";
 import ArrowDown from "@/assets/icons/ArrowDown";
+import { selectedDirectory } from "@/app/store/home";
 
 const CoinsTable = () => {
+  const [selectedCoinDirectory] = useAtom(selectedDirectory);
   const navigate = useRouter();
   const source = React.useRef<CancelTokenSource | null>(null);
 
@@ -42,7 +44,7 @@ const CoinsTable = () => {
       }
       source.current = axios.CancelToken.source();
 
-      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}`;
+      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}&symbol=${selectedCoinDirectory}`;
 
       const apiResult = await axios.get(url, {
         cancelToken: source.current.token,
@@ -109,15 +111,29 @@ const CoinsTable = () => {
   );
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-    const mmoshUsdcPrice = await axios.get(
-      `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
-    );
-
-    setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0);
-  }, []);
+    if(selectedCoinDirectory === "PTVB") {
+      const mmoshUsdcPrice = await axios.get(
+        `https://price.jup.ag/v6/price?ids=PTVB&vsToken=USDC`,
+      );
+  
+      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVB?.price || 0.003);
+    } else if(selectedCoinDirectory === "PTVR") {
+      const mmoshUsdcPrice = await axios.get(
+        `https://price.jup.ag/v6/price?ids=PTVR&vsToken=USDC`,
+      );
+  
+      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVR?.price || 0.003);
+    } else {
+      const mmoshUsdcPrice = await axios.get(
+        `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
+      );
+  
+      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
+    }
+  }, [selectedCoinDirectory]);
 
   const navigateToCoinPage = React.useCallback((symbol: string) => {
-    navigate.push(`/create/coins/${symbol}`);
+    navigate.push(`/create/coins_directory/${symbol}`);
   }, []);
 
   const getCoinPrice = React.useCallback(
@@ -126,9 +142,9 @@ const CoinsTable = () => {
         return `${price * usdcMmoshPrice} USDC`;
       }
 
-      return `${price} MMOSH`;
+      return `${price} ${selectedCoinDirectory}`;
     },
-    [usdcMmoshPrice, isUSDCSelected],
+    [usdcMmoshPrice, isUSDCSelected, selectedCoinDirectory],
   );
 
   const getCoinFDV = React.useCallback(
@@ -137,9 +153,9 @@ const CoinsTable = () => {
         return `${value * usdcMmoshPrice} USDC`;
       }
 
-      return `${value} MMOSH`;
+      return `${value} ${selectedCoinDirectory}`;
     },
-    [usdcMmoshPrice, isUSDCSelected],
+    [usdcMmoshPrice, isUSDCSelected, selectedCoinDirectory],
   );
 
   const getCoinVolume = React.useCallback(
@@ -148,9 +164,9 @@ const CoinsTable = () => {
         return `${value * usdcMmoshPrice} USDC`;
       }
 
-      return `${value} MMOSH`;
+      return `${value} ${selectedCoinDirectory}`;
     },
-    [usdcMmoshPrice, isUSDCSelected],
+    [usdcMmoshPrice, isUSDCSelected, selectedCoinDirectory],
   );
 
   const getChartColor = React.useCallback((prices: string[]) => {
@@ -180,7 +196,7 @@ const CoinsTable = () => {
   React.useEffect(() => {
     getCoins(volume.value, searchText, 0);
     getUsdcMmoshPrice();
-  }, [searchText, volume]);
+  }, [searchText, volume, selectedCoinDirectory]);
 
   return (
     <table className="w-full bg-[#100E5242] rounded-md">
@@ -257,7 +273,7 @@ const CoinsTable = () => {
 
             <td align="center">
               <a
-                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/coins/${coin.symbol}`}
+                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/coins_directory/${coin.symbol}`}
                 className="cursor-pointer"
               >
                 <div className="flex items-center">

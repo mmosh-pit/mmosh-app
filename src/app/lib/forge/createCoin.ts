@@ -153,6 +153,7 @@ export const createCoin = async ({
         address: wallet.publicKey.toBase58(),
       });
       if (buytx.data.status) {
+        
         const tx = anchor.web3.VersionedTransaction.deserialize(
           Buffer.from(buytx.data.transaction, "base64"),
         );
@@ -217,6 +218,7 @@ export const createCoin = async ({
         symbol,
         desc: description,
         image: body.image,
+        basesymbol: baseToken.symbol,
         tokenAddress: res.targetMint.toBase58(),
         bondingAddress: res.tokenBonding.toBase58(),
         creatorUsername: username,

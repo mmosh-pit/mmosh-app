@@ -1,3 +1,5 @@
+import { Coin } from "@/app/models/coin";
+import axios from "axios";
 import * as React from "react";
 
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
@@ -5,62 +7,72 @@ import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 type Props = {
   bonding?: string;
   height?: number;
+  base?: Coin;
 };
 
-const Price = ({ height }: Props) => {
+const Price = ({ height, base }: Props) => {
   // const [data, setData] = React.useState([]);
+  const [price, setPrice] = React.useState(0)
+  const [data, setData] = React.useState<{ value: number; name: string }[]>([])
 
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+
+  const getPricesFromAPI = async () => {
+    try {
+      let priceResult = await axios.get(`/api/project/token-detail?symbol=${base?.symbol.toUpperCase()}`);
+      console.log("priceResult.data ", priceResult.data)
+      if(priceResult.data.prices) {
+        const newData = [];
+        for (let index = 0; index < priceResult.data.prices.length; index++) {
+          const d = new Date();
+          let filterDate;
+          filterDate = new Date(d.setDate(d.getDate() - index));
+          const element = priceResult.data.labels[index];
+          newData.push({ value: Math.abs(element.value), name:filterDate.toLocaleString("en-us", {
+            month: "short",
+            day: "numeric",
+          })});
+        }
+        setData(newData.reverse())
+        setPrice(priceResult.data.pricepercentage)
+      }
+
+    } catch (error) {
+      resetGraph()
+      console.error(error);
+    }
+  };
+
+  const resetGraph = () => {
+    const newData = [];
+    for (let index = 0; index < 7; index++) {
+      const d = new Date();
+      let filterDate;
+      filterDate = new Date(d.setDate(d.getDate() - index));
+      newData.push({ value: 0, name: filterDate.toLocaleString("en-us", {
+        month: "short",
+        day: "numeric",
+      })});
+    }
+
+    setData(newData.reverse())
+    setPrice(0)
+  }
+
+  React.useEffect(()=>{
+    resetGraph()
+    getPricesFromAPI()
+  },[])
+
+
+  React.useEffect(()=>{
+    console.log("price data", data)
+  },[data])
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
       <div className="flex flex-col ml-6 mt-4">
-        <p className="text-sm">MMOSH Price</p>
-        <h6 className="my-2">$12.2M</h6>
-        <h6>USDC 12.2M</h6>
+        <p className="text-sm">{base?.symbol.toUpperCase()} Price</p>
+        <h6>USDC {price}</h6>
       </div>
       <ResponsiveContainer width="100%" height={height || 200}>
         <AreaChart

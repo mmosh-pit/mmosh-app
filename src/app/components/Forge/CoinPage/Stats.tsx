@@ -42,20 +42,6 @@ const Stats = ({ coin, base }: Props) => {
           </div>
 
           <div className="flex flex-col">
-            <p className="text-base">Market Cap</p>
-            <p className="text-white">
-              90M <span className="ml-1 text-xs">{base.symbol}</span>
-            </p>
-          </div>
-
-          <div className="flex flex-col">
-            <p className="text-base">FDV</p>
-            <p className="text-white">
-             200M <span className="ml-1 text-xs">{base.symbol}</span>
-            </p>
-          </div>
-
-          <div className="flex flex-col">
             <p className="text-base">1 Day Volume</p>
             <p className="text-white">
               {stats.dayVolume}{" "}

@@ -18,28 +18,37 @@ export async function GET(req: NextRequest) {
   const sortDirection = searchParams.get("direction") as string;
 
   const volume = volumeParam || "hour";
+  
+  const basesymbol = searchParams.get("symbol");
 
   let filter = {};
   if (keyword) {
     filter = {
-      $or: [
+      $and: [
+        {"basesymbol": basesymbol},
         {
-          name: {
-            $regex: new RegExp(keyword, "ig"),
-          },
-        },
-        {
-          symbol: {
-            $regex: new RegExp(keyword, "ig"),
-          },
-        },
-        {
-          token: {
-            $regex: new RegExp(keyword, "ig"),
-          },
-        },
-      ],
+          $or: [
+            {
+              name: {
+                $regex: new RegExp(keyword, "ig"),
+              },
+            },
+            {
+              symbol: {
+                $regex: new RegExp(keyword, "ig"),
+              },
+            },
+            {
+              token: {
+                $regex: new RegExp(keyword, "ig"),
+              },
+            },
+          ],
+        }
+      ]
     };
+  } else {
+    filter = {"basesymbol": basesymbol}
   }
 
   const sortFilter: Sort = {}
@@ -62,15 +71,15 @@ export async function GET(req: NextRequest) {
   const d = new Date();
   let filterDate;
 
-  if (volume === "hour") {
+  if (volume === "1h") {
     filterDate = new Date(d.setHours(d.getHours() - 1));
-  } else if (volume === "day") {
+  } else if (volume === "1d") {
     filterDate = new Date(d.setDate(d.getDate() - 1));
-  } else if (volume === "week") {
+  } else if (volume === "1w") {
     filterDate = new Date(d.setDate(d.getDate() - 7));
-  } else if (volume === "month") {
+  } else if (volume === "1m") {
     filterDate = new Date(d.setMonth(d.getMonth() - 1));
-  } else if (volume === "year") {
+  } else if (volume === "1y") {
     filterDate = new Date(d.setFullYear(d.getFullYear() - 1));
   }
 

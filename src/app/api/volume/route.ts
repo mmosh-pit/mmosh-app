@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") ? searchParams.get("type") : "day";
   const bonding = searchParams.get("bonding");
+  const symbol = searchParams.get("symbol")
 
   const labels = [];
   for (let index = 0; index < 7; index++) {
@@ -73,6 +74,10 @@ export async function GET(req: NextRequest) {
 
   if (bonding) {
     matchCondition.bonding = bonding;
+  }
+
+  if(symbol) {
+    matchCondition.basesymbol = symbol.toUpperCase()
   }
 
   const buyresult = await collection

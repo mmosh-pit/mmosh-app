@@ -6,6 +6,7 @@ import { Bar, BarChart, ResponsiveContainer, XAxis } from "recharts";
 import DateTypeSelector from "../common/DateTypeSelector";
 import { useAtom } from "jotai";
 import { selectedDateType } from "@/app/store/coins";
+import { selectedDirectory } from "@/app/store/home";
 
 type Props = {
   bonding?: string;
@@ -16,15 +17,23 @@ type Props = {
 const Volume = ({ bonding, height, withFilters }: Props) => {
   const [data, setData] = React.useState([]);
   const [total, setTotal] = React.useState("0");
+  const [selectedCoinDirectory] = useAtom(selectedDirectory);
 
   const [type, setType] = useAtom(selectedDateType);
 
   const getVolume = async () => {
     try {
-      const result = await axios.get(
-        `/api/volume?type=${type}&bonding=${bonding}`,
-      );
-
+      let result;
+      if(bonding) {
+        result = await axios.get(
+          `/api/volume?type=${type}&bonding=${bonding}`,
+        );
+      } else {
+        result = await axios.get(
+          `/api/volume?type=${type}&symbol=${selectedCoinDirectory}`,
+        );
+      }
+  
       setData(result.data.labels?.reverse() || []);
 
       setTotal(abbreviateNumber(Math.abs(result.data.total)));
@@ -34,8 +43,9 @@ const Volume = ({ bonding, height, withFilters }: Props) => {
   };
 
   React.useEffect(() => {
+    console.log("selectedCoinDirectory from volume", selectedCoinDirectory)
     getVolume();
-  }, [type]);
+  }, [type, selectedCoinDirectory]);
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">

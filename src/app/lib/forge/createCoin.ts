@@ -14,6 +14,7 @@ import { pinImageToShadowDrive } from "../uploadImageToShdwDrive";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 import { calculatePrice } from "./setupCoinPrice";
 import { deleteShdwDriveFile } from "../deleteShdwDriveFile";
+import { Connectivity as UserConn } from "@/anchor/user";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -152,6 +153,7 @@ export const createCoin = async ({
         address: wallet.publicKey.toBase58(),
       });
       if (buytx.data.status) {
+        
         const tx = anchor.web3.VersionedTransaction.deserialize(
           Buffer.from(buytx.data.transaction, "base64"),
         );
@@ -169,11 +171,28 @@ export const createCoin = async ({
           });
         }
       } else {
-        return {
-          message:
-            "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
-          type: "error",
-        };
+        let userConn: UserConn = new UserConn(env, web3Consts.programID);
+        const balance = await userConn.getUserBalance({
+          address: wallet.publicKey,
+          token: baseToken.address,
+          decimals: web3Consts.LAMPORTS_PER_OPOS
+        });
+        if(balance > Number(supply)) {
+          buyres = await curveConn.buy({
+            tokenBonding: res.tokenBonding,
+            desiredTargetAmount: new anchor.BN(
+              Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
+            ),
+            slippage: 0.5,
+          });
+        } else{
+          return {
+            message:
+              "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
+            type: "error",
+          };
+        }
+
       }
     }
 
@@ -199,6 +218,7 @@ export const createCoin = async ({
         symbol,
         desc: description,
         image: body.image,
+        basesymbol: baseToken.symbol,
         tokenAddress: res.targetMint.toBase58(),
         bondingAddress: res.tokenBonding.toBase58(),
         creatorUsername: username,

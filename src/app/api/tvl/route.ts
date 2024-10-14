@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const bonding = searchParams.get("bonding");
-
+  const symbol = searchParams.get("symbol");
   const labels = [];
 
   for (let index = 0; index < 4; index++) {
@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
           : {
               type: "buy",
               created_date: { $gte: new Date(pastYear, 0, 1, 0, 0, 0) },
+              basesymbol: symbol?.toUpperCase()
             },
       },
       {
@@ -66,6 +67,7 @@ export async function GET(req: NextRequest) {
           : {
               type: "sell",
               created_date: { $gte: new Date(pastYear, 0, 1, 0, 0, 0) },
+              basesymbol: symbol?.toUpperCase()
             },
       },
       {
@@ -90,7 +92,7 @@ export async function GET(req: NextRequest) {
 
   const buyfullresult = await collection
     .aggregate([
-      { $match: bonding ? { type: "buy", bonding: bonding } : { type: "buy" } },
+      { $match: bonding ? { type: "buy", bonding: bonding } : { type: "buy", basesymbol: symbol?.toUpperCase() } },
       {
         $group: {
           _id: { year: { $year: "$created_date" } },
@@ -104,7 +106,7 @@ export async function GET(req: NextRequest) {
   const sellfullresult = await collection
     .aggregate([
       {
-        $match: bonding ? { type: "sell", bonding: bonding } : { type: "sell" },
+        $match: bonding ? { type: "sell", bonding: bonding } : { type: "sell", basesymbol: symbol?.toUpperCase() },
       },
       {
         $group: {

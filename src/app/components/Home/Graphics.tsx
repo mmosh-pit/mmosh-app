@@ -6,12 +6,15 @@ import TVL from "./TVL";
 import Volume from "./Volume";
 import Price from "./Price";
 import Button from "../common/Button";
+import { useAtom } from "jotai";
+import { selectedDirectory } from "@/app/store/home";
 
 const Graphics = () => {
   const router = useRouter();
 
   const [selectedTab, setSelectedTab] = React.useState("tvl");
   const [selectedCoin, setSelectedCoin] = React.useState("mmosh");
+  const [selectedCoinDirectory, setSelectedCoinDirectory] = useAtom(selectedDirectory);
 
   const isMobile = useCheckMobileScreen();
 
@@ -20,8 +23,13 @@ const Graphics = () => {
 
     if (selectedTab === "volume") return <Volume withFilters />;
 
-    return <Price />;
+    return <Price symbol={selectedCoinDirectory} />;
   }, [selectedTab]);
+
+  React.useEffect(()=> {
+    console.log("selectedCoin ", selectedCoin)
+    setSelectedCoinDirectory(selectedCoin.toUpperCase())
+  },[selectedCoin])
 
   return (
     <>
@@ -86,16 +94,16 @@ const Graphics = () => {
             }}
             isLoading={false}
           />
-        </div>
+        </div> 
       </div>
 
       {!isMobile && (
         <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
-          <TVL />
+          <TVL symbol={selectedCoinDirectory}/>
 
           <Volume withFilters />
 
-          <Price />
+          <Price symbol={selectedCoinDirectory}/>
         </div>
       )}
 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as React from "react";
 import { useAtom } from "jotai";
 
@@ -15,7 +15,7 @@ const HomePage = () => {
   const isMobile = useCheckMobileScreen();
 
   return (
-    <div className="background-content flex flex-col max-h-full pt-20 px-12 w-full">
+    <div className="background-content flex flex-col max-h-full pt-20 px-12 w-full relative">
       <Graphics />
 
       <div className="mt-8">

@@ -23,7 +23,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
     if (pathname.includes("create") || pathname.includes("communities"))
       return "common-bg";
 
-    if (pathname !== "/" || isOnSettings) {
+    if (pathname !== "/coins" || isOnSettings) {
       return "bg-profile";
     }
 

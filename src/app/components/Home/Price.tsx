@@ -16,7 +16,7 @@ const Price = ({ height, symbol }: Props) => {
   // const [data, setData] = React.useState([]);
   const [selectedCoinDirectory] = useAtom(selectedDirectory);
   const [price, setPrice] = React.useState(0)
-  const [data, setData] = React.useState<{ value: number; name: string }[]>([])
+  const [data, setData] = React.useState<{ uv: number; pv: number; amt: number; name: string }[]>([])
 
 
   const getPricesFromAPI = async () => {
@@ -29,8 +29,8 @@ const Price = ({ height, symbol }: Props) => {
           const d = new Date();
           let filterDate;
           filterDate = new Date(d.setDate(d.getDate() - index));
-          const element = priceResult.data.labels[index];
-          newData.push({ value: Math.abs(element.value), name:filterDate.toLocaleString("en-us", {
+          const element = priceResult.data.prices[index];
+          newData.push({ uv: Math.abs(element), pv: Math.abs(element), amt: Math.abs(element), name:filterDate.toLocaleString("en-us", {
             month: "short",
             day: "numeric",
           })});
@@ -51,7 +51,7 @@ const Price = ({ height, symbol }: Props) => {
       const d = new Date();
       let filterDate;
       filterDate = new Date(d.setDate(d.getDate() - index));
-      newData.push({ value: 0, name: filterDate.toLocaleString("en-us", {
+      newData.push({ amt:0, pv:0, uv:0, name: filterDate.toLocaleString("en-us", {
         month: "short",
         day: "numeric",
       })});

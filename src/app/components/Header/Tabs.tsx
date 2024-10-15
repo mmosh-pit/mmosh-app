@@ -9,73 +9,81 @@ const Tabs = () => {
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
 
   return (
-      <div className="w-full flex justify-between items-center">
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/coins");
-          }}
-        >
-          Coins
-        </a>
+    <div className="flex justify-center items-center">
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/coins");
+        }}
+      >
+        Coins
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/members");
-          }}
-        >
-          Members
-        </a>
+      <div className="mx-2" />
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => router.push("/projects")}
-        >
-          Projects
-        </a>
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/members");
+        }}
+      >
+        Members
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => router.push("/communities")}
-        >
-          Communities
-        </a>
+      <div className="mx-2" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/projects")}
+      >
+        Projects
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/rewards");
-          }}
-        >
-          Rewards
-        </a>
+      <div className="mx-2" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/communities")}
+      >
+        Communities
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/swap");
-          }}
-        >
-          Swap
-        </a>
+      <div className="mx-2" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/rewards");
+        }}
+      >
+        Rewards
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/atm");
-          }}
-        >
-          ATM
-        </a>
+      <div className="mx-2" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/swap");
+        }}
+      >
+        Swap
+      </a>
 
-        <div className="flex items-center cursor-pointer">
-          <p className="text-base text-white font-semibold">
-            Create
-          </p>
-        </div>
+      <div className="mx-2" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/atm");
+        }}
+      >
+        ATM
+      </a>
 
-        {currentUser?.profilenft && (
+      <div className="mx-2" />
+      <div className="flex items-center cursor-pointer">
+        <p className="text-base text-white font-semibold">Create</p>
+      </div>
+
+      {currentUser?.profilenft && (
+        <>
+          <div className="mx-2" />
           <a
             className="text-base text-white cursor-pointer"
             onClick={() => {
@@ -85,16 +93,18 @@ const Tabs = () => {
           >
             My Profile
           </a>
-        )}
+        </>
+      )}
 
-        <a
-          className="text-base text-white cursor-pointer"
-          href="https://www.liquidhearts.club"
-          target="_blank"
-        >
-          Training
-        </a>
-      </div>
+      <div className="mx-2" />
+      <a
+        className="text-base text-white cursor-pointer"
+        href="https://www.liquidhearts.club"
+        target="_blank"
+      >
+        Training
+      </a>
+    </div>
   );
 };
 

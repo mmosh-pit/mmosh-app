@@ -7,7 +7,7 @@ import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 type Props = {
-  symbol: string
+  symbol: string;
   bonding?: string;
   height?: number;
 };
@@ -15,32 +15,35 @@ type Props = {
 const Price = ({ height, symbol }: Props) => {
   // const [data, setData] = React.useState([]);
   const [selectedCoinDirectory] = useAtom(selectedDirectory);
-  const [price, setPrice] = React.useState(0)
-  const [data, setData] = React.useState<{ value: number; name: string }[]>([])
-
+  const [price, setPrice] = React.useState(0);
+  const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
 
   const getPricesFromAPI = async () => {
     try {
-      let priceResult = await axios.get(`/api/project/token-detail?symbol=${symbol}`);
-      console.log("priceResult.data ", priceResult.data)
-      if(priceResult.data.prices) {
+      let priceResult = await axios.get(
+        `/api/project/token-detail?symbol=${symbol}`,
+      );
+      console.log("priceResult.data ", priceResult.data);
+      if (priceResult?.data?.prices) {
         const newData = [];
         for (let index = 0; index < priceResult.data.prices.length; index++) {
           const d = new Date();
           let filterDate;
           filterDate = new Date(d.setDate(d.getDate() - index));
           const element = priceResult.data.labels[index];
-          newData.push({ value: Math.abs(element.value), name:filterDate.toLocaleString("en-us", {
-            month: "short",
-            day: "numeric",
-          })});
+          newData.push({
+            value: Math.abs(element.value),
+            name: filterDate.toLocaleString("en-us", {
+              month: "short",
+              day: "numeric",
+            }),
+          });
         }
-        setData(newData.reverse())
-        setPrice(priceResult.data.pricepercentage)
+        setData(newData.reverse());
+        setPrice(priceResult.data.pricepercentage);
       }
-
     } catch (error) {
-      resetGraph()
+      resetGraph();
       console.error(error);
     }
   };
@@ -51,26 +54,28 @@ const Price = ({ height, symbol }: Props) => {
       const d = new Date();
       let filterDate;
       filterDate = new Date(d.setDate(d.getDate() - index));
-      newData.push({ value: 0, name: filterDate.toLocaleString("en-us", {
-        month: "short",
-        day: "numeric",
-      })});
+      newData.push({
+        value: 0,
+        name: filterDate.toLocaleString("en-us", {
+          month: "short",
+          day: "numeric",
+        }),
+      });
     }
 
-    setData(newData.reverse())
-    setPrice(0)
-  }
+    setData(newData.reverse());
+    setPrice(0);
+  };
 
-  React.useEffect(()=>{
-    resetGraph()
-    getPricesFromAPI()
-  },[selectedCoinDirectory])
+  React.useEffect(() => {
+    resetGraph();
+    getPricesFromAPI();
+  }, [selectedCoinDirectory]);
 
-
-  React.useEffect(()=>{
-    console.log("price data", data)
+  React.useEffect(() => {
+    console.log("price data", data);
     // getPricesFromAPI()
-  },[data])
+  }, [data]);
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">

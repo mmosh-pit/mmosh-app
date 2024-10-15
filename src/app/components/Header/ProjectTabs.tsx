@@ -61,10 +61,10 @@ const ProjectTabs = () => {
         <a
           className="text-base text-white cursor-pointer self-center"
           onClick={() => {
-            // router.push("/create/coins");
+            router.push("/projects/ptv/bounties");
           }}
         >
-          Join
+          Bounties
         </a>
       </div>
     </div>

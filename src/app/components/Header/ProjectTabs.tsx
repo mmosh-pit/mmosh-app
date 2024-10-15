@@ -40,13 +40,13 @@ const ProjectTabs = () => {
         <div className="mx-6" />
         <a
           className="text-base text-white cursor-pointer self-center"
-          onClick={() => router.replace("/create/projects/ptv")}
+          onClick={() => router.replace("/projects/ptv")}
         >
           Pump the Vote
         </a>
         <div className="mx-6" />
         <a
-          onClick={() => router.replace("/create/projects/ptv/candidates")}
+          onClick={() => router.replace("/projects/ptv/candidates")}
           className="text-base text-white cursor-pointer self-center"
         >
           Candidates

@@ -31,7 +31,7 @@ const defaultFormState = {
   symbol: "",
   candidate: null,
   position: "for",
-  bonding: "PTVB",
+  bonding: "MMOSH",
   description: "",
   supply: 1000,
   multiplier: 0,
@@ -412,7 +412,8 @@ const CreateCoin = () => {
         <MessageBanner message={message.message} type={message.type} />
         <div className="w-full flex flex-col justify-center items-center mt-20">
           <h4 className="text-center text-white font-goudy font-normal">
-            Create a Political Memecoin!
+            Create a {selectedCoin.symbol !== "MMOSH" ? "Political " : ""}
+            Memecoin!
           </h4>
         </div>
 
@@ -734,8 +735,8 @@ const CreateCoin = () => {
                 form.supply < 1000 ||
                 !form.name ||
                 !form.symbol ||
-                !form.candidate ||
-                !form.bonding ||
+                (!form.candidate && selectedCoin.symbol !== "MMOSH") ||
+                // !form.bonding ||
                 !!error ||
                 !wallet
               }

@@ -10,7 +10,7 @@ const DesktopNavbar = (props: any) => {
 
   useEffect(() => {
     setPrivate(
-      props.user.profile.isprivate ? props.user.profile.isprivate : false,
+      props.user.profile?.isprivate ? props.user.profile?.isprivate : false,
     );
   }, []);
 

@@ -301,8 +301,8 @@ const Profile = ({ username }: { username: any }) => {
         } else {
           setStatusMsg("connecting...")
         }
-        nextStatus = userData.profile.isprivate ? 0 : 1
-        if(userData.profile.isprivate ) {
+        nextStatus = userData.profile?.isprivate ? 0 : 1
+        if(userData.profile?.isprivate ) {
             nextConnectionStatus = 1
         } else {
             if(connectionStatus != 3) {
@@ -451,7 +451,7 @@ const Profile = ({ username }: { username: any }) => {
                   }
                 </p>
                 <p className="text-sm">{`@${userData?.profile?.username}`}</p>
-                {userData.profile.request &&
+                {userData.profile?.request &&
                     <div className="flex justify-start mt-2.5">
                         {requestloader &&
                             <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5">processing...</button>

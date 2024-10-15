@@ -9,12 +9,11 @@ const Tabs = () => {
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="flex w-[75%] justify-between items-center">
+      <div className="w-full flex justify-between items-center">
         <a
           className="text-base text-white cursor-pointer"
           onClick={() => {
-            router.push("/");
+            router.push("/coins");
           }}
         >
           Coins
@@ -31,7 +30,7 @@ const Tabs = () => {
 
         <a
           className="text-base text-white cursor-pointer"
-          onClick={() => router.push("/create/projects")}
+          onClick={() => router.push("/projects")}
         >
           Projects
         </a>
@@ -46,10 +45,19 @@ const Tabs = () => {
         <a
           className="text-base text-white cursor-pointer"
           onClick={() => {
-            router.push("/");
+            router.push("/rewards");
           }}
         >
           Rewards
+        </a>
+
+        <a
+          className="text-base text-white cursor-pointer"
+          onClick={() => {
+            router.push("/swap");
+          }}
+        >
+          Swap
         </a>
 
         <a
@@ -60,6 +68,12 @@ const Tabs = () => {
         >
           ATM
         </a>
+
+        <div className="flex items-center cursor-pointer">
+          <p className="text-base text-white font-semibold">
+            Create
+          </p>
+        </div>
 
         {currentUser?.profilenft && (
           <a
@@ -81,7 +95,6 @@ const Tabs = () => {
           Training
         </a>
       </div>
-    </div>
   );
 };
 

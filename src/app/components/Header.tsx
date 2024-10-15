@@ -33,18 +33,20 @@ import { incomingReferAddress } from "../store/signup";
 import Notification from "./Notification/Notification";
 import { currentGroupCommunity } from "../store/community";
 import LHCIcon from "@/assets/icons/LHCIcon";
+import { init } from "../lib/firebase";
 
 const Header = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const wallet = useAnchorWallet();
+  const rendered = React.useRef(false);
 
   const renderedUserInfo = React.useRef(false);
   const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
-  const [____, setIsUserAuthenticated] = useAtom(isAuth);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
   const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [userStatus] = useAtom(status);
   // const [community] = useAtom(pageCommunity);
@@ -87,7 +89,6 @@ const Header = () => {
     const result = await axios.get("/api/is-auth");
 
     if (!result.data && pathname === "/") {
-      console.log("Redirecting to login...");
       router.replace("/login");
     }
 
@@ -180,6 +181,18 @@ const Header = () => {
   };
 
   React.useEffect(() => {
+    if (!rendered.current) {
+      init();
+      const param = searchParams.get("socialwallet");
+
+      if (param) {
+        setIncomingWalletToken(param);
+      }
+      rendered.current = true;
+    }
+  }, []);
+
+  React.useEffect(() => {
     if (wallet?.publicKey && !renderedUserInfo.current) {
       renderedUserInfo.current = true;
       getProfileInfo();
@@ -221,12 +234,19 @@ const Header = () => {
   return (
     <header className="flex flex-col">
       <div className={getHeaderBackground()}>
-        <div className="flex w-full justify-between items-center mx-8">
-          <div className="flex w-[33%] justify-start items-center">
+        <div className="flex w-full justify-center items-center mx-8">
+          <div className="flex w-[33%] justify-end items-center">
             {isMobileScreen ? (
               <MobileDrawer />
             ) : (
-              <div className="w-[33%]">
+              <div className="mr-4" onClick={() => {
+                  if (isUserAuthenticated) {
+                    router.push("/coins");
+                    return;
+                  }
+
+                router.push("/login");
+                }}>
                 <LHCIcon />
               </div>
             )}

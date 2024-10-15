@@ -16,7 +16,6 @@ type Props = {
 };
 
 const TVL = ({ bonding, base, height, symbol }: Props) => {
-  const rendered = React.useRef(false);
   const [selectedCoinDirectory] = useAtom(selectedDirectory);
 
   const [data, setData] = React.useState<{ value: number; name: string }[]>([]);
@@ -25,12 +24,12 @@ const TVL = ({ bonding, base, height, symbol }: Props) => {
   const getTVL = async () => {
     try {
       let tvlResult;
-      if(bonding) {
+      if (bonding) {
         tvlResult = await axios.get(`/api/tvl?bonding=${bonding}`);
       } else {
         tvlResult = await axios.get(`/api/tvl?symbol=${symbol}`);
       }
-   
+
       const data = [];
 
       for (let index = 0; index < tvlResult.data.labels.length; index++) {
@@ -48,7 +47,7 @@ const TVL = ({ bonding, base, height, symbol }: Props) => {
   };
 
   React.useEffect(() => {
-      getTVL();
+    getTVL();
   }, [selectedCoinDirectory]);
 
   return (

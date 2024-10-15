@@ -111,29 +111,29 @@ const CoinsTable = () => {
   );
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-    if(selectedCoinDirectory === "PTVB") {
+    if (selectedCoinDirectory === "PTVB") {
       const mmoshUsdcPrice = await axios.get(
         `https://price.jup.ag/v6/price?ids=PTVB&vsToken=USDC`,
       );
-  
+
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVB?.price || 0.003);
-    } else if(selectedCoinDirectory === "PTVR") {
+    } else if (selectedCoinDirectory === "PTVR") {
       const mmoshUsdcPrice = await axios.get(
         `https://price.jup.ag/v6/price?ids=PTVR&vsToken=USDC`,
       );
-  
+
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVR?.price || 0.003);
     } else {
       const mmoshUsdcPrice = await axios.get(
         `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
       );
-  
+
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
     }
   }, [selectedCoinDirectory]);
 
   const navigateToCoinPage = React.useCallback((symbol: string) => {
-    navigate.push(`/create/coins_directory/${symbol}`);
+    navigate.push(`/coins/${symbol}`);
   }, []);
 
   const getCoinPrice = React.useCallback(
@@ -273,7 +273,7 @@ const CoinsTable = () => {
 
             <td align="center">
               <a
-                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/coins_directory/${coin.symbol}`}
+                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/coins/${coin.symbol}`}
                 className="cursor-pointer"
               >
                 <div className="flex items-center">

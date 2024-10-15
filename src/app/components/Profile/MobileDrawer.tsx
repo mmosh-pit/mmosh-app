@@ -4,12 +4,16 @@ import { useRouter } from "next/navigation";
 
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 import { data, isDrawerOpen, settings } from "@/app/store";
+import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
+import SimpleArrowUp from "@/assets/icons/SimpleArrowUp";
 
 const MobileDrawer = () => {
   const router = useRouter();
   const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
   const [currentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
+
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
   return (
     <div className="drawer">
@@ -30,8 +34,7 @@ const MobileDrawer = () => {
           aria-label="close sidebar"
           className="drawer-overlay"
           onClick={() => setIsDrawerOpen(false)}
-        >
-        </label>
+        ></label>
         <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
             <a
@@ -43,6 +46,8 @@ const MobileDrawer = () => {
               Coins
             </a>
 
+            <div className="my-2" />
+
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
@@ -52,6 +57,8 @@ const MobileDrawer = () => {
               Members
             </a>
 
+            <div className="my-2" />
+
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => router.push("/projects")}
@@ -59,12 +66,16 @@ const MobileDrawer = () => {
               Projects
             </a>
 
+            <div className="my-2" />
+
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => router.push("/communities")}
             >
               Communities
             </a>
+
+            <div className="my-2" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -75,6 +86,8 @@ const MobileDrawer = () => {
               Rewards
             </a>
 
+            <div className="my-2" />
+
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
@@ -83,6 +96,52 @@ const MobileDrawer = () => {
             >
               ATM
             </a>
+
+            <div className="my-2" />
+
+            <div
+              className="flex flex-col cursor-pointer"
+              onClick={() => setIsCreateOpen(!isCreateOpen)}
+            >
+              <div className="flex items-center">
+                <p className="text-base text-white font-semibold">Create</p>
+
+                <div className="ml-1">
+                  {isCreateOpen ? <SimpleArrowUp /> : <SimpleArrowDown />}
+                </div>
+              </div>
+
+              {isCreateOpen && (
+                <div className="flex flex-col p-2 my-4">
+                  <p
+                    className="text-sm text-white mb-2"
+                    onClick={() => router.push("/create/profile")}
+                  >
+                    Profile
+                  </p>
+                  <p
+                    className="text-sm text-white mb-2"
+                    onClick={() => router.push("/create/coins")}
+                  >
+                    Coins
+                  </p>
+                  <p
+                    className="text-sm text-white mb-2"
+                    onClick={() => router.push("/communities/create")}
+                  >
+                    Communities
+                  </p>
+                  <p
+                    className="text-sm text-white"
+                    onClick={() => router.push("/create/create_projects")}
+                  >
+                    Projects
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="my-2" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -94,16 +153,21 @@ const MobileDrawer = () => {
             </a>
 
             {currentUser?.profilenft && (
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {
-                  if (isOnSettings) return setIsOnSettings(false);
-                  router.push(`/${currentUser?.profile.username}`);
-                }}
-              >
-                My Profile
-              </a>
+              <>
+                <div className="my-2" />
+                <a
+                  className="text-base text-white cursor-pointer"
+                  onClick={() => {
+                    if (isOnSettings) return setIsOnSettings(false);
+                    router.push(`/${currentUser?.profile.username}`);
+                  }}
+                >
+                  My Profile
+                </a>
+              </>
             )}
+
+            <div className="my-2" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -118,25 +182,25 @@ const MobileDrawer = () => {
 
           <div className="flex flex-col mt-4">
             <a
-              className="text-base text-white cursor-pointer self-center"
+              className="text-base text-white cursor-pointer"
               onClick={() => router.replace("/create/projects/ptv")}
             >
               Pump the Vote
             </a>
 
-            <div className="mx-6" />
+            <div className="my-2" />
 
             <a
               onClick={() => router.replace("/create/projects/ptv/candidates")}
-              className="text-base text-white cursor-pointer self-center"
+              className="text-base text-white cursor-pointer "
             >
               Candidates
             </a>
 
-            <div className="mx-6" />
+            <div className="my-2" />
 
             <a
-              className="text-base text-white cursor-pointer self-center"
+              className="text-base text-white cursor-pointer "
               onClick={() => {
                 router.push("/projects/ptv/bounties");
               }}
@@ -148,10 +212,7 @@ const MobileDrawer = () => {
           <div className="h-[1px] w-[90%] bg-white mt-4" />
           <div className="flex flex-col mt-4">
             {currentUser?.telegram?.id && (
-              <div
-                className="mt-8"
-                onClick={() => setIsOnSettings(true)}
-              >
+              <div className="mt-8" onClick={() => setIsOnSettings(true)}>
                 <p className="text-base text-white font-bold">Settings</p>
               </div>
             )}

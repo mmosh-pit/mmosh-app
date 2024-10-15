@@ -1,12 +1,18 @@
-import { data, settings } from "@/app/store";
+import * as React from "react";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
+
+import { data, settings } from "@/app/store";
+import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
+import SimpleArrowUp from "@/assets/icons/SimpleArrowUp";
 
 const Tabs = () => {
   const router = useRouter();
 
   const [currentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
+
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
   return (
     <div className="flex justify-center items-center">
@@ -19,7 +25,7 @@ const Tabs = () => {
         Coins
       </a>
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
 
       <a
         className="text-base text-white cursor-pointer"
@@ -30,7 +36,7 @@ const Tabs = () => {
         Members
       </a>
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => router.push("/projects")}
@@ -38,7 +44,7 @@ const Tabs = () => {
         Projects
       </a>
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => router.push("/communities")}
@@ -46,7 +52,7 @@ const Tabs = () => {
         Communities
       </a>
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
@@ -56,7 +62,7 @@ const Tabs = () => {
         Rewards
       </a>
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
@@ -66,7 +72,7 @@ const Tabs = () => {
         Swap
       </a>
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
@@ -76,14 +82,51 @@ const Tabs = () => {
         ATM
       </a>
 
-      <div className="mx-2" />
-      <div className="flex items-center cursor-pointer">
+      <div className="lg:mx-6 md:mx-3" />
+
+      <div
+        className="flex items-center cursor-pointer relative "
+        onClick={() => setIsCreateOpen(!isCreateOpen)}
+      >
         <p className="text-base text-white font-semibold">Create</p>
+
+        <div className="ml-1">
+          {isCreateOpen ? <SimpleArrowUp /> : <SimpleArrowDown />}
+        </div>
+
+        {isCreateOpen && (
+          <div className="flex flex-col p-2 absolute top-[20px] right-[-25px] bg-[#FFFFFF12] backdrop-blur-[18.4px] rounded-lg">
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/create/profile")}
+            >
+              Profile
+            </p>
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/create/coins")}
+            >
+              Coins
+            </p>
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/communities/create")}
+            >
+              Communities
+            </p>
+            <p
+              className="text-sm text-white"
+              onClick={() => router.push("/create/create_projects")}
+            >
+              Projects
+            </p>
+          </div>
+        )}
       </div>
 
       {currentUser?.profilenft && (
         <>
-          <div className="mx-2" />
+          <div className="lg:mx-6 md:mx-3" />
           <a
             className="text-base text-white cursor-pointer"
             onClick={() => {
@@ -96,7 +139,7 @@ const Tabs = () => {
         </>
       )}
 
-      <div className="mx-2" />
+      <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
         href="https://www.liquidhearts.club"

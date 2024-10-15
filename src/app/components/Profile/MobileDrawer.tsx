@@ -30,13 +30,14 @@ const MobileDrawer = () => {
           aria-label="close sidebar"
           className="drawer-overlay"
           onClick={() => setIsDrawerOpen(false)}
-        ></label>
+        >
+        </label>
         <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
           <div className="flex flex-col">
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
-                router.push("/");
+                router.push("/coins");
               }}
             >
               Coins
@@ -53,7 +54,7 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => router.push("/create/projects")}
+              onClick={() => router.push("/projects")}
             >
               Projects
             </a>
@@ -68,7 +69,7 @@ const MobileDrawer = () => {
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
-                router.push("/");
+                router.push("/rewards");
               }}
             >
               Rewards
@@ -81,6 +82,15 @@ const MobileDrawer = () => {
               }}
             >
               ATM
+            </a>
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/swap");
+              }}
+            >
+              Swap
             </a>
 
             {currentUser?.profilenft && (
@@ -103,23 +113,45 @@ const MobileDrawer = () => {
               Training
             </a>
           </div>
+
+          <div className="h-[1px] w-[90%] bg-white mt-4" />
+
+          <div className="flex flex-col mt-4">
+            <a
+              className="text-base text-white cursor-pointer self-center"
+              onClick={() => router.replace("/create/projects/ptv")}
+            >
+              Pump the Vote
+            </a>
+
+            <div className="mx-6" />
+
+            <a
+              onClick={() => router.replace("/create/projects/ptv/candidates")}
+              className="text-base text-white cursor-pointer self-center"
+            >
+              Candidates
+            </a>
+
+            <div className="mx-6" />
+
+            <a
+              className="text-base text-white cursor-pointer self-center"
+              onClick={() => {
+                router.push("/projects/ptv/bounties");
+              }}
+            >
+              Bounties
+            </a>
+          </div>
+
           <div className="h-[1px] w-[90%] bg-white mt-4" />
           <div className="flex flex-col mt-4">
-            <p className="text-lg font-bold mb-8">My MMOSH Account</p>
-
-            <div className="flex my-4">
-              <p className="text-base text-white">Send</p>
-              <p className="text-base text-white mx-2">•</p>
-
-              <div id="coming-soon-mobile-wrapper">
-                <p id="coming-soon-mobile" className="text-base">
-                  Coming Soon
-                </p>
-              </div>
-            </div>
-
             {currentUser?.telegram?.id && (
-              <div className="mt-8" onClick={() => setIsOnSettings(true)}>
+              <div
+                className="mt-8"
+                onClick={() => setIsOnSettings(true)}
+              >
                 <p className="text-base text-white font-bold">Settings</p>
               </div>
             )}

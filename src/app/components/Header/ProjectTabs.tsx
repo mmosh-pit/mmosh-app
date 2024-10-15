@@ -26,7 +26,7 @@ const ProjectTabs = () => {
 
   return (
     <div className={getHeaderBackground()}>
-      <div className="w-[50%] flex justify-center">
+      <div className="lg:w-[50%] md:w-[60%] flex justify-center">
         <div
           className="relative w-[1.5vmax] h-[1.5vmax] cursor-pointer"
           onClick={() => router.replace("/create/projects/ptv")}
@@ -37,27 +37,21 @@ const ProjectTabs = () => {
             layout="fill"
           />
         </div>
-
         <div className="mx-6" />
-
         <a
           className="text-base text-white cursor-pointer self-center"
           onClick={() => router.replace("/create/projects/ptv")}
         >
           Pump the Vote
         </a>
-
         <div className="mx-6" />
-
         <a
           onClick={() => router.replace("/create/projects/ptv/candidates")}
           className="text-base text-white cursor-pointer self-center"
         >
           Candidates
         </a>
-
         <div className="mx-6" />
-
         <a
           className="text-base text-white cursor-pointer self-center"
           onClick={() => {

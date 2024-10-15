@@ -1,6 +1,10 @@
-import { data, settings } from "@/app/store";
+import * as React from "react";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
+
+import { data, settings } from "@/app/store";
+import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
+import SimpleArrowUp from "@/assets/icons/SimpleArrowUp";
 
 const Tabs = () => {
   const router = useRouter();
@@ -8,74 +12,121 @@ const Tabs = () => {
   const [currentUser] = useAtom(data);
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
 
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+
   return (
-      <div className="w-full flex justify-between items-center">
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/coins");
-          }}
-        >
-          Coins
-        </a>
+    <div className="flex justify-center items-center">
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/coins");
+        }}
+      >
+        Coins
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/members");
-          }}
-        >
-          Members
-        </a>
+      <div className="lg:mx-6 md:mx-3" />
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => router.push("/projects")}
-        >
-          Projects
-        </a>
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/members");
+        }}
+      >
+        Members
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => router.push("/communities")}
-        >
-          Communities
-        </a>
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/projects")}
+      >
+        Projects
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/rewards");
-          }}
-        >
-          Rewards
-        </a>
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/communities")}
+      >
+        Communities
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/swap");
-          }}
-        >
-          Swap
-        </a>
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/rewards");
+        }}
+      >
+        Rewards
+      </a>
 
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/atm");
-          }}
-        >
-          ATM
-        </a>
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/swap");
+        }}
+      >
+        Swap
+      </a>
 
-        <div className="flex items-center cursor-pointer">
-          <p className="text-base text-white font-semibold">
-            Create
-          </p>
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/atm");
+        }}
+      >
+        ATM
+      </a>
+
+      <div className="lg:mx-6 md:mx-3" />
+
+      <div
+        className="flex items-center cursor-pointer relative "
+        onClick={() => setIsCreateOpen(!isCreateOpen)}
+      >
+        <p className="text-base text-white font-semibold">Create</p>
+
+        <div className="ml-1">
+          {isCreateOpen ? <SimpleArrowUp /> : <SimpleArrowDown />}
         </div>
 
-        {currentUser?.profilenft && (
+        {isCreateOpen && (
+          <div className="flex flex-col p-2 absolute top-[20px] right-[-25px] bg-[#FFFFFF12] backdrop-blur-[18.4px] rounded-lg">
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/create/profile")}
+            >
+              Profile
+            </p>
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/create/coins")}
+            >
+              Coins
+            </p>
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/communities/create")}
+            >
+              Communities
+            </p>
+            <p
+              className="text-sm text-white"
+              onClick={() => router.push("/create/create_projects")}
+            >
+              Projects
+            </p>
+          </div>
+        )}
+      </div>
+
+      {currentUser?.profilenft && (
+        <>
+          <div className="lg:mx-6 md:mx-3" />
           <a
             className="text-base text-white cursor-pointer"
             onClick={() => {
@@ -85,16 +136,18 @@ const Tabs = () => {
           >
             My Profile
           </a>
-        )}
+        </>
+      )}
 
-        <a
-          className="text-base text-white cursor-pointer"
-          href="https://www.liquidhearts.club"
-          target="_blank"
-        >
-          Training
-        </a>
-      </div>
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        href="https://www.liquidhearts.club"
+        target="_blank"
+      >
+        Training
+      </a>
+    </div>
   );
 };
 

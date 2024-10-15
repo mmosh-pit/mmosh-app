@@ -234,111 +234,111 @@ const Header = () => {
   return (
     <header className="flex flex-col">
       <div className={getHeaderBackground()}>
-        <div className="flex w-full justify-center items-center mx-8">
-          <div className="flex w-[33%] justify-end items-center">
-            {isMobileScreen ? (
-              <MobileDrawer />
-            ) : (
-              <div className="mr-4" onClick={() => {
-                  if (isUserAuthenticated) {
-                    router.push("/coins");
-                    return;
-                  }
+        <div className="flex w-full justify-between items-center mx-8">
+          {isMobileScreen ? (
+            <MobileDrawer />
+          ) : (
+            <div
+              className="mr-4"
+              onClick={() => {
+                if (isUserAuthenticated) {
+                  router.push("/coins");
+                  return;
+                }
 
                 router.push("/login");
-                }}>
-                <LHCIcon />
-              </div>
-            )}
-          </div>
+              }}
+            >
+              <LHCIcon />
+            </div>
+          )}
 
           {!isMobileScreen && <Tabs />}
 
-          <div className="flex justify-end items-center w-[33%]">
-            {currentUser?.profilenft && (
-              <div className="dropdown pr-6">
-                <a
-                  className="text-base text-white cursor-pointer relative"
-                  tabIndex={0}
-                  href="javascript:void(0)"
-                  onClick={resetNotification}
-                >
-                  <img
-                    src="/images/alert.png"
-                    alt="notification"
-                    className="max-w-4 w-4"
-                  />
-                  {badge > 0 && (
-                    <span className="bg-[#FF0000] text-white w-6 h-6 rounded-full absolute text-center leading-6  right-[-11px] top-[-13px]">
-                      {badge}
-                    </span>
-                  )}
-                </a>
-                {notifications && (
-                  <div
-                    className="dropdown-content z-[999999999] top-[72px]"
-                    tabIndex={0}
-                  >
-                    <div className="w-64 bg-black bg-opacity-[0.56] backdrop-blur-[2px] p-5 max-h-96 overflow-y-auto">
-                      {notifications.length > 0 && (
-                        <div>
-                          {notifications.map((value: any) => (
-                            <Notification data={value} key={value._id} />
-                          ))}
-                        </div>
-                      )}
-                      {notifications.length == 0 && (
-                        <p className="text-base">
-                          You don't have any notification
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            {currentUser?.profile?.image && (
-              <div
-                className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+          {currentUser?.profilenft && (
+            <div className="dropdown pr-6">
+              <a
+                className="text-base text-white cursor-pointer relative"
+                tabIndex={0}
+                href="javascript:void(0)"
+                onClick={resetNotification}
               >
-                <Image
-                  src={currentUser.profile.image}
-                  alt="Profile Image"
-                  className="rounded-full"
-                  layout="fill"
+                <img
+                  src="/images/alert.png"
+                  alt="notification"
+                  className="max-w-4 w-4"
                 />
-              </div>
-            )}
-
-            <WalletMultiButton
-              startIcon={undefined}
-              style={{
-                background:
-                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: "0 2em",
-                borderRadius: 15,
-              }}
-            >
-              <p className="text-lg text-white">
-                {wallet?.publicKey
-                  ? walletAddressShortener(wallet.publicKey.toString())
-                  : "Connect Wallet"}
-              </p>
-            </WalletMultiButton>
-
-            {userStatus === UserStatus.fullAccount &&
-              !isMobileScreen &&
-              currentUser?.telegram?.id && (
-                <button
-                  className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-6"
-                  onClick={() => setIsOnSettings(true)}
+                {badge > 0 && (
+                  <span className="bg-[#FF0000] text-white w-6 h-6 rounded-full absolute text-center leading-6  right-[-11px] top-[-13px]">
+                    {badge}
+                  </span>
+                )}
+              </a>
+              {notifications && (
+                <div
+                  className="dropdown-content z-[999999999] top-[72px]"
+                  tabIndex={0}
                 >
-                  <p className="text-base text-white font-bold settings-btn">
-                    Settings
-                  </p>
-                </button>
+                  <div className="w-64 bg-black bg-opacity-[0.56] backdrop-blur-[2px] p-5 max-h-96 overflow-y-auto">
+                    {notifications.length > 0 && (
+                      <div>
+                        {notifications.map((value: any) => (
+                          <Notification data={value} key={value._id} />
+                        ))}
+                      </div>
+                    )}
+                    {notifications.length == 0 && (
+                      <p className="text-base">
+                        You don't have any notification
+                      </p>
+                    )}
+                  </div>
+                </div>
               )}
-          </div>
+            </div>
+          )}
+          {currentUser?.profile?.image && (
+            <div
+              className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+            >
+              <Image
+                src={currentUser.profile.image}
+                alt="Profile Image"
+                className="rounded-full"
+                layout="fill"
+              />
+            </div>
+          )}
+
+          <WalletMultiButton
+            startIcon={undefined}
+            style={{
+              background:
+                "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
+              padding: "0 2em",
+              borderRadius: 15,
+              marginLeft: "2rem",
+            }}
+          >
+            <p className="text-lg text-white">
+              {wallet?.publicKey
+                ? walletAddressShortener(wallet.publicKey.toString())
+                : "Connect Wallet"}
+            </p>
+          </WalletMultiButton>
+
+          {userStatus === UserStatus.fullAccount &&
+            !isMobileScreen &&
+            currentUser?.telegram?.id && (
+              <button
+                className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-6"
+                onClick={() => setIsOnSettings(true)}
+              >
+                <p className="text-base text-white font-bold settings-btn">
+                  Settings
+                </p>
+              </button>
+            )}
         </div>
       </div>
 

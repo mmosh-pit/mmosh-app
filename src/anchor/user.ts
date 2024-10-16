@@ -1372,7 +1372,7 @@ export class Connectivity {
       const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.token), user);
       const infoes = await this.connection.getTokenAccountBalance(userOposAta);
       console.log("infoes ", infoes)
-      return infoes.value.uiAmount
+      return infoes.value.uiAmount ? infoes.value.uiAmount : 0
     } catch (error) {
       return 0
     }

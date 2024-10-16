@@ -10,10 +10,7 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("onramp-session") &&
     !req.url.includes("forgot-password")
   ) {
-    console.log("Going to authorize");
     const cookie = cookies().get("session")?.value;
-
-    console.log("We have cookie");
 
     if (!cookie) {
       return NextResponse.json("", { status: 401 });

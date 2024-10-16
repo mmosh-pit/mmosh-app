@@ -23,20 +23,19 @@ import Button from "../common/Button";
 
 type Props = {
   user: User;
-  wallet?: AnchorWallet
-  currentuser: User
-  connection: Connection
+  wallet?: AnchorWallet;
+  currentuser: User;
+  connection: Connection;
 };
 
 const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
   const [guildSize, setGuildSize] = React.useState(0);
   const [loader, setLoader] = React.useState(false);
   const [statusMsg, setStatusMsg] = React.useState("");
-  const [connectionStatus, setConnectionStatus] = React.useState(0)
-  const [hasRequest, setHasRequest] = React.useState(false)
+  const [connectionStatus, setConnectionStatus] = React.useState(0);
+  const [hasRequest, setHasRequest] = React.useState(false);
   const [___, setCurrentUser] = useAtom(data);
   const [requestloader, setReqestLoader] = React.useState(false);
-
 
   const getGuildSize = React.useCallback(async () => {
     const result = await axios.get(
@@ -52,9 +51,9 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
 
   React.useEffect(() => {
     getGuildSize();
-    console.log(" user.profile.connection", user.profile.connection)
-    setConnectionStatus(user.profile.connection ? user.profile.connection : 0)
-    setHasRequest(user.profile.request ? user.profile.request : false)
+    console.log(" user.profile.connection", user.profile.connection);
+    setConnectionStatus(user.profile.connection ? user.profile.connection : 0);
+    setHasRequest(user.profile.request ? user.profile.request : false);
   }, [user.profilenft]);
 
   const sendConnectionRequest = async () => {
@@ -65,8 +64,8 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
     // 4 - linked
     // 5 - has invite no connection
 
-    if(!wallet) {
-      return
+    if (!wallet) {
+      return;
     }
 
     let connectionnft;
@@ -78,22 +77,34 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
     anchor.setProvider(env);
 
     try {
-      setLoader(true)
-      let nextStatus
-      let nextConnectionStatus
-      if(connectionStatus == 0 || connectionStatus == 3 || connectionStatus == 5) {
-        if(connectionStatus != 5) {
-          if(!currentuser.profile.connectionnft) {
-            setStatusMsg("Initiating...")
+      setLoader(true);
+      let nextStatus;
+      let nextConnectionStatus;
+      if (
+        connectionStatus == 0 ||
+        connectionStatus == 3 ||
+        connectionStatus == 5
+      ) {
+        if (connectionStatus != 5) {
+          if (!currentuser.profile.connectionnft) {
+            setStatusMsg("Initiating...");
             const projectKeyPair = anchor.web3.Keypair.generate();
-            communityConnection = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
-  
+            communityConnection = new Community(
+              env,
+              web3Consts.programID,
+              projectKeyPair.publicKey,
+            );
+
             let connectionBody = {
               name: currentuser.profile.username + " Connection",
               symbol: "CONNECTIONS",
               description: currentuser.profile.bio,
-              image: "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"/"+currentuser.profile.username,
+              image:
+                "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
+              enternal_url:
+                process.env.NEXT_PUBLIC_APP_MAIN_URL +
+                "/" +
+                currentuser.profile.username,
               collection: "MMOSH Pass Collection",
               attributes: [
                 {
@@ -101,17 +112,20 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
                   value: projectKeyPair.publicKey.toBase58(),
                 },
               ],
-            }
-            const projectMetaURI: any = await pinFileToShadowDriveUrl(connectionBody);
-            const profileMintingCost = new anchor.BN(calcNonDecimalValue(0, 9))
-            const invitationMintingCost = new anchor.BN(calcNonDecimalValue(0, 9))
-  
-            const res1:any = await communityConnection.mintGenesisPass({
+            };
+            const projectMetaURI: any =
+              await pinFileToShadowDriveUrl(connectionBody);
+            const profileMintingCost = new anchor.BN(calcNonDecimalValue(0, 9));
+            const invitationMintingCost = new anchor.BN(
+              calcNonDecimalValue(0, 9),
+            );
+
+            const res1: any = await communityConnection.mintGenesisPass({
               name: currentuser.profile.username,
               symbol: "CONNECT",
               uri: projectMetaURI,
               mintKp: projectKeyPair,
-              input:{
+              input: {
                 oposToken: web3Consts.usdcToken,
                 profileMintingCost,
                 invitationMintingCost,
@@ -128,40 +142,44 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
                   grandParent: 100 * 20,
                   greatGrandParent: 100 * 5,
                   genesis: 100 * 3,
-                }
-              }
+                },
+              },
             });
-  
-          connectionnft = res1.Ok.info.profile
-  
-            await delay(15000)
-            setStatusMsg("Connecting...")
+
+            connectionnft = res1.Ok.info.profile;
+
+            await delay(15000);
+            setStatusMsg("Connecting...");
             const invitebody = {
-              name: "Connection from " +  currentuser.profile.username,
+              name: "Connection from " + currentuser.profile.username,
               symbol: "CONNECTIONS",
-              description: currentuser.profile.username+" cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
-              image: "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
+              description:
+                currentuser.profile.username +
+                " cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
+              image:
+                "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
               external_url: "https://liquidhearts.app",
               minter: currentuser.profile.name,
               attributes: [
-                  {
-                      trait_type: "Project",
-                      value: projectKeyPair.publicKey.toBase58(),
-                  }
-              ]
+                {
+                  trait_type: "Project",
+                  value: projectKeyPair.publicKey.toBase58(),
+                },
+              ],
             };
-            const inviteMetaURI: any = await pinFileToShadowDriveUrl(invitebody);
-  
+            const inviteMetaURI: any =
+              await pinFileToShadowDriveUrl(invitebody);
+
             const res2: any = await communityConnection.initBadge({
               name: "Invitation",
-              symbol:  "CONNECT",
-              uri:inviteMetaURI,
+              symbol: "CONNECT",
+              uri: inviteMetaURI,
               profile: connectionnft,
             });
-            console.log("invite result ", res2)
-            connectionbadge = res2.Ok.info.subscriptionToken
-            await delay(15000)
-            
+            console.log("invite result ", res2);
+            connectionbadge = res2.Ok.info.subscriptionToken;
+            await delay(15000);
+
             const params = {
               connectionnft,
               connectionbadge,
@@ -170,128 +188,129 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
               value: params,
               wallet: currentuser.wallet,
             });
-            currentuser.profile.connectionnft = connectionnft
-            currentuser.profile.connectionnft = connectionbadge
-            setCurrentUser(currentuser)
+            currentuser.profile.connectionnft = connectionnft;
+            currentuser.profile.connectionnft = connectionbadge;
+            setCurrentUser(currentuser);
           } else {
-            connectionnft = currentuser.profile.connectionnft
-            connectionbadge = currentuser.profile.connectionbadge
-            communityConnection = new Community(env, web3Consts.programID, new anchor.web3.PublicKey(currentuser.profile.connectionnft));
+            connectionnft = currentuser.profile.connectionnft;
+            connectionbadge = currentuser.profile.connectionbadge;
+            communityConnection = new Community(
+              env,
+              web3Consts.programID,
+              new anchor.web3.PublicKey(currentuser.profile.connectionnft),
+            );
           }
           const balance = await communityConnection.getUserBalance({
             token: connectionbadge,
-            address: wallet.publicKey
-          })
-          if(balance == 0) {
-            setStatusMsg("Inviting...")
+            address: wallet.publicKey,
+          });
+          if (balance == 0) {
+            setStatusMsg("Inviting...");
             let res = await communityConnection.createBadge({
               amount: 10000,
-              subscriptionToken: connectionbadge
+              subscriptionToken: connectionbadge,
             });
-            if(res.Err) {
-              setLoader(false)
-              return
+            if (res.Err) {
+              setLoader(false);
+              return;
             }
-            await delay(15000)
+            await delay(15000);
           }
-          
+
           const userbalance = await communityConnection.getUserBalance({
             token: connectionbadge,
-            address: new anchor.web3.PublicKey(user.wallet)
-          })
-          if(userbalance == 0) {
-            setStatusMsg("Sending...")
+            address: new anchor.web3.PublicKey(user.wallet),
+          });
+          if (userbalance == 0) {
+            setStatusMsg("Sending...");
             let res1;
             res1 = await communityConnection.transferBadge({
               amount: 1,
               subscriptionToken: connectionbadge,
-              receiver: user.wallet
+              receiver: user.wallet,
             });
-            if(res1.Err) {
-              setLoader(false)
-              return
+            if (res1.Err) {
+              setLoader(false);
+              return;
             }
-            console.log("transferBadge ", res1)
+            console.log("transferBadge ", res1);
           }
-
         } else {
-          setStatusMsg("connecting...")
+          setStatusMsg("connecting...");
         }
-        nextStatus = user.profile.isprivate ? 0 : 1
-        if(user.profile.isprivate ) {
-            nextConnectionStatus = 1
+        nextStatus = user.profile.isprivate ? 0 : 1;
+        if (user.profile.isprivate) {
+          nextConnectionStatus = 1;
         } else {
-            if(connectionStatus != 3) {
-               nextConnectionStatus = 2
-            } else {
-               nextConnectionStatus = 4
-            }
+          if (connectionStatus != 3) {
+            nextConnectionStatus = 2;
+          } else {
+            nextConnectionStatus = 4;
+          }
         }
-      } else if(connectionStatus == 1) {
-        setStatusMsg("Cancelling...")
-        nextStatus = 3
-        nextConnectionStatus = 5
+      } else if (connectionStatus == 1) {
+        setStatusMsg("Cancelling...");
+        nextStatus = 3;
+        nextConnectionStatus = 5;
       } else {
-        setStatusMsg("unlinking...")
-        if(connectionStatus == 4) {
-          nextConnectionStatus = 3
+        setStatusMsg("unlinking...");
+        if (connectionStatus == 4) {
+          nextConnectionStatus = 3;
         } else {
-          nextConnectionStatus = 0
+          nextConnectionStatus = 0;
         }
-        nextStatus = 2
+        nextStatus = 2;
       }
-      await axios.post("/api/connections/send",{
+      await axios.post("/api/connections/send", {
         sender: currentuser.wallet,
         receiver: user.wallet,
         badge: connectionbadge,
-        status: nextStatus
-      })
-      setConnectionStatus(nextConnectionStatus)
-      await delay(15000)
-      setLoader(false)
+        status: nextStatus,
+      });
+      setConnectionStatus(nextConnectionStatus);
+      await delay(15000);
+      setLoader(false);
     } catch (error) {
-      setLoader(false)
+      setLoader(false);
     }
+  };
 
-  }
-
-  const connectionAction = async(type:any) => {
+  const connectionAction = async (type: any) => {
     try {
-      setReqestLoader(true)
-      if(type === "accept") {
-       await axios.post("/api/connections/send",{
-         sender: user.wallet,
-         receiver: currentuser.wallet,
-         badge: "",
-         status: 4
-       })
-       if(connectionStatus == 2) {
-         setConnectionStatus(4)
-       } else {
-         setConnectionStatus(3)
-       }
+      setReqestLoader(true);
+      if (type === "accept") {
+        await axios.post("/api/connections/send", {
+          sender: user.wallet,
+          receiver: currentuser.wallet,
+          badge: "",
+          status: 4,
+        });
+        if (connectionStatus == 2) {
+          setConnectionStatus(4);
+        } else {
+          setConnectionStatus(3);
+        }
       } else {
-       await axios.post("/api/connections/send",{
-         sender: user.wallet,
-         receiver: currentuser.wallet,
-         badge: "",
-         status: 5
-       })
-       setConnectionStatus(0)
+        await axios.post("/api/connections/send", {
+          sender: user.wallet,
+          receiver: currentuser.wallet,
+          badge: "",
+          status: 5,
+        });
+        setConnectionStatus(0);
       }
-      setHasRequest(false)
-      setReqestLoader(false)
+      setHasRequest(false);
+      setReqestLoader(false);
     } catch (error) {
-      setReqestLoader(false)
+      setReqestLoader(false);
     }
+  };
 
-  }
+  const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
 
-  const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
-
-  React.useEffect(()=>{
-     console.log("current user ", connectionStatus)
-  },[connectionStatus])
+  React.useEffect(() => {
+    console.log("current user ", connectionStatus);
+  }, [connectionStatus]);
 
   return (
     <div
@@ -313,34 +332,57 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
       <div className="w-full flex flex-col justify-start">
         <div>
           <p className="text-white text-sm flex">
-
-            {user.profile.name} 
-            {currentuser &&
+            {user.profile.name}
+            {currentuser && (
               <>
-              {(wallet && (wallet.publicKey.toBase58() != user.wallet) && currentuser.profilenft && !loader)  && 
-                <>
-                  {(connectionStatus == 0 || connectionStatus == 5) &&
-                      <span className="cursor-pointer ml-2.5 mt-1" onClick={sendConnectionRequest}><EmptyHeartSvg /></span>
-                  }
+                {wallet &&
+                  wallet.publicKey.toBase58() != user.wallet &&
+                  currentuser.profilenft &&
+                  !loader && (
+                    <>
+                      {(connectionStatus == 0 || connectionStatus == 5) && (
+                        <span
+                          className="cursor-pointer ml-2.5 mt-1"
+                          onClick={sendConnectionRequest}
+                        >
+                          <EmptyHeartSvg />
+                        </span>
+                      )}
 
-                  {(connectionStatus == 1 || connectionStatus == 2) && 
-                      <span className="cursor-pointer ml-2.5" onClick={sendConnectionRequest}><HeartSvg /></span>
-                  }
+                      {(connectionStatus == 1 || connectionStatus == 2) && (
+                        <span
+                          className="cursor-pointer ml-2.5"
+                          onClick={sendConnectionRequest}
+                        >
+                          <HeartSvg />
+                        </span>
+                      )}
 
-                  {connectionStatus == 4 && 
-                      <span className="cursor-pointer relative top-[-6px]" onClick={sendConnectionRequest}><LinkedHeartSvg /></span>
-                  }
+                      {connectionStatus == 4 && (
+                        <span
+                          className="cursor-pointer relative top-[-6px]"
+                          onClick={sendConnectionRequest}
+                        >
+                          <LinkedHeartSvg />
+                        </span>
+                      )}
 
-                  {connectionStatus == 3 && 
-                      <span className="cursor-pointer relative top-[-4px]" onClick={sendConnectionRequest}><InBoundHeart /></span>
-                  }
-                  
-                </>
-              }
+                      {connectionStatus == 3 && (
+                        <span
+                          className="cursor-pointer relative top-[-4px]"
+                          onClick={sendConnectionRequest}
+                        >
+                          <InBoundHeart />
+                        </span>
+                      )}
+                    </>
+                  )}
               </>
-            }
+            )}
 
-            {(wallet && (wallet.publicKey.toBase58() != user.wallet) && loader)  && <span className="cursor-poiner ml-2.5">{statusMsg}</span>}
+            {wallet && wallet.publicKey.toBase58() != user.wallet && loader && (
+              <span className="cursor-poiner ml-2.5">{statusMsg}</span>
+            )}
           </p>
           <p className="text-sm">@{user.profile.username}</p>
         </div>
@@ -351,27 +393,42 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
           </p>
           <a
             className="text-[#FF00C7] text-sm"
-            href={`https://mmosh.app/${user.profile.username}`}
+            href={`https://liquidhearts.app/${user.profile.username}`}
           >
-            mmosh.app/{user.profile.username}
+            liquidhearts.app/{user.profile.username}
           </a>
         </div>
-        {user.profile.request &&
-             <div className="flex justify-end">
-                 {requestloader &&
-                    <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5">processing...</button>
-                 }
+        {user.profile.request && (
+          <div className="flex justify-end">
+            {requestloader && (
+              <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5">
+                processing...
+              </button>
+            )}
 
-                 {!requestloader && hasRequest &&
-                 <>
-                    <p className="text-white text-sm">Request</p>
-                    <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5" onClick={()=>{connectionAction("accept")}}>Accept</button>
-                    <button className="btn btn-xs bg-[#372E4F] rounded-md text-white" onClick={()=>{connectionAction("reject")}}>Reject</button>
-                 </>
-                }
-              </div>
-        }
-   
+            {!requestloader && hasRequest && (
+              <>
+                <p className="text-white text-sm">Request</p>
+                <button
+                  className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5"
+                  onClick={() => {
+                    connectionAction("accept");
+                  }}
+                >
+                  Accept
+                </button>
+                <button
+                  className="btn btn-xs bg-[#372E4F] rounded-md text-white"
+                  onClick={() => {
+                    connectionAction("reject");
+                  }}
+                >
+                  Reject
+                </button>
+              </>
+            )}
+          </div>
+        )}
 
         <div className="w-[100%] flex justify-between items-center py-2 rounded-3xl mt-2">
           <div className="flex items-center">

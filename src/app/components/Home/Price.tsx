@@ -7,7 +7,7 @@ import * as React from "react";
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 
 type Props = {
-  symbol: string
+  symbol: string;
   bonding?: string;
   height?: number;
 };
@@ -18,12 +18,13 @@ const Price = ({ height, symbol }: Props) => {
   const [price, setPrice] = React.useState(0)
   const [data, setData] = React.useState<{ uv: number; pv: number; amt: number; name: string }[]>([])
 
-
   const getPricesFromAPI = async () => {
     try {
-      let priceResult = await axios.get(`/api/project/token-detail?symbol=${symbol}`);
-      console.log("priceResult.data ", priceResult.data)
-      if(priceResult.data.prices) {
+      let priceResult = await axios.get(
+        `/api/project/token-detail?symbol=${symbol}`,
+      );
+      console.log("priceResult.data ", priceResult.data);
+      if (priceResult?.data?.prices) {
         const newData = [];
         for (let index = 0; index < priceResult.data.prices.length; index++) {
           const d = new Date();
@@ -35,12 +36,11 @@ const Price = ({ height, symbol }: Props) => {
             day: "numeric",
           })});
         }
-        setData(newData.reverse())
-        setPrice(priceResult.data.pricepercentage)
+        setData(newData.reverse());
+        setPrice(priceResult.data.pricepercentage);
       }
-
     } catch (error) {
-      resetGraph()
+      resetGraph();
       console.error(error);
     }
   };
@@ -57,20 +57,19 @@ const Price = ({ height, symbol }: Props) => {
       })});
     }
 
-    setData(newData.reverse())
-    setPrice(0)
-  }
+    setData(newData.reverse());
+    setPrice(0);
+  };
 
-  React.useEffect(()=>{
-    resetGraph()
-    getPricesFromAPI()
-  },[selectedCoinDirectory])
+  React.useEffect(() => {
+    resetGraph();
+    getPricesFromAPI();
+  }, [selectedCoinDirectory]);
 
-
-  React.useEffect(()=>{
-    console.log("price data", data)
+  React.useEffect(() => {
+    console.log("price data", data);
     // getPricesFromAPI()
-  },[data])
+  }, [data]);
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">

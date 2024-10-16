@@ -1,23 +1,21 @@
+"use client";
 import * as React from "react";
 import { useAtom } from "jotai";
 
-import CoinsTable from "./CoinDirectory/CoinsTable";
-import SearchBar from "./CoinDirectory/SearchBar";
-import Graphics from "./Home/Graphics";
 import { selectedCoinsMode } from "../store/home";
-import CoinsList from "./Home/CoinsList";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
+import Graphics from "../components/Home/Graphics";
+import SearchBar from "../components/CoinDirectory/SearchBar";
+import CoinsTable from "../components/CoinDirectory/CoinsTable";
+import CoinsList from "../components/Home/CoinsList";
 
 const HomePage = () => {
-  // const [currentUser] = useAtom(data);
-  // const [isDrawerShown] = useAtom(isDrawerOpen);
-
   const [coinsMode] = useAtom(selectedCoinsMode);
 
   const isMobile = useCheckMobileScreen();
 
   return (
-    <div className="background-content flex flex-col max-h-full pt-20 px-12 w-full">
+    <div className="background-content flex flex-col max-h-full pt-20 px-12 w-full relative">
       <Graphics />
 
       <div className="mt-8">

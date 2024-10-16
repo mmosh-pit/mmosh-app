@@ -19,7 +19,7 @@ const Coins = ({ candidate, color }: Props) => {
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
     const mmoshUsdcPrice = await axios.get(
-      `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
+      `https://price.jup.ag/v6/price?ids=MMOSH`,
     );
 
     setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0);

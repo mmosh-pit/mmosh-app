@@ -112,6 +112,7 @@ const CoinsTable = () => {
   );
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
+
     if(selectedCoinDirectory === "PTVB") {
       const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
       setUsdcMmoshPrice(mmoshUsdcPrice);
@@ -127,7 +128,7 @@ const CoinsTable = () => {
   }, [selectedCoinDirectory]);
 
   const navigateToCoinPage = React.useCallback((symbol: string) => {
-    navigate.push(`/create/coins_directory/${symbol}`);
+    navigate.push(`/coins/${symbol}`);
   }, []);
 
   const getCoinPrice = React.useCallback(
@@ -267,7 +268,7 @@ const CoinsTable = () => {
 
             <td align="center">
               <a
-                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/coins_directory/${coin.symbol}`}
+                href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/coins/${coin.symbol}`}
                 className="cursor-pointer"
               >
                 <div className="flex items-center">

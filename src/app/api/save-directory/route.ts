@@ -1,16 +1,29 @@
 import axios from "axios";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
+import { getPriceForPTV } from "@/app/lib/forge/jupiter";
 
 export async function POST(req: NextRequest) {
   const directoryCollection = db.collection("mmosh-app-directory");
   const params = await req.json();
 
-  const mmoshUsdcPrice = await axios.get(
-    `https://price.jup.ag/v6/price?ids=MMOSH`,
-  );
 
-  const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
+  let usdcPrice;
+  
+
+
+  if(params.basesymbol === "PTVB") {
+    let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
+    usdcPrice = result > 0 ? result : 0.0003;
+  } else if(params.basesymbol === "PTVR") {
+    let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
+    usdcPrice = result > 0 ? result : 0.0003;
+  } else {
+    let apiResponse  = await axios.get(
+      `https://price.jup.ag/v6/price?ids=MMOSH`,
+    );
+    usdcPrice = apiResponse.data?.data?.MMOSH?.price || 0;
+  }
 
   directoryCollection.insertOne({
     basekey: params.basekey,
@@ -23,7 +36,7 @@ export async function POST(req: NextRequest) {
     targetimg: params.targetimg,
     value: params.value,
     price: params.price,
-    usdcPrice: params.value * USDCPrice,
+    usdcPrice: params.value * usdcPrice,
     type: params.type,
     wallet: params.wallet,
     created_date: new Date(),

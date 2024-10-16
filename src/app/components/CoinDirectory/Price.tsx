@@ -26,8 +26,8 @@ const Price = ({ height, base }: Props) => {
           const d = new Date();
           let filterDate;
           filterDate = new Date(d.setDate(d.getDate() - index));
-          const element = priceResult.data.labels[index];
-          newData.push({ value: Math.abs(element.value), name:filterDate.toLocaleString("en-us", {
+          const element = priceResult.data.prices[index];
+          newData.push({ value: Math.abs(element), name:filterDate.toLocaleString("en-us", {
             month: "short",
             day: "numeric",
           })});

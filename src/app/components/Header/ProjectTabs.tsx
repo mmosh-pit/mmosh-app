@@ -11,7 +11,7 @@ const ProjectTabs = () => {
 
   const getHeaderBackground = React.useCallback(() => {
     let defaultClass =
-      "w-full flex justify-center items-center py-6 px-8 relative z-0 ";
+      "w-full flex justify-center items-center pb-6 pt-2 px-8 relative z-0 ";
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
@@ -37,21 +37,27 @@ const ProjectTabs = () => {
             layout="fill"
           />
         </div>
+
         <div className="mx-6" />
+
         <a
           className="text-base text-white cursor-pointer self-center"
           onClick={() => router.replace("/projects/ptv")}
         >
           Pump the Vote
         </a>
+
         <div className="mx-6" />
+
         <a
           onClick={() => router.replace("/projects/ptv/candidates")}
           className="text-base text-white cursor-pointer self-center"
         >
           Candidates
         </a>
+
         <div className="mx-6" />
+
         <a
           className="text-base text-white cursor-pointer self-center"
           onClick={() => {

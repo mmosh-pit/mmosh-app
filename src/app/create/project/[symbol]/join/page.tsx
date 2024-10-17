@@ -302,6 +302,43 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                 ],
             };
 
+            if(localStorage.getItem("refer")) {
+                let parentPass:any = localStorage.getItem("refer");
+                let parentInfo = await projectConn.metaplex.nfts().findByMint({
+                  mintAddress:  new anchor.web3.PublicKey(parentPass)
+                })
+                body.attributes.push({
+                  trait_type: "USER.Parent",
+                  value: parentPass
+                });
+        
+                if(parentInfo.json?.attributes) {
+                    for (let index = 0; index < parentInfo.json?.attributes.length; index++) {
+                      const element = parentInfo.json?.attributes[index];
+                      if(element.trait_type === "USER.Parent") {
+                        body.attributes.push({
+                            trait_type: "USER.GrandParent",
+                            value: element.value
+                          });
+                      }
+                      if(element.trait_type === "USER.GrandParent") {
+                        body.attributes.push({
+                          trait_type: "USER.GreatGrandParent",
+                          value: element.value
+                        });
+                      }
+        
+                      if(element.trait_type === "USER.GreatGrandParent") {
+                        body.attributes.push({
+                          trait_type: "USER.GGreatGrandParent",
+                          value: element.value
+                        });
+                      }
+                    }
+                }
+            }
+        
+
             // get originator name
             if (projectInfo.profilelineage.originator.length > 0) {
                 let originator: any = await getUserName(projectInfo.profilelineage.originator);
@@ -365,13 +402,16 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                 },profile);
             } else {
                 console.log("guest pass implementation")
-                res = await projectConn.mintGuestPass({
+                const apiResult = await axios.post("/api/ptv/free",{
                     name: body.name,
                     symbol: body.symbol,
-                    uriHash: passMetaURI,
-                    genesisProfile,
-                    commonLut: projectDetail.project.lut
-                },profile);
+                    url: passMetaURI,
+                    gensis: genesisProfile,
+                    lut: projectDetail.project.lut,
+                    receiver: wallet.publicKey.toBase58(),
+                    key: projectDetail.project.key
+                })
+                res = apiResult.data;
             }
 
 

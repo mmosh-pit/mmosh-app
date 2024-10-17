@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import sgMail from "@sendgrid/mail";
+// import sgMail from "@sendgrid/mail";
 
 import { db } from "@/app/lib/mongoClient";
 import { generateCode } from "@/utils/generateCode";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-users-email-verification");
@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    await sgMail.send(msg);
+    console.log("code is ", code)
+    // await sgMail.send(msg);
 
     const existingData = await collection.findOne({
       email: data.email,

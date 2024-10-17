@@ -1,18 +1,17 @@
 import * as React from "react";
 import axios from "axios";
-import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import Image from "next/image";
+import { useAtom } from "jotai";
 
 import { Coin } from "@/app/models/coin";
-import { userWeb3Info } from "@/app/store";
 import Search from "../common/Search";
-import RecentCoin from "../common/RecentCoin";
 import CoinListItem from "../common/CoinListItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import CloseIcon from "@/assets/icons/CloseIcon";
-import { jupCoins } from "@/app/lib/forge/jupiter";
+import { networkCoins, communityCoins } from "@/app/lib/forge/jupiter";
+import { data } from "@/app/store";
+import RecentCoin from "../common/RecentCoin";
 
 type Props = {
   selectedCoin: SwapCoin | null;
@@ -33,8 +32,11 @@ const CoinSelect = ({
 
   const [politicalCoins, setPoliticalCoins] = React.useState<Coin[]>([]);
 
-  // const [recentCoins, setRecentCoins] = React.useState<Coin[]>([]);
+  const [recentCoins, setRecentCoins] = React.useState<Coin[]>([]);
+
   const [searchText, setSearchText] = React.useState("");
+
+  const [currentUser] = useAtom(data);
 
   const getCoinsList = async () => {
     let newCoinList = [];
@@ -44,8 +46,11 @@ const CoinSelect = ({
       `/api/list-political-tokens?search=${searchText}`,
     );
 
+    const recentCoins = await axios.get(
+      `/api/get-recent-coins?profile=${currentUser?.profilenft}`,
+    );
+
     if (otherToken?.token === "") {
-      newCoinList = jupCoins;
       for (let index = 0; index < listResult.data.length; index++) {
         const element = listResult.data[index];
         element.decimals = 9;
@@ -53,42 +58,6 @@ const CoinSelect = ({
         newCoinList.push(element);
       }
     } else {
-      let memeCoin = listResult.data.filter(
-        (item: any) => item.token == otherToken?.token,
-      );
-      if (memeCoin.length > 0) {
-        newCoinList.push(jupCoins[0]); // mmosh
-        newCoinList.push(jupCoins[1]); // ptvr
-        newCoinList.push(jupCoins[2]); // ptvb
-      }
-
-      if (otherToken?.symbol.toLowerCase() == "mmosh") {
-        let jupList = jupCoins;
-        for (let index = 0; index < jupList.length; index++) {
-          const element = jupList[index];
-          if (element.symbol != otherToken?.symbol) {
-            newCoinList.push(element);
-          }
-        }
-      }
-
-      if (
-        otherToken?.symbol.toLowerCase() == "ptvb" ||
-        otherToken?.symbol.toLowerCase() == "ptvr"
-      ) {
-        newCoinList.push(jupCoins[0]); // mmosh
-      }
-
-      if (otherToken?.symbol.toLowerCase() == "usdc") {
-        newCoinList.push(jupCoins[0]); // mmosh
-        newCoinList.push(jupCoins[4]); // sol
-      }
-
-      if (otherToken?.symbol.toLowerCase() == "wsol") {
-        newCoinList.push(jupCoins[0]); // mmosh
-        newCoinList.push(jupCoins[3]); // usdc
-      }
-
       if (
         otherToken?.symbol.toLowerCase() == "mmosh" ||
         otherToken?.symbol.toLowerCase() == "ptvr" ||
@@ -113,6 +82,7 @@ const CoinSelect = ({
     }
 
     setPoliticalCoins(politicalResult.data);
+    setRecentCoins(recentCoins.data);
   };
 
   const handleTokenSelect = (token: Coin) => {
@@ -167,7 +137,7 @@ const CoinSelect = ({
         <div className="flex flex-col modal-box w-[40%] bg-[#02001A] p-8">
           <div className="custom-select-open grow">
             <div className="flex w-full justify-between mb-2">
-              <p className="text-xs text-white font-bold ml-4">Creator Coins</p>
+              <p className="text-xs text-white font-bold ml-4">Trading Pairs</p>
 
               <button
                 className="cursor-pointer"
@@ -191,7 +161,76 @@ const CoinSelect = ({
               />
             </div>
 
-            <div className="w-full h-[0.5px] bg-[#36357C] px-2 mb-8 mt-2" />
+            <div>
+              {recentCoins.map((coin) => (
+                <RecentCoin
+                  onTokenSelect={handleTokenSelect}
+                  symbol={coin.symbol}
+                  desc={coin.desc}
+                  name={coin.name}
+                  image={coin.image}
+                  token={coin.token}
+                  bonding={coin.bonding}
+                  creatorUsername={coin.creatorUsername}
+                  iscoin={coin.iscoin}
+                  decimals={coin.decimals}
+                />
+              ))}
+            </div>
+
+            <div className="w-full h-[1px] bg-[#36357C] px-2 mb-8 mt-2" />
+
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">Network Tokens</p>
+            </div>
+
+            {networkCoins.map((coin) => {
+              return (
+                <div className="my-2">
+                  <CoinListItem
+                    token={coin.token}
+                    bonding={coin.bonding}
+                    name={coin.name}
+                    desc={coin.desc}
+                    creatorUsername={coin.creatorUsername}
+                    symbol={coin.symbol}
+                    image={coin.image}
+                    iscoin={coin.iscoin}
+                    decimals={coin.decimals}
+                    onTokenSelect={handleTokenSelect}
+                    key={coin.token}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">Community Coins</p>
+            </div>
+
+            {communityCoins.map((coin) => {
+              return (
+                <div className="my-2">
+                  <CoinListItem
+                    token={coin.token}
+                    bonding={coin.bonding}
+                    name={coin.name}
+                    desc={coin.desc}
+                    creatorUsername={coin.creatorUsername}
+                    symbol={coin.symbol}
+                    image={coin.image}
+                    iscoin={coin.iscoin}
+                    decimals={coin.decimals}
+                    onTokenSelect={handleTokenSelect}
+                    key={coin.token}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">Memecoins</p>
+            </div>
 
             {coinsList.map((coin) => {
               return (
@@ -213,7 +252,11 @@ const CoinSelect = ({
               );
             })}
 
-            <div className="w-full h-[0.5px] bg-[#36357C] px-2 mb-8 mt-2" />
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">
+                Political Memecoins
+              </p>
+            </div>
 
             {politicalCoins.map((coin) => {
               return (

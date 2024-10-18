@@ -30,8 +30,6 @@ export async function GET(req: NextRequest) {
   let forResult = 0;
   let againstResult = 0;
 
-  console.log("Token for results: ", tokenForResults);
-
   const highestForCoin = {
     address: "---",
     amount: 0,

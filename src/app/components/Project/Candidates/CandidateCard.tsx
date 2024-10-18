@@ -68,6 +68,10 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
   const getImage = () => {
     const color = getColor();
 
+    if (coinsData) {
+      return coinsData!.coin.image;
+    }
+
     return getImageUrl(color);
   };
 
@@ -163,7 +167,10 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
           <div className="flex items-center">
             <p className="text-sm mr-2">All</p>
             <p className="text-sm text-white">
-              {coinsData?.total} <span className="text-tiny ml-1">USDC</span>
+              {coinsData?.total}
+              <span className="text-tiny ml-1">
+                {coinsData?.coin.symbol || "USDC"}
+              </span>
             </p>
           </div>
 
@@ -171,7 +178,9 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
             <p className="text-sm mr-2">For</p>
             <p className="text-sm text-white">
               {coinsData?.forResult}
-              <span className="text-tiny ml-1">USDC</span>
+              <span className="text-tiny ml-1">
+                {coinsData?.coin.symbol || "USDC"}
+              </span>
             </p>
           </div>
 
@@ -179,7 +188,9 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
             <p className="text-sm mr-2">Against</p>
             <p className="text-sm text-white">
               {coinsData?.againstResult}
-              <span className="text-tiny ml-1">USDC</span>
+              <span className="text-tiny ml-1">
+                {coinsData?.coin.symbol || "USDC"}
+              </span>
             </p>
           </div>
         </div>

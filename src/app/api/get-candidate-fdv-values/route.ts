@@ -30,6 +30,8 @@ export async function GET(req: NextRequest) {
   let forResult = 0;
   let againstResult = 0;
 
+  console.log("Token for results: ", tokenForResults);
+
   const highestForCoin = {
     address: "---",
     amount: 0,
@@ -140,6 +142,24 @@ export async function GET(req: NextRequest) {
     }
 
     againstResult += totalVolume * oneHourPriceEnd;
+  }
+
+  if (highestForCoin.address === "---") {
+    const [forCoin] = tokenForResults;
+
+    if (forCoin) {
+      highestForCoin.address = forCoin.token;
+      highestForCoin.name = forCoin.name;
+      highestForCoin.symbol = forCoin.symbol;
+    } else {
+      const [againstCoin] = tokenAgainstResults;
+
+      if (againstCoin) {
+        highestForCoin.address = againstCoin.token;
+        highestForCoin.name = againstCoin.name;
+        highestForCoin.symbol = againstCoin.symbol;
+      }
+    }
   }
 
   return NextResponse.json({

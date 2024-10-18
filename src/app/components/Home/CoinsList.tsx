@@ -5,7 +5,11 @@ import axios from "axios";
 import { useAtom } from "jotai";
 
 import { DirectoryCoin } from "@/app/models/directoryCoin";
-import { selectedDirectory, selectedSearchFilter, typedSearchValue } from "@/app/store/home";
+import {
+  selectedDirectory,
+  selectedSearchFilter,
+  typedSearchValue,
+} from "@/app/store/home";
 import { getPriceForPTV } from "@/app/lib/forge/jupiter";
 
 const CoinsList = () => {
@@ -57,11 +61,15 @@ const CoinsList = () => {
   }, [searchText, currentPage, selectedFilters]);
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-    if(selectedCoinDirectory === "PTVB") {
-      const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
+    if (selectedCoinDirectory === "PTVB") {
+      const mmoshUsdcPrice = await getPriceForPTV(
+        process.env.NEXT_PUBLIC_PTVB_TOKEN,
+      );
       setUsdcMmoshPrice(mmoshUsdcPrice);
-    } else if(selectedCoinDirectory === "PTVR") {
-      const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
+    } else if (selectedCoinDirectory === "PTVR") {
+      const mmoshUsdcPrice = await getPriceForPTV(
+        process.env.NEXT_PUBLIC_PTVR_TOKEN,
+      );
       setUsdcMmoshPrice(mmoshUsdcPrice);
     } else {
       const mmoshUsdcPrice = await axios.get(
@@ -130,7 +138,7 @@ const CoinsList = () => {
           <div
             className="flex bg-[#030007] bg-opacity-40 px-2 py-2 rounded-2xl"
             id="border-gradient-container"
-            key={coin.symbol}
+            key={coin.symbol.toUpperCase()}
           >
             <div className="self-center max-w-[30%] mr-8">
               <div className="relative w-[3vmax] h-[3vmax]">
@@ -146,7 +154,7 @@ const CoinsList = () => {
             <div className="flex grow flex-col justify-start">
               <div>
                 <p className="text-white text-sm">{coin.name}</p>
-                <p className="text-sm">{coin.symbol}</p>
+                <p className="text-sm">{coin.symbol.toUpperCase()}</p>
               </div>
             </div>
 

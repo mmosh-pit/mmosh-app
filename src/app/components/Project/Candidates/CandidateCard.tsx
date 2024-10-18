@@ -112,7 +112,9 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
   }, [borderRight, noBorder]);
 
   const getCandidateCoinsData = React.useCallback(async () => {
-    const result = await axios.get("/api/get-candidate-fdv-values");
+    const result = await axios.get(
+      `/api/get-candidate-fdv-values?candidate=${candidate.CANDIDATE_ID}`,
+    );
 
     setCoinsData(result.data);
   }, [candidate]);
@@ -141,7 +143,7 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
           <p className="text-base text-white underline">
             {coinsData?.coin.name}
           </p>
-          <p className="text-sm">{coinsData?.coin.symbol}</p>
+          <p className="text-sm">{coinsData?.coin.symbol?.toUpperCase()}</p>
         </div>
 
         <div className="flex flex-col justify-start grow">

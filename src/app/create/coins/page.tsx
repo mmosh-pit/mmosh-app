@@ -200,7 +200,7 @@ const CreateCoin = () => {
       const params = {
         name: form.name,
         description: form.description,
-        symbol: form.symbol,
+        symbol: form.symbol.toUpperCase(),
         preview,
         imageFile: image,
         wallet: wallet!,
@@ -238,7 +238,7 @@ const CreateCoin = () => {
         JSON.stringify({
           ...form.candidate,
           name: form.name,
-          symbol: form.symbol,
+          symbol: form.symbol.toUpperCase(),
         }),
       );
 
@@ -267,7 +267,7 @@ const CreateCoin = () => {
         supply: coinPrice,
         name: form.name,
         description: form.description,
-        symbol: form.symbol,
+        symbol: form.symbol.toUpperCase(),
         initialPrice,
         preview,
         imageFile: image,
@@ -294,7 +294,7 @@ const CreateCoin = () => {
   const checkSymbolExists = React.useCallback(async () => {
     setError(null);
     const result = await axios.get(
-      `/api/check-token-symbol?symbol=${form.symbol}`,
+      `/api/check-token-symbol?symbol=${form.symbol.toUpperCase()}`,
     );
 
     if (result.data) {

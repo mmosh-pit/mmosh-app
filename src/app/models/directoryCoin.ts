@@ -11,4 +11,5 @@ export type DirectoryCoin = {
   price: number;
   volume: number;
   priceLastSevenDays: string[];
+  basesymbol: string;
 };

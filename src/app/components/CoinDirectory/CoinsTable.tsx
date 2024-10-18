@@ -7,6 +7,7 @@ import { Line, LineChart, ResponsiveContainer } from "recharts";
 
 import {
   coinTextSearch,
+  pair,
   selectedUSDCCoin,
   selectedVolume,
 } from "@/app/store/coins";
@@ -14,17 +15,16 @@ import SortIcon from "@/assets/icons/SortIcon";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import ArrowUp from "@/assets/icons/ArrowUp";
 import ArrowDown from "@/assets/icons/ArrowDown";
-import { selectedDirectory } from "@/app/store/home";
 import { getPriceForPTV } from "@/app/lib/forge/jupiter";
 
 const CoinsTable = () => {
-  const [selectedCoinDirectory] = useAtom(selectedDirectory);
   const navigate = useRouter();
   const source = React.useRef<CancelTokenSource | null>(null);
 
   const [searchText] = useAtom(coinTextSearch);
   const [isUSDCSelected] = useAtom(selectedUSDCCoin);
   const [volume] = useAtom(selectedVolume);
+  const [tradingPair] = useAtom(pair);
 
   const [selectedSort, setSelectedSort] = React.useState({
     // type: "coin",
@@ -45,7 +45,7 @@ const CoinsTable = () => {
       }
       source.current = axios.CancelToken.source();
 
-      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}&symbol=${selectedCoinDirectory}`;
+      const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}&symbol=${tradingPair}`;
 
       const apiResult = await axios.get(url, {
         cancelToken: source.current.token,
@@ -112,12 +112,15 @@ const CoinsTable = () => {
   );
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-
-    if(selectedCoinDirectory === "PTVB") {
-      const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
+    if (tradingPair === "PTVB") {
+      const mmoshUsdcPrice = await getPriceForPTV(
+        process.env.NEXT_PUBLIC_PTVB_TOKEN,
+      );
       setUsdcMmoshPrice(mmoshUsdcPrice);
-    } else if(selectedCoinDirectory === "PTVR") {
-      const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
+    } else if (tradingPair === "PTVR") {
+      const mmoshUsdcPrice = await getPriceForPTV(
+        process.env.NEXT_PUBLIC_PTVR_TOKEN,
+      );
       setUsdcMmoshPrice(mmoshUsdcPrice);
     } else {
       const mmoshUsdcPrice = await axios.get(
@@ -125,43 +128,43 @@ const CoinsTable = () => {
       );
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
     }
-  }, [selectedCoinDirectory]);
+  }, [tradingPair]);
 
   const navigateToCoinPage = React.useCallback((symbol: string) => {
     navigate.push(`/coins/${symbol}`);
   }, []);
 
   const getCoinPrice = React.useCallback(
-    (price: number) => {
-      if (isUSDCSelected) {
-        return `${price * usdcMmoshPrice} USDC`;
-      }
+    (price: number, pair: string) => {
+      // if (isUSDCSelected) {
+      //   return `${price * usdcMmoshPrice} USDC`;
+      // }
 
-      return `${price} ${selectedCoinDirectory}`;
+      return `${price} ${pair}`;
     },
-    [usdcMmoshPrice, isUSDCSelected, selectedCoinDirectory],
+    [usdcMmoshPrice],
   );
 
   const getCoinFDV = React.useCallback(
-    (value: number) => {
-      if (isUSDCSelected) {
-        return `${value * usdcMmoshPrice} USDC`;
-      }
+    (value: number, pair: string) => {
+      // if (isUSDCSelected) {
+      //   return `${value * usdcMmoshPrice} USDC`;
+      // }
 
-      return `${value} ${selectedCoinDirectory}`;
+      return `${value} ${pair}`;
     },
-    [usdcMmoshPrice, isUSDCSelected, selectedCoinDirectory],
+    [usdcMmoshPrice],
   );
 
   const getCoinVolume = React.useCallback(
-    (value: number) => {
-      if (isUSDCSelected) {
-        return `${value * usdcMmoshPrice} USDC`;
-      }
+    (value: number, pair: string) => {
+      // if (isUSDCSelected) {
+      //   return `${value * usdcMmoshPrice} USDC`;
+      // }
 
-      return `${value} ${selectedCoinDirectory}`;
+      return `${value} ${pair}`;
     },
-    [usdcMmoshPrice, isUSDCSelected, selectedCoinDirectory],
+    [usdcMmoshPrice],
   );
 
   const getChartColor = React.useCallback((prices: string[]) => {
@@ -191,7 +194,7 @@ const CoinsTable = () => {
   React.useEffect(() => {
     getCoins(volume.value, searchText, 0);
     getUsdcMmoshPrice();
-  }, [searchText, volume, selectedCoinDirectory]);
+  }, [searchText, volume, tradingPair]);
 
   return (
     <table className="w-full bg-[#100E5242] rounded-md">
@@ -288,7 +291,7 @@ const CoinsTable = () => {
               </a>
             </td>
 
-            <td align="center">{getCoinPrice(coin.price)}</td>
+            <td align="center">{getCoinPrice(coin.price, coin.basesymbol)}</td>
 
             <td align="center">
               {getCoinPriceStatus(coin.oneHourPriceStart, coin.oneHourPriceEnd)}
@@ -298,9 +301,13 @@ const CoinsTable = () => {
               {getCoinPriceStatus(coin.oneDayPriceStart, coin.oneDayPriceEnd)}
             </td>
 
-            <td align="center">{getCoinFDV(coin.price * coin.volume)}</td>
+            <td align="center">
+              {getCoinFDV(coin.price * coin.volume, coin.basesymbol)}
+            </td>
 
-            <td align="center">{getCoinVolume(coin.volume)}</td>
+            <td align="center">
+              {getCoinVolume(coin.volume, coin.basesymbol)}
+            </td>
 
             <td align="center">
               <ResponsiveContainer width={150} height={50}>

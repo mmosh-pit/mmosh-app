@@ -13,14 +13,17 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { incomingReferAddress } from "@/app/store/signup";
 
 export default function ProjectView({ params }: { params: { symbol: string } }) {
+    const [refer] = useAtom(incomingReferAddress);
     const navigate = useRouter();
     const connection = useConnection();
     const wallet = useAnchorWallet();
     const [profileInfo] = useAtom(userWeb3Info);
     const [projectLoading, setProjectLoading] = useState(true);
     const [projectDetail, setProjectDetail] = useState<any>(null)
+    
   
 
     const [creatorInfo, setCreatorInfo] = useState(null)
@@ -302,6 +305,43 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                 ],
             };
 
+            if(refer != "") {
+                let parentPass:any = refer;
+                let parentInfo = await projectConn.metaplex.nfts().findByMint({
+                  mintAddress:  new anchor.web3.PublicKey(parentPass)
+                })
+                body.attributes.push({
+                  trait_type: "USER.Parent",
+                  value: parentPass
+                });
+        
+                if(parentInfo.json?.attributes) {
+                    for (let index = 0; index < parentInfo.json?.attributes.length; index++) {
+                      const element = parentInfo.json?.attributes[index];
+                      if(element.trait_type === "USER.Parent") {
+                        body.attributes.push({
+                            trait_type: "USER.GrandParent",
+                            value: element.value
+                          });
+                      }
+                      if(element.trait_type === "USER.GrandParent") {
+                        body.attributes.push({
+                          trait_type: "USER.GreatGrandParent",
+                          value: element.value
+                        });
+                      }
+        
+                      if(element.trait_type === "USER.GreatGrandParent") {
+                        body.attributes.push({
+                          trait_type: "USER.GGreatGrandParent",
+                          value: element.value
+                        });
+                      }
+                    }
+                }
+            }
+        
+
             // get originator name
             if (projectInfo.profilelineage.originator.length > 0) {
                 let originator: any = await getUserName(projectInfo.profilelineage.originator);
@@ -365,13 +405,16 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                 },profile);
             } else {
                 console.log("guest pass implementation")
-                res = await projectConn.mintGuestPass({
+                const apiResult = await axios.post("/api/ptv/free",{
                     name: body.name,
                     symbol: body.symbol,
-                    uriHash: passMetaURI,
-                    genesisProfile,
-                    commonLut: projectDetail.project.lut
-                },profile);
+                    url: passMetaURI,
+                    gensis: genesisProfile,
+                    lut: projectDetail.project.lut,
+                    receiver: wallet.publicKey.toBase58(),
+                    key: projectDetail.project.key
+                })
+                res = apiResult.data;
             }
 
 
@@ -433,7 +476,7 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
             )}
             <div className="relative background-content">
                 <div className="container mx-auto">
-                    <div className="backdrop-container rounded-xl border border-white border-opacity-20 my-10 p-5">
+                    <div className="my-10 p-5">
                         {projectLoading &&
                             <div className="p-10 text-center">
                                 <Bars
@@ -449,31 +492,34 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                         }
                         {(!projectLoading && projectDetail) &&
                         <>
-                            <h2 className="text-left text-white font-goudy font-normal text-xl">Pump The Vote</h2>  
-                            <div className="border-t border-white border-opacity-20 pt-8 mt-5">
+                            <h2 className="text-center text-white font-goudy font-normal text-xl">Collect Bounties</h2>  
+                            <p className="text-center text-white text-xs">Join Pump The Vote and collect bounties for every donor you bring to the party!</p>
+                            <div className="pt-8 mt-5">
                             
                             {profileInfo  &&
                                 <div className="flex gap-4 justify-center">
                                     <div className="w-80">
                                         <div>
                                             <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                <div className="border-container rounded-md">
+                                                <div className="border-container rounded-md mt-2.5">
                                                     <img src="https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
                                                 </div>
-                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-10">
-                                                    Pump the Vote Blue
-                                                </h5>
+                                                <p className="text-center text-white text-xs mt-2.5">Join the Blue Team and pump candidates who share your values and views</p>
+                                                <p className="text-center text-white text-xs mt-3.5">Pump the Vote Blue project pass is for progressive who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education and economic opportunities and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring theat every person has the opportunity to succeed and live a life of diginity, respect and personal freedom</p>
+
                                                 <div className="text-center">
                                                     {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
                                                         <>
                                                             {!passBlueSubmit &&
-                                                                <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{passAction("Blue")}}>Blue Vote</button></p>
+                                                                <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5" onClick={()=>{passAction("Blue")}}>Free Mint</button></p>
                                                             }
                                                             {passBlueSubmit &&
-                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{passBlueButtonStatus}</button>
+                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5">{passBlueButtonStatus}</button>
                                                             }
-                                                                                                                    <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                                                                                    <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-2.5">
+                                                                Mint a Blue Pass
+                                                            </h5>  
+                                                                                                
                                                         </>
                                                     }
                                                 </div>
@@ -484,23 +530,23 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                                     <div className="w-80">
                                         <div>
                                             <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
-                                                <div className="border-container rounded-md">
+                                                <div className="border-container rounded-md mt-2.5">
                                                     <img src="https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Red.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
                                                 </div>
-                                                <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-10">
-                                                    Pump the Vote Red
-                                                </h5>
+                                                <p className="text-center text-white text-xs mt-2.5">Join the Red Team and pump candidates who share your values and views</p>
+                                                <p className="text-center text-white text-xs mt-3.5">Pump the Vote Red project pass is for progressive who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education and economic opportunities and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring theat every person has the opportunity to succeed and live a life of diginity, respect and personal freedom</p>
                                                 <div className="text-center">
                                                     {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
                                                         <>
                                                             {!passRedSubmit &&
-                                                                <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10" onClick={()=>{passAction("Red")}}>Red Vote</button></p>
+                                                                <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5" onClick={()=>{passAction("Red")}}>Free Mint</button></p>
                                                             }
                                                             {passRedSubmit &&
-                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10">{passRedButtonStatus}</button>
+                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5">{passRedButtonStatus}</button>
                                                             }
-                                                                                                                                                                            <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                                                                                                                                                            <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-2.5">
+                                                                Mint a Red Pass
+                                                            </h5>          
                                                         </>
                                                     }
                                                 </div>
@@ -510,7 +556,12 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
             
                                 </div>
                             }
-
+                            {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
+                             <>
+                                <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
+                                <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
+                             </>
+                            }
                             </div>
                         </>
                         }

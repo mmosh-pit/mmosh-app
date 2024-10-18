@@ -15,6 +15,7 @@ import { DirectoryCoin } from "@/app/models/directoryCoin";
 import ArrowUp from "@/assets/icons/ArrowUp";
 import ArrowDown from "@/assets/icons/ArrowDown";
 import { selectedDirectory } from "@/app/store/home";
+import { getPriceForPTV } from "@/app/lib/forge/jupiter";
 
 const CoinsTable = () => {
   const [selectedCoinDirectory] = useAtom(selectedDirectory);
@@ -111,23 +112,17 @@ const CoinsTable = () => {
   );
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-    if (selectedCoinDirectory === "PTVB") {
-      const mmoshUsdcPrice = await axios.get(
-        `https://price.jup.ag/v6/price?ids=PTVB&vsToken=USDC`,
-      );
 
-      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVB?.price || 0.003);
-    } else if (selectedCoinDirectory === "PTVR") {
-      const mmoshUsdcPrice = await axios.get(
-        `https://price.jup.ag/v6/price?ids=PTVR&vsToken=USDC`,
-      );
-
-      setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.PTVR?.price || 0.003);
+    if(selectedCoinDirectory === "PTVB") {
+      const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
+      setUsdcMmoshPrice(mmoshUsdcPrice);
+    } else if(selectedCoinDirectory === "PTVR") {
+      const mmoshUsdcPrice = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
+      setUsdcMmoshPrice(mmoshUsdcPrice);
     } else {
       const mmoshUsdcPrice = await axios.get(
-        `https://price.jup.ag/v6/price?ids=MMOSH&vsToken=USDC`,
+        `https://price.jup.ag/v6/price?ids=MMOSH`,
       );
-
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
     }
   }, [selectedCoinDirectory]);

@@ -13,14 +13,17 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { incomingReferAddress } from "@/app/store/signup";
 
 export default function ProjectView({ params }: { params: { symbol: string } }) {
+    const [refer] = useAtom(incomingReferAddress);
     const navigate = useRouter();
     const connection = useConnection();
     const wallet = useAnchorWallet();
     const [profileInfo] = useAtom(userWeb3Info);
     const [projectLoading, setProjectLoading] = useState(true);
     const [projectDetail, setProjectDetail] = useState<any>(null)
+    
   
 
     const [creatorInfo, setCreatorInfo] = useState(null)
@@ -302,8 +305,8 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                 ],
             };
 
-            if(localStorage.getItem("refer")) {
-                let parentPass:any = localStorage.getItem("refer");
+            if(refer != "") {
+                let parentPass:any = refer;
                 let parentInfo = await projectConn.metaplex.nfts().findByMint({
                   mintAddress:  new anchor.web3.PublicKey(parentPass)
                 })

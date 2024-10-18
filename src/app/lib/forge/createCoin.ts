@@ -118,12 +118,14 @@ export const createCoin = async ({
 
     setMintingStatus("Creating Bonding Curve...");
 
+    console.log("basetoken ", baseToken)
+
     const res = await curveConn.createTokenBonding({
       name,
       symbol,
       url: shdwHash,
       curve: curve,
-      baseMint: new anchor.web3.PublicKey(baseToken.address),
+      baseMint: new anchor.web3.PublicKey(baseToken.token),
       generalAuthority: wallet.publicKey,
       reserveAuthority: wallet.publicKey,
       buyBaseRoyaltyPercentage: 0,
@@ -136,7 +138,7 @@ export const createCoin = async ({
     setMintingStatus("Swapping Token...");
     await delay(15000);
     let buyres;
-    if (baseToken.address === web3Consts.oposToken.toBase58()) {
+    if (baseToken.token === web3Consts.oposToken.toBase58()) {
       buyres = await curveConn.buy({
         tokenBonding: res.tokenBonding,
         desiredTargetAmount: new anchor.BN(
@@ -157,7 +159,7 @@ export const createCoin = async ({
         buyres = await curveConn.provider.sendAndConfirm(tx);
         if (buyres) {
           let tokenType = "Blue";
-          if (baseToken.address === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+          if (baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
             tokenType = "Red";
           }
           await axios.post("/api/ptv/update-rewards", {
@@ -171,7 +173,7 @@ export const createCoin = async ({
         let userConn: UserConn = new UserConn(env, web3Consts.programID);
         const balance = await userConn.getUserBalance({
           address: wallet.publicKey,
-          token: baseToken.address,
+          token: baseToken.token,
           decimals: web3Consts.LAMPORTS_PER_OPOS,
         });
         if (balance > Number(supply)) {
@@ -194,7 +196,7 @@ export const createCoin = async ({
 
     if (buyres) {
       const directoryParams = {
-        basekey: baseToken.address,
+        basekey: baseToken.token,
         basename: baseToken.name,
         basesymbol: baseToken.symbol,
         baseimg: baseToken.logoURI,

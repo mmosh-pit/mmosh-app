@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
 
   const filterCondition: Filter<Document> = {};
 
+  const candidateTypeRegex = candidateTypes.map((val) => new RegExp(`^${val}`));
+
   if (searchText !== "") {
     filterCondition.$or = [
       {
@@ -46,7 +48,7 @@ export async function GET(req: NextRequest) {
     filterCondition.$and = [
       {
         CANDIDATE_ID: {
-          $in: candidateTypes.map((val) => new RegExp(val, "ig")),
+          $in: candidateTypeRegex,
         },
       },
     ];

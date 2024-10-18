@@ -5,15 +5,11 @@ import axios from "axios";
 import { useAtom } from "jotai";
 
 import { DirectoryCoin } from "@/app/models/directoryCoin";
-import {
-  selectedDirectory,
-  selectedSearchFilter,
-  typedSearchValue,
-} from "@/app/store/home";
+import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 import { getPriceForPTV } from "@/app/lib/forge/jupiter";
+import { pair } from "@/app/store/coins";
 
 const CoinsList = () => {
-  const [selectedCoinDirectory] = useAtom(selectedDirectory);
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(typedSearchValue);
 
@@ -25,11 +21,13 @@ const CoinsList = () => {
   const [coins, setCoins] = React.useState<DirectoryCoin[]>([]);
   const [usdcMmoshPrice, setUsdcMmoshPrice] = React.useState(0);
 
+  const [tradingPair] = useAtom(pair);
+
   const getCoins = React.useCallback(async () => {
     if (selectedFilters.includes("coins") || selectedFilters.includes("all")) {
       setIsLoading(true);
       fetching.current = true;
-      const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}&symbol=${selectedCoinDirectory}`;
+      const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}&symbol=${tradingPair}`;
 
       const result = await axios.get(url);
 
@@ -61,12 +59,12 @@ const CoinsList = () => {
   }, [searchText, currentPage, selectedFilters]);
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
-    if (selectedCoinDirectory === "PTVB") {
+    if (tradingPair === "PTVB") {
       const mmoshUsdcPrice = await getPriceForPTV(
         process.env.NEXT_PUBLIC_PTVB_TOKEN,
       );
       setUsdcMmoshPrice(mmoshUsdcPrice);
-    } else if (selectedCoinDirectory === "PTVR") {
+    } else if (tradingPair === "PTVR") {
       const mmoshUsdcPrice = await getPriceForPTV(
         process.env.NEXT_PUBLIC_PTVR_TOKEN,
       );

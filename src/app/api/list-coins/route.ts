@@ -1,4 +1,4 @@
-import { Sort } from "mongodb";
+import { Filter, Sort } from "mongodb";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -22,11 +22,11 @@ export async function GET(req: NextRequest) {
 
   const basesymbol = searchParams.get("symbol");
 
-  let filter = {};
+  let filter: any = {};
+
   if (keyword) {
     filter = {
       $and: [
-        { basesymbol: basesymbol },
         {
           $or: [
             {
@@ -48,8 +48,13 @@ export async function GET(req: NextRequest) {
         },
       ],
     };
-  } else if (basesymbol) {
-    filter = { basesymbol: basesymbol };
+  }
+
+  if (basesymbol !== "All") {
+    if (filter.$and) {
+    } else {
+      filter.$and = [{ basesymbol: basesymbol }];
+    }
   }
 
   const sortFilter: Sort = {};
@@ -252,6 +257,7 @@ export async function GET(req: NextRequest) {
       volume: totalVolume,
       price: oneHourPriceEnd,
       priceLastSevenDays: labels,
+      basesymbol: element.basesymbol,
     });
   }
 

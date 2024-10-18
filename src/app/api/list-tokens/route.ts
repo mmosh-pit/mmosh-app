@@ -6,35 +6,62 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("search") as string;
+  const basesymbol = searchParams.get("symbol") as string;
+  let query = {}
+  console.log("param", param)
+  console.log("basesymbol", basesymbol)
+  if (param != "" &&  basesymbol) {
 
-  if (param != "") {
-    let search = {
-      $or: [
+    query = {
+      $and: [
+        {"basesymbol": basesymbol},
         {
-          name: {
-            $regex: new RegExp(param, "ig"),
-          },
-        },
-        {
-          symbol: {
-            $regex: new RegExp(param, "ig"),
-          },
-        },
-        {
-          token: {
-            $regex: new RegExp(param, "ig"),
-          },
-        },
-      ],
+          $or: [
+            {
+              name: {
+                $regex: new RegExp(param, "ig"),
+              },
+            },
+            {
+              symbol: {
+                $regex: new RegExp(param, "ig"),
+              },
+            },
+            {
+              token: {
+                $regex: new RegExp(param, "ig"),
+              },
+            },
+          ],
+        }
+      ]
     };
-    const result = await collection.find(search).limit(100).toArray();
-    return NextResponse.json([...result], {
-      status: 200,
-    });
-  } else {
-    const result = await collection.find().toArray();
-    return NextResponse.json([...result], {
-      status: 200,
-    });
+  } else if (param != "" &&  !basesymbol) {
+    query = {
+        $or: [
+          {
+            name: {
+              $regex: new RegExp(param, "ig"),
+            },
+          },
+          {
+            symbol: {
+              $regex: new RegExp(param, "ig"),
+            },
+          },
+          {
+            token: {
+              $regex: new RegExp(param, "ig"),
+            },
+          },
+        ],
+    };
+  } else if (param == "" &&  !basesymbol) {
+     query =  {"basesymbol": basesymbol}
   }
+  console.log("query", query)
+  const result = await collection.find(query).toArray();
+  return NextResponse.json([...result], {
+    status: 200,
+  });
 }

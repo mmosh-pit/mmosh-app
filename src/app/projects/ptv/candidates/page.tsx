@@ -78,9 +78,14 @@ const Candidates = () => {
 
   const filterCandidates = React.useCallback(
     async (page: number) => {
+      console.log(
+        "Selected state and district: ",
+        selectedState,
+        selectedDistrict,
+      );
       fetching.current = true;
       const resultingCandidates = await axios.get(
-        `/api/get-leaderboard-candidates?search=${searchText}&types=${selectedCandidateFilter.join(",")}&parties=${selectedPartyFilter.join(",")}&page=${page}&count=20`,
+        `/api/get-leaderboard-candidates?search=${searchText}&types=${selectedCandidateFilter.join(",")}&parties=${selectedPartyFilter.join(",")}&page=${page}&count=20&state=${selectedState}&district=${selectedDistrict}`,
       );
 
       setCurrentPage(page + 1);
@@ -89,9 +94,13 @@ const Candidates = () => {
         lastPageTriggered.current = true;
       }
 
-      setCandidates((prev) => {
-        return [...prev, ...resultingCandidates.data];
-      });
+      if (page == 0) {
+        setCandidates(resultingCandidates.data);
+      } else {
+        setCandidates((prev) => {
+          return [...prev, ...resultingCandidates.data];
+        });
+      }
       fetching.current = false;
     },
     [

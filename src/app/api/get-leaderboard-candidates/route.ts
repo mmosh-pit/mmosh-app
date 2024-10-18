@@ -21,6 +21,9 @@ export async function GET(req: NextRequest) {
 
   const partiesTypes = partiesParams?.split(",") ?? [];
 
+  const stateFilter = searchParams.get("state") as string;
+  const districtFilter = searchParams.get("district") as string;
+
   const filterCondition: Filter<Document> = {};
 
   if (searchText !== "") {
@@ -49,6 +52,26 @@ export async function GET(req: NextRequest) {
     ];
   }
 
+  if (stateFilter) {
+    filterCondition.$and = [
+      ...(filterCondition.$and || []),
+      {
+        REG_ABBR: stateFilter,
+      },
+    ];
+  }
+
+  console.log("Filtering with district param: ", districtFilter);
+
+  if (districtFilter) {
+    filterCondition.$and = [
+      ...(filterCondition.$and || []),
+      {
+        DISTRICT: Number(districtFilter),
+      },
+    ];
+  }
+
   if (partiesTypes.length > 0) {
     const otherParties = partiesTypes.filter((val) => val !== "OTHER");
     const containsOther = partiesTypes.includes("OTHER");
@@ -71,9 +94,6 @@ export async function GET(req: NextRequest) {
       },
     ];
   }
-
-  console.log("Limit: ", Number(count) ?? 10);
-  console.log("Skip: ", (Number(count) ?? 10) * currentPage);
 
   const candidates = await collection
     .find(filterCondition, {})

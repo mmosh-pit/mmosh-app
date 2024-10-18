@@ -7,5 +7,6 @@ export type CandidateCoinsData = {
     amount: number;
     name: string;
     symbol: string;
+    image: string;
   };
 };

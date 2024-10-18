@@ -248,7 +248,7 @@ const Candidates = () => {
                 <div
                   onClick={() => {
                     navigate.push(
-                      `/create/projects/ptv/candidates/${candidate.CANDIDATE_ID}`,
+                      `/projects/ptv/candidates/${candidate.CANDIDATE_ID}`,
                     );
                   }}
                   className="cursor-pointer"

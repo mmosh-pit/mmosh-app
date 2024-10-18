@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
     amount: 0,
     name: "---",
     symbol: "---",
+    image: "",
   };
 
   for (let index = 0; index < tokenForResults.length; index++) {
@@ -89,6 +90,7 @@ export async function GET(req: NextRequest) {
       highestForCoin.name = element.name;
       highestForCoin.symbol = element.symbol;
       highestForCoin.address = element.address;
+      highestForCoin.image = element.image;
     }
 
     forResult += result;
@@ -149,6 +151,7 @@ export async function GET(req: NextRequest) {
       highestForCoin.address = forCoin.token;
       highestForCoin.name = forCoin.name;
       highestForCoin.symbol = forCoin.symbol;
+      highestForCoin.image = forCoin.image;
     } else {
       const [againstCoin] = tokenAgainstResults;
 
@@ -156,6 +159,7 @@ export async function GET(req: NextRequest) {
         highestForCoin.address = againstCoin.token;
         highestForCoin.name = againstCoin.name;
         highestForCoin.symbol = againstCoin.symbol;
+        highestForCoin.image = againstCoin.image;
       }
     }
   }

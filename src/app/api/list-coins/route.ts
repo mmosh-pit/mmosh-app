@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
         },
       ],
     };
-  } else {
+  } else if (basesymbol) {
     filter = { basesymbol: basesymbol };
   }
 
@@ -62,21 +62,21 @@ export async function GET(req: NextRequest) {
     sortFilter["created_date"] = -1;
   }
 
-  const tokenResults = await collection
+  const otherCoins = await collection
     .find(filter)
     .sort(sortFilter)
     .skip(offset)
     .limit(limit)
     .toArray();
 
-  const token2Results = await politicalMemecoinsColl
+  const politicalCoins = await politicalMemecoinsColl
     .find(filter)
     .sort(sortFilter)
     .skip(offset)
     .limit(limit)
     .toArray();
 
-  tokenResults.push(...token2Results);
+  const tokenResults = [...politicalCoins, ...otherCoins];
 
   const d = new Date();
   let filterDate;

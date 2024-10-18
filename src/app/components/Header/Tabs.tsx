@@ -95,7 +95,7 @@ const Tabs = () => {
         </div>
 
         {isCreateOpen && (
-          <div className="flex flex-col p-2 absolute top-[20px] right-[-25px] bg-[#FFFFFF12] backdrop-blur-[18.4px] rounded-lg">
+          <div className="flex flex-col py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg">
             <p
               className="text-sm text-white mb-2"
               onClick={() => router.push("/create/profile")}

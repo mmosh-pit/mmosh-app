@@ -253,6 +253,7 @@ const CreateCoin = () => {
         setForm({ ...defaultFormState });
         setImage(null);
         setPreview("");
+        setFiles([]);
       }
     } else {
       const multiplier = form.bonding === "linear" ? 0 : form.multiplier;
@@ -285,6 +286,7 @@ const CreateCoin = () => {
         setForm({ ...defaultFormState });
         setImage(null);
         setPreview("");
+        setFiles([]);
       }
     }
   };
@@ -579,7 +581,7 @@ const CreateCoin = () => {
                   )}
 
                 <div
-                  className={`w-full flex flex-col ${form.candidate ? "mt-4" : "mt-12"}`}
+                  className={`w-full flex flex-col ${!["DEM", "REP"].includes(form.candidate?.PARTY ?? "") ? "mt-8" : "mt-12"}`}
                 >
                   <p className="text-base text-white">
                     Inform the AI bot about this candidate

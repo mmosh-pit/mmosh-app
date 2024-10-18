@@ -33,22 +33,6 @@ const ptvbToken = {
     "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
 };
 
-// const ptvrToken = {
-//   address: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
-//   name: "Pump The Vote Red",
-//   symbol: "PTVR",
-//   logoURI:
-//     "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
-// };
-//
-// const ptvbToken = {
-//   address: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
-//   name: "Pump The Vote Blue",
-//   symbol: "PTVB",
-//   logoURI:
-//     "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
-// };
-
 const symbols = {
   ptvr: ptvrToken,
   ptvb: ptvbToken,
@@ -212,6 +196,7 @@ export const createProjectCoin = async ({
         creatorUsername: username,
         position,
         candidate,
+        basesymbol: baseToken,
       };
 
       await axios.post("/api/save-project-coin-directory", directoryParams);

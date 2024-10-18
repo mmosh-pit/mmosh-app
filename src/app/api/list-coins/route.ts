@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
+  const politicalMemecoinsColl = db.collection("mmosh-app-project-tokens");
   const directoryCollection = db.collection("mmosh-app-directory");
 
   const { searchParams } = new URL(req.url);
@@ -18,14 +19,14 @@ export async function GET(req: NextRequest) {
   const sortDirection = searchParams.get("direction") as string;
 
   const volume = volumeParam || "hour";
-  
+
   const basesymbol = searchParams.get("symbol");
 
   let filter = {};
   if (keyword) {
     filter = {
       $and: [
-        {"basesymbol": basesymbol},
+        { basesymbol: basesymbol },
         {
           $or: [
             {
@@ -44,14 +45,14 @@ export async function GET(req: NextRequest) {
               },
             },
           ],
-        }
-      ]
+        },
+      ],
     };
   } else {
-    filter = {"basesymbol": basesymbol}
+    filter = { basesymbol: basesymbol };
   }
 
-  const sortFilter: Sort = {}
+  const sortFilter: Sort = {};
 
   const directionValue = sortDirection === "ASC" ? 1 : -1;
 
@@ -67,6 +68,15 @@ export async function GET(req: NextRequest) {
     .skip(offset)
     .limit(limit)
     .toArray();
+
+  const token2Results = await politicalMemecoinsColl
+    .find(filter)
+    .sort(sortFilter)
+    .skip(offset)
+    .limit(limit)
+    .toArray();
+
+  tokenResults.push(...token2Results);
 
   const d = new Date();
   let filterDate;

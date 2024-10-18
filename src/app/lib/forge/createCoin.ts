@@ -115,8 +115,6 @@ export const createCoin = async ({
     setMintingStatus("Creating Token...");
     await delay(15000);
     const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash);
-    // setIsSubmit(false);
-    // return
 
     setMintingStatus("Creating Bonding Curve...");
 
@@ -153,7 +151,6 @@ export const createCoin = async ({
         address: wallet.publicKey.toBase58(),
       });
       if (buytx.data.status) {
-        
         const tx = anchor.web3.VersionedTransaction.deserialize(
           Buffer.from(buytx.data.transaction, "base64"),
         );
@@ -175,9 +172,9 @@ export const createCoin = async ({
         const balance = await userConn.getUserBalance({
           address: wallet.publicKey,
           token: baseToken.address,
-          decimals: web3Consts.LAMPORTS_PER_OPOS
+          decimals: web3Consts.LAMPORTS_PER_OPOS,
         });
-        if(balance > Number(supply)) {
+        if (balance > Number(supply)) {
           buyres = await curveConn.buy({
             tokenBonding: res.tokenBonding,
             desiredTargetAmount: new anchor.BN(
@@ -185,14 +182,13 @@ export const createCoin = async ({
             ),
             slippage: 0.5,
           });
-        } else{
+        } else {
           return {
             message:
               "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
             type: "error",
           };
         }
-
       }
     }
 

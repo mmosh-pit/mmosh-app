@@ -196,6 +196,7 @@ export const createProjectCoin = async ({
         creatorUsername: username,
         position,
         candidate,
+        bonding: res.tokenBonding.toBase58(),
         basesymbol: baseToken,
       };
 

@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
     creatorUsername,
     candidate,
     position,
+    basesymbol,
   } = await req.json();
 
   const token = await tokenCollection.findOne({
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
     creatorUsername,
     candidate,
     position,
+    basesymbol: basesymbol.toUpperCase(),
   });
   return NextResponse.json("", { status: 200 });
 }

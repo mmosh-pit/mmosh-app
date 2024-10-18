@@ -104,6 +104,12 @@ const Tabs = () => {
             </p>
             <p
               className="text-sm text-white mb-2"
+              onClick={() => router.push("/create/create_invitation")}
+            >
+              Invitations
+            </p>
+            <p
+              className="text-sm text-white mb-2"
               onClick={() => router.push("/create/coins")}
             >
               Coins

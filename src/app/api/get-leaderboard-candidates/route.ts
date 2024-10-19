@@ -63,8 +63,6 @@ export async function GET(req: NextRequest) {
     ];
   }
 
-  console.log("Filtering with district param: ", districtFilter);
-
   if (districtFilter) {
     filterCondition.$and = [
       ...(filterCondition.$and || []),

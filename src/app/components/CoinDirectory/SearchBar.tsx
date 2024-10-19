@@ -124,7 +124,6 @@ const SearchBar = () => {
 
           <div className="dropdown rounded-lg py-1 mr-8">
             <div tabIndex={0} role="button" className="btn m-1">
-              {volume.label}
               <p className="text-base text-white">
                 Trading Pair • {tradingPair}
               </p>

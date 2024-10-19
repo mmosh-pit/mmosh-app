@@ -12,6 +12,8 @@ const Login = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  const [error, setError] = React.useState("");
+
   const [isLoading, setIsLoading] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
@@ -32,7 +34,11 @@ const Login = () => {
           password,
         });
         router.replace("/");
-      } catch (_) {}
+      } catch (err: any) {
+        setError(
+          err?.response?.data || "Failed to Login, please check support",
+        );
+      }
 
       setIsLoading(false);
     },

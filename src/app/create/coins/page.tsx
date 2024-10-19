@@ -736,16 +736,6 @@ const CreateCoin = () => {
               action={startCreatingCoin}
               isLoading={false}
               isPrimary
-              disabled={
-                isLoading ||
-                form.supply < 1000 ||
-                !form.name ||
-                !form.symbol ||
-                (!form.candidate && selectedCoin.symbol !== "MMOSH") ||
-                // !form.bonding ||
-                !!error ||
-                !wallet
-              }
             />
             <p className="text-sm text-white text-center">
               Minimum 1,000 initial purchase
@@ -780,7 +770,7 @@ const CreateCoin = () => {
             </p>
           </div>
 
-          <p className="text-xs text-center max-w-[75%] md:max-w-[50%] lg:max-w-[25%] xl:max-w-[10%]">
+          <p className="text-xs text-center max-w-[80%] md:max-w-[60%] lg:max-w-[35%] xl:max-w-[20%]">
             Enter the amount of your initial Swap. You will swap {form.supply}{" "}
             {form.bonding.toUpperCase()}
             for {form.supply} {form.symbol} and you will be charged a small

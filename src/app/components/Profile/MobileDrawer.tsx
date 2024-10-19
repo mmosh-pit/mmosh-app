@@ -189,7 +189,7 @@ const MobileDrawer = () => {
           <div className="flex flex-col mt-4">
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => router.replace("/create/projects/ptv")}
+              onClick={() => router.replace("/projects/ptv")}
             >
               Pump the Vote
             </a>
@@ -197,7 +197,7 @@ const MobileDrawer = () => {
             <div className="my-2" />
 
             <a
-              onClick={() => router.replace("/create/projects/ptv/candidates")}
+              onClick={() => router.replace("/projects/ptv/candidates")}
               className="text-base text-white cursor-pointer "
             >
               Candidates

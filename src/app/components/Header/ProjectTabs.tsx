@@ -29,7 +29,7 @@ const ProjectTabs = () => {
       <div className="lg:w-[50%] md:w-[60%] flex justify-center">
         <div
           className="relative w-[1.5vmax] h-[1.5vmax] cursor-pointer"
-          onClick={() => router.replace("/create/projects/ptv")}
+          onClick={() => router.replace("/projects/ptv")}
         >
           <Image
             src="https://storage.googleapis.com/mmosh-assets/ptv_logo.png"

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (user === null) {
-    return NextResponse.json("", {
+    return NextResponse.json("User does not exists", {
       status: 400,
     });
   }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   const isValid = argon2.verify(user!.password, password);
 
   if (!isValid) {
-    return NextResponse.json("", {
+    return NextResponse.json("Invalid Password", {
       status: 400,
     });
   }

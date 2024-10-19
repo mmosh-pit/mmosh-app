@@ -12,29 +12,41 @@ type Props = {
 
 const CoinsCandidatesSelect = ({ value, onChangeValue }: Props) => {
   const divHeight = 50;
-  const [candidates, setCandidates] = React.useState<Candidate[]>([]);
+  const [presidentialCandidates, setPresidentialCandidates] = React.useState<
+    Candidate[]
+  >([]);
+  const [senatorialCandidates, setSenatorialCandidates] = React.useState<
+    Candidate[]
+  >([]);
+  const [congressCandidates, setCongressCandidates] = React.useState<
+    Candidate[]
+  >([]);
   const [searchText, setSearchText] = React.useState("");
-  const [page, setPage] = React.useState(0);
   const [displayItems, setDisplayItems] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const lastPageTriggered = React.useRef(false);
   const isQuerying = React.useRef(false);
 
   const animating = React.useRef(false);
 
-  const getCandidates = async (page: number) => {
+  const getCandidates = async () => {
     isQuerying.current = true;
-    const response = await axios.get(
-      `/api/get-leaderboard-candidates?search=${searchText}&page=${page}&count=50`,
+    const presidentialResponse = await axios.get(
+      `/api/get-candidates-for-selects?search=${searchText}&type=0`,
     );
 
-    setPage(page + 1);
+    const senatorialResponse = await axios.get(
+      `/api/get-candidates-for-selects?search=${searchText}&type=1`,
+    );
 
-    if (response.data.length === 0) return;
+    const congressResponse = await axios.get(
+      `/api/get-candidates-for-selects?search=${searchText}&type=2`,
+    );
 
-    setCandidates(response.data);
+    setPresidentialCandidates(presidentialResponse.data);
+    setSenatorialCandidates(senatorialResponse.data);
+    setCongressCandidates(congressResponse.data);
     isQuerying.current = false;
   };
 
@@ -57,23 +69,8 @@ const CoinsCandidatesSelect = ({ value, onChangeValue }: Props) => {
   };
 
   React.useEffect(() => {
-    getCandidates(0);
+    getCandidates();
   }, [searchText]);
-
-  const handleScroll = () => {
-    console.log("Scrolling...");
-    if (!containerRef.current) return;
-
-    if (
-      containerRef.current.scrollHeight - containerRef.current.scrollTop <=
-        containerRef.current.clientHeight + 50 &&
-      !lastPageTriggered.current &&
-      !isQuerying.current
-    ) {
-      console.log("Executing");
-      getCandidates(page);
-    }
-  };
 
   return (
     <div className="flex flex-col w-full relative">
@@ -117,29 +114,67 @@ const CoinsCandidatesSelect = ({ value, onChangeValue }: Props) => {
           {isOpen ? <ArrowUp /> : <ArrowDown />}
         </div>
         {displayItems && (
-          <div
-            className="candidates-select-open"
-            ref={containerRef}
-            onScroll={handleScroll}
-          >
+          <div className="candidates-select-open" ref={containerRef}>
             <div className="w-full h-[1px] bg-[#6E5FB1] px-4 my-2" />
 
-            {candidates.map((candidate) => {
-              return (
-                <div
-                  className="flex items-center my-3 cursor-pointer"
-                  key={candidate.CANDIDATE_ID}
-                  onClick={() => {
-                    setIsOpen(false);
-                    onChangeValue(candidate);
-                  }}
-                >
-                  <p className="text-gray-200 text-xs">
-                    {candidate.CANDIDATE_NAME.split(",").reverse().join(" ")}
-                  </p>
-                </div>
-              );
-            })}
+            <div className="w-full flex flex-col">
+              <p className="text-lg text-white font-bold my-3">Presidential</p>
+
+              {presidentialCandidates.map((candidate) => {
+                return (
+                  <div
+                    className="flex items-center my-2 cursor-pointer"
+                    key={candidate.CANDIDATE_ID}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onChangeValue(candidate);
+                    }}
+                  >
+                    <p className="text-gray-200 text-xs">
+                      {candidate.CANDIDATE_NAME.split(",").reverse().join(" ")}
+                    </p>
+                  </div>
+                );
+              })}
+
+              <p className="text-lg text-white font-bold my-3">Senatorial</p>
+
+              {senatorialCandidates.map((candidate) => {
+                return (
+                  <div
+                    className="flex items-center my-2 cursor-pointer"
+                    key={candidate.CANDIDATE_ID}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onChangeValue(candidate);
+                    }}
+                  >
+                    <p className="text-gray-200 text-xs">
+                      {candidate.CANDIDATE_NAME.split(",").reverse().join(" ")}
+                    </p>
+                  </div>
+                );
+              })}
+
+              <p className="text-lg text-white font-bold my-3">Congressional</p>
+
+              {congressCandidates.map((candidate) => {
+                return (
+                  <div
+                    className="flex items-center my-2 cursor-pointer"
+                    key={candidate.CANDIDATE_ID}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onChangeValue(candidate);
+                    }}
+                  >
+                    <p className="text-gray-200 text-xs">
+                      {candidate.CANDIDATE_NAME.split(",").reverse().join(" ")}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const { code, ...filteredData } = data;
 
   const existingData = await emailCollection.findOne({
-    email: filteredData.email.trim(),
+    email: filteredData.email.trim().toLowerCase(),
     code: Number(code.trim()),
   });
 
@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     ...filteredData,
     password,
     address: address.publicKey.toBase58(),
+    email: filteredData.email.trim().toLowerCase(),
     privateKey: encryptedKey,
     sessions: [session],
   });

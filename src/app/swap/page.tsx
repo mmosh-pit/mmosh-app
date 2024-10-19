@@ -30,8 +30,7 @@ const defaultBaseToken = {
   name: "",
   symbol: "Select",
   token: "",
-  image:
-    "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+  image: "",
   balance: 0,
   bonding: "",
   value: 0,
@@ -292,9 +291,11 @@ const Swap = () => {
                 <p className="font-normal text-sm text-white mx-1">
                   {baseToken.balance}
                 </p>
-                <p className="font-normal text-sm text-white">
-                  {baseToken.symbol}
-                </p>
+                {baseToken.symbol !== "Select" && (
+                  <p className="font-normal text-sm text-white">
+                    {baseToken.symbol}
+                  </p>
+                )}
               </div>
             </div>
 

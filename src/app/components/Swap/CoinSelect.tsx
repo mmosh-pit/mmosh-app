@@ -115,13 +115,15 @@ const CoinSelect = ({
       >
         {selectedCoin && (
           <>
-            <div className="w-[1.5vmax] h-[1.5vmax] relative flex items-center">
-              <Image
-                src={selectedCoin!.image}
-                alt={selectedCoin!.symbol}
-                layout="fill"
-              />
-            </div>
+            {selectedCoin!.image && (
+              <div className="w-[1.5vmax] h-[1.5vmax] relative flex items-center">
+                <Image
+                  src={selectedCoin!.image}
+                  alt={selectedCoin!.symbol}
+                  layout="fill"
+                />
+              </div>
+            )}
             <p className="text-white text-sm ml-1 mr-2">
               {selectedCoin!.symbol.toUpperCase()}
             </p>

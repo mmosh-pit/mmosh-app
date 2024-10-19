@@ -610,16 +610,20 @@ const CreateCoin = () => {
                 </div>
 
                 {form.bonding === "linear" ? (
-                  <div className="lg:mt-8 md:mt-4 sm:mt-2">
+                  <div className="flex flex-col lg:mt-8 md:mt-4 sm:mt-2">
+                    <p className="text-white text-tiny">
+                      Adjust the slope for your Bonding Curve by changing the
+                      multiplier
+                    </p>
                     <Input
-                      title="Enter MMOSH Price"
+                      title=""
                       value={form.initialPrice.toString()}
                       onChange={(e) => {
                         const value = Number(e.target.value);
 
                         if (Number.isNaN(value)) return;
 
-                        if (value < 0) return;
+                        if (value < 1) return;
 
                         if (value > 9000) return;
 
@@ -648,7 +652,7 @@ const CreateCoin = () => {
 
                           if (Number.isNaN(value)) return;
 
-                          if (value < 0) return;
+                          if (value < 1) return;
 
                           if (value >= 3 && form.supply > 15850) return;
 

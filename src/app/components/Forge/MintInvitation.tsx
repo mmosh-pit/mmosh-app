@@ -96,7 +96,7 @@ const MintInvitation = () => {
                   <p className="text-sm text-white">Minted:</p>
 
                   <input
-                    className="bg-[#C7C7C7] bg-opacity-[0.17] px-2 ml-2 rounded-md md:max-w-[10%] max-w-[25%] text-center"
+                    className="bg-[#C7C7C7] bg-opacity-[0.17] px-2 ml-2 rounded-md md:max-w-[12%] max-w-[25%] text-center"
                     value={amountSelected}
                     onChange={(e) => {
                       const value = Number(e.target.value);

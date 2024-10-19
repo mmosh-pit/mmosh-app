@@ -68,7 +68,7 @@ const CandidateCard = ({ candidate, noBorder, borderRight }: Props) => {
   const getImage = () => {
     const color = getColor();
 
-    if (coinsData) {
+    if (coinsData?.coin.image) {
       return coinsData!.coin.image;
     }
 

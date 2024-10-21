@@ -22,7 +22,7 @@ const LineageFilterOptions = () => {
       {lineageOptions.map((option) => (
         <div
           key={option.value}
-          className="flex justify-center items-center mx-4 cursor-pointer relative"
+          className="flex justify-center items-center md:mx-4 mx-1 cursor-pointer relative"
           onClick={() => toggleChangeOption(option.value)}
         >
           <input
@@ -32,7 +32,7 @@ const LineageFilterOptions = () => {
             checked={option.selected}
             onChange={() => {}}
           />
-          <p className="text-base text-white ml-4">
+          <p className="md:text-base text-sm text-white md:ml-4 ml-2">
             {option.label} <span className="text-xs">({option.subLabel})</span>
           </p>
         </div>

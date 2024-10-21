@@ -34,6 +34,7 @@ import Notification from "./Notification/Notification";
 import { currentGroupCommunity } from "../store/community";
 import LHCIcon from "@/assets/icons/LHCIcon";
 import { init } from "../lib/firebase";
+import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
 
 const Header = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const Header = () => {
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const isMobileScreen = useCheckMobileScreen();
+  const screenSize = useCheckDeviceScreenSize();
   const [badge, setBadge] = useState(0);
   const [notifications, setNotifications] = useState([]);
 
@@ -231,6 +232,8 @@ const Header = () => {
     setBadge(0);
   };
 
+  const isMobileScreen = screenSize < 1000;
+
   return (
     <header className="flex flex-col">
       <div className={getHeaderBackground()}>
@@ -300,7 +303,7 @@ const Header = () => {
             )}
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
               >
                 <Image
                   src={currentUser.profile.image}
@@ -316,12 +319,12 @@ const Header = () => {
               style={{
                 background:
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: "0 2em",
+                padding: isMobileScreen ? "0 1em" : "0 2em",
                 borderRadius: 15,
-                marginLeft: "2rem",
+                marginLeft: isMobileScreen ? "2rem" : "0.5rem",
               }}
             >
-              <p className="text-lg text-white">
+              <p className="md:text-lg text-sm text-white">
                 {wallet?.publicKey
                   ? walletAddressShortener(wallet.publicKey.toString())
                   : "Connect Wallet"}

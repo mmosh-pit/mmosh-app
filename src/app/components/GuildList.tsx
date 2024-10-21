@@ -4,10 +4,17 @@ import { useAtom } from "jotai";
 import { User } from "../models/user";
 import UserCard from "./UserCard";
 import UserSortTabs from "./UserSortTabs";
-import { connectionTypes, data, lineage, sortDirection, sortOption } from "../store";
+import {
+  connectionTypes,
+  data,
+  lineage,
+  sortDirection,
+  sortOption,
+} from "../store";
 import LineageFilterOptions from "./Profile/LineageFilterOptions";
 import ConnectionFilterOptions from "./Profile/ConnectionFilterOptions";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 
 const GuildList = ({
   profilenft,
@@ -21,6 +28,7 @@ const GuildList = ({
   const wallet = useAnchorWallet();
   const connection = useConnection();
   const [currentUser] = useAtom(data);
+  const isMobile = useCheckMobileScreen();
 
   const [currentPage, setCurrentPage] = React.useState(0);
   const [users, setUsers] = React.useState<User[]>([]);
@@ -53,9 +61,9 @@ const GuildList = ({
     });
 
     fetching.current = true;
-    let url = `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`
-    if(currentUser) {
-      url = url + "&requester="+currentUser.wallet
+    let url = `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`;
+    if (currentUser) {
+      url = url + "&requester=" + currentUser.wallet;
     }
     const result = await axios.get(
       `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`,
@@ -66,7 +74,13 @@ const GuildList = ({
     setCurrentPage(0);
 
     setUsers(result.data);
-  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage, currentUser]);
+  }, [
+    selectedSortOption,
+    selectedSortDirection,
+    lineageOptions,
+    currentPage,
+    currentUser,
+  ]);
 
   const paginateGuild = React.useCallback(async () => {
     if (!profilenft) return;
@@ -88,14 +102,12 @@ const GuildList = ({
     fetching.current = true;
     let url = `/api/get-user-guild?address=${profilenft}&skip=${
       currentPage * 10
-    }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&connection=${connectionArr.join(",")}&gens=${gensArr.join(",")}`
-    if(currentUser) {
-      url = url + "&requester="+currentUser.wallet
+    }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&connection=${connectionArr.join(",")}&gens=${gensArr.join(",")}`;
+    if (currentUser) {
+      url = url + "&requester=" + currentUser.wallet;
     }
 
-    const result = await axios.get(
-      url
-    );
+    const result = await axios.get(url);
     fetching.current = false;
 
     if (result.data.length === 0) {
@@ -103,7 +115,13 @@ const GuildList = ({
     }
 
     setUsers((prev) => [...prev, ...result.data]);
-  }, [selectedSortOption, selectedSortDirection, lineageOptions, currentPage, currentUser]);
+  }, [
+    selectedSortOption,
+    selectedSortDirection,
+    lineageOptions,
+    currentPage,
+    currentUser,
+  ]);
 
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -130,16 +148,16 @@ const GuildList = ({
   return (
     <>
       <div
-        className="flex flex-col items-start ml-20 mt-8"
+        className="flex flex-col items-start md:ml-20 mt-8"
         ref={containerRef}
         onScroll={handleScroll}
       >
         <p className="text-lg text-white font-bold font-goudy">
-          {isMyProfile ? "Your Guild" : `${userName}'s Guild`}
+          {isMyProfile ? "Your Lineage" : `${userName}'s Lineage`}
         </p>
-        <div className="xl:flex">
-           <LineageFilterOptions />
-           <ConnectionFilterOptions />
+        <div className="lg:flex">
+          <LineageFilterOptions />
+          <ConnectionFilterOptions />
         </div>
 
         <UserSortTabs />
@@ -153,7 +171,7 @@ const GuildList = ({
           </p>
         </div>
       ) : (
-        <div className="relative px-16 pb-8 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
+        <div className="relative px-16 pb-8 grid xs:grid-cols-auto md:grid-cols-2 xl:grid-cols-3 gap-4 mt-[3vmax]">
           {users.map((value) => (
             <UserCard
               user={value}

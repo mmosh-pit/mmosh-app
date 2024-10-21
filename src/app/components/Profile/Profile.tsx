@@ -8,17 +8,13 @@ import { useAtom } from "jotai";
 import GuildList from "../GuildList";
 import CopyIcon from "@/assets/icons/CopyIcon";
 import TelegramAccount from "./TelegramAccount";
-import TwitterAccount from "./TwitterAccount";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import DesktopNavbar from "./DesktopNavbar";
-import Banner from "../Banner";
 import Settings from "../Settings";
 import { init } from "@/app/lib/firebase";
 import { UserStatus, data, isDrawerOpen, settings, status } from "@/app/store";
 import { User } from "@/app/models/user";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
-import ProfileConnection from "./ProfileConnection";
-import Button from "../common/Button";
 import { useRouter } from "next/navigation";
 import HeartSvg from "./HeartSvg";
 import LinkedHeartSvg from "./LinkedHeartSvg";
@@ -54,24 +50,28 @@ const Profile = ({ username }: { username: any }) => {
 
   const [loader, setLoader] = React.useState(false);
   const [statusMsg, setStatusMsg] = React.useState("");
-  const [connectionStatus, setConnectionStatus] = React.useState(0)
-  const [hasRequest, setHasRequest] = React.useState(false)
+  const [connectionStatus, setConnectionStatus] = React.useState(0);
+  const [hasRequest, setHasRequest] = React.useState(false);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [requestloader, setReqestLoader] = React.useState(false);
 
   const getUserData = React.useCallback(async () => {
-    let url = `/api/get-user-data?username=${username}`
-    console.log("wallet", currentUser)
-    if(currentUser) {
-      url = url + "&requester=" + currentUser.wallet
+    let url = `/api/get-user-data?username=${username}`;
+    console.log("wallet", currentUser);
+    if (currentUser) {
+      url = url + "&requester=" + currentUser.wallet;
     }
     const result = await axios.get(url);
 
     setUserData({
       ...result.data,
     });
-    setConnectionStatus(result.data.profile.connection ? result.data.profile.connection : 0)
-    setHasRequest(result.data.profile.request ? result.data.profile.request : false)
+    setConnectionStatus(
+      result.data.profile.connection ? result.data.profile.connection : 0,
+    );
+    setHasRequest(
+      result.data.profile.request ? result.data.profile.request : false,
+    );
   }, [username, currentUser]);
 
   const getRankData = React.useCallback(async () => {
@@ -117,7 +117,7 @@ const Profile = ({ username }: { username: any }) => {
   );
 
   React.useEffect(() => {
-    console.log("username ",username)
+    console.log("username ", username);
     setUserStatus(UserStatus.fullAccount);
     if (!username) return;
     getUserData();
@@ -128,7 +128,6 @@ const Profile = ({ username }: { username: any }) => {
 
     getRankData();
     getLhcWallet();
-
   }, [userData]);
 
   React.useEffect(() => {
@@ -138,8 +137,7 @@ const Profile = ({ username }: { username: any }) => {
     }
   }, []);
 
-  const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
-
+  const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
 
   const sendConnectionRequest = async () => {
     // 0 - no connection
@@ -149,8 +147,8 @@ const Profile = ({ username }: { username: any }) => {
     // 4 - linked
     // 5 - has invite no connection
 
-    if(!wallet || !currentUser || !userData) {
-      return
+    if (!wallet || !currentUser || !userData) {
+      return;
     }
 
     let connectionnft;
@@ -162,22 +160,34 @@ const Profile = ({ username }: { username: any }) => {
     anchor.setProvider(env);
 
     try {
-      setLoader(true)
-      let nextStatus
-      let nextConnectionStatus
-      if(connectionStatus == 0 || connectionStatus == 3 || connectionStatus == 5) {
-        if(connectionStatus != 5) {
-          if(!currentUser.profile.connectionnft) {
-            setStatusMsg("Initiating...")
+      setLoader(true);
+      let nextStatus;
+      let nextConnectionStatus;
+      if (
+        connectionStatus == 0 ||
+        connectionStatus == 3 ||
+        connectionStatus == 5
+      ) {
+        if (connectionStatus != 5) {
+          if (!currentUser.profile.connectionnft) {
+            setStatusMsg("Initiating...");
             const projectKeyPair = anchor.web3.Keypair.generate();
-            communityConnection = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
-  
+            communityConnection = new Community(
+              env,
+              web3Consts.programID,
+              projectKeyPair.publicKey,
+            );
+
             let connectionBody = {
               name: currentUser.profile.username + " Connection",
               symbol: "CONNECTIONS",
               description: currentUser.profile.bio,
-              image: "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL+"/"+currentUser.profile.username,
+              image:
+                "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
+              enternal_url:
+                process.env.NEXT_PUBLIC_APP_MAIN_URL +
+                "/" +
+                currentUser.profile.username,
               collection: "MMOSH Pass Collection",
               attributes: [
                 {
@@ -185,17 +195,20 @@ const Profile = ({ username }: { username: any }) => {
                   value: projectKeyPair.publicKey.toBase58(),
                 },
               ],
-            }
-            const projectMetaURI: any = await pinFileToShadowDriveUrl(connectionBody);
-            const profileMintingCost = new anchor.BN(calcNonDecimalValue(0, 9))
-            const invitationMintingCost = new anchor.BN(calcNonDecimalValue(0, 9))
-  
-            const res1:any = await communityConnection.mintGenesisPass({
+            };
+            const projectMetaURI: any =
+              await pinFileToShadowDriveUrl(connectionBody);
+            const profileMintingCost = new anchor.BN(calcNonDecimalValue(0, 9));
+            const invitationMintingCost = new anchor.BN(
+              calcNonDecimalValue(0, 9),
+            );
+
+            const res1: any = await communityConnection.mintGenesisPass({
               name: currentUser.profile.username,
               symbol: "CONNECT",
               uri: projectMetaURI,
               mintKp: projectKeyPair,
-              input:{
+              input: {
                 oposToken: web3Consts.usdcToken,
                 profileMintingCost,
                 invitationMintingCost,
@@ -212,40 +225,44 @@ const Profile = ({ username }: { username: any }) => {
                   grandParent: 100 * 20,
                   greatGrandParent: 100 * 5,
                   genesis: 100 * 3,
-                }
-              }
+                },
+              },
             });
-  
-          connectionnft = res1.Ok.info.profile
-  
-            await delay(15000)
-            setStatusMsg("Connecting...")
+
+            connectionnft = res1.Ok.info.profile;
+
+            await delay(15000);
+            setStatusMsg("Connecting...");
             const invitebody = {
-              name: "Connection from " +  currentUser.profile.username,
+              name: "Connection from " + currentUser.profile.username,
               symbol: "CONNECTIONS",
-              description: currentUser.profile.username+" cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
-              image: "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
+              description:
+                currentUser.profile.username +
+                " cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
+              image:
+                "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
               external_url: "https://liquidhearts.app",
               minter: currentUser.profile.name,
               attributes: [
-                  {
-                      trait_type: "Project",
-                      value: projectKeyPair.publicKey.toBase58(),
-                  }
-              ]
+                {
+                  trait_type: "Project",
+                  value: projectKeyPair.publicKey.toBase58(),
+                },
+              ],
             };
-            const inviteMetaURI: any = await pinFileToShadowDriveUrl(invitebody);
-  
+            const inviteMetaURI: any =
+              await pinFileToShadowDriveUrl(invitebody);
+
             const res2: any = await communityConnection.initBadge({
               name: "Invitation",
-              symbol:  "CONNECT",
-              uri:inviteMetaURI,
+              symbol: "CONNECT",
+              uri: inviteMetaURI,
               profile: connectionnft,
             });
-            console.log("invite result ", res2)
-            connectionbadge = res2.Ok.info.subscriptionToken
-            await delay(15000)
-            
+            console.log("invite result ", res2);
+            connectionbadge = res2.Ok.info.subscriptionToken;
+            await delay(15000);
+
             const params = {
               connectionnft,
               connectionbadge,
@@ -254,126 +271,126 @@ const Profile = ({ username }: { username: any }) => {
               value: params,
               wallet: currentUser.wallet,
             });
-            currentUser.profile.connectionnft = connectionnft
-            currentUser.profile.connectionnft = connectionbadge
-            setCurrentUser(currentUser)
+            currentUser.profile.connectionnft = connectionnft;
+            currentUser.profile.connectionnft = connectionbadge;
+            setCurrentUser(currentUser);
           } else {
-            connectionnft = currentUser.profile.connectionnft
-            connectionbadge = currentUser.profile.connectionbadge
-            communityConnection = new Community(env, web3Consts.programID, new anchor.web3.PublicKey(currentUser.profile.connectionnft));
+            connectionnft = currentUser.profile.connectionnft;
+            connectionbadge = currentUser.profile.connectionbadge;
+            communityConnection = new Community(
+              env,
+              web3Consts.programID,
+              new anchor.web3.PublicKey(currentUser.profile.connectionnft),
+            );
           }
           const balance = await communityConnection.getUserBalance({
             token: connectionbadge,
-            address: wallet.publicKey
-          })
-          if(balance == 0) {
-            setStatusMsg("Inviting...")
+            address: wallet.publicKey,
+          });
+          if (balance == 0) {
+            setStatusMsg("Inviting...");
             let res = await communityConnection.createBadge({
               amount: 10000,
-              subscriptionToken: connectionbadge
+              subscriptionToken: connectionbadge,
             });
-            if(res.Err) {
-              setLoader(false)
-              return
+            if (res.Err) {
+              setLoader(false);
+              return;
             }
-            await delay(15000)
+            await delay(15000);
           }
-          
+
           const userbalance = await communityConnection.getUserBalance({
             token: connectionbadge,
-            address: new anchor.web3.PublicKey(userData.wallet)
-          })
-          if(userbalance == 0) {
-            setStatusMsg("Sending...")
+            address: new anchor.web3.PublicKey(userData.wallet),
+          });
+          if (userbalance == 0) {
+            setStatusMsg("Sending...");
             let res1;
             res1 = await communityConnection.transferBadge({
               amount: 1,
               subscriptionToken: connectionbadge,
-              receiver: userData.wallet
+              receiver: userData.wallet,
             });
-            if(res1.Err) {
-              setLoader(false)
-              return
+            if (res1.Err) {
+              setLoader(false);
+              return;
             }
-            console.log("transferBadge ", res1)
+            console.log("transferBadge ", res1);
           }
-
         } else {
-          setStatusMsg("connecting...")
+          setStatusMsg("connecting...");
         }
-        nextStatus = userData.profile?.isprivate ? 0 : 1
-        if(userData.profile?.isprivate ) {
-            nextConnectionStatus = 1
+        nextStatus = userData.profile?.isprivate ? 0 : 1;
+        if (userData.profile?.isprivate) {
+          nextConnectionStatus = 1;
         } else {
-            if(connectionStatus != 3) {
-               nextConnectionStatus = 2
-            } else {
-               nextConnectionStatus = 4
-            }
+          if (connectionStatus != 3) {
+            nextConnectionStatus = 2;
+          } else {
+            nextConnectionStatus = 4;
+          }
         }
-      } else if(connectionStatus == 1) {
-        setStatusMsg("Cancelling...")
-        nextStatus = 3
-        nextConnectionStatus = 5
+      } else if (connectionStatus == 1) {
+        setStatusMsg("Cancelling...");
+        nextStatus = 3;
+        nextConnectionStatus = 5;
       } else {
-        setStatusMsg("unlinking...")
-        if(connectionStatus == 4) {
-          nextConnectionStatus = 3
+        setStatusMsg("unlinking...");
+        if (connectionStatus == 4) {
+          nextConnectionStatus = 3;
         } else {
-          nextConnectionStatus = 0
+          nextConnectionStatus = 0;
         }
-        nextStatus = 2
+        nextStatus = 2;
       }
-      await axios.post("/api/connections/send",{
+      await axios.post("/api/connections/send", {
         sender: currentUser.wallet,
         receiver: userData.wallet,
         badge: connectionbadge,
-        status: nextStatus
-      })
-      setConnectionStatus(nextConnectionStatus)
-      await delay(15000)
-      setLoader(false)
+        status: nextStatus,
+      });
+      setConnectionStatus(nextConnectionStatus);
+      await delay(15000);
+      setLoader(false);
     } catch (error) {
-      setLoader(false)
+      setLoader(false);
     }
+  };
 
-  }
-
-  const connectionAction = async(type:any) => {
-    if(!wallet || !currentUser || !userData) {
-      return
+  const connectionAction = async (type: any) => {
+    if (!wallet || !currentUser || !userData) {
+      return;
     }
     try {
-      setReqestLoader(true)
-      if(type === "accept") {
-       await axios.post("/api/connections/send",{
-         sender: userData.wallet,
-         receiver: currentUser.wallet,
-         badge: "",
-         status: 4
-       })
-       if(connectionStatus == 2) {
-         setConnectionStatus(4)
-       } else {
-         setConnectionStatus(3)
-       }
+      setReqestLoader(true);
+      if (type === "accept") {
+        await axios.post("/api/connections/send", {
+          sender: userData.wallet,
+          receiver: currentUser.wallet,
+          badge: "",
+          status: 4,
+        });
+        if (connectionStatus == 2) {
+          setConnectionStatus(4);
+        } else {
+          setConnectionStatus(3);
+        }
       } else {
-       await axios.post("/api/connections/send",{
-         sender: userData.wallet,
-         receiver: currentUser.wallet,
-         badge: "",
-         status: 5
-       })
-       setConnectionStatus(0)
+        await axios.post("/api/connections/send", {
+          sender: userData.wallet,
+          receiver: currentUser.wallet,
+          badge: "",
+          status: 5,
+        });
+        setConnectionStatus(0);
       }
-      setHasRequest(false)
-      setReqestLoader(false)
+      setHasRequest(false);
+      setReqestLoader(false);
     } catch (error) {
-      setReqestLoader(false)
+      setReqestLoader(false);
     }
-
-  }
-
+  };
 
   if (!userData) return <></>;
 
@@ -381,25 +398,21 @@ const Profile = ({ username }: { username: any }) => {
     return <Settings />;
   }
 
-
   return (
     <div className="w-full h-screen flex flex-col">
-      <Banner />
       <div
         className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16 gap-6`}
       >
         {!isMobile && isMyProfile && <DesktopNavbar user={userData} />}
 
-        <div
-          className={`flex-1`}
-        >
+        <div className={`flex-1`}>
           <p className="text-lg text-white font-bold font-goudy">
             {isMyProfile
               ? "My MMOSH Account"
               : `${userData?.profile?.name}'s Hideout`}
           </p>
           <div
-            className="flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[3vmax] rounded-tr-md rounded-b-md pl-4 pt-4 pb-8 pr-8 mt-4"
+            className="flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[3vmax] rounded-tr-md rounded-b-md p-4 mt-4"
             id={userData?.profilenft && "member-container"}
           >
             <div className="w-full grid" id="profile-info-image">
@@ -420,52 +433,102 @@ const Profile = ({ username }: { username: any }) => {
               <div className="flex flex-col ml-4">
                 <p className="flex text-lg text-white font-bold">
                   {userData?.profile?.name}
-                  {currentUser &&
+                  {currentUser && (
                     <>
-                    {(wallet && (wallet.publicKey.toBase58() != userData.wallet) && currentUser.profilenft && !loader)  && 
-                      <>
-                        {(connectionStatus == 0 || connectionStatus == 5) &&
-                            <span className="cursor-pointer ml-2.5 mt-1" onClick={sendConnectionRequest}><EmptyHeartSvg /></span>
-                        }
+                      {wallet &&
+                        wallet.publicKey.toBase58() != userData.wallet &&
+                        currentUser.profilenft &&
+                        !loader && (
+                          <>
+                            {(connectionStatus == 0 ||
+                              connectionStatus == 5) && (
+                              <span
+                                className="cursor-pointer ml-2.5 mt-1"
+                                onClick={sendConnectionRequest}
+                              >
+                                <EmptyHeartSvg />
+                              </span>
+                            )}
 
-                        {(connectionStatus == 1 || connectionStatus == 2) && 
-                            <span className="cursor-pointer ml-2.5" onClick={sendConnectionRequest}><HeartSvg /></span>
-                        }
+                            {(connectionStatus == 1 ||
+                              connectionStatus == 2) && (
+                              <span
+                                className="cursor-pointer ml-2.5"
+                                onClick={sendConnectionRequest}
+                              >
+                                <HeartSvg />
+                              </span>
+                            )}
 
-                        {connectionStatus == 4 && 
-                            <span className="cursor-pointer relative top-[-6px]" onClick={sendConnectionRequest}><LinkedHeartSvg /></span>
-                        }
+                            {connectionStatus == 4 && (
+                              <span
+                                className="cursor-pointer relative top-[-6px]"
+                                onClick={sendConnectionRequest}
+                              >
+                                <LinkedHeartSvg />
+                              </span>
+                            )}
 
-                        {connectionStatus == 3 && 
-                            <span className="cursor-pointer relative top-[-4px]" onClick={sendConnectionRequest}><InBoundHeart /></span>
-                        }
-                        
-                      </>
-                    }
-                    {(wallet && (wallet.publicKey.toBase58() == userData.wallet) && currentUser.profilenft && !loader)  && 
-                      <>
-                        <span className="cursor-pointer ml-1 mt-1" onClick={()=>{router.push("/create/edit-profile")}}><EditIcon /></span>
-                      </>
-                    }
+                            {connectionStatus == 3 && (
+                              <span
+                                className="cursor-pointer relative top-[-4px]"
+                                onClick={sendConnectionRequest}
+                              >
+                                <InBoundHeart />
+                              </span>
+                            )}
+                          </>
+                        )}
+                      {wallet &&
+                        wallet.publicKey.toBase58() == userData.wallet &&
+                        currentUser.profilenft &&
+                        !loader && (
+                          <>
+                            <span
+                              className="cursor-pointer ml-1 mt-1"
+                              onClick={() => {
+                                router.push("/create/edit-profile");
+                              }}
+                            >
+                              <EditIcon />
+                            </span>
+                          </>
+                        )}
                     </>
-                  }
+                  )}
                 </p>
                 <p className="text-sm">{`@${userData?.profile?.username}`}</p>
-                {userData.profile?.request &&
-                    <div className="flex justify-start mt-2.5">
-                        {requestloader &&
-                            <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5">processing...</button>
-                        }
+                {userData.profile?.request && (
+                  <div className="flex justify-start mt-2.5">
+                    {requestloader && (
+                      <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5">
+                        processing...
+                      </button>
+                    )}
 
-                        {!requestloader && hasRequest &&
-                        <>
-                            <p className="text-white text-sm">Request</p>
-                            <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5" onClick={()=>{connectionAction("accept")}}>Accept</button>
-                            <button className="btn btn-xs bg-[#372E4F] rounded-md text-white" onClick={()=>{connectionAction("reject")}}>Reject</button>
-                        </>
-                        }
-                      </div>
-                }
+                    {!requestloader && hasRequest && (
+                      <>
+                        <p className="text-white text-sm">Request</p>
+                        <button
+                          className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5"
+                          onClick={() => {
+                            connectionAction("accept");
+                          }}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="btn btn-xs bg-[#372E4F] rounded-md text-white"
+                          onClick={() => {
+                            connectionAction("reject");
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
                 <p className="text-base text-white mt-4 max-w-[60%] md:max-w-[80%]">
                   {userData?.profile?.bio}
                 </p>
@@ -478,76 +541,152 @@ const Profile = ({ username }: { username: any }) => {
                     {`mmosh.app/${userData?.profile?.username}`}
                   </a>
 
-                  {lhcWallet && (
-                    <div
-                      className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
-                    >
-                      <div className="flex flex-col justify-center items-center">
-                        <a
-                          className="text-base text-white underline"
-                          href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                          target="_blank"
+                  {!isMobile && (
+                    <>
+                      {lhcWallet && (
+                        <div
+                          className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                         >
-                          Social Wallet
-                        </a>
-                        <a
-                          className="text-base text-white underline"
-                          href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                          target="_blank"
-                        >
-                          {walletAddressShortener(lhcWallet)}
-                        </a>
-                      </div>
-
-                      <sup
-                        className="absolute top-[-8px] right-[-8px] cursor-pointer"
-                        onClick={() => copyToClipboard(lhcWallet, 1)}
-                      >
-                        <CopyIcon />
-                        {isFirstTooltipShown && (
-                          <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                            Copied!
+                          <div className="flex flex-col justify-center items-center">
+                            <a
+                              className="text-base text-white underline"
+                              href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
+                              target="_blank"
+                            >
+                              Social Wallet
+                            </a>
+                            <a
+                              className="text-base text-white underline"
+                              href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
+                              target="_blank"
+                            >
+                              {walletAddressShortener(lhcWallet)}
+                            </a>
                           </div>
-                        )}
-                      </sup>
-                    </div>
-                  )}
 
+                          <sup
+                            className="absolute top-[-8px] right-[-8px] cursor-pointer"
+                            onClick={() => copyToClipboard(lhcWallet, 1)}
+                          >
+                            <CopyIcon />
+                            {isFirstTooltipShown && (
+                              <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                                Copied!
+                              </div>
+                            )}
+                          </sup>
+                        </div>
+                      )}
+
+                      <div
+                        className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
+                      >
+                        <div className="flex flex-col items-center justify-center">
+                          <a
+                            className="text-base text-white underline"
+                            href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                            target="_blank"
+                          >
+                            Linked Wallet
+                          </a>
+
+                          <a
+                            className="text-base text-white underline"
+                            href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                            target="_blank"
+                          >
+                            {walletAddressShortener(userData.wallet)}
+                          </a>
+                        </div>
+                        <sup
+                          className="absolute top-[-8px] right-[-8px] cursor-pointer"
+                          onClick={() => copyToClipboard(userData.wallet, 2)}
+                        >
+                          <CopyIcon />
+                          {isSecTooltipShown && (
+                            <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                              Copied!
+                            </div>
+                          )}
+                        </sup>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {isMobile && (
+              <div className="flex justify-around mt-6">
+                {lhcWallet && (
                   <div
                     className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
                   >
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-col justify-center items-center">
                       <a
                         className="text-base text-white underline"
-                        href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                        href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
                         target="_blank"
                       >
-                        Linked Wallet
+                        Social Wallet
                       </a>
-
                       <a
                         className="text-base text-white underline"
-                        href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                        href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
                         target="_blank"
                       >
-                        {walletAddressShortener(userData.wallet)}
+                        {walletAddressShortener(lhcWallet)}
                       </a>
                     </div>
+
                     <sup
-                      className="absolute top-[-8px] right-[-8px] cursor-pointer"
-                      onClick={() => copyToClipboard(userData.wallet, 2)}
+                      className="absolute top-[-0.5vmax] right-[-0.5vmax] cursor-pointer"
+                      onClick={() => copyToClipboard(lhcWallet, 1)}
                     >
                       <CopyIcon />
-                      {isSecTooltipShown && (
+                      {isFirstTooltipShown && (
                         <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
                           Copied!
                         </div>
                       )}
                     </sup>
                   </div>
+                )}
+
+                <div
+                  className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <a
+                      className="text-base text-white underline"
+                      href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                      target="_blank"
+                    >
+                      Linked Wallet
+                    </a>
+
+                    <a
+                      className="text-base text-white underline"
+                      href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
+                      target="_blank"
+                    >
+                      {walletAddressShortener(userData.wallet)}
+                    </a>
+                  </div>
+                  <sup
+                    className="absolute top-[-0.5vmax] right-[-0.5vmax] cursor-pointer"
+                    onClick={() => copyToClipboard(userData.wallet, 2)}
+                  >
+                    <CopyIcon />
+                    {isSecTooltipShown && (
+                      <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
+                        Copied!
+                      </div>
+                    )}
+                  </sup>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="w-full flex justify-around mt-16">
               <TelegramAccount
@@ -555,57 +694,9 @@ const Profile = ({ username }: { username: any }) => {
                 userData={userData}
                 setUserData={setUserData}
               />
-
-              <TwitterAccount
-                userData={userData}
-                setUserData={setUserData}
-                isMyProfile={isMyProfile}
-              />
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-center p-8 rounded-2xl bg-[#6536BB] bg-opacity-20 lg:self-start">
-            {lhcWallet && userData?.telegram?.id && (
-              <p className="flex text-lg text-white font-bold mb-6">
-                Activation Link{" "}
-                <sup
-                  className="relative cursor-pointer"
-                  onClick={() =>
-                    copyToClipboard(
-                      `https://t.me/MMOSHBot?start=${userData?.telegram?.id}`,
-                      0,
-                    )
-                  }
-                >
-                  {isTooltipShown && (
-                    <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
-                      Copied!
-                    </div>
-                  )}
-                  <CopyIcon />
-                </sup>
-              </p>
-            )}
-
-            {lhcWallet && userData?.telegram?.id && (
-              <p className="text-base text-white">
-                {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
-              </p>
-            )}
-
-            <p className="text-base text-white mt-6">
-              <span className="font-bold">Your Role: </span>{" "}
-              {userData?.profilenft ? "Member" : "Guest"}
-            </p>
-            <p className="text-base text-white my-4">
-              <span className="font-bold">Your Points: </span>{" "}
-              {rankData.points || 0}
-            </p>
-            <p className="text-base text-white">
-              <span className="font-bold">Your Rank: </span>{" "}
-              {rankData.rank || 0}
-            </p>
-          </div>
       </div>
       <GuildList
         profilenft={userData?.profilenft}

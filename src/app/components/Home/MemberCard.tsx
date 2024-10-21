@@ -13,13 +13,11 @@ import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
 import { Connectivity as Community } from "@/anchor/community";
-import { updateUserData } from "@/app/lib/forge/updateUserData";
 import HeartSvg from "../Profile/HeartSvg";
 import LinkedHeartSvg from "../Profile/LinkedHeartSvg";
 import InBoundHeart from "../Profile/InBoundHeart";
 import { data } from "@/app/store";
 import { useAtom } from "jotai";
-import Button from "../common/Button";
 
 type Props = {
   user: User;

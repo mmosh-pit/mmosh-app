@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const password = data.password;
 
   const user = await collection.findOne({
-    email,
+    email: email.trim().toLowerCase(),
   });
 
   if (user === null) {

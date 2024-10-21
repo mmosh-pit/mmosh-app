@@ -11,6 +11,7 @@ import RecentCoin from "../../common/RecentCoin";
 import CoinListItem from "../../common/CoinListItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import CloseIcon from "@/assets/icons/CloseIcon";
+import { networkCoins, communityCoins } from "@/app/lib/forge/jupiter";
 
 type Props = {
   selectedCoin: SwapCoin | null;
@@ -24,6 +25,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
   const fetching = React.useRef(false);
 
   const [coinsList, setCoinsList] = React.useState<Coin[]>([]);
+  const [politicalCoins, setPoliticalCoins] = React.useState<Coin[]>([]);
   const [recentCoins, setRecentCoins] = React.useState<Coin[]>([]);
   const [searchText, setSearchText] = React.useState("");
 
@@ -40,7 +42,12 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
     fetching.current = true;
     const listResult = await axios.get(`/api/list-tokens?search=${searchText}`);
 
+    const politicalResult = await axios.get(
+      `/api/list-political-tokens?search=${searchText}`,
+    );
+
     setCoinsList(listResult.data);
+    setPoliticalCoins(politicalResult.data);
     fetching.current = false;
   }, [searchText]);
 
@@ -91,7 +98,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
         <div className="flex flex-col modal-box w-[40%] bg-[#02001A] p-8">
           <div className="custom-select-open grow">
             <div className="flex w-full justify-between mb-2">
-              <p className="text-xs text-white font-bold ml-4">Creator Coins</p>
+              <p className="text-xs text-white font-bold ml-4">Trading Pairs</p>
 
               <button
                 className="cursor-pointer"
@@ -129,6 +136,58 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
 
             <div className="w-full h-[0.5px] bg-[#36357C] px-2 mb-8 mt-2" />
 
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">Network Tokens</p>
+            </div>
+
+            {networkCoins.map((coin) => {
+              return (
+                <div className="my-2">
+                  <CoinListItem
+                    token={coin.token}
+                    bonding={coin.bonding}
+                    name={coin.name}
+                    desc={coin.desc}
+                    creatorUsername={coin.creatorUsername}
+                    symbol={coin.symbol}
+                    image={coin.image}
+                    iscoin={coin.iscoin}
+                    decimals={coin.decimals}
+                    onTokenSelect={handleTokenSelect}
+                    key={coin.token}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">Community Coins</p>
+            </div>
+
+            {communityCoins.map((coin) => {
+              return (
+                <div className="my-2">
+                  <CoinListItem
+                    token={coin.token}
+                    bonding={coin.bonding}
+                    name={coin.name}
+                    desc={coin.desc}
+                    creatorUsername={coin.creatorUsername}
+                    symbol={coin.symbol}
+                    image={coin.image}
+                    iscoin={coin.iscoin}
+                    decimals={coin.decimals}
+                    onTokenSelect={handleTokenSelect}
+                    key={coin.token}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">Memecoins</p>
+            </div>
+
             {coinsList.map((coin) => {
               return (
                 <div className="my-2">
@@ -140,6 +199,34 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                     creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
                     image={coin.image}
+                    iscoin={coin.iscoin}
+                    decimals={coin.decimals}
+                    onTokenSelect={handleTokenSelect}
+                    key={coin.token}
+                  />
+                </div>
+              );
+            })}
+
+            <div className="w-full mb-4 mt-6">
+              <p className="text-lg text-white font-bold">
+                Political Memecoins
+              </p>
+            </div>
+
+            {politicalCoins.map((coin) => {
+              return (
+                <div className="my-2">
+                  <CoinListItem
+                    token={coin.token}
+                    bonding={coin.bonding}
+                    name={coin.name}
+                    desc={coin.desc}
+                    creatorUsername={coin.creatorUsername}
+                    symbol={coin.symbol}
+                    image={coin.image}
+                    iscoin={coin.iscoin}
+                    decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
                   />

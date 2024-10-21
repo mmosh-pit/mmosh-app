@@ -329,7 +329,7 @@ const CreateCoin = () => {
   }, [selectedCoin, wallet]);
 
   const getTokenBalance = async () => {
-    if (selectedCoin.token === web3Consts.oposToken.toBase58()) {
+    // if (selectedCoin.token === web3Consts.oposToken.toBase58()) {
       const connection = new Connection(
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
       );
@@ -344,21 +344,21 @@ const CreateCoin = () => {
         decimals: selectedCoin.decimals,
       });
       setSelectedCoinBalance(balance ? balance : 0);
-    } else {
-      let type = "Red";
-      if (selectedCoin.token === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
-        type = "Blue";
-      }
-      let coinData = await axios(
-        "/api/ptv/rewards?type=" +
-          type +
-          "&&wallet=" +
-          wallet?.publicKey.toBase58(),
-      );
-      setSelectedCoinBalance(
-        coinData.data ? coinData.data.claimable + coinData.data.unstakable : 0,
-      );
-    }
+    // } else {
+    //   let type = "Red";
+    //   if (selectedCoin.token === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+    //     type = "Blue";
+    //   }
+    //   let coinData = await axios(
+    //     "/api/ptv/rewards?type=" +
+    //       type +
+    //       "&&wallet=" +
+    //       wallet?.publicKey.toBase58(),
+    //   );
+    //   setSelectedCoinBalance(
+    //     coinData.data ? coinData.data.claimable + coinData.data.unstakable : 0,
+    //   );
+    // }
   };
 
   React.useEffect(() => {

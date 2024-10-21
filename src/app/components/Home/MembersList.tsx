@@ -4,11 +4,12 @@ import { useAtom } from "jotai";
 
 import { User } from "@/app/models/user";
 import { selectedSearchFilter } from "@/app/store/home";
-import MemberCard from "./MemberCard";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { textSearch } from "@/app/store/membership";
+import UserCard from "../UserCard";
+import { data } from "@/app/store";
 
-const MembersList = (props: any) => {
+const MembersList = () => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(textSearch);
 
@@ -21,6 +22,7 @@ const MembersList = (props: any) => {
   const [users, setUsers] = React.useState<User[]>([]);
   const wallet = useAnchorWallet();
   const connection = useConnection();
+  const [currentUser] = useAtom(data);
 
   const getUsers = React.useCallback(async () => {
     if (
@@ -78,10 +80,6 @@ const MembersList = (props: any) => {
         <p className="text-white text-base">
           Members <span className="text-gray-500"></span>
         </p>
-
-        <a className="underline text-white cursor-pointer text-base">
-          Go to Membership Directory
-        </a>
       </div>
       <div
         className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 overflow-y-auto"
@@ -89,10 +87,17 @@ const MembersList = (props: any) => {
         onScroll={handleScroll}
       >
         {users.map((user) => (
-          <MemberCard
+          // <MemberCard
+          //   user={user}
+          //   wallet={wallet}
+          //   currentuser={props.currentuser}
+          //   connection={connection.connection}
+          // />
+          <UserCard
             user={user}
             wallet={wallet}
-            currentuser={props.currentuser}
+            currentuser={currentUser || undefined}
+            isHome={false}
             connection={connection.connection}
           />
         ))}

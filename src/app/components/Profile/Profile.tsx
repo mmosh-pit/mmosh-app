@@ -10,7 +10,6 @@ import CopyIcon from "@/assets/icons/CopyIcon";
 import TelegramAccount from "./TelegramAccount";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import DesktopNavbar from "./DesktopNavbar";
-import Banner from "../Banner";
 import Settings from "../Settings";
 import { init } from "@/app/lib/firebase";
 import { UserStatus, data, isDrawerOpen, settings, status } from "@/app/store";
@@ -401,7 +400,6 @@ const Profile = ({ username }: { username: any }) => {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <Banner />
       <div
         className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16 gap-6`}
       >
@@ -698,47 +696,6 @@ const Profile = ({ username }: { username: any }) => {
               />
             </div>
           </div>
-        </div>
-        <div className="flex flex-col items-center md:p-8 p-4 rounded-2xl bg-[#6536BB] bg-opacity-20 lg:self-start">
-          {lhcWallet && userData?.profilenft && (
-            <p className="flex text-lg text-white font-bold mb-6">
-              Activation Link{" "}
-              <sup
-                className="relative cursor-pointer"
-                onClick={() =>
-                  copyToClipboard(
-                    `https://t.me/LiquidHeartsBot?start=${userData?.profilenft}`,
-                    0,
-                  )
-                }
-              >
-                {isTooltipShown && (
-                  <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
-                    Copied!
-                  </div>
-                )}
-                <CopyIcon />
-              </sup>
-            </p>
-          )}
-
-          {lhcWallet && userData?.telegram?.id && (
-            <p className="text-base text-white">
-              {`https://t.me/MMOSHBot?start=${userData?.telegram?.id}`}
-            </p>
-          )}
-
-          <p className="text-base text-white mt-6">
-            <span className="font-bold">Your Role: </span>{" "}
-            {userData?.profilenft ? "Member" : "Guest"}
-          </p>
-          <p className="text-base text-white my-4">
-            <span className="font-bold">Your Points: </span>{" "}
-            {rankData.points || 0}
-          </p>
-          <p className="text-base text-white">
-            <span className="font-bold">Your Rank: </span> {rankData.rank || 0}
-          </p>
         </div>
       </div>
       <GuildList

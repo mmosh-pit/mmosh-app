@@ -155,7 +155,7 @@ const GuildList = ({
         <p className="text-lg text-white font-bold font-goudy">
           {isMyProfile ? "Your Lineage" : `${userName}'s Lineage`}
         </p>
-        <div className="md:flex">
+        <div className="lg:flex">
           <LineageFilterOptions />
           <ConnectionFilterOptions />
         </div>

@@ -232,7 +232,7 @@ const Header = () => {
     setBadge(0);
   };
 
-  const isMobileScreen = screenSize < 600;
+  const isMobileScreen = screenSize < 1000;
 
   return (
     <header className="flex flex-col">
@@ -303,7 +303,7 @@ const Header = () => {
             )}
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[2.5vmax] h-[2.5vmax] mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
               >
                 <Image
                   src={currentUser.profile.image}
@@ -319,12 +319,12 @@ const Header = () => {
               style={{
                 background:
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: "0 2em",
+                padding: isMobileScreen ? "0 1em" : "0 2em",
                 borderRadius: 15,
-                marginLeft: "2rem",
+                marginLeft: isMobileScreen ? "2rem" : "0.5rem",
               }}
             >
-              <p className="text-lg text-white">
+              <p className="md:text-lg text-sm text-white">
                 {wallet?.publicKey
                   ? walletAddressShortener(wallet.publicKey.toString())
                   : "Connect Wallet"}

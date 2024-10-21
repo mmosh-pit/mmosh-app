@@ -407,7 +407,7 @@ const CreateCoin = () => {
     if (form.candidate?.PARTY === "DEM") {
       setForm({ ...form, bonding: "ptvb" });
     } else if (form.candidate?.PARTY === "REP") {
-      setForm({ ...form, bonding: "ptvb" });
+      setForm({ ...form, bonding: "ptvr" });
     } else {
       setForm({ ...form, bonding: "" });
     }

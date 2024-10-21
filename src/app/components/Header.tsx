@@ -34,6 +34,7 @@ import Notification from "./Notification/Notification";
 import { currentGroupCommunity } from "../store/community";
 import LHCIcon from "@/assets/icons/LHCIcon";
 import { init } from "../lib/firebase";
+import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
 
 const Header = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const Header = () => {
   const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const isMobileScreen = useCheckMobileScreen();
+  const screenSize = useCheckDeviceScreenSize();
   const [badge, setBadge] = useState(0);
   const [notifications, setNotifications] = useState([]);
 
@@ -230,6 +231,8 @@ const Header = () => {
     });
     setBadge(0);
   };
+
+  const isMobileScreen = screenSize < 600;
 
   return (
     <header className="flex flex-col">

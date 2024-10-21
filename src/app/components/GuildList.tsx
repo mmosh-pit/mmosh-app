@@ -171,7 +171,7 @@ const GuildList = ({
           </p>
         </div>
       ) : (
-        <div className="relative px-16 pb-8 grid xs:grid-cols-auto lg:grid-cols-3 gap-4 mt-[3vmax]">
+        <div className="relative px-16 pb-8 grid xs:grid-cols-auto md:grid-cols-2 xl:grid-cols-3 gap-4 mt-[3vmax]">
           {users.map((value) => (
             <UserCard
               user={value}

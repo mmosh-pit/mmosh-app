@@ -66,7 +66,11 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
   };
 
   return (
-    <>
+    <div className="flex flex-col">
+      <p className="text-xs text-white">
+        Select a Community Coin or the Native Token to pair with your Memecoin
+        on the bonding curve.
+      </p>
       <div
         className="w-full flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-[#9D9D9D12] cursor-pointer border-[1px] border-[#FFFFFF30] rounded-lg px-2 mx-1"
         onClick={() => {
@@ -134,7 +138,7 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
           </div>
         </div>
       </dialog>
-    </>
+    </div>
   );
 };
 

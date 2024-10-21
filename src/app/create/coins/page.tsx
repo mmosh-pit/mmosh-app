@@ -146,6 +146,15 @@ const CreateCoin = () => {
       return false;
     }
 
+    if (form.multiplier > 2) {
+      setMessage({
+        type: "error",
+        message: "Multiplier should be 1 or 2",
+      });
+      return false;
+    }
+
+
     return true;
   };
 
@@ -214,7 +223,7 @@ const CreateCoin = () => {
         position,
         candidate: form.candidate!,
       };
-
+      
       const res = await createProjectCoin(params);
       setIsLoading(false);
       setMessage({ type: res.type, message: res.message });

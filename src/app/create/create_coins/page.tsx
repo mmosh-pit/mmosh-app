@@ -358,7 +358,7 @@ const CreateCoin = () => {
   };
 
   const getTokenBalance = async () => {
-    if (selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
+    // if (selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
       const connection = new Connection(
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
       );
@@ -373,23 +373,23 @@ const CreateCoin = () => {
         decimals: selectedCommunityCoin.decimals,
       });
       setSelectedCommunityBalance(balance ? balance : 0);
-    } else {
-      let type = "Red";
-      if (
-        selectedCommunityCoin.address === process.env.NEXT_PUBLIC_PTVB_TOKEN
-      ) {
-        type = "Blue";
-      }
-      let coinData = await axios(
-        "/api/ptv/rewards?type=" +
-          type +
-          "&&wallet=" +
-          wallet?.publicKey.toBase58(),
-      );
-      setSelectedCommunityBalance(
-        coinData.data ? coinData.data.claimable + coinData.data.unstakable : 0,
-      );
-    }
+    // } else {
+    //   let type = "Red";
+    //   if (
+    //     selectedCommunityCoin.address === process.env.NEXT_PUBLIC_PTVB_TOKEN
+    //   ) {
+    //     type = "Blue";
+    //   }
+    //   let coinData = await axios(
+    //     "/api/ptv/rewards?type=" +
+    //       type +
+    //       "&&wallet=" +
+    //       wallet?.publicKey.toBase58(),
+    //   );
+    //   setSelectedCommunityBalance(
+    //     coinData.data ? coinData.data.claimable + coinData.data.unstakable : 0,
+    //   );
+    // }
   };
 
   return (

@@ -39,16 +39,16 @@ export const getSwapPrices = async (
     9
   );
   let baseBalance = 0
-  if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
+  // if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
     baseBalance = balances.target
-  } else {
-    let type = "Red"
-    if(bondingResult?.baseMint.toBase58() === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
-      type = "Blue"
-    }
-    let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
-    baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
-  }
+  // } else {
+  //   let type = "Red"
+  //   if(bondingResult?.baseMint.toBase58() === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+  //     type = "Blue"
+  //   }
+  //   let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
+  //   baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+  // }
 
   const base = {
     name: mintDetail.name,
@@ -114,30 +114,30 @@ export const getSwapPricesForJup = async (
     targetToken.decimals ? targetToken.decimals : 9,
   );
   let baseBalance = 0
-  let basetype = ""
-  if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN) {
-    basetype = "Blue"
-  }
-  if(baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-    basetype = "Red"
-  }
-  if(basetype !== "") {
-    let coinData = await axios("/api/ptv/rewards?type="+basetype+"&&wallet="+wallet?.publicKey.toBase58())
-    baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
-  }
+  // let basetype = ""
+  // if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+  //   basetype = "Blue"
+  // }
+  // if(baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+  //   basetype = "Red"
+  // }
+  // if(basetype !== "") {
+  //   let coinData = await axios("/api/ptv/rewards?type="+basetype+"&&wallet="+wallet?.publicKey.toBase58())
+  //   baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+  // }
 
   let targetBalance = 0
-  let targettype = ""
-  if(targetToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN) {
-    targettype = "Blue"
-  }
-  if(targetToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-    targettype = "Red"
-  }
-  if(targettype !== "") {
-    let coinData = await axios("/api/ptv/rewards?type="+targettype+"&&wallet="+wallet?.publicKey.toBase58())
-    targetBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
-  }
+  // let targettype = ""
+  // if(targetToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+  //   targettype = "Blue"
+  // }
+  // if(targetToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+  //   targettype = "Red"
+  // }
+  // if(targettype !== "") {
+  //   let coinData = await axios("/api/ptv/rewards?type="+targettype+"&&wallet="+wallet?.publicKey.toBase58())
+  //   targetBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+  // }
 
   console.log("base token ", baseToken.token)
   console.log("target token ", targetToken.token)

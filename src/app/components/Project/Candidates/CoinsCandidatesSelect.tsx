@@ -8,9 +8,14 @@ import ArrowUp from "@/assets/icons/ArrowUp";
 type Props = {
   value: Candidate | null;
   onChangeValue: (value: Candidate | null) => void;
+  selectedCoin: string;
 };
 
-const CoinsCandidatesSelect = ({ value, onChangeValue }: Props) => {
+const CoinsCandidatesSelect = ({
+  value,
+  onChangeValue,
+  selectedCoin,
+}: Props) => {
   const divHeight = 50;
   const [presidentialCandidates, setPresidentialCandidates] = React.useState<
     Candidate[]
@@ -75,7 +80,7 @@ const CoinsCandidatesSelect = ({ value, onChangeValue }: Props) => {
   return (
     <div className="flex flex-col w-full relative">
       <p className="text-sm text-white">
-        Candidate You're Endorsing or Opposing <sup>*</sup>
+        Search for Candidate by Name, Party or State<sup>*</sup>
       </p>
 
       <div
@@ -178,6 +183,18 @@ const CoinsCandidatesSelect = ({ value, onChangeValue }: Props) => {
           </div>
         )}
       </div>
+      {["DEM", "REP"].includes(value?.PARTY ?? "") && (
+        <p className="text-xs text-white mt-14">
+          Based on the Coin and the Candidate you've selected, you're{" "}
+          <span className="font-bold text-white text-xs">
+            {(value?.PARTY === "DEM" && selectedCoin === "PTVB") ||
+            (value?.PARTY === "REP" && selectedCoin === "PTVR")
+              ? "For"
+              : "Against"}
+          </span>{" "}
+          this Candidate.
+        </p>
+      )}
     </div>
   );
 };

@@ -138,7 +138,7 @@ const Page = () => {
                     <div className="flex flex-wrap">
                       {community.groups.map((group) => (
                         <a
-                          className="text-sm underline"
+                          className="text-sm underline mx-1"
                           href={`https://t.me/${group.handle}`}
                           target="_blank"
                         >

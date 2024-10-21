@@ -499,6 +499,7 @@ const CreateCoin = () => {
                 <CoinsCandidatesSelect
                   value={form.candidate}
                   onChangeValue={(val) => setForm({ ...form, candidate: val })}
+                  selectedCoin={selectedCoin.symbol}
                 />
 
                 {form.candidate !== null &&
@@ -590,7 +591,7 @@ const CreateCoin = () => {
                   )}
 
                 <div
-                  className={`w-full flex flex-col ${!["DEM", "REP"].includes(form.candidate?.PARTY ?? "") ? "mt-8" : "mt-12"}`}
+                  className={`w-full flex flex-col ${!["DEM", "REP"].includes(form.candidate?.PARTY ?? "") ? "mt-8" : "mt-4"}`}
                 >
                   <p className="text-base text-white">
                     Inform the AI bot about this candidate
@@ -604,7 +605,7 @@ const CreateCoin = () => {
                 </div>
               </div>
             ) : (
-              <div className="w-full flex flex-col md:ml-8">
+              <div className="w-full flex flex-col">
                 <div className="flex flex-col">
                   <p className="text-xs text-white">
                     Choose a Bonding Curve for your Coin
@@ -618,66 +619,7 @@ const CreateCoin = () => {
                   />
                 </div>
 
-                {form.bonding === "linear" ? (
-                  <div className="flex flex-col lg:mt-8 md:mt-4 sm:mt-2">
-                    <p className="text-white text-tiny">
-                      Adjust the slope for your Bonding Curve by changing the
-                      multiplier
-                    </p>
-                    <Input
-                      title=""
-                      value={form.initialPrice.toString()}
-                      onChange={(e) => {
-                        const value = Number(e.target.value);
-
-                        if (Number.isNaN(value)) return;
-
-                        if (value < 1) return;
-
-                        if (value > 9000) return;
-
-                        setForm({
-                          ...form,
-                          initialPrice: value,
-                        });
-                      }}
-                      type="text"
-                      required={false}
-                      placeholder="0"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col lg:mt-8 md:mt-4 sm:mt-2">
-                    <p className="text-white text-tiny">
-                      Adjust the slope for your Bonding Curve by changing the
-                      multiplier
-                    </p>
-                    <div className="max-w-[50%]">
-                      <Input
-                        title=""
-                        value={form.multiplier.toString()}
-                        onChange={(e) => {
-                          const value = Number(e.target.value);
-
-                          if (Number.isNaN(value)) return;
-
-                          if (value < 1) return;
-
-                          if (value >= 3 && form.supply > 15850) return;
-
-                          if (value >= 4 && form.supply > 1450) return;
-
-                          setForm({ ...form, multiplier: value });
-                        }}
-                        type="text"
-                        required={false}
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="w-full h-full mt-4">
+                <div className="flex w-full h-full mt-4">
                   <ResponsiveContainer
                     width="85%"
                     height={200}
@@ -731,6 +673,59 @@ const CreateCoin = () => {
                       />
                     </AreaChart>
                   </ResponsiveContainer>
+
+                  {form.bonding === "linear" ? (
+                    <div className="flex flex-col justify-center items-center lg:ml-4 md:ml-2 sm:ml-1">
+                      <p className="text-white text-tiny">
+                        Adjust the slope for your Bonding Curve by changing the
+                        multiplier
+                      </p>
+                      <SimpleInput
+                        value={form.initialPrice.toString()}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+
+                          if (Number.isNaN(value)) return;
+
+                          if (value < 1) return;
+
+                          if (value > 9000) return;
+
+                          setForm({
+                            ...form,
+                            initialPrice: value,
+                          });
+                        }}
+                        placeholder="0"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col justify-center items-center lg:ml-4 md:ml-2 sm:ml-1">
+                      <p className="text-white text-tiny">
+                        Adjust the slope for your Bonding Curve by changing the
+                        multiplier
+                      </p>
+                      <div className="max-w-[50%]">
+                        <SimpleInput
+                          value={form.multiplier.toString()}
+                          onChange={(e) => {
+                            const value = Number(e.target.value);
+
+                            if (Number.isNaN(value)) return;
+
+                            if (value < 1) return;
+
+                            if (value >= 3 && form.supply > 15850) return;
+
+                            if (value >= 4 && form.supply > 1450) return;
+
+                            setForm({ ...form, multiplier: value });
+                          }}
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

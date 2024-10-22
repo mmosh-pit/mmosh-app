@@ -10,7 +10,6 @@ import CopyIcon from "@/assets/icons/CopyIcon";
 import TelegramAccount from "./TelegramAccount";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import DesktopNavbar from "./DesktopNavbar";
-import Settings from "../Settings";
 import { init } from "@/app/lib/firebase";
 import { UserStatus, data, isDrawerOpen, settings, status } from "@/app/store";
 import { User } from "@/app/models/user";
@@ -393,10 +392,6 @@ const Profile = ({ username }: { username: any }) => {
   };
 
   if (!userData) return <></>;
-
-  if (isOnSettings) {
-    return <Settings />;
-  }
 
   return (
     <div className="w-full h-screen flex flex-col">

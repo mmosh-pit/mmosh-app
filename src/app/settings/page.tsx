@@ -1,12 +1,17 @@
+"use client";
 import { useAtom } from "jotai";
 import * as React from "react";
 
-import { data } from "../store";
+import { data, isAuth } from "../store";
 import axios from "axios";
 import CopyIcon from "@/assets/icons/CopyIcon";
+import { useRouter } from "next/navigation";
 
 const Settings = () => {
+  const router = useRouter();
   const [currentUser] = useAtom(data);
+  const [isUserAuthenticated] = useAtom(isAuth);
+
   const [isPrivateKeyVisible, setIsPrivateKeyVisible] = React.useState(false);
   const [privateKey, setPrivateKey] = React.useState("");
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
@@ -36,6 +41,12 @@ const Settings = () => {
     fetchPrivateKey();
   }, [currentUser]);
 
+  React.useEffect(() => {
+    if (!isUserAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isUserAuthenticated]);
+
   return (
     <div className="flex flex-col w-full h-full">
       <div className="w-full flex justify-center mt-16 mb-8">
@@ -45,7 +56,7 @@ const Settings = () => {
       <div className="flex flex-col ml-20">
         <div className="my-2">
           <p className="text-base text-white font-goudy font-bold">
-            Social Wallet
+            App Wallet
           </p>
         </div>
 

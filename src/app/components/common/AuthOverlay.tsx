@@ -39,7 +39,7 @@ const AuthOverlay = () => {
 
       <div className="self-center flex mt-4">
         <button
-          className="bg-[#CD068E] w-full px-16 rounded-md flex items-center justify-center text-center"
+          className="bg-[#CD068E] w-full px-12 rounded-md flex items-center justify-center text-center"
           onClick={() => {
             router.push("/login");
           }}
@@ -50,12 +50,12 @@ const AuthOverlay = () => {
         <div className="mx-4" />
 
         <button
-          className="bg-white w-full px-16 rounded-md flex items-center justify-center text-center"
+          className="bg-white w-full px-12 rounded-md flex items-center justify-center text-center"
           onClick={() => {
             router.push("/sign-up");
           }}
         >
-          <p className="text-black text-base text-center">Create New Account</p>
+          <p className="text-black text-base text-center">Sign Up</p>
         </button>
       </div>
     </div>

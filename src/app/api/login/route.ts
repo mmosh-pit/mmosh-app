@@ -18,15 +18,17 @@ export async function POST(req: NextRequest) {
   });
 
   if (user === null) {
-    return NextResponse.json("User does not exists", {
+    return NextResponse.json("user", {
       status: 400,
     });
   }
 
-  const isValid = argon2.verify(user!.password, password);
+  const isValid = await argon2.verify(user!.password, password);
+
+  console.log("Password is fking valid?? ", isValid);
 
   if (!isValid) {
-    return NextResponse.json("Invalid Password", {
+    return NextResponse.json("password", {
       status: 400,
     });
   }

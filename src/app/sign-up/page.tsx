@@ -8,6 +8,8 @@ import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import { useRouter } from "next/navigation";
 import { storeFormAtom } from "../store/signup";
+import EyeLineIcon from "@/assets/icons/EyeLineIcon";
+import EyeIcon from "@/assets/icons/EyeIcon";
 
 const SignUp = () => {
   const router = useRouter();
@@ -20,6 +22,9 @@ const SignUp = () => {
   const [emailError, setEmailError] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    React.useState(false);
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -114,11 +119,21 @@ const SignUp = () => {
         <Input
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          type="password"
           error={confirmPasswordError}
           placeholder="Enter your password..."
           title="Password"
+          type={isPasswordVisible ? "text" : "password"}
           required={false}
+          trailing={
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsPasswordVisible(!isPasswordVisible);
+              }}
+            >
+              {isPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+            </button>
+          }
         />
 
         <div className="my-2" />
@@ -128,12 +143,22 @@ const SignUp = () => {
           onChange={(e) =>
             setForm({ ...form, confirmPassword: e.target.value })
           }
-          type="password"
+          type={isConfirmPasswordVisible ? "text" : "password"}
           error={confirmPasswordError}
           helperText={confirmPasswordError ? "Passwords must match!" : ""}
           placeholder="Confirm your Password..."
           title="Confirm Password"
           required={false}
+          trailing={
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+              }}
+            >
+              {isConfirmPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+            </button>
+          }
         />
       </div>
 

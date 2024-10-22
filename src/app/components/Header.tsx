@@ -10,23 +10,19 @@ import Image from "next/image";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import {
-  UserStatus,
   data,
   incomingWallet,
   isAuth,
   isAuthOverlayOpen,
   isDrawerOpen,
-  settings,
   status,
   userWeb3Info,
   web3InfoLoading,
 } from "../store";
-import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import MobileDrawer from "./Profile/MobileDrawer";
 import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
-// import { pageCommunity } from "../store/community";
 import Tabs from "./Header/Tabs";
 import ProjectTabs from "./Header/ProjectTabs";
 import { incomingReferAddress } from "../store/signup";
@@ -50,14 +46,14 @@ const Header = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
   const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [userStatus] = useAtom(status);
-  // const [community] = useAtom(pageCommunity);
   const [currentUser, setCurrentUser] = useAtom(data);
-  const [isOnSettings, setIsOnSettings] = useAtom(settings);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const screenSize = useCheckDeviceScreenSize();
   const [badge, setBadge] = useState(0);
   const [notifications, setNotifications] = useState([]);
+
+  const [isLoadingLogout, setIsLoadingLogout] = useState(false);
 
   const [community] = useAtom(currentGroupCommunity);
 
@@ -77,9 +73,9 @@ const Header = () => {
 
     if (pathname.includes("create")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
-    } else if (pathname !== "/" || isOnSettings) {
+    } else if (pathname !== "/" || pathname.includes("settings")) {
       defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
-    } else if (pathname === "/" && !isOnSettings) {
+    } else if (pathname === "/" && !pathname.includes("settings")) {
       defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
     }
 
@@ -93,8 +89,12 @@ const Header = () => {
       router.replace("/login");
     }
 
+    if (result.data && pathname === "/") {
+      router.replace("/coins");
+    }
+
     setShowAuthOverlay(!result.data);
-    setIsUserAuthenticated(!result.data);
+    setIsUserAuthenticated(result.data);
   }, []);
 
   const getProfileInfo = async () => {
@@ -226,10 +226,21 @@ const Header = () => {
   }
 
   const resetNotification = async () => {
-    await axios.put("api/notifications/update", {
+    await axios.put("/api/notifications/update", {
       wallet: wallet?.publicKey.toBase58(),
     });
     setBadge(0);
+  };
+
+  const logout = async () => {
+    if (isLoadingLogout) return;
+
+    setIsLoadingLogout(true);
+    await axios.put("/api/logout");
+    setIsLoadingLogout(false);
+
+    setIsUserAuthenticated(false);
+    setShowAuthOverlay(true);
   };
 
   const isMobileScreen = screenSize < 1000;
@@ -314,6 +325,29 @@ const Header = () => {
               </div>
             )}
 
+            {!isMobileScreen && (
+              <button
+                className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-2"
+                disabled={isLoadingLogout}
+                onClick={() => {
+                  if (isUserAuthenticated) {
+                    logout();
+                    return;
+                  }
+
+                  router.push("/login");
+                }}
+              >
+                {isLoadingLogout ? (
+                  <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
+                ) : (
+                  <p className="text-base text-white font-bold settings-btn">
+                    {isUserAuthenticated ? "Logout" : "Log In/Sign Up"}
+                  </p>
+                )}
+              </button>
+            )}
+
             <WalletMultiButton
               startIcon={undefined}
               style={{
@@ -331,12 +365,13 @@ const Header = () => {
               </p>
             </WalletMultiButton>
 
-            {userStatus === UserStatus.fullAccount &&
-              !isMobileScreen &&
-              currentUser?.telegram?.id && (
+            {!isMobileScreen &&
+              currentUser?.telegram?.id &&
+              currentUser?.profilenft &&
+              isUserAuthenticated && (
                 <button
-                  className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-6"
-                  onClick={() => setIsOnSettings(true)}
+                  className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-2"
+                  onClick={() => router.push("/settings")}
                 >
                   <p className="text-base text-white font-bold settings-btn">
                     Settings
@@ -360,15 +395,6 @@ const Header = () => {
 
             <p className="text-base my-4">{community.description}</p>
           </div>
-        </div>
-      )}
-
-      {pathname === "/" && !isOnSettings && (
-        <div className="w-full flex flex-col justify-center items-center pb-4 my-16">
-          <h6>Go Deeper {currentUser?.profile.name}</h6>
-          <p className="text-base mt-4">
-            Welcome to Liquid Hearts Club, the privacy superdapp.
-          </p>
         </div>
       )}
     </header>

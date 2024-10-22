@@ -253,7 +253,7 @@ const Header = () => {
             <MobileDrawer />
           ) : (
             <div
-              className="mr-4"
+              className="flex justify-end w-[30%] mr-12"
               onClick={() => {
                 if (isUserAuthenticated) {
                   router.push("/coins");
@@ -269,7 +269,7 @@ const Header = () => {
 
           {!isMobileScreen && <Tabs />}
 
-          <div className="flex items-center">
+          <div className="flex items-center justify-end w-[30%]">
             {currentUser?.profilenft && (
               <div className="dropdown pr-6">
                 <a
@@ -327,7 +327,7 @@ const Header = () => {
 
             {!isMobileScreen && (
               <button
-                className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-2"
+                className="relative bg-[#03002B] px-4 py-3 rounded-xl"
                 disabled={isLoadingLogout}
                 onClick={() => {
                   if (isUserAuthenticated) {
@@ -341,7 +341,7 @@ const Header = () => {
                 {isLoadingLogout ? (
                   <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
                 ) : (
-                  <p className="text-base text-white font-bold settings-btn">
+                  <p className="md:text-base text-sm text-white font-bold settings-btn">
                     {isUserAuthenticated ? "Logout" : "Log In/Sign Up"}
                   </p>
                 )}
@@ -358,7 +358,7 @@ const Header = () => {
                 marginLeft: isMobileScreen ? "2rem" : "0.5rem",
               }}
             >
-              <p className="md:text-lg text-sm text-white">
+              <p className="md:text-base text-sm text-white">
                 {wallet?.publicKey
                   ? walletAddressShortener(wallet.publicKey.toString())
                   : "Connect Wallet"}
@@ -370,10 +370,10 @@ const Header = () => {
               currentUser?.profilenft &&
               isUserAuthenticated && (
                 <button
-                  className="relative bg-[#03002B] px-6 py-3 rounded-xl ml-2"
+                  className="relative bg-[#03002B] px-4 py-3 rounded-xl ml-2"
                   onClick={() => router.push("/settings")}
                 >
-                  <p className="text-base text-white font-bold settings-btn">
+                  <p className="md:text-base text-sm text-white font-bold settings-btn">
                     Settings
                   </p>
                 </button>

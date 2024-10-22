@@ -5,6 +5,8 @@ import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import EyeLineIcon from "@/assets/icons/EyeLineIcon";
+import EyeIcon from "@/assets/icons/EyeIcon";
 
 const Login = () => {
   const router = useRouter();
@@ -15,6 +17,8 @@ const Login = () => {
   const [error, setError] = React.useState("");
 
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await axios.get("/api/is-auth");
@@ -27,13 +31,14 @@ const Login = () => {
   const submit = React.useCallback(
     async (e: any) => {
       e.preventDefault();
+      setError("");
       setIsLoading(true);
       try {
         await axios.post("/api/login", {
           email,
           password,
         });
-        router.replace("/");
+        router.replace("/coins");
       } catch (err: any) {
         setError(
           err?.response?.data || "Failed to Login, please check support",
@@ -74,6 +79,8 @@ const Login = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           type="text"
+          error={error === "user"}
+          helperText={error === "user" ? "User does not exists" : ""}
           placeholder="Enter your email address..."
           title="Email address"
           required={false}
@@ -84,10 +91,22 @@ const Login = () => {
         <Input
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          type="password"
+          type={isPasswordVisible ? "text" : "password"}
           placeholder="Enter your password..."
           title="Password"
+          helperText={error === "password" ? "Incorrect password" : ""}
+          error={error === "password"}
           required={false}
+          trailing={
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsPasswordVisible(!isPasswordVisible);
+              }}
+            >
+              {isPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+            </button>
+          }
         />
       </div>
 

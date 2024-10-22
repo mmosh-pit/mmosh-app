@@ -12,6 +12,7 @@ type Props = {
   readonly?: boolean;
   onBlur?: () => void;
   error?: boolean;
+  trailing?: React.ReactNode;
 };
 
 const Input = ({
@@ -26,6 +27,7 @@ const Input = ({
   readonly,
   onChange,
   error,
+  trailing,
 }: Props) => {
   const getTextType = () => {
     if (textarea) {
@@ -41,15 +43,20 @@ const Input = ({
     }
 
     return (
-      <input
-        type={type}
-        value={value}
-        readOnly={readonly}
-        onChange={onChange}
-        onBlur={onBlur}
-        placeholder={placeholder}
-        className={`input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container ${error && "border-red-500"}`}
-      />
+      <label
+        className={`flex justify-between items-center input input-bordered text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container ${error && "border-red-500"}`}
+      >
+        <input
+          type={type}
+          value={value}
+          readOnly={readonly}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          className="grow bg-transparent"
+        />
+        {trailing ? trailing : <></>}
+      </label>
     );
   };
 

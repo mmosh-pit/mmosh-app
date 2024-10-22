@@ -294,9 +294,9 @@ const CreateProfile = () => {
               <Input
                 type="text"
                 title="Web Link"
-                required
-                placeholder="Web Link"
-                value={form.name}
+                required={false}
+                placeholder="https://your.domain"
+                value={form.link}
                 onChange={(e) => setForm({ ...form, link: e.target.value })}
               />
 

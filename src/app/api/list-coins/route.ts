@@ -52,6 +52,7 @@ export async function GET(req: NextRequest) {
 
   if (basesymbol !== "All") {
     if (filter.$and) {
+      filter.$and = [...filter.$and, { basesymbol: basesymbol }];
     } else {
       filter.$and = [{ basesymbol: basesymbol }];
     }

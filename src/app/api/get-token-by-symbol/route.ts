@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
 
-  const politicalCollection = db.collection("mmosh-app-project-tokens");
+  const politicalCollection = db.collection("mmosh-app-tokens");
 
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("symbol");

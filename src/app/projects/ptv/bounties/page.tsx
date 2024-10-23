@@ -321,14 +321,14 @@ const Page = () => {
             token: selectedToken.token
         })
         
-        // if(balance < donation) {
-        //     setMessage({
-        //         type: "warn",
-        //         message:
-        //           "Balance is not enough to process transaction",
-        //     });
-        //     return
-        // }
+        if(balance < donation) {
+            setMessage({
+                type: "warn",
+                message:
+                  "Balance is not enough to process transaction",
+            });
+            return
+        }
         setStep("two")
     }
 

@@ -238,7 +238,7 @@ The group will only available to your coin holders, and you can set the level. F
                         name={`radio-open-${index}`}
                       />
 
-                      <Radio
+                      {/*<Radio
                         title="Pass"
                         checked={group.privacy === "pass"}
                         onChoose={() => {
@@ -250,7 +250,7 @@ The group will only available to your coin holders, and you can set the level. F
                           });
                         }}
                         name={`radio-pass-${index}`}
-                      />
+                      />*/}
 
                       <Radio
                         title="Coin"

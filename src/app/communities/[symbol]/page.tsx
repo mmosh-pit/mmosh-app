@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { isDrawerOpen } from "@/app/store";
 import Button from "@/app/components/common/Button";
 import { currentGroupCommunity } from "@/app/store/community";
+import { Coin } from "@/app/models/coin";
 
 const Page = ({ params }: { params: { symbol: string } }) => {
   const router = useRouter();
@@ -15,6 +16,16 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   const [isDrawerShown] = useAtom(isDrawerOpen);
 
   const [community, setCommunity] = useAtom(currentGroupCommunity);
+
+  const [coin, setCoin] = React.useState<Coin | null>(null);
+
+  const fetchCoin = React.useCallback(async () => {
+    const result = await axios.get<Coin>(
+      `/api/get-token-by-symbol?symbol=${community?.coinSymbol}`,
+    );
+
+    setCoin(result.data);
+  }, []);
 
   const fetchCommunity = React.useCallback(async () => {
     const result = await axios.get(
@@ -27,6 +38,12 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   React.useEffect(() => {
     fetchCommunity();
   }, [params]);
+
+  React.useEffect(() => {
+    if (community) {
+      fetchCoin();
+    }
+  }, [community]);
 
   if (!community) return <div className="background-content" />;
 
@@ -71,40 +88,39 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             </div>
           </div>
 
-          <div className="flex">
-            <div className="flex flex-col">
-              <p className="font-bold text-base text-white">Community Pass</p>
+          {coin && (
+            <div className="flex">
+              <div className="flex flex-col">
+                <p className="font-bold text-base text-white">Community Coin</p>
 
-              <div className="relative w-[7vmax] h-[7vmax] mt-2">
-                <Image
-                  src={community?.coinSymbol}
-                  alt={`${community?.name ?? "Community"}'s image`}
-                  layout="fill"
-                  className="rounded-lg"
-                />
+                <div className="relative w-[7vmax] h-[7vmax] mt-2">
+                  <Image
+                    src={coin?.image!}
+                    alt={`${coin?.name ?? "Coin"}'s image`}
+                    layout="fill"
+                    className="rounded-lg"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col justify-between ml-6">
+                <div className="flex flex-col my-4">
+                  <p className="text-lg text-white font-bold">{coin?.name}</p>
+                  <p className="text-sm">{coin?.symbol.toUpperCase()}</p>
+                </div>
+
+                <div className="mt-4">
+                  <p className="text-sm">{coin?.desc}</p>
+                </div>
+
+                <a
+                  className="underline text-base font-normal text-[#FF00C7]"
+                  href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/coins/${coin?.symbol}`}
+                >
+                  {coin?.symbol}
+                </a>
               </div>
             </div>
-
-            <div className="flex flex-col self-center items-center ml-6">
-              <div className="flex flex-col my-2">
-                <Button
-                  size="large"
-                  title="Mint"
-                  action={() => {}}
-                  isLoading={false}
-                  isPrimary
-                />
-
-                <p className="text-sm text-center">
-                  Price 12 {community?.coinSymbol}
-                </p>
-                <p className="text-tiny text-center">
-                  Plus you will be charged a small amount of SOL in transaction
-                  fees.
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/*<div className="flex">
             <div className="flex flex-col">
@@ -157,8 +173,11 @@ const Page = ({ params }: { params: { symbol: string } }) => {
         </div>
 
         <div className="w-full px-4 py-2 grid gap-4 grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-24">
-          {community?.groups.map((group) => (
-            <div className="flex flex-col justify-between border-[1px] border-[#FFFFFF22] rounded-2xl py-4 backdrop-blur-[4px]">
+          {community?.groups.map((group, index) => (
+            <div
+              className="flex flex-col justify-between border-[1px] border-[#FFFFFF22] rounded-2xl py-4 backdrop-blur-[4px]"
+              key={`${group.handle}-${index}`}
+            >
               <div className="self-center">
                 <a
                   className="text-base text-white font-bold underline"

@@ -55,6 +55,8 @@ export async function GET(req: NextRequest) {
         },
       ],
     };
+  } else if (param == "" && basesymbol) {
+    query = { basesymbol: basesymbol };
   }
   const result = await collection.find(query).toArray();
   return NextResponse.json([...result], {

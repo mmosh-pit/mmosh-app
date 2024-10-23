@@ -1553,4 +1553,72 @@ export class Connectivity {
     }
 
   }
+
+  async sendShare(
+    token: any,
+    holdersfullInfo: any
+  ): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    try {
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+
+
+      const holdermap: any = [];
+      holdersfullInfo.reduce(function (res: any, value:any) {
+        if (!res[value.receiver]) {
+          res[value.receiver] = { receiver: value.receiver, value: 0 };
+          holdermap.push(res[value.receiver]);
+        }
+        res[value.receiver].value += value.value;
+        return res;
+      }, {});
+
+      for (let index = 0; index < holdermap.length; index++) {
+        const element = holdermap[index];
+        let createShare: any = await this.baseSpl.transfer_token_modified({
+          mint: new anchor.web3.PublicKey(token),
+          sender: user,
+          receiver: new anchor.web3.PublicKey(element.receiver),
+          init_if_needed: true,
+          amount: element.value,
+        });
+        for (let index = 0; index < createShare.length; index++) {
+          this.txis.push(createShare[index]);
+        }
+      }
+
+      const tx = new web3.Transaction().add(...this.txis);
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+
+      const feeEstimate = await this.getPriorityFeeEstimate(tx);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      tx.add(feeIns);
+
+      this.txis = [];
+      const signature = await this.provider.sendAndConfirm(tx as any);
+
+      return {
+        Ok: {
+          signature,
+          info: { profile: ""},
+        },
+      };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+  }
 }

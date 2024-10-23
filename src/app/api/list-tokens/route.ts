@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
   console.log("param", param)
   console.log("basesymbol", basesymbol)
   if (param != "" &&  basesymbol) {
-
     query = {
       $and: [
         {"basesymbol": basesymbol},
@@ -56,7 +55,8 @@ export async function GET(req: NextRequest) {
           },
         ],
     };
-  } else if (param == "" &&  !basesymbol) {
+  } else if (param == "" &&  basesymbol) {
+ 
      query =  {"basesymbol": basesymbol}
   }
   console.log("query", query)

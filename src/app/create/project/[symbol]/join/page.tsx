@@ -304,8 +304,8 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                   },
                 ],
             };
-
-            if(refer != "") {
+            console.log("refer ", refer)
+            if(refer != "" && refer != undefined) {
                 let parentPass:any = refer;
                 let parentInfo = await projectConn.metaplex.nfts().findByMint({
                   mintAddress:  new anchor.web3.PublicKey(parentPass)
@@ -393,33 +393,23 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
             })
 
             console.log("profile ", profile)
-            let res;
-            if(projectInfo.invitationPrice > 0) {
-                res = await projectConn.mintPass({
-                    name: body.name,
-                    symbol: body.symbol,
-                    uriHash: passMetaURI,
-                    activationToken: activationToken ? activationToken.toBase58() :  "",
-                    genesisProfile,
-                    commonLut: projectDetail.project.lut
-                },profile);
-            } else {
-                console.log("guest pass implementation")
-                const apiResult = await axios.post("/api/ptv/free",{
-                    name: body.name,
-                    symbol: body.symbol,
-                    url: passMetaURI,
-                    gensis: genesisProfile,
-                    lut: projectDetail.project.lut,
-                    receiver: wallet.publicKey.toBase58(),
-                    key: projectDetail.project.key
-                })
-                res = apiResult.data;
-            }
+
+            console.log("guest pass implementation")
+            const apiResult = await axios.post("/api/ptv/free",{
+                name: body.name,
+                symbol: body.symbol,
+                url: passMetaURI,
+                gensis: genesisProfile,
+                lut: projectDetail.project.lut,
+                receiver: wallet.publicKey.toBase58(),
+                key: projectDetail.project.key
+            })
+            let res = apiResult.data;
+       
 
 
 
-            if(res.Ok) {
+            if(res.status) {
                 if(type === "Blue") {
                     setPassBlueButtonStatus("Waiting for confirmations...")
                 } else {
@@ -505,7 +495,7 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                                                     <img src="https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
                                                 </div>
                                                 <p className="text-center text-white text-xs mt-2.5">Join the Blue Team and pump candidates who share your values and views</p>
-                                                <p className="text-center text-white text-xs mt-3.5">Pump the Vote Blue project pass is for progressive who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education and economic opportunities and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring theat every person has the opportunity to succeed and live a life of diginity, respect and personal freedom</p>
+                                                <p className="text-center text-white text-xs mt-3.5">Pump The Vote Blue project pass is for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.</p>
 
                                                 <div className="text-center">
                                                     {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
@@ -534,7 +524,7 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                                                     <img src="https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Red.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
                                                 </div>
                                                 <p className="text-center text-white text-xs mt-2.5">Join the Red Team and pump candidates who share your values and views</p>
-                                                <p className="text-center text-white text-xs mt-3.5">Pump the Vote Red project pass is for progressive who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education and economic opportunities and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring theat every person has the opportunity to succeed and live a life of diginity, respect and personal freedom</p>
+                                                <p className="text-center text-white text-xs mt-3.5">Pump The Vote Red is for conservatives united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability.</p>
                                                 <div className="text-center">
                                                     {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
                                                         <>
@@ -555,12 +545,6 @@ export default function ProjectView({ params }: { params: { symbol: string } }) 
                                     </div>
             
                                 </div>
-                            }
-                            {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
-                             <>
-                                <p className="text-small-font-size text-center leading-none my-2">Plus you will be charged a small amount of SOL in transaction fees.</p>
-                                <p className="text-para-font-size text-center leading-none">Current Balance {profileInfo?.solBalance.toFixed(2)} SOL</p>
-                             </>
                             }
                             </div>
                         </>

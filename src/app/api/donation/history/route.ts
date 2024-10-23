@@ -6,51 +6,43 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
+
+
   const { searchParams } = new URL(req.url);
-  const search = searchParams.get("searchText") as string;
-  let match = {$match: {}};
-  if(search) {
-     match = {
-      $match: {
-        $or: [
-          { name: { $regex: new RegExp(search, "ig") } },
-          { symbol: { $regex: new RegExp(search, "ig") } },
-          { desc: { $regex: new RegExp(search, "ig") } },
-        ],
-      },
-    }
+  const skip = searchParams.get("skip");
+  const wallet = searchParams.get("wallet");
+
+  if (!skip) {
+    return NextResponse.json("Invalid Payload", { status: 400 });
   }
+
+  let match = {$match: {wallet}};
 
   const result = await db
     .collection("mmosh-app-donation-history")
     .aggregate([
      match,
-      {
-        $lookup: {
-          from: "mmosh-app-profile",
-          localField: "wallet",
-          foreignField: "wallet",
-          as: "wallet",
-        },
-    },
      {
         $lookup: {
-            from: "mmosh-app-project-coins",
+            from: "mmosh-app-tokens",
             localField: "token",
-            foreignField: "key",
+            foreignField: "token",
             as: "token",
       },
     },
       {
         $project: {
           amount: 1,
-          wallet: "$wallet",
+          usdvalue: 1,
+          created_date: 1,
+          wallet: 1,
           token: "$token",
         },
       },
       {$sort: {created_date: -1}},
     ])
-    .limit(100)
+    .skip(Number(skip))
+    .limit(10)
     .toArray();
   return NextResponse.json(result, { status: 200 });
 }

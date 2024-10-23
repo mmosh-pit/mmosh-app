@@ -7,48 +7,14 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const search = searchParams.get("searchText") as string;
-  let match = {$match: {}};
-  if(search) {
-     match = {
-      $match: {
-        $or: [
-          { name: { $regex: new RegExp(search, "ig") } },
-          { symbol: { $regex: new RegExp(search, "ig") } },
-          { desc: { $regex: new RegExp(search, "ig") } },
-        ],
-      },
-    }
-  }
+  const wallet = searchParams.get("wallet");
 
   const result = await db
-    .collection("mmosh-app-donation-profile")
-    .aggregate([
-     match,
-      {
-        $lookup: {
-          from: "mmosh-app-profile",
-          localField: "wallet",
-          foreignField: "wallet",
-          as: "wallet",
-        },
-    },
-     {
-        $project: {
-          firstname: 1,
-          lastname: 1,
-          middlename: 1,
-          addressone: 1,
-          addresstwo: 1,
-          city:1,
-          state: 1,
-          zip: 1,
-          wallet: "$wallet"
-        },
-      },
-      {$sort: {created_date: -1}},
-    ])
-    .limit(100)
-    .toArray();
-  return NextResponse.json(result, { status: 200 });
+    .collection("mmosh-app-donation-profile").findOne({wallet});
+  if(result) {
+    return NextResponse.json({status: true, data: result}, { status: 200 });
+  } else {
+    return NextResponse.json({status: false}, { status: 200 });
+  }
+
 }

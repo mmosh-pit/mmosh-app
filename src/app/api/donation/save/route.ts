@@ -10,15 +10,15 @@ import axios from "axios";
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-donation-profile");
   const historyCollection = db.collection("mmosh-app-donation-history");
-  const { address, firstname, lastname, middlename, addressone, addresstwo, city, state, zip, amount, token } = await req.json();
+  const { wallet, firstname, lastname, middlename, addressone, addresstwo, city, state, zip, image, amount, usdvalue, token } = await req.json();
   const donationProfile = await collection.findOne({
-    wallet: address,
+    wallet: wallet,
   });
 
 
   if (!donationProfile) {
     await collection.insertOne({
-      wallet: address,
+      wallet: wallet,
       firstname,
       middlename,
       lastname,
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       city,
       state,
       zip,
+      image,
       created_date: new Date(),
       updated_date: new Date(),
     });
@@ -45,14 +46,16 @@ export async function POST(req: NextRequest) {
             city,
             state,
             zip,
+            image
           },
         },
       );
   }
 
   await historyCollection.insertOne({
-    wallet: address,
+    wallet: wallet,
     amount,
+    usdvalue,
     token,
     created_date: new Date(),
     updated_date: new Date(),

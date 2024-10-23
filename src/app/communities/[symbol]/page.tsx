@@ -77,6 +77,41 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
               <div className="relative w-[7vmax] h-[7vmax] mt-2">
                 <Image
+                  src={community?.coinSymbol}
+                  alt={`${community?.name ?? "Community"}'s image`}
+                  layout="fill"
+                  className="rounded-lg"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col self-center items-center ml-6">
+              <div className="flex flex-col my-2">
+                <Button
+                  size="large"
+                  title="Mint"
+                  action={() => {}}
+                  isLoading={false}
+                  isPrimary
+                />
+
+                <p className="text-sm text-center">
+                  Price 12 {community?.coinSymbol}
+                </p>
+                <p className="text-tiny text-center">
+                  Plus you will be charged a small amount of SOL in transaction
+                  fees.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/*<div className="flex">
+            <div className="flex flex-col">
+              <p className="font-bold text-base text-white">Community Pass</p>
+
+              <div className="relative w-[7vmax] h-[7vmax] mt-2">
+                <Image
                   src={community?.passImage!}
                   alt={`${community?.name ?? "Community"}'s image`}
                   layout="fill"
@@ -118,7 +153,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
                 </div>
               </div>
             </div>
-          </div>
+          </div>*/}
         </div>
 
         <div className="w-full px-4 py-2 grid gap-4 grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-24">
@@ -126,7 +161,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
             <div className="flex flex-col justify-between border-[1px] border-[#FFFFFF22] rounded-2xl py-4 backdrop-blur-[4px]">
               <div className="self-center">
                 <a
-                  className="text-base text-white font-bold"
+                  className="text-base text-white font-bold underline"
                   href={`https://t.me/${group.handle}`}
                   target="_blank"
                 >

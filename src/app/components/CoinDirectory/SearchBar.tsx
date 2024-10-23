@@ -3,12 +3,7 @@ import { useAtom } from "jotai";
 
 import SearchIcon from "@/assets/icons/SearchIcon";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
-import {
-  coinTextSearch,
-  pair,
-  selectedUSDCCoin,
-  selectedVolume,
-} from "@/app/store/coins";
+import { coinTextSearch, pair, selectedVolume } from "@/app/store/coins";
 import HomeMenuIcon from "@/assets/icons/HomeMenu";
 import { selectedCoinsMode } from "@/app/store/home";
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
@@ -36,7 +31,7 @@ const volumeOptions = [
   },
 ];
 
-const tradingPairOptions = ["All", "PTVB", "PTVR"];
+const tradingPairOptions = ["All", "MMOSH", "PTVB", "PTVR"];
 
 const SearchBar = () => {
   const isMobile = useCheckMobileScreen();

@@ -68,7 +68,7 @@ const Login = () => {
           />
         </div>
         <p className="text-base mt-4">
-          Intimate Conversations, Close-knit Communities
+          The Cutting Edge of Culture
         </p>
       </div>
 

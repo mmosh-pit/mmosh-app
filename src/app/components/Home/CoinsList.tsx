@@ -115,18 +115,6 @@ const CoinsList = () => {
 
   return (
     <div className="flex w-full flex-col" id="coins">
-      <div className="w-full flex justify-between px-4">
-        <p className="text-white text-base">
-          Coins <span className="text-gray-500"></span>
-        </p>
-
-        <a
-          className="underline text-white cursor-pointer text-base"
-          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/coins`}
-        >
-          Go to Coin Directory
-        </a>
-      </div>
       <div
         className="w-full px-4 py-2 grid grid-cols-auto xs:grid-cols-1 lg:grid-cols-3 md:grid-cols-2 xl:grid-cols-4 gap-8 mt-4"
         ref={containerRef}

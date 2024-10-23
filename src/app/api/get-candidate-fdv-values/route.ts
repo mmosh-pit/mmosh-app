@@ -3,7 +3,7 @@ import { Sort } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const collection = db.collection("mmosh-app-project-tokens");
+  const collection = db.collection("mmosh-app-tokens");
   const directoryCollection = db.collection("mmosh-app-project-directory");
 
   const { searchParams } = new URL(req.url);

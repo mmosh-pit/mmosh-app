@@ -2,7 +2,7 @@ import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const tokenCollection = db.collection("mmosh-app-project-tokens");
+  const tokenCollection = db.collection("mmosh-app-tokens");
   const {
     name,
     symbol,

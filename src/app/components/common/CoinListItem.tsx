@@ -30,7 +30,7 @@ const CoinListItem = (props: Props) => {
         />
       </div>
       <div className="flex flex-col">
-        <p className="text-sm text-white">{props.symbol}</p>
+        <p className="text-sm text-white">{props.symbol.toUpperCase()}</p>
         <p className="text-tiny">{props.name}</p>
       </div>
 

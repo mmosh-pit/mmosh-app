@@ -9,14 +9,14 @@ import Graphics from "@/app/components/Forge/CoinPage/Graphics";
 import Stats from "@/app/components/Forge/CoinPage/Stats";
 import TransactionsTable from "@/app/components/Forge/CoinPage/TransactionsTable";
 import * as anchor from "@coral-xyz/anchor";
-import { Connection } from "@solana/web3.js";
+import { Connection, Keypair } from "@solana/web3.js";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { web3Consts } from "@/anchor/web3Consts";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 
 const Page = ({ params }: { params: { symbol: string } }) => {
   const navigate = useRouter();
-  const wallet = useAnchorWallet();
   const rendered = React.useRef(false);
 
   const [baseCoin, setBaseCoin] = React.useState<Coin | null>(null);
@@ -28,9 +28,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   }, []);
 
   const getBaseToken = async (bondingKey: string) => {
-    if (!wallet) {
-      return;
-    }
+
+    let wallet = new NodeWallet(new Keypair());
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
 
     const env = new anchor.AnchorProvider(connection, wallet, {
@@ -84,10 +83,10 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   }, [params]);
 
   React.useEffect(() => {
-    if (wallet && coin) {
+    if (coin) {
       getBaseToken(coin?.bonding);
     }
-  }, [wallet, coin]);
+  }, [coin]);
 
   if (isLoading) {
     return (

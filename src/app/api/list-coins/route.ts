@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
-  const politicalMemecoinsColl = db.collection("mmosh-app-tokens");
   const directoryCollection = db.collection("mmosh-app-directory");
 
   const { searchParams } = new URL(req.url);
@@ -75,14 +74,7 @@ export async function GET(req: NextRequest) {
     .limit(limit)
     .toArray();
 
-  const politicalCoins = await politicalMemecoinsColl
-    .find(filter)
-    .sort(sortFilter)
-    .skip(offset)
-    .limit(limit)
-    .toArray();
-
-  const tokenResults = [...politicalCoins, ...otherCoins];
+  const tokenResults = [...otherCoins];
 
   const d = new Date();
   let filterDate;

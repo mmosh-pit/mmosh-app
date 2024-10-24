@@ -34,7 +34,8 @@ import { usstates } from "./usstates";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import { calculateTimeForTransactionTable } from "@/app/lib/dateUtils";
 import moment from "moment";
-
+import { incomingReferAddress } from "@/app/store/signup";
+import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 
 const defaultBaseToken = {
     name: "",
@@ -48,6 +49,9 @@ const defaultBaseToken = {
     decimals: 9,
     iscoin: false
   };
+
+  const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
+
   
 
 const Page = () => {
@@ -57,6 +61,7 @@ const Page = () => {
     const wallet = useAnchorWallet();
     const [projectLoading, setProjectLoading] = useState(true);
     const [projectDetail, setProjectDetail] = useState<any>(null)
+    const [profileInfo] = useAtom(userWeb3Info);
     const [projectInfo, setProjectInfo] = useState<any>({
         profiles: [],
         activationTokens: [],
@@ -107,6 +112,15 @@ const Page = () => {
     const [historyLoading, setHistoryLoading] = useState(true);
     const [historyPage, setHistoryPage] = useState(1);
     const [isHistoryPaging, setIsHistoryPaging] = useState(false);
+
+    const [passBlueSubmit, setPassBlueSubmit] = useState(false)
+    const [passBlueButtonStatus, setPassBlueButtonStatus] = useState("Mint")
+
+    const [passRedSubmit, setPassRedSubmit] = useState(false)
+    const [passRedButtonStatus, setPassRedButtonStatus] = useState("Mint")
+
+
+    const [refer] = useAtom(incomingReferAddress);
 
     const getProjectDetailFromAPI = async() => {
         try {
@@ -165,13 +179,6 @@ const Page = () => {
         }
     },[projectDetail])
 
-    React.useEffect(()=>{
-        if(!projectLoading) {
-            if(projectInfo.profiles.length == 0) {
-                navigate.push("/create/project/PTV/join");
-            }
-        }
-    },[projectLoading])
 
     React.useEffect(() => {
         getCoinsList();
@@ -455,13 +462,291 @@ const Page = () => {
             setHistoryLoading(false);
             setHistories([]);
         }
-      };
+    };
     
-      const nextHistoryPage = () => {
-        let currentPage = historyPage + 1;
-        setHistoryPage(currentPage);
-        listHistory(currentPage);
-      };
+    const nextHistoryPage = () => {
+    let currentPage = historyPage + 1;
+    setHistoryPage(currentPage);
+    listHistory(currentPage);
+    };
+
+    const getUserName = async (pubKey: any) => {
+        try {
+          const result = await axios.get(`/api/get-wallet-data?wallet=${pubKey}`);
+          if (result) {
+            if (result.data) {
+              if (result.data.profile) {
+                return result.data.profile.username;
+              }
+            }
+          }
+          return "";
+        } catch (error) {
+          return "";
+        }
+    };
+
+
+    const passAction = async (type:any) => {
+        if(!profileInfo) {
+            createMessage(
+                "Hey! We checked your wallet is not connected",
+                "warning-container",
+            );
+            return
+        }
+
+        if(!wallet) {
+            createMessage(
+                "Hey! We checked your wallet is not connected",
+                "warning-container",
+            );
+            return
+        }
+
+        if (profileInfo?.solBalance < 0) {
+            createMessage(
+              "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
+              "warn",
+            );
+            return;
+        }
+      
+        let tolBalance = profileInfo?.mmoshBalance;
+
+        if(tolBalance < (projectInfo.mintPrice / 1000_000_000)) {
+            createMessage(
+                "Hey! We checked your wallet and you don’t have enough usdc to mint. Get some MMOSH here and try again!",
+                "warn",
+            );
+            return
+        }
+       
+        try {
+            if(type === "Blue") {
+                setPassBlueSubmit(true);
+            } else {
+                setPassRedSubmit(true);
+            }
+      
+            const genesisProfile = projectDetail.project.key;
+            let activationToken;
+            if(projectInfo.activationTokens.length > 0) {
+                activationToken = new anchor.web3.PublicKey(projectInfo.activationTokens[0].activation);
+            }
+           
+            const env = new anchor.AnchorProvider(connection.connection, wallet, {
+              preflightCommitment: "processed",
+            });
+            let projectConn: ProjectConn = new ProjectConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.project.key));
+            if(type === "Blue") {
+                setPassBlueButtonStatus("Preparing Metadata...")
+            } else {
+                setPassRedButtonStatus("Preparing Metadata...")
+            }
+      
+
+            let name = "Pump The Vote Blue"
+            const body = {
+                name:  type === "Red" ? "Pump The Vote Red" : "Pump The Vote Blue",
+                symbol: type === "Red" ? "PTVR" : "PTVB",
+                description: type === "Red" ? "Pump The Vote is a PolitiFi project within the MMOSH ecosystem. The Pump The Vote Red project pass is for conservatives united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability." : "Pump The Vote is a PolitiFi project within the MMOSH ecosystem. The Pump The Vote Blue project pass is for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.",
+                image: type === "Blue" ? "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png" : "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Red.png",
+                enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL + "create/project/" + projectDetail.project.symbol,
+                family: "MMOSH",
+                collection: "MMOSH Pass Collection",
+                attributes: [
+                  {
+                    trait_type: "Project",
+                    value: projectDetail.project.key,
+                  },
+                  {
+                    trait_type: "Primitive",
+                    value:"Pass",
+                  },
+                  {
+                    trait_type: "Ecosystem",
+                    value:"MMOSH",
+                  },
+                  {
+                    trait_type: "Founder",
+                    value:"Moto",
+                  },
+                  {
+                    trait_type: "Party",
+                    value: type,
+                  },
+                  {
+                    trait_type: "Seniority",
+                    value: projectDetail.project.seniority + 1,
+                  },
+                  {
+                    trait_type: "Website",
+                    value:type === "Red" ? "https://www.pumpthevote.red" : "https://www.pumpthevote.blue",
+                  },
+                  {
+                    trait_type: "Telegram",
+                    value:projectDetail.project.telegram,
+                  },
+                  {
+                    trait_type: "X",
+                    value:projectDetail.project.twitter,
+                  },
+                ],
+            };
+            console.log("refer ", refer)
+            if(refer != "" && refer != undefined) {
+                let parentPass:any = refer;
+                let parentInfo = await projectConn.metaplex.nfts().findByMint({
+                  mintAddress:  new anchor.web3.PublicKey(parentPass)
+                })
+                body.attributes.push({
+                  trait_type: "USER.Parent",
+                  value: parentPass
+                });
+        
+                if(parentInfo.json?.attributes) {
+                    for (let index = 0; index < parentInfo.json?.attributes.length; index++) {
+                      const element = parentInfo.json?.attributes[index];
+                      if(element.trait_type === "USER.Parent") {
+                        body.attributes.push({
+                            trait_type: "USER.GrandParent",
+                            value: element.value
+                          });
+                      }
+                      if(element.trait_type === "USER.GrandParent") {
+                        body.attributes.push({
+                          trait_type: "USER.GreatGrandParent",
+                          value: element.value
+                        });
+                      }
+        
+                      if(element.trait_type === "USER.GreatGrandParent") {
+                        body.attributes.push({
+                          trait_type: "USER.GGreatGrandParent",
+                          value: element.value
+                        });
+                      }
+                    }
+                }
+            }
+        
+
+            // get originator name
+            if (projectInfo.profilelineage.originator.length > 0) {
+                let originator: any = await getUserName(projectInfo.profilelineage.originator);
+                if (originator != "") {
+                    body.attributes.push({
+                    trait_type: "Creator",
+                    value: originator,
+                    });
+                } else {
+                    body.attributes.push({
+                    trait_type: "Creator",
+                    value: projectInfo.profilelineage.originator,
+                    });
+                }
+                body.attributes.push({
+                    trait_type: "Creator_Profile",
+                    value: projectInfo.profilelineage.originatorprofile,
+                });
+            }
+
+            const passMetaURI: any = await pinFileToShadowDrive(body);
+            if (passMetaURI === "") {
+                if(type === "Blue") {
+                    setPassBlueSubmit(false);
+                } else {
+                    setPassRedSubmit(false);
+                }
+          
+                createMessage(
+                    "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
+                    "danger-container",
+                );
+                return;
+            }
+
+            if(type === "Blue") {
+                setPassBlueButtonStatus("Minting Pass...")
+            } else {
+                setPassRedButtonStatus("Minting Pass...")
+            }
+            
+            console.log("params", {
+                name: body.name,
+                symbol: body.symbol,
+                uriHash: passMetaURI,
+                activationToken: activationToken ? activationToken.toBase58() :  "",
+                genesisProfile: genesisProfile,
+                commonLut: projectDetail.project.lut
+            })
+
+
+            console.log("guest pass implementation")
+            const apiResult = await axios.post("/api/ptv/free",{
+                name: body.name,
+                symbol: body.symbol,
+                url: passMetaURI,
+                gensis: genesisProfile,
+                lut: projectDetail.project.lut,
+                receiver: wallet.publicKey.toBase58(),
+                key: projectDetail.project.key
+            })
+            let res = apiResult.data;
+       
+
+
+
+            if(res.status) {
+                if(type === "Blue") {
+                    setPassBlueButtonStatus("Waiting for confirmations...")
+                } else {
+                    setPassRedButtonStatus("Waiting for confirmations...")
+                }
+                
+                await delay(15000)
+                await axios.put("/api/project/update-seniority", {
+                    key: projectDetail.project.key,
+                });
+                createMessage(
+                    "Congrats! You have minted your Pass successfully.",
+                    "success-container",
+                );
+                await getProjectDetailFromAPI()
+                await getUserProfileInfo()
+            } else {
+                createMessage(
+                    "We’re sorry, there was an error while trying to mint your Pass. Check your wallet and try again.",
+                    "danger-container",
+                );
+            }
+            if(type === "Blue") {
+                setPassBlueSubmit(false)
+                setPassBlueButtonStatus("Mint")
+            } else {
+                setPassRedSubmit(false)
+                setPassRedButtonStatus("Mint")
+            }
+
+        } catch (error) {
+            console.log("error ", error)
+            createMessage(
+                "We’re sorry, there was an error while trying to mint your Pass. Check your wallet and try again.",
+                "danger-container",
+            );
+            if(type === "Blue") {
+                setPassBlueSubmit(false)
+                setPassBlueButtonStatus("Mint")
+            } else {
+                setPassRedSubmit(false)
+                setPassRedButtonStatus("Mint")
+            }
+        }
+    }
+
+
+    
     
     
 
@@ -513,8 +798,8 @@ const Page = () => {
                                             </div>
                                             </div>
                                             <div className="max-w-xl flex flex-col justify-center mx-auto">
-                                                <h2 className="text-center text-white font-goudy font-normal text-xl">Donate Memecoins to Pumb The Vote!</h2>  
-                                                <p className="text-center text-white text-xs">If you're a US citizen, you can donate political memecoins to Pumb The Vote's Super PAC and get out the vote for your candidates</p>
+                                                <h2 className="text-center text-white font-goudy font-normal text-xl">Donate Memecoins to Pump The Vote!</h2>  
+                                                <p className="text-center text-white text-xs">If you're a US citizen, you can donate political memecoins to Pump The Vote's Super PAC and get out the vote for your candidates</p>
                                                 {selectedToken.token != "" &&
                                                     <div className="flex justify-center mt-3.5">
                                                         <div className="mr-3.5">
@@ -583,6 +868,75 @@ const Page = () => {
                                                     <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white mx-auto" onClick={onNextAction}>Next</button>
                                                 </>
                                                 }
+                                            </div>
+                                        </>
+                                    }
+                                    {(!projectLoading && projectDetail && projectInfo.profiles.length == 0) &&
+                                        <>
+                                            <h2 className="text-center text-white font-goudy font-normal text-xl">Collect Bounties</h2>  
+                                            <p className="text-center text-white text-xs">Join Pump The Vote and collect bounties for every donor you bring to the party!</p>
+                                            <div className="pt-8 mt-5">
+                                            
+                                            {profileInfo  &&
+                                                <div className="flex gap-4 justify-center">
+                                                    <div className="w-80">
+                                                        <div>
+                                                            <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                                <div className="border-container rounded-md mt-2.5">
+                                                                    <img src="https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Blue.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
+                                                                </div>
+                                                                <p className="text-center text-white text-xs mt-2.5">Join the Blue Team and pump candidates who share your values and views</p>
+                                                                <p className="text-center text-white text-xs mt-3.5">Pump The Vote Blue project pass is for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.</p>
+
+                                                                <div className="text-center">
+                                                                    {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
+                                                                        <>
+                                                                            {!passBlueSubmit &&
+                                                                                <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5" onClick={()=>{passAction("Blue")}}>Free Mint</button></p>
+                                                                            }
+                                                                            {passBlueSubmit &&
+                                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5">{passBlueButtonStatus}</button>
+                                                                            }
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-2.5">
+                                                                                Mint a Blue Pass
+                                                                            </h5>  
+                                                                                                                
+                                                                        </>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="w-80">
+                                                        <div>
+                                                            <div className="rounded-md bg-black bg-opacity-[0.4] p-2.5">
+                                                                <div className="border-container rounded-md mt-2.5">
+                                                                    <img src="https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/Pump%20the%20Vote%20Square%20Icon%20Only%20Red.png" alt="project pass" className="w-full object-cover p-0.5 rounded-md"/>
+                                                                </div>
+                                                                <p className="text-center text-white text-xs mt-2.5">Join the Red Team and pump candidates who share your values and views</p>
+                                                                <p className="text-center text-white text-xs mt-3.5">Pump The Vote Red is for conservatives united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability.</p>
+                                                                <div className="text-center">
+                                                                    {projectInfo.profiles.length == 0 && (projectInfo.activationTokens.length > 0 || projectInfo.invitationPrice === 0) &&
+                                                                        <>
+                                                                            {!passRedSubmit &&
+                                                                                <p><button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5" onClick={()=>{passAction("Red")}}>Free Mint</button></p>
+                                                                            }
+                                                                            {passRedSubmit &&
+                                                                                <button className="btn-sm btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white rounded-md px-10 mt-3.5">{passRedButtonStatus}</button>
+                                                                            }
+                                                                            <h5 className="text-white font-goudy font-normal text-header-small-font-size flex justify-center mt-2.5 mb-2.5">
+                                                                                Mint a Red Pass
+                                                                            </h5>          
+                                                                        </>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                            
+                                                </div>
+                                            }
                                             </div>
                                         </>
                                     }

@@ -87,7 +87,7 @@ const ResetPassword = () => {
         <Input
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          type="password"
+          type={isPasswordVisible ? "text" : "password"}
           placeholder="Enter your new password..."
           title="New Password"
           required={false}
@@ -108,7 +108,7 @@ const ResetPassword = () => {
         <Input
           value={passwordConfirmation}
           onChange={(e) => setPasswordConfirmation(e.target.value)}
-          type="password"
+          type={isConfirmPasswordVisible ? "text" : "password"}
           placeholder="Confirm your Password"
           title="Confirm your Password"
           required={false}

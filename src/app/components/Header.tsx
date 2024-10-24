@@ -342,7 +342,7 @@ const Header = () => {
                   <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
                 ) : (
                   <p className="md:text-base text-sm text-white font-bold settings-btn">
-                    {isUserAuthenticated ? "Logout" : "Log In/Sign Up"}
+                    {isUserAuthenticated ? "Logout" : "Log In"}
                   </p>
                 )}
               </button>
@@ -365,19 +365,16 @@ const Header = () => {
               </p>
             </WalletMultiButton>
 
-            {!isMobileScreen &&
-              currentUser?.telegram?.id &&
-              currentUser?.profilenft &&
-              isUserAuthenticated && (
-                <button
-                  className="relative bg-[#03002B] px-4 py-3 rounded-xl ml-2"
-                  onClick={() => router.push("/settings")}
-                >
-                  <p className="md:text-base text-sm text-white font-bold settings-btn">
-                    Settings
-                  </p>
-                </button>
-              )}
+            {!isMobileScreen && isUserAuthenticated && (
+              <button
+                className="relative bg-[#03002B] px-4 py-3 rounded-xl ml-2"
+                onClick={() => router.push("/settings")}
+              >
+                <p className="md:text-base text-sm text-white font-bold settings-btn">
+                  Settings
+                </p>
+              </button>
+            )}
           </div>
         </div>
       </div>

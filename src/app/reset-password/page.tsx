@@ -5,6 +5,8 @@ import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import EyeIcon from "@/assets/icons/EyeIcon";
+import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 
 const ResetPassword = () => {
   const router = useRouter();
@@ -16,7 +18,13 @@ const ResetPassword = () => {
   const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    React.useState(false);
+
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const [error, setError] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await axios.get("/api/is-auth");
@@ -29,6 +37,7 @@ const ResetPassword = () => {
   const submit = React.useCallback(
     async (e: any) => {
       e.preventDefault();
+      setError(false);
 
       if (passwordConfirmation !== password) return;
 
@@ -39,7 +48,9 @@ const ResetPassword = () => {
           code: search,
         });
         router.replace("/login");
-      } catch (_) {}
+      } catch (_) {
+        setError(true);
+      }
 
       setIsLoading(false);
     },
@@ -67,9 +78,7 @@ const ResetPassword = () => {
             layout="fill"
           />
         </div>
-        <p className="text-base mt-4">
-          The Cutting Edge of Culture
-        </p>
+        <p className="text-base mt-4">The Cutting Edge of Culture</p>
       </div>
 
       <h6 className="my-4">Reset your Password</h6>
@@ -82,6 +91,16 @@ const ResetPassword = () => {
           placeholder="Enter your new password..."
           title="New Password"
           required={false}
+          trailing={
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsPasswordVisible(!isPasswordVisible);
+              }}
+            >
+              {isPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+            </button>
+          }
         />
 
         <div className="my-2" />
@@ -93,8 +112,24 @@ const ResetPassword = () => {
           placeholder="Confirm your Password"
           title="Confirm your Password"
           required={false}
+          trailing={
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+              }}
+            >
+              {isConfirmPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+            </button>
+          }
         />
       </div>
+
+      {error && (
+        <p className="text-base text-red-500">
+          Something went wrong, please try again.
+        </p>
+      )}
 
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button

@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
   await collection.updateOne(
     { email: existingData?.email },
     {
-      password: hashedPassword,
+      $set: {
+        password: hashedPassword,
+      },
     },
   );
 

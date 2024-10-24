@@ -4,8 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
 
-  const politicalCollection = db.collection("mmosh-app-tokens");
-
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("symbol");
 
@@ -20,15 +18,7 @@ export async function GET(req: NextRequest) {
   });
 
   if (!token) {
-    const newToken = await politicalCollection.findOne({
-      symbol: {
-        $regex: new RegExp(param, "ig"),
-      },
-    });
-
-    return NextResponse.json(newToken, {
-      status: 200,
-    });
+    return NextResponse.json("", { status: 400 });
   }
 
   return NextResponse.json(token, {

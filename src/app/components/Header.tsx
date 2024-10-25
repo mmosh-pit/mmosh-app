@@ -246,10 +246,10 @@ const Header = () => {
   React.useEffect(() => {
     async () => {
       if (wallet && isUserAuthenticated) {
-        await axios.post("/api/link-wallet", {
-          wallet: wallet.publicKey,
-          appWallet: 
-          });
+        // await axios.post("/api/link-wallet", {
+        //   wallet: wallet.publicKey,
+        //   appWallet:
+        //   });
       }
     };
   }, [wallet]);

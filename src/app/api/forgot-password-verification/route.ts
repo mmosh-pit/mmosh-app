@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   const msg = {
     to: data.email,
-    from: "admin@liquidhearts.app",
+    from: "support@liquidhearts.club",
     subject: "Forgot Password",
     html: `Hey there!<br /> Click the following link to reset your password!<br /> <a href="${link}" target="_blank">${link}</a>`,
   };

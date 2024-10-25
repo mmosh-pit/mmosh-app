@@ -243,6 +243,17 @@ const Header = () => {
     setShowAuthOverlay(true);
   };
 
+  React.useEffect(() => {
+    async () => {
+      if (wallet && isUserAuthenticated) {
+        await axios.post("/api/link-wallet", {
+          wallet: wallet.publicKey,
+          appWallet: 
+          });
+      }
+    };
+  }, [wallet]);
+
   const isMobileScreen = screenSize < 1000;
 
   return (

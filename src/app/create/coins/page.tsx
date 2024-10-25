@@ -58,6 +58,7 @@ const CreateCoin = () => {
   const [selectedCoin, setSelectedCoin] = React.useState<Coin>({
     name: "MMOSH: The Stoked Token",
     desc: "",
+    basesymbol: "",
     image:
       "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
     token: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
@@ -154,7 +155,6 @@ const CreateCoin = () => {
       return false;
     }
 
-
     return true;
   };
 
@@ -223,7 +223,7 @@ const CreateCoin = () => {
         position,
         candidate: form.candidate!,
       };
-      
+
       const res = await createProjectCoin(params);
       setIsLoading(false);
       setMessage({ type: res.type, message: res.message });
@@ -330,20 +330,18 @@ const CreateCoin = () => {
 
   const getTokenBalance = async () => {
     // if (selectedCoin.token === web3Consts.oposToken.toBase58()) {
-      const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-      );
-      const env = new anchor.AnchorProvider(connection, wallet!, {
-        preflightCommitment: "processed",
-      });
-      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-      const balance = await userConn.getUserBalance({
-        address: wallet?.publicKey,
-        token: selectedCoin.token,
-        decimals: selectedCoin.decimals,
-      });
-      setSelectedCoinBalance(balance ? balance : 0);
+    const balance = await userConn.getUserBalance({
+      address: wallet?.publicKey,
+      token: selectedCoin.token,
+      decimals: selectedCoin.decimals,
+    });
+    setSelectedCoinBalance(balance ? balance : 0);
     // } else {
     //   let type = "Red";
     //   if (selectedCoin.token === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
@@ -370,7 +368,7 @@ const CreateCoin = () => {
       (isLinear && form.initialPrice === 0) ||
       (isExponential && form.multiplier === 0)
     ) {
-      setDatasets([]);
+      setDatasets([{ data: 0 }, { data: 0 }, { data: 0 }]);
       return;
     }
 
@@ -626,7 +624,7 @@ const CreateCoin = () => {
                     className="pt-2"
                   >
                     <AreaChart
-                      width={150}
+                      width={120}
                       height={200}
                       data={datasets}
                       margin={{
@@ -673,6 +671,16 @@ const CreateCoin = () => {
                       />
                     </AreaChart>
                   </ResponsiveContainer>
+
+                  <div className="flex justify-center items-end">
+                    {form.bonding === "linear" ? (
+                      <p className="text-sm text-white">X=4(Y)</p>
+                    ) : (
+                      <p className="text-sm text-white">
+                        Y=X<sup>2</sup>
+                      </p>
+                    )}
+                  </div>
 
                   {form.bonding === "linear" ? (
                     <div className="flex flex-col justify-center items-center lg:ml-4 md:ml-2 sm:ml-1">
@@ -776,9 +784,8 @@ const CreateCoin = () => {
 
           <p className="text-xs text-center max-w-[80%] md:max-w-[60%] lg:max-w-[35%] xl:max-w-[20%]">
             Enter the amount of your initial Swap. You will swap {form.supply}{" "}
-            {form.bonding.toUpperCase()}
-            for {form.supply} {form.symbol} and you will be charged a small
-            amount of SOL in transaction fees
+            {selectedCoin.symbol.toUpperCase()} for {form.supply} {form.symbol}{" "}
+            and you will be charged a small amount of SOL in transaction fees
           </p>
         </div>
       </div>

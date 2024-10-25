@@ -7,5 +7,6 @@ export type Coin = {
   bonding: string;
   creatorUsername: string;
   decimals?: number;
+  basesymbol: string;
   iscoin?: boolean;
 };

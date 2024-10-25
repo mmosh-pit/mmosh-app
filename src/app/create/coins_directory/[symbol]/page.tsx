@@ -58,6 +58,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       desc: mintDetail.json?.description ? mintDetail.json?.description : "",
       token: mintDetail.address.toBase58(),
       image: mintDetail.json?.image ? mintDetail.json?.image : "",
+      basesymbol: "",
       bonding: coin?.bonding ? coin.bonding : "",
       creatorUsername: coin?.creatorUsername ? coin.creatorUsername : "",
     });
@@ -121,7 +122,10 @@ const Page = ({ params }: { params: { symbol: string } }) => {
 
               <div className="flex items-center">
                 <div className="relative">
-                  <img src={coin.image} className="w-10 h-10 rounded-full object-cover"/>
+                  <img
+                    src={coin.image}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
                 </div>
 
                 <h6 className="mx-2">{coin.name}</h6>

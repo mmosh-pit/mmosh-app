@@ -54,7 +54,13 @@ const Projects = () => {
           <h2 className="text-center text-white font-goudy font-normal text-xl">
             Project Directory
           </h2>
-          <div className="relative mt-10 flex search-container">
+
+          <p className="text-base">
+            Soon, you’ll be able to build, launch and scale your own projects
+            without writing any code! For now, check out Pump The Vote, our demo
+            project.
+          </p>
+          {/*<div className="relative mt-10 flex search-container">
             <button className="btn btn-circle bg-search h-10 w-10 min-h-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -77,13 +83,14 @@ const Projects = () => {
               className="input bg-transparent px-2.5 h-10 border-0 focus:outline-0 text-xs w-52"
               onChange={(event) => searchProject(event.target.value)}
             />
-          </div>
+          </div>*/}
         </div>
       </div>
       <div className="container mx-auto pb-12">
         {projects.length > 0 && !projectLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {projects.map((projectItem: any, index: any) => (
+          <div className="w-full justify-center items-start">
+            {/*<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">*/}
+            {projects.map((projectItem: any) => (
               <ProjectCard
                 data={projectItem}
                 onClick={() => {

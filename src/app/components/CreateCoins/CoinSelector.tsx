@@ -124,6 +124,7 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
                   <CoinListItem
                     token={coin.token}
                     bonding={coin.bonding}
+                    basesymbol=""
                     name={coin.name}
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}

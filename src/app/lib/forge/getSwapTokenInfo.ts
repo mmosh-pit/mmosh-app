@@ -24,7 +24,7 @@ export const getSwapTokenInfo = async (
     token.token,
     9,
     web3Consts.oposToken.toBase58(),
-    9
+    9,
   );
 
   const target = {
@@ -34,6 +34,7 @@ export const getSwapTokenInfo = async (
     image: token.image,
     creatorUsername: token.creatorUsername,
     desc: token.desc,
+    basesymbol: "",
     balance: balances.base,
     bonding: token.bonding,
     value: 0,
@@ -47,6 +48,7 @@ export const getSwapTokenInfo = async (
       "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
     creatorUsername: "",
     desc: "",
+    basesymbol: "",
     balance: balances.target,
     bonding: token.bonding,
     value: 0,

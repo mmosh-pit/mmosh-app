@@ -39,12 +39,8 @@ const CoinSelect = ({
   const [currentUser] = useAtom(data);
 
   const getCoinsList = async () => {
-    let newCoinList = [];
+    const newCoinList: Coin[] = [];
     const listResult = await axios.get(`/api/list-tokens?search=${searchText}`);
-
-    const politicalResult = await axios.get(
-      `/api/list-political-tokens?search=${searchText}`,
-    );
 
     const recentCoins = await axios.get(
       `/api/get-recent-coins?profile=${currentUser?.profilenft}`,
@@ -72,16 +68,16 @@ const CoinSelect = ({
       }
     }
 
-    if (searchText) {
-      let finalList = newCoinList.filter((item: any) =>
-        item.name.toLowerCase().includes(searchText.toLowerCase()),
-      );
-      setCoinsList(finalList);
-    } else {
-      setCoinsList(newCoinList);
-    }
+    const regularCoins = newCoinList.filter(
+      (coin) => !["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
+    );
+    const politicalMemecoins = newCoinList.filter((coin) =>
+      ["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
+    );
 
-    setPoliticalCoins(politicalResult.data);
+    setCoinsList(regularCoins);
+    setPoliticalCoins(politicalMemecoins);
+
     setRecentCoins(recentCoins.data);
   };
 
@@ -169,6 +165,7 @@ const CoinSelect = ({
                   onTokenSelect={handleTokenSelect}
                   symbol={coin.symbol}
                   desc={coin.desc}
+                  basesymbol={coin.basesymbol}
                   name={coin.name}
                   image={coin.image}
                   token={coin.token}
@@ -196,6 +193,7 @@ const CoinSelect = ({
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
+                    basesymbol=""
                     image={coin.image}
                     iscoin={coin.iscoin}
                     decimals={coin.decimals}
@@ -220,6 +218,7 @@ const CoinSelect = ({
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
+                    basesymbol=""
                     image={coin.image}
                     iscoin={coin.iscoin}
                     decimals={coin.decimals}
@@ -244,6 +243,7 @@ const CoinSelect = ({
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
+                    basesymbol={coin.basesymbol}
                     image={coin.image}
                     iscoin={coin.iscoin}
                     decimals={coin.decimals}
@@ -269,6 +269,7 @@ const CoinSelect = ({
                     name={coin.name}
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
+                    basesymbol={coin.basesymbol}
                     symbol={coin.symbol}
                     image={coin.image}
                     iscoin={coin.iscoin}

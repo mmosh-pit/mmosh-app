@@ -40,14 +40,21 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
 
   const getCoinsList = React.useCallback(async () => {
     fetching.current = true;
-    const listResult = await axios.get(`/api/list-tokens?search=${searchText}`);
-
-    const politicalResult = await axios.get(
-      `/api/list-political-tokens?search=${searchText}`,
+    const listResult = await axios.get<Coin[]>(
+      `/api/list-tokens?search=${searchText}`,
     );
 
-    setCoinsList(listResult.data);
-    setPoliticalCoins(politicalResult.data);
+    const coinList = listResult.data;
+
+    const regularCoins = coinList.filter(
+      (coin) => !["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
+    );
+    const politicalMemecoins = coinList.filter((coin) =>
+      ["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
+    );
+
+    setCoinsList(regularCoins);
+    setPoliticalCoins(politicalMemecoins);
     fetching.current = false;
   }, [searchText]);
 
@@ -125,6 +132,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                   bonding={coin.bonding}
                   desc={coin.desc}
                   creatorUsername={coin.creatorUsername}
+                  basesymbol={coin.basesymbol}
                   name={coin.name}
                   symbol={coin.symbol}
                   image={coin.image}
@@ -150,6 +158,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
+                    basesymbol=""
                     image={coin.image}
                     iscoin={coin.iscoin}
                     decimals={coin.decimals}
@@ -173,6 +182,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                     name={coin.name}
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
+                    basesymbol=""
                     symbol={coin.symbol}
                     image={coin.image}
                     iscoin={coin.iscoin}
@@ -194,6 +204,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                   <CoinListItem
                     token={coin.token}
                     bonding={coin.bonding}
+                    basesymbol={coin.basesymbol}
                     name={coin.name}
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
@@ -223,6 +234,7 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                     name={coin.name}
                     desc={coin.desc}
                     creatorUsername={coin.creatorUsername}
+                    basesymbol={coin.basesymbol}
                     symbol={coin.symbol}
                     image={coin.image}
                     iscoin={coin.iscoin}

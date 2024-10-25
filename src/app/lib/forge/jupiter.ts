@@ -128,6 +128,7 @@ export const networkCoins = [
     image:
       "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
     balance: 0,
+    basesymbol: "",
     bonding: "",
     value: 0,
     desc: "",
@@ -142,6 +143,7 @@ export const networkCoins = [
     image:
       "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
     balance: 0,
+    basesymbol: "",
     bonding: "",
     value: 0,
     desc: "",
@@ -156,6 +158,7 @@ export const networkCoins = [
     image:
       "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
     balance: 0,
+    basesymbol: "",
     bonding: "",
     value: 0,
     desc: "",
@@ -173,6 +176,7 @@ export const communityCoins = [
     image:
       "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
     balance: 0,
+    basesymbol: "",
     bonding: "",
     value: 0,
     desc: "",
@@ -187,6 +191,7 @@ export const communityCoins = [
     image:
       "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
     balance: 0,
+    basesymbol: "",
     bonding: "",
     value: 0,
     desc: "",

@@ -11,7 +11,6 @@ import TransactionsTable from "@/app/components/Forge/CoinPage/TransactionsTable
 import * as anchor from "@coral-xyz/anchor";
 import { Connection, Keypair } from "@solana/web3.js";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { web3Consts } from "@/anchor/web3Consts";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 
@@ -28,7 +27,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   }, []);
 
   const getBaseToken = async (bondingKey: string) => {
-
     let wallet = new NodeWallet(new Keypair());
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
 
@@ -54,6 +52,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       name: mintDetail.name,
       symbol: mintDetail.symbol,
       desc: mintDetail.json?.description ? mintDetail.json?.description : "",
+      basesymbol: "",
       token: mintDetail.address.toBase58(),
       image: mintDetail.json?.image ? mintDetail.json?.image : "",
       bonding: coin?.bonding ? coin.bonding : "",

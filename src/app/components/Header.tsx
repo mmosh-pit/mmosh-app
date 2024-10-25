@@ -367,7 +367,7 @@ const Header = () => {
 
             {!isMobileScreen && isUserAuthenticated && (
               <button
-                className="relative bg-[#03002B] px-4 py-3 rounded-xl ml-2"
+                className="relative bg-[#03002B] px-2 py-3 rounded-xl ml-2"
                 onClick={() => router.push("/settings")}
               >
                 <p className="md:text-base text-sm text-white font-bold settings-btn">

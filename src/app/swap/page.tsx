@@ -30,6 +30,7 @@ const defaultBaseToken = {
   name: "",
   symbol: "Select",
   token: "",
+  basesymbol: "",
   image: "",
   balance: 0,
   bonding: "",

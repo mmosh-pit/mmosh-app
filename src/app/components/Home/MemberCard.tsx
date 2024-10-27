@@ -22,7 +22,7 @@ import { useAtom } from "jotai";
 type Props = {
   user: User;
   wallet?: AnchorWallet;
-  currentuser: User;
+  currentuser?: User;
   connection: Connection;
 };
 
@@ -62,7 +62,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
     // 4 - linked
     // 5 - has invite no connection
 
-    if (!wallet) {
+    if (!wallet || !currentuser) {
       return;
     }
 
@@ -274,6 +274,9 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
   };
 
   const connectionAction = async (type: any) => {
+    if (!currentuser) {
+      return;
+    }
     try {
       setReqestLoader(true);
       if (type === "accept") {

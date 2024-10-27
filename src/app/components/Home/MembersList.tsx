@@ -8,6 +8,7 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { textSearch } from "@/app/store/membership";
 import UserCard from "../UserCard";
 import { data } from "@/app/store";
+import MemberCard from "./MemberCard";
 
 const MembersList = () => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
@@ -90,7 +91,7 @@ const MembersList = () => {
           // <MemberCard
           //   user={user}
           //   wallet={wallet}
-          //   currentuser={props.currentuser}
+          //   currentuser={currentUser || undefined}
           //   connection={connection.connection}
           // />
           <UserCard

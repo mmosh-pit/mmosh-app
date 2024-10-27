@@ -618,68 +618,69 @@ const CreateCoin = () => {
                 </div>
 
                 <div className="flex w-full h-full mt-4">
-                  <ResponsiveContainer
-                    width="85%"
-                    height={200}
-                    className="pt-2"
-                  >
-                    <AreaChart
-                      width={120}
+                  <div className="flex w-full h-full flex-col">
+                    <ResponsiveContainer
+                      width="100%"
                       height={200}
-                      data={datasets}
-                      margin={{
-                        top: 30,
-                      }}
+                      className="pt-2"
                     >
-                      <defs>
-                        <linearGradient
-                          id="gradient"
-                          x1="1"
-                          y1="1"
-                          x2="2"
-                          y2="2"
-                        >
-                          <stop
-                            offset="100%"
-                            stopColor="#0765FF"
-                            stopOpacity={0.6}
-                          />
-                          <stop
-                            offset="30%"
-                            stopColor="#09073A"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <XAxis tickFormatter={tickXFormat} tickLine={false} />
-                      <YAxis
-                        width={5}
-                        tick={false}
-                        tickLine={false}
-                        label={{
-                          value: "Price = Y",
-                          position: "top",
-                          offset: 5,
-                          dx: 30,
+                      <AreaChart
+                        width={120}
+                        height={200}
+                        data={datasets}
+                        margin={{
+                          top: 30,
                         }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="data"
-                        stroke="#0047FF"
-                        fill="url(#gradient)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-
-                  <div className="flex justify-center items-end">
-                    {form.bonding === "linear" ? (
-                      <p className="text-sm text-white">X=4(Y)</p>
-                    ) : (
-                      <p className="text-sm text-white">
-                        Y=X<sup>2</sup>
-                      </p>
-                    )}
+                      >
+                        <defs>
+                          <linearGradient
+                            id="gradient"
+                            x1="1"
+                            y1="1"
+                            x2="2"
+                            y2="2"
+                          >
+                            <stop
+                              offset="100%"
+                              stopColor="#0765FF"
+                              stopOpacity={0.6}
+                            />
+                            <stop
+                              offset="30%"
+                              stopColor="#09073A"
+                              stopOpacity={0}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <XAxis tickFormatter={tickXFormat} tickLine={false} />
+                        <YAxis
+                          width={5}
+                          tick={false}
+                          tickLine={false}
+                          label={{
+                            value: "Price = Y",
+                            position: "top",
+                            offset: 5,
+                            dx: 30,
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="data"
+                          stroke="#0047FF"
+                          fill="url(#gradient)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                    <div className="flex justify-center items-end self-end">
+                      {form.bonding === "linear" ? (
+                        <p className="text-lg text-white">X=4(Y)</p>
+                      ) : (
+                        <p className="text-lg text-white">
+                          Y=X<sup>2</sup>
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   {form.bonding === "linear" ? (

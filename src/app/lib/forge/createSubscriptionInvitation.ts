@@ -20,7 +20,9 @@ export const createSubscriptionInvitation = async ({
 }: CreateInvitationParams): Promise<MintResultMessage> => {
   const profileLineage = profileInfo?.profileLineage;
 
-  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+    confirmTransactionInitialTimeout: 120000
+  });
   const env = new anchor.AnchorProvider(connection, wallet, {
     preflightCommitment: "processed",
   });

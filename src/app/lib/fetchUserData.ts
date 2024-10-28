@@ -7,7 +7,9 @@ import { AnchorWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 
 export async function fetchUserData(wallet: AnchorWallet) {
-  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+    confirmTransactionInitialTimeout: 120000
+  });
   const env = new anchor.AnchorProvider(connection, wallet, {
     preflightCommitment: "processed",
   });

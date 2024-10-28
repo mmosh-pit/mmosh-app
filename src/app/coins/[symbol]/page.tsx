@@ -30,7 +30,9 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   const getBaseToken = async (bondingKey: string) => {
 
     let wallet = new NodeWallet(new Keypair());
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000
+    });
 
     const env = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: "processed",

@@ -42,7 +42,9 @@ export async function POST(req: NextRequest) {
         throw 'Invalid "account" provided';
       }
       let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-      let connection = new Connection(rpcUrl)
+      let connection = new Connection(rpcUrl, {
+        confirmTransactionInitialTimeout: 120000
+      })
       let wallet = new NodeWallet(new Keypair());
       const env = new anchor.AnchorProvider(connection, wallet, {
         preflightCommitment: "processed",
@@ -175,7 +177,9 @@ export async function POST(req: NextRequest) {
       let referer = projectInfo.project.key
 
       let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-      let connection = new Connection(rpcUrl)
+      let connection = new Connection(rpcUrl, {
+        confirmTransactionInitialTimeout: 120000
+      })
       let wallet = new NodeWallet(new Keypair());
       const env = new anchor.AnchorProvider(connection, wallet, {
         preflightCommitment: "processed",

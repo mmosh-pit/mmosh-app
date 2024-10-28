@@ -333,7 +333,9 @@ const CreateCoin = () => {
   const getTokenBalance = async () => {
     // if (selectedCoin.token === web3Consts.oposToken.toBase58()) {
       const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+          confirmTransactionInitialTimeout: 120000
+        }
       );
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",

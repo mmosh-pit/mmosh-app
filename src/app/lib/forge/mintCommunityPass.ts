@@ -18,7 +18,9 @@ export const mintCommunityPass = async ({
   profile,
 }: MintCommunityPassParams): Promise<MintResultMessage> => {
   try {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000
+    });
 
     const genesisProfile = community.project;
     let activationToken;

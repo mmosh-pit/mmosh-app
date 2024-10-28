@@ -152,7 +152,9 @@ import { pinFileToShadowDrive, pinFileToShadowDriveBackend } from "@/app/lib/upl
       }
       console.log("test4")
       let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-      let connection = new Connection(rpcUrl)
+      let connection = new Connection(rpcUrl, {
+        confirmTransactionInitialTimeout: 120000
+      })
       let wallet = new NodeWallet(new Keypair());
       const env = new anchor.AnchorProvider(connection, wallet, {
         preflightCommitment: "processed",
@@ -347,7 +349,9 @@ import { pinFileToShadowDrive, pinFileToShadowDriveBackend } from "@/app/lib/upl
       let referer = requestUrl.searchParams.get("referer") ? requestUrl.searchParams.get("referer") : projectInfo.project.key
 
       let rpcUrl:any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-      let connection = new Connection(rpcUrl)
+      let connection = new Connection(rpcUrl, {
+        confirmTransactionInitialTimeout: 120000
+      })
       let wallet = new NodeWallet(new Keypair());
       const env = new anchor.AnchorProvider(connection, wallet, {
         preflightCommitment: "processed",

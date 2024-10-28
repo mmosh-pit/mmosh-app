@@ -212,7 +212,9 @@ const EditProfile = () => {
       console.log("submitForm 4")
       currentUser.profile = profile
 
-      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+        confirmTransactionInitialTimeout: 120000
+      });
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",
       });
@@ -287,7 +289,9 @@ const EditProfile = () => {
     }, [wallet]);
 
     const getProfileInfo = async () => {
-      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+        confirmTransactionInitialTimeout: 120000
+      });
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",
       });

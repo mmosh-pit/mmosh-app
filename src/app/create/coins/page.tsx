@@ -206,6 +206,8 @@ const CreateCoin = () => {
         position = form.position;
       }
 
+      console.log("current user", currentUser);
+
       const params = {
         name: form.name,
         description: form.description,
@@ -214,7 +216,7 @@ const CreateCoin = () => {
         imageFile: image,
         wallet: wallet!,
         setMintingStatus,
-        username: currentUser!.profile.username,
+        username: currentUser ? currentUser!.profile.username : "",
         multiplier: 1,
         initialPrice: 0,
         supply: form.supply,
@@ -330,7 +332,9 @@ const CreateCoin = () => {
 
   const getTokenBalance = async () => {
     // if (selectedCoin.token === web3Consts.oposToken.toBase58()) {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
     const env = new anchor.AnchorProvider(connection, wallet!, {
       preflightCommitment: "processed",
     });

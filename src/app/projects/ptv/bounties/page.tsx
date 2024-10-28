@@ -40,11 +40,11 @@ const defaultBaseToken = {
   name: "",
   symbol: "Select",
   token: "",
-  basesymbol: "",
   image:
     "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
   bonding: "",
   desc: "",
+  basesymbol: "",
   creatorUsername: "",
   decimals: 9,
   iscoin: false,
@@ -117,8 +117,6 @@ const Page = () => {
 
   const [passRedSubmit, setPassRedSubmit] = useState(false);
   const [passRedButtonStatus, setPassRedButtonStatus] = useState("Mint");
-
-  const [refer] = useAtom(incomingReferAddress);
 
   const getProjectDetailFromAPI = async () => {
     try {
@@ -345,7 +343,7 @@ const Page = () => {
     anchor.setProvider(env);
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
     const balance = await userConn.getUserBalance({
-      address: wallet,
+      address: wallet.publicKey,
       token: selectedToken.token,
     });
 
@@ -426,6 +424,7 @@ const Page = () => {
 
       const res = await createLineageShare();
       if (!res) {
+        console.log("res ", res);
         createMessage("Error on donation", "error");
         setIsLoading(false);
         return;
@@ -629,7 +628,8 @@ const Page = () => {
           },
         ],
       };
-      console.log("refer ", refer);
+
+      let refer = localStorage.getItem("refer");
       if (refer != "" && refer != undefined) {
         let parentPass: any = refer;
         let parentInfo = await projectConn.metaplex.nfts().findByMint({

@@ -12,7 +12,9 @@ export const getSwapPrices = async (
   wallet: AnchorWallet,
   isBase: boolean,
 ) => {
-  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+    confirmTransactionInitialTimeout: 120000
+  });
 
   const env = new anchor.AnchorProvider(connection, wallet, {
     preflightCommitment: "processed",
@@ -96,7 +98,9 @@ export const getSwapPricesForJup = async (
   targetToken: SwapCoin,
   wallet: AnchorWallet,
 ) => {
-  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+    confirmTransactionInitialTimeout: 120000
+  });
 
   const env = new anchor.AnchorProvider(connection, wallet, {
     preflightCommitment: "processed",

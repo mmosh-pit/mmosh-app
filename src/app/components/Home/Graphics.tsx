@@ -98,16 +98,16 @@ const Graphics = () => {
       </div>
 
       {!isMobile && (
-        <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
-          <TVL symbol={selectedCoinDirectory}/>
+        <div className="w-full">
+          {/* <TVL symbol={selectedCoinDirectory}/>
 
-          <Volume withFilters />
+          <Volume withFilters /> */}
 
           <Price symbol={selectedCoinDirectory}/>
         </div>
       )}
 
-      {isMobile && (
+      {/* {isMobile && (
         <div className="w-full flex flex-col">
           <div className="w-full flex flex-col">
             <div className="w-full flex">
@@ -150,7 +150,7 @@ const Graphics = () => {
 
           {renderGraphicComponent()}
         </div>
-      )}
+      )} */}
     </>
   );
 };

@@ -3,8 +3,8 @@ import { selectedDirectory } from "@/app/store/home";
 import axios from "axios";
 import { useAtom } from "jotai";
 import * as React from "react";
-
-import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
+import Chart from "react-apexcharts";
+import DateTypeSelector from "../common/DateTypeSelector";
 
 type Props = {
   symbol: string;
@@ -15,55 +15,297 @@ type Props = {
 const Price = ({ height, symbol }: Props) => {
   // const [data, setData] = React.useState([]);
   const [selectedCoinDirectory] = useAtom(selectedDirectory);
-  const [price, setPrice] = React.useState(0)
-  const [data, setData] = React.useState<{ uv: number; pv: number; amt: number; name: string }[]>([])
+  const [price, setPrice] = React.useState(0.0003184)
+  const [data, setData] = React.useState<any>([{
+    data: [{
+        x: new Date(1538778600000),
+        y: [0.000329, 0.000350, 0.000323, 0.000333]
+      },
+      {
+        x: new Date(1538780400000),
+        y: [0.000332, 0.000343, 0.000320, 0.000330]
+      },
+      {
+        x: new Date(1538782200000),
+        y: [0.000330, 0.000348, 0.000323, 0.000335]
+      },
+      {
+        x: new Date(1538784000000),
+        y: [0.000335, 0.000351, 0.000329, 0.000338]
+      },
+      {
+        x: new Date(1538785800000),
+        y: [0.000338, 0.000340, 0.000320, 0.000324]
+      },
+      {
+        x: new Date(1538787600000),
+        y: [0.000324, 0.000336, 0.000321, 0.000324]
+      },
+      {
+        x: new Date(1538789400000),
+        y: [0.000324, 0.000332, 0.000317, 0.000326]
+      },
+      {
+        x: new Date(1538791200000),
+        y: [0.000327, 0.000327, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538793000000),
+        y: [0.000305, 0.000308, 0.000303, 0.000304]
+      },
+      {
+        x: new Date(1538794800000),
+        y: [0.000304, 0.000314, 0.000302, 0.000308]
+      },
+      {
+        x: new Date(1538796600000),
+        y: [0.000308, 0.000310, 0.000301, 0.000308]
+      },
+      {
+        x: new Date(1538798400000),
+        y: [0.000308, 0.000318, 0.000308, 0.000312]
+      },
+      {
+        x: new Date(1538800200000),
+        y: [0.000312, 0.000315, 0.000305, 0.000312]
+      },
+      {
+        x: new Date(1538802000000),
+        y: [0.000312, 0.000324, 0.000308, 0.000322]
+      },
+      {
+        x: new Date(1538803800000),
+        y: [0.000323, 0.000323, 0.000315, 0.000315]
+      },
+      {
+        x: new Date(1538805600000),
+        y: [0.000318, 0.000318, 0.000310, 0.000310]
+      },
+      {
+        x: new Date(1538807400000),
+        y: [0.000311, 0.000322, 0.000310, 0.000314]
+      },
+      {
+        x: new Date(1538809200000),
+        y: [0.000314, 0.000326, 0.000313, 0.000323]
+      },
+      {
+        x: new Date(1538811000000),
+        y: [0.000323, 0.000327, 0.000318, 0.000320]
+      },
+      {
+        x: new Date(1538812800000),
+        y: [0.000319, 0.000320, 0.000310, 0.000315]
+      },
+      {
+        x: new Date(1538814600000),
+        y: [0.000315, 0.000317, 0.000310, 0.000315]
+      },
+      {
+        x: new Date(1538816400000),
+        y: [0.000315, 0.000321, 0.000308, 0.000320]
+      },
+      {
+        x: new Date(1538818200000),
+        y: [0.000319, 0.000325, 0.000314, 0.000320]
+      },
+      {
+        x: new Date(1538820000000),
+        y: [0.000320, 0.000334, 0.000317, 0.000324]
+      },
+      {
+        x: new Date(1538821800000),
+        y: [0.000325, 0.000326, 0.000311, 0.000317]
+      },
+      {
+        x: new Date(1538823600000),
+        y: [0.000319, 0.000325, 0.000395, 0.000398]
+      },
+      {
+        x: new Date(1538825400000),
+        y: [0.000398, 0.000398, 0.000370, 0.000387]
+      },
+      {
+        x: new Date(1538827200000),
+        y: [0.000388, 0.000300, 0.000380, 0.000393]
+      },
+      {
+        x: new Date(1538829000000),
+        y: [0.000393, 0.000398, 0.000385, 0.000387]
+      },
+      {
+        x: new Date(1538830800000),
+        y: [0.000387, 0.000392, 0.000367, 0.000378]
+      },
+      {
+        x: new Date(1538832600000),
+        y: [0.000378, 0.000381, 0.000367, 0.000379]
+      },
+      {
+        x: new Date(1538834400000),
+        y: [0.000379, 0.000380, 0.00030, 0.000375]
+      },
+      {
+        x: new Date(1538836200000),
+        y: [0.000375, 0.000389, 0.000371, 0.000388]
+      },
+      {
+        x: new Date(1538838000000),
+        y: [0.000388, 0.000394, 0.000377, 0.000389]
+      },
+      {
+        x: new Date(1538839800000),
+        y: [0.000389, 0.000398, 0.000389, 0.000396]
+      },
+      {
+        x: new Date(1538841600000),
+        y: [0.000397, 0.000300, 0.000388, 0.000396]
+      },
+      {
+        x: new Date(1538843400000),
+        y: [0.000398, 0.000300, 0.000388, 0.000395]
+      },
+      {
+        x: new Date(1538845200000),
+        y: [0.000395, 0.000302, 0.000388, 0.000302]
+      },
+      {
+        x: new Date(1538847000000),
+        y: [0.000302, 0.000307, 0.000396, 0.000399]
+      },
+      {
+        x: new Date(1538848800000),
+        y: [0.000300, 0.000301, 0.000390, 0.000391]
+      },
+      {
+        x: new Date(1538850600000),
+        y: [0.000391, 0.000303, 0.000391, 0.000391]
+      },
+      {
+        x: new Date(1538852400000),
+        y: [0.000391, 0.000301, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538854200000),
+        y: [0.000303, 0.000303, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538856000000),
+        y: [60.000303, 0.000304, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538857800000),
+        y: [0.000303, 0.000304, 0.000303, 0.000300]
+      },
+      {
+        x: new Date(1538859600000),
+        y: [0.000301, 0.000303, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538861400000),
+        y: [0.000303, 0.000304, 0.000390, 0.000302]
+      },
+      {
+        x: new Date(1538863200000),
+        y: [0.000302, 0.000306, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538866000000),
+        y: [0.000303, 0.000303, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538866800000),
+        y: [0.000303, 0.000303, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538868600000),
+        y: [0.000303, 0.000303, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538870400000),
+        y: [0.000303, 0.000301, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538872200000),
+        y: [0.000398, 0.000305, 0.000396, 0.000300]
+      },
+      {
+        x: new Date(1538874000000),
+        y: [0.000300, 0.000305, 0.000303, 0.000393]
+      },
+      {
+        x: new Date(1538875800000),
+        y: [0.000393, 0.000305, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538877600000),
+        y: [0.000303, 0.000304, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538879400000),
+        y: [0.000304, 0.000304, 0.000300, 0.000303]
+      },
+      {
+        x: new Date(1538881200000),
+        y: [0.000303, 0.000303, 0.000303, 0.000303]
+      },
+      {
+        x: new Date(1538883000000),
+        y: [0.000303, 0.000305, 0.000300, 0.000304]
+      },
+      {
+        x: new Date(1538884800000),
+        y: [0.000304, 0.000306, 0.000304, 0.000306]
+      },
+    ]
+  }])
+  const [type, setType] = React.useState("day")
+
+  const [options, setOptions] = React.useState<any>({
+    chart: {
+      type: 'candlestick',
+      height: height || 300
+    },
+    xaxis: {
+      type: 'datetime'
+    },
+    yaxis: {
+      tooltip: {
+        enabled: true
+      }
+    },
+    tooltip: {
+      enabled: false
+    }
+  })
 
   const getPricesFromAPI = async () => {
     try {
       let priceResult = await axios.get(
-        `/api/project/token-detail?symbol=${symbol}`,
+        `/api/token/price/token-detail?symbol=${symbol}`,
       );
       console.log("priceResult.data ", priceResult.data);
-      if (priceResult?.data?.prices) {
+      if (priceResult.data?.prices) {
         const newData = [];
         for (let index = 0; index < priceResult.data.prices.length; index++) {
-          const d = new Date();
-          let filterDate;
-          filterDate = new Date(d.setDate(d.getDate() - index));
           const element = priceResult.data.prices[index];
-          newData.push({ uv: Math.abs(element), pv: Math.abs(element), amt: Math.abs(element), name:filterDate.toLocaleString("en-us", {
-            month: "short",
-            day: "numeric",
-          })});
+          newData.push({
+            x: new Date(element.x),
+            y: element.y,
+          });
         }
-        setData(newData.reverse());
-        setPrice(priceResult.data.pricepercentage);
+
+        setPrice(priceResult.data.price);
       }
     } catch (error) {
-      resetGraph();
       console.error(error);
     }
   };
 
-  const resetGraph = () => {
-    const newData = [];
-    for (let index = 0; index < 7; index++) {
-      const d = new Date();
-      let filterDate;
-      filterDate = new Date(d.setDate(d.getDate() - index));
-      newData.push({ amt:0, pv:0, uv:0, name: filterDate.toLocaleString("en-us", {
-        month: "short",
-        day: "numeric",
-      })});
-    }
 
-    setData(newData.reverse());
-    setPrice(0);
-  };
 
   React.useEffect(() => {
-    resetGraph();
-    getPricesFromAPI();
+    // getPricesFromAPI();
   }, [selectedCoinDirectory]);
 
   React.useEffect(() => {
@@ -73,34 +315,18 @@ const Price = ({ height, symbol }: Props) => {
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
-      <div className="flex flex-col ml-6 mt-4">
-        <p className="text-sm">{symbol} Price</p>
-        <h6>USDC {price}</h6>
+      <div className="w-full flex justify-between px-4 pt-4">
+        <div className="flex flex-col">
+          <p className="text-sm">{symbol} Price</p>
+          <h6>USDC {price}</h6>
+        </div>
+        <DateTypeSelector type={type} setType={setType} />
       </div>
-      <ResponsiveContainer width="100%" height={height || 200}>
-        <AreaChart
-          width={500}
-          height={height || 200}
-          data={data}
-          margin={{
-            top: 10,
-          }}
-        >
-          <defs>
-            <linearGradient id="gradient-price" x1="0" y1="0" x2="0" y2="2">
-              <stop offset="0%" stopColor="#C900B3" stopOpacity={0.8} />
-              <stop offset="75%" stopColor="#C900B3" stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="name" tickLine={false} axisLine={false} />
-          <Area
-            type="monotone"
-            dataKey="pv"
-            stroke="#C900B3"
-            fill="url(#gradient-price)"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+
+      <Chart options={options} series={data} type="candlestick" height={height || 300} />
+
+
+
     </div>
   );
 };

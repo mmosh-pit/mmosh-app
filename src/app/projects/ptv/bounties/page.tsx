@@ -44,7 +44,6 @@ const defaultBaseToken = {
     "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
   bonding: "",
   desc: "",
-  basesymbol: "",
   creatorUsername: "",
   decimals: 9,
   iscoin: false,
@@ -284,11 +283,11 @@ const Page = () => {
     if (lineage === "USER.Parent") {
       return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.4); // 40%
     } else if (lineage === "USER.GrandParent") {
-      return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.2); // 20%
+      return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.25); // 25%
     } else if (lineage === "USER.GreatGrandParent") {
-      return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.1); // 10%
+      return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.2); // 20%
     } else {
-      return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.1); // 10%
+      return Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS * 0.15); // 15%
     }
   };
 
@@ -406,6 +405,14 @@ const Page = () => {
         imageUri = await pinImageToShadowDrive(image);
       }
 
+      const res = await createLineageShare();
+      if (!res) {
+        console.log("res ", res);
+        createMessage("Error on donation", "error");
+        setIsLoading(false);
+        return;
+      }
+
       const result = await axios.post("/api/donation/save", {
         wallet: wallet?.publicKey.toBase58(),
         firstname: form.firstName,
@@ -422,13 +429,6 @@ const Page = () => {
         token: selectedToken.token,
       });
 
-      const res = await createLineageShare();
-      if (!res) {
-        console.log("res ", res);
-        createMessage("Error on donation", "error");
-        setIsLoading(false);
-        return;
-      }
       setSelectedToken(defaultBaseToken);
       setStep("one");
       createMessage("", "error");
@@ -858,12 +858,22 @@ const Page = () => {
                                   className="border border-white border-opacity-20 cursor-pointer justify-between flex p-2.5 rounded-md"
                                   onClick={() => {
                                     copyToClipboard(
-                                      "https://t.me/liquidheartsbot?start=liquidheartsbot",
+                                      "https://t.me/liquidheartsbot?start=" +
+                                        projectInfo.profiles[0].address,
                                     );
                                   }}
                                 >
                                   <p className="text-center text-white text-xs">
-                                    https://t.me/liquidheartsbot?start=liquidheartsbot
+                                    {"https://t.me/liquidheartsbot?start=" +
+                                      projectInfo.profiles[0].address.substring(
+                                        0,
+                                        5,
+                                      ) +
+                                      "..." +
+                                      projectInfo.profiles[0].address.substring(
+                                        projectInfo.profiles[0].address.length -
+                                          5,
+                                      )}
                                   </p>
                                   <CopyIcon />
                                 </div>
@@ -1171,7 +1181,6 @@ const Page = () => {
                               bonding={coin.bonding}
                               name={coin.name}
                               desc={coin.desc}
-                              basesymbol={coin.basesymbol}
                               creatorUsername={coin.creatorUsername}
                               symbol={coin.symbol}
                               image={coin.image}

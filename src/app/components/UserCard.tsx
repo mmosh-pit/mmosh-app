@@ -401,7 +401,7 @@ const UserCard = ({ user, wallet, currentuser, connection }: Props) => {
         </div>
 
         <div className="my-4">
-          <p className="text-white text-base h-12 text-ellipsis">
+          <p className="text-white text-base h-12 text-ellipsis overflow-hidden">
             {user.profile.bio}
           </p>
           <a

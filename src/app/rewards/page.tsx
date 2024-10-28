@@ -77,7 +77,9 @@ const ClaimPage = () => {
         return;
       }
       const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+          confirmTransactionInitialTimeout: 120000
+        }
       );
 
       const env = new anchor.AnchorProvider(connection, wallet, {
@@ -182,7 +184,9 @@ const ClaimPage = () => {
 
       if (result.data.status) {
         const connection = new Connection(
-          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+            confirmTransactionInitialTimeout: 120000
+          }
         );
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",

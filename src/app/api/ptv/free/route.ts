@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
     let ptvOwner = Keypair.fromSecretKey(private_arrray);
 
     let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-    let connection = new Connection(rpcUrl);
+    let connection = new Connection(rpcUrl, {
+      confirmTransactionInitialTimeout: 120000
+    });
     let wallet = new NodeWallet(ptvOwner);
 
     console.log("wallet.publicKey.toBase58() ", wallet.publicKey.toBase58());

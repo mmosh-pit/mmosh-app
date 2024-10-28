@@ -16,7 +16,9 @@ export const createGenesisInvitation = async ({
   name,
   pronouns,
 }: CreateInvitationParams): Promise<MintResultMessage> => {
-  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+    confirmTransactionInitialTimeout: 120000
+  });
 
   const firstTime = profileInfo.firstTimeInvitation;
 

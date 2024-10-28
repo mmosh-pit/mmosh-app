@@ -156,7 +156,9 @@ const rewardByType = (lineage: String) => {
 
 const getNFTDetails = async (pass: anchor.web3.PublicKey, lineage: string) => {
   let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-  let connection = new Connection(rpcUrl);
+  let connection = new Connection(rpcUrl, {
+    confirmTransactionInitialTimeout: 120000
+  });
 
   let wallet = new NodeWallet(new Keypair());
   const env = new anchor.AnchorProvider(connection, wallet, {

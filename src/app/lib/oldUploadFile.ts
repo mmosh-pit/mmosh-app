@@ -16,7 +16,9 @@ export const oldUploadFile = async (jsonData: any) => {
     );
     const keypair = Keypair.fromSecretKey(private_arrray);
     const drive = await new ShdwDrive(
-      new Connection(Config.mainRpcURL),
+      new Connection(Config.mainRpcURL, {
+        confirmTransactionInitialTimeout: 120000
+      }),
       new NodeWallet(keypair),
     ).init();
 

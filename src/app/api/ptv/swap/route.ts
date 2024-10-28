@@ -74,7 +74,9 @@ export async function POST(req: NextRequest) {
         let ptvOwner = Keypair.fromSecretKey(private_arrray)
 
         let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-        let connection = new Connection(rpcUrl);
+        let connection = new Connection(rpcUrl, {
+            confirmTransactionInitialTimeout: 120000
+          });
         let wallet = new NodeWallet(ptvOwner);
         const env = new anchor.AnchorProvider(connection, wallet, {
         preflightCommitment: "processed",
@@ -171,7 +173,9 @@ const convertUTCDateToLocalDate = (date: any) => {
 
 const calculatePriorityFee = async (ixs: any, mintKp: any, userConn: UserConn) => {
     let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-    let connection = new Connection(rpcUrl);
+    let connection = new Connection(rpcUrl, {
+        confirmTransactionInitialTimeout: 120000
+      });
     const blockhash = (await connection.getLatestBlockhash()).blockhash;
     const message = new anchor.web3.TransactionMessage({
         payerKey: userConn.provider.publicKey,

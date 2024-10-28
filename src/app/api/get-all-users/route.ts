@@ -48,9 +48,9 @@ export async function GET(req: NextRequest) {
         royalty: { $ifNull: ["$royalty", 0] },
         profilenft: { $ifNull: ["$profilenft", null] },
       },
-      sort: { "profile.seniority": -1, profilenft: -1 },
+      sort: { "profile.seniority": 1 },
       skip: Number(skip),
-      limit: 10,
+      limit: 15,
     })
     .toArray();
 

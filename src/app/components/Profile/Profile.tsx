@@ -89,7 +89,7 @@ const Profile = ({ username }: { username: any }) => {
     setLhcWallet(result.data?.addressPublicKey);
   }, [userData]);
 
-  const isMyProfile = wallet?.publicKey?.toString() === userData?.wallet;
+  const isMyProfile = currentUser?.profilenft === userData?.profilenft;
 
   const copyToClipboard = React.useCallback(
     async (text: string, textNumber: number) => {

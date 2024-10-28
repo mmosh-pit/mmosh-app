@@ -44,6 +44,7 @@ const defaultBaseToken = {
     "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
   bonding: "",
   desc: "",
+  basesymbol: "",
   creatorUsername: "",
   decimals: 9,
   iscoin: false,
@@ -1180,6 +1181,7 @@ const Page = () => {
                               token={coin.token}
                               bonding={coin.bonding}
                               name={coin.name}
+                              basesymbol={coin.basesymbol}
                               desc={coin.desc}
                               creatorUsername={coin.creatorUsername}
                               symbol={coin.symbol}

@@ -431,7 +431,7 @@ const Profile = ({ username }: { username: any }) => {
                   {currentUser && (
                     <>
                       {wallet &&
-                        wallet.publicKey.toBase58() != userData.wallet &&
+                        !isMyProfile &&
                         currentUser.profilenft &&
                         !loader && (
                           <>
@@ -475,7 +475,7 @@ const Profile = ({ username }: { username: any }) => {
                           </>
                         )}
                       {wallet &&
-                        wallet.publicKey.toBase58() == userData.wallet &&
+                        isMyProfile &&
                         currentUser.profilenft &&
                         !loader && (
                           <>

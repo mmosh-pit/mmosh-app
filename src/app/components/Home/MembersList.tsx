@@ -31,7 +31,7 @@ const MembersList = () => {
     ) {
       fetching.current = true;
       setIsLoading(true);
-      let url = `/api/get-all-users?skip=${currentPage * 10}&searchText=${searchText}`;
+      let url = `/api/get-all-users?skip=${currentPage * 15}&searchText=${searchText}`;
       if (wallet) {
         url = url + "&requester=" + wallet.publicKey.toBase58();
       }

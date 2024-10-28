@@ -61,6 +61,7 @@ const Header = () => {
 
   React.useEffect(() => {
     if (param) {
+      localStorage.setItem("refer",param)
       setReferAddress(param);
     } else {
       setReferAddress(process.env.NEXT_PUBLIC_DEFAULT_REFER_ADDRESS!);

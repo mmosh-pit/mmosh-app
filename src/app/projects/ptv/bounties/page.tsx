@@ -119,9 +119,6 @@ const Page = () => {
     const [passRedSubmit, setPassRedSubmit] = useState(false)
     const [passRedButtonStatus, setPassRedButtonStatus] = useState("Mint")
 
-
-    const [refer] = useAtom(incomingReferAddress);
-
     const getProjectDetailFromAPI = async() => {
         try {
             let listResult = await axios.get(`/api/project/detail?symbol=PTV`);
@@ -324,7 +321,7 @@ const Page = () => {
         anchor.setProvider(env);
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
         const balance = await userConn.getUserBalance({
-            address: wallet,
+            address: wallet.publicKey,
             token: selectedToken.token
         })
         
@@ -409,6 +406,7 @@ const Page = () => {
 
             const res = await createLineageShare();
             if(!res) {
+                console.log("res ", res)
                 createMessage("Error on donation", "error");
                 setIsLoading(false)
                 return
@@ -594,7 +592,8 @@ const Page = () => {
                   },
                 ],
             };
-            console.log("refer ", refer)
+
+            let refer = localStorage.getItem("refer")
             if(refer != "" && refer != undefined) {
                 let parentPass:any = refer;
                 let parentInfo = await projectConn.metaplex.nfts().findByMint({
@@ -681,7 +680,7 @@ const Page = () => {
                 genesisProfile: genesisProfile,
                 commonLut: projectDetail.project.lut
             })
-
+            
 
             console.log("guest pass implementation")
             const apiResult = await axios.post("/api/ptv/free",{

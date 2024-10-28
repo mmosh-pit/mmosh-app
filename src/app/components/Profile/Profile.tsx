@@ -403,7 +403,7 @@ const Profile = ({ username }: { username: any }) => {
         <div className={`flex-1`}>
           <p className="text-lg text-white font-bold font-goudy">
             {isMyProfile
-              ? "My MMOSH Account"
+              ? "My LHC Account"
               : `${userData?.profile?.name}'s Hideout`}
           </p>
           <div
@@ -531,9 +531,9 @@ const Profile = ({ username }: { username: any }) => {
                 <div className="flex items-center mt-4">
                   <a
                     className="text-base font-white underline"
-                    href={`https://mmosh.app/${userData?.profile?.username}`}
+                    href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${userData?.profile?.username}`}
                   >
-                    {`mmosh.app/${userData?.profile?.username}`}
+                    {`liquidhearts.app/${userData?.profile?.username}`}
                   </a>
 
                   {!isMobile && (

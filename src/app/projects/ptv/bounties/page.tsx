@@ -264,11 +264,11 @@ const Page = () => {
         if (lineage === "USER.Parent") {
           return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.4); // 40%
         } else if (lineage === "USER.GrandParent") {
-          return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.2); // 20%
+          return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.25); // 25%
         } else if (lineage === "USER.GreatGrandParent") {
-          return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.1); // 10%
+          return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.20); // 20%
         } else {
-          return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.1); // 10%
+          return Math.ceil((donation * web3Consts.LAMPORTS_PER_OPOS) * 0.15); // 15%
         }
       };
 
@@ -388,21 +388,7 @@ const Page = () => {
                 imageUri = await pinImageToShadowDrive(image);
             }
             
-            const result = await axios.post("/api/donation/save",{
-               wallet: wallet?.publicKey.toBase58(),
-               firstname: form.firstName,
-               middlename: form.middleName,
-               lastname: form.lastName,
-               addressone: form.addressOne,
-               addresstwo: form.addressTwo,
-               city: form.city,
-               state: form.state,
-               zip: form.zip,
-               amount: donation,
-               image: imageUri,
-               usdvalue: donation * usdPrice,
-               token: selectedToken.token
-            })
+
 
             const res = await createLineageShare();
             if(!res) {
@@ -411,6 +397,23 @@ const Page = () => {
                 setIsLoading(false)
                 return
             }
+
+            const result = await axios.post("/api/donation/save",{
+                wallet: wallet?.publicKey.toBase58(),
+                firstname: form.firstName,
+                middlename: form.middleName,
+                lastname: form.lastName,
+                addressone: form.addressOne,
+                addresstwo: form.addressTwo,
+                city: form.city,
+                state: form.state,
+                zip: form.zip,
+                amount: donation,
+                image: imageUri,
+                usdvalue: donation * usdPrice,
+                token: selectedToken.token
+            })
+
             setSelectedToken(defaultBaseToken)
             setStep("one")
             createMessage("", "error");
@@ -789,8 +792,8 @@ const Page = () => {
                                                 </div>
                                                 <div className="copy-container mt-5">
                                                     <p className="text-left text-white text-xs">Telegram bot</p>
-                                                    <div className="border border-white border-opacity-20 cursor-pointer justify-between flex p-2.5 rounded-md" onClick={()=>{copyToClipboard("https://t.me/liquidheartsbot?start=liquidheartsbot")}}>
-                                                        <p className="text-center text-white text-xs">https://t.me/liquidheartsbot?start=liquidheartsbot</p>
+                                                    <div className="border border-white border-opacity-20 cursor-pointer justify-between flex p-2.5 rounded-md" onClick={()=>{copyToClipboard("https://t.me/liquidheartsbot?start="+projectInfo.profiles[0].address)}}>
+                                                        <p className="text-center text-white text-xs">{"https://t.me/liquidheartsbot?start="+projectInfo.profiles[0].address.substring(0, 5) +"..."+ projectInfo.profiles[0].address.substring(projectInfo.profiles[0].address.length-5)}</p>
                                                         <CopyIcon />
                                                     </div>
                                                 </div>

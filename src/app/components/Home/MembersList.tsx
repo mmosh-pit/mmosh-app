@@ -8,7 +8,6 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { textSearch } from "@/app/store/membership";
 import UserCard from "../UserCard";
 import { data } from "@/app/store";
-import MemberCard from "./MemberCard";
 
 const MembersList = () => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
@@ -46,7 +45,12 @@ const MembersList = () => {
         return;
       }
 
-      setUsers(result.data.users);
+      if (currentPage === 0) {
+        setUsers(result.data.users);
+      } else {
+        setUsers((prev) => [...prev, ...result.data.users]);
+      }
+
       allUsers.current = result.data.users;
       setIsLoading(false);
       fetching.current = false;

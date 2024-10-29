@@ -236,6 +236,7 @@ const Page = () => {
     });
 
     let holdersfullInfo = [];
+    let totalValue = 0;
     if (tokenInfo.json?.attributes) {
       for (let index = 0; index < tokenInfo.json?.attributes.length; index++) {
         const element = tokenInfo.json?.attributes[index];
@@ -251,6 +252,9 @@ const Page = () => {
               new anchor.web3.PublicKey(mintAddress),
             )
           ).profileHolder.toBase58();
+
+          let value = getShare(element.trait_type);
+          totalValue = totalValue + value;
           holdersfullInfo.push({
             receiver,
             value: getShare(element.trait_type),
@@ -261,6 +265,12 @@ const Page = () => {
 
     console.log("holder info", holdersfullInfo);
     if (holdersfullInfo.length > 0) {
+      if (totalValue < donation * web3Consts.LAMPORTS_PER_OPOS) {
+        let finalValue = Math.ceil(
+          donation * web3Consts.LAMPORTS_PER_OPOS - totalValue,
+        );
+        holdersfullInfo[0].value = holdersfullInfo[0].value + finalValue;
+      }
       const res = await userConn.sendShare(
         selectedToken.token,
         holdersfullInfo,
@@ -1181,9 +1191,9 @@ const Page = () => {
                               token={coin.token}
                               bonding={coin.bonding}
                               name={coin.name}
-                              basesymbol={coin.basesymbol}
                               desc={coin.desc}
                               creatorUsername={coin.creatorUsername}
+                              basesymbol={coin.basesymbol}
                               symbol={coin.symbol}
                               image={coin.image}
                               iscoin={coin.iscoin}

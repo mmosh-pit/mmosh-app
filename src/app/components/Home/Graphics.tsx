@@ -2,8 +2,8 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
-import TVL from "./TVL";
-import Volume from "./Volume";
+// import TVL from "./TVL";
+// import Volume from "./Volume";
 import Price from "./Price";
 import Button from "../common/Button";
 import { useAtom } from "jotai";
@@ -14,22 +14,23 @@ const Graphics = () => {
 
   const [selectedTab, setSelectedTab] = React.useState("tvl");
   const [selectedCoin, setSelectedCoin] = React.useState("mmosh");
-  const [selectedCoinDirectory, setSelectedCoinDirectory] = useAtom(selectedDirectory);
+  const [selectedCoinDirectory, setSelectedCoinDirectory] =
+    useAtom(selectedDirectory);
 
   const isMobile = useCheckMobileScreen();
 
-  const renderGraphicComponent = React.useCallback(() => {
-    if (selectedTab === "tvl") return <TVL />;
+  // const renderGraphicComponent = React.useCallback(() => {
+  //   if (selectedTab === "tvl") return <TVL />;
+  //
+  //   if (selectedTab === "volume") return <Volume withFilters />;
+  //
+  //   return <Price symbol={selectedCoinDirectory} />;
+  // }, [selectedTab]);
 
-    if (selectedTab === "volume") return <Volume withFilters />;
-
-    return <Price symbol={selectedCoinDirectory} />;
-  }, [selectedTab]);
-
-  React.useEffect(()=> {
-    console.log("selectedCoin ", selectedCoin)
-    setSelectedCoinDirectory(selectedCoin.toUpperCase())
-  },[selectedCoin])
+  React.useEffect(() => {
+    console.log("selectedCoin ", selectedCoin);
+    setSelectedCoinDirectory(selectedCoin.toUpperCase());
+  }, [selectedCoin]);
 
   return (
     <>
@@ -94,20 +95,20 @@ const Graphics = () => {
             }}
             isLoading={false}
           />
-        </div> 
+        </div>
       </div>
 
       {!isMobile && (
-        <div className="w-full grid md:grid-cols-3 gap-8 grid-cols-auto items-center">
-          <TVL symbol={selectedCoinDirectory}/>
+        <div className="w-full">
+          {/* <TVL symbol={selectedCoinDirectory}/>
 
-          <Volume withFilters />
+          <Volume withFilters /> */}
 
-          <Price symbol={selectedCoinDirectory}/>
+          <Price symbol={selectedCoinDirectory} />
         </div>
       )}
 
-      {isMobile && (
+      {/* {isMobile && (
         <div className="w-full flex flex-col">
           <div className="w-full flex flex-col">
             <div className="w-full flex">
@@ -150,7 +151,7 @@ const Graphics = () => {
 
           {renderGraphicComponent()}
         </div>
-      )}
+      )} */}
     </>
   );
 };

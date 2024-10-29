@@ -238,7 +238,7 @@ const CoinsTable = () => {
             </div>
           </th>
 
-          <th align="center">
+          {/*<th align="center">
             <div
               className="flex items-center justify-center"
               onClick={() => handleSortOptionSelect("volume")}
@@ -250,7 +250,7 @@ const CoinsTable = () => {
 
           <th align="center">
             <p className="text-white text-sm">Last 7 days</p>
-          </th>
+          </th>*/}
         </tr>
       </thead>
 
@@ -305,6 +305,8 @@ const CoinsTable = () => {
               {getCoinFDV(coin.price * coin.volume, coin.basesymbol)}
             </td>
 
+            {/*
+
             <td align="center">
               {getCoinVolume(coin.volume, coin.basesymbol)}
             </td>
@@ -326,6 +328,7 @@ const CoinsTable = () => {
                 </LineChart>
               </ResponsiveContainer>
             </td>
+            */}
           </tr>
         ))}
       </tbody>

@@ -86,10 +86,9 @@ const Projects = () => {
           </div>*/}
         </div>
       </div>
-      <div className="container mx-auto pb-12">
+      <div className="w-full flex justify-center mx-16">
         {projects.length > 0 && !projectLoading && (
-          <div className="w-full justify-center items-start">
-            {/*<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">*/}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             {projects.map((projectItem: any) => (
               <ProjectCard
                 data={projectItem}

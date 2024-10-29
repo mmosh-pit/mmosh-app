@@ -158,21 +158,6 @@ const MobileDrawer = () => {
               Swap
             </a>
 
-            {currentUser?.profilenft && (
-              <>
-                <div className="my-2" />
-                <a
-                  className="text-base text-white cursor-pointer"
-                  onClick={() => {
-                    if (isOnSettings) return setIsOnSettings(false);
-                    router.push(`/${currentUser?.profile.username}`);
-                  }}
-                >
-                  My Profile
-                </a>
-              </>
-            )}
-
             <div className="my-2" />
 
             <a

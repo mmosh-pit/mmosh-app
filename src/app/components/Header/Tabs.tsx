@@ -130,21 +130,6 @@ const Tabs = () => {
         )}
       </div>
 
-      {currentUser?.profilenft && (
-        <>
-          <div className="lg:mx-6 md:mx-3" />
-          <a
-            className="text-base text-white cursor-pointer"
-            onClick={() => {
-              if (isOnSettings) return setIsOnSettings(false);
-              router.push(`/${currentUser?.profile.username}`);
-            }}
-          >
-            My Profile
-          </a>
-        </>
-      )}
-
       <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"

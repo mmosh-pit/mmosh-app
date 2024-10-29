@@ -72,7 +72,7 @@ const sendKartaNotification = async (name: string, email: string) => {
       },
       {
         cmd: "assign_tag",
-        tag_name: "New User Sign Up",
+        tag_name: "Liquid Hearts App Sign Up API",
       },
     ],
   };

@@ -1,22 +1,6 @@
 import { db } from "../../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const collection = db.collection("mmosh-app-token-price");
-
-  const { key, price, type } = await req.json();
-
-  collection.insertOne({
-    key,
-    price,
-    type,
-    created_date: new Date(),
-    updated_date: new Date(),
-  });
-  return NextResponse.json("", { status: 200 });
-}
-
-
 export async function GET(req: NextRequest) {
     const collection = db.collection("mmosh-app-token-price");
 
@@ -24,7 +8,7 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get("type") ? searchParams.get("type") : "day";
     const key = searchParams.get("key")
 
-    let priceresult = await collection.find({key: key}).sort("-created_date").toArray()
+    let priceresult = await collection.find({key: key}).limit(1).sort("-created_date").toArray()
 
     let price = 0;
     if(priceresult.length > 0) {

@@ -61,7 +61,7 @@ const Header = () => {
 
   React.useEffect(() => {
     if (param) {
-      localStorage.setItem("refer",param)
+      localStorage.setItem("refer", param);
       setReferAddress(param);
     } else {
       setReferAddress(process.env.NEXT_PUBLIC_DEFAULT_REFER_ADDRESS!);
@@ -100,7 +100,7 @@ const Header = () => {
 
   const getProfileInfo = async () => {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000
+      confirmTransactionInitialTimeout: 120000,
     });
     const env = new anchor.AnchorProvider(connection, wallet!, {
       preflightCommitment: "processed",
@@ -257,7 +257,7 @@ const Header = () => {
     };
   }, [wallet]);
 
-  const isMobileScreen = screenSize < 1000;
+  const isMobileScreen = screenSize < 1200;
 
   return (
     <header className="flex flex-col">
@@ -283,9 +283,9 @@ const Header = () => {
 
           {!isMobileScreen && <Tabs />}
 
-          <div className="flex items-center justify-end w-[30%]">
+          <div className="flex items-center justify-end max-w-[50%] md:w-[40%] lg:w-[30%]">
             {currentUser?.profilenft && (
-              <div className="dropdown pr-6">
+              <div className="dropdown pr-6 ml-4">
                 <a
                   className="text-base text-white cursor-pointer relative"
                   tabIndex={0}
@@ -328,7 +328,10 @@ const Header = () => {
             )}
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-6 ${isDrawerShown ? "z-[-1]" : ""}`}
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-6 ${isDrawerShown ? "z-[-1]" : ""} cursor-pointer`}
+                onClick={() => {
+                  router.push(`/${currentUser?.profile.username}`);
+                }}
               >
                 <Image
                   src={currentUser.profile.image}

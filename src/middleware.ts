@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 export default async function middleware(req: NextRequest) {
   if (
-    req.method !== "GET" &&
+    (req.method !== "GET" || req.url.includes("get-user-private-key")) &&
     !req.url.includes("signup") &&
     !req.url.includes("request-verification") &&
     !req.url.includes("login") &&

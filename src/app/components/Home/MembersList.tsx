@@ -81,13 +81,8 @@ const MembersList = () => {
 
   return (
     <div className="flex w-full flex-col" id="members">
-      <div className="w-full flex justify-between px-4">
-        <p className="text-white text-base">
-          Members <span className="text-gray-500"></span>
-        </p>
-      </div>
       <div
-        className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4 overflow-y-auto"
+        className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 overflow-y-auto mt-8"
         ref={containerRef}
         onScroll={handleScroll}
       >

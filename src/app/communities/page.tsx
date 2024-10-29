@@ -93,7 +93,7 @@ const Page = () => {
       </div>
 
       <div
-        className="w-full px-4 py-2 grid grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        className="w-full px-4 py-2 grid gap-4 grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         ref={containerRef}
         onScroll={handleScroll}
       >
@@ -106,8 +106,8 @@ const Page = () => {
             }}
           >
             <div className="flex flex-col">
-              <div className="w-full flex justify-start mx-4 mb-2">
-                <div className="relative md:w-[5vmax] md:h-[5vmax] w-[6vmax] h-[6vmax]">
+              <div className="w-full flex justify-center mx-4 mb-2">
+                <div className="self-center relative md:w-[5vmax] md:h-[5vmax] w-[8vmax] h-[6vmax]">
                   <Image
                     src={community.passImage}
                     alt="Profile Image"

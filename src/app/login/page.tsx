@@ -67,9 +67,7 @@ const Login = () => {
             layout="fill"
           />
         </div>
-        <p className="text-base mt-4">
-          The Cutting Edge of Culture
-        </p>
+        <p className="text-base mt-4">The Cutting Edge of Culture</p>
       </div>
 
       <h6 className="my-4">Log In</h6>
@@ -133,7 +131,7 @@ const Login = () => {
 
       <div className="w-[60%] md:w-[35%] lg:w-[20%] my-2">
         <Button
-          title="Create new Account"
+          title="Create New Account"
           action={() => {
             router.push("/sign-up");
           }}
@@ -142,6 +140,15 @@ const Login = () => {
           isLoading={false}
           disabled={isLoading}
         />
+      </div>
+
+      <div className="flex justify-center w-[60%] md:w-[35%] lg:w-[20%] my-2">
+        <a
+          className="text-base underline"
+          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/coins`}
+        >
+          Skip this, just take me to the coins
+        </a>
       </div>
     </form>
   );

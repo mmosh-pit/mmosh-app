@@ -34,8 +34,8 @@ const Graphics = ({ coin, base }: Props) => {
   const [type, setType] = useAtom(selectedDateType);
 
   const [selectedGraphicType, setSelectedGraphicType] = React.useState({
-    label: "TVL",
-    value: "tvl",
+    label: "Price",
+    value: "price",
   });
 
   const renderGraphicType = React.useCallback(() => {
@@ -53,23 +53,26 @@ const Graphics = ({ coin, base }: Props) => {
       <div className="absolute right-4 top-0">
         <div className="w-full flex justify-end mt-4">
           <div className="flex items-center self-end">
-            <div className="dropdown rounded-lg py-1 ml-4 mr-6">
+            {/* <div className="dropdown rounded-lg py-1 ml-4 mr-6">
               <div tabIndex={0} role="button" className="btn m-1">
                 <p className="text-base">{selectedGraphicType.label}</p>
               </div>
-              <ul
-                tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                {typeOptions.map((value) => (
-                  <li onClick={() => setSelectedGraphicType(value)}>
-                    <p className="text-base">{value.label}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <DateTypeSelector type={type} setType={setType} />
+          
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  {typeOptions.map((value) => (
+                    <li onClick={() => setSelectedGraphicType(value)}>
+                      <p className="text-base">{value.label}</p>
+                    </li>
+                  ))}
+                </ul>
+          
+            </div> */}
+            {selectedGraphicType.value !== "price" && 
+              <DateTypeSelector type={type} setType={setType} />
+            }
           </div>
         </div>
       </div>

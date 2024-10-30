@@ -18,16 +18,20 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
 
   const getClassName = () => {
     if (pathname.includes("create_") || pathname.includes("create/coins"))
-      return "bg-without-picture";
+      return "bg-without-picture min-h-screen";
 
     if (pathname.includes("create") || pathname.includes("communities"))
-      return "common-bg";
+      return "common-bg min-h-screen";
 
-    if (pathname !== "/coins" || isOnSettings) {
-      return "bg-profile";
+    if (pathname === "/tos" || pathname === "/privacy") {
+      return "bg-tos";
     }
 
-    return "common-bg";
+    if (pathname !== "/coins" || isOnSettings) {
+      return "bg-profile min-h-screen";
+    }
+
+    return "common-bg min-h-screen";
   };
 
   return (

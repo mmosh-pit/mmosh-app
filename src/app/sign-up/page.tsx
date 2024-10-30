@@ -84,9 +84,7 @@ const SignUp = () => {
             layout="fill"
           />
         </div>
-        <p className="text-base mt-4">
-          The Cutting Edge of Culture
-        </p>
+        <p className="text-base mt-4">The Cutting Edge of Culture</p>
       </div>
 
       <h6 className="my-4">Sign Up</h6>
@@ -173,7 +171,13 @@ const SignUp = () => {
           }}
         />
 
-        <a className="text-sm underline">Agree to Terms</a>
+        <a
+          className="text-sm underline"
+          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/tos`}
+          target="_blank"
+        >
+          Agree to Terms
+        </a>
       </div>
 
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">

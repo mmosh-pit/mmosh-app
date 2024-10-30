@@ -154,36 +154,6 @@ const CoinsList = () => {
                 </p>
               </div>
             </div>
-
-            <div className="bg-[#434069] w-[2px] h-[90%] mx-2 self-center" />
-
-            <div className="flex flex-col">
-              <p className="text-xs self-end">24h</p>
-
-              <div className="w-[5vmax]">
-                <ResponsiveContainer width="100%" height={50}>
-                  <LineChart
-                    width={150}
-                    height={50}
-                    data={coin.priceLastSevenDays.map((val) => ({
-                      value: val,
-                    }))}
-                  >
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke={getChartColor(coin.priceLastSevenDays)}
-                      dot={false}
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="flex self-end">
-                <p className="text-sm text-[#39F10A]">0.0%</p>
-              </div>
-            </div>
           </div>
         ))}
       </div>

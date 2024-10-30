@@ -5,6 +5,7 @@ import axios from "axios";
 import { coinStats } from "@/app/store/coins";
 import { Coin } from "@/app/models/coin";
 import { User } from "@/app/models/user";
+import { useRouter } from "next/navigation";
 
 type Props = {
   coin: Coin;
@@ -13,6 +14,7 @@ type Props = {
 
 const Stats = ({ coin, base }: Props) => {
   const [stats] = useAtom(coinStats);
+  const router = useRouter();
 
   const [coinOwner, setCoinOwner] = React.useState<User | null>(null);
 
@@ -56,7 +58,10 @@ const Stats = ({ coin, base }: Props) => {
           <h5>Info</h5>
           <p className="my-2 text-sm">{coin.desc}</p>
           {coinOwner && (
-            <div className="bg-[#7420E8] md:max-w-[35%] max-w-[40%] lg:max-w-[25%] rounded-2xl p-4">
+            <div
+              className="bg-[#7420E8] md:max-w-[35%] max-w-[40%] lg:max-w-[25%] rounded-2xl p-4 cursor-pointer"
+              onClick={() => router.push(`/${coinOwner.profile.username}`)}
+            >
               <p className="text-white text-sm">{coinOwner.profile.name}</p>
             </div>
           )}

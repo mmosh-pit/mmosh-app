@@ -6,8 +6,11 @@ import { useAtom } from "jotai";
 
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
+import { useRouter } from "next/navigation";
 
 const CoinsList = () => {
+  const navigate = useRouter();
+
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(typedSearchValue);
 
@@ -94,6 +97,10 @@ const CoinsList = () => {
     }
   }, [currentPage]);
 
+  const navigateToCoinPage = React.useCallback((symbol: string) => {
+    navigate.push(`/coins/${symbol}`);
+  }, []);
+
   if (isLoading) return <></>;
 
   if (coins?.length === 0) return <></>;
@@ -119,9 +126,10 @@ const CoinsList = () => {
       >
         {coins.map((coin) => (
           <div
-            className="flex bg-[#030007] bg-opacity-40 px-2 py-2 rounded-2xl"
+            className="flex bg-[#030007] bg-opacity-40 px-2 py-2 rounded-2xl cursor-pointer"
             id="border-gradient-container"
             key={coin.symbol}
+            onClick={() => navigateToCoinPage(coin.symbol)}
           >
             <div className="self-center max-w-[30%] mr-8">
               <div className="relative w-[3vmax] h-[3vmax]">

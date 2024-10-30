@@ -98,16 +98,13 @@ const Graphics = () => {
         </div>
       </div>
 
-      {!isMobile && (
-        <div className="w-full">
-          {/* <TVL symbol={selectedCoinDirectory}/>
+      <div className="w-full">
+        {/* <TVL symbol={selectedCoinDirectory}/>
 
           <Volume withFilters /> */}
 
-          <Price symbol={selectedCoinDirectory} />
-        </div>
-      )}
-
+        <Price symbol={selectedCoinDirectory} />
+      </div>
       {/* {isMobile && (
         <div className="w-full flex flex-col">
           <div className="w-full flex flex-col">

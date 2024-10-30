@@ -331,13 +331,10 @@ const Price = ({ height, symbol }: Props) => {
           <p className="text-sm">{symbol} Price</p>
           <h6>USDC {price}</h6>
         </div>
-        {/* <DateTypeSelector type={type} setType={setType} /> */}
+        <DateTypeSelector type={type} setType={setType} />
       </div>
 
       <Chart options={options} series={data} type="candlestick" height={height || 300} />
-
-
-
     </div>
   );
 };

@@ -1,8 +1,8 @@
 import { Coin } from "@/app/models/coin";
 import axios from "axios";
 import * as React from "react";
-
-import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
+import Chart from "react-apexcharts";
+import DateTypeSelector from "../common/DateTypeSelector";
 
 type Props = {
   bonding?: string;
@@ -11,93 +11,77 @@ type Props = {
 };
 
 const Price = ({ height, base }: Props) => {
-  // const [data, setData] = React.useState([]);
   const [price, setPrice] = React.useState(0)
-  const [data, setData] = React.useState<{ value: number; name: string }[]>([])
+  const [data, setData] = React.useState<any>([
+    {
+      data: []
+    }
+  ]);
 
+  const [type, setType] = React.useState("day")
+
+  const [options, setOptions] = React.useState<any>({
+    chart: {
+      type: 'candlestick',
+      height: height || 300
+    },
+    xaxis: {
+      type: 'datetime'
+    },
+    yaxis: {
+      tooltip: {
+        enabled: true
+      }
+    },
+    tooltip: {
+      enabled: false
+    }
+  })
 
   const getPricesFromAPI = async () => {
     try {
-      let priceResult = await axios.get(`/api/project/token-detail?symbol=${base?.symbol.toUpperCase()}`);
-      console.log("priceResult.data ", priceResult.data)
-      if(priceResult.data.prices) {
+ 
+      let priceResult = await axios.get(
+        `/api/token/price?key=${base?.bonding}&type=${type}`,
+      );
+      console.log("priceResult.data ", priceResult.data);
+      if (priceResult.data?.prices) {
         const newData = [];
         for (let index = 0; index < priceResult.data.prices.length; index++) {
-          const d = new Date();
-          let filterDate;
-          filterDate = new Date(d.setDate(d.getDate() - index));
           const element = priceResult.data.prices[index];
-          newData.push({ value: Math.abs(element), name:filterDate.toLocaleString("en-us", {
-            month: "short",
-            day: "numeric",
-          })});
+          newData.push({
+            x: new Date(element.x),
+            y: element.y,
+          });
         }
-        setData(newData.reverse())
-        setPrice(priceResult.data.pricepercentage)
-      }
 
+        setPrice(priceResult.data.price);
+        setData([{
+          data: newData
+        }])
+      }
     } catch (error) {
-      resetGraph()
       console.error(error);
     }
   };
 
-  const resetGraph = () => {
-    const newData = [];
-    for (let index = 0; index < 7; index++) {
-      const d = new Date();
-      let filterDate;
-      filterDate = new Date(d.setDate(d.getDate() - index));
-      newData.push({ value: 0, name: filterDate.toLocaleString("en-us", {
-        month: "short",
-        day: "numeric",
-      })});
-    }
 
-    setData(newData.reverse())
-    setPrice(0)
-  }
 
   React.useEffect(()=>{
-    resetGraph()
     getPricesFromAPI()
-  },[])
+  },[type])
 
 
-  React.useEffect(()=>{
-    console.log("price data", data)
-  },[data])
 
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
-      <div className="flex flex-col ml-6 mt-4">
-        <p className="text-sm">{base?.symbol.toUpperCase()} Price</p>
-        <h6>USDC {price}</h6>
+      <div className="w-full flex justify-between px-4 pt-4">
+        <div className="flex flex-col">
+          <h6>{base?.symbol.toUpperCase()} {price}</h6>
+        </div>
+        <DateTypeSelector type={type} setType={setType} />
       </div>
-      <ResponsiveContainer width="100%" height={height || 200}>
-        <AreaChart
-          width={500}
-          height={height || 200}
-          data={data}
-          margin={{
-            top: 10,
-          }}
-        >
-          <defs>
-            <linearGradient id="gradient-price" x1="0" y1="0" x2="0" y2="2">
-              <stop offset="0%" stopColor="#C900B3" stopOpacity={0.8} />
-              <stop offset="75%" stopColor="#C900B3" stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="name" tickLine={false} axisLine={false} />
-          <Area
-            type="monotone"
-            dataKey="pv"
-            stroke="#C900B3"
-            fill="url(#gradient-price)"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      <Chart options={options} series={data} type="candlestick" height={height || 300} />
     </div>
   );
 };

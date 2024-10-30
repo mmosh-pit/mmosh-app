@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
         if(startDate && endDate) {
             let result = await collection.find({key: key, created_date:{$gte:startDate, $lt: endDate}}).sort("-created_date").toArray()
 
-            let chartData = parsePriceByInterval(startDate, endDate,result)
+            let chartData = parsePriceByInterval(startDate, endDate,result, type)
             for (let index = 0; index < chartData.length; index++) {
                 const element = chartData[index];
                 data.push(element)
@@ -61,14 +61,14 @@ export async function GET(req: NextRequest) {
     );
 }
 
-const parsePriceByInterval = (startDate: Date, endDate: Date, data:any) => {
+const parsePriceByInterval = (startDate: Date, endDate: Date, data:any, type:any) => {
     let currentDate = endDate;
     let chartData = []
 
     console.log(data)
 
     while(currentDate.getTime() > startDate.getTime()) {
-        let newDate = new Date(currentDate.getTime() - 30*60000);
+        let newDate = new Date(currentDate.getTime() - chartTimeInterval(type)*60000);
         let series = data.filter((item: any) => {
             return new Date(item.created_date).getTime() >= newDate.getTime() &&  new Date(item.created_date).getTime() < currentDate.getTime();
         });
@@ -84,4 +84,18 @@ const parsePriceByInterval = (startDate: Date, endDate: Date, data:any) => {
         currentDate = newDate;
     }
     return chartData
+}
+
+const chartTimeInterval = (type:any) => {
+    if(type == "day") {
+        return 30 // 30 mins
+    } else if(type == "week") {
+        return 45 // 2 1/2 hours
+    } else if(type == "month") {
+        return 300 // 15 hours 
+    } else if(type == "year") {
+        return 3600 // 7.5 days 
+    }
+
+    return 0
 }

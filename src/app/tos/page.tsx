@@ -107,7 +107,7 @@ const TOS = () => {
         us.
       </p>
 
-      <div class="important">
+      <div className="important">
         <p>
           <strong>
             PLEASE NOTE: THE “DISPUTE RESOLUTION” SECTION OF THIS EULA CONTAINS

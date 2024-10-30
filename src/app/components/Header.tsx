@@ -84,6 +84,7 @@ const Header = () => {
   }, [userStatus, pathname]);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
+    if (pathname === "/tos" || pathname === "/privacy") return;
     const result = await axios.get("/api/is-auth");
 
     if (!result.data && pathname === "/") {
@@ -258,6 +259,8 @@ const Header = () => {
   }, [wallet]);
 
   const isMobileScreen = screenSize < 1200;
+
+  if (pathname === "/tos" || pathname === "/privacy") return <></>;
 
   return (
     <header className="flex flex-col">

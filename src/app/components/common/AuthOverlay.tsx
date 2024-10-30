@@ -16,7 +16,9 @@ const AuthOverlay = () => {
     !showAuthOverlay ||
     pathname.includes("login") ||
     pathname.includes("sign-up") ||
-    pathname.includes("password")
+    pathname.includes("password") ||
+    pathname === "/tos" ||
+    pathname === "/privacy"
   )
     return <></>;
 

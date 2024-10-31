@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("id");
 
-  if (!param) {
+  if (!param || param === "undefined") {
     const user = await usersCollection.findOne({
       sessions: cookie,
     });

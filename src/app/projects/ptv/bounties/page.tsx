@@ -261,8 +261,20 @@ const Page = () => {
             return false
           }
           return true
+        } else {
+            let receiver = await (await userConn.getNftProfileOwner(web3Consts.oposToken)).profileHolder.toBase58()
+            holdersfullInfo.push({
+                receiver,
+                value: Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS),
+            });
+            const res =  await userConn.sendShare(selectedToken.token,holdersfullInfo)
+            console.log("res ", res)
+            if(res.Err) {
+              createMessage("Error on sending donation", "error");
+              return false
+            }
+            return true
         }
-        return false
     }
 
     const handleTokenSelect = (token: Coin) => {
@@ -426,8 +438,10 @@ const Page = () => {
 
             setSelectedToken(defaultBaseToken)
             setStep("one")
-            createMessage("", "error");
+            createMessage("Your donation has been successfully received!", "success");
             setIsLoading(false)
+            setHistoryPage(1);
+            listHistory(1)
         } catch (error) {
             setIsLoading(false)
         }

@@ -26,12 +26,25 @@ const Price = ({ height, base }: Props) => {
       height: height || 300
     },
     xaxis: {
-      type: 'datetime'
+      type: 'datetime',
+      labels: {
+        style: {
+          colors: "#fff"
+        }
+      }
     },
     yaxis: {
+      labels: {
+        formatter(value: string, timestamp?: number, opts?:any) {
+          return Number(value).toFixed(5).toString()
+        },
+        style: {
+          colors: "#fff"
+        }
+      },
       tooltip: {
         enabled: true
-      }
+      },
     },
     tooltip: {
       enabled: false

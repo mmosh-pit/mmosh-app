@@ -20,6 +20,8 @@ const Price = ({ height, symbol }: Props) => {
   ]);
   const [selectedCoinDirectory] = useAtom(selectedDirectory);
   const [price, setPrice] = React.useState(0)
+  const [supply, setSupply] = React.useState<any>(0)
+  const [fdv, setFdv] = React.useState<any>(0)
   // const [data, setData] = React.useState<any>([{
   //   data: [{
   //       x: new Date(1538778600000),
@@ -271,9 +273,22 @@ const Price = ({ height, symbol }: Props) => {
       height: height || 300
     },
     xaxis: {
-      type: 'datetime'
+      type: 'datetime',
+      labels: {
+        style: {
+          colors: "#fff"
+        }
+      }
     },
     yaxis: {
+      labels: {
+        formatter(value: string, timestamp?: number, opts?:any) {
+          return Number(value).toFixed(5).toString()
+        },
+        style: {
+          colors: "#fff"
+        }
+      },
       tooltip: {
         enabled: true
       }
@@ -302,7 +317,10 @@ const Price = ({ height, symbol }: Props) => {
             y: element.y,
           });
         }
+        let nf = new Intl.NumberFormat('en-US')
 
+        setFdv(nf.format(priceResult.data.fdv));
+        setSupply(nf.format(priceResult.data.supply));
         setPrice(priceResult.data.price);
         setData([{
           data: newData
@@ -313,24 +331,28 @@ const Price = ({ height, symbol }: Props) => {
     }
   };
 
-
-
   React.useEffect(() => {
     getPricesFromAPI();
   }, [selectedCoinDirectory, type]);
 
-  // React.useEffect(() => {
-  //   console.log("price data", data);
-  //   // getPricesFromAPI()
-  // }, [data]);
-
   return (
     <div className="w-full flex flex-col bg-[#04024185] rounded-xl">
       <div className="w-full flex justify-between px-4 pt-4">
-        <div className="flex flex-col">
-          <p className="text-sm">{symbol} Price</p>
-          <h6>USDC {price}</h6>
+        <div className="md:flex">
+          <div className="flex flex-col mb-2.5 md:mr-10 md:mb-0">
+            <p className="text-sm">{symbol} Price</p>
+            <h6>USDC {price}</h6>
+          </div>
+          <div className="flex flex-col mb-2.5 md:mr-10 md:mb-0">
+            <p className="text-sm">{symbol} Total Supply</p>
+            <h6>{supply}</h6>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-sm">{symbol} Fully Diluted Value(FDV)</p>
+            <h6>USD {fdv}</h6>
+          </div>
         </div>
+
         <DateTypeSelector type={type} setType={setType} />
       </div>
 

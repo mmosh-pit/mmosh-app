@@ -27,8 +27,6 @@ const CoinsTable = () => {
   const [tradingPair] = useAtom(pair);
 
   const [selectedSort, setSelectedSort] = React.useState({
-    // type: "coin",
-    // value: "DESC",
     type: "",
     value: "",
   });
@@ -45,6 +43,8 @@ const CoinsTable = () => {
       }
       source.current = axios.CancelToken.source();
 
+      const prices = await getBaseTokenPrices()
+
       const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}&symbol=${tradingPair}`;
 
       const apiResult = await axios.get(url, {
@@ -52,6 +52,7 @@ const CoinsTable = () => {
       });
 
       const newCoins = [];
+      let nf = new Intl.NumberFormat('en-US')
       for (let index = 0; index < apiResult.data.length; index++) {
         const element = apiResult.data[index];
         const datas = [];
@@ -65,7 +66,15 @@ const CoinsTable = () => {
           datas.push(elementchart.value);
         }
         element.priceLastSevenDays = datas;
-
+        let marketcap = 0
+        if(element.basesymbol === "PTVB") {
+          marketcap = element.supply * (prices.ptvb * element.lastprice)
+        } else if(element.basesymbol === "PTVR") {
+          marketcap = element.supply * (prices.ptvr * element.lastprice)
+        } else {
+          marketcap = element.supply * (prices.mmosh * element.lastprice)
+        }
+        element.marketcap = nf.format(marketcap) +" USDC" 
         newCoins.push(element);
       }
 
@@ -196,6 +205,24 @@ const CoinsTable = () => {
     getUsdcMmoshPrice();
   }, [searchText, volume, tradingPair]);
 
+  const getBaseTokenPrices = async () => {
+
+    let prices = {
+      mmosh: 0,
+      ptvb: 0,
+      ptvr: 0
+    }
+
+    let mmoshResponse = await axios.get(
+      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"
+    );
+    prices.mmosh = mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"].price || 0;
+    prices.ptvb = mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"].price || 0;
+    prices.ptvr = mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"].price || 0;
+
+  return prices
+}
+
   return (
     <table className="w-full bg-[#100E5242] rounded-md">
       <thead>
@@ -234,7 +261,7 @@ const CoinsTable = () => {
               onClick={() => handleSortOptionSelect("fdv")}
             >
               {selectedSort.type === "fdv" && <SortIcon />}
-              <p className="text-white text-sm">FDV%</p>
+              <p className="text-white text-sm">Market Cap</p>
             </div>
           </th>
 
@@ -302,7 +329,7 @@ const CoinsTable = () => {
             </td>
 
             <td align="center">
-              {getCoinFDV(coin.price * coin.volume, coin.basesymbol)}
+              {coin.marketcap}
             </td>
 
             {/*

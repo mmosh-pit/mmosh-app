@@ -36,19 +36,13 @@ export const getquote = async (params: JupQuoteParams) => {
   }
 };
 
+
 export const getPriceForPTV = async (tokenAddress: any) => {
   try {
     const result = await axios.get(
-      process.env.NEXT_PUBLIC_JUPITER_API +
-        "/v6/quote?inputMint=" +
-        tokenAddress +
-        "&outputMint=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS&amount=1000000000&slippageBps=50",
+      "https://api.jup.ag/price/v2?ids=" + tokenAddress,
     );
-    let priceResult = await axios.get(`/api/project/token-detail?symbol=MMOSH`);
-    return (
-      (Number(result.data.outAmount / 1000_000_000) / 1) *
-      Number(priceResult.data.pricepercentage)
-    );
+    return result.data.data[tokenAddress].price || 0;
   } catch (error) {
     return 0;
   }

@@ -21,6 +21,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   const [baseCoin, setBaseCoin] = React.useState<Coin | null>(null);
   const [coin, setCoin] = React.useState<Coin | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [supply, setSupply] = React.useState<any>(0)
 
   const goBack = React.useCallback(() => {
     navigate.back();
@@ -45,6 +46,8 @@ const Page = ({ params }: { params: { symbol: string } }) => {
     if (!bondingResult) {
       return null;
     }
+
+    setSupply(bondingResult.supplyFromBonding.toNumber() / web3Consts.LAMPORTS_PER_OPOS)
 
     const mintDetail = await curveConn.metaplex
       .nfts()
@@ -132,7 +135,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-12">
             <div className="col-span-7">
-              <Graphics coin={coin} base={baseCoin} />
+              <Graphics coin={coin} base={baseCoin} supply={supply} />
             </div>
 
             <div className="col-span-5 mt-5 md:mt-0">

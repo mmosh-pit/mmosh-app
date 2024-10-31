@@ -6,6 +6,7 @@ import { useAtom } from "jotai";
 import * as React from "react";
 import DateTypeSelector from "../common/DateTypeSelector";
 import dynamic from "next/dynamic";
+import { web3Consts } from "@/anchor/web3Consts";
 
 const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false, // Ensure ApexCharts is not imported during SSR
@@ -306,7 +307,7 @@ const Price = ({ height, symbol }: Props) => {
   const getPricesFromAPI = async () => {
     try {
       let tokenDetail = await axios.get(
-        `/api/project/token-detail?symbol=${symbol}`,
+        `/api/project/token-detail?symbol=${symbol.toUpperCase()}`,
       );
       let token = tokenDetail.data.key;
       let priceResult = await axios.get(
@@ -325,7 +326,7 @@ const Price = ({ height, symbol }: Props) => {
         let nf = new Intl.NumberFormat("en-US");
 
         setFdv(nf.format(priceResult.data.fdv));
-        setSupply(nf.format(priceResult.data.supply));
+        setSupply(nf.format(priceResult.data.supply / web3Consts.LAMPORTS_PER_OPOS));
         setPrice(priceResult.data.price);
         setData([
           {

@@ -310,7 +310,7 @@ const CreateProfile = () => {
 
                 <div className="flex w-full items-center">
                   <p className="text-xs text-white mb-[0.5vmax] mr-4">The</p>
-                  <div className="flex flex-col">
+                  <div className="w-[35%] md:w-full flex flex-col">
                     <Input
                       type="text"
                       title=""
@@ -327,7 +327,7 @@ const CreateProfile = () => {
                     />
                   </div>
 
-                  <div className="flex flex-col ml-4">
+                  <div className="w-[35%] md:w-full flex flex-col ml-4">
                     <Input
                       type="text"
                       title=""

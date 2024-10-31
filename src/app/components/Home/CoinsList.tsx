@@ -27,22 +27,27 @@ const CoinsList = () => {
   const [tradingPair] = useAtom(pair);
 
   const getBaseTokenPrices = async () => {
-
     let prices = {
       mmosh: 0,
       ptvb: 0,
-      ptvr: 0
-    }
+      ptvr: 0,
+    };
 
     let mmoshResponse = await axios.get(
-      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"
+      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd",
     );
-    prices.mmosh = mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"].price || 0;
-    prices.ptvb = mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"].price || 0;
-    prices.ptvr = mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"].price || 0;
+    prices.mmosh =
+      mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"]
+        ?.price || 0;
+    prices.ptvb =
+      mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"]
+        ?.price || 0;
+    prices.ptvr =
+      mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"]
+        ?.price || 0;
 
-  return prices
-}
+    return prices;
+  };
 
   const getCoins = React.useCallback(async () => {
     if (selectedFilters.includes("coins") || selectedFilters.includes("all")) {
@@ -50,12 +55,12 @@ const CoinsList = () => {
       fetching.current = true;
       const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}&symbol=${tradingPair}`;
 
-      const prices = await getBaseTokenPrices()
+      const prices = await getBaseTokenPrices();
       const result = await axios.get(url);
 
       fetching.current = false;
 
-      let nf = new Intl.NumberFormat('en-US')
+      let nf = new Intl.NumberFormat("en-US");
       const newCoins = [];
       for (let index = 0; index < result.data.length; index++) {
         const element = result.data[index];
@@ -70,15 +75,15 @@ const CoinsList = () => {
           datas.push(elementchart.value);
         }
         element.priceLastSevenDays = datas;
-        let marketcap = 0
-        if(element.basesymbol === "PTVB") {
-          marketcap = element.supply * (prices.ptvb * element.lastprice)
-        } else if(element.basesymbol === "PTVR") {
-          marketcap = element.supply * (prices.ptvr * element.lastprice)
+        let marketcap = 0;
+        if (element.basesymbol === "PTVB") {
+          marketcap = element.supply * (prices.ptvb * element.lastprice);
+        } else if (element.basesymbol === "PTVR") {
+          marketcap = element.supply * (prices.ptvr * element.lastprice);
         } else {
-          marketcap = element.supply * (prices.mmosh * element.lastprice)
+          marketcap = element.supply * (prices.mmosh * element.lastprice);
         }
-        element.marketcap = nf.format(marketcap) +" USDC" 
+        element.marketcap = nf.format(marketcap) + " USDC";
 
         newCoins.push(element);
       }
@@ -148,8 +153,6 @@ const CoinsList = () => {
   if (isLoading) return <></>;
 
   if (coins?.length === 0) return <></>;
-
-
 
   return (
     <div className="flex w-full flex-col" id="coins">

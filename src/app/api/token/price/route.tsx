@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get("type") ? searchParams.get("type") : "day";
     const key = searchParams.get("key")
 
-    let priceresult = await collection.find({key: key}).limit(1).sort("-created_date").toArray()
+    let priceresult = await collection.find({key: key}).limit(1).sort({ created_date: -1 }).toArray()
 
     let price = 0;
     if(priceresult.length > 0) {

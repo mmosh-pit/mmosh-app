@@ -27,8 +27,6 @@ const CoinsTable = () => {
   const [tradingPair] = useAtom(pair);
 
   const [selectedSort, setSelectedSort] = React.useState({
-    // type: "coin",
-    // value: "DESC",
     type: "",
     value: "",
   });

@@ -12,4 +12,5 @@ export type DirectoryCoin = {
   volume: number;
   priceLastSevenDays: string[];
   basesymbol: string;
+  marketcap: any
 };

@@ -23,16 +23,36 @@ const CoinsList = () => {
 
   const [tradingPair] = useAtom(pair);
 
+  const getBaseTokenPrices = async () => {
+
+    let prices = {
+      mmosh: 0,
+      ptvb: 0,
+      ptvr: 0
+    }
+
+    let mmoshResponse = await axios.get(
+      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"
+    );
+    prices.mmosh = mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"].price || 0;
+    prices.ptvb = mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"].price || 0;
+    prices.ptvr = mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"].price || 0;
+
+  return prices
+}
+
   const getCoins = React.useCallback(async () => {
     if (selectedFilters.includes("coins") || selectedFilters.includes("all")) {
       setIsLoading(true);
       fetching.current = true;
       const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}&symbol=${tradingPair}`;
 
+      const prices = await getBaseTokenPrices()
       const result = await axios.get(url);
 
       fetching.current = false;
 
+      let nf = new Intl.NumberFormat('en-US')
       const newCoins = [];
       for (let index = 0; index < result.data.length; index++) {
         const element = result.data[index];
@@ -47,6 +67,15 @@ const CoinsList = () => {
           datas.push(elementchart.value);
         }
         element.priceLastSevenDays = datas;
+        let marketcap = 0
+        if(element.basesymbol === "PTVB") {
+          marketcap = element.supply * (prices.ptvb * element.lastprice)
+        } else if(element.basesymbol === "PTVR") {
+          marketcap = element.supply * (prices.ptvr * element.lastprice)
+        } else {
+          marketcap = element.supply * (prices.mmosh * element.lastprice)
+        }
+        element.marketcap = nf.format(marketcap) +" USDC" 
 
         newCoins.push(element);
       }
@@ -113,6 +142,8 @@ const CoinsList = () => {
 
   if (coins?.length === 0) return <></>;
 
+
+
   return (
     <div className="flex w-full flex-col" id="coins">
       <div
@@ -145,11 +176,11 @@ const CoinsList = () => {
             </div>
 
             <div className="flex flex-col h-full">
-              <p className="text-sm font-white self-start">FDV</p>
+              <p className="text-sm font-white self-start">Market Cap</p>
 
               <div className="self-center">
                 <p className="text-sm text-white font-bold">
-                  {coin.price * coin.volume * usdcMmoshPrice}{" "}
+                  {coin.marketcap}{" "}
                   <span className="text-sm font-normal">USDC</span>
                 </p>
               </div>

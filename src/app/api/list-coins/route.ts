@@ -1,11 +1,19 @@
 import { Filter, Sort } from "mongodb";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
+import axios from "axios";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
+import { Connection, Keypair } from "@solana/web3.js";
+import * as anchor from "@coral-xyz/anchor";
+import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
+import { web3Consts } from "@/anchor/web3Consts";
 
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
   const politicalMemecoinsColl = db.collection("mmosh-app-tokens");
   const directoryCollection = db.collection("mmosh-app-directory");
+  const tokenPriceCollection = db.collection("mmosh-app-token-price");
+
 
   const { searchParams } = new URL(req.url);
 
@@ -21,6 +29,19 @@ export async function GET(req: NextRequest) {
   const volume = volumeParam || "hour";
 
   const basesymbol = searchParams.get("symbol");
+
+  let wallet = new NodeWallet(new Keypair());
+  const connection = new Connection("https://api.devnet.solana.com", {
+    confirmTransactionInitialTimeout: 120000
+  });
+
+  const env = new anchor.AnchorProvider(connection, wallet, {
+    preflightCommitment: "processed",
+  });
+
+  anchor.setProvider(env);
+  const curveConn = new CurveConn(env, web3Consts.programID);
+  let nf = new Intl.NumberFormat('en-US')
 
   let filter: any = {};
 
@@ -104,6 +125,14 @@ export async function GET(req: NextRequest) {
   for (let index = 0; index < tokenResults.length; index++) {
     const element = tokenResults[index];
 
+
+    let supply: any = await getSupply(element.bonding, curveConn)
+    let priceresult = await tokenPriceCollection.find({key: element.bonding}).limit(1).sort({ created_date: -1 }).toArray()
+    let price = 0;
+    if(priceresult.length > 0) {
+      price = priceresult[0].price
+    }
+
     // total volume calculation
     const volumeresult = await directoryCollection
       .aggregate([
@@ -122,6 +151,7 @@ export async function GET(req: NextRequest) {
         },
       ])
       .toArray();
+
     let totalVolume = 0;
     for (let index = 0; index < volumeresult.length; index++) {
       const volumeelement = volumeresult[index];
@@ -259,10 +289,28 @@ export async function GET(req: NextRequest) {
       price: oneHourPriceEnd,
       priceLastSevenDays: labels,
       basesymbol: element.basesymbol,
+      supply: supply,
+      lastprice: price
     });
   }
 
   return NextResponse.json(finalResult, {
     status: 200,
   });
+}
+
+const getSupply = async (bonding: any, curveConn: CurveConn) => {
+   try {
+    const bondingResult = await curveConn.getTokenBonding(
+      new anchor.web3.PublicKey(bonding),
+    );
+    if(bondingResult) {
+      return (bondingResult.supplyFromBonding.toNumber() / web3Consts.LAMPORTS_PER_OPOS)
+    } else {
+      return 0
+    }
+   } catch (error) {
+     console.log("error ", error)
+     return 0
+   }
 }

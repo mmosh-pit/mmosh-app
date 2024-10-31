@@ -18,7 +18,7 @@ const Settings = () => {
 
   const fetchPrivateKey = React.useCallback(async () => {
     const res = await axios.get(
-      `/api/get-user-private-key?id=${currentUser!.telegram?.id}`,
+      `/api/get-user-private-key?id=${currentUser?.telegram?.id}`,
     );
     const pKey = res.data;
 

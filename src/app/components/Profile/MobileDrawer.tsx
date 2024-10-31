@@ -186,7 +186,7 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              href="https://www.liquidhearts.club"
+              href="https://www.politifi.pro/"
               target="_blank"
             >
               Training

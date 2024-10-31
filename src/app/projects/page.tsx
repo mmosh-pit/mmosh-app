@@ -44,7 +44,8 @@ const Projects = () => {
   };
 
   const onProjectSelect = (projectItem: any) => {
-    navigate.push("/create/project/" + projectItem.key);
+    // navigate.push("/create/project/" + projectItem.key);
+    navigate.push("/projects/ptv");
   };
 
   return (

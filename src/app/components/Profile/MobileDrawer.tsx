@@ -139,9 +139,10 @@ const MobileDrawer = () => {
                   </p>
                   <p
                     className="text-sm text-white"
-                    onClick={() => router.push("/create/create_projects")}
+                    onClick={() => router.push("/projects")}
                   >
                     Projects
+                    <span className="text-tiny ml-1">(Coming soon)</span>
                   </p>
                 </div>
               )}

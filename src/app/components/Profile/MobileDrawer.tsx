@@ -149,6 +149,29 @@ const MobileDrawer = () => {
 
             <div className="my-2" />
 
+            {currentUser?.profile?.image && (
+              <>
+                <a
+                  className="text-sm text-white"
+                  onClick={() =>
+                    router.push(`/${currentUser?.profile?.username}`)
+                  }
+                >
+                  My Profile
+                </a>
+                <div className="my-2" />
+              </>
+            )}
+
+            <a
+              className="text-sm text-white"
+              onClick={() => router.push("/settings")}
+            >
+              Settings
+            </a>
+
+            <div className="my-2" />
+
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {

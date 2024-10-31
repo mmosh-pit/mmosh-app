@@ -43,7 +43,6 @@ export async function GET(req: NextRequest) {
     let prices = []
     for (let index = 0; index < tokenList.length; index++) {
         const element = tokenList[index];
-        // let bondingAccount = await curveConn.getTokenBonding( new anchor.web3.PublicKey(element.bonding))
         let curve = await curveConn.getPricing(
             new anchor.web3.PublicKey(element.bonding),
         )

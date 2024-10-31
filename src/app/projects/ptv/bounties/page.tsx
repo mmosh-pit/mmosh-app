@@ -43,8 +43,8 @@ const defaultBaseToken = {
   image:
     "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
   bonding: "",
-  desc: "",
   basesymbol: "",
+  desc: "",
   creatorUsername: "",
   decimals: 9,
   iscoin: false,
@@ -281,8 +281,25 @@ const Page = () => {
         return false;
       }
       return true;
+    } else {
+      let receiver = await (
+        await userConn.getNftProfileOwner(web3Consts.oposToken)
+      ).profileHolder.toBase58();
+      holdersfullInfo.push({
+        receiver,
+        value: Math.ceil(donation * web3Consts.LAMPORTS_PER_OPOS),
+      });
+      const res = await userConn.sendShare(
+        selectedToken.token,
+        holdersfullInfo,
+      );
+      console.log("res ", res);
+      if (res.Err) {
+        createMessage("Error on sending donation", "error");
+        return false;
+      }
+      return true;
     }
-    return false;
   };
 
   const handleTokenSelect = (token: Coin) => {
@@ -442,8 +459,10 @@ const Page = () => {
 
       setSelectedToken(defaultBaseToken);
       setStep("one");
-      createMessage("", "error");
+      createMessage("Your donation has been successfully received!", "success");
       setIsLoading(false);
+      setHistoryPage(1);
+      listHistory(1);
     } catch (error) {
       setIsLoading(false);
     }
@@ -1191,9 +1210,9 @@ const Page = () => {
                               token={coin.token}
                               bonding={coin.bonding}
                               name={coin.name}
+                              basesymbol={coin.basesymbol}
                               desc={coin.desc}
                               creatorUsername={coin.creatorUsername}
-                              basesymbol={coin.basesymbol}
                               symbol={coin.symbol}
                               image={coin.image}
                               iscoin={coin.iscoin}

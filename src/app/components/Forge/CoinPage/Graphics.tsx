@@ -26,9 +26,10 @@ const typeOptions = [
 type Props = {
   coin: Coin;
   base: Coin;
+  supply?: Number
 };
 
-const Graphics = ({ coin, base }: Props) => {
+const Graphics = ({ coin, base, supply }: Props) => {
   const [stats] = useAtom(coinStats);
 
   const [type, setType] = useAtom(selectedDateType);
@@ -45,7 +46,7 @@ const Graphics = ({ coin, base }: Props) => {
     if (selectedGraphicType.value === "volume")
       return <Volume bonding={coin.bonding} height={400} />;
 
-    return <Price base={base} />;
+    return <Price base={base} supply={supply} coin={coin}/>;
   }, [coin, selectedGraphicType]);
 
   return (
@@ -70,9 +71,8 @@ const Graphics = ({ coin, base }: Props) => {
                 </ul>
           
             </div> */}
-            {selectedGraphicType.value !== "price" && 
-              <DateTypeSelector type={type} setType={setType} />
-            }
+       
+            {/* <DateTypeSelector type={type} setType={setType} /> */}
           </div>
         </div>
       </div>

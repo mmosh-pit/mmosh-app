@@ -94,8 +94,9 @@ const TransactionsTable = ({ coin, base }: Props) => {
         <tbody>
           {history.map((item: any, index: number) => (
             <tr
-              className={`${index % 2 === 0 ? "bg-[#100E5242] hover:bg-[#100E5230]" : "bg-[#07076E70] hover:bg-[#07076E60]"} cursor`}
+              className={`${index % 2 === 0 ? "bg-[#100E5242] hover:bg-[#100E5230]" : "bg-[#07076E70] hover:bg-[#07076E60]"} cursor-pointer`}
               key={coin.symbol}
+              onClick={()=> window.open("https://solscan.io/tx/"+item.tx, "_blank")}
             >
               <td align="center">
                 <p className="text-white text-sm">

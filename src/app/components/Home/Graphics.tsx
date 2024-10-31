@@ -98,6 +98,7 @@ const Graphics = () => {
         </div>
       </div>
 
+      {/* {!isMobile && ( */}
       <div className="w-full">
         {/* <TVL symbol={selectedCoinDirectory}/>
 
@@ -105,6 +106,8 @@ const Graphics = () => {
 
         <Price symbol={selectedCoinDirectory} />
       </div>
+      {/* )} */}
+
       {/* {isMobile && (
         <div className="w-full flex flex-col">
           <div className="w-full flex flex-col">

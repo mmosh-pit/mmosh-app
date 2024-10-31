@@ -209,8 +209,9 @@ export const createCoin = async ({
         targetimg: body.image,
         value: Number(supply),
         price: curveConfig.current(),
-        type: "sell",
+        type: "buy",
         wallet: wallet.publicKey.toBase58(),
+        tx: buyres
       };
 
       const tokenParams = {

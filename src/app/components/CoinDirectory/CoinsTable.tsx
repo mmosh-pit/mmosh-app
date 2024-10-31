@@ -43,7 +43,7 @@ const CoinsTable = () => {
       }
       source.current = axios.CancelToken.source();
 
-      const prices = await getBaseTokenPrices()
+      const prices = await getBaseTokenPrices();
 
       const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&sort=${selectedSort.type}&direction=${selectedSort.value}&symbol=${tradingPair}`;
 
@@ -52,7 +52,7 @@ const CoinsTable = () => {
       });
 
       const newCoins = [];
-      let nf = new Intl.NumberFormat('en-US')
+      let nf = new Intl.NumberFormat("en-US");
       for (let index = 0; index < apiResult.data.length; index++) {
         const element = apiResult.data[index];
         const datas = [];
@@ -66,15 +66,15 @@ const CoinsTable = () => {
           datas.push(elementchart.value);
         }
         element.priceLastSevenDays = datas;
-        let marketcap = 0
-        if(element.basesymbol === "PTVB") {
-          marketcap = element.supply * (prices.ptvb * element.lastprice)
-        } else if(element.basesymbol === "PTVR") {
-          marketcap = element.supply * (prices.ptvr * element.lastprice)
+        let marketcap = 0;
+        if (element.basesymbol === "PTVB") {
+          marketcap = element.supply * (prices.ptvb * element.lastprice);
+        } else if (element.basesymbol === "PTVR") {
+          marketcap = element.supply * (prices.ptvr * element.lastprice);
         } else {
-          marketcap = element.supply * (prices.mmosh * element.lastprice)
+          marketcap = element.supply * (prices.mmosh * element.lastprice);
         }
-        element.marketcap = nf.format(marketcap) +" USDC" 
+        element.marketcap = nf.format(marketcap) + " USDC";
         newCoins.push(element);
       }
 
@@ -83,6 +83,7 @@ const CoinsTable = () => {
         setIsLastPage(true);
       }
     } catch (error) {
+      console.error(error);
       setCoins([]);
     }
   };
@@ -206,22 +207,27 @@ const CoinsTable = () => {
   }, [searchText, volume, tradingPair]);
 
   const getBaseTokenPrices = async () => {
-
     let prices = {
       mmosh: 0,
       ptvb: 0,
-      ptvr: 0
-    }
+      ptvr: 0,
+    };
 
     let mmoshResponse = await axios.get(
-      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"
+      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd",
     );
-    prices.mmosh = mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"].price || 0;
-    prices.ptvb = mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"].price || 0;
-    prices.ptvr = mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"].price || 0;
+    prices.mmosh =
+      mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"]
+        ?.price || 0;
+    prices.ptvb =
+      mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"]
+        ?.price || 0;
+    prices.ptvr =
+      mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"]
+        ?.price || 0;
 
-  return prices
-}
+    return prices;
+  };
 
   return (
     <table className="w-full bg-[#100E5242] rounded-md">
@@ -328,9 +334,7 @@ const CoinsTable = () => {
               {getCoinPriceStatus(coin.oneDayPriceStart, coin.oneDayPriceEnd)}
             </td>
 
-            <td align="center">
-              {coin.marketcap}
-            </td>
+            <td align="center">{coin.marketcap}</td>
 
             {/*
 

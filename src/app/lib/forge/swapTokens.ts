@@ -116,7 +116,7 @@ export const swapTokens = async (
   }
 
   try {
-  
+    let tx;
     if (targetToken.token == web3Consts.oposToken.toBase58() || targetToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN || targetToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
       let buyres;
       // if(targetToken.token == web3Consts.oposToken.toBase58()) {
@@ -174,6 +174,7 @@ export const swapTokens = async (
       //   }
       // }
       console.log("buyres ", buyres);
+      tx = buyres
     } else {
         let supply = Math.ceil((targetToken.value - targetToken.value * 0.06))
         let sellres
@@ -273,6 +274,7 @@ export const swapTokens = async (
           });
         // }
         console.log("sellres ", sellres);
+        tx = sellres
 
 
     }
@@ -293,6 +295,7 @@ export const swapTokens = async (
         price: baseToken.value / (targetToken.value - targetToken.value * 0.06),
         type: "buy",
         wallet: wallet.publicKey.toBase58(),
+        tx
       };
     } else {
       params = {
@@ -309,6 +312,7 @@ export const swapTokens = async (
         price: (targetToken.value - targetToken.value * 0.06) / baseToken.value,
         type: "sell",
         wallet: wallet.publicKey.toBase58(),
+        tx
       };
     }
     await saveDirectory(params);

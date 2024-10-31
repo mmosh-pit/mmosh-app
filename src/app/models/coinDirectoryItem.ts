@@ -12,4 +12,5 @@ export type CoinDirectoryItem = {
   price: number;
   type: string;
   wallet: string;
+  tx: String
 };

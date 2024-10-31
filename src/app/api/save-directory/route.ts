@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     usdcPrice: params.value * usdcPrice,
     type: params.type,
     wallet: params.wallet,
+    tx: params.tx,
     created_date: new Date(),
     updated_date: new Date(),
   });

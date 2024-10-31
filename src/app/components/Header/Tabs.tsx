@@ -95,7 +95,7 @@ const Tabs = () => {
         </div>
 
         {isCreateOpen && (
-          <div className="flex flex-col py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg">
+          <div className="flex flex-col w-[150px] py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg">
             <p
               className="text-sm text-white mb-2"
               onClick={() => router.push("/create/profile")}
@@ -122,9 +122,10 @@ const Tabs = () => {
             </p>
             <p
               className="text-sm text-white"
-              onClick={() => router.push("/create/create_projects")}
+              onClick={() => router.push("/projects")}
             >
               Projects
+              <sub className="text-[0.5rem] ml-1">(Coming soon)</sub>
             </p>
           </div>
         )}

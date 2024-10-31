@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
 
     const pKeyDecrypted = btoa(decryptData(pKey));
 
-    return NextResponse.json(pKeyDecrypted, { status: 400 });
+    return NextResponse.json(pKeyDecrypted, { status: 200 });
   }
 
   const user = await collection.findOne({

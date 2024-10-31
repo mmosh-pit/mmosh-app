@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   const basesymbol = searchParams.get("symbol");
 
   let wallet = new NodeWallet(new Keypair());
-  const connection = new Connection("https://api.devnet.solana.com", {
+  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
     confirmTransactionInitialTimeout: 120000
   });
 

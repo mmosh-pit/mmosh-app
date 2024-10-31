@@ -291,7 +291,7 @@ export const swapTokens = async (
         targetimg: baseToken.image,
         value: targetToken.value - targetToken.value * 0.06,
         price: baseToken.value / (targetToken.value - targetToken.value * 0.06),
-        type: "sell",
+        type: "buy",
         wallet: wallet.publicKey.toBase58(),
       };
     } else {
@@ -307,7 +307,7 @@ export const swapTokens = async (
         targetimg: targetToken.image,
         value: baseToken.value,
         price: (targetToken.value - targetToken.value * 0.06) / baseToken.value,
-        type: "buy",
+        type: "sell",
         wallet: wallet.publicKey.toBase58(),
       };
     }

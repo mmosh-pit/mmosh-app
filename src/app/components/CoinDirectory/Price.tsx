@@ -110,7 +110,9 @@ const Price = ({ height, base, coin, supply }: Props) => {
       let apiResponse = await axios.get(
         `https://api.jup.ag/price/v2?ids=` + key,
       );
-      price = apiResponse.data.data[key].price;
+      if(apiResponse.data.data[key]) {
+        price = apiResponse.data.data[key].price;
+      }
     }
     return price;
   };

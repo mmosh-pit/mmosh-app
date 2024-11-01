@@ -95,22 +95,14 @@ const Price = ({ height, base, coin, supply }: Props) => {
     let price = 0;
     if (base.symbol == "MMOSH") {
       let apiResponse = await axios.get(
-        `https://price.jup.ag/v6/price?ids=MMOSH`,
+        "/api/token/lastprice?key=" + process.env.NEXT_PUBLIC_OPOS_TOKEN,
       );
-      price = apiResponse.data?.data?.MMOSH?.price || 0;
+      price = apiResponse.data.price || 0;
     } else {
-      let key;
-      if (base.symbol == "PTVB") {
-        key = "CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX";
-      } else if (base.symbol == "PTVR") {
-        key = "H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd";
-      } else {
-        key = base.token;
-      }
       let apiResponse = await axios.get(
-        `https://api.jup.ag/price/v2?ids=` + key,
+        `/api/token/lastprice?key=` + base.token,
       );
-      price = apiResponse.data.data[key].price;
+      price = apiResponse.data.price || 0;
     }
     return price;
   };

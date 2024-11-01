@@ -214,18 +214,20 @@ const CoinsTable = () => {
     };
 
     let mmoshResponse = await axios.get(
-      "https://api.jup.ag/price/v2?ids=FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS,CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX,H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd",
+      "/api/token/lastprice?key=" + process.env.NEXT_PUBLIC_OPOS_TOKEN,
     );
-    prices.mmosh =
-      mmoshResponse.data.data["FwfrwnNVLGyS8ucVjWvyoRdFDpTY8w6ACMAxJ4rqGUSS"]
-        ?.price || 0;
-    prices.ptvb =
-      mmoshResponse.data.data["CUQ7Tj9nWHFV39QvyeFCecSRXLGYQNEPTbhu287TdPMX"]
-        ?.price || 0;
-    prices.ptvr =
-      mmoshResponse.data.data["H8hgJsUKwChQ96fRgAtoP3X7dZqCo7XRnUT8CJvLyrgd"]
-        ?.price || 0;
 
+    let ptvbResponse = await axios.get(
+      "/api/token/lastprice?key=" + process.env.NEXT_PUBLIC_PTVB_TOKEN,
+    );
+
+    let ptvrResponse = await axios.get(
+      "/api/token/lastprice?key=" + process.env.NEXT_PUBLIC_PTVR_TOKEN,
+    );
+
+    prices.mmosh = mmoshResponse.data.price || 0;
+    prices.ptvb = ptvbResponse.data.price || 0;
+    prices.ptvr = ptvrResponse.data.price || 0;
     return prices;
   };
 

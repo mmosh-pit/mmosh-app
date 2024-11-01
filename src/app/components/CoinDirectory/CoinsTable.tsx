@@ -66,15 +66,19 @@ const CoinsTable = () => {
           datas.push(elementchart.value);
         }
         element.priceLastSevenDays = datas;
-        let marketcap = 0;
+        let currentprice = 0
         if (element.basesymbol === "PTVB") {
-          marketcap = element.supply * (prices.ptvb * element.lastprice);
+          currentprice = prices.ptvb
         } else if (element.basesymbol === "PTVR") {
-          marketcap = element.supply * (prices.ptvr * element.lastprice);
+          currentprice = prices.ptvr
         } else {
-          marketcap = element.supply * (prices.mmosh * element.lastprice);
+          currentprice = prices.mmosh
         }
-        element.marketcap = nf.format(marketcap) + " USDC";
+        console.log("element.basesymbol ", element.basesymbol)
+        console.log("current price ", currentprice)
+        element.marketcap = nf.format(element.supply * (currentprice * element.lastprice)) + " USDC";
+        element.lastprice = currentprice * element.lastprice
+        element.volume = currentprice * element.volume
         newCoins.push(element);
       }
 
@@ -273,19 +277,19 @@ const CoinsTable = () => {
             </div>
           </th>
 
-          {/*<th align="center">
+          <th align="center">
             <div
               className="flex items-center justify-center"
               onClick={() => handleSortOptionSelect("volume")}
             >
               {selectedSort.type === "volume" && <SortIcon />}
-              <p className="text-white text-sm">Volume%</p>
+              <p className="text-white text-sm">Volume</p>
             </div>
           </th>
 
           <th align="center">
             <p className="text-white text-sm">Last 7 days</p>
-          </th>*/}
+          </th>
         </tr>
       </thead>
 
@@ -326,7 +330,7 @@ const CoinsTable = () => {
               </a>
             </td>
 
-            <td align="center">{getCoinPrice(coin.price, coin.basesymbol)}</td>
+            <td align="center">{coin.lastprice} USDC</td>
 
             <td align="center">
               {getCoinPriceStatus(coin.oneHourPriceStart, coin.oneHourPriceEnd)}
@@ -338,10 +342,10 @@ const CoinsTable = () => {
 
             <td align="center">{coin.marketcap}</td>
 
-            {/*
+            
 
             <td align="center">
-              {getCoinVolume(coin.volume, coin.basesymbol)}
+              {getCoinVolume(coin.volume, coin.basesymbol)} USDC
             </td>
 
             <td align="center">
@@ -361,7 +365,7 @@ const CoinsTable = () => {
                 </LineChart>
               </ResponsiveContainer>
             </td>
-            */}
+           
           </tr>
         ))}
       </tbody>

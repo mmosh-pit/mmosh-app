@@ -22,10 +22,7 @@ export async function GET(req: NextRequest) {
 
   const volumeParam = searchParams.get("volume");
 
-  const sortOption = searchParams.get("sort") as string;
-  const sortDirection = searchParams.get("direction") as string;
-
-  const volume = volumeParam || "hour";
+  const volume = volumeParam || "1h";
 
   const basesymbol = searchParams.get("symbol");
 
@@ -42,6 +39,8 @@ export async function GET(req: NextRequest) {
   const curveConn = new CurveConn(env, web3Consts.programID);
   let nf = new Intl.NumberFormat('en-US')
 
+  let finalResult:any = []
+
   let filter: any = {};
 
   if (keyword) {
@@ -50,17 +49,12 @@ export async function GET(req: NextRequest) {
         {
           $or: [
             {
-              name: {
+              targetname: {
                 $regex: new RegExp(keyword, "ig"),
               },
             },
             {
-              symbol: {
-                $regex: new RegExp(keyword, "ig"),
-              },
-            },
-            {
-              token: {
+              targetsymbol: {
                 $regex: new RegExp(keyword, "ig"),
               },
             },
@@ -78,25 +72,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const sortFilter: Sort = {};
-
-  const directionValue = sortDirection === "ASC" ? 1 : -1;
-
-  if (sortOption === "coin") {
-    sortFilter["name"] = directionValue;
-  } else {
-    sortFilter["created_date"] = -1;
-  }
-
-  const otherCoins = await collection
-    .find(filter)
-    .sort(sortFilter)
-    .skip(offset)
-    .limit(limit)
-    .toArray();
-
-  const tokenResults = [...otherCoins];
-
   const d = new Date();
   let filterDate;
 
@@ -112,71 +87,69 @@ export async function GET(req: NextRequest) {
     filterDate = new Date(d.setFullYear(d.getFullYear() - 1));
   }
 
-  const finalResult = [];
 
-  for (let index = 0; index < tokenResults.length; index++) {
-    const element = tokenResults[index];
+  if (filter.$and) {
+    filter.$and = [...filter.$and, { created_date: { $gte: filterDate }}];
+  } else {
+    filter.$and = [{ created_date: { $gte: filterDate }}];
+  }
 
 
-    let supply: any = await getSupply(element.bonding, curveConn)
-    let priceresult = await tokenPriceCollection.find({key: element.bonding}).limit(1).sort({ created_date: -1 }).toArray()
-    let price = 0;
-    if(priceresult.length > 0) {
-      price = priceresult[0].price
-    }
+  console.log("filter", filter)
 
-    // total volume calculation
-    const volumeresult = await directoryCollection
-      .aggregate([
-        {
-          $match: {
-            bonding: element.bonding,
-            created_date: { $gte: filterDate },
-          },
+  const volumeresult = await directoryCollection
+    .aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $group: {
+          _id: "$bonding",
+          totalAmount: { $sum: "$value" },
+          count: { $sum: 1 },
         },
-        {
-          $group: {
-            _id: {},
-            totalAmount: { $sum: "$value" },
-            count: { $sum: 1 },
-          },
+      },
+      {
+        $project: {
+          targetname: 1,
+          targetsymbol: 1,
+          targetimg: 1,
+          basesymbol:1,
+          totalAmount:1
         },
-      ])
-      .toArray();
+      },
+    ])
+    .sort({totalAmount: -1})
+    .skip(offset)
+    .limit(limit)
+    .toArray();
 
-    let totalVolume = 0;
-    for (let index = 0; index < volumeresult.length; index++) {
-      const volumeelement = volumeresult[index];
-      totalVolume = volumeelement.totalAmount;
+  for (let index = 0; index < volumeresult.length; index++) {
+    const element = volumeresult[index];
+    const details = await collection.findOne({bonding: element._id})
+    if(!details) {
+      continue
     }
 
     // last hour price
     const onehourResult1 = await directoryCollection
-      .find({
-        bonding: element.bonding,
-        created_date: {
-          $lte: new Date(new Date().setHours(new Date().getHours() - 1)),
-        },
-      })
-      .sort({ created_date: 1 })
-      .limit(1)
-      .toArray();
-
-    const priceSortFilter: Sort = {};
-
-    if (sortOption === "price" || sortOption === "fdv") {
-      priceSortFilter["price"] = directionValue;
-    } else {
-      priceSortFilter["created_date"] = 1;
-    }
+    .find({
+      bonding: element._id,
+      created_date: {
+        $lte: new Date(new Date().setHours(new Date().getHours() - 1)),
+      },
+    })
+    .sort({ created_date: -1 })
+    .limit(1)
+    .toArray();
 
     const onehourResult2 = await directoryCollection
-      .find({
-        bonding: element.bonding,
-      })
-      .sort(priceSortFilter)
-      .limit(1)
-      .toArray();
+    .find({
+      bonding: element._id,
+    })
+    .sort({ created_date: -1 })
+    .limit(1)
+    .toArray();
 
     let oneHourPriceStart = 0;
     for (let index = 0; index < onehourResult1.length; index++) {
@@ -190,23 +163,24 @@ export async function GET(req: NextRequest) {
       oneHourPriceEnd = volumeelement.price;
     }
 
+
     // last day price
     const oneDatResult1 = await directoryCollection
       .find({
-        bonding: element.bonding,
+        bonding: element._id,
         created_date: {
           $lte: new Date(new Date().setDate(new Date().getDate() - 1)),
         },
       })
-      .sort({ created_date: 1 })
+      .sort({ created_date: -1 })
       .limit(1)
       .toArray();
 
     const oneDatResult2 = await directoryCollection
       .find({
-        bonding: element.bonding,
+        bonding: element._id,
       })
-      .sort({ created_date: 1 })
+      .sort({ created_date: -1 })
       .limit(1)
       .toArray();
 
@@ -221,6 +195,16 @@ export async function GET(req: NextRequest) {
       const volumeelement = oneDatResult2[index];
       oneDayPriceEnd = volumeelement.price;
     }
+
+
+    let supply: any = await getSupply(element._id, curveConn)
+    let priceresult = await tokenPriceCollection.find({key: element._id}).limit(1).sort({ created_date: -1 }).toArray()
+    let price = 0;
+    if(priceresult.length > 0) {
+      price = priceresult[0].price
+    }
+
+
 
     const labels = [];
     for (let index = 0; index < 7; index++) {
@@ -268,23 +252,23 @@ export async function GET(req: NextRequest) {
     }
 
     finalResult.push({
-      name: element.name,
-      symbol: element.symbol,
-      image: element.image,
-      address: element.address,
-      bonding: element.bonding,
+      name: details.name,
+      symbol: details.symbol,
+      image: details.image,
+      bonding: element._id,
+      volume: element.totalAmount,
+      basesymbol: details.basesymbol,
       oneHourPriceStart,
       oneHourPriceEnd,
       oneDayPriceStart,
       oneDayPriceEnd,
-      volume: totalVolume,
-      price: oneHourPriceEnd,
+      supply,
+      lastprice: price,
       priceLastSevenDays: labels,
-      basesymbol: element.basesymbol,
-      supply: supply,
-      lastprice: price
-    });
+    })
+    
   }
+
 
   return NextResponse.json(finalResult, {
     status: 200,

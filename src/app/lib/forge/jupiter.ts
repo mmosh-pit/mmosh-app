@@ -40,9 +40,9 @@ export const getquote = async (params: JupQuoteParams) => {
 export const getPriceForPTV = async (tokenAddress: any) => {
   try {
     const result = await axios.get(
-      "https://api.jup.ag/price/v2?ids=" + tokenAddress,
+      "/api/token/lastprice?key=" + tokenAddress,
     );
-    return result.data.data[tokenAddress].price || 0;
+    return result.data.price || 0;
   } catch (error) {
     return 0;
   }

@@ -14,27 +14,46 @@ const Settings = () => {
 
   const [isPrivateKeyVisible, setIsPrivateKeyVisible] = React.useState(false);
   const [privateKey, setPrivateKey] = React.useState("");
+  const [publicKey, setPublicKey] = React.useState("");
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
+
+  const [isTooltip2Shown, setIsTooltip2Shown] = React.useState(false);
 
   const fetchPrivateKey = React.useCallback(async () => {
     const res = await axios.get(
       `/api/get-user-private-key?id=${currentUser?.telegram?.id}`,
     );
-    const pKey = res.data;
+
+    const data = res.data;
+
+    const pKey = data.privateKey;
+    const publicKey = data.publicKey;
 
     if (!pKey) return;
 
     setPrivateKey(atob(pKey));
+    setPublicKey(publicKey);
   }, []);
 
-  const copyToClipboard = React.useCallback(async (text: string) => {
-    setIsTooltipShown(true);
-    await navigator.clipboard.writeText(text);
+  const copyToClipboard = React.useCallback(
+    async (text: string, publicKey = false) => {
+      if (publicKey) {
+        setIsTooltip2Shown(true);
+      } else {
+        setIsTooltipShown(true);
+      }
+      await navigator.clipboard.writeText(text);
 
-    setTimeout(() => {
-      setIsTooltipShown(false);
-    }, 2000);
-  }, []);
+      setTimeout(() => {
+        if (publicKey) {
+          setIsTooltip2Shown(false);
+        } else {
+          setIsTooltipShown(false);
+        }
+      }, 2000);
+    },
+    [],
+  );
 
   React.useEffect(() => {
     fetchPrivateKey();
@@ -59,49 +78,84 @@ const Settings = () => {
           </p>
         </div>
 
-        <div className="my-2">
-          <p className="text-base text-white">Private Key</p>
-        </div>
-
-        <div className="lg:w-[30%] md:w-[45%] sm:w-[80%] w-[90%] min-h-[8vmax] bg-[#030007] bg-opacity-[0.33] rounded-md p-8">
-          <div className="flex flex-col bg-[#02001A] rounded-md p-8">
-            <div className="ml-4 mb-4">
-              <p className="text-base text-white font-goudy">
-                Show Private Key
-              </p>
+        <div className="flex md:flex-row flex-col">
+          <div className="lg:w-[30%] md:w-[45%] sm:w-[80%] w-[90%] flex flex-col">
+            <div className="my-2">
+              <p className="text-base text-white">Public Key</p>
             </div>
 
-            <div className="flex min-h-[4vmax] relative border-[1px] border-[#1B1B1B] rounded-md p-4">
-              <div
-                className={`w-[90%] ${!isPrivateKeyVisible && "filter blur-lg"}`}
-              >
-                <p className="text-sm word-break-text">{privateKey}</p>
+            <div className="w-full min-h-[8vmax] bg-[#030007] bg-opacity-[0.33] rounded-md p-8">
+              <div className="flex flex-col bg-[#02001A] rounded-md p-8">
+                <div className="ml-4 mb-4">
+                  <p className="text-base text-white font-goudy">
+                    Show Public Key
+                  </p>
+                </div>
+
+                <div className="flex min-h-[4vmax] relative border-[1px] border-[#1B1B1B] rounded-md p-4">
+                  <p className="text-sm word-break-text">{publicKey}</p>
+                  <div
+                    className="cursor-pointer ml-4 mt-8"
+                    onClick={() => copyToClipboard(publicKey, true)}
+                  >
+                    {isTooltip2Shown && (
+                      <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
+                        Copied!
+                      </div>
+                    )}
+                    <CopyIcon />
+                  </div>
+                </div>
               </div>
-              {isPrivateKeyVisible && (
-                <div
-                  className="cursor-pointer ml-4 mt-8"
-                  onClick={() => copyToClipboard(privateKey)}
-                >
-                  {isTooltipShown && (
-                    <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
-                      Copied!
+            </div>
+          </div>
+
+          <div className="md:ml-12 md:mt-0 mt-12 lg:w-[30%] md:w-[45%] sm:w-[80%] w-[90%] flex flex-col">
+            <div className="my-2">
+              <p className="text-base text-white">Private Key</p>
+            </div>
+
+            <div className="w-full min-h-[8vmax] bg-[#030007] bg-opacity-[0.33] rounded-md p-8">
+              <div className="flex flex-col bg-[#02001A] rounded-md p-8">
+                <div className="ml-4 mb-4">
+                  <p className="text-base text-white font-goudy">
+                    Show Private Key
+                  </p>
+                </div>
+
+                <div className="flex min-h-[4vmax] relative border-[1px] border-[#1B1B1B] rounded-md p-4">
+                  <div
+                    className={`${!isPrivateKeyVisible && "filter blur-lg"}`}
+                  >
+                    <p className="text-sm word-break-text">{privateKey}</p>
+                  </div>
+                  {isPrivateKeyVisible && (
+                    <div
+                      className="cursor-pointer ml-4 mt-8"
+                      onClick={() => copyToClipboard(privateKey)}
+                    >
+                      {isTooltipShown && (
+                        <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
+                          Copied!
+                        </div>
+                      )}
+                      <CopyIcon />
                     </div>
                   )}
-                  <CopyIcon />
                 </div>
-              )}
+
+                <label>*Never share your Private Key</label>
+
+                <button
+                  className="relative bg-[#CD068E] py-4 px-4 rounded-md mt-4"
+                  onClick={() => setIsPrivateKeyVisible(!isPrivateKeyVisible)}
+                >
+                  <p className="text-base text-white">
+                    {!isPrivateKeyVisible ? "Show" : "Hide"}
+                  </p>
+                </button>
+              </div>
             </div>
-
-            <label>*Never share your Private Key</label>
-
-            <button
-              className="relative bg-[#CD068E] py-4 px-4 rounded-md mt-4"
-              onClick={() => setIsPrivateKeyVisible(!isPrivateKeyVisible)}
-            >
-              <p className="text-base text-white">
-                {!isPrivateKeyVisible ? "Show" : "Hide"}
-              </p>
-            </button>
           </div>
         </div>
       </div>

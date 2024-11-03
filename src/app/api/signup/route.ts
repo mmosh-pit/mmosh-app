@@ -76,13 +76,18 @@ const sendKartaNotification = async (name: string, email: string) => {
       },
     ],
   };
-  const result = await axios({
-    method: "post",
-    url: process.env.KARTA_API_BASE,
-    headers: {
-      "Content-Type": `application/x-www-form-urlencoded`,
-    },
-    data,
-  });
-  console.log("sendKartaNotification ", result.data);
+
+  try {
+    const result = await axios({
+      method: "post",
+      url: process.env.KARTA_API_BASE,
+      headers: {
+        "Content-Type": `application/x-www-form-urlencoded`,
+      },
+      data,
+    });
+    console.log("sendKartaNotification ", result.data);
+  } catch (err) {
+    console.error(err);
+  }
 };

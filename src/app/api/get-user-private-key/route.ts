@@ -46,7 +46,13 @@ export async function GET(req: NextRequest) {
 
     const pKeyDecrypted = btoa(decryptData(pKey));
 
-    return NextResponse.json(pKeyDecrypted, { status: 200 });
+    return NextResponse.json(
+      {
+        privateKey: pKeyDecrypted,
+        publicKey: user.address,
+      },
+      { status: 200 },
+    );
   }
 
   const user = await collection.findOne({
@@ -59,7 +65,13 @@ export async function GET(req: NextRequest) {
 
   const pKeyDecrypted = btoa(decryptData(pKey));
 
-  return NextResponse.json(pKeyDecrypted, {
-    status: 200,
-  });
+  return NextResponse.json(
+    {
+      privateKey: pKeyDecrypted,
+      publicKey: user.addressPublicKey,
+    },
+    {
+      status: 200,
+    },
+  );
 }

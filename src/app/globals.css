@@ -965,9 +965,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   min-height: 56px;
 }
 
-.apexcharts-toolbar {
-  display: none !important;
-}
 
 /* TOS styles */
 

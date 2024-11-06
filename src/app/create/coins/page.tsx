@@ -227,9 +227,6 @@ const CreateCoin = () => {
       };
 
       const res = await createProjectCoin(params);
-      setIsLoading(false);
-      setMessage({ type: res.type, message: res.message });
-      setMintingStatus("Mint and Swap");
 
       const fileUrls = [];
 
@@ -260,12 +257,18 @@ const CreateCoin = () => {
         formData,
       );
 
-      if (res.type === "success") {
-        setForm({ ...defaultFormState });
-        setImage(null);
-        setPreview("");
-        setFiles([]);
-      }
+      setIsLoading(false);
+      setMessage({ type: res.type, message: res.message });
+      setMintingStatus("Mint and Swap");
+
+      setTimeout(() => {
+        if (res.type === "success") {
+          setForm({ ...defaultFormState });
+          setImage(null);
+          setPreview("");
+          setFiles([]);
+        }
+      }, 5000);
     } else {
       const multiplier = form.bonding === "linear" ? 0 : form.multiplier;
       const initialPrice = form.bonding === "linear" ? form.initialPrice : 0;

@@ -61,7 +61,9 @@ const AIChat = ({ candidateInfo }: Props) => {
             body: JSON.stringify({
               username: currentUser!.profile.username,
               prompt: currentText,
-              coinsList: [], // Add coin list if needed e.g coinsList: ["BTC", "Eth"]
+              metadata: JSON.stringify({
+                ...candidateInfo.candidate,
+              }),
             }),
           },
         );

@@ -52,7 +52,7 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
   }
 
   return (
-    <div className="w-full h-full background-content mix-blend-hard-light">
+    <div className="w-full h-full background-content">
       <div className="w-full h-full flex flex-col md:px-16 px-4 mt-16 justify-between relative">
         <div className="w-full flex justify-evenly">
           {candidateInfo.candidate && (

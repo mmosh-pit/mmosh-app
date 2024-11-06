@@ -230,7 +230,7 @@ const Candidates = () => {
 
   return (
     <div
-      className="w-full h-full background-content max-h-[500px] mix-blend-hard-light"
+      className="w-full h-full background-content max-h-[500px]"
       onScroll={handleScroll}
       ref={containerRef}
     >

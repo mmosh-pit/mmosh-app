@@ -73,7 +73,20 @@ const TransactionsTable = ({ coin, base }: Props) => {
             <th align="center">
               <p className="text-white text-sm">Type</p>
             </th>
+
             <th align="center">
+              <p className="text-white text-sm">Price</p>
+            </th>
+
+            <th align="center">
+              <p className="text-white text-sm">Amount</p>
+            </th>
+
+            <th align="center">
+              <p className="text-white text-sm">Total</p>
+            </th>
+
+            {/* <th align="center">
               <p className="text-white text-sm">{base.symbol}</p>
             </th>
 
@@ -84,10 +97,10 @@ const TransactionsTable = ({ coin, base }: Props) => {
             <th align="center">
               <p className="text-white text-sm">USD</p>
             </th>
-
+  */}
             <th align="center">
               <p className="text-white text-sm">Wallet</p>
-            </th>
+            </th> 
           </tr>
         </thead>
 
@@ -117,35 +130,20 @@ const TransactionsTable = ({ coin, base }: Props) => {
 
               <td align="center">
                 <p className="text-white text-sm">
-                  {currencyFormatter(item.value).replace("$", "")}
+                  {item.value / (item.price * item.value)} {item.basesymbol.toUpperCase()}
                 </p>
-              </td>
-
-              <td align="center">
-                <div className="w-full flex items-center justify-around">
-                  <div className="flex">
-                    <p className="text-white font-normal text-sm">
-                      {item.price}
-                    </p>
-                    <div className="relative w-[1vmax] h-[1vmax] mx-2">
-                      <Image
-                        src={item.targetimg}
-                        alt="mmosh"
-                        layout="fill"
-                        className="rounded-full"
-                      />
-                    </div>
-                    <p className="text-white font-normal text-sm">
-                      {item.targetsymbol}
-                    </p>
-                  </div>
-                </div>
               </td>
 
               <td align="center">
                 <p className="text-white text-sm">
-                  {currencyFormatter(item.usdcPrice || 0)}
-                </p>
+                  {item.price * item.value} {item.targetsymbol.toUpperCase()}
+                 </p>
+              </td>
+
+              <td align="center">
+                <p className="text-white text-sm">
+                  {item.usdcPrice * item.value} USDC
+                 </p>
               </td>
 
               <td align="center">

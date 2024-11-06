@@ -10,6 +10,7 @@ import axios from "axios";
 import { CoinDirectoryItem } from "@/app/models/coinDirectoryItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import { list } from "firebase/storage";
+import { getPriceForPTV } from "./jupiter";
 
 export const swapTokens = async (
   baseToken: SwapCoin,
@@ -315,6 +316,25 @@ export const swapTokens = async (
         tx
       };
     }
+
+    let creator =  wallet.publicKey.toBase58().substring(0,5) + "..." + wallet.publicKey.toBase58().substring(wallet.publicKey.toBase58().length - 5)
+    if(hasProfile) {
+      if(creatorInfo.data.telegram) {
+        creator = "@"+creatorInfo.data.telegram.username
+      } else {
+        if(creatorInfo.data.profile) {
+          creator = creatorInfo.data.profile.username
+        }
+      }
+    }
+
+    let supply = 0
+    if(tokenBondingAcct) {
+      supply = tokenBondingAcct.supplyFromBonding.toNumber() / web3Consts.LAMPORTS_PER_OPOS
+    }
+
+
+    await sendTelegramNotification(params, creator, supply);
     await saveDirectory(params);
 
     await userConn.storeRoyalty(
@@ -357,3 +377,54 @@ export const swapTokens = async (
 const saveDirectory = async (params: CoinDirectoryItem) => {
   await axios.post("/api/save-directory", params);
 };
+
+
+const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any, supply: any) => {
+  try {
+
+    let usdcPrice;
+
+
+    if(params.basesymbol === "PTVB") {
+      let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
+      usdcPrice = result > 0 ? result : 0.0003;
+    } else if(params.basesymbol === "PTVR") {
+      let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
+      usdcPrice = result > 0 ? result : 0.0003;
+    } else {
+      let apiResponse  = await axios.get(
+        `https://price.jup.ag/v6/price?ids=MMOSH`,
+      );
+      usdcPrice = apiResponse.data?.data?.MMOSH?.price || 0;
+    }
+
+    let communityCoinPrice = params.value /  (params.value * params.price)
+    
+    const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
+  
+    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+  
+    let swapType = params.type === "sell" ? "Sold!" : "Bought!"
+    let swapTypeSymbol = params.type === "sell" ? "-" : "+"
+    let swapMessage = params.type === "sell" ? creator+" reduced their position" : "Thank you "+creator+" for Pumping the Vote!"
+  
+    let text = params.targetname + " " + swapType +"\n"
+    text = text + (params.value * params.price) + " " + params.targetsymbol.toUpperCase() + " " + swapTypeSymbol +"\n";
+    text = text + params.value + " " + params.basesymbol.toUpperCase() +"\n";
+    text = text + params.value * usdcPrice + " USDC\n";
+    text = text + "Fully Diluted Value " + ((supply + (params.value * params.price)) * communityCoinPrice) * usdcPrice + " USDC\n";
+    text = text + swapMessage + " \n";
+    const response = await axios.post(telegramUrl, {
+      chat_id: chatId,
+      text: text,
+      reply_markup: {inline_keyboard: [[
+        {text: "Swap", url: "https://www.liquidhearts.app/swap"},
+        {text: "View", url: "https://www.liquidhearts.app/coins/" + params.targetsymbol}
+      ]]}
+    });
+  } catch (error) {
+    console.log("sendTelegramNotification err ", error)
+  }
+
+}

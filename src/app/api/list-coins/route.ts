@@ -1,7 +1,5 @@
-import { Filter, Sort } from "mongodb";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Connection, Keypair } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
@@ -13,11 +11,10 @@ export async function GET(req: NextRequest) {
   const directoryCollection = db.collection("mmosh-app-directory");
   const tokenPriceCollection = db.collection("mmosh-app-token-price");
 
-
   const { searchParams } = new URL(req.url);
 
   const keyword = searchParams.get("keyword");
-  const limit = 10;
+  const limit = 20;
   const offset = Number(searchParams.get("page")) * limit;
 
   const volumeParam = searchParams.get("volume");
@@ -28,7 +25,7 @@ export async function GET(req: NextRequest) {
 
   let wallet = new NodeWallet(new Keypair());
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-    confirmTransactionInitialTimeout: 120000
+    confirmTransactionInitialTimeout: 120000,
   });
 
   const env = new anchor.AnchorProvider(connection, wallet, {
@@ -37,9 +34,9 @@ export async function GET(req: NextRequest) {
 
   anchor.setProvider(env);
   const curveConn = new CurveConn(env, web3Consts.programID);
-  let nf = new Intl.NumberFormat('en-US')
+  let nf = new Intl.NumberFormat("en-US");
 
-  let finalResult:any = []
+  let finalResult: any = [];
 
   let filter: any = {};
 
@@ -87,15 +84,13 @@ export async function GET(req: NextRequest) {
     filterDate = new Date(d.setFullYear(d.getFullYear() - 1));
   }
 
-
   if (filter.$and) {
-    filter.$and = [...filter.$and, { created_date: { $gte: filterDate }}];
+    filter.$and = [...filter.$and, { created_date: { $gte: filterDate } }];
   } else {
-    filter.$and = [{ created_date: { $gte: filterDate }}];
+    filter.$and = [{ created_date: { $gte: filterDate } }];
   }
 
-
-  console.log("filter", filter)
+  console.log("filter", filter);
 
   const volumeresult = await directoryCollection
     .aggregate([
@@ -114,42 +109,42 @@ export async function GET(req: NextRequest) {
           targetname: 1,
           targetsymbol: 1,
           targetimg: 1,
-          basesymbol:1,
-          totalAmount:1
+          basesymbol: 1,
+          totalAmount: 1,
         },
       },
     ])
-    .sort({totalAmount: -1})
+    .sort({ totalAmount: -1 })
     .skip(offset)
     .limit(limit)
     .toArray();
 
   for (let index = 0; index < volumeresult.length; index++) {
     const element = volumeresult[index];
-    const details = await collection.findOne({bonding: element._id})
-    if(!details) {
-      continue
+    const details = await collection.findOne({ bonding: element._id });
+    if (!details) {
+      continue;
     }
 
     // last hour price
     const onehourResult1 = await directoryCollection
-    .find({
-      bonding: element._id,
-      created_date: {
-        $lte: new Date(new Date().setHours(new Date().getHours() - 1)),
-      },
-    })
-    .sort({ created_date: -1 })
-    .limit(1)
-    .toArray();
+      .find({
+        bonding: element._id,
+        created_date: {
+          $lte: new Date(new Date().setHours(new Date().getHours() - 1)),
+        },
+      })
+      .sort({ created_date: -1 })
+      .limit(1)
+      .toArray();
 
     const onehourResult2 = await directoryCollection
-    .find({
-      bonding: element._id,
-    })
-    .sort({ created_date: -1 })
-    .limit(1)
-    .toArray();
+      .find({
+        bonding: element._id,
+      })
+      .sort({ created_date: -1 })
+      .limit(1)
+      .toArray();
 
     let oneHourPriceStart = 0;
     for (let index = 0; index < onehourResult1.length; index++) {
@@ -162,7 +157,6 @@ export async function GET(req: NextRequest) {
       const volumeelement = onehourResult2[index];
       oneHourPriceEnd = volumeelement.price;
     }
-
 
     // last day price
     const oneDatResult1 = await directoryCollection
@@ -196,15 +190,16 @@ export async function GET(req: NextRequest) {
       oneDayPriceEnd = volumeelement.price;
     }
 
-
-    let supply: any = await getSupply(element._id, curveConn)
-    let priceresult = await tokenPriceCollection.find({key: element._id}).limit(1).sort({ created_date: -1 }).toArray()
+    let supply: any = await getSupply(element._id, curveConn);
+    let priceresult = await tokenPriceCollection
+      .find({ key: element._id })
+      .limit(1)
+      .sort({ created_date: -1 })
+      .toArray();
     let price = 0;
-    if(priceresult.length > 0) {
-      price = priceresult[0].price
+    if (priceresult.length > 0) {
+      price = priceresult[0].price;
     }
-
-
 
     const labels = [];
     for (let index = 0; index < 7; index++) {
@@ -265,10 +260,8 @@ export async function GET(req: NextRequest) {
       supply,
       lastprice: price,
       priceLastSevenDays: labels,
-    })
-    
+    });
   }
-
 
   return NextResponse.json(finalResult, {
     status: 200,
@@ -276,17 +269,20 @@ export async function GET(req: NextRequest) {
 }
 
 const getSupply = async (bonding: any, curveConn: CurveConn) => {
-   try {
+  try {
     const bondingResult = await curveConn.getTokenBonding(
       new anchor.web3.PublicKey(bonding),
     );
-    if(bondingResult) {
-      return (bondingResult.supplyFromBonding.toNumber() / web3Consts.LAMPORTS_PER_OPOS)
+    if (bondingResult) {
+      return (
+        bondingResult.supplyFromBonding.toNumber() /
+        web3Consts.LAMPORTS_PER_OPOS
+      );
     } else {
-      return 0
+      return 0;
     }
-   } catch (error) {
-     console.log("error ", error)
-     return 0
-   }
-}
+  } catch (error) {
+    console.log("error ", error);
+    return 0;
+  }
+};

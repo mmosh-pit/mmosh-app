@@ -2,7 +2,6 @@ import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import { data, userWeb3Info, web3InfoLoading } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
@@ -12,6 +11,7 @@ import Input from "../common/Input";
 import Select from "../common/Select";
 import Button from "../common/Button";
 import BalanceBox from "../common/BalanceBox";
+import useWallet from "@/utils/wallet";
 
 const PronounsSelectOptions = [
   {
@@ -29,7 +29,7 @@ const PronounsSelectOptions = [
 ];
 
 const CreateProfile = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const navigate = useRouter();
   const [profileInfo] = useAtom(userWeb3Info);
   const [isLoadingProfile] = useAtom(web3InfoLoading);

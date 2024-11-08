@@ -1,7 +1,6 @@
 import * as React from "react";
 import Image from "next/image";
 import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import { Coin } from "@/app/models/coin";
 import Input from "../../common/Input";
@@ -9,6 +8,7 @@ import Button from "../../common/Button";
 import { mintCommunityPass } from "@/app/lib/forge/mintCommunityPass";
 import { pageCommunity, targetTokenBalance } from "@/app/store/community";
 import { userWeb3Info } from "@/app/store";
+import useWallet from "@/utils/wallet";
 
 type Props = {
   image: string;
@@ -28,7 +28,7 @@ const CommunityPassMint = ({
   const [community] = useAtom(pageCommunity);
   const [userInfo] = useAtom(userWeb3Info);
 
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [isLoading, setIsLoading] = React.useState(false);
   const [amountToMint, setAmountToMint] = React.useState(0);
   const [mintStatus, setMintStatus] = React.useState("Mint");
@@ -69,7 +69,7 @@ const CommunityPassMint = ({
       return;
     }
 
-    if(projectInfo?.invitationPrice > 0) {
+    if (projectInfo?.invitationPrice > 0) {
       if (projectInfo?.activationTokens?.length <= 0) {
         setResult({
           type: "info",

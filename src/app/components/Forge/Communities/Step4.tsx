@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import SimpleInput from "../../common/SimpleInput";
 import Card from "../common/Card";
@@ -24,10 +23,11 @@ import { useRouter } from "next/navigation";
 import { generateCommunityGenesisImage } from "@/app/lib/forge/generateCommunityGenesisImage";
 import { fetchImage } from "@/app/lib/forge/fetchImage";
 import { generateCommunityInvitationImage } from "@/app/lib/forge/generateCommunityInvitationImage";
+import useWallet from "@/utils/wallet";
 
 const Step4 = () => {
   const navigate = useRouter();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   const [currentUser] = useAtom(data);
   const [_, setCurrentStep] = useAtom(step);
@@ -78,7 +78,6 @@ const Step4 = () => {
     if (!firstForm.preview || !thirdForm.coin) return;
     generateImages();
   }, [thirdForm, firstForm]);
-
 
   const mintCommunity = React.useCallback(async () => {
     setMessage({ type: "", message: "" });

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
 
 import { User } from "@/app/models/user";
 import TelegramMagentaIcon from "@/assets/icons/TelegramMagentaIcon";
+import useWallet from "@/utils/wallet";
 
 type Props = {
   isMyProfile: boolean;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   // const [isDisconnecting, setIsDisconnecting] = React.useState(false);
   // const [isConnecting, setIsConnecting] = React.useState(false);
 

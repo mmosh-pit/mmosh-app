@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import {
+  appPrivateKey,
+  appPublicKey,
   data,
   incomingWallet,
   isAuth,
@@ -31,12 +32,13 @@ import { currentGroupCommunity } from "../store/community";
 import LHCIcon from "@/assets/icons/LHCIcon";
 import { init } from "../lib/firebase";
 import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
+import useWallet from "@/utils/wallet";
 
 const Header = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const rendered = React.useRef(false);
 
   const renderedUserInfo = React.useRef(false);
@@ -45,6 +47,8 @@ const Header = () => {
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
   const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
+  const [______, setPrivateKey] = useAtom(appPrivateKey);
+  const [_______, setPublicKey] = useAtom(appPublicKey);
   const [userStatus] = useAtom(status);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
@@ -247,16 +251,25 @@ const Header = () => {
     setShowAuthOverlay(true);
   };
 
+  const fetchPrivateKey = React.useCallback(async () => {
+    if (!isUserAuthenticated) return;
+
+    const res = await axios.get(`/api/get-user-private-key`);
+
+    const data = res.data;
+
+    const pKey = data.privateKey;
+    const publicKey = data.publicKey;
+
+    if (!pKey) return;
+
+    setPrivateKey(atob(pKey));
+    setPublicKey(publicKey);
+  }, [isUserAuthenticated]);
+
   React.useEffect(() => {
-    async () => {
-      if (wallet && isUserAuthenticated) {
-        // await axios.post("/api/link-wallet", {
-        //   wallet: wallet.publicKey,
-        //   appWallet:
-        //   });
-      }
-    };
-  }, [wallet]);
+    fetchPrivateKey();
+  }, [isUserAuthenticated]);
 
   const isMobileScreen = screenSize < 1200;
 

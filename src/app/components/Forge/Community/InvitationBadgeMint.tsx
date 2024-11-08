@@ -6,9 +6,9 @@ import { Coin } from "@/app/models/coin";
 import Input from "../../common/Input";
 import Button from "../../common/Button";
 import { mintInvitation } from "@/app/lib/forge/mintInvitation";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { pageCommunity, targetTokenBalance } from "@/app/store/community";
 import { data } from "@/app/store";
+import useWallet from "@/utils/wallet";
 
 type Props = {
   image: string;
@@ -28,7 +28,7 @@ const InvitationBadgeMint = ({
   const [community] = useAtom(pageCommunity);
   const [currentUser] = useAtom(data);
 
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [isLoading, setIsLoading] = React.useState(false);
   const [amountToMint, setAmountToMint] = React.useState(0);
 

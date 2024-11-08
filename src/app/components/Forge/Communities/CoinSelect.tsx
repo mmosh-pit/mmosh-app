@@ -1,7 +1,6 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import Image from "next/image";
 
 import { Coin } from "@/app/models/coin";
@@ -12,6 +11,7 @@ import CoinListItem from "../../common/CoinListItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import CloseIcon from "@/assets/icons/CloseIcon";
 import { networkCoins, communityCoins } from "@/app/lib/forge/jupiter";
+import useWallet from "@/utils/wallet";
 
 type Props = {
   selectedCoin: SwapCoin | null;
@@ -19,7 +19,7 @@ type Props = {
 };
 
 const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
 
   const fetching = React.useRef(false);

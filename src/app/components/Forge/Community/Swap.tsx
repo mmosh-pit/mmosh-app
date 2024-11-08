@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { useAtom } from "jotai";
 import Image from "next/image";
 
@@ -13,13 +12,14 @@ import { targetTokenBalance } from "@/app/store/community";
 import { BondingPricing } from "@/anchor/curve/curves";
 import { web3Consts } from "@/anchor/web3Consts";
 import { SwapCoin } from "@/app/models/swapCoin";
+import useWallet from "@/utils/wallet";
 
 type Props = {
   coin: Coin;
 };
 
 const Swap = ({ coin }: Props) => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   const [_, setTargetTokenBalance] = useAtom(targetTokenBalance);
 

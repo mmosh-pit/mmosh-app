@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import axios from "axios";
-import Image from "next/image";
 
 import ArrowBack from "@/assets/icons/ArrowBack";
 import { useRouter } from "next/navigation";
@@ -12,12 +11,12 @@ import TransactionsTable from "@/app/components/Forge/CoinPage/TransactionsTable
 import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { web3Consts } from "@/anchor/web3Consts";
+import useWallet from "@/utils/wallet";
 
 const Page = ({ params }: { params: { symbol: string } }) => {
   const navigate = useRouter();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const rendered = React.useRef(false);
 
   const [baseCoin, setBaseCoin] = React.useState<Coin | null>(null);
@@ -33,7 +32,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       return;
     }
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000
+      confirmTransactionInitialTimeout: 120000,
     });
 
     const env = new anchor.AnchorProvider(connection, wallet, {

@@ -31,8 +31,6 @@ export default async function middleware(req: NextRequest) {
 
     const data = await response.json();
 
-    console.log("We've got a response here: ", data);
-
     if (!data) {
       return NextResponse.json("", { status: 401 });
     }

@@ -1,19 +1,18 @@
 "use client";
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { Connection, Keypair } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/components/common/MessageBanner";
+import useWallet from "@/utils/wallet";
 
 const ClaimPage = () => {
   const navigate = useRouter();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [countDownDate, setCountDownDate] = useState(0);
   const [countDown, setCountDown] = useState(0);
   const [message, setMessage] = useState({
@@ -77,9 +76,10 @@ const ClaimPage = () => {
         return;
       }
       const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-          confirmTransactionInitialTimeout: 120000
-        }
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        {
+          confirmTransactionInitialTimeout: 120000,
+        },
       );
 
       const env = new anchor.AnchorProvider(connection, wallet, {
@@ -184,9 +184,10 @@ const ClaimPage = () => {
 
       if (result.data.status) {
         const connection = new Connection(
-          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-            confirmTransactionInitialTimeout: 120000
-          }
+          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+          {
+            confirmTransactionInitialTimeout: 120000,
+          },
         );
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",

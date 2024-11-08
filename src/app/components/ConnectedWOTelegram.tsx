@@ -3,11 +3,11 @@ import { useAtom } from "jotai";
 import axios from "axios";
 import TelegramIcon from "../../assets/icons/TelegramIcon";
 import { UserStatus, data, status } from "../store";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import ArrowIcon from "@/assets/icons/ArrowIcon";
+import useWallet from "@/utils/wallet";
 
 const ConnectedWOAccount = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const intervalRef = React.useRef<NodeJS.Timeout>();
   const [_, setUserStatus] = useAtom(status);
   const [__, setUserData] = useAtom(data);

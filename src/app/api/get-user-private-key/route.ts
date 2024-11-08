@@ -28,50 +28,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json("", { status: 401 });
   }
 
-  const collection = db.collection("users");
-
   const usersCollection = db.collection("mmosh-users");
 
-  const { searchParams } = new URL(req.url);
-  const param = searchParams.get("id");
-
-  if (!param || param === "undefined") {
-    const user = await usersCollection.findOne({
-      sessions: cookie,
-    });
-
-    if (!user) return NextResponse.json(null, { status: 200 });
-
-    const pKey = user.privateKey;
-
-    const pKeyDecrypted = btoa(decryptData(pKey));
-
-    return NextResponse.json(
-      {
-        privateKey: pKeyDecrypted,
-        publicKey: user.address,
-      },
-      { status: 200 },
-    );
-  }
-
-  const user = await collection.findOne({
-    telegramId: Number(param.trim()),
+  const user = await usersCollection.findOne({
+    sessions: cookie,
   });
 
   if (!user) return NextResponse.json(null, { status: 200 });
 
-  const pKey = user.addressPrivateKey;
+  const pKey = user.privateKey;
 
   const pKeyDecrypted = btoa(decryptData(pKey));
 
   return NextResponse.json(
     {
       privateKey: pKeyDecrypted,
-      publicKey: user.addressPublicKey,
+      publicKey: user.address,
     },
-    {
-      status: 200,
-    },
+    { status: 200 },
   );
 }

@@ -6,10 +6,15 @@ import CandidateCard from "@/app/components/Project/Candidates/CandidateCard";
 import AIChat from "@/app/components/Project/Candidates/CandidatePage/AIChat";
 import { CandidateInfo } from "@/app/models/candidateInfo";
 import Coins from "@/app/components/Project/Candidates/CandidatePage/Coins";
+import { DirectoryCoin } from "@/app/models/directoryCoin";
 
 const Candidate = ({ params }: { params: { candidate: string } }) => {
   const [selectedTab, setSelectedTab] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(true);
+
+  const [candidateCoins, setCandidateCoins] = React.useState<DirectoryCoin[]>(
+    [],
+  );
 
   const [candidateInfo, setCandidateInfo] = React.useState<CandidateInfo>({
     candidate: null,
@@ -29,7 +34,16 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
 
   React.useEffect(() => {
     getCandidateInfo();
+    fetchCoins();
   }, [params.candidate]);
+
+  const fetchCoins = async () => {
+    const response = await axios.get(
+      `/api/get-candidate-coins?candidate=${params.candidate}`,
+    );
+
+    setCandidateCoins(response.data);
+  };
 
   const getCandidateColor = () => {
     if (candidateInfo.candidate?.PARTY === "DEM") {
@@ -94,10 +108,15 @@ const Candidate = ({ params }: { params: { candidate: string } }) => {
               Ask the AI
             </p>
           </div>
-          {selectedTab === 1 && <AIChat candidateInfo={candidateInfo} />}
+          {selectedTab === 1 && (
+            <AIChat
+              symbols={candidateCoins.map((e) => e.symbol.toUpperCase())}
+              candidateInfo={candidateInfo}
+            />
+          )}
           {selectedTab === 0 && (
             <Coins
-              candidate={candidateInfo.candidate?.CANDIDATE_ID ?? ""}
+              candidateCoins={candidateCoins}
               color={getCandidateColor()}
             />
           )}

@@ -5,14 +5,14 @@ import {
   CryptoElements,
   OnrampElement,
 } from "../components/atm/StripeCryptoElements";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import useWallet from "@/utils/wallet";
 
 const stripeOnrampPromise = loadStripeOnramp(
   process.env.NEXT_PUBLIC_STRIPE_KEY!,
 );
 
 const Page = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [clientSecret, setClientSecret] = React.useState("");
 
   React.useEffect(() => {

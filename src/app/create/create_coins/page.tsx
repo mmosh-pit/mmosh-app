@@ -3,7 +3,6 @@ import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import ImagePicker from "@/app/components/ImagePicker";
 import MessageBanner from "@/app/components/common/MessageBanner";
@@ -24,6 +23,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
 import { Connectivity as UserConn } from "../../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
+import useWallet from "@/utils/wallet";
 
 /* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */
 /* THE LIBRARY STILL WORKS WELL, SO IT IS NOT A BREAKING ERROR. RECHART DEV TEAM IS WORKING ON IT */
@@ -70,7 +70,7 @@ const customStyles = {
 };
 
 const CreateCoin = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser] = useAtom(data);
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -359,22 +359,20 @@ const CreateCoin = () => {
 
   const getTokenBalance = async () => {
     // if (selectedCommunityCoin.address === web3Consts.oposToken.toBase58()) {
-      const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-          confirmTransactionInitialTimeout: 120000
-        }
-      );
-      const env = new anchor.AnchorProvider(connection, wallet!, {
-        preflightCommitment: "processed",
-      });
-      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-      const balance = await userConn.getUserBalance({
-        address: wallet?.publicKey,
-        token: selectedCommunityCoin.address,
-        decimals: selectedCommunityCoin.decimals,
-      });
-      setSelectedCommunityBalance(balance ? balance : 0);
+    const balance = await userConn.getUserBalance({
+      address: wallet?.publicKey,
+      token: selectedCommunityCoin.address,
+      decimals: selectedCommunityCoin.decimals,
+    });
+    setSelectedCommunityBalance(balance ? balance : 0);
     // } else {
     //   let type = "Red";
     //   if (

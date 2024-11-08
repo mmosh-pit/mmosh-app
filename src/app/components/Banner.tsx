@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useAtom } from "jotai";
 import Image from "next/image";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { data, status, userWeb3Info, web3InfoLoading } from "../store";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import useWallet from "@/utils/wallet";
 
 const Banner = () => {
   const [userStatus] = useAtom(status);
@@ -11,7 +11,7 @@ const Banner = () => {
   const [profileInfo] = useAtom(userWeb3Info);
   const [isLoading] = useAtom(web3InfoLoading);
 
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   const hasProfile = !!profileInfo?.profile.address;
   const hasInvitation = !!profileInfo?.activationToken;

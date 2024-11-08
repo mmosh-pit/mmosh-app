@@ -13,8 +13,9 @@ import {
 } from "../store";
 import LineageFilterOptions from "./Profile/LineageFilterOptions";
 import ConnectionFilterOptions from "./Profile/ConnectionFilterOptions";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
+import useWallet from "@/utils/wallet";
 
 const GuildList = ({
   profilenft,
@@ -25,7 +26,7 @@ const GuildList = ({
   isMyProfile: boolean;
   userName: string;
 }) => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const connection = useConnection();
   const [currentUser] = useAtom(data);
   const isMobile = useCheckMobileScreen();

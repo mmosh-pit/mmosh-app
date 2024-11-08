@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 import axios from "axios";
 import Image from "next/image";
 import { useAtom } from "jotai";
@@ -11,7 +11,7 @@ import TelegramAccount from "./TelegramAccount";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import DesktopNavbar from "./DesktopNavbar";
 import { init } from "@/app/lib/firebase";
-import { UserStatus, data, isDrawerOpen, settings, status } from "@/app/store";
+import { UserStatus, data, isDrawerOpen, status } from "@/app/store";
 import { User } from "@/app/models/user";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { useRouter } from "next/navigation";
@@ -26,15 +26,14 @@ import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import InBoundHeart from "./InBoundHeart";
 import EditIcon from "@/assets/icons/EditIcon";
+import useWallet from "@/utils/wallet";
 
 const Profile = ({ username }: { username: any }) => {
   const isMobile = useCheckMobileScreen();
   const router = useRouter();
   const rendered = React.useRef(false);
-  const wallet = useAnchorWallet();
-  const [isOnSettings] = useAtom(settings);
+  const wallet = useWallet();
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
   const [isSecTooltipShown, setIsSecTooltipShown] = React.useState(false);
   const [userData, setUserData] = React.useState<User>();
@@ -97,8 +96,6 @@ const Profile = ({ username }: { username: any }) => {
         setIsFirstTooltipShown(true);
       } else if (textNumber === 2) {
         setIsSecTooltipShown(true);
-      } else {
-        setIsTooltipShown(true);
       }
       await navigator.clipboard.writeText(text);
 
@@ -107,8 +104,6 @@ const Profile = ({ username }: { username: any }) => {
           setIsFirstTooltipShown(false);
         } else if (textNumber === 2) {
           setIsSecTooltipShown(false);
-        } else {
-          setIsTooltipShown(false);
         }
       }, 2000);
     },

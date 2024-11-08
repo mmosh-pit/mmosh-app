@@ -4,14 +4,14 @@ import { useAtom } from "jotai";
 import Button from "../common/Button";
 import { data, userWeb3Info } from "@/app/store";
 import { createSubscriptionInvitation } from "@/app/lib/forge/createSubscriptionInvitation";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import MessageBanner from "../common/MessageBanner";
 import { createGenesisInvitation } from "@/app/lib/forge/createGenesisInvitation";
 import { web3Consts } from "@/anchor/web3Consts";
 import { getPronouns } from "@/app/lib/getPronouns";
+import useWallet from "@/utils/wallet";
 
 const MintInvitation = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [currentUser] = useAtom(data);
   const [profileInfo] = useAtom(userWeb3Info);
   const [amountSelected, setAmountSelected] = React.useState(0);

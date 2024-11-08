@@ -2,38 +2,20 @@
 import { useAtom } from "jotai";
 import * as React from "react";
 
-import { data, isAuth } from "../store";
-import axios from "axios";
+import { appPrivateKey, appPublicKey, isAuth } from "../store";
 import CopyIcon from "@/assets/icons/CopyIcon";
 import { useRouter } from "next/navigation";
 
 const Settings = () => {
   const router = useRouter();
-  const [currentUser] = useAtom(data);
   const [isUserAuthenticated] = useAtom(isAuth);
 
   const [isPrivateKeyVisible, setIsPrivateKeyVisible] = React.useState(false);
-  const [privateKey, setPrivateKey] = React.useState("");
-  const [publicKey, setPublicKey] = React.useState("");
+  const [privateKey] = useAtom(appPrivateKey);
+  const [publicKey] = useAtom(appPublicKey);
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
 
   const [isTooltip2Shown, setIsTooltip2Shown] = React.useState(false);
-
-  const fetchPrivateKey = React.useCallback(async () => {
-    const res = await axios.get(
-      `/api/get-user-private-key?id=${currentUser?.telegram?.id}`,
-    );
-
-    const data = res.data;
-
-    const pKey = data.privateKey;
-    const publicKey = data.publicKey;
-
-    if (!pKey) return;
-
-    setPrivateKey(atob(pKey));
-    setPublicKey(publicKey);
-  }, []);
 
   const copyToClipboard = React.useCallback(
     async (text: string, publicKey = false) => {
@@ -54,10 +36,6 @@ const Settings = () => {
     },
     [],
   );
-
-  React.useEffect(() => {
-    fetchPrivateKey();
-  }, [currentUser]);
 
   React.useEffect(() => {
     if (!isUserAuthenticated) {

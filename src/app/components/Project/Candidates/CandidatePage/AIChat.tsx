@@ -5,14 +5,14 @@ import { useAtom } from "jotai";
 import { CandidateInfo } from "@/app/models/candidateInfo";
 import { AIChatMessage } from "@/app/models/AIChatMessage";
 import { data } from "@/app/store";
-import EditIcon from "@/assets/icons/EditIcon";
 import Markdown from "markdown-to-jsx";
 
 type Props = {
   candidateInfo: CandidateInfo;
+  symbols: string[];
 };
 
-const AIChat = ({ candidateInfo }: Props) => {
+const AIChat = ({ candidateInfo, symbols }: Props) => {
   const [currentUser] = useAtom(data);
 
   const [messages, setMessages] = React.useState<AIChatMessage[]>([]);
@@ -61,9 +61,10 @@ const AIChat = ({ candidateInfo }: Props) => {
             body: JSON.stringify({
               username: currentUser!.profile.username,
               prompt: currentText,
-              metadata: JSON.stringify({
-                ...candidateInfo.candidate,
-              }),
+              namespaces: symbols,
+              // metafield: JSON.stringify({
+              //   ...candidateInfo.candidate,
+              // }),
             }),
           },
         );

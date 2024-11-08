@@ -4,10 +4,11 @@ import { useAtom } from "jotai";
 
 import { User } from "@/app/models/user";
 import { selectedSearchFilter } from "@/app/store/home";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 import { textSearch } from "@/app/store/membership";
 import UserCard from "../UserCard";
 import { data } from "@/app/store";
+import useWallet from "@/utils/wallet";
 
 const MembersList = () => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
@@ -20,7 +21,7 @@ const MembersList = () => {
   const allUsers = React.useRef<User[]>([]);
   const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const connection = useConnection();
   const [currentUser] = useAtom(data);
 

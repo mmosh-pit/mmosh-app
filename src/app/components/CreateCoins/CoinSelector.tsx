@@ -1,12 +1,12 @@
 import * as React from "react";
 import Image from "next/image";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import { Coin } from "@/app/models/coin";
 import CloseIcon from "@/assets/icons/CloseIcon";
 import CoinListItem from "../common/CoinListItem";
 import OpenInNew from "@/assets/icons/OpenInNew";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
+import useWallet from "@/utils/wallet";
 
 type Props = {
   selectedCoin: Coin;
@@ -14,7 +14,7 @@ type Props = {
 };
 
 const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   const coinsList = [
     {

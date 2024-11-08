@@ -49,3 +49,6 @@ export const web3InfoLoading = atom(true);
 
 export const isAuth = atom(false);
 export const isAuthOverlayOpen = atom(true);
+
+export const appPrivateKey = atom("");
+export const appPublicKey = atom("");

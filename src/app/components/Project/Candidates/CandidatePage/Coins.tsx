@@ -3,18 +3,13 @@ import * as React from "react";
 import Image from "next/image";
 
 import { DirectoryCoin } from "@/app/models/directoryCoin";
-import { Line, LineChart, ResponsiveContainer } from "recharts";
 
 type Props = {
-  candidate: string;
   color: string;
+  candidateCoins: DirectoryCoin[];
 };
 
-const Coins = ({ candidate, color }: Props) => {
-  const [candidateCoins, setCandidateCoins] = React.useState<DirectoryCoin[]>(
-    [],
-  );
-
+const Coins = ({ candidateCoins, color }: Props) => {
   const [usdcMmoshPrice, setUsdcMmoshPrice] = React.useState(0);
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
@@ -28,26 +23,6 @@ const Coins = ({ candidate, color }: Props) => {
   React.useEffect(() => {
     getUsdcMmoshPrice();
   }, [candidateCoins]);
-
-  const fetchCoins = async () => {
-    const response = await axios.get(
-      `/api/get-candidate-coins?candidate=${candidate}`,
-    );
-
-    setCandidateCoins(response.data);
-  };
-
-  React.useEffect(() => {
-    fetchCoins();
-  }, [candidate]);
-
-  const getChartColor = React.useCallback((prices: string[]) => {
-    if (Number(prices[prices.length - 1]) < Number(prices[prices.length - 2])) {
-      return "#DC2626";
-    }
-
-    return "#22C55E";
-  }, []);
 
   return (
     <div className="w-full px-4 py-2 grid grid-cols-auto md:grid-cols-3 xl:grid-cols-4 gap-8 mt-4">

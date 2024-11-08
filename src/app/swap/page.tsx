@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import WalletIcon from "@/assets/icons/WalletIcon";
 import CompareArrows from "@/assets/icons/CompareArrows";
@@ -26,6 +25,7 @@ import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import axios from "axios";
+import useWallet from "@/utils/wallet";
 
 const defaultBaseToken = {
   name: "",
@@ -43,7 +43,7 @@ const defaultBaseToken = {
 };
 
 const Swap = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   const [isDrawerShown] = useAtom(isDrawerOpen);
 
@@ -156,9 +156,10 @@ const Swap = () => {
           let txHex = swapResult.data;
 
           const connection = new Connection(
-            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-              confirmTransactionInitialTimeout: 120000
-            }
+            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+            {
+              confirmTransactionInitialTimeout: 120000,
+            },
           );
           const env = new anchor.AnchorProvider(connection, wallet, {
             preflightCommitment: "processed",
@@ -279,8 +280,6 @@ const Swap = () => {
     },
     [baseToken, targetToken],
   );
-
-
 
   return (
     <div

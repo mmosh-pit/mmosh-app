@@ -2,7 +2,6 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
@@ -25,6 +24,7 @@ import { getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { createCoin } from "@/app/lib/forge/createCoin";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connectivity as UserConn } from "../../../anchor/user";
+import useWallet from "@/utils/wallet";
 
 const defaultFormState = {
   name: "",
@@ -50,7 +50,7 @@ const bondingSelectOptions = [
 ];
 
 const CreateCoin = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser] = useAtom(data);
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -240,7 +240,7 @@ const CreateCoin = () => {
       }
 
       const formData = new FormData();
-      formData.append("name", form.candidate!.CANDIDATE_NAME);
+      formData.append("name", form.symbol.toUpperCase());
       formData.append(
         "metadata",
         JSON.stringify({

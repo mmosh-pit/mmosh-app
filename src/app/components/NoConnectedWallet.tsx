@@ -1,9 +1,9 @@
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
+import useWallet from "@/utils/wallet";
 
 const NoConnectedWallet = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   return (
     <div className="relative w-full h-full flex flex-col justify-center items-center mt-4">

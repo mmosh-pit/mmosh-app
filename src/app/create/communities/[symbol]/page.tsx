@@ -4,7 +4,6 @@ import * as React from "react";
 import axios from "axios";
 import Image from "next/image";
 import { useAtom } from "jotai";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
 
 import { Community } from "@/app/models/community";
 import { User } from "@/app/models/user";
@@ -15,9 +14,10 @@ import { pageCommunity } from "@/app/store/community";
 import TelegramBox from "@/app/components/Forge/Community/TelegramBox";
 import { getCommunityProjectInfo } from "@/app/lib/forge/getCommunityProjectInfo";
 import { userWeb3Info } from "@/app/store";
+import useWallet from "@/utils/wallet";
 
 const Page = ({ params }: { params: { symbol: string } }) => {
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
 
   const [userInfo] = useAtom(userWeb3Info);
 
@@ -93,9 +93,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   }
 
   if (!community)
-    return (
-      <div className="background-content flex flex-col max-h-full" />
-    );
+    return <div className="background-content flex flex-col max-h-full" />;
 
   return (
     <div className="background-content flex flex-col items-center max-h-full">

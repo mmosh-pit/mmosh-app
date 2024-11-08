@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useAtom } from "jotai";
 import { userWeb3Info } from "@/app/store";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 import { Connectivity as ProjectConn } from "@/anchor/community";
 import * as anchor from "@coral-xyz/anchor";
 import { web3Consts } from "@/anchor/web3Consts";
@@ -35,6 +35,7 @@ import { calculateTimeForTransactionTable } from "@/app/lib/dateUtils";
 import moment from "moment";
 import { incomingReferAddress } from "@/app/store/signup";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
+import useWallet from "@/utils/wallet";
 
 const defaultBaseToken = {
   name: "",
@@ -56,7 +57,7 @@ const Page = () => {
   const fetching = React.useRef(false);
   const navigate = useRouter();
   const connection = useConnection();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [projectLoading, setProjectLoading] = useState(true);
   const [projectDetail, setProjectDetail] = useState<any>(null);
   const [profileInfo] = useAtom(userWeb3Info);

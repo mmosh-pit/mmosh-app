@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import { selectedSearchFilter, typedSearchValue } from "@/app/store/home";
 import { getPriceForPTV } from "@/app/lib/forge/jupiter";
-import { pair } from "@/app/store/coins";
+import { pair, selectedVolume } from "@/app/store/coins";
 import { useRouter } from "next/navigation";
 
 const CoinsList = () => {
@@ -15,6 +15,7 @@ const CoinsList = () => {
 
   const [selectedFilters] = useAtom(selectedSearchFilter);
   const [searchText] = useAtom(typedSearchValue);
+  const [volume] = useAtom(selectedVolume);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const fetching = React.useRef(false);
@@ -51,52 +52,57 @@ const CoinsList = () => {
     return prices;
   };
 
-  
-  const getCoins = React.useCallback(async () => {
-    if (selectedFilters.includes("coins") || selectedFilters.includes("all")) {
-      setIsLoading(true);
-      fetching.current = true;
-      const url = `/api/list-coins?page=${currentPage}&volume=hour&keyword=${searchText}&symbol=${tradingPair}`;
+  const getCoins = React.useCallback(
+    async (volume: string, keyword: string, page: number) => {
+      if (
+        selectedFilters.includes("coins") ||
+        selectedFilters.includes("all")
+      ) {
+        setIsLoading(true);
+        fetching.current = true;
+        const url = `/api/list-coins?page=${page}&volume=${volume}&keyword=${keyword}&symbol=${tradingPair}`;
 
-      const prices = await getBaseTokenPrices();
-      const result = await axios.get(url);
+        const prices = await getBaseTokenPrices();
+        const result = await axios.get(url);
 
-      fetching.current = false;
+        fetching.current = false;
 
-      let nf = new Intl.NumberFormat("en-US");
-      const newCoins = [];
-      for (let index = 0; index < result.data.length; index++) {
-        const element = result.data[index];
-        const datas = [];
+        let nf = new Intl.NumberFormat("en-US");
+        const newCoins = [];
+        for (let index = 0; index < result.data.length; index++) {
+          const element = result.data[index];
+          const datas = [];
 
-        for (
-          let index = 0;
-          index < element.priceLastSevenDays.length;
-          index++
-        ) {
-          const elementchart = element.priceLastSevenDays[index];
-          datas.push(elementchart.value);
+          for (
+            let index = 0;
+            index < element.priceLastSevenDays.length;
+            index++
+          ) {
+            const elementchart = element.priceLastSevenDays[index];
+            datas.push(elementchart.value);
+          }
+          element.priceLastSevenDays = datas;
+          let marketcap = 0;
+          if (element.basesymbol === "PTVB") {
+            marketcap = element.supply * (prices.ptvb * element.lastprice);
+          } else if (element.basesymbol === "PTVR") {
+            marketcap = element.supply * (prices.ptvr * element.lastprice);
+          } else {
+            marketcap = element.supply * (prices.mmosh * element.lastprice);
+          }
+          element.marketcap = nf.format(marketcap) + " USDC";
+
+          newCoins.push(element);
         }
-        element.priceLastSevenDays = datas;
-        let marketcap = 0;
-        if (element.basesymbol === "PTVB") {
-          marketcap = element.supply * (prices.ptvb * element.lastprice);
-        } else if (element.basesymbol === "PTVR") {
-          marketcap = element.supply * (prices.ptvr * element.lastprice);
-        } else {
-          marketcap = element.supply * (prices.mmosh * element.lastprice);
-        }
-        element.marketcap = nf.format(marketcap) + " USDC";
 
-        newCoins.push(element);
+        setCoins(newCoins);
+        setIsLoading(false);
+      } else {
+        setCoins([]);
       }
-
-      setCoins(newCoins);
-      setIsLoading(false);
-    } else {
-      setCoins([]);
-    }
-  }, [searchText, currentPage, selectedFilters]);
+    },
+    [searchText, currentPage, selectedFilters],
+  );
 
   const getUsdcMmoshPrice = React.useCallback(async () => {
     if (tradingPair === "PTVB") {
@@ -144,12 +150,12 @@ const CoinsList = () => {
   }, [coins]);
 
   React.useEffect(() => {
-    getCoins();
+    getCoins(volume.value, searchText, 0);
   }, [searchText]);
 
   React.useEffect(() => {
     if (currentPage > 0 && !lastPageTriggered.current && !fetching.current) {
-      getCoins();
+      getCoins(volume.value, searchText, 0);
     }
   }, [currentPage]);
 

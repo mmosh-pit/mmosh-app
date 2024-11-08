@@ -66,19 +66,21 @@ const CoinsTable = () => {
           datas.push(elementchart.value);
         }
         element.priceLastSevenDays = datas;
-        let currentprice = 0
+        let currentprice = 0;
         if (element.basesymbol === "PTVB") {
-          currentprice = prices.ptvb
+          currentprice = prices.ptvb;
         } else if (element.basesymbol === "PTVR") {
-          currentprice = prices.ptvr
+          currentprice = prices.ptvr;
         } else {
-          currentprice = prices.mmosh
+          currentprice = prices.mmosh;
         }
-        console.log("element.basesymbol ", element.basesymbol)
-        console.log("current price ", currentprice)
-        element.marketcap = nf.format(element.supply * (currentprice * element.lastprice)) + " USDC";
-        element.lastprice = currentprice * element.lastprice
-        element.volume = currentprice * element.volume
+        console.log("element.basesymbol ", element.basesymbol);
+        console.log("current price ", currentprice);
+        element.marketcap =
+          nf.format(element.supply * (currentprice * element.lastprice)) +
+          " USDC";
+        element.lastprice = currentprice * element.lastprice;
+        element.volume = currentprice * element.volume;
         newCoins.push(element);
       }
 
@@ -342,8 +344,6 @@ const CoinsTable = () => {
 
             <td align="center">{coin.marketcap}</td>
 
-            
-
             <td align="center">
               {getCoinVolume(coin.volume, coin.basesymbol)} USDC
             </td>
@@ -365,7 +365,6 @@ const CoinsTable = () => {
                 </LineChart>
               </ResponsiveContainer>
             </td>
-           
           </tr>
         ))}
       </tbody>

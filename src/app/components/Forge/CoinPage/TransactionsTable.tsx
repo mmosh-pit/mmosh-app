@@ -27,11 +27,12 @@ const TransactionsTable = ({ coin, base }: Props) => {
       const url = `/api/list-coin-transactions?page=${page}&bonding=${coin.bonding}`;
 
       const apiResult = await axios.get(url);
-
+      let nf = new Intl.NumberFormat("en-US");
       if (apiResult.data.history.length > 0) {
         const newHistory = [];
         for (let index = 0; index < apiResult.data.history.length; index++) {
           const element = apiResult.data.history[index];
+          element.total =  nf.format(element.usdcPrice * element.value) + " USDC";
           newHistory.push(element);
         }
         setHistory(newHistory);
@@ -142,7 +143,7 @@ const TransactionsTable = ({ coin, base }: Props) => {
 
               <td align="center">
                 <p className="text-white text-sm">
-                  {item.usdcPrice * item.value} USDC
+                  {item.total}
                  </p>
               </td>
 

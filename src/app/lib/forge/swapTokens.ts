@@ -384,6 +384,15 @@ const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any,
 
     let usdcPrice;
 
+    const result = await axios.get(
+      `/api/get-group-community?symbol=${params.basesymbol}`,
+    );
+  
+    if(!result.data) {
+      return
+    }
+    console.log("community details ", result.data)
+    let groupID = result.data.group[0].handle
 
     if(params.basesymbol === "PTVB") {
       let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
@@ -401,7 +410,6 @@ const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any,
     let communityCoinPrice = params.value /  (params.value * params.price)
     
     const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
   
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
   
@@ -416,7 +424,7 @@ const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any,
     text = text + "Fully Diluted Value " + ((supply + (params.value * params.price)) * communityCoinPrice) * usdcPrice + " USDC\n";
     text = text + swapMessage + " \n";
     const response = await axios.post(telegramUrl, {
-      chat_id: chatId,
+      chat_id: groupID,
       text: text,
       reply_markup: {inline_keyboard: [[
         {text: "Swap", url: "https://www.liquidhearts.app/swap"},

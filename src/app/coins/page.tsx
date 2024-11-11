@@ -22,8 +22,8 @@ const HomePage = () => {
         <SearchBar />
       </div>
 
-      <div className="w-full mt-8">
-        {coinsMode === "list" && !isMobile ? <CoinsTable /> : <CoinsList />}
+      <div className="w-full mt-8 overflow-x-auto">
+        <CoinsTable />
       </div>
     </div>
   );

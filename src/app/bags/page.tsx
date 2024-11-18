@@ -27,7 +27,6 @@ const PROFILE_COLLECTION = "PROFILES";
 const Page = () => {
   const wallet = useWallet();
 
-  const rendered = React.useRef(false);
   const [_, setMmoshUsdcPrice] = React.useState(0);
   const [selectedAsset, setSelectedAsset] = React.useState<
     BagsCoin | BagsNFT | null
@@ -54,8 +53,6 @@ const Page = () => {
   }, [wallet]);
 
   const fetchAllBalances = React.useCallback(async () => {
-    rendered.current = true;
-
     const allTokens = await getAllTokenAddreses();
 
     const response = await fetch(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
@@ -64,7 +61,7 @@ const Page = () => {
         id: "1",
         method: "getAssetsByOwner",
         params: {
-          ownerAddress: "F9FxKsm6ZS4EYYSu1rdBPQDh5JUHgjjmtwxwUZBjNjaB",
+          ownerAddress: wallet?.publicKey.toBase58(),
           displayOptions: {
             showFungible: true,
             showCollectionMetadata: true,
@@ -255,7 +252,7 @@ const Page = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!wallet || rendered.current || bags !== null) return;
+    if (!wallet || bags !== null) return;
     fetchAllBalances();
   }, [wallet]);
 

@@ -193,6 +193,16 @@ const MobileDrawer = () => {
             </a>
           </div>
 
+          <div className="lg:mx-6 md:mx-3" />
+          <a
+            className="text-base text-white cursor-pointer"
+            onClick={() => {
+              router.push("/bags");
+            }}
+          >
+            Wallet
+          </a>
+
           <div className="h-[1px] w-[90%] bg-white mt-4" />
 
           <div className="flex flex-col mt-4">

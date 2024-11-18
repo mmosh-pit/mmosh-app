@@ -134,6 +134,16 @@ const Tabs = () => {
       <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/bags");
+        }}
+      >
+        Wallet
+      </a>
+
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
         href="https://www.politifi.pro/"
         target="_blank"
       >

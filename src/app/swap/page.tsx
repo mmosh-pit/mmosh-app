@@ -24,7 +24,6 @@ import {
 import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
-import axios from "axios";
 import useWallet from "@/utils/wallet";
 
 const defaultBaseToken = {

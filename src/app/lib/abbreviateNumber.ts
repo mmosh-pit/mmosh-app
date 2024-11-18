@@ -1,6 +1,8 @@
 export function abbreviateNumber(number: number) {
   if (number === 0) return number.toString();
 
+  if (number < 1) return number.toString();
+
   const abbreviations = ["", "K", "M", "B", "T"];
   const tier = Math.floor(Math.log10(Math.abs(number)) / 3);
 

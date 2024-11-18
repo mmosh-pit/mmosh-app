@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   const basesymbol = searchParams.get("symbol");
 
-  let wallet = new NodeWallet(new Keypair());
+  const wallet = new NodeWallet(new Keypair());
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
     confirmTransactionInitialTimeout: 120000,
   });
@@ -34,8 +34,6 @@ export async function GET(req: NextRequest) {
 
   anchor.setProvider(env);
   const curveConn = new CurveConn(env, web3Consts.programID);
-  let nf = new Intl.NumberFormat("en-US");
-
   let finalResult: any = [];
 
   let filter: any = {};

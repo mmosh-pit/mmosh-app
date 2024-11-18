@@ -77,28 +77,6 @@ const MobileDrawer = () => {
 
             <div className="my-2" />
 
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() => {
-                router.push("/rewards");
-              }}
-            >
-              Rewards
-            </a>
-
-            <div className="my-2" />
-
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() => {
-                router.push("/atm");
-              }}
-            >
-              ATM
-            </a>
-
-            <div className="my-2" />
-
             <div
               className="flex flex-col cursor-pointer"
               onClick={() => setIsCreateOpen(!isCreateOpen)}
@@ -169,17 +147,6 @@ const MobileDrawer = () => {
               onClick={() => router.push("/settings")}
             >
               Settings
-            </a>
-
-            <div className="my-2" />
-
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() => {
-                router.push("/swap");
-              }}
-            >
-              Swap
             </a>
 
             <div className="my-2" />

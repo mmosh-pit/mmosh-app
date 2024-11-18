@@ -7,6 +7,12 @@ import NFTs from "./NFTs";
 import Coins from "./Coins";
 import SearchBar from "../Project/Candidates/SearchBar";
 import { BagsCoin, BagsNFT } from "@/app/store/bags";
+import SwapIcon from "@/assets/icons/SwapIcon";
+import { useRouter } from "next/navigation";
+import BuyIcon from "@/assets/icons/BuyIcon";
+import ReceiveIcon from "@/assets/icons/ReceiveIcon";
+import RewardsIcon from "@/assets/icons/RewardsIcon";
+import SendWalletIcon from "@/assets/icons/SendWalletIcon";
 
 type Props = {
   onSelectAsset: (asset: BagsNFT) => void;
@@ -17,6 +23,7 @@ type Props = {
 const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   const [search, setSearch] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
+  const router = useRouter();
   const wallet = useWallet();
 
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
@@ -31,7 +38,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   }, []);
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-start mt-8">
+    <div className="w-full h-screen min-w-[3vmax] flex flex-col justify-center items-center items-center justify-start mt-8">
       <div className="flex items-center justify-center my-8">
         <h6>My Bags</h6>
       </div>
@@ -54,12 +61,69 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
               }
             >
               {isTooltipShown && (
-                <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
+                <div className="absolute z-10 mb-20 inline-block rounded-xl bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
                   Copied!
                 </div>
               )}
               <CopyIcon />
             </button>
+          </div>
+        </div>
+
+        <div className="w-full flex justify-evenly mt-6">
+          <div
+            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            onClick={() => {
+              router.push("/swap");
+            }}
+          >
+            <SwapIcon />
+
+            <p className="text-sm text-white mt-1">Swap</p>
+          </div>
+
+          <div
+            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            onClick={() => {
+              router.push("/atm");
+            }}
+          >
+            <BuyIcon />
+
+            <p className="text-sm text-white mt-1">Buy</p>
+          </div>
+
+          <div
+            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            onClick={() => {
+              // router.push("/atm");
+            }}
+          >
+            <SendWalletIcon />
+
+            <p className="text-sm text-white mt-1">Send</p>
+          </div>
+
+          <div
+            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            onClick={() => {
+              // router.push("/atm");
+            }}
+          >
+            <ReceiveIcon />
+
+            <p className="text-sm text-white mt-1">Receive</p>
+          </div>
+
+          <div
+            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            onClick={() => {
+              router.push("/rewards");
+            }}
+          >
+            <RewardsIcon />
+
+            <p className="text-sm text-white mt-1">Rewards</p>
           </div>
         </div>
 

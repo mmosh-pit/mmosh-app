@@ -153,10 +153,10 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              href="https://www.politifi.pro/"
+              href="https://www.kinship.systems"
               target="_blank"
             >
-              Training
+              Resources
             </a>
           </div>
 

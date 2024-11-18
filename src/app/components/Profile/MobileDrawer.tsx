@@ -61,7 +61,7 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => router.push("/projects")}
+              onClick={() => router.push("/create/create_projects")}
             >
               Projects
             </a>

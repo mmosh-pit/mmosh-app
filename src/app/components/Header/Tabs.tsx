@@ -122,10 +122,9 @@ const Tabs = () => {
             </p>
             <p
               className="text-sm text-white"
-              onClick={() => router.push("/projects")}
+              onClick={() => router.push("/create/create_projects")}
             >
               Projects
-              <sub className="text-[0.5rem] ml-1">(Coming soon)</sub>
             </p>
           </div>
         )}

@@ -42,6 +42,10 @@ const CreateCommunity = () => {
   });
 
   const createCommunity = React.useCallback(async () => {
+    console.log("Values: ", form);
+    console.log(selectedCoin);
+    console.log(currentUser);
+    console.log(symbolExists);
     if (
       !form.name ||
       !form.description ||

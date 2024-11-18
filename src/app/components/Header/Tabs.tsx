@@ -122,14 +122,23 @@ const Tabs = () => {
             </p>
             <p
               className="text-sm text-white"
-              onClick={() => router.push("/projects")}
+              onClick={() => router.push("/create/create_projects")}
             >
               Projects
-              <sub className="text-[0.5rem] ml-1">(Coming soon)</sub>
             </p>
           </div>
         )}
       </div>
+
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/bags");
+        }}
+      >
+        Wallet
+      </a>
 
       <div className="lg:mx-6 md:mx-3" />
       <a

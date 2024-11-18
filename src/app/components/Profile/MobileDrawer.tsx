@@ -61,7 +61,7 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => router.push("/projects")}
+              onClick={() => router.push("/create/create_projects")}
             >
               Projects
             </a>
@@ -192,6 +192,16 @@ const MobileDrawer = () => {
               Training
             </a>
           </div>
+
+          <div className="lg:mx-6 md:mx-3" />
+          <a
+            className="text-base text-white cursor-pointer"
+            onClick={() => {
+              router.push("/bags");
+            }}
+          >
+            Wallet
+          </a>
 
           <div className="h-[1px] w-[90%] bg-white mt-4" />
 

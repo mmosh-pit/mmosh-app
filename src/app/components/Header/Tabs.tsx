@@ -1,16 +1,11 @@
 import * as React from "react";
-import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 
-import { data, settings } from "@/app/store";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import SimpleArrowUp from "@/assets/icons/SimpleArrowUp";
 
 const Tabs = () => {
   const router = useRouter();
-
-  const [currentUser] = useAtom(data);
-  const [isOnSettings, setIsOnSettings] = useAtom(settings);
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 

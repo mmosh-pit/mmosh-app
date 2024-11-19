@@ -202,7 +202,7 @@ const Page = () => {
         name: value.content.metadata.name,
         image: value.content.links.image ?? "",
         symbol: value.content.metadata.symbol,
-        balance: 0,
+        balance: 1,
         tokenAddress: value.id,
         metadata: value.content.metadata,
       };

@@ -11,6 +11,11 @@ p {
   color: #d7d7d7;
 }
 
+span {
+  font-size: 0.8rem;
+  color: #fff;
+}
+
 a {
   font-weight: bold;
 }
@@ -84,22 +89,10 @@ h6 {
 }
 
 .common-bg {
-  background: url("https://storage.googleapis.com/mmosh-assets/mmosh_background.png");
-  background-size: cover, auto;
-  background-repeat: no-repeat, repeat;
-  background-attachment: fixed;
 }
 
 .bg-without-picture {
-  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
-  background: radial-gradient(
-    circle at 50% 15%,
-    #174aff40 0%,
-    #174aff25 2%,
-    #174aff10 10%,
-    #030064 40%,
-    #030064 100%
-  );
+  background: #09073a;
 }
 
 .common-bg:before {
@@ -113,8 +106,7 @@ h6 {
 }
 
 .bg-profile {
-  background: rgba(0, 0, 0, 0.5),
-    url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
+  background: #09073a;
 
   background-size: auto;
   background-repeat: repeat;
@@ -124,15 +116,8 @@ h6 {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100vh;
-  background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png");
-  /* background: #09073a; */
-  background: radial-gradient(
-    circle at 50% 15%,
-    #133ad550 1%,
-    #06067680 10%,
-    #00005285 60%,
-    #00000090 100%
-  );
+  /* background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png"); */
+  background: #09073a;
 }
 
 .background-content-full-bg {
@@ -1095,4 +1080,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 
   backdrop-filter: blur(20px);
+}
+
+.home-ai-textfield {
+  background: transparent;
+  border: none;
+  color: #fff;
+  ::placeholder {
+    color: #9b9b9b;
+  }
+
+  ::-ms-input-placeholder {
+    color: #9b9b9b;
+  }
 }

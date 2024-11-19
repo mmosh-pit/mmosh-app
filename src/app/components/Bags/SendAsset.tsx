@@ -132,7 +132,15 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
             <div className="mt-4">
               <Input
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  if (Number.isNaN(Number(e.target.value))) return;
+
+                  if (Number(e.target.value) > selectedCoin.balance) return;
+
+                  if (Number(e.target.value) < 0) return;
+
+                  setAmount(e.target.value);
+                }}
                 type="text"
                 placeholder="Amount"
                 title=""

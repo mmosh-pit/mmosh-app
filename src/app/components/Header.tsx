@@ -14,9 +14,11 @@ import {
   data,
   incomingWallet,
   isAuth,
+  isAuthModalOpen,
   isAuthOverlayOpen,
   isDrawerOpen,
   status,
+  userData,
   userWeb3Info,
   web3InfoLoading,
 } from "../store";
@@ -49,6 +51,8 @@ const Header = () => {
   const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [______, setPrivateKey] = useAtom(appPrivateKey);
   const [_______, setPublicKey] = useAtom(appPublicKey);
+  const [________, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
+  const [_________, setUser] = useAtom(userData);
   const [userStatus] = useAtom(status);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
@@ -89,18 +93,22 @@ const Header = () => {
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
-    const result = await axios.get("/api/is-auth");
+    const result = await axios.get("/api/get-current-user");
 
-    if (!result.data && pathname === "/") {
-      router.replace("/login");
-    }
+    // if (!result.data && pathname === "/") {
+    //   router.replace("/login");
+    // }
+    //
+    // if (result.data && pathname === "/") {
+    //   router.replace("/coins");
+    // }
 
-    if (result.data && pathname === "/") {
-      router.replace("/coins");
-    }
+    const user = result.data;
 
-    setShowAuthOverlay(!result.data);
-    setIsUserAuthenticated(result.data);
+    setShowAuthOverlay(!user);
+    setIsAuthModalOpen(!user);
+    setIsUserAuthenticated(!!user);
+    setUser(user);
   }, []);
 
   const getProfileInfo = async () => {

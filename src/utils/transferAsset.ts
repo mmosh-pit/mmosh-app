@@ -79,7 +79,7 @@ export async function transferAsset(
 
     return explorerLink;
   } catch (err) {
-    if (retries < 6) {
+    if (retries < 3) {
       return transferAsset(
         wallet,
         mintAddress,

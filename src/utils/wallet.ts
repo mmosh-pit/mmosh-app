@@ -24,7 +24,7 @@ const useWallet = () => {
     }
   }, [privateKey]);
 
-  return wallet ?? externalWallet;
+  return externalWallet ?? wallet;
 };
 
 export default useWallet;

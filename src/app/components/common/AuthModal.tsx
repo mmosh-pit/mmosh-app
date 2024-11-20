@@ -6,7 +6,7 @@ import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import axios from "axios";
 import Button from "./Button";
 import { useAtom } from "jotai";
-import { isAuthModalOpen } from "@/app/store";
+import { isAuth, isAuthModalOpen, isAuthOverlayOpen } from "@/app/store";
 import CloseIcon from "@/assets/icons/CloseIcon";
 import { useRouter } from "next/navigation";
 
@@ -35,6 +35,9 @@ const AuthModal = () => {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useAtom(isAuthModalOpen);
+  const [_, setIsUserAuthenticated] = useAtom(isAuth);
+  const [__, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
+  const [___, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
 
   const [form, setForm] = React.useState({
     email: "",
@@ -57,6 +60,9 @@ const AuthModal = () => {
           password: form.password,
         });
         close();
+        setShowAuthOverlay(false);
+        setIsAuthModalOpen(false);
+        setIsUserAuthenticated(true);
       } catch (err: any) {
         setError(
           err?.response?.data || "Failed to Login, please check support",

@@ -12,12 +12,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!username) {
     return {
-      title: "Liquid Hearts Club",
-      description:
-        "Go deeper. Join us on the cutting edge of culture for an epic adventure beyond time, space and the death-grip of global civilization.",
+      title: "Kinship Codes",
+      description: "It’s All Related",
       openGraph: {
         images: [
-          "https://storage.googleapis.com/mmosh-assets/lhc_metadata.png",
+          "https://storage.googleapis.com/mmosh-assets/kinship_codes.png",
         ],
       },
     };
@@ -27,11 +26,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // if (!user) {
   return {
-    title: "Liquid Hearts Club",
-    description:
-      "Go deeper. Join us on the privacy superdapp for an epic adventure beyond time, space and the death-grip of global civilization.",
+    title: "Kinship Codes",
+    description: "It’s All Related",
     openGraph: {
-      images: ["https://storage.googleapis.com/mmosh-assets/metadata.png"],
+      images: ["https://storage.googleapis.com/mmosh-assets/kinship_codes.png"],
     },
   };
   // }

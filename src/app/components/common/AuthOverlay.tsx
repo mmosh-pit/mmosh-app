@@ -38,7 +38,7 @@ const AuthOverlay = () => {
 
         <div className="w-full flex justify-center">
           <p className="text-base text-white">
-            Join Liquid Hearts Club, the privacy superdapp.
+            Join Kinship Codes, It's All Related.
           </p>
         </div>
 

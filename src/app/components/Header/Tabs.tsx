@@ -34,7 +34,7 @@ const Tabs = () => {
       <div className="lg:mx-6 md:mx-3" />
       <a
         className="text-base text-white cursor-pointer"
-        onClick={() => router.push("/create/create_projects")}
+        onClick={() => router.push("/projects")}
       >
         Projects
       </a>

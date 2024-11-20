@@ -57,7 +57,7 @@ export async function transferAsset(
         tokenAccount1Pubkey,
         mintPubkey,
         associatedTokenTo,
-        wallet.publicKey,
+        tokenAccount1Pubkey,
         Number(amount) * decimalMultiplier,
         decimals,
         [],

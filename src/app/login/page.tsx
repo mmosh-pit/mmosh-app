@@ -67,7 +67,7 @@ const Login = () => {
             layout="fill"
           />
         </div>
-        <p className="text-base mt-4">The Cutting Edge of Culture</p>
+        <p className="text-base mt-4">It's All Related</p>
       </div>
 
       <h6 className="my-4">Log In</h6>

@@ -76,7 +76,7 @@ const AuthModal = () => {
     >
       <div className="flex justify-between">
         <div className="w-[10%]" />
-        <h2 className="font-goudy text-center">Join Liquid Hearts Club</h2>
+        <h2 className="font-goudy text-center">Join Kinship Codes</h2>
 
         <button
           className="flex justify-end w-[10%]"

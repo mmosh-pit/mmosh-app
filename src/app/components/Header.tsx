@@ -402,7 +402,7 @@ const Header = () => {
               <p className="md:text-base text-sm text-white">
                 {wallet?.publicKey
                   ? walletAddressShortener(wallet.publicKey.toString())
-                  : "Connect Wallet"}
+                  : "Connect"}
               </p>
             </WalletMultiButton>
 

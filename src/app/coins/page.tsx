@@ -23,7 +23,13 @@ const HomePage = () => {
       </div>
 
       <div className="w-full mt-8 overflow-x-auto">
-        <CoinsTable />
+        {isMobile ? (
+          <CoinsList />
+        ) : coinsMode === "card" ? (
+          <CoinsList />
+        ) : (
+          <CoinsTable />
+        )}
       </div>
     </div>
   );

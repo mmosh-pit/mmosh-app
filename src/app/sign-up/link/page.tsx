@@ -1,10 +1,10 @@
 "use client";
 import * as React from "react";
-import Image from "next/image";
 import Button from "../../components/common/Button";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
+import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 
 const Link = () => {
   const router = useRouter();
@@ -22,16 +22,12 @@ const Link = () => {
   return (
     <div className="w-full min-h-full flex flex-col items-center background-content pt-32 relative">
       <div className="flex flex-col items-center my-6">
-        <div className="flex flex-col relative w-[250px] h-[100px] my-6">
-          <Image
-            src="https://storage.googleapis.com/mmosh-assets/logo_white.png"
-            alt="mmosh"
-            layout="fill"
-          />
+        <div className="flex justify-center w-[250px] h-[100px]">
+          <KinshipCodesLogin />
         </div>
         <p className="text-base mt-4">
-          Is a Web3 Social Network on Telegram. Activate the MMOSH Bot on
-          Telegram to continue.
+          Is a Web3 Social Network on Telegram. Activate the Kinship Codes Bot
+          on Telegram to continue.
         </p>
       </div>
 

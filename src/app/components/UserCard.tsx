@@ -401,14 +401,14 @@ const UserCard = ({ user, wallet, currentuser, connection }: Props) => {
         </div>
 
         <div className="my-4">
-          <p className="text-white text-base h-12 text-ellipsis overflow-hidden">
+          <p className="text-white text-base text-with-ellipsis">
             {user.profile.bio}
           </p>
           <a
             className="text-[#FF00C7] text-base"
             href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${user.profile.username}`}
           >
-            liquidhearts.app/{user.profile.username}
+            kinship.codes/{user.profile.username}
           </a>
         </div>
 

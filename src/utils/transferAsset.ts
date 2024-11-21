@@ -8,11 +8,9 @@ import {
 import * as anchor from "@coral-xyz/anchor";
 
 import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   createTransferCheckedInstruction,
   getAssociatedTokenAddress,
-  getOrCreateAssociatedTokenAccount,
 } from "forge-spl-token";
 import { getExplorerLink } from "@solana-developers/helpers";
 import { getOrCreateTokenAccountInstruction } from "./getOrCreateAssociatedTokenAccount";
@@ -47,6 +45,7 @@ export async function transferAsset(
       {
         mint: mintPubkey,
         owner: receiverPubkey,
+        payer: wallet.publicKey,
       },
       connection,
     );

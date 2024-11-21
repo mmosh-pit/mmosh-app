@@ -4,21 +4,24 @@ import { useAtom } from "jotai";
 
 import { CandidateInfo } from "@/app/models/candidateInfo";
 import { AIChatMessage } from "@/app/models/AIChatMessage";
-import { data } from "@/app/store";
+import { data, userData } from "@/app/store";
 import Markdown from "markdown-to-jsx";
+import { Bars } from "react-loader-spinner";
 
 type Props = {
   candidateInfo: CandidateInfo;
   symbols: string[];
 };
 
-const AIChat = ({ candidateInfo, symbols }: Props) => {
+const AIChat = ({ symbols }: Props) => {
   const [currentUser] = useAtom(data);
+  const [user] = useAtom(userData);
 
   const [messages, setMessages] = React.useState<AIChatMessage[]>([]);
-  const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
+  // const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
 
   const [isDisabled, setIsDisabled] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const [currentText, setCurrentText] = React.useState("");
 
@@ -27,12 +30,21 @@ const AIChat = ({ candidateInfo, symbols }: Props) => {
   const getMessageImage = React.useCallback(
     (message: AIChatMessage) => {
       if (message.type === "user") {
-        if (!currentUser) return "";
+        if (!currentUser) {
+          if (!user)
+            return "https://storage.googleapis.com/mmosh-assets/g_avatar.png";
+
+          return "https://storage.googleapis.com/mmosh-assets/v_avatar.png";
+        }
 
         return currentUser!.profile.image;
       }
 
-      return "https://storage.googleapis.com/mmosh-assets/candidates/ptv_blue_square.png";
+      if ((message.index || 0) % 2 === 0) {
+        return "https://storage.googleapis.com/mmosh-assets/uncle-psy.png";
+      }
+
+      return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
     [currentUser],
   );
@@ -42,6 +54,7 @@ const AIChat = ({ candidateInfo, symbols }: Props) => {
       e.preventDefault();
       try {
         setIsDisabled(true);
+        setIsLoading(true);
         setMessages([
           ...messages,
           {
@@ -88,6 +101,7 @@ const AIChat = ({ candidateInfo, symbols }: Props) => {
           },
         ];
 
+        setIsLoading(false);
         while (true) {
           const { value, done } = await reader.read();
           if (done) break;
@@ -146,6 +160,33 @@ const AIChat = ({ candidateInfo, symbols }: Props) => {
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="w-full flex items-center justify-start my-1 rounded-lg">
+            <div className="relative w-[2vmax] h-[2vmax]">
+              <Image
+                layout="fill"
+                src={getMessageImage({
+                  type: "bot",
+                  message: "",
+                })}
+                alt="image"
+                className="rounded-full"
+              />
+            </div>
+
+            <div className="w-full justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
+              <Bars
+                height="60"
+                width="60"
+                color="rgba(255, 0, 199, 1)"
+                ariaLabel="bars-loading"
+                wrapperStyle={{}}
+                wrapperClass="bars-loading"
+                visible={true}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <form

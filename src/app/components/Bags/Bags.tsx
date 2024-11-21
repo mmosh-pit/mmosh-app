@@ -38,7 +38,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   }, []);
 
   return (
-    <div className="w-full h-screen min-w-[3vmax] flex flex-col justify-center items-center items-center justify-start mt-8">
+    <div className="w-full h-screen min-w-[3vmax] flex flex-col items-center items-center justify-start mt-8">
       <div className="flex items-center justify-center my-8">
         <h6>My Bags</h6>
       </div>

@@ -31,7 +31,6 @@ import ProjectTabs from "./Header/ProjectTabs";
 import { incomingReferAddress } from "../store/signup";
 import Notification from "./Notification/Notification";
 import { currentGroupCommunity } from "../store/community";
-import LHCIcon from "@/assets/icons/LHCIcon";
 import { init } from "../lib/firebase";
 import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
 import useWallet from "@/utils/wallet";
@@ -293,12 +292,7 @@ const Header = () => {
             <div
               className="flex justify-end w-[30%] mr-12"
               onClick={() => {
-                if (isUserAuthenticated) {
-                  router.push("/coins");
-                  return;
-                }
-
-                router.push("/login");
+                router.push("/");
               }}
             >
               <div className="relative w-[2vmax] h-[2vmax]">

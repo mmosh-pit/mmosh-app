@@ -7,6 +7,7 @@ import { AIChatMessage } from "./models/AIChatMessage";
 import { data, userData } from "./store";
 import { useAtom } from "jotai";
 import Markdown from "markdown-to-jsx";
+import { Bars } from "react-loader-spinner";
 
 export default function Home() {
   const lastBotMessageIndex = React.useRef(0);
@@ -16,12 +17,14 @@ export default function Home() {
   const [text, setText] = React.useState("");
   const [messages, setMessages] = React.useState<AIChatMessage[]>([]);
   const [isDisabled, setIsDisabled] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const messagesRef = React.useRef<HTMLDivElement>(null);
 
   const sendToAI = async () => {
     try {
       setIsDisabled(true);
+      setIsLoading(true);
       setMessages([
         ...messages,
         {
@@ -64,6 +67,8 @@ export default function Home() {
           message: text,
         },
       ];
+
+      setIsLoading(false);
 
       while (true) {
         const { value, done } = await reader.read();
@@ -198,6 +203,34 @@ export default function Home() {
               </div>
             </div>
           ))}
+
+          {isLoading && (
+            <div className="w-full flex items-center justify-start my-1 rounded-lg">
+              <div className="relative w-[2vmax] h-[2vmax]">
+                <Image
+                  layout="fill"
+                  src={getMessageImage({
+                    type: "bot",
+                    message: "",
+                  })}
+                  alt="image"
+                  className="rounded-full"
+                />
+              </div>
+
+              <div className="w-full justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
+                <Bars
+                  height="60"
+                  width="60"
+                  color="rgba(255, 0, 199, 1)"
+                  ariaLabel="bars-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="bars-loading"
+                  visible={true}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="w-full pb-4 px-12">

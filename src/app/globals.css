@@ -11,6 +11,15 @@ p {
   color: #d7d7d7;
 }
 
+.text-with-ellipsis {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
 span {
   font-size: 0.8rem;
   color: #fff;
@@ -256,41 +265,17 @@ h6 {
 
 #member-container {
   position: relative;
-  box-shadow:
-    1px 2px 8px #ff00ae,
-    -0.2em 0 0.2em #0061ff;
-}
-
-#member-container::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 3vmax 0.375rem 0.375rem 0.375rem;
-  border: 1px solid transparent;
-  background-clip: padding-box;
-
-  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
-    border-box;
-
-  -webkit-mask: /*4*/
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /*5'*/
-  mask-composite: exclude; /*5*/
+  border: 1px solid #ff00aea6;
 }
 
 #border-gradient-container {
   position: relative;
-  box-shadow:
-    1px 2px 4px #ff00ae,
-    -0.2em 0 0.1em #0061ff;
+  border: 1px solid #ff00aea6;
 }
 
 #member-container-home {
   position: relative;
-  box-shadow:
-    1px 2px 4px #ff00ae,
-    -0.2em 0 0.1em #0061ff;
+  border: 1px solid #ff00aea6;
 }
 
 #member-container p,
@@ -301,23 +286,23 @@ h6 {
   z-index: 1;
 }
 
-#member-container-home::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 1rem;
-  border: 1px solid transparent;
-  background-clip: padding-box;
-
-  background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%)
-    border-box;
-
-  -webkit-mask: /*4*/
-    linear-gradient(#fff 0 0) padding-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; /*5'*/
-  mask-composite: exclude; /*5*/
-}
+/* #member-container-home::before { */
+/*   content: ""; */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   border-radius: 1rem; */
+/*   border: 1px solid transparent; */
+/*   background-clip: padding-box; */
+/**/
+/*   background: linear-gradient(90.66deg, #0061ff 70.22%, #ff00ae 92.51%) */
+/*     border-box; */
+/**/
+/*   -webkit-mask: /*4*/
+/*     linear-gradient(#fff 0 0) padding-box, */
+/*     linear-gradient(#fff 0 0); */
+/*   -webkit-mask-composite: xor; /*5'*/
+/*   mask-composite: exclude; /*5*/
+/* } */
 
 .selected-sort-option::before {
   content: "";

@@ -12,8 +12,10 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   createTransferCheckedInstruction,
   getAssociatedTokenAddress,
+  getOrCreateAssociatedTokenAccount,
 } from "forge-spl-token";
 import { getExplorerLink } from "@solana-developers/helpers";
+import { getOrCreateTokenAccountInstruction } from "./getOrCreateAssociatedTokenAccount";
 
 export async function transferAsset(
   wallet: AnchorWallet,
@@ -41,29 +43,46 @@ export async function transferAsset(
       wallet.publicKey,
     );
 
-    const associatedTokenTo = await getAssociatedTokenAddress(
-      mintPubkey,
-      receiverPubkey,
+    const { ata, ix } = await getOrCreateTokenAccountInstruction(
+      {
+        mint: mintPubkey,
+        owner: receiverPubkey,
+      },
+      connection,
     );
 
-    const decimalMultiplier = Number("1".padEnd(decimals, "0")) * 10;
+    const decimalMultiplier =
+      Number("1".padEnd(decimals, "0")) * (decimals === 0 ? 1 : 10);
 
     const blockhash = await connection
       .getLatestBlockhash()
       .then((res) => res.blockhash);
 
-    const instructions = [
+    console.log("Sending values: ", {
+      tokenAccount1Pubkey: tokenAccount1Pubkey.toBase58(),
+      mintPubkey: mintPubkey.toBase58(),
+      associatedTokenTo: ata.toBase58(),
+      wallet: wallet.publicKey.toBase58(),
+      amount: Number(amount) * decimalMultiplier,
+      decimals,
+    });
+
+    const instructions = [];
+
+    if (ix) instructions.push(ix);
+
+    instructions.push(
       createTransferCheckedInstruction(
         tokenAccount1Pubkey,
         mintPubkey,
-        associatedTokenTo,
-        tokenAccount1Pubkey,
+        ata,
+        wallet.publicKey,
         Number(amount) * decimalMultiplier,
         decimals,
-        [],
-        TOKEN_PROGRAM_ID,
+        // [],
+        // TOKEN_PROGRAM_ID,
       ),
-    ];
+    );
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,

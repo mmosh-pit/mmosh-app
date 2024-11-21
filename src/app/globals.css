@@ -298,11 +298,10 @@ h6 {
 /*     border-box; */
 /**/
 /*   -webkit-mask: /*4*/
-*/
 /*     linear-gradient(#fff 0 0) padding-box, */
 /*     linear-gradient(#fff 0 0); */
-/*   -webkit-mask-composite: xor; /*5'*/ */
-/*   mask-composite: exclude; /*5*/ */
+/*   -webkit-mask-composite: xor; /*5'*/
+/*   mask-composite: exclude; /*5*/
 /* } */
 
 .selected-sort-option::before {

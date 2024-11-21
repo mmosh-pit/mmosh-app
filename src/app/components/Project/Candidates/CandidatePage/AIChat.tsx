@@ -72,7 +72,8 @@ const AIChat = ({ symbols }: Props) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username: currentUser!.profile.username,
+              username:
+                currentUser?.profile.username ?? user?.name ?? "Visitor",
               prompt: currentText,
               namespaces: symbols,
               // metafield: JSON.stringify({

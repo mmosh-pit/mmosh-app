@@ -1,6 +1,5 @@
 "use client";
 import * as React from "react";
-import Image from "next/image";
 import { useAtom } from "jotai";
 import axios from "axios";
 
@@ -10,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { storeFormAtom } from "../store/signup";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
+import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 
 const SignUp = () => {
   const router = useRouter();
@@ -77,12 +77,8 @@ const SignUp = () => {
       onSubmit={submit}
     >
       <div className="flex flex-col items-center my-6">
-        <div className="flex flex-col relative w-[250px] h-[100px] my-6">
-          <Image
-            src="https://storage.googleapis.com/mmosh-assets/logo_white.png"
-            alt="mmosh"
-            layout="fill"
-          />
+        <div className="flex justify-center w-[250px] h-[100px]">
+          <KinshipCodesLogin />
         </div>
         <p className="text-base mt-4">It's All Related</p>
       </div>

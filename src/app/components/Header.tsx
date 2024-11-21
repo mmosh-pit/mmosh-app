@@ -301,7 +301,13 @@ const Header = () => {
                 router.push("/login");
               }}
             >
-              <LHCIcon />
+              <div className="relative w-[2vmax] h-[2vmax]">
+                <Image
+                  src="https://storage.googleapis.com/mmosh-assets/kinship.png"
+                  alt="Kinship"
+                  layout="fill"
+                />
+              </div>
             </div>
           )}
 

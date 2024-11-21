@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
+import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 
 const ResetPassword = () => {
   const router = useRouter();
@@ -71,12 +72,8 @@ const ResetPassword = () => {
       onSubmit={submit}
     >
       <div className="flex flex-col items-center my-6">
-        <div className="relative w-[250px] h-[100px] ">
-          <Image
-            src="https://storage.googleapis.com/mmosh-assets/logo_white.png"
-            alt="mmosh"
-            layout="fill"
-          />
+        <div className="flex justify-center w-[250px] h-[100px]">
+          <KinshipCodesLogin />
         </div>
         <p className="text-base mt-4">It's All Related</p>
       </div>

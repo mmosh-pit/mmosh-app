@@ -1,12 +1,12 @@
 "use client";
 import * as React from "react";
-import Image from "next/image";
 import { useAtom } from "jotai";
 import axios from "axios";
 import Button from "../../components/common/Button";
 import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import { useRouter } from "next/navigation";
+import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 
 function codeIsValid(myString: string) {
   return /\d/.test(myString);
@@ -85,12 +85,8 @@ const Code = () => {
   return (
     <div className="w-full min-h-full flex flex-col items-center background-content pt-32 relative">
       <div className="flex flex-col items-center my-6">
-        <div className="flex flex-col relative w-[250px] h-[100px] my-6">
-          <Image
-            src="https://storage.googleapis.com/mmosh-assets/logo_white.png"
-            alt="mmosh"
-            layout="fill"
-          />
+        <div className="flex justify-center w-[250px] h-[100px]">
+          <KinshipCodesLogin />
         </div>
         <p className="text-base mt-4">Enter code from Email</p>
       </div>

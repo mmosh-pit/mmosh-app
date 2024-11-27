@@ -3,6 +3,7 @@ import { LineChart, Line, ResponsiveContainer } from "recharts";
 import Image from "next/image";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import { useRouter } from "next/navigation";
+import { abbreviateNumber } from "@/app/lib/abbreviateNumber";
 
 type Props = {
   coin: DirectoryCoin;
@@ -30,7 +31,7 @@ const CoinCardItem = ({ coin, displayGraph }: Props) => {
       key={coin.symbol.toUpperCase()}
       onClick={() => navigateToCoinPage(coin.symbol)}
     >
-      <div className="self-center max-w-[30%] mr-8">
+      <div className="self-center max-w-[20%] md:mr-4 2xl:mr-8">
         <div className="relative w-[3vmax] h-[3vmax]">
           <Image
             src={coin.image}
@@ -49,11 +50,12 @@ const CoinCardItem = ({ coin, displayGraph }: Props) => {
       </div>
 
       <div className="flex flex-col h-full">
-        <p className="text-sm font-white self-start">Market Cap</p>
+        <p className="text-xs font-white self-start text-center">Market Cap</p>
 
         <div className="self-center">
-          <p className="text-sm text-white font-bold">
-            {coin.marketcap} <span className="text-sm font-normal">USDC</span>
+          <p className="text-xs text-white font-bold text-center">
+            {abbreviateNumber(coin.marketcap)}{" "}
+            <span className="text-sm font-normal">USDC</span>
           </p>
         </div>
       </div>
@@ -61,7 +63,7 @@ const CoinCardItem = ({ coin, displayGraph }: Props) => {
         <div className="flex flex-col">
           <p className="text-xs self-end">24h</p>
 
-          <div className="w-[5vmax]">
+          <div className="w-[4vmax]">
             <ResponsiveContainer width="100%" height={50}>
               <LineChart
                 width={150}

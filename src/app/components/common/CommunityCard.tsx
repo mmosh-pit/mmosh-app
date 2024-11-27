@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Community } from "@/app/models/community";
 
 type Props = {
-  community: Community;
+  community: Omit<Community, "coin">;
 };
 
 const CommunityCard = ({ community }: Props) => {
@@ -20,11 +20,11 @@ const CommunityCard = ({ community }: Props) => {
       }}
     >
       <div className="self-center max-w-[30%] mr-8">
-        <div className="relative w-[6vmax] h-[6vmax]">
+        <div className="relative w-[4vmax] h-[4vmax]">
           <Image
             src={community.image}
             alt="Profile Image"
-            className="rounded-md"
+            className="rounded-lg"
             layout="fill"
           />
         </div>
@@ -53,7 +53,9 @@ const CommunityCard = ({ community }: Props) => {
           <a
             className="text-sm text-[#FF00C7] underline"
             href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/communities/${community.symbol.toLowerCase()}`}
-          >{`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/communities/${community.symbol.toLowerCase()}`}</a>
+          >
+            {community.name}
+          </a>
         </div>
       </div>
     </div>

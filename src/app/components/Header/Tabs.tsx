@@ -10,18 +10,7 @@ const Tabs = () => {
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
   return (
-    <div className="flex justify-center items-center">
-      <a
-        className="text-base text-white cursor-pointer"
-        onClick={() => {
-          router.push("/coins");
-        }}
-      >
-        Coins
-      </a>
-
-      <div className="lg:mx-6 md:mx-3" />
-
+    <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
@@ -32,11 +21,14 @@ const Tabs = () => {
       </a>
 
       <div className="lg:mx-6 md:mx-3" />
+
       <a
         className="text-base text-white cursor-pointer"
-        onClick={() => router.push("/projects")}
+        onClick={() => {
+          router.push("/coins");
+        }}
       >
-        Projects
+        Coins
       </a>
 
       <div className="lg:mx-6 md:mx-3" />
@@ -45,6 +37,14 @@ const Tabs = () => {
         onClick={() => router.push("/communities")}
       >
         Communities
+      </a>
+
+      <div className="lg:mx-6 md:mx-3" />
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/projects")}
+      >
+        Projects
       </a>
 
       <div className="lg:mx-6 md:mx-3" />
@@ -103,15 +103,6 @@ const Tabs = () => {
         }}
       >
         Wallet
-      </a>
-
-      <div className="lg:mx-6 md:mx-3" />
-      <a
-        className="text-base text-white cursor-pointer"
-        href="https://www.kinship.systems"
-        target="_blank"
-      >
-        Resources
       </a>
     </div>
   );

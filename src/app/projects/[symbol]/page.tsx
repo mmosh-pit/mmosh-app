@@ -1,15 +1,21 @@
 "use client";
 
 import * as React from "react";
-import Button from "@/app/components/common/Button";
 import { isDrawerOpen } from "@/app/store";
 import { useAtom } from "jotai";
 import Image from "next/image";
+import axios from "axios";
+
+import Button from "@/app/components/common/Button";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import CoinCardItem from "@/app/components/common/CoinCardItem";
 import { mockCoins } from "@/utils/mockCoins";
 import { User } from "@/app/models/user";
 import SimpleMemberCard from "@/app/components/common/SimpleMemberCard";
+import Dots from "@/assets/icons/Dots";
+import { Community } from "@/app/models/community";
+import { mockCommunities } from "@/utils/mockCommunities";
+import CommunityCard from "@/app/components/common/CommunityCard";
 
 const Project = () => {
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -21,7 +27,22 @@ const Project = () => {
     })),
   );
 
+  const [communities, setCommunities] =
+    React.useState<Omit<Community, "coin">[]>(mockCommunities);
+
   const [members, setMembers] = React.useState<User[]>([]);
+
+  const getUsers = React.useCallback(async () => {
+    let url = `/api/get-all-users?skip=0`;
+
+    const result = await axios.get(url);
+
+    setMembers(result.data.users);
+  }, []);
+
+  React.useEffect(() => {
+    getUsers();
+  });
 
   return (
     <div
@@ -29,13 +50,15 @@ const Project = () => {
     >
       <h4 className="text-white self-center text-xl py-12">Project Page</h4>
 
-      <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl">
+      <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl mb-16">
         <div className="project-image-header h-[25vh] m-4">
-          <div className="dots-menu" />
-
-          <div className="p-2 bg-[#100E3A] rounded-lg">
-            <p className="text-white text-base">Inform OPOS</p>
+          <div className="dots-menu">
+            <Dots />
           </div>
+
+          <button className="p-2 bg-[#100E3A] rounded-lg cursor-pointer">
+            <p className="text-white text-base">Inform OPOS</p>
+          </button>
         </div>
 
         <div className="absolute left-[5%] top-[12%] md:top-[15%] lg:top-[18%]">
@@ -52,7 +75,7 @@ const Project = () => {
           <div className="w-[8vmax]" />
 
           <div className="flex flex-col mt-4 max-w-[60%]">
-            <div className="flex">
+            <div className="flex items-center">
               <h5 className="font-bold text-white text-lg">Frankie</h5>
               <span className="font-bold text-lg text-white mx-2">•</span>
               <p className="text-base">Frankie</p>
@@ -81,7 +104,7 @@ const Project = () => {
 
         <div className="flex flex-col mt-6">
           <h6 className="text-white font-bold text-lg ml-6">Community Coins</h6>
-          <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-auto gap-4 px-8 mt-4">
+          <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-auto gap-4 2xl:px-8 md:px-4 px-6 mt-4">
             {coins.map((coin) => (
               <CoinCardItem
                 key={coin.symbol + coin.name}
@@ -91,15 +114,15 @@ const Project = () => {
             ))}
           </div>
 
-          <div className="flex mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 mt-8">
             <div className="flex grow flex-col items-start">
               <h6 className="text-white font-bold text-lg mb-4 ml-4">
                 Communities
               </h6>
 
-              <div className="w-full grid grid-cols-auto md:grid-cols-2 gap-4 px-8 py-6 bg-[#202061]">
-                {coins.map((coin) => (
-                  <CoinCardItem coin={coin} displayGraph={false} />
+              <div className="w-full h-full grid grid-cols-auto 2xl:grid-cols-2 grid-rows-min gap-4 2xl:px-8 md:px-4 px-6 py-6 bg-[#202061] max-h-[500px] overflow-y-auto">
+                {communities.map((community) => (
+                  <CommunityCard community={community} />
                 ))}
               </div>
             </div>
@@ -112,9 +135,14 @@ const Project = () => {
                 <div id="all-trading-pairs"></div>
               </div>
 
-              <div className="w-full grid grid-cols-auto md:grid-cols-2 gap-4 py-6 bg-[#202061]">
+              <div className="w-full h-full grid grid-cols-auto lg:grid-cols-2 md:gap-2 gap-4 2xl:gap-4 py-6 bg-[#202061] max-h-[500px] overflow-y-auto">
                 {coins.map((coin) => (
-                  <CoinCardItem coin={coin} displayGraph={false} />
+                  <div
+                    key={coin.name + coin.symbol}
+                    className="max-h-[80px] mb-2"
+                  >
+                    <CoinCardItem coin={coin} displayGraph={false} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -123,10 +151,7 @@ const Project = () => {
                 Members
               </h6>
 
-              <div className="w-full grid grid-cols-auto md:grid-cols-2 gap-4 px-8 py-6 bg-[#202061]">
-                {coins.map((coin) => (
-                  <CoinCardItem coin={coin} displayGraph={false} />
-                ))}
+              <div className="w-full h-full grid grid-cols-auto gap-4 2xl:px-8 md:px-4 px-6 py-6 bg-[#202061] max-h-[500px] overflow-y-auto">
                 {members.map((member) => (
                   <SimpleMemberCard user={member} />
                 ))}

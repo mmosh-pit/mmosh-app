@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
-import { data, isDrawerOpen, settings } from "@/app/store";
+import { data, isDrawerOpen } from "@/app/store";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import SimpleArrowUp from "@/assets/icons/SimpleArrowUp";
 
@@ -11,7 +11,6 @@ const MobileDrawer = () => {
   const router = useRouter();
   const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
   const [currentUser] = useAtom(data);
-  const [isOnSettings, setIsOnSettings] = useAtom(settings);
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
@@ -144,19 +143,16 @@ const MobileDrawer = () => {
 
             <a
               className="text-sm text-white"
+              onClick={() => router.push("/inform")}
+            >
+              OPOS
+            </a>
+
+            <a
+              className="text-sm text-white"
               onClick={() => router.push("/settings")}
             >
               Settings
-            </a>
-
-            <div className="my-2" />
-
-            <a
-              className="text-base text-white cursor-pointer"
-              href="https://www.kinship.systems"
-              target="_blank"
-            >
-              Resources
             </a>
           </div>
 
@@ -171,44 +167,6 @@ const MobileDrawer = () => {
           </a>
 
           <div className="h-[1px] w-[90%] bg-white mt-4" />
-
-          <div className="flex flex-col mt-4">
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() => router.replace("/projects/ptv")}
-            >
-              Pump the Vote
-            </a>
-
-            <div className="my-2" />
-
-            <a
-              onClick={() => router.replace("/projects/ptv/candidates")}
-              className="text-base text-white cursor-pointer "
-            >
-              Candidates
-            </a>
-
-            <div className="my-2" />
-
-            <a
-              className="text-base text-white cursor-pointer "
-              onClick={() => {
-                router.push("/projects/ptv/bounties");
-              }}
-            >
-              Bounties
-            </a>
-          </div>
-
-          <div className="h-[1px] w-[90%] bg-white mt-4" />
-          <div className="flex flex-col mt-4">
-            {currentUser?.telegram?.id && (
-              <div className="mt-8" onClick={() => setIsOnSettings(true)}>
-                <p className="text-base text-white font-bold">Settings</p>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

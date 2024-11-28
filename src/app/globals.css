@@ -133,28 +133,21 @@ h6 {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100vh;
-  /* background: #09073a; */
-  background: radial-gradient(
-    circle at 50% 15%,
-    #133ad5 1%,
-    #060676 10%,
-    #000052 60%,
-    #000000 100%
-  );
+  background: #09073a;
 }
 
-.bg-profile::before {
-  content: "";
-  display: block;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: radial-gradient(circle at 50% 50%, #174aff 0%, #030064 100%);
-  filter: blur(100px);
-  mix-blend-mode: soft-light;
-}
+/* .bg-profile::before { */
+/*   content: ""; */
+/*   display: block; */
+/*   height: 100%; */
+/*   position: absolute; */
+/*   top: 0; */
+/*   left: 0; */
+/*   width: 100%; */
+/*   background: radial-gradient(circle at 50% 50%, #174aff 0%, #030064 100%); */
+/*   filter: blur(100px); */
+/*   mix-blend-mode: soft-light; */
+/* } */
 
 #hallucination {
   background-color: #0061ff;
@@ -264,17 +257,14 @@ h6 {
 }
 
 #member-container {
-  position: relative;
   border: 1px solid #ff00aea6;
 }
 
 #border-gradient-container {
-  position: relative;
   border: 1px solid #ff00aea6;
 }
 
 #member-container-home {
-  position: relative;
   border: 1px solid #ff00aea6;
 }
 
@@ -282,8 +272,11 @@ h6 {
 #member-container a,
 #member-container-home p,
 #member-container-home a {
-  position: relative;
   z-index: 1;
+}
+
+#blue-border {
+  border: 1px solid #353485;
 }
 
 /* #member-container-home::before { */
@@ -1078,4 +1071,26 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   ::-ms-input-placeholder {
     color: #9b9b9b;
   }
+}
+
+.project-image-header {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: end;
+
+  padding: 2rem;
+
+  background-image: url("https://storage.googleapis.com/mmosh-assets/mmosh_box.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  backdrop-filter: blur(9px);
+}
+
+.dots-menu {
+  background-color: #42408442;
+  backdrop-filter: blur(39px);
+  padding: 0.5vmax;
+  border-radius: 9999px;
+  cursor: pointer;
 }

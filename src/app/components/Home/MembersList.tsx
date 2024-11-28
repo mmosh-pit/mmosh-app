@@ -88,12 +88,6 @@ const MembersList = () => {
         onScroll={handleScroll}
       >
         {users.map((user) => (
-          // <MemberCard
-          //   user={user}
-          //   wallet={wallet}
-          //   currentuser={currentUser || undefined}
-          //   connection={connection.connection}
-          // />
           <UserCard
             user={user}
             wallet={wallet}

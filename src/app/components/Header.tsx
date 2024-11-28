@@ -17,7 +17,6 @@ import {
   isAuthModalOpen,
   isAuthOverlayOpen,
   isDrawerOpen,
-  status,
   userData,
   userWeb3Info,
   web3InfoLoading,
@@ -52,7 +51,6 @@ const Header = () => {
   const [_______, setPublicKey] = useAtom(appPublicKey);
   const [________, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
   const [_________, setUser] = useAtom(userData);
-  const [userStatus] = useAtom(status);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -74,21 +72,6 @@ const Header = () => {
       setReferAddress(process.env.NEXT_PUBLIC_DEFAULT_REFER_ADDRESS!);
     }
   }, [param]);
-
-  const getHeaderBackground = React.useCallback(() => {
-    let defaultClass =
-      "w-full flex flex-col justify-center items-center py-6 px-8 relative z-10 ";
-
-    if (pathname.includes("create")) {
-      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[10px]";
-    } else if (pathname !== "/" || pathname.includes("settings")) {
-      defaultClass += "bg-white bg-opacity-[0.07] backdrop-blur-[2px]";
-    } else if (pathname === "/" && !pathname.includes("settings")) {
-      defaultClass += "bg-black bg-opacity-[0.56] backdrop-blur-[2px]";
-    }
-
-    return defaultClass;
-  }, [userStatus, pathname]);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
@@ -280,17 +263,18 @@ const Header = () => {
 
   const isMobileScreen = screenSize < 1200;
 
-  if (pathname === "/tos" || pathname === "/privacy") return <></>;
+  if (pathname === "/tos" || pathname === "/privacy" || pathname === "/")
+    return <></>;
 
   return (
     <header className="flex flex-col">
-      <div className={getHeaderBackground()}>
+      <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
         <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (
             <MobileDrawer />
           ) : (
             <div
-              className="flex justify-end w-[30%] mr-12"
+              className="flex justify-end w-[30%] mr-12 cursor-pointer"
               onClick={() => {
                 router.push("/");
               }}
@@ -352,7 +336,7 @@ const Header = () => {
             )}
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-6 ${isDrawerShown ? "z-[-1]" : ""} cursor-pointer`}
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 ${isDrawerShown ? "z-[-1]" : ""} cursor-pointer`}
                 onClick={() => {
                   router.push(`/${currentUser?.profile.username}`);
                 }}
@@ -360,7 +344,7 @@ const Header = () => {
                 <Image
                   src={currentUser.profile.image}
                   alt="Profile Image"
-                  className="rounded-full"
+                  className="rounded-md"
                   layout="fill"
                 />
               </div>
@@ -368,7 +352,18 @@ const Header = () => {
 
             {!isMobileScreen && (
               <button
-                className="relative bg-[#03002B] px-4 py-3 rounded-xl"
+                className="relative bg-[#3A34888A] px-4 py-3 rounded-full"
+                onClick={() => {
+                  router.push("/inform");
+                }}
+              >
+                <p className="md:text-base text-sm text-white ">OPOS</p>
+              </button>
+            )}
+
+            {!isMobileScreen && (
+              <button
+                className="relative bg-[#3A34888A] px-4 py-3 rounded-xl ml-4"
                 disabled={isLoadingLogout}
                 onClick={() => {
                   if (isUserAuthenticated) {
@@ -382,7 +377,7 @@ const Header = () => {
                 {isLoadingLogout ? (
                   <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
                 ) : (
-                  <p className="md:text-base text-sm text-white font-bold settings-btn">
+                  <p className="md:text-base text-sm text-white settings-btn">
                     {isUserAuthenticated ? "Logout" : "Log In"}
                   </p>
                 )}
@@ -394,9 +389,9 @@ const Header = () => {
               style={{
                 background:
                   "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: isMobileScreen ? "0 1em" : "0 2em",
+                padding: isMobileScreen ? "0 0.4em" : "0 0.8em",
                 borderRadius: 15,
-                marginLeft: isMobileScreen ? "2rem" : "0.5rem",
+                marginLeft: "0.5rem",
               }}
             >
               <p className="md:text-base text-sm text-white">
@@ -408,10 +403,10 @@ const Header = () => {
 
             {!isMobileScreen && isUserAuthenticated && (
               <button
-                className="relative bg-[#03002B] px-2 py-3 rounded-xl ml-2"
+                className="relative bg-[#3A34888A] px-2 py-3 rounded-xl ml-2"
                 onClick={() => router.push("/settings")}
               >
-                <p className="md:text-base text-sm text-white font-bold settings-btn">
+                <p className="md:text-base text-sm text-white settings-btn">
                   Settings
                 </p>
               </button>
@@ -419,8 +414,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-      {!isMobileScreen && <ProjectTabs />}
 
       {pathname.includes("/communities/") && community !== null && (
         <div

@@ -1,9 +1,9 @@
 "use client";
+import { useAtom } from "jotai";
 import * as React from "react";
 
-import { useAtom } from "jotai";
-import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
-import axios from "axios";
+import { isDrawerOpen } from "../store";
+import SearchBar from "../components/Project/Candidates/SearchBar";
 import {
   BagsCoin,
   BagsNFT,
@@ -11,13 +11,10 @@ import {
   bagsCoins,
   bagsNfts,
 } from "../store/bags";
+import axios from "axios";
 import useWallet from "@/utils/wallet";
-import { getPriceForPTV } from "../lib/forge/jupiter";
-import Bags from "../components/Bags/Bags";
-import SelectedCoin from "../components/Bags/SelectedCoin";
-import SendAsset from "../components/Bags/SendAsset";
-
-const SOL_ADDR = "So11111111111111111111111111111111111111112";
+import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
+import AssetCard from "../components/Inform/AssetCard";
 
 const COMMUNITY_PTVB_COIN = process.env.NEXT_PUBLIC_PTVB_TOKEN;
 const COMMUNITY_PTVR_COIN = process.env.NEXT_PUBLIC_PTVR_TOKEN;
@@ -30,19 +27,15 @@ const PASS_COLLECTION = "PASSES";
 const BADGE_COLLECTION = "BADGES";
 const PROFILE_COLLECTION = "PROFILES";
 
-const Page = () => {
+const Inform = () => {
   const wallet = useWallet();
 
-  const [_, setMmoshUsdcPrice] = React.useState(0);
-  const [selectedAsset, setSelectedAsset] = React.useState<
-    BagsCoin | BagsNFT | null
-  >(null);
+  const [isDrawerShown] = useAtom(isDrawerOpen);
+  const [searchText, setSearchText] = React.useState("");
 
-  const [isOnSend, setIsOnSend] = React.useState(false);
-
-  const [totalBalance, setTotalBalance] = useAtom(bagsBalance);
+  const [_, setTotalBalance] = useAtom(bagsBalance);
   const [bags, setBags] = useAtom(bagsCoins);
-  const [__, setBagsNFTs] = useAtom(bagsNfts);
+  const [nfts, setBagsNFTs] = useAtom(bagsNfts);
 
   const getAllTokenAddreses = React.useCallback(async () => {
     const response = await axios.get("/api/get-all-coins-address");
@@ -72,7 +65,6 @@ const Page = () => {
             showFungible: true,
             showCollectionMetadata: true,
             showUnverifiedCollections: true,
-            showNativeBalance: true,
           },
           page: 1,
           limit: 1000,
@@ -91,18 +83,6 @@ const Page = () => {
     const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
 
     const res: AssetsHeliusResponse = await response.json();
-
-    let networkCoin: BagsCoin = {
-      symbol: "SOL",
-      decimals: 9,
-      balance: res.result.nativeBalance.lamports,
-      name: "Solana",
-      image:
-        "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
-      tokenAddress: SOL_ADDR,
-      usdcPrice: Number(res.result.nativeBalance.price_per_sol.toFixed(2)),
-      mmoshPrice: 0,
-    };
 
     let stableCoin: BagsCoin | null = null;
     let nativeCoin: BagsCoin | null = null;
@@ -127,8 +107,6 @@ const Page = () => {
     for (const value of res.result.items) {
       if (value.interface === "FungibleToken") {
         if (value.token_info.decimals > 0) {
-          const price = await getPriceForPTV(value.id);
-
           const coin = {
             name: value.content.metadata.name,
             image: value.content.links.image ?? "",
@@ -136,22 +114,11 @@ const Page = () => {
             balance: value.token_info.balance,
             tokenAddress: value.id,
             decimals: value.token_info.decimals,
-            usdcPrice: price,
+            usdcPrice: 0,
             mmoshPrice: 0,
           };
 
-          if (value.id !== MMOSH_COIN) {
-            const decimals = "1".padEnd(coin.decimals + 1, "0");
-
-            const coinBalance = coin.balance / Number(decimals);
-
-            totalPriceInWallet += coinBalance * price;
-          }
-
           switch (value.id) {
-            case SOL_ADDR:
-              networkCoin = coin;
-              break;
             case COMMUNITY_PTVB_COIN:
               communityCoins.push(coin);
               break;
@@ -233,13 +200,12 @@ const Page = () => {
       exosystemAssets.push(nft);
     }
 
-    setMmoshUsdcPrice(USDCPrice);
     setTotalBalance(totalPriceInWallet);
 
     setBags({
       native: nativeCoin,
       stable: stableCoin,
-      network: networkCoin,
+      network: null,
       community: communityCoins,
       exosystem: exosystemCoins,
       memecoins: memecoins,
@@ -253,52 +219,70 @@ const Page = () => {
     });
   }, [wallet]);
 
-  const onSelectCoin = React.useCallback((coin: BagsCoin) => {
-    setSelectedAsset(coin);
-  }, []);
-
   React.useEffect(() => {
-    if (!wallet || bags !== null) return;
+    if (!wallet) return;
     fetchAllBalances();
   }, [wallet]);
 
-  if (isOnSend) {
-    return (
-      <SendAsset
-        selectedCoin={selectedAsset!}
-        goBack={() => {
-          if ("decimals" in selectedAsset!) {
-            setIsOnSend(false);
-          } else {
-            setIsOnSend(false);
-            setSelectedAsset(null);
-          }
-        }}
-      />
-    );
-  }
-
-  if (selectedAsset) {
-    return (
-      <SelectedCoin
-        selectedCoin={selectedAsset}
-        totalBalance={totalBalance}
-        setSelectedAsset={setSelectedAsset}
-        onSend={() => setIsOnSend(true)}
-      />
-    );
-  }
+  const coins = [...(bags?.memecoins ?? []), ...(bags?.community ?? [])];
 
   return (
-    <Bags
-      totalBalance={totalBalance}
-      onSelectAsset={(asset) => {
-        setIsOnSend(true);
-        setSelectedAsset(asset);
-      }}
-      onSelectCoin={onSelectCoin}
-    />
+    <div
+      className={`background-content-full-bg flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""}`}
+    >
+      <div className="bg-[#131245E0] flex flex-col items-center py-4 px-2 md:w-[85%] w-[95%] rounded-lg mt-8">
+        <h3>Inform OPOS</h3>
+
+        <div className="mt-6 mb-3">
+          <SearchBar setSearchText={setSearchText} />
+        </div>
+
+        <div className="w-full bg-[#09073A] px-4 py-2 rounded-md">
+          <h5>Ecosystem</h5>
+        </div>
+
+        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+          {!nfts?.profiles.length ? (
+            <p className="text-white text-center text-sm">Nothing yet</p>
+          ) : (
+            nfts.profiles.map((asset) => <AssetCard asset={asset} />)
+          )}
+        </div>
+
+        <div className="w-full bg-[#09073A] px-4 py-2 rounded-md">
+          <h5>Projects</h5>
+        </div>
+
+        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+          {!nfts?.passes.length ? (
+            <p className="text-white text-center text-sm">Nothing yet</p>
+          ) : (
+            nfts.profiles.map((asset) => <AssetCard asset={asset} />)
+          )}
+        </div>
+
+        <div className="w-full bg-[#09073A] px-4 py-2 rounded-md">
+          <h5>Communities</h5>
+        </div>
+
+        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+          <p className="text-white text-center text-sm">Nothing yet</p>
+        </div>
+
+        <div className="w-full bg-[#09073A] px-4 py-2 rounded-md">
+          <h5>Coins</h5>
+        </div>
+
+        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+          {!coins.length ? (
+            <p className="text-white text-center text-sm">Nothing yet</p>
+          ) : (
+            coins.map((asset) => <AssetCard asset={asset} />)
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Page;
+export default Inform;

@@ -4,7 +4,13 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
 import axios from "axios";
-import { BagsCoin, BagsNFT, bagsCoins, bagsNfts } from "../store/bags";
+import {
+  BagsCoin,
+  BagsNFT,
+  bagsBalance,
+  bagsCoins,
+  bagsNfts,
+} from "../store/bags";
 import useWallet from "@/utils/wallet";
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import Bags from "../components/Bags/Bags";
@@ -32,9 +38,9 @@ const Page = () => {
     BagsCoin | BagsNFT | null
   >(null);
 
-  const [totalBalance, setTotalBalance] = React.useState(0);
   const [isOnSend, setIsOnSend] = React.useState(false);
 
+  const [totalBalance, setTotalBalance] = useAtom(bagsBalance);
   const [bags, setBags] = useAtom(bagsCoins);
   const [__, setBagsNFTs] = useAtom(bagsNfts);
 

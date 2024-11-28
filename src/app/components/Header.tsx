@@ -263,7 +263,8 @@ const Header = () => {
 
   const isMobileScreen = screenSize < 1200;
 
-  if (pathname === "/tos" || pathname === "/privacy") return <></>;
+  if (pathname === "/tos" || pathname === "/privacy" || pathname === "/")
+    return <></>;
 
   return (
     <header className="flex flex-col">

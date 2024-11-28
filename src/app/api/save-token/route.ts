@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     tokenAddress,
     bondingAddress,
     creatorUsername,
-    basesymbol
+    basesymbol,
   } = await req.json();
 
   const token = await tokenCollection.findOne({

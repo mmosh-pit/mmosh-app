@@ -41,12 +41,12 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col my-4">
-        <h3 className="text-white font-bold text-xl text-center">
+        <h3 className="text-white font-bold text-2xl text-center font-goudy">
           Coming Soon
         </h3>
 
         <p className="mt-4 text-white text-base text-center">
-          We're still building. We'll let you know when we're ready for you
+          We're still building. We'll let you know when we're ready for you.
         </p>
       </div>
 

@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
 
-  await documentsCollection.insertOne(body);
+  const res = await documentsCollection.insertOne(body);
 
-  return NextResponse.json("");
+  return NextResponse.json(res.insertedId.toString());
 }

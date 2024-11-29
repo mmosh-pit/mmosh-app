@@ -64,6 +64,7 @@ const Inform = () => {
           displayOptions: {
             showFungible: true,
             showCollectionMetadata: true,
+            showNativeBalance: true,
             showUnverifiedCollections: true,
           },
           page: 1,
@@ -241,7 +242,7 @@ const Inform = () => {
           <h5>Ecosystem</h5>
         </div>
 
-        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+        <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 min-h-[10vh] py-4">
           {!nfts?.profiles.length ? (
             <p className="text-white text-center text-sm">Nothing yet</p>
           ) : (
@@ -253,7 +254,7 @@ const Inform = () => {
           <h5>Projects</h5>
         </div>
 
-        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+        <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 min-h-[10vh] py-4">
           {!nfts?.passes.length ? (
             <p className="text-white text-center text-sm">Nothing yet</p>
           ) : (
@@ -265,7 +266,7 @@ const Inform = () => {
           <h5>Communities</h5>
         </div>
 
-        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+        <div className="w-full flex justify-center items-center flex-wrap min-h-[10vh] py-4">
           <p className="text-white text-center text-sm">Nothing yet</p>
         </div>
 
@@ -273,7 +274,7 @@ const Inform = () => {
           <h5>Coins</h5>
         </div>
 
-        <div className="w-full flex justify-center items-center flex-wrap h-[10vh]">
+        <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 min-h-[10vh] py-4">
           {!coins.length ? (
             <p className="text-white text-center text-sm">Nothing yet</p>
           ) : (

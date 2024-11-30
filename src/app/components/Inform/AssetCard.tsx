@@ -67,7 +67,7 @@ const AssetCard = ({ asset }: Props) => {
           url,
           tokenAddress: asset.tokenAddress,
           namespace: asset.symbol,
-          name,
+          name: event.target.files.item(0)!.name,
           id: res.data,
           isPrivate: false,
         },
@@ -85,10 +85,12 @@ const AssetCard = ({ asset }: Props) => {
 
   const fetchDocuments = React.useCallback(async () => {
     const response = await axios.get(
-      `/api/get-documents-by-asset?addres=${asset.tokenAddress}`,
+      `/api/get-documents-by-asset?address=${asset.tokenAddress}`,
     );
 
-    setDocuments(response.data);
+    setDocuments(
+      response.data.map((val: any) => ({ ...val, id: val._id.toString() })),
+    );
   }, [asset]);
 
   const onDeleteDocument = React.useCallback(async (id: string) => {
@@ -134,11 +136,16 @@ const AssetCard = ({ asset }: Props) => {
               className="border-[0.5px] border-[#9F9F9F38] bg-[#9A9A9A12] rounded-full px-2"
               onClick={triggerClick}
             >
-              {isLoading ? (
-                <span className="loading loading-spinner w-[0.6vmax] h-[0.6vmax] loading-lg bg-[#CD068E]"></span>
-              ) : (
-                <p className="text-sm text-white font-semibold">+ Add File</p>
-              )}
+              {isLoading
+                ? (
+                  <span className="loading loading-spinner w-[1vmax] h-[1vmax] loading-lg bg-[#CD068E]">
+                  </span>
+                )
+                : (
+                  <p className="text-sm text-white font-semibold">
+                    + Add File
+                  </p>
+                )}
             </button>
           </div>
 

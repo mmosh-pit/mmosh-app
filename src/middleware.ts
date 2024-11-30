@@ -9,7 +9,8 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("login") &&
     !req.url.includes("onramp-session") &&
     !req.url.includes("forgot-password") &&
-    !req.url.includes("reset-password")
+    !req.url.includes("reset-password") && !req.url.includes("inform") &&
+    !req.url.includes("document")
   ) {
     const cookie = cookies().get("session")?.value;
 

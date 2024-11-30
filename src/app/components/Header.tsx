@@ -26,13 +26,34 @@ import { Connectivity as UserConn } from "../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
 import Tabs from "./Header/Tabs";
-import ProjectTabs from "./Header/ProjectTabs";
 import { incomingReferAddress } from "../store/signup";
 import Notification from "./Notification/Notification";
 import { currentGroupCommunity } from "../store/community";
 import { init } from "../lib/firebase";
 import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
 import useWallet from "@/utils/wallet";
+import {
+  bagsBalance,
+  BagsCoin,
+  bagsCoins,
+  BagsNFT,
+  bagsNfts,
+} from "../store/bags";
+import { getPriceForPTV } from "../lib/forge/jupiter";
+import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
+
+const SOL_ADDR = "So11111111111111111111111111111111111111112";
+
+const COMMUNITY_PTVB_COIN = process.env.NEXT_PUBLIC_PTVB_TOKEN;
+const COMMUNITY_PTVR_COIN = process.env.NEXT_PUBLIC_PTVR_TOKEN;
+
+const USDC_COIN = process.env.NEXT_PUBLIC_USDC_TOKEN;
+
+const MMOSH_COIN = process.env.NEXT_PUBLIC_OPOS_TOKEN;
+
+const PASS_COLLECTION = "PASSES";
+const BADGE_COLLECTION = "BADGES";
+const PROFILE_COLLECTION = "PROFILES";
 
 const Header = () => {
   const router = useRouter();
@@ -57,6 +78,10 @@ const Header = () => {
   const screenSize = useCheckDeviceScreenSize();
   const [badge, setBadge] = useState(0);
   const [notifications, setNotifications] = useState([]);
+
+  const [totalBalance, setTotalBalance] = useAtom(bagsBalance);
+  const [bags, setBags] = useAtom(bagsCoins);
+  const [__________, setBagsNFTs] = useAtom(bagsNfts);
 
   const [isLoadingLogout, setIsLoadingLogout] = useState(false);
 
@@ -92,6 +117,214 @@ const Header = () => {
     setIsUserAuthenticated(!!user);
     setUser(user);
   }, []);
+
+  const getAllTokenAddreses = React.useCallback(async () => {
+    const response = await axios.get("/api/get-all-coins-address");
+
+    const data: any = response.data;
+
+    const result: any = {};
+
+    for (const value of data) {
+      result[value.token] = true;
+    }
+
+    return result;
+  }, [wallet]);
+
+  const fetchAllBalances = React.useCallback(async () => {
+    const allTokens = await getAllTokenAddreses();
+
+    const response = await fetch(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "1",
+        method: "getAssetsByOwner",
+        params: {
+          ownerAddress: wallet?.publicKey.toBase58(),
+          displayOptions: {
+            showFungible: true,
+            showCollectionMetadata: true,
+            showUnverifiedCollections: true,
+            showNativeBalance: true,
+          },
+          page: 1,
+          limit: 1000,
+        },
+      }),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const mmoshUsdcPrice = await axios.get(
+      `https://price.jup.ag/v6/price?ids=MMOSH`,
+    );
+
+    const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
+
+    const res: AssetsHeliusResponse = await response.json();
+
+    let networkCoin: BagsCoin = {
+      symbol: "SOL",
+      decimals: 9,
+      balance: res.result.nativeBalance.lamports,
+      name: "Solana",
+      image:
+        "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
+      tokenAddress: SOL_ADDR,
+      usdcPrice: Number(res.result.nativeBalance.price_per_sol.toFixed(2)),
+      mmoshPrice: 0,
+    };
+
+    let stableCoin: BagsCoin | null = null;
+    let nativeCoin: BagsCoin | null = null;
+
+    const communityCoins: BagsCoin[] = [];
+
+    const memecoins: BagsCoin[] = [];
+
+    const exosystemCoins: BagsCoin[] = [];
+
+    const badges: BagsNFT[] = [];
+
+    const exosystemAssets: BagsNFT[] = [];
+
+    const profiles: BagsNFT[] = [];
+    const passes: BagsNFT[] = [];
+
+    const nativeUsdcBalance = res.result.nativeBalance.total_price;
+
+    let totalPriceInWallet = nativeUsdcBalance;
+
+    for (const value of res.result.items) {
+      if (value.interface === "FungibleToken") {
+        if (value.token_info.decimals > 0) {
+          const price = await getPriceForPTV(value.id);
+
+          const coin = {
+            name: value.content.metadata.name,
+            image: value.content.links.image ?? "",
+            symbol: value.content.metadata.symbol,
+            balance: value.token_info.balance,
+            tokenAddress: value.id,
+            decimals: value.token_info.decimals,
+            usdcPrice: price,
+            mmoshPrice: 0,
+          };
+
+          if (value.id !== MMOSH_COIN) {
+            const decimals = "1".padEnd(coin.decimals + 1, "0");
+
+            const coinBalance = coin.balance / Number(decimals);
+
+            totalPriceInWallet += coinBalance * price;
+          }
+
+          switch (value.id) {
+            case SOL_ADDR:
+              networkCoin = coin;
+              break;
+            case COMMUNITY_PTVB_COIN:
+              communityCoins.push(coin);
+              break;
+            case COMMUNITY_PTVR_COIN:
+              communityCoins.push(coin);
+              break;
+            case USDC_COIN:
+              stableCoin = coin;
+              break;
+            case MMOSH_COIN:
+              coin.usdcPrice = USDCPrice;
+              const decimals = "1".padEnd(coin.decimals + 1, "0");
+              const balance = value.token_info.balance / Number(decimals);
+              coin.mmoshPrice = balance;
+
+              totalPriceInWallet += coin.usdcPrice * balance;
+              nativeCoin = coin;
+              break;
+            default:
+              if (allTokens[value.id]) {
+                memecoins.push(coin);
+              } else {
+                exosystemCoins.push(coin);
+              }
+          }
+        } else {
+          const badge = {
+            name: value.content.metadata.name,
+            image: value.content.links.image ?? "",
+            symbol: value.content.metadata.symbol,
+            balance: value.token_info.balance,
+            tokenAddress: value.id,
+            metadata: value.content.metadata,
+          };
+          if (value.group_definition && value.group_definition?.length > 0) {
+            const collectionDefinition = value.grouping.find(
+              (e) => e.group_key === "collection",
+            );
+
+            if (
+              collectionDefinition?.collection_metadata?.symbol ===
+                BADGE_COLLECTION
+            ) {
+              badges.push(badge);
+            } else {
+              exosystemAssets.push(badge);
+            }
+          }
+        }
+        continue;
+      }
+
+      const nft = {
+        name: value.content.metadata.name,
+        image: value.content.links.image ?? "",
+        symbol: value.content.metadata.symbol,
+        balance: 1,
+        tokenAddress: value.id,
+        metadata: value.content.metadata,
+      };
+
+      const collectionDefinition = value.grouping.find(
+        (e) => e.group_key === "collection",
+      );
+
+      if (
+        collectionDefinition?.collection_metadata?.symbol === PROFILE_COLLECTION
+      ) {
+        profiles.push(nft);
+        continue;
+      }
+
+      if (
+        collectionDefinition?.collection_metadata?.symbol === PASS_COLLECTION
+      ) {
+        passes.push(nft);
+        continue;
+      }
+      exosystemAssets.push(nft);
+    }
+
+    setTotalBalance(totalPriceInWallet);
+
+    setBags({
+      native: nativeCoin,
+      stable: stableCoin,
+      network: networkCoin,
+      community: communityCoins,
+      exosystem: exosystemCoins,
+      memecoins: memecoins,
+    });
+
+    setBagsNFTs({
+      passes,
+      profiles,
+      badges,
+      exosystem: exosystemAssets,
+    });
+  }, [wallet]);
 
   const getProfileInfo = async () => {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
@@ -192,6 +425,10 @@ const Header = () => {
   }, []);
 
   React.useEffect(() => {
+    if (!wallet || bags !== null) return;
+  }, [wallet]);
+
+  React.useEffect(() => {
     if (wallet?.publicKey && !renderedUserInfo.current) {
       renderedUserInfo.current = true;
       getProfileInfo();
@@ -263,16 +500,15 @@ const Header = () => {
 
   const isMobileScreen = screenSize < 1200;
 
-  if (pathname === "/tos" || pathname === "/privacy" || pathname === "/")
+  if (pathname === "/tos" || pathname === "/privacy" || pathname === "/") {
     return <></>;
+  }
 
   return (
     <header className="flex flex-col">
       <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
         <div className="flex w-full justify-between items-center mx-8">
-          {isMobileScreen ? (
-            <MobileDrawer />
-          ) : (
+          {isMobileScreen ? <MobileDrawer /> : (
             <div
               className="flex justify-end w-[30%] mr-12 cursor-pointer"
               onClick={() => {
@@ -336,7 +572,9 @@ const Header = () => {
             )}
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 ${isDrawerShown ? "z-[-1]" : ""} cursor-pointer`}
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 ${
+                  isDrawerShown ? "z-[-1]" : ""
+                } cursor-pointer`}
                 onClick={() => {
                   router.push(`/${currentUser?.profile.username}`);
                 }}
@@ -374,13 +612,16 @@ const Header = () => {
                   router.push("/login");
                 }}
               >
-                {isLoadingLogout ? (
-                  <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
-                ) : (
-                  <p className="md:text-base text-sm text-white settings-btn">
-                    {isUserAuthenticated ? "Logout" : "Log In"}
-                  </p>
-                )}
+                {isLoadingLogout
+                  ? (
+                    <span className="loading loading-spinner loading-lg bg-[#CD068E]">
+                    </span>
+                  )
+                  : (
+                    <p className="md:text-base text-sm text-white settings-btn">
+                      {isUserAuthenticated ? "Logout" : "Log In"}
+                    </p>
+                  )}
               </button>
             )}
 
@@ -417,10 +658,14 @@ const Header = () => {
 
       {pathname.includes("/communities/") && community !== null && (
         <div
-          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"}`}
+          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${
+            isDrawerShown ? "z-[-1]" : "z-0"
+          }`}
         >
           <div
-            className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"} py-20`}
+            className={`flex flex-col justify-center items-center ${
+              isDrawerShown && "z-[-1]"
+            } py-20`}
           >
             <h2 className="text-center">{community.name}</h2>
 

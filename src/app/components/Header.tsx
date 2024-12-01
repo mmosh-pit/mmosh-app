@@ -267,7 +267,7 @@ const Header = () => {
 
             if (
               collectionDefinition?.collection_metadata?.symbol ===
-                BADGE_COLLECTION
+              BADGE_COLLECTION
             ) {
               badges.push(badge);
             } else {
@@ -426,6 +426,7 @@ const Header = () => {
 
   React.useEffect(() => {
     if (!wallet || bags !== null) return;
+    fetchAllBalances();
   }, [wallet]);
 
   React.useEffect(() => {
@@ -508,7 +509,9 @@ const Header = () => {
     <header className="flex flex-col">
       <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
         <div className="flex w-full justify-between items-center mx-8">
-          {isMobileScreen ? <MobileDrawer /> : (
+          {isMobileScreen ? (
+            <MobileDrawer />
+          ) : (
             <div
               className="flex justify-end w-[30%] mr-12 cursor-pointer"
               onClick={() => {
@@ -612,16 +615,13 @@ const Header = () => {
                   router.push("/login");
                 }}
               >
-                {isLoadingLogout
-                  ? (
-                    <span className="loading loading-spinner loading-lg bg-[#CD068E]">
-                    </span>
-                  )
-                  : (
-                    <p className="md:text-base text-sm text-white settings-btn">
-                      {isUserAuthenticated ? "Logout" : "Log In"}
-                    </p>
-                  )}
+                {isLoadingLogout ? (
+                  <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
+                ) : (
+                  <p className="md:text-base text-sm text-white settings-btn">
+                    {isUserAuthenticated ? "Logout" : "Log In"}
+                  </p>
+                )}
               </button>
             )}
 

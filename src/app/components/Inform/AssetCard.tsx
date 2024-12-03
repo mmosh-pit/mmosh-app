@@ -34,18 +34,16 @@ const AssetCard = ({ asset }: Props) => {
       );
 
       const formData = new FormData();
-      formData.append("name", asset.symbol.toUpperCase());
+      formData.append("name", "PRIVATE");
       formData.append("urls", url);
       formData.append(
         "metadata",
         JSON.stringify({
-          symbol: asset.symbol.toUpperCase(),
           name: asset.name,
           address: asset.tokenAddress,
           url,
         }),
       );
-      formData.append("namespace", "");
 
       await axios.post(
         "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
@@ -55,9 +53,9 @@ const AssetCard = ({ asset }: Props) => {
       const res = await axios.post("/api/inform-document", {
         name: event.target.files.item(0)!.name,
         url: url,
-        isPrivate: false,
+        isPrivate: true,
         tokenAddress: asset.tokenAddress,
-        namespace: asset.symbol,
+        namespace: "PRIVATE",
       });
 
       setIsLoading(false);
@@ -69,7 +67,7 @@ const AssetCard = ({ asset }: Props) => {
           namespace: asset.symbol,
           name: event.target.files.item(0)!.name,
           id: res.data,
-          isPrivate: false,
+          isPrivate: true,
         },
       ]);
     },

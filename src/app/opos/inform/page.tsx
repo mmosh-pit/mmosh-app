@@ -2,10 +2,10 @@
 import { useAtom } from "jotai";
 import * as React from "react";
 
-import { isDrawerOpen } from "../store";
-import SearchBar from "../components/Project/Candidates/SearchBar";
-import { bagsCoins, bagsNfts } from "../store/bags";
-import AssetCard from "../components/Inform/AssetCard";
+import { isDrawerOpen } from "../../store";
+import SearchBar from "../../components/Project/Candidates/SearchBar";
+import { bagsCoins, bagsNfts } from "../../store/bags";
+import AssetCard from "../../components/Inform/AssetCard";
 
 const Inform = () => {
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -67,57 +67,49 @@ const Inform = () => {
         <div className="w-full h-[50vh]">
           {selectedTab === 0 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6  py-4">
-              {!nfts?.profiles.length
-                ? (
-                  <p className="text-white self-center text-center text-sm">
-                    Nothing yet
-                  </p>
-                )
-                : (
-                  nfts.profiles.map((asset) => <AssetCard asset={asset} />)
-                )}
+              {!nfts?.profiles.length ? (
+                <p className="text-white self-center text-center text-sm">
+                  Nothing yet
+                </p>
+              ) : (
+                nfts.profiles.map((asset) => <AssetCard asset={asset} />)
+              )}
             </div>
           )}
 
           {selectedTab === 1 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 py-4">
-              {!nfts?.passes.length
-                ? (
-                  <p className="text-white text-center self-center text-sm">
-                    Nothing yet
-                  </p>
-                )
-                : (
-                  nfts.passes.map((asset) => <AssetCard asset={asset} />)
-                )}
+              {!nfts?.passes.length ? (
+                <p className="text-white text-center self-center text-sm">
+                  Nothing yet
+                </p>
+              ) : (
+                nfts.passes.map((asset) => <AssetCard asset={asset} />)
+              )}
             </div>
           )}
 
           {selectedTab === 2 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6  py-4">
-              {!nfts?.passes.length
-                ? (
-                  <p className="text-white text-center self-center text-sm">
-                    Nothing yet
-                  </p>
-                )
-                : (
-                  nfts.passes.map((asset) => <AssetCard asset={asset} />)
-                )}
+              {!nfts?.passes.length ? (
+                <p className="text-white text-center self-center text-sm">
+                  Nothing yet
+                </p>
+              ) : (
+                nfts.passes.map((asset) => <AssetCard asset={asset} />)
+              )}
             </div>
           )}
 
           {selectedTab === 3 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6  py-4">
-              {!coins.length
-                ? (
-                  <p className="text-white text-center self-center text-sm">
-                    Nothing yet
-                  </p>
-                )
-                : (
-                  coins.map((asset) => <AssetCard asset={asset} />)
-                )}
+              {!coins.length ? (
+                <p className="text-white text-center self-center text-sm">
+                  Nothing yet
+                </p>
+              ) : (
+                coins.map((asset) => <AssetCard asset={asset} />)
+              )}
             </div>
           )}
         </div>

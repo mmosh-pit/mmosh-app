@@ -22,6 +22,37 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
   const [isDocPrivate, setIsDocPrivate] = React.useState(isPrivate);
   const [showTooltip, setShowTooltip] = React.useState(false);
 
+  const onChangePrivacy = React.useCallback(
+    async (isPrivate: boolean) => {
+      setIsDocPrivate(isPrivate);
+      await axios.patch("/api/toggle-document-privacy", {
+        docId: id,
+        isPrivate: isPrivate,
+      });
+
+      const metadata = JSON.stringify({
+        name: documentName,
+        address: aiDocument.tokenAddress,
+        url,
+      });
+
+      await axios.delete(
+        `https://mmoshapi-uodcouqmia-uc.a.run.app/delete_by_metadata?metadata=${metadata}`,
+      );
+
+      const formData = new FormData();
+      formData.append("name", isPrivate ? "PRIVATE" : "PUBLIC");
+      formData.append("urls", url);
+      formData.append("metadata", metadata);
+
+      await axios.post(
+        "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+        formData,
+      );
+    },
+    [aiDocument],
+  );
+
   const getIconByFileType = React.useCallback(() => {
     const extension = url.split(".")[1];
 
@@ -35,13 +66,6 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
 
     return <DocumentIcon />;
   }, []);
-
-  const toggleDocumentPrivate = React.useCallback(async () => {
-    await axios.patch("/api/toggle-document-privacy", {
-      docId: id,
-      isPrivate: !isDocPrivate,
-    });
-  }, [isPrivate, id]);
 
   const downloadURI = () => {
     const link = document.createElement("a");
@@ -100,8 +124,7 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
             className="toggle border-[#0061FF] bg-[#0061FF] [--tglbg:#1B1B1B] hover:bg-[#0061FF]"
             checked={isDocPrivate}
             onClick={() => {
-              toggleDocumentPrivate();
-              setIsDocPrivate(!isDocPrivate);
+              onChangePrivacy(!isDocPrivate);
             }}
           />
           <div className="w-[0.1vmax]" />

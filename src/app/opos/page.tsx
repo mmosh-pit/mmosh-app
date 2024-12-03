@@ -8,25 +8,26 @@ import { data, userData } from "../store";
 import { useAtom } from "jotai";
 import Markdown from "markdown-to-jsx";
 import { Bars } from "react-loader-spinner";
-import { bagsCoins, bagsNfts } from "../store/bags";
 
 export default function OPOS() {
   const lastBotMessageIndex = React.useRef(0);
   const [currentUser] = useAtom(data);
   const [user] = useAtom(userData);
-  const [nfts] = useAtom(bagsNfts);
-  const [coins] = useAtom(bagsCoins)
 
   const [text, setText] = React.useState("");
   const [messages, setMessages] = React.useState<AIChatMessage[]>([]);
   const [isDisabled, setIsDisabled] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false); 
-
-  const [availableNamespaces, setAvailableNamespaces] = React.useState<string[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const messagesRef = React.useRef<HTMLDivElement>(null);
 
   const sendToAI = async () => {
+    const namespaces = ["PUBLIC"];
+
+    if (currentUser?.profilenft) {
+      namespaces.push("PRIVATE");
+    }
+
     try {
       setIsDisabled(true);
       setIsLoading(true);
@@ -49,7 +50,7 @@ export default function OPOS() {
           body: JSON.stringify({
             username: currentUser?.profile.username ?? user?.name ?? "Visitor",
             prompt: text,
-            namespaces: availableNamespaces,
+            namespaces: namespaces,
           }),
         },
       );
@@ -147,20 +148,6 @@ export default function OPOS() {
     },
     [currentUser, user],
   );
-
-  React.useEffect(() => {
-    const namespaces: string[] = [];
-
-    coins?.memecoins.forEach((coin) => namespaces.push(coin.symbol));
-    coins?.community.forEach((coin) => namespaces.push(coin.symbol));
-
-    nfts?.badges.forEach((coin) => namespaces.push(coin.symbol));
-    nfts?.passes.forEach((coin) => namespaces.push(coin.symbol));
-    nfts?.profiles.forEach((coin) => namespaces.push(coin.symbol));
-
-    setAvailableNamespaces(namespaces);
-    
-  }, [coins, nfts]);
 
   return (
     <div className="background-content flex w-full h-full justify-center">

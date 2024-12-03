@@ -11,12 +11,21 @@ export async function POST(req: NextRequest) {
     try {
         
         const collection = db.collection("mmosh-app-ptv");
-        const { address, type } = await req.json();
+        const { address, type, coin } = await req.json();
 
-        let claimDate = convertUTCDateToLocalDate(new Date("2024-11-05"))
+        const result = await db.collection("mmosh-app-project-stake").findOne({coin:coin});
+        if(!result) {
+            return NextResponse.json(
+                {
+                    status: false, 
+                    message: "coin not available"
+                }, 
+            { status: 200 });
+        }
+        let claimDate = convertUTCDateToLocalDate(new Date(result.unlockDate))
         let dateDiff = claimDate.getTime() - new Date().getTime() ;
         if(dateDiff > 0) {
-            return NextResponse.json({status: false, message: "Pls try cliam after Nov 5th 2024"}, { status: 200 });
+            return NextResponse.json({status: false, message: "Pls try cliam after "+result.unlockDate}, { status: 200 });
         }
 
         const ptvData = await collection.findOne({
@@ -32,18 +41,9 @@ export async function POST(req: NextRequest) {
             { status: 200 });
         }
         
-        let amount = 0
-        let tokenAddress:any = process.env.NEXT_PUBLIC_PTVR_TOKEN
-        if(type === "Blue") {
-            tokenAddress = process.env.NEXT_PUBLIC_PTVB_TOKEN
-            if(ptvData.blueavailable) {
-                amount = ptvData.blueavailable
-            }
-        } else {
-            if(ptvData.redavailable) {
-                amount = ptvData.redavailable
-            }
-        }
+        let amount = ptvData.available
+        let tokenAddress:any = ptvData.coin
+
 
         if(amount === 0) {
             return NextResponse.json(

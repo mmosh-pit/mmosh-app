@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     try {
         
         const collection = db.collection("mmosh-app-ptv");
-        const { address, type, supply, bonding } = await req.json();
+        const { address, supply, bonding, coin } = await req.json();
 
         if(supply === 0) {
             return NextResponse.json(
@@ -22,9 +22,19 @@ export async function POST(req: NextRequest) {
                 }, 
             { status: 200 });
         }
+
+        const result = await db.collection("mmosh-app-project-stake").findOne({coin:coin});
+        if(!result) {
+            return NextResponse.json(
+                {
+                    status: false, 
+                    message: "coin not available"
+                }, 
+            { status: 200 });
+        }
         
 
-        let claimDate = convertUTCDateToLocalDate(new Date("2024-11-05"))
+        let claimDate = convertUTCDateToLocalDate(new Date(result.unlockDate))
         let dateDiff = new Date().getTime() - claimDate.getTime();
         if(dateDiff > 0) {
             return NextResponse.json({status: false, message: "Time is expired"}, { status: 200 });
@@ -32,6 +42,7 @@ export async function POST(req: NextRequest) {
 
         const ptvData = await collection.findOne({
             wallet: address,
+            coin
         });
 
         if(!ptvData) {
@@ -46,13 +57,8 @@ export async function POST(req: NextRequest) {
         let claimable = 0;
         let unstakable = 0
         if(ptvData) {
-            if(type?.toLocaleLowerCase() === "blue") {
-                claimable = ptvData.bluereward - ptvData.blueswapped
-                unstakable = ptvData.blueavailable
-            } else {
-                claimable = ptvData.redreward - ptvData.redswapped
-                unstakable = ptvData.redavailable
-            }
+            claimable = ptvData.reward - ptvData.swapped
+            unstakable = ptvData.available
         }
 
         if((claimable + unstakable) < supply) {

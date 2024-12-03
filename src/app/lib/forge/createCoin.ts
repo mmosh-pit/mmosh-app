@@ -140,7 +140,7 @@ export const createCoin = async ({
     setMintingStatus("Swapping Token...");
     await delay(15000);
     let buyres;
-    if (baseToken.token === web3Consts.oposToken.toBase58() || baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN || baseToken.token === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+    if (baseToken.token === web3Consts.oposToken.toBase58()) {
       buyres = await curveConn.buy({
         tokenBonding: res.tokenBonding,
         desiredTargetAmount: new anchor.BN(
@@ -149,51 +149,52 @@ export const createCoin = async ({
         slippage: 0.5,
       });
     } else {
-      // const buytx = await axios.post("/api/ptv/swap", {
-      //   bonding: res.tokenBonding,
-      //   supply: Number(supply),
-      //   address: wallet.publicKey.toBase58(),
-      // });
-      // if (buytx.data.status) {
-      //   const tx = anchor.web3.VersionedTransaction.deserialize(
-      //     Buffer.from(buytx.data.transaction, "base64"),
-      //   );
-      //   buyres = await curveConn.provider.sendAndConfirm(tx);
-      //   if (buyres) {
-      //     let tokenType = "Blue";
-      //     if (baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-      //       tokenType = "Red";
-      //     }
-      //     await axios.post("/api/ptv/update-rewards", {
-      //       type: tokenType,
-      //       wallet: wallet.publicKey.toBase58(),
-      //       method: "buy",
-      //       value: Number(supply),
-      //     });
-      //   }
-      // } else {
-      //   let userConn: UserConn = new UserConn(env, web3Consts.programID);
-      //   const balance = await userConn.getUserBalance({
-      //     address: wallet.publicKey,
-      //     token: baseToken.token,
-      //     decimals: web3Consts.LAMPORTS_PER_OPOS,
-      //   });
-      //   if (balance > Number(supply)) {
-      //     buyres = await curveConn.buy({
-      //       tokenBonding: res.tokenBonding,
-      //       desiredTargetAmount: new anchor.BN(
-      //         Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
-      //       ),
-      //       slippage: 0.5,
-      //     });
-      //   } else {
+      const buytx = await axios.post("/api/ptv/swap", {
+        coin: baseToken.token,
+        bonding: res.tokenBonding,
+        supply: Number(supply),
+        address: wallet.publicKey.toBase58(),
+      });
+      if (buytx.data.status) {
+        const tx = anchor.web3.VersionedTransaction.deserialize(
+          Buffer.from(buytx.data.transaction, "base64"),
+        );
+        buyres = await curveConn.provider.sendAndConfirm(tx);
+        if (buyres) {
+          let tokenType = "Blue";
+          if (baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+            tokenType = "Red";
+          }
+          await axios.post("/api/ptv/update-rewards", {
+            coin: baseToken.token,
+            wallet: wallet.publicKey.toBase58(),
+            method: "buy",
+            value: Number(supply),
+          });
+        }
+      } else {
+        let userConn: UserConn = new UserConn(env, web3Consts.programID);
+        const balance = await userConn.getUserBalance({
+          address: wallet.publicKey,
+          token: baseToken.token,
+          decimals: web3Consts.LAMPORTS_PER_OPOS,
+        });
+        if (balance > Number(supply)) {
+          buyres = await curveConn.buy({
+            tokenBonding: res.tokenBonding,
+            desiredTargetAmount: new anchor.BN(
+              Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
+            ),
+            slippage: 0.5,
+          });
+        } else {
           return {
             message:
               "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
             type: "error",
           };
-        // }
-      // }
+        }
+      }
     }
 
     if (buyres) {

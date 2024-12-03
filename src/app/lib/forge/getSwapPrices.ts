@@ -41,16 +41,12 @@ export const getSwapPrices = async (
     9
   );
   let baseBalance = 0
-  // if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
+  if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
     baseBalance = balances.target
-  // } else {
-  //   let type = "Red"
-  //   if(bondingResult?.baseMint.toBase58() === process.env.NEXT_PUBLIC_PTVB_TOKEN) {
-  //     type = "Blue"
-  //   }
-  //   let coinData = await axios("/api/ptv/rewards?type="+type+"&&wallet="+wallet?.publicKey.toBase58())
-  //   baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
-  // }
+  } else {
+    let coinData = await axios("/api/ptv/rewards?coin="+bondingResult?.baseMint.toBase58()+"&&wallet="+wallet?.publicKey.toBase58())
+    baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+  }
 
   const base = {
     name: mintDetail.name,

@@ -44,22 +44,23 @@ export async function GET(req: NextRequest) {
         },
       },
       {
-        $project: {
-          name: 1,
-          email: 1,
-          twitter: 1,
-          telegram: 1,
-          type: 1,
-          bluereward: 1,
-          blueclaimed: 1,
-          redreward: 1,
-          redclaimed: 1,
-          project: 1,
-          pass: 1,
-          profiles: "$profiles",
+        $lookup: {
+          from: "mmosh-app-profiles",
+          localField: "coin",
+          foreignField: "key",
+          as: "coins",
         },
       },
-      { $addFields: { "totalearned": { $sum: [ "$bluereward", "$redreward"] } } },
+      {
+        $project: {
+          reward: 1,
+          claimed: 1,
+          coin: 1,
+          profiles: "$profiles",
+          coins: "$coins",
+        },
+      },
+      { $addFields: { "totalearned": { $sum: [ "$reward" ] } } },
       { $sort: { "totalearned": -1 } }
     ])
     .limit(100)

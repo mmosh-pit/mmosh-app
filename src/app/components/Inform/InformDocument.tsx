@@ -97,7 +97,7 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
           <div className="w-[0.1vmax]" />
           <input
             type="checkbox"
-            className="toggle border-[#9F9F9F38] bg-[#9A9A9A12] [--tglbg:#9A9A9A12] hover:bg-transparent"
+            className="toggle border-[#0061FF] bg-[#0061FF] [--tglbg:#1B1B1B] hover:bg-[#0061FF]"
             checked={isDocPrivate}
             onClick={() => {
               toggleDocumentPrivate();

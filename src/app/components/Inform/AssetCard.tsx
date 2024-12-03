@@ -116,7 +116,7 @@ const AssetCard = ({ asset }: Props) => {
         onChange={handleChangeInput}
       />
       <div className="w-full flex p-[2px] border-[1px] border-[#353485] bg-[#09073A] rounded-lg">
-        <div className="px-2 relative w-[10vmax] h-[8vmax]">
+        <div className="px-2 relative md:w-[12vmax] xl:w-[10vmax] h-[8vmax]">
           <Image
             src={asset.image}
             alt={asset.name}
@@ -133,13 +133,13 @@ const AssetCard = ({ asset }: Props) => {
             </div>
 
             <button
-              className="border-[0.5px] border-[#9F9F9F38] bg-[#9A9A9A12] rounded-full px-2"
+              className="border-[0.5px] border-[#9F9F9F38] bg-[#003489] rounded-full px-2"
               onClick={triggerClick}
             >
               {isLoading ? (
                 <span className="loading loading-spinner w-[1vmax] h-[1vmax] loading-lg bg-[#CD068E]"></span>
               ) : (
-                <p className="text-sm text-white font-semibold">+ Add File</p>
+                <p className="text-sm text-white font-semibold">Add Media</p>
               )}
             </button>
           </div>

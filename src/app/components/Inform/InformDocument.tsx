@@ -87,7 +87,7 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
   };
 
   return (
-    <div className="flex justify-between items-center relative">
+    <div className="flex justify-between items-center relative mt-2">
       <div className="flex items-center relative">
         {getIconByFileType()}
         <div className="w-[0.1vmax]" />
@@ -115,7 +115,7 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
         </div>
       </div>
 
-      <div className="flex items-center mt-2">
+      <div className="flex items-center">
         <div className="flex items-center">
           <GlobeIcon />
           <div className="w-[0.1vmax]" />

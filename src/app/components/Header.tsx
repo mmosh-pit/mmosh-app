@@ -38,6 +38,7 @@ import {
   bagsCoins,
   BagsNFT,
   bagsNfts,
+  genesisProfileUser,
 } from "../store/bags";
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
@@ -60,9 +61,15 @@ const Header = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const wallet = useWallet();
-  const rendered = React.useRef(false);
+  const screenSize = useCheckDeviceScreenSize();
 
+  const rendered = React.useRef(false);
   const renderedUserInfo = React.useRef(false);
+
+  const [isLoadingLogout, setIsLoadingLogout] = useState(false);
+  const [badge, setBadge] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+
   const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
@@ -75,15 +82,10 @@ const Header = () => {
   const [currentUser, setCurrentUser] = useAtom(data);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
-  const screenSize = useCheckDeviceScreenSize();
-  const [badge, setBadge] = useState(0);
-  const [notifications, setNotifications] = useState([]);
-
-  const [totalBalance, setTotalBalance] = useAtom(bagsBalance);
   const [bags, setBags] = useAtom(bagsCoins);
   const [__________, setBagsNFTs] = useAtom(bagsNfts);
-
-  const [isLoadingLogout, setIsLoadingLogout] = useState(false);
+  const [___________, setTotalBalance] = useAtom(bagsBalance);
+  const [____________, setHasGenesisProfile] = useAtom(genesisProfileUser);
 
   const [community] = useAtom(currentGroupCommunity);
 
@@ -101,14 +103,6 @@ const Header = () => {
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
     const result = await axios.get("/api/get-current-user");
-
-    // if (!result.data && pathname === "/") {
-    //   router.replace("/login");
-    // }
-    //
-    // if (result.data && pathname === "/") {
-    //   router.replace("/coins");
-    // }
 
     const user = result.data;
 
@@ -286,6 +280,10 @@ const Header = () => {
         tokenAddress: value.id,
         metadata: value.content.metadata,
       };
+
+      if (nft.tokenAddress === web3Consts.genesisProfile.toBase58()) {
+        setHasGenesisProfile(true);
+      }
 
       const collectionDefinition = value.grouping.find(
         (e) => e.group_key === "collection",

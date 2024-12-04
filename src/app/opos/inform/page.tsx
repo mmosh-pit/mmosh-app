@@ -4,18 +4,69 @@ import * as React from "react";
 
 import { isDrawerOpen } from "../../store";
 import SearchBar from "../../components/Project/Candidates/SearchBar";
-import { bagsCoins, bagsNfts } from "../../store/bags";
+import {
+  BagsNFT,
+  bagsCoins,
+  bagsNfts,
+  genesisProfileUser,
+} from "../../store/bags";
 import AssetCard from "../../components/Inform/AssetCard";
+import axios from "axios";
 
 const Inform = () => {
+  const [hasGenesisProfile] = useAtom(genesisProfileUser);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [bags] = useAtom(bagsCoins);
   const [nfts] = useAtom(bagsNfts);
+
+  const [allCoins, setAllCoins] = React.useState<BagsNFT[]>([]);
+  const [allProfiles, setAllProfiles] = React.useState<BagsNFT[]>([]);
 
   const [_, setSearchText] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   const coins = [...(bags?.memecoins ?? []), ...(bags?.community ?? [])];
+
+  const fetchAssetsAsGenesisUser = React.useCallback(async () => {
+    const [profilesRes, coinsRes] = await Promise.all([
+      axios.get("/api/get-all-profiles"),
+      axios.get("/api/get-all-coins"),
+    ]);
+
+    const parsedProfiles: BagsNFT[] = [];
+    const parsedCoins: BagsNFT[] = [];
+
+    for (const data of profilesRes.data) {
+      parsedProfiles.push({
+        tokenAddress: data.profilenft,
+        name: data.profile.name,
+        image: data.profile.image,
+        symbol: data.profile.username,
+        balance: 1,
+        metadata: {},
+      });
+    }
+
+    for (const data of coinsRes.data) {
+      parsedCoins.push({
+        tokenAddress: data.token,
+        name: data.name,
+        image: data.image,
+        symbol: data.symbol,
+        balance: 1,
+        metadata: {},
+      });
+    }
+
+    setAllCoins(parsedCoins);
+    setAllProfiles(parsedProfiles);
+  }, []);
+
+  React.useEffect(() => {
+    if (hasGenesisProfile) {
+      fetchAssetsAsGenesisUser();
+    }
+  }, [hasGenesisProfile]);
 
   return (
     <div
@@ -71,6 +122,8 @@ const Inform = () => {
                 <p className="text-white self-center text-center text-sm">
                   Nothing yet
                 </p>
+              ) : allProfiles.length > 0 ? (
+                allProfiles.map((asset) => <AssetCard asset={asset} />)
               ) : (
                 nfts.profiles.map((asset) => <AssetCard asset={asset} />)
               )}
@@ -107,6 +160,8 @@ const Inform = () => {
                 <p className="text-white text-center self-center text-sm">
                   Nothing yet
                 </p>
+              ) : allCoins.length > 0 ? (
+                allCoins.map((asset) => <AssetCard asset={asset} />)
               ) : (
                 coins.map((asset) => <AssetCard asset={asset} />)
               )}

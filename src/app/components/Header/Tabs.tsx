@@ -8,9 +8,39 @@ const Tabs = () => {
   const router = useRouter();
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+  const [isAIOpen, setIsAIOpen] = React.useState(false);
 
   return (
     <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
+      <div
+        className="flex items-center cursor-pointer relative "
+        onClick={() => setIsAIOpen(!isAIOpen)}
+      >
+        <p className="text-base text-white font-semibold">AI</p>
+
+        <div className="ml-1">
+          {isAIOpen ? <SimpleArrowUp /> : <SimpleArrowDown />}
+        </div>
+
+        {isAIOpen && (
+          <div className="flex flex-col w-[150px] py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg border-[1px] border-[#FFFFFF30]">
+            <p
+              className="text-sm text-white mb-2"
+              onClick={() => router.push("/opos")}
+            >
+              Ask OPOS
+            </p>
+            <p
+              className="text-sm text-white"
+              onClick={() => router.push("/opos/inform")}
+            >
+              Inform OPOS
+            </p>
+          </div>
+        )}
+      </div>
+      <div className="lg:mx-6 md:mx-3" />
+
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
@@ -60,7 +90,7 @@ const Tabs = () => {
         </div>
 
         {isCreateOpen && (
-          <div className="flex flex-col w-[150px] py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg">
+          <div className="flex flex-col w-[150px] py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg border-[1px] border-[#FFFFFF30]">
             <p
               className="text-sm text-white mb-2"
               onClick={() => router.push("/create/profile")}

@@ -41,3 +41,5 @@ export const bagsCoins = atom<BagsCoins | null>(null);
 export const bagsNfts = atom<BagsNFTAssets | null>(null);
 
 export const bagsBalance = atom(0);
+
+export const genesisProfileUser = atom(false);

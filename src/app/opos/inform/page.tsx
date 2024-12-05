@@ -21,6 +21,8 @@ const Inform = () => {
 
   const [allCoins, setAllCoins] = React.useState<BagsNFT[]>([]);
   const [allProfiles, setAllProfiles] = React.useState<BagsNFT[]>([]);
+  const [allCommunities, setAllCommunities] = React.useState<BagsNFT[]>([]);
+  const [allProjects, setAllProjects] = React.useState<BagsNFT[]>([]);
 
   const [_, setSearchText] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -118,45 +120,75 @@ const Inform = () => {
         <div className="w-full h-[50vh]">
           {selectedTab === 0 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6  py-4">
-              {!nfts?.profiles.length ? (
+              {!nfts?.profiles.length && !allProjects.length ? (
                 <p className="text-white self-center text-center text-sm">
-                  Nothing yet
+                  You can only inform OPOS about your identities once you become
+                  a member.{" "}
+                  <a
+                    className="text-white text-sm underline text-[#0061FF]"
+                    href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/create/profile}`}
+                  >
+                    Mint a Profile
+                  </a>{" "}
+                  to join us!
                 </p>
               ) : allProfiles.length > 0 ? (
                 allProfiles.map((asset) => <AssetCard asset={asset} />)
               ) : (
-                nfts.profiles.map((asset) => <AssetCard asset={asset} />)
+                nfts!.profiles.map((asset) => <AssetCard asset={asset} />)
               )}
             </div>
           )}
 
           {selectedTab === 1 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 py-4">
-              {!nfts?.passes.length ? (
+              {!nfts?.passes.length && !allProjects.length ? (
                 <p className="text-white text-center self-center text-sm">
-                  Nothing yet
+                  You can only inform OPOS about projects you create yourself
+                  and projects you join where the founder allows contributions
+                  from Project Pass holders.{" "}
+                  <a
+                    className="text-white text-sm underline text-[#0061FF]"
+                    href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/projects`}
+                  >
+                    Join a project
+                  </a>{" "}
+                  to participate!
                 </p>
+              ) : allProjects.length > 0 ? (
+                allProjects.map((asset) => <AssetCard asset={asset} />)
               ) : (
-                nfts.passes.map((asset) => <AssetCard asset={asset} />)
+                nfts!.passes.map((asset) => <AssetCard asset={asset} />)
               )}
             </div>
           )}
 
           {selectedTab === 2 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6  py-4">
-              {!nfts?.passes.length ? (
+              {!nfts?.passes.length && !allCommunities.length ? (
                 <p className="text-white text-center self-center text-sm">
-                  Nothing yet
+                  You can only inform OPOS about Communities you create yourself
+                  and projects you join where the founder allows contributions
+                  from Community Pass holders.{" "}
+                  <a
+                    className="text-white text-sm underline text-[#0061FF]"
+                    href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/communities`}
+                  >
+                    Join a community
+                  </a>{" "}
+                  to participate!
                 </p>
+              ) : allCommunities.length > 0 ? (
+                allCommunities.map((asset) => <AssetCard asset={asset} />)
               ) : (
-                nfts.passes.map((asset) => <AssetCard asset={asset} />)
+                nfts!.passes.map((asset) => <AssetCard asset={asset} />)
               )}
             </div>
           )}
 
           {selectedTab === 3 && (
             <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6  py-4">
-              {!coins.length ? (
+              {!coins.length && !allCoins.length ? (
                 <p className="text-white text-center self-center text-sm">
                   Nothing yet
                 </p>

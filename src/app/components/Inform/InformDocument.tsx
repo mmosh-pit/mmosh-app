@@ -12,9 +12,10 @@ import * as React from "react";
 type Props = {
   aiDocument: AIDocument;
   onDelete: (id: string) => void;
+  isCoin?: boolean;
 };
 
-const InformDocument = ({ aiDocument, onDelete }: Props) => {
+const InformDocument = ({ aiDocument, onDelete, isCoin = false }: Props) => {
   const { isPrivate, name: documentName, url, id } = aiDocument;
 
   const divRef = React.useRef<HTMLDivElement>(null);
@@ -116,20 +117,22 @@ const InformDocument = ({ aiDocument, onDelete }: Props) => {
       </div>
 
       <div className="flex items-center">
-        <div className="flex items-center">
-          <GlobeIcon />
-          <div className="w-[0.1vmax]" />
-          <input
-            type="checkbox"
-            className="toggle border-[#0061FF] bg-[#0061FF] [--tglbg:#1B1B1B] hover:bg-[#0061FF]"
-            checked={isDocPrivate}
-            onClick={() => {
-              onChangePrivacy(!isDocPrivate);
-            }}
-          />
-          <div className="w-[0.1vmax]" />
-          <LockIcon />
-        </div>
+        {!isCoin && (
+          <div className="flex items-center">
+            <GlobeIcon />
+            <div className="w-[0.1vmax]" />
+            <input
+              type="checkbox"
+              className="toggle border-[#0061FF] bg-[#0061FF] [--tglbg:#1B1B1B] hover:bg-[#0061FF]"
+              checked={isDocPrivate}
+              onClick={() => {
+                onChangePrivacy(!isDocPrivate);
+              }}
+            />
+            <div className="w-[0.1vmax]" />
+            <LockIcon />
+          </div>
+        )}
 
         <div className="w-[0.5vmax]" />
 

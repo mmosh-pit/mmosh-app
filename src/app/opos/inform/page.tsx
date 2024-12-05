@@ -193,9 +193,9 @@ const Inform = () => {
                   Nothing yet
                 </p>
               ) : allCoins.length > 0 ? (
-                allCoins.map((asset) => <AssetCard asset={asset} />)
+                allCoins.map((asset) => <AssetCard asset={asset} isCoin />)
               ) : (
-                coins.map((asset) => <AssetCard asset={asset} />)
+                coins.map((asset) => <AssetCard asset={asset} isCoin />)
               )}
             </div>
           )}

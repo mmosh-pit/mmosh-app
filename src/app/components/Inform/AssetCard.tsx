@@ -9,9 +9,10 @@ import { uploadFile } from "@/app/lib/firebase";
 
 type Props = {
   asset: BagsNFT | BagsCoin;
+  isCoin?: boolean;
 };
 
-const AssetCard = ({ asset }: Props) => {
+const AssetCard = ({ asset, isCoin = false }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [documents, setDocuments] = React.useState<AIDocument[]>([]);
@@ -34,7 +35,7 @@ const AssetCard = ({ asset }: Props) => {
       );
 
       const formData = new FormData();
-      formData.append("name", "PRIVATE");
+      formData.append("name", isCoin ? "PUBLIC" : "PRIVATE");
       formData.append("urls", url);
       formData.append(
         "metadata",
@@ -55,7 +56,7 @@ const AssetCard = ({ asset }: Props) => {
         url: url,
         isPrivate: true,
         tokenAddress: asset.tokenAddress,
-        namespace: "PRIVATE",
+        namespace: isCoin ? "PUBLIC" : "PRIVATE",
       });
 
       setIsLoading(false);
@@ -144,7 +145,11 @@ const AssetCard = ({ asset }: Props) => {
 
           <div className="h-[5vh] overflow-y-auto">
             {documents.map((doc) => (
-              <InformDocument aiDocument={doc} onDelete={onDeleteDocument} />
+              <InformDocument
+                aiDocument={doc}
+                onDelete={onDeleteDocument}
+                isCoin={isCoin}
+              />
             ))}
           </div>
         </div>

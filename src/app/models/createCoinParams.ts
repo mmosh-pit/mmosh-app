@@ -30,7 +30,7 @@ export type CreateProjectCoinParams = {
   supply: number;
   initialPrice: number;
   type: string;
-  baseToken: string;
+  baseToken: any;
   candidate: Candidate;
   position: string;
   setMintingStatus: React.Dispatch<React.SetStateAction<string>>;

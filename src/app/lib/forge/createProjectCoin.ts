@@ -14,6 +14,7 @@ import { pinImageToShadowDrive } from "../uploadImageToShdwDrive";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 import { calculatePrice } from "./setupCoinPrice";
 import { deleteShdwDriveFile } from "../deleteShdwDriveFile";
+import { Connectivity as UserConn } from "@/anchor/user";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -149,7 +150,7 @@ export const createProjectCoin = async ({
       symbol,
       url: shdwHash,
       curve: curve,
-      baseMint: new anchor.web3.PublicKey(token.address),
+      baseMint: new anchor.web3.PublicKey(baseToken.token),
       generalAuthority: wallet.publicKey,
       reserveAuthority: wallet.publicKey,
       buyBaseRoyaltyPercentage: 0,
@@ -161,20 +162,66 @@ export const createProjectCoin = async ({
 
     setMintingStatus("Swapping Token...");
     await delay(15000);
-    const buyres = await curveConn.buy({
-      tokenBonding: res.tokenBonding,
-      desiredTargetAmount: new anchor.BN(
-        Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
-      ),
-      slippage: 0.5,
-    });
+    let buyres;
+    if (baseToken.token === web3Consts.oposToken.toBase58()) {
+      buyres = await curveConn.buy({
+        tokenBonding: res.tokenBonding,
+        desiredTargetAmount: new anchor.BN(
+          Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
+        ),
+        slippage: 0.5,
+      });
+    } else {
+      const buytx = await axios.post("/api/ptv/swap", {
+        coin: baseToken.token,
+        bonding: res.tokenBonding,
+        supply: Number(supply),
+        address: wallet.publicKey.toBase58(),
+      });
+      if (buytx.data.status) {
+        const tx = anchor.web3.VersionedTransaction.deserialize(
+          Buffer.from(buytx.data.transaction, "base64"),
+        );
+        buyres = await curveConn.provider.sendAndConfirm(tx);
+        if (buyres) {
+          await axios.post("/api/ptv/update-rewards", {
+            coin: baseToken.token,
+            wallet: wallet.publicKey.toBase58(),
+            method: "buy",
+            value: Number(supply),
+          });
+        }
+      } else {
+        let userConn: UserConn = new UserConn(env, web3Consts.programID);
+        const balance = await userConn.getUserBalance({
+          address: wallet.publicKey,
+          token: baseToken.token,
+          decimals: web3Consts.LAMPORTS_PER_OPOS,
+        });
+        if (balance > Number(supply)) {
+          buyres = await curveConn.buy({
+            tokenBonding: res.tokenBonding,
+            desiredTargetAmount: new anchor.BN(
+              Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
+            ),
+            slippage: 0.5,
+          });
+        } else {
+          return {
+            message:
+              "We’re sorry, there was an error while trying to mint. Check your wallet and try again.",
+            type: "error",
+          };
+        }
+      }
+    }
 
     if (buyres) {
       const directoryParams = {
-        basekey: token.address,
-        basename: token.name,
-        basesymbol: token.symbol,
-        baseimg: token.logoURI,
+        basekey: baseToken.token,
+        basename: baseToken.name,
+        basesymbol: baseToken.symbol,
+        baseimg: baseToken.logoURI,
         bonding: res.tokenBonding.toBase58(),
         targetkey: targetMint,
         targetname: name,
@@ -198,7 +245,7 @@ export const createProjectCoin = async ({
         creatorUsername: username,
         position,
         candidate,
-        basesymbol: baseToken,
+        basesymbol: baseToken.symbol,
       };
 
       await axios.post("/api/save-project-coin-directory", directoryParams);

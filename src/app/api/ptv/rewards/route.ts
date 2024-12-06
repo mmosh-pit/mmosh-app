@@ -5,11 +5,12 @@ export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-ptv");
 
   const { searchParams } = new URL(req.url);
-  const type = searchParams.get("type");
+  const coin = searchParams.get("coin");
   const wallet = searchParams.get("wallet");
 
   const ptvData = await collection.findOne({
     wallet,
+    coin
   });
 
   let claimable = 0;
@@ -18,30 +19,16 @@ export async function GET(req: NextRequest) {
   let total = 0;
   let swapped = 0;
   if (ptvData) {
-    if (type?.toLocaleLowerCase() === "blue") {
-      claimable = ptvData.bluereward - ptvData.blueswapped;
-      unstakable = ptvData.blueavailable;
-      unstaked = ptvData.blueclaimed;
-      total = ptvData.bluereward - ptvData.blueswapped + ptvData.blueavailable;
-      swapped = ptvData.blueswapped;
-    } else {
-      claimable = ptvData.redreward - ptvData.redswapped;
-      unstakable = ptvData.redavailable;
-      total = ptvData.redreward - ptvData.redswapped + ptvData.redavailable;
-      unstaked = ptvData.redclaimed;
-      swapped = ptvData.redswapped;
-    }
+      claimable = ptvData.reward - ptvData.swapped;
+      unstakable = ptvData.available;
+      unstaked = ptvData.claimed;
+      total = ptvData.reward - ptvData.swapped + ptvData.available;
+      swapped = ptvData.swapped;
   }
 
-  let claimField = "$redclaimed";
-  let availableField = "$redavailable";
-  let rewardField = "$redreward";
-
-  if (type?.toLocaleLowerCase() === "blue") {
-    claimField = "$blueclaimed";
-    availableField = "$blueavailable";
-    rewardField = "$bluereward";
-  }
+  let claimField = "$claimed";
+  let availableField = "$available";
+  let rewardField = "$reward";
 
   const claimTotal = await collection
     .aggregate([{ $group: { _id: null, sum: { $sum: claimField } } }])

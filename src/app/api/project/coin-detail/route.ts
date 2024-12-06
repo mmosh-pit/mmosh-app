@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   const coin = searchParams.get("coin");
   const result = await collection.findOne({key:coin});
 
-  const stakeData = db.collection("mmosh-app-project-stake").findOne({coin:coin});
+  const stakeData = await db.collection("mmosh-app-project-stake").findOne({coin:coin});
 
   return NextResponse.json({coin: result, info: stakeData }, {
         status: 200,

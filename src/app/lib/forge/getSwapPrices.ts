@@ -46,6 +46,9 @@ export const getSwapPrices = async (
   } else {
     let coinData = await axios("/api/ptv/rewards?coin="+bondingResult?.baseMint.toBase58()+"&&wallet="+wallet?.publicKey.toBase58())
     baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+    if(baseBalance == 0) {
+      baseBalance = balances.target
+    }
   }
 
   const base = {

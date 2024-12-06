@@ -118,7 +118,9 @@ export const swapTokens = async (
 
   try {
     let tx;
-    if (targetToken.token == web3Consts.oposToken.toBase58()) {
+    let result:any = await axios.get("/api/project/coin-detail?coin="+targetToken.token)
+
+    if (result.data.coin) {
       let buyres;
       if(targetToken.token == web3Consts.oposToken.toBase58()) {
         buyres = await curveConn.buy({
@@ -139,10 +141,6 @@ export const swapTokens = async (
           const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(buytx.data.transaction,"base64"))
           buyres = await curveConn.provider.sendAndConfirm(tx)
           if(buyres) {
-              let tokenType = "Blue"
-              if(targetToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-                tokenType = "Red"
-              }
               await axios.post("/api/ptv/update-rewards",{
                 coin: targetToken.token,
                 wallet: wallet.publicKey.toBase58(),
@@ -172,16 +170,17 @@ export const swapTokens = async (
               type: "error",
             };
           }
-
         }
       }
       console.log("buyres ", buyres);
       tx = buyres
     } else {
+        let result1:any = await axios.get("/api/project/coin-detail?coin="+baseToken.token)
+
         let supply = Math.ceil((targetToken.value - targetToken.value * 0.06))
         let sellres
         console.log("baseToken.token ", baseToken.token)
-        if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN || baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
+        if(result1.data.coin && targetToken.token != web3Consts.oposToken.toBase58()) {
 
           let coinData = await axios("/api/ptv/rewards?coin="+baseToken.token+"&&wallet="+wallet?.publicKey.toBase58())
           if(coinData.data.swapped > targetToken.value) {
@@ -271,8 +270,6 @@ export const swapTokens = async (
         }
         console.log("sellres ", sellres);
         tx = sellres
-
-
     }
 
     let params;
@@ -431,3 +428,4 @@ const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any,
   }
 
 }
+

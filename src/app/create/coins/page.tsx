@@ -221,12 +221,21 @@ const CreateCoin = () => {
         initialPrice: 0,
         supply: form.supply,
         type: "exponential",
-        baseToken: form.bonding,
+        baseToken: selectedCoin,
         position,
         candidate: form.candidate!,
       };
 
       const res = await createProjectCoin(params);
+
+      if (res.type === "error") {
+        setMessage({
+          type: "error",
+          message: res.message,
+        });
+        setIsLoading(false);
+        return
+      }
 
       const fileUrls = [];
 

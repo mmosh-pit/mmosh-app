@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         },
         {
           $set: {
-            redreward: ptv.reward + reward,
+            reward: ptv.reward + reward,
           },
         },
       );

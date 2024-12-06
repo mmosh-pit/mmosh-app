@@ -13,9 +13,11 @@ import useWallet from "@/utils/wallet";
 import { web3Consts } from "@/anchor/web3Consts";
 import { userWeb3Info } from "@/app/store";
 import { useAtom } from "jotai";
+import { useRouter } from "next/navigation";
 
 
 const CommunityStake = () => {
+    const navigate = useRouter();
     const connection = useConnection();
     const wallet: any = useWallet();
     const [profileInfo] = useAtom(userWeb3Info);
@@ -77,6 +79,10 @@ const CommunityStake = () => {
                 })
             }
             setCoins(newCoins)
+            if(newCoins.length > 0) {
+                setFields({ ...fields, coin: newCoins[0].value})
+            }
+     
         } catch (error) {
             setCoins([])
         }
@@ -98,7 +104,6 @@ const CommunityStake = () => {
             );
             return
         }
-
         if(profileInfo.mmoshBalance === 0) {
             createMessage(
                 "Not enough mmosh balance to process stake",
@@ -106,18 +111,21 @@ const CommunityStake = () => {
             );
             return
         }
-
         if(!validateFields()) {
            console.log("validation field")
            return;
         }
-
         let finalCoin = coinList.filter((coinItem: any) => {
             return coinItem.key === fields.coin;
         });
 
         if(finalCoin.length === 0) {
             console.log("coin not exist")
+            return
+        }
+
+        if(getTotalPercentage() !== 100) {
+            createMessage("Giveaway is not 100%", "danger-container");
             return
         }
 
@@ -137,21 +145,25 @@ const CommunityStake = () => {
             );
             let gensis = rootMainStateInfo.genesisProfile.toBase58()
 
+
+
             let userConn: UserConn = new UserConn(
                 env,
                 web3Consts.programID
             );
             let projectOwner: any = await userConn.getNftProfileOwner(
-                web3Consts.genesisProfile,
+                rootMainStateInfo.genesisProfile,
             );
 
+            console.log("gensis ", projectOwner.profileHolder.toBase58())
+    
             let balance:any = await userConn.getUserBalance({
                 address: wallet.publicKey,
                 token: fields.coin,
                 decimals: web3Consts.LAMPORTS_PER_OPOS
             })
 
-            if(projectOwner.profileHolder.toBase58() !== gensis) {
+            if(projectOwner.profileHolder.toBase58() !== wallet.publicKey.toBase58()) {
                 createMessage(
                     "Only project owner only able to stake coins",
                     "danger-container",
@@ -167,16 +179,11 @@ const CommunityStake = () => {
                 return
             }
 
-            if(getTotalPercentage() !== 100) {
-                createMessage("Giveaway is not 100%", "danger-container");
-                return
-            }
-
             fields.creator = wallet.publicKey.toBase58();
 
             let stakePublicKey:any = process.env.NEXT_PUBLIC_PTV_WALLET_KEY;
             let txis = [];
-            let stakeIns:any =  await userConn.baseSpl.transfer_token_modified({ mint: new anchor.web3.PublicKey(finalCoin.key), sender: wallet.publicKey, receiver: new anchor.web3.PublicKey(stakePublicKey), init_if_needed: true, amount: Math.ceil(fields.amount * web3Consts.LAMPORTS_PER_OPOS)});
+            let stakeIns:any =  await userConn.baseSpl.transfer_token_modified({ mint: new anchor.web3.PublicKey(finalCoin[0].key), sender: wallet.publicKey, receiver: new anchor.web3.PublicKey(stakePublicKey), init_if_needed: true, amount: Math.ceil(fields.amount * web3Consts.LAMPORTS_PER_OPOS)});
             for (let index = 0; index < stakeIns.length; index++) {
                 txis.push(stakeIns[index]);
             }
@@ -205,8 +212,14 @@ const CommunityStake = () => {
               [],
             );
             console.log("res ", res);
-            await axios.post("/api/project/stake-coin",fields);
+            if(res) {
+                await axios.post("/api/project/stake-coins",fields);
+                setFields({ ...fields, amount:0, unlockDate: ""})
+            }
+            setLoading(false)
+            navigate.replace(`/rewards/` +fields.coin);
         } catch (error) {
+            console.log("test6 ", error)
             setLoading(false)
         }
     }

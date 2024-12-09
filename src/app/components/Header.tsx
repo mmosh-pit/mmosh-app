@@ -504,7 +504,7 @@ const Header = () => {
   }
 
   return (
-    <header className="flex flex-col">
+    <header className="flex flex-col bg-transparent">
       <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
         <div className="flex w-full justify-between items-center mx-8">
           {isMobileScreen ? (

@@ -25,8 +25,6 @@ export async function POST(req: NextRequest) {
 
   const isValid = await argon2.verify(user!.password, password);
 
-  console.log("Password is fking valid?? ", isValid);
-
   if (!isValid) {
     return NextResponse.json("password", {
       status: 400,

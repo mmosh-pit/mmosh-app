@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@atproto/api": "^0.13.19",
     "@coral-xyz/anchor": "^0.30.0",
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
     "@metaplex-foundation/js": "^0.20.1",

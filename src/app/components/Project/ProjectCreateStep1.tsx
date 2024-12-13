@@ -14,27 +14,27 @@ import SearchIcon from "@/assets/icons/SearchIcon";
 import axios from "axios";
 import { Bars } from "react-loader-spinner";
 import TokenCard from "./TokenCard";
-
-const customStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "#180E4F",
-    minWidth: "300px",
-    maxWidth: "500px",
-    width: "100%",
-  },
-};
+import Select from "../common/Select";
+import BalanceBox from "../common/BalanceBox";
+import { useConnection } from "@solana/wallet-adapter-react";
+import * as anchor from "@coral-xyz/anchor";
+import useWallet from "@/utils/wallet";
+import { useAtom } from "jotai";
+import { userWeb3Info } from "@/app/store";
+import { Connectivity as Community } from "@/anchor/community";
+import { web3Consts } from "@/anchor/web3Consts";
+import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
+import { calcNonDecimalValue } from "@/anchor/curve/utils";
 
 export default function ProjectCreateStep1({
   onPageChange,
 }: {
   onPageChange: any;
 }) {
+  const connection = useConnection();
+  const wallet: any = useWallet();
+  const [profileInfo] = useAtom(userWeb3Info);
+
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -42,11 +42,6 @@ export default function ProjectCreateStep1({
   const [msgText, setMsgText] = useState("");
 
   const [image, setImage] = React.useState<File | null>(null);
-  const [modalIsOpen, setIsOpen] = React.useState(false);
-  const [keyword, setKeyword] = React.useState("");
-  const [coinLoader, setCoinLoader] = React.useState(false);
-  const [coinAllList, setCoinAllList] = React.useState([]);
-  const [coinList, setCoinList] = React.useState([]);
 
   const [fields, setFields] = useState({
     image: {
@@ -62,30 +57,44 @@ export default function ProjectCreateStep1({
     twitter: "",
     priceDistribution: {
       echosystem: 3,
-      curator: 2,
-      creator: 70,
-      promoter: 20,
-      scout: 5,
+      curator: 7,
+      creator: 90,
+      promoter: 0,
+      scout: 0,
     },
-    invitationType: "required",
+    invitationType: "none",
     invitationPrice: 0,
     discount: 0.0,
-    isExternalCoin: false,
+    isExternalCoin: true,
     externalCoin: {
-      name: "",
-      address: "",
-      image: "",
-      symbol: "",
-      decimals: 0,
+      name: "MMOSH: The Stoked Token",
+      address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
+      image: "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+      symbol: "MMOSH",
+      decimals: 9,
     },
   });
 
-  const [invitationTypes, setInvitationTypes] = React.useState([
-    "required",
-    "optional",
-    "none",
-  ]);
   const [isReady, setIsReady] = useState(false);
+
+  const [studioType, setStudioType] = useState([
+    {label: "Project", value: "Project"},
+    {label: "EcoSystem", value: "EcoSystem"},
+    {label: "Community", value: "Community"}
+  ])
+  const [selectedStudioType, setSelectedStudioType] = useState("Project");
+
+  const [projectType, setProjectType] = useState([
+    {label: "New Project", value: "New Project"},
+  ])
+  const [selectedProjectType, setSelectedProjectType] = useState("New Project");
+
+  const [options, setOptions] = useState([
+    {label: "Project Pass", value: "Project Pass"},
+  ])
+  const [selectedOption, setSelectedOption] = useState("Project Pass");
+  const [usdPrice, setUsdPrice] = useState(0)
+  const [buttonText, setButtonText] = useState("Mint");
 
   React.useEffect(() => {
     if (!image) return;
@@ -102,53 +111,20 @@ export default function ProjectCreateStep1({
       let savedData: any = localStorage.getItem("projectstep1");
       setFields(JSON.parse(savedData));
     }
+    getMmoshPrice();
   }, []);
+
+  const getMmoshPrice = async() => {
+    const mmoshUsdcPrice = await axios.get(
+      `https://price.jup.ag/v6/price?ids=MMOSH`,
+    );
+    setUsdPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
+  }
 
   React.useEffect(() => {
     setIsReady(validateFields(false));
   }, [fields]);
 
-  const onRadioChange = (value: any) => {
-    console.log("radio change ", value);
-    setFields({ ...fields, isExternalCoin: value });
-  };
-
-  const chooseInvitationType = (currentInvitationType: any) => {
-    let invitationPrice = fields.invitationPrice;
-    let distribution = {
-      echosystem: 3,
-      curator: 2,
-      creator: 70,
-      promoter: 20,
-      scout: 5,
-    };
-    if (currentInvitationType == "none") {
-      distribution = {
-        echosystem: 3,
-        curator: 7,
-        creator: 90,
-        promoter: 0,
-        scout: 0,
-      };
-      invitationPrice = 0;
-    }
-    setFields({
-      image: fields.image,
-      name: fields.name,
-      symbol: fields.symbol,
-      desc: fields.desc,
-      passPrice: fields.passPrice,
-      website: fields.website,
-      telegram: fields.telegram,
-      twitter: fields.twitter,
-      priceDistribution: distribution,
-      invitationType: currentInvitationType,
-      invitationPrice: invitationPrice,
-      discount: fields.discount,
-      isExternalCoin: fields.isExternalCoin,
-      externalCoin: fields.externalCoin,
-    });
-  };
 
   const getTotalPercentage = () => {
     return (
@@ -293,7 +269,10 @@ export default function ProjectCreateStep1({
     }
   };
 
-  const gotoStep2 = async () => {
+  const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
+
+
+  const mintGensisPass = async () => {
     setLoading(true);
     if (validateFields(true)) {
       const result = await axios.get(
@@ -314,12 +293,145 @@ export default function ProjectCreateStep1({
         fields.image.preview = imageUri;
       }
       localStorage.setItem("projectstep1", JSON.stringify(fields));
-      onPageChange("step2");
-    }
-  };
 
-  const goBack = () => {
-    navigate.back();
+      const projectKeyPair = anchor.web3.Keypair.generate();
+      const env = new anchor.AnchorProvider(connection.connection, wallet, {
+        preflightCommitment: "processed",
+      });
+      anchor.setProvider(env);
+      let communityConnection: Community = new Community(
+        env,
+        web3Consts.programID,
+        projectKeyPair.publicKey,
+      );
+
+      try {
+        setButtonText("Uploading project metadata...");
+        let projectBody = {
+          name: fields.name,
+          symbol: fields.symbol,
+          description: fields.desc,
+          image: fields.image.preview,
+          enternal_url: "https://liquidhearts.app",
+          family: "MMOSH",
+          collection: "MMOSH Pass Collection",
+          attributes: [
+            {
+              trait_type: "Primitive",
+              value: "Pass",
+            },
+            {
+              trait_type: "Ecosystem",
+              value: " MMOSH",
+            },
+            {
+              trait_type: "Project",
+              value: projectKeyPair.publicKey.toBase58(),
+            },
+            {
+              trait_type: "Founder",
+              value: "Moto",
+            },
+            {
+              trait_type: "Website",
+              value: fields.website,
+            },
+            {
+              trait_type: "Telegram",
+              value: fields.telegram,
+            },
+            {
+              trait_type: "X",
+              value: fields.twitter,
+            },
+          ],
+        };
+  
+        const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
+        if (projectMetaURI === "") {
+          createMessage(
+            "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
+            "danger-container",
+          );
+          return;
+        }
+
+        const profileMintingCost = new anchor.BN(
+          calcNonDecimalValue(Number(fields.passPrice), 9),
+        );
+        const invitationMintingCost = new anchor.BN(
+          calcNonDecimalValue(fields.invitationPrice, 9),
+        );
+        setButtonText("Minting Project...");
+        const res1: any = await communityConnection.mintGenesisPass({
+          name: fields.name,
+          symbol: fields.symbol,
+          uri: projectMetaURI,
+          mintKp: projectKeyPair,
+          input: {
+            oposToken: web3Consts.usdcToken,
+            profileMintingCost,
+            invitationMintingCost,
+            mintingCostDistribution: {
+              parent: 100 * fields.priceDistribution.curator,
+              grandParent: 100 * fields.priceDistribution.creator,
+              greatGrandParent: 100 * fields.priceDistribution.promoter,
+              ggreatGrandParent: 100 * fields.priceDistribution.scout,
+              genesis: 100 * fields.priceDistribution.echosystem,
+            },
+            tradingPriceDistribution: {
+              seller: 100 * fields.priceDistribution.curator,
+              parent: 100 * fields.priceDistribution.creator,
+              grandParent: 100 * fields.priceDistribution.promoter,
+              greatGrandParent: 100 * fields.priceDistribution.scout,
+              genesis: 100 * fields.priceDistribution.echosystem,
+            },
+          },
+        });
+
+        const genesisProfileStr = res1.Ok.info.profile;
+        console.log("genesisProfileStr ", genesisProfileStr);
+
+        setButtonText("Waiting for Confirmation...");
+        await delay(15000);
+        communityConnection.setMainState();
+
+        setButtonText("Creating LUT Registration...");
+        const res4: any = await communityConnection.registerCommonLut();
+        console.log("register lookup result ", res4);
+
+        await axios.post("/api/project/save-project", {
+          name: fields.name,
+          symbol: fields.symbol,
+          desc: fields.desc,
+          image: fields.image.preview,
+          inviteimage: "",
+          key: projectKeyPair.publicKey.toBase58(),
+          lut: res4.Ok.info.lookupTable,
+          seniority: 0,
+          price: fields.passPrice,
+          distribution: fields.priceDistribution,
+          invitationprice: fields.invitationPrice,
+          discount: fields.discount,
+          telegram: fields.telegram,
+          twitter: fields.twitter,
+          website: fields.website,
+          presalesupply: 0,
+          minpresalesupply:0,
+          presalestartdate: "",
+          presaleenddate: "",
+          dexlistingdate: "",
+        });
+        setButtonText("Mint");
+        localStorage.removeItem("projectstep1");
+        navigate.push("/projects/" + fields.symbol );
+  
+      } catch (error) {
+        console.log("error ", error)
+        setButtonText("Mint");
+        setLoading(false)
+      }
+    }
   };
 
   const prepareNumber = (inputValue: any) => {
@@ -329,71 +441,6 @@ export default function ProjectCreateStep1({
     return inputValue;
   };
 
-  const capitalizeString = (str: any) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-
-  const openJupiterCoins = () => {
-    setIsOpen(true);
-    getCoinsFromJupiter();
-  };
-
-  const getCoinsFromJupiter = async () => {
-    try {
-      setCoinLoader(true);
-      const result = await axios.get("https://token.jup.ag/strict");
-      setCoinAllList(result.data);
-      setCoinList(result.data);
-      setCoinLoader(false);
-    } catch (error) {
-      setCoinLoader(false);
-      setCoinList([]);
-      setCoinAllList([]);
-    }
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    setKeyword("");
-    setCoinList([]);
-    setCoinAllList([]);
-  };
-
-  const onCoinSearch = (event: any) => {
-    setKeyword(event.target.value);
-    console.log(event.target.value);
-    if (event.target.value.trim().length == 0) {
-      setCoinList(coinAllList);
-    } else {
-      let newCoinList = coinAllList.filter(
-        (item: any) =>
-          item.name
-            .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()) ||
-          item.symbol
-            .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()) ||
-          item.symbol
-            .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()),
-      );
-      setCoinList(newCoinList);
-    }
-  };
-
-  const onTokenSelect = (token: any) => {
-    setFields({
-      ...fields,
-      externalCoin: {
-        name: token.name,
-        address: token.address,
-        image: token.logoURI,
-        symbol: token.symbol,
-        decimals: token.decimals,
-      },
-    });
-    closeModal();
-  };
 
   return (
     <>
@@ -409,38 +456,55 @@ export default function ProjectCreateStep1({
       )}
       <div className="background-content">
         <div className="flex flex-col items-center justify-center w-full">
-          <div className="relative w-full flex flex-col justify-center items-center pt-5">
+          <div className="relative w-full flex flex-col justify-center items-center pt-10">
             <div className="max-w-md">
               <h2 className="text-center text-white font-goudy font-normal text-xl">
-                Launch Your Project
+                Design Studio
               </h2>
-              <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">
-                Step 1
-              </h3>
-              <h3 className="text-center text-white font-goudy font-normal text-sub-title-font-size pt-1.5">
-                Design your Project Pass
-              </h3>
-              <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">
-                Projects are the economic engine of Web3. Each Project has a
-                specific purpose and leverages protocols, tokens and communities
-                to achieve the goals set by the Project founder. The total cost
-                of deploying your Project will be 100,000 MMOSH plus a minimum
-                of $100 in USDC, SOL and MMOSH to provide liquidity for your
-                project’s Community Coin. You will be able to save your work and
-                return later to complete the process.
-              </p>
             </div>
           </div>
         </div>
         <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-9 gap-4">
+          <div className="mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+              <div>
+                <Select
+                value={selectedStudioType}
+                onChange={(e) =>{
+                    createMessage("Project only available in design studio", "warn-container");
+                    setSelectedStudioType("Project");
+                }}
+                options={studioType}
+                />
+              </div>
+              <div>
+                <Select
+                value={selectedProjectType}
+                onChange={(e) =>{
+                    setSelectedProjectType(e.target.value);
+                }}
+                options={projectType}
+                />
+              </div>
+              <div>
+                <Select
+                value={selectedOption}
+                onChange={(e) =>{
+                    setSelectedOption(e.target.value);
+                }}
+                options={options}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
             <div className="xl:col-span-2">
               <ImagePicker
                 changeImage={setImage}
                 image={fields.image.preview}
               />
             </div>
-            <div className="xl:col-span-2">
+            <div className="xl:col-span-3">
               <div className="form-element pt-2.5">
                 <Input
                   type="text"
@@ -482,7 +546,7 @@ export default function ProjectCreateStep1({
                 />
               </div>
             </div>
-            <div className="xl:col-span-2">
+            <div className="xl:col-span-3">
               <div className="form-element pt-2.5">
                 <div className="grid grid-cols-12 gap-4">
                   <div className="form-element col-span-9">
@@ -504,7 +568,7 @@ export default function ProjectCreateStep1({
                     />
                   </div>
                   <div className="col-span-3 mt-7 text-white text-header-small-font-size">
-                    USD
+                    MMOSH = {usdPrice * fields.passPrice} USD
                   </div>
                 </div>
               </div>
@@ -547,363 +611,35 @@ export default function ProjectCreateStep1({
                   }
                 />
               </div>
-              {fields.isExternalCoin && (
-                <div className="form-element pt-2.5">
-                  <p className="text-xs text-whilte">Select Coin</p>
-
-                  <p
-                    className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] backdrop-container flex items-center justify-between gap-2 px-2 cursor-pointer"
-                    onClick={openJupiterCoins}
-                  >
-                    {fields.externalCoin.name !== "" && (
-                      <>
-                        <span>{fields.externalCoin.name}</span>
-                      </>
-                    )}
-                    {fields.externalCoin.name === "" && (
-                      <span className="text-white text-opacity-[0.3]">
-                        {" "}
-                        Select Coin
-                      </span>
-                    )}
-                    <label className="mr-2.5">
-                      <ArrowDown />
-                    </label>
-                  </p>
-                </div>
-              )}
-
-              <div className="flex pt-2.5">
-                <Radio
-                  title="Create a new Community Coin"
-                  checked={!fields.isExternalCoin}
-                  onChoose={() => {
-                    onRadioChange(false);
-                  }}
-                  disabled={false}
-                />
-                <div className="relative">
-                  <Radio
-                    title="Use an Existing Coin"
-                    checked={fields.isExternalCoin}
-                    onChoose={() => {
-                      onRadioChange(true);
-                    }}
-                    disabled={false}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="xl:col-span-3">
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 mb-5">
-                <div className="col-span-5">
-                  <div className="invitation-type-options">
-                    <p className="text-xs text-white">
-                      Invitation to Mint a Pass
-                    </p>
-                    <div className="grid grid-cols-3 gap-4 ">
-                      {invitationTypes.map(
-                        (invitationTypeItem: any, index: any) => (
-                          <div
-                            className="text-center"
-                            key={index}
-                            onClick={() => {
-                              chooseInvitationType(invitationTypeItem);
-                            }}
-                          >
-                            <div
-                              className={
-                                invitationTypeItem == fields.invitationType
-                                  ? "invitation-type-option-item-select active"
-                                  : "invitation-type-option-item-select"
-                              }
-                            >
-                              {invitationTypeItem == fields.invitationType && (
-                                <input
-                                  type="checkbox"
-                                  checked
-                                  className="checkbox"
-                                />
-                              )}
-                              {invitationTypeItem != fields.invitationType && (
-                                <input type="checkbox" className="checkbox" />
-                              )}
-                            </div>
-                            <p className="text-xs text-white leading-3">
-                              {capitalizeString(invitationTypeItem)}
-                            </p>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {fields.invitationType == "optional" && (
-                  <div className="col-span-3">
-                    <div className="profile-container-element">
-                      <Input
-                        type="text"
-                        title="Discount"
-                        required
-                        helperText=""
-                        placeholder="%"
-                        value={
-                          fields.discount > 0 ? fields.discount.toString() : ""
-                        }
-                        onChange={(e) =>
-                          setFields({
-                            ...fields,
-                            discount: prepareNumber(Number(e.target.value)),
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-                {fields.invitationType != "none" && (
-                  <div className="col-span-4">
-                    <div className="profile-container-element">
-                      <Input
-                        type="text"
-                        title="Mint Price for Invitation"
-                        required={false}
-                        helperText=""
-                        placeholder="0"
-                        value={
-                          fields.invitationPrice > 0
-                            ? fields.invitationPrice.toString()
-                            : ""
-                        }
-                        onChange={(e) =>
-                          setFields({
-                            ...fields,
-                            invitationPrice: prepareNumber(
-                              Number(e.target.value),
-                            ),
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="project-share-royalties">
-                <h4 className="text-header-small-font-size mt-2">
-                  Set the Royalties for the Project
-                </h4>
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-2.5">
-                  <div>
-                    <div className="project-share-royalties-info">
-                      <label className="text-xs text-white mr-2">
-                        Ecosystem
-                      </label>
-                      <span className="text-header-small-font-size text-white ">
-                        MMOSH DAO {fields.priceDistribution.echosystem} %
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="project-share-royalties-info">
-                      <label className="text-xs text-white mr-2">Curator</label>
-                      <span className="text-header-small-font-size text-white">
-                        Your Promoter {fields.priceDistribution.curator} %
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex mt-2 mb-3.5">
-                  <label className="text-xs text-white leading-10 min-w-12">
-                    Creator
-                  </label>
-                  {fields.invitationType == "none" && (
-                    <span className="text-header-small-font-size text-white mx-2 leading-10">
-                      {fields.priceDistribution.creator}%{" "}
-                    </span>
-                  )}
-                  {fields.invitationType != "none" && (
-                    <div className="mx-2">
-                      <input
-                        type="text"
-                        value={fields.priceDistribution.creator}
-                        onChange={(event) => {
-                          let priceDetails = {
-                            echosystem: 3,
-                            curator: 2,
-                            creator: prepareNumber(Number(event.target.value)),
-                            promoter: fields.priceDistribution.promoter,
-                            scout: fields.priceDistribution.scout,
-                          };
-                          setFields({
-                            ...fields,
-                            priceDistribution: priceDetails,
-                          });
-                        }}
-                        placeholder="0"
-                        className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container w-16"
-                      />
-                    </div>
-                  )}
-                  <span className="text-header-small-font-size text-white leading-10">
-                    Your royalties
-                  </span>
-                </div>
-              </div>
-              {fields.invitationType != "none" && (
-                <div className="project-share-royalties-agents">
-                  <h4 className="text-header-small-font-size">Agents</h4>
-                  <div className="flex">
-                    <label className="text-xs text-white leading-10 min-w-12">
-                      Promoter
-                    </label>
-                    <div className="mx-2">
-                      <input
-                        type="text"
-                        value={fields.priceDistribution.promoter}
-                        onChange={(event) => {
-                          let priceDetails = {
-                            echosystem: 3,
-                            curator: 2,
-                            creator: fields.priceDistribution.creator,
-                            promoter: prepareNumber(Number(event.target.value)),
-                            scout: fields.priceDistribution.scout,
-                          };
-                          setFields({
-                            ...fields,
-                            priceDistribution: priceDetails,
-                          });
-                        }}
-                        placeholder="0"
-                        className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container w-16"
-                      />
-                    </div>
-                    <span className="text-header-small-font-size text-white leading-10">
-                      Promotes your community
-                    </span>
-                  </div>
-                  <div className="flex mt-2">
-                    <label className="text-xs text-white leading-10 min-w-12">
-                      Scout
-                    </label>
-                    <div className="mx-2">
-                      <input
-                        type="text"
-                        value={fields.priceDistribution.scout}
-                        onChange={(event) => {
-                          let priceDetails = {
-                            echosystem: 3,
-                            curator: 2,
-                            creator: fields.priceDistribution.creator,
-                            promoter: fields.priceDistribution.promoter,
-                            scout: prepareNumber(Number(event.target.value)),
-                          };
-                          setFields({
-                            ...fields,
-                            priceDistribution: priceDetails,
-                          });
-                        }}
-                        placeholder="0"
-                        className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container w-16"
-                      />
-                    </div>
-                    <span className="text-header-small-font-size text-white">
-                      Organizes, encourages, trains and motivates Promoters
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-3.5">
-                <h6>
-                  <label className="text-header-small-font-size text-white font-bold mr-2">
-                    Total:{" "}
-                  </label>{" "}
-                  <span className="text-header-small-font-size text-white font-bold">
-                    {getTotalPercentage()}
-                  </span>
-                </h6>
-              </div>
             </div>
           </div>
           <div className="flex justify-center mt-10">
-            <button
-              className="btn btn-link text-white no-underline"
-              onClick={goBack}
-            >
-              Back
-            </button>
             {!loading && (
               <button
-                className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white"
-                onClick={gotoStep2}
+                className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+                onClick={mintGensisPass}
                 disabled={!isReady}
               >
-                Next
+                Mint
               </button>
             )}
             {loading && (
-              <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">
-                Loading...
+              <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white">
+                {buttonText}
               </button>
             )}
           </div>
+          <div className="w-full flex flex-col justify-center items-center mt-5">
+          <div className="flex flex-col justify-center items-center">
+            <p className="text-sm text-white">Price: 25,000 MMOSH</p>
+            <p className="text-tiny text-white">
+              plus a small amount of SOL for gas fees
+            </p>
+          </div>
+          <BalanceBox />
+          </div>
         </div>
       </div>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
-      >
-        <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">
-          Coin List{" "}
-        </h2>
-        <div>
-          {!coinLoader && (
-            <>
-              <div className="search-container">
-                <label
-                  className={
-                    "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
-                  }
-                >
-                  <div className="p-2">
-                    <SearchIcon />
-                  </div>
-                  <input
-                    type="text"
-                    className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
-                    placeholder="Search by Coin Name"
-                    value={keyword}
-                    onChange={onCoinSearch}
-                  />
-                </label>
-              </div>
-              <div
-                className="overflow-y-auto"
-                style={{ maxHeight: window.innerHeight * 0.7 + "px" }}
-              >
-                {coinList.map((coinItem: any) => (
-                  <TokenCard data={coinItem} onChoose={onTokenSelect} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {coinLoader && (
-            <div className="flex justify-center">
-              <Bars
-                height="80"
-                width="80"
-                color="rgba(255, 0, 199, 1)"
-                ariaLabel="bars-loading"
-                wrapperStyle={{}}
-                wrapperClass="bars-loading"
-                visible={true}
-              />
-            </div>
-          )}
-        </div>
-      </Modal>
     </>
   );
 }

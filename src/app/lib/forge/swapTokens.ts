@@ -18,7 +18,7 @@ export const swapTokens = async (
   wallet: AnchorWallet,
 ): Promise<MintResultMessage> => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-    confirmTransactionInitialTimeout: 120000
+    confirmTransactionInitialTimeout: 120000,
   });
 
   const env = new anchor.AnchorProvider(connection, wallet, {
@@ -40,26 +40,28 @@ export const swapTokens = async (
     `/api/get-wallet-data?wallet=${ownerUser.profileHolder.toBase58()}`,
   );
 
-  console.log("creatorInfo ", creatorInfo)
+  console.log("creatorInfo ", creatorInfo);
   let hasProfile = false;
-  if(creatorInfo.data) {
-    if(creatorInfo.data.profilenft) {
-      hasProfile = true
+  if (creatorInfo.data) {
+    if (creatorInfo.data.profilenft) {
+      hasProfile = true;
     }
   }
 
   let listResult = await axios.get(`/api/project/detail?symbol=PTV`);
   const genesisPassUser = await userConn.getNftProfileOwner(
-   new anchor.web3.PublicKey(listResult.data.project.key),
+    new anchor.web3.PublicKey(listResult.data.project.key),
   );
 
-  if(hasProfile) {
+  if (hasProfile) {
     const creatorShare = await userConn.baseSpl.transfer_token_modified({
       mint: new anchor.web3.PublicKey(targetToken.token),
       sender: wallet.publicKey,
       receiver: ownerUser.profileHolder,
       init_if_needed: true,
-      amount: Math.ceil(targetToken.value * 0.03 * web3Consts.LAMPORTS_PER_OPOS),
+      amount: Math.ceil(
+        targetToken.value * 0.03 * web3Consts.LAMPORTS_PER_OPOS,
+      ),
     });
 
     const gensisPassShare = await userConn.baseSpl.transfer_token_modified({
@@ -67,7 +69,9 @@ export const swapTokens = async (
       sender: wallet.publicKey,
       receiver: genesisPassUser.profileHolder,
       init_if_needed: true,
-      amount: Math.ceil(targetToken.value * 0.02 * web3Consts.LAMPORTS_PER_OPOS),
+      amount: Math.ceil(
+        targetToken.value * 0.02 * web3Consts.LAMPORTS_PER_OPOS,
+      ),
     });
 
     for (let index = 0; index < creatorShare.length; index++) {
@@ -83,7 +87,9 @@ export const swapTokens = async (
       sender: wallet.publicKey,
       receiver: ownerUser.profileHolder,
       init_if_needed: true,
-      amount: Math.ceil(targetToken.value * 0.02 * web3Consts.LAMPORTS_PER_OPOS),
+      amount: Math.ceil(
+        targetToken.value * 0.02 * web3Consts.LAMPORTS_PER_OPOS,
+      ),
     });
 
     const gensisPassShare = await userConn.baseSpl.transfer_token_modified({
@@ -91,7 +97,9 @@ export const swapTokens = async (
       sender: wallet.publicKey,
       receiver: genesisPassUser.profileHolder,
       init_if_needed: true,
-      amount: Math.ceil(targetToken.value * 0.03 * web3Consts.LAMPORTS_PER_OPOS),
+      amount: Math.ceil(
+        targetToken.value * 0.03 * web3Consts.LAMPORTS_PER_OPOS,
+      ),
     });
 
     for (let index = 0; index < gensisPassShare.length; index++) {
@@ -111,18 +119,19 @@ export const swapTokens = async (
     amount: Math.ceil(targetToken.value * 0.01 * web3Consts.LAMPORTS_PER_OPOS),
   });
 
-
   for (let index = 0; index < genesisShare.length; index++) {
     curveConn.txis.push(genesisShare[index]);
   }
 
   try {
     let tx;
-    let result:any = await axios.get("/api/project/coin-detail?coin="+targetToken.token)
+    let result: any = await axios.get(
+      "/api/project/coin-detail?coin=" + targetToken.token,
+    );
 
     if (result.data.coin) {
       let buyres;
-      if(targetToken.token == web3Consts.oposToken.toBase58()) {
+      if (targetToken.token == web3Consts.oposToken.toBase58()) {
         buyres = await curveConn.buy({
           tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
           desiredTargetAmount: new anchor.BN(
@@ -131,31 +140,33 @@ export const swapTokens = async (
           slippage: 0.5,
         });
       } else {
-        const buytx = await axios.post("/api/ptv/swap",{
+        const buytx = await axios.post("/api/ptv/swap", {
           coin: targetToken.token,
           bonding: targetToken.bonding,
-          supply:  baseToken.value,
-          address: wallet.publicKey.toBase58()
-        })
-        if(buytx.data.status) {
-          const tx = anchor.web3.VersionedTransaction.deserialize(Buffer.from(buytx.data.transaction,"base64"))
-          buyres = await curveConn.provider.sendAndConfirm(tx)
-          if(buyres) {
-              await axios.post("/api/ptv/update-rewards",{
-                coin: targetToken.token,
-                wallet: wallet.publicKey.toBase58(),
-                method: "buy",
-                value: targetToken.value
-              })
+          supply: baseToken.value,
+          address: wallet.publicKey.toBase58(),
+        });
+        if (buytx.data.status) {
+          const tx = anchor.web3.VersionedTransaction.deserialize(
+            Buffer.from(buytx.data.transaction, "base64"),
+          );
+          buyres = await curveConn.provider.sendAndConfirm(tx);
+          if (buyres) {
+            await axios.post("/api/ptv/update-rewards", {
+              coin: targetToken.token,
+              wallet: wallet.publicKey.toBase58(),
+              method: "buy",
+              value: targetToken.value,
+            });
           }
         } else {
           let userConn: UserConn = new UserConn(env, web3Consts.programID);
           const balance = await userConn.getUserBalance({
             address: wallet.publicKey,
             token: targetToken.token,
-            decimals: web3Consts.LAMPORTS_PER_OPOS
+            decimals: web3Consts.LAMPORTS_PER_OPOS,
           });
-          if(balance > targetToken.value) {
+          if (balance > targetToken.value) {
             buyres = await curveConn.buy({
               tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
               desiredTargetAmount: new anchor.BN(
@@ -173,107 +184,119 @@ export const swapTokens = async (
         }
       }
       console.log("buyres ", buyres);
-      tx = buyres
+      tx = buyres;
     } else {
-        let result1:any = await axios.get("/api/project/coin-detail?coin="+baseToken.token)
+      let result1: any = await axios.get(
+        "/api/project/coin-detail?coin=" + baseToken.token,
+      );
 
-        let supply = Math.ceil((targetToken.value - targetToken.value * 0.06))
-        let sellres
-        console.log("baseToken.token ", baseToken.token)
-        if(result1.data.coin && targetToken.token != web3Consts.oposToken.toBase58()) {
-
-          let coinData = await axios("/api/ptv/rewards?coin="+baseToken.token+"&&wallet="+wallet?.publicKey.toBase58())
-          if(coinData.data.swapped > targetToken.value) {
-            let stakePublicKey:any = process.env.NEXT_PUBLIC_PTV_WALLET_KEY;
-            userConn.txis = []
-            let txis = [];
-            const { ata: destination } =
+      let supply = Math.ceil(targetToken.value - targetToken.value * 0.06);
+      let sellres;
+      console.log("baseToken.token ", baseToken.token);
+      if (
+        result1.data.coin &&
+        targetToken.token != web3Consts.oposToken.toBase58()
+      ) {
+        let coinData = await axios(
+          "/api/ptv/rewards?coin=" +
+          baseToken.token +
+          "&&wallet=" +
+          wallet?.publicKey.toBase58(),
+        );
+        if (coinData.data.swapped > targetToken.value) {
+          let stakePublicKey: any = process.env.NEXT_PUBLIC_PTV_WALLET_KEY;
+          userConn.txis = [];
+          let txis = [];
+          const { ata: destination } =
             await userConn.baseSpl.__getOrCreateTokenAccountInstruction(
-              { mint: new anchor.web3.PublicKey(baseToken.token), owner: new anchor.web3.PublicKey(stakePublicKey) },
-              (userConn.ixCallBack),
+              {
+                mint: new anchor.web3.PublicKey(baseToken.token),
+                owner: new anchor.web3.PublicKey(stakePublicKey),
+              },
+              userConn.ixCallBack,
             );
-    
-            for (let index = 0; index < userConn.txis.length; index++) {
-              const element = userConn.txis[index];
-              txis.push(element)
-            }
-            userConn.txis = []
-    
-            let tokenObj = await curveConn.sellInstructions({
-              tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
-              targetAmount: new anchor.BN(
-                supply * web3Consts.LAMPORTS_PER_OPOS,
-              ),
-              slippage: 0.5,
-              destination: destination
+
+          for (let index = 0; index < userConn.txis.length; index++) {
+            const element = userConn.txis[index];
+            txis.push(element);
+          }
+          userConn.txis = [];
+
+          let tokenObj = await curveConn.sellInstructions({
+            tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+            targetAmount: new anchor.BN(supply * web3Consts.LAMPORTS_PER_OPOS),
+            slippage: 0.5,
+            destination: destination,
+          });
+
+          for (let index = 0; index < tokenObj.instructions.length; index++) {
+            const element = tokenObj.instructions[index];
+            txis.push(element);
+          }
+
+          const tx = new anchor.web3.Transaction().add(...txis);
+          tx.recentBlockhash = (
+            await curveConn.connection.getLatestBlockhash()
+          ).blockhash;
+          tx.feePayer = curveConn.provider.publicKey;
+
+          const feeEstimate = await curveConn.getPriorityFeeEstimate(tx);
+          let feeIns;
+          if (feeEstimate > 0) {
+            feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
+              microLamports: feeEstimate,
             });
-    
-            for (let index = 0; index < tokenObj.instructions.length; index++) {
-              const element = tokenObj.instructions[index];
-              txis.push(element)
-            }
-  
-            const tx = new anchor.web3.Transaction().add(...txis);
-            tx.recentBlockhash = (
-              await curveConn.connection.getLatestBlockhash()
-            ).blockhash;
-            tx.feePayer = curveConn.provider.publicKey;
-            
-            const feeEstimate = await curveConn.getPriorityFeeEstimate(tx);
-            let feeIns;
-            if (feeEstimate > 0) {
-              feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
-                microLamports: feeEstimate,
-              });
-            } else {
-              feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
-                units: 1_400_000,
-              });
-            }
-            tx.add(feeIns);
-            sellres = await curveConn.provider.sendAndConfirm(
-              tx,
-              tokenObj.signers,
-            );
-            if(sellres) {
-              if(baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN || baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN) {
-                
-                const curve = await curveConn.getPricing(
-                  new anchor.web3.PublicKey(targetToken.bonding),
-                );
-                const value = targetToken.value;
-                await axios.post("/api/ptv/update-rewards",{
-                  coin: baseToken.token,
-                  wallet: wallet.publicKey.toBase58(),
-                  method: "sell",
-                  value: curve!.sellTargetAmount(value - value * 0.06)
-                })
-              }
-            }
           } else {
-            sellres = await curveConn.sell({
-              tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
-              targetAmount: new anchor.BN(
-                supply * web3Consts.LAMPORTS_PER_OPOS,
-              ),
-              slippage: 0.5
+            feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
+              units: 1_400_000,
             });
+          }
+          tx.add(feeIns);
+          sellres = await curveConn.provider.sendAndConfirm(
+            tx,
+            tokenObj.signers,
+          );
+          if (sellres) {
+            if (
+              baseToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN ||
+              baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN
+            ) {
+              const curve = await curveConn.getPricing(
+                new anchor.web3.PublicKey(targetToken.bonding),
+              );
+              const value = targetToken.value;
+              await axios.post("/api/ptv/update-rewards", {
+                coin: baseToken.token,
+                wallet: wallet.publicKey.toBase58(),
+                method: "sell",
+                value: curve!.sellTargetAmount(value - value * 0.06),
+              });
+            }
           }
         } else {
           sellres = await curveConn.sell({
             tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
-            targetAmount: new anchor.BN(
-              supply * web3Consts.LAMPORTS_PER_OPOS,
-            ),
-            slippage: 0.5
+            targetAmount: new anchor.BN(supply * web3Consts.LAMPORTS_PER_OPOS),
+            slippage: 0.5,
           });
         }
-        console.log("sellres ", sellres);
-        tx = sellres
+      } else {
+        sellres = await curveConn.sell({
+          tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+          targetAmount: new anchor.BN(supply * web3Consts.LAMPORTS_PER_OPOS),
+          slippage: 0.5,
+        });
+      }
+      console.log("sellres ", sellres);
+      tx = sellres;
     }
 
     let params;
-    if (targetToken.token == web3Consts.oposToken.toBase58() || targetToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN  || targetToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN) {
+    if (
+      targetToken.token == web3Consts.oposToken.toBase58() ||
+      targetToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN ||
+      targetToken.token == process.env.NEXT_PUBLIC_PTVB_TOKEN
+    ) {
       params = {
         basekey: targetToken.token,
         basename: targetToken.name,
@@ -288,7 +311,7 @@ export const swapTokens = async (
         price: baseToken.value / (targetToken.value - targetToken.value * 0.06),
         type: "buy",
         wallet: wallet.publicKey.toBase58(),
-        tx
+        tx,
       };
     } else {
       params = {
@@ -305,26 +328,32 @@ export const swapTokens = async (
         price: (targetToken.value - targetToken.value * 0.06) / baseToken.value,
         type: "sell",
         wallet: wallet.publicKey.toBase58(),
-        tx
+        tx,
       };
     }
 
-    let creator =  wallet.publicKey.toBase58().substring(0,5) + "..." + wallet.publicKey.toBase58().substring(wallet.publicKey.toBase58().length - 5)
-    if(hasProfile) {
-      if(creatorInfo.data.telegram) {
-        creator = "@"+creatorInfo.data.telegram.username
+    let creator =
+      wallet.publicKey.toBase58().substring(0, 5) +
+      "..." +
+      wallet.publicKey
+        .toBase58()
+        .substring(wallet.publicKey.toBase58().length - 5);
+    if (hasProfile) {
+      if (creatorInfo.data.telegram) {
+        creator = "@" + creatorInfo.data.telegram.username;
       } else {
-        if(creatorInfo.data.profile) {
-          creator = creatorInfo.data.profile.username
+        if (creatorInfo.data.profile) {
+          creator = creatorInfo.data.profile.username;
         }
       }
     }
 
-    let supply = 0
-    if(tokenBondingAcct) {
-      supply = tokenBondingAcct.supplyFromBonding.toNumber() / web3Consts.LAMPORTS_PER_OPOS
+    let supply = 0;
+    if (tokenBondingAcct) {
+      supply =
+        tokenBondingAcct.supplyFromBonding.toNumber() /
+        web3Consts.LAMPORTS_PER_OPOS;
     }
-
 
     await sendTelegramNotification(params, creator, supply);
     await saveDirectory(params);
@@ -370,62 +399,83 @@ const saveDirectory = async (params: CoinDirectoryItem) => {
   await axios.post("/api/save-directory", params);
 };
 
-
-const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any, supply: any) => {
+const sendTelegramNotification = async (
+  params: CoinDirectoryItem,
+  creator: any,
+  supply: any,
+) => {
   try {
-
     let usdcPrice;
 
     const result = await axios.get(
       `/api/get-group-community?symbol=${params.basesymbol}`,
     );
-  
-    if(!result.data) {
-      return
-    }
-    console.log("community details ", result.data)
-    let groupID = result.data.group[0].handle
 
-    if(params.basesymbol === "PTVB") {
+    if (!result.data) {
+      return;
+    }
+    console.log("community details ", result.data);
+    let groupID = result.data.group[0].handle;
+
+    if (params.basesymbol === "PTVB") {
       let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
       usdcPrice = result > 0 ? result : 0.0003;
-    } else if(params.basesymbol === "PTVR") {
+    } else if (params.basesymbol === "PTVR") {
       let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
       usdcPrice = result > 0 ? result : 0.0003;
     } else {
-      let apiResponse  = await axios.get(
-        `https://price.jup.ag/v6/price?ids=MMOSH`,
+      let apiResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
       );
       usdcPrice = apiResponse.data?.data?.MMOSH?.price || 0;
     }
 
-    let communityCoinPrice = params.value /  (params.value * params.price)
-    
+    let communityCoinPrice = params.value / (params.value * params.price);
+
     const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-  
+
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-  
-    let swapType = params.type === "sell" ? "Sold!" : "Bought!"
-    let swapTypeSymbol = params.type === "sell" ? "-" : "+"
-    let swapMessage = params.type === "sell" ? creator+" reduced their position" : "Thank you "+creator+" for Pumping the Vote!"
-  
-    let text = params.targetname + " " + swapType +"\n"
-    text = text + (params.value * params.price) + " " + params.targetsymbol.toUpperCase() + " " + swapTypeSymbol +"\n";
-    text = text + params.value + " " + params.basesymbol.toUpperCase() +"\n";
+
+    let swapType = params.type === "sell" ? "Sold!" : "Bought!";
+    let swapTypeSymbol = params.type === "sell" ? "-" : "+";
+    let swapMessage =
+      params.type === "sell"
+        ? creator + " reduced their position"
+        : "Thank you " + creator + " for Pumping the Vote!";
+
+    let text = params.targetname + " " + swapType + "\n";
+    text =
+      text +
+      params.value * params.price +
+      " " +
+      params.targetsymbol.toUpperCase() +
+      " " +
+      swapTypeSymbol +
+      "\n";
+    text = text + params.value + " " + params.basesymbol.toUpperCase() + "\n";
     text = text + params.value * usdcPrice + " USDC\n";
-    text = text + "Fully Diluted Value " + ((supply + (params.value * params.price)) * communityCoinPrice) * usdcPrice + " USDC\n";
+    text =
+      text +
+      "Fully Diluted Value " +
+      (supply + params.value * params.price) * communityCoinPrice * usdcPrice +
+      " USDC\n";
     text = text + swapMessage + " \n";
     const response = await axios.post(telegramUrl, {
       chat_id: groupID,
       text: text,
-      reply_markup: {inline_keyboard: [[
-        {text: "Swap", url: "https://www.liquidhearts.app/swap"},
-        {text: "View", url: "https://www.liquidhearts.app/coins/" + params.targetsymbol}
-      ]]}
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Swap", url: "https://www.liquidhearts.app/swap" },
+            {
+              text: "View",
+              url: "https://www.liquidhearts.app/coins/" + params.targetsymbol,
+            },
+          ],
+        ],
+      },
     });
   } catch (error) {
-    console.log("sendTelegramNotification err ", error)
+    console.log("sendTelegramNotification err ", error);
   }
-
-}
-
+};

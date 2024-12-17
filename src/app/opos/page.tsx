@@ -8,13 +8,18 @@ import { data, userData } from "../store";
 import { useAtom } from "jotai";
 import Markdown from "markdown-to-jsx";
 import { Bars } from "react-loader-spinner";
+import { bagsNfts } from "../store/bags";
 
 export default function OPOS() {
   const lastBotMessageIndex = React.useRef(0);
   const [currentUser] = useAtom(data);
   const [user] = useAtom(userData);
+  const [nfts] = useAtom(bagsNfts);
 
   const [text, setText] = React.useState("");
+  const [availableNamespaces, setAvailableNamespaces] = React.useState<
+    string[]
+  >([]);
   const [messages, setMessages] = React.useState<AIChatMessage[]>([]);
   const [isDisabled, setIsDisabled] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -22,7 +27,7 @@ export default function OPOS() {
   const messagesRef = React.useRef<HTMLDivElement>(null);
 
   const sendToAI = async () => {
-    const namespaces = ["PUBLIC"];
+    const namespaces = ["PUBLIC", ...availableNamespaces];
 
     if (currentUser?.profilenft) {
       namespaces.push("PRIVATE");
@@ -148,6 +153,23 @@ export default function OPOS() {
     },
     [currentUser, user],
   );
+
+  const setupAvailableNamespaces = React.useCallback(() => {
+    if (!nfts?.passes) return;
+
+    const namespaces: string[] = [];
+
+    for (const nft of nfts.passes) {
+      if (!nft.parentKey) continue;
+      namespaces.push(nft.parentKey);
+    }
+
+    setAvailableNamespaces(namespaces);
+  }, [nfts]);
+
+  React.useEffect(() => {
+    setupAvailableNamespaces();
+  }, [nfts]);
 
   return (
     <div className="background-content flex w-full h-full justify-center">

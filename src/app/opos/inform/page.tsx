@@ -64,17 +64,44 @@ const Inform = () => {
     setAllProfiles(parsedProfiles);
   }, []);
 
+  const setupPasses = React.useCallback(() => {
+    if (!nfts?.passes) return;
+
+    const communities: BagsNFT[] = [];
+    const projects: BagsNFT[] = [];
+
+    for (const nft of nfts!.passes) {
+      if (!nft.metadata.attributes) continue;
+      for (const attribute of nft.metadata.attributes) {
+        if (attribute.trait_type === "Community") {
+          communities.push({ ...nft, parentKey: attribute.value });
+          continue;
+        }
+
+        if (attribute.trait_type === "Project") {
+          projects.push({ ...nft, parentKey: attribute.value });
+        }
+      }
+    }
+
+    setAllProjects(projects);
+    setAllCommunities(communities);
+  }, [nfts]);
+
   React.useEffect(() => {
     if (hasGenesisProfile) {
       fetchAssetsAsGenesisUser();
     }
   }, [hasGenesisProfile]);
 
+  React.useEffect(() => {
+    setupPasses();
+  }, [nfts]);
+
   return (
     <div
-      className={`background-content-full-bg flex flex-col items-center ${
-        isDrawerShown ? "z-[-1]" : ""
-      }`}
+      className={`background-content-full-bg flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""
+        }`}
     >
       <div className="bg-[#131245E0] flex flex-col items-center py-4 px-2 md:w-[85%] w-[95%] rounded-lg mt-8">
         <h3>Inform OPOS</h3>
@@ -156,9 +183,13 @@ const Inform = () => {
                   to participate!
                 </p>
               ) : allProjects.length > 0 ? (
-                allProjects.map((asset) => <AssetCard asset={asset} />)
+                allProjects.map((asset) => (
+                  <AssetCard asset={asset} isProject />
+                ))
               ) : (
-                nfts!.passes.map((asset) => <AssetCard asset={asset} />)
+                nfts!.passes.map((asset) => (
+                  <AssetCard asset={asset} isProject />
+                ))
               )}
             </div>
           )}
@@ -179,9 +210,13 @@ const Inform = () => {
                   to participate!
                 </p>
               ) : allCommunities.length > 0 ? (
-                allCommunities.map((asset) => <AssetCard asset={asset} />)
+                allCommunities.map((asset) => (
+                  <AssetCard asset={asset} isCommunity />
+                ))
               ) : (
-                nfts!.passes.map((asset) => <AssetCard asset={asset} />)
+                nfts!.passes.map((asset) => (
+                  <AssetCard asset={asset} isCommunity />
+                ))
               )}
             </div>
           )}

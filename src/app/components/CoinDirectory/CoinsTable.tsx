@@ -114,9 +114,8 @@ const CoinsTable = () => {
       return (
         <div className="flex items-center justify-evenly">
           <p
-            className={`text-sm ${
-              isIncremental ? "text-green-500" : "text-red-500"
-            }`}
+            className={`text-sm ${isIncremental ? "text-green-500" : "text-red-500"
+              }`}
           >
             {percentage}
           </p>
@@ -140,7 +139,7 @@ const CoinsTable = () => {
       setUsdcMmoshPrice(mmoshUsdcPrice);
     } else {
       const mmoshUsdcPrice = await axios.get(
-        `https://price.jup.ag/v6/price?ids=MMOSH`,
+        `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
       );
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
     }
@@ -298,11 +297,10 @@ const CoinsTable = () => {
       <tbody>
         {coins.map((coin, index) => (
           <tr
-            className={`${
-              index % 2 === 0
+            className={`${index % 2 === 0
                 ? "bg-[#100E5242] hover:bg-[#100E5230]"
                 : "bg-[#07076E70] hover:bg-[#07076E60]"
-            }`}
+              }`}
             key={coin.symbol}
             onClick={() => navigateToCoinPage(coin.symbol)}
           >

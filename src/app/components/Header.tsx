@@ -153,7 +153,7 @@ const Header = () => {
     });
 
     const mmoshUsdcPrice = await axios.get(
-      `https://api.jup.ag/price/v2?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
+      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
     );
 
     const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
@@ -272,7 +272,7 @@ const Header = () => {
         continue;
       }
 
-      const nft = {
+      const nft: BagsNFT = {
         name: value.content.metadata.name,
         image: value.content.links.image ?? "",
         symbol: value.content.metadata.symbol,
@@ -299,6 +299,11 @@ const Header = () => {
       if (
         collectionDefinition?.collection_metadata?.symbol === PASS_COLLECTION
       ) {
+        nft.parentKey = value.content.metadata.attributes?.find(
+          (attr) =>
+            attr.trait_type === "Community" || attr.trait_type === "Project",
+        )?.value;
+
         passes.push(nft);
         continue;
       }

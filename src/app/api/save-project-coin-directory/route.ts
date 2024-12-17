@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const params = await req.json();
 
   const mmoshUsdcPrice = await axios.get(
-    `https://price.jup.ag/v6/price?ids=MMOSH`,
+    `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
   );
 
   const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;

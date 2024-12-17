@@ -88,7 +88,7 @@ export default function ProjectCreateStep8({
   const getPriceForSol = async () => {
     try {
       const result = await axios.get(
-        "https://price.jup.ag/v6/price?ids=SOL,MMOSH",
+        `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=So11111111111111111111111111111111111111112,${process.env.NEXT_PUBLIC_OPOS_TOKEN}`,
       );
       setSolPrice(result.data.data.SOL.price);
       setMmoshPrice(result.data.data.MMOSH.price);
@@ -217,7 +217,7 @@ export default function ProjectCreateStep8({
                       value={fields.sol > 0 ? fields.sol.toString() : ""}
                       onChange={(e) => {
                         let sol = prepareNumber(Number(e.target.value));
-                        let usdPercentage = solPrice/1
+                        let usdPercentage = solPrice / 1;
                         setFields({
                           usd: sol * usdPercentage,
                           sol: sol,
@@ -242,14 +242,13 @@ export default function ProjectCreateStep8({
                       value={fields.mmosh > 0 ? fields.mmosh.toString() : ""}
                       onChange={(e) => {
                         let mmosh = prepareNumber(Number(e.target.value));
-                        let usdPercentage = mmoshPrice/1
+                        let usdPercentage = mmoshPrice / 1;
                         setFields({
                           usd: mmosh * usdPercentage,
                           sol: (mmosh * usdPercentage) / solPrice,
                           mmosh: mmosh,
                         });
-                      }
-                      }
+                      }}
                     />
                   </div>
                   <p className="text-para-font-size text-white leading-10 min-w-14">

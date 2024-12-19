@@ -140,7 +140,7 @@ const CoinsTable = () => {
       setUsdcMmoshPrice(mmoshUsdcPrice);
     } else {
       const mmoshUsdcPrice = await axios.get(
-        `https://price.jup.ag/v6/price?ids=MMOSH`,
+        `https://api.jup.ag/price/v2?ids=MMOSH`,
       );
       setUsdcMmoshPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
     }

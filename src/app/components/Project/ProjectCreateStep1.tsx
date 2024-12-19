@@ -372,7 +372,7 @@ export default function ProjectCreateStep1({
           uri: projectMetaURI,
           mintKp: projectKeyPair,
           input: {
-            oposToken: web3Consts.usdcToken,
+            oposToken: web3Consts.oposToken,
             profileMintingCost,
             invitationMintingCost,
             mintingCostDistribution: {
@@ -413,7 +413,7 @@ export default function ProjectCreateStep1({
 
         await axios.post("/api/project/save-project", {
           name: fields.name,
-          symbol: fields.symbol,
+          symbol: fields.symbol.toUpperCase(),
           desc: fields.desc,
           image: fields.image.preview,
           inviteimage: "",

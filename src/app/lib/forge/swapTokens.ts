@@ -394,7 +394,7 @@ const sendTelegramNotification = async (params: CoinDirectoryItem, creator: any,
       usdcPrice = result > 0 ? result : 0.0003;
     } else {
       let apiResponse  = await axios.get(
-        `https://price.jup.ag/v6/price?ids=MMOSH`,
+        `https://api.jup.ag/price/v2?ids=MMOSH`,
       );
       usdcPrice = apiResponse.data?.data?.MMOSH?.price || 0;
     }

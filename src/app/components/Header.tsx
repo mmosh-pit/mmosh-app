@@ -153,7 +153,7 @@ const Header = () => {
     });
 
     const mmoshUsdcPrice = await axios.get(
-      `https://price.jup.ag/v6/price?ids=MMOSH`,
+      `https://api.jup.ag/price/v2?ids=MMOSH`,
     );
 
     const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;

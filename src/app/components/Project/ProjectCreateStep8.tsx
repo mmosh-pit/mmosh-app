@@ -88,7 +88,7 @@ export default function ProjectCreateStep8({
   const getPriceForSol = async () => {
     try {
       const result = await axios.get(
-        "https://price.jup.ag/v6/price?ids=SOL,MMOSH",
+        "https://api.jup.ag/price/v2?ids=SOL,MMOSH",
       );
       setSolPrice(result.data.data.SOL.price);
       setMmoshPrice(result.data.data.MMOSH.price);

@@ -7,20 +7,18 @@ export async function POST(req: NextRequest) {
   const directoryCollection = db.collection("mmosh-app-directory");
   const params = await req.json();
 
-
   let usdcPrice;
-  
 
-
-  if(params.basesymbol === "PTVB") {
+  if (params.basesymbol === "PTVB") {
     let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVB_TOKEN);
     usdcPrice = result > 0 ? result : 0.0003;
-  } else if(params.basesymbol === "PTVR") {
+  } else if (params.basesymbol === "PTVR") {
     let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
     usdcPrice = result > 0 ? result : 0.0003;
   } else {
-    let apiResponse  = await axios.get(
-      `https://api.jup.ag/price/v2?ids=MMOSH`,
+
+    let apiResponse = await axios.get(
+      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
     );
     usdcPrice = apiResponse.data?.data?.MMOSH?.price || 0;
   }

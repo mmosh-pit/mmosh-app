@@ -10,9 +10,16 @@ import { uploadFile } from "@/app/lib/firebase";
 type Props = {
   asset: BagsNFT | BagsCoin;
   isCoin?: boolean;
+  isProject?: boolean;
+  isCommunity?: boolean;
 };
 
-const AssetCard = ({ asset, isCoin = false }: Props) => {
+const AssetCard = ({
+  asset,
+  isCoin = false,
+  isProject = false,
+  isCommunity = false,
+}: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [documents, setDocuments] = React.useState<AIDocument[]>([]);
@@ -35,7 +42,14 @@ const AssetCard = ({ asset, isCoin = false }: Props) => {
       );
 
       const formData = new FormData();
-      formData.append("name", isCoin ? "PUBLIC" : "PRIVATE");
+      formData.append(
+        "name",
+        isCoin
+          ? "PUBLIC"
+          : isProject || isCommunity
+            ? asset.parentKey!
+            : "PRIVATE",
+      );
       formData.append("urls", url);
       formData.append(
         "metadata",

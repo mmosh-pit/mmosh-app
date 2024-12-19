@@ -10,12 +10,15 @@ export async function GET(req: NextRequest) {
   const symbol = searchParams.get("symbol");
 
   const projectCollection = db.collection("mmosh-app-project");
-  const projectData:any = await projectCollection.findOne({ symbol: symbol?.toUpperCase() });
+  let projectData:any = await projectCollection.findOne({ symbol: symbol?.toUpperCase() });
 
   if(!projectData) {
-    return NextResponse.json(null, {
-      status: 200,
-    });
+    projectData = await projectCollection.findOne({ symbol: symbol });
+    if (!projectData) {
+      return NextResponse.json(null, {
+        status: 200,
+      });
+    }
   }
 
 

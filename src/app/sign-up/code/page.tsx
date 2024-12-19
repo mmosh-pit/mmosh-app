@@ -51,8 +51,9 @@ const Code = () => {
     setIsLoading(true);
     setHasError(false);
     try {
+      const { confirmPassword, ...data } = form;
       const response = await axios.post("/api/signup", {
-        ...form,
+        ...data,
         referredBy: referAddress,
         code: formCodes.join(""),
       });

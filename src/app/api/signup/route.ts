@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   const session = generateSession();
 
-  const { code, ...filteredData } = data;
+  const { code, confirmPassword, ...filteredData } = data;
 
   const existingData = await emailCollection.findOne({
     email: filteredData.email.trim().toLowerCase(),

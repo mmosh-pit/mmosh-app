@@ -115,10 +115,13 @@ export default function ProjectCreateStep1({
   }, []);
 
   const getMmoshPrice = async() => {
-    const mmoshUsdcPrice = await axios.get(
-      `https://price.jup.ag/v6/price?ids=MMOSH`,
+    let tokenDetail = await axios.get(
+      `/api/project/token-detail?symbol=MMOSH`,
     );
-    setUsdPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
+    if(tokenDetail.data) {
+      setUsdPrice(tokenDetail.data.pricepercentage || 0.003);
+    }
+
   }
 
   React.useEffect(() => {
@@ -341,7 +344,7 @@ export default function ProjectCreateStep1({
               value: fields.telegram,
             },
             {
-              trait_type: "X",
+              trait_type: "Bluesky",
               value: fields.twitter,
             },
           ],
@@ -399,6 +402,14 @@ export default function ProjectCreateStep1({
         setButtonText("Creating LUT Registration...");
         const res4: any = await communityConnection.registerCommonLut();
         console.log("register lookup result ", res4);
+
+        setButtonText("Buying new Project...")
+        const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,25000);
+        if(res5.Err) {
+            createMessage("error creating new project","danger-container")
+            return
+        }
+        console.log("send price result ", res5.Ok?.info)
 
         await axios.post("/api/project/save-project", {
           name: fields.name,
@@ -471,7 +482,7 @@ export default function ProjectCreateStep1({
                 <Select
                 value={selectedStudioType}
                 onChange={(e) =>{
-                    createMessage("Project only available in design studio", "warn-container");
+                    createMessage("Design Studio currently supports the development of Projects only.", "warn-container");
                     setSelectedStudioType("Project");
                 }}
                 options={studioType}
@@ -578,7 +589,7 @@ export default function ProjectCreateStep1({
                   title="Project Website"
                   required
                   helperText=""
-                  placeholder="Project Website"
+                  placeholder="https://www.example.com/"
                   value={fields.website}
                   onChange={(e) =>
                     setFields({ ...fields, website: e.target.value })
@@ -591,7 +602,7 @@ export default function ProjectCreateStep1({
                   title="Project Telegram"
                   required
                   helperText=""
-                  placeholder="Project Telegram"
+                  placeholder="https://t.me/example"
                   value={fields.telegram}
                   onChange={(e) =>
                     setFields({ ...fields, telegram: e.target.value })
@@ -601,10 +612,10 @@ export default function ProjectCreateStep1({
               <div className="form-element pt-2.5">
                 <Input
                   type="text"
-                  title="Project Twitter"
+                  title="Project Bluesky"
                   required
                   helperText=""
-                  placeholder="Project Twitter"
+                  placeholder="https://bsky.app/profile/example.bsky.social"
                   value={fields.twitter}
                   onChange={(e) =>
                     setFields({ ...fields, twitter: e.target.value })

@@ -663,7 +663,6 @@ export class Connectivity {
           web3Consts.genesisProfile,
           mainStateInfo.oposToken
         );
-        console.log("mint pass 74")
         let holdersfullInfo = [];
 
         holdersfullInfo.push({
@@ -912,6 +911,9 @@ export class Connectivity {
       this.txis.push(ix);
 
       let cost = mainStateInfo.profileMintingCost.toNumber();
+
+      console.log("mainStateInfo.oposToken ", mainStateInfo.oposToken.toBase58())
+      console.log("mainStateInfo.profileMintingCost ", cost)
       let profileHolderInfo;
       if(cost > 0) {
         console.log("mint pass 71", userProfile);
@@ -973,6 +975,8 @@ export class Connectivity {
           res[value.receiver].vallue += value.vallue;
           return res;
         }, {});
+
+
   
         for (let index = 0; index < holdermap.length; index++) {
           const element = holdermap[index];
@@ -981,7 +985,7 @@ export class Connectivity {
             sender: user,
             receiver: new anchor.web3.PublicKey(element.receiver),
             init_if_needed: true,
-            amount: element.vallue,
+            amount: Math.ceil(element.vallue),
           });
           for (let index = 0; index < createShare.length; index++) {
             this.txis.push(createShare[index]);
@@ -1281,7 +1285,7 @@ export class Connectivity {
             sender: user,
             receiver: new anchor.web3.PublicKey(element.receiver),
             init_if_needed: true,
-            amount: element.vallue,
+            amount: Math.ceil(element.vallue),
           });
           for (let index = 0; index < createShare.length; index++) {
             this.txis.push(createShare[index]);

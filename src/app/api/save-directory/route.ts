@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
     let result = await getPriceForPTV(process.env.NEXT_PUBLIC_PTVR_TOKEN);
     usdcPrice = result > 0 ? result : 0.0003;
   } else {
+
     let apiResponse = await axios.get(
       `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
     );

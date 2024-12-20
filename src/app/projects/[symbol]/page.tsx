@@ -102,8 +102,6 @@ const Project = ({ params }: { params: { symbol: string } }) => {
         setProjectLoading(true)
         let listResult = await axios.get(`/api/project/detail?symbol=${params.symbol}`);
         setProjectDetail(listResult.data)
-        
-        setProjectLoading(false)
     } catch (error) {
         setProjectLoading(false)
         setProjectDetail(null)
@@ -138,7 +136,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     }
 
     setProjectInfo(projectInfo)
-    getProfileInfo()
+    await getProfileInfo()
   }
 
   const getProfileInfo = async () => {
@@ -400,7 +398,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
           }
           <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl mb-16">
     
-            <div className="h-[25vh] m-4 mb-0 overflow-hidden">
+            <div className="h-64 m-4 mb-0 overflow-hidden">
                 {projectDetail &&
                     <img
                       src={projectDetail.project.image}
@@ -445,7 +443,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
                       </p>
                     </div>
                 }
-                {profileInfo &&
+                {(profileInfo  && !projectLoading) &&
                   <>
                     {projectInfo.profiles.length == 0 &&
                       <div className="mr-8 mt-4 lg:mt-0">

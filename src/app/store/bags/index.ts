@@ -9,6 +9,7 @@ export type BagsCoin = {
   decimals: number;
   usdcPrice: number;
   mmoshPrice: number;
+  parentKey?: string;
 };
 
 export type BagsCoins = {
@@ -27,6 +28,7 @@ export type BagsNFT = {
   symbol: string;
   balance: number;
   metadata: any;
+  parentKey?: string;
 };
 
 export type BagsNFTAssets = {

@@ -69,7 +69,8 @@ export default function ProjectCreateStep1({
     externalCoin: {
       name: "MMOSH: The Stoked Token",
       address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
-      image: "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+      image:
+        "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
       symbol: "MMOSH",
       decimals: 9,
     },
@@ -78,22 +79,22 @@ export default function ProjectCreateStep1({
   const [isReady, setIsReady] = useState(false);
 
   const [studioType, setStudioType] = useState([
-    {label: "Project", value: "Project"},
-    {label: "EcoSystem", value: "EcoSystem"},
-    {label: "Community", value: "Community"}
-  ])
+    { label: "Project", value: "Project" },
+    { label: "EcoSystem", value: "EcoSystem" },
+    { label: "Community", value: "Community" },
+  ]);
   const [selectedStudioType, setSelectedStudioType] = useState("Project");
 
   const [projectType, setProjectType] = useState([
-    {label: "New Project", value: "New Project"},
-  ])
+    { label: "New Project", value: "New Project" },
+  ]);
   const [selectedProjectType, setSelectedProjectType] = useState("New Project");
 
   const [options, setOptions] = useState([
-    {label: "Project Pass", value: "Project Pass"},
-  ])
+    { label: "Project Pass", value: "Project Pass" },
+  ]);
   const [selectedOption, setSelectedOption] = useState("Project Pass");
-  const [usdPrice, setUsdPrice] = useState(0)
+  const [usdPrice, setUsdPrice] = useState(0);
   const [buttonText, setButtonText] = useState("Mint");
 
   React.useEffect(() => {
@@ -114,20 +115,17 @@ export default function ProjectCreateStep1({
     getMmoshPrice();
   }, []);
 
-  const getMmoshPrice = async() => {
-    let tokenDetail = await axios.get(
-      `/api/project/token-detail?symbol=MMOSH`,
-    );
-    if(tokenDetail.data) {
-      setUsdPrice(tokenDetail.data.pricepercentage || 0.003);
-    }
 
-  }
+  const getMmoshPrice = async () => {
+    const mmoshUsdcPrice = await axios.get(
+      `https://api.jup.ag/price/v2?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
+    );
+    setUsdPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
+  };
 
   React.useEffect(() => {
     setIsReady(validateFields(false));
   }, [fields]);
-
 
   const getTotalPercentage = () => {
     return (
@@ -274,7 +272,6 @@ export default function ProjectCreateStep1({
 
   const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
 
-
   const mintGensisPass = async () => {
     setLoading(true);
     if (validateFields(true)) {
@@ -349,7 +346,7 @@ export default function ProjectCreateStep1({
             },
           ],
         };
-  
+
         const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
         if (projectMetaURI === "") {
           createMessage(
@@ -428,19 +425,18 @@ export default function ProjectCreateStep1({
           twitter: fields.twitter,
           website: fields.website,
           presalesupply: 0,
-          minpresalesupply:0,
+          minpresalesupply: 0,
           presalestartdate: "",
           presaleenddate: "",
           dexlistingdate: "",
         });
         setButtonText("Mint");
         localStorage.removeItem("projectstep1");
-        navigate.push("/projects/" + fields.symbol );
-  
+        navigate.push("/projects/" + fields.symbol);
       } catch (error) {
-        console.log("error ", error)
+        console.log("error ", error);
         setButtonText("Mint");
-        setLoading(false)
+        setLoading(false);
       }
     }
   };
@@ -451,7 +447,6 @@ export default function ProjectCreateStep1({
     }
     return inputValue;
   };
-
 
   return (
     <>
@@ -484,26 +479,26 @@ export default function ProjectCreateStep1({
                 onChange={(e) =>{
                     createMessage("Design Studio currently supports the development of Projects only.", "warn-container");
                     setSelectedStudioType("Project");
-                }}
-                options={studioType}
+                  }}
+                  options={studioType}
                 />
               </div>
               <div>
                 <Select
-                value={selectedProjectType}
-                onChange={(e) =>{
+                  value={selectedProjectType}
+                  onChange={(e) => {
                     setSelectedProjectType(e.target.value);
-                }}
-                options={projectType}
+                  }}
+                  options={projectType}
                 />
               </div>
               <div>
                 <Select
-                value={selectedOption}
-                onChange={(e) =>{
+                  value={selectedOption}
+                  onChange={(e) => {
                     setSelectedOption(e.target.value);
-                }}
-                options={options}
+                  }}
+                  options={options}
                 />
               </div>
             </div>
@@ -641,13 +636,13 @@ export default function ProjectCreateStep1({
             )}
           </div>
           <div className="w-full flex flex-col justify-center items-center mt-5">
-          <div className="flex flex-col justify-center items-center">
-            <p className="text-sm text-white">Price: 25,000 MMOSH</p>
-            <p className="text-tiny text-white">
-              plus a small amount of SOL for gas fees
-            </p>
-          </div>
-          <BalanceBox />
+            <div className="flex flex-col justify-center items-center">
+              <p className="text-sm text-white">Price: 25,000 MMOSH</p>
+              <p className="text-tiny text-white">
+                plus a small amount of SOL for gas fees
+              </p>
+            </div>
+            <BalanceBox />
           </div>
         </div>
       </div>

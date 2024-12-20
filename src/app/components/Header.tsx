@@ -153,7 +153,7 @@ const Header = () => {
     });
 
     const mmoshUsdcPrice = await axios.get(
-      `https://api.jup.ag/price/v2?ids=MMOSH`,
+      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
     );
 
     const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
@@ -272,7 +272,7 @@ const Header = () => {
         continue;
       }
 
-      const nft = {
+      const nft: BagsNFT = {
         name: value.content.metadata.name,
         image: value.content.links.image ?? "",
         symbol: value.content.metadata.symbol,
@@ -299,6 +299,11 @@ const Header = () => {
       if (
         collectionDefinition?.collection_metadata?.symbol === PASS_COLLECTION
       ) {
+        nft.parentKey = value.content.metadata.attributes?.find(
+          (attr) =>
+            attr.trait_type === "Community" || attr.trait_type === "Project",
+        )?.value;
+
         passes.push(nft);
         continue;
       }
@@ -573,9 +578,8 @@ const Header = () => {
             )}
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 ${
-                  isDrawerShown ? "z-[-1]" : ""
-                } cursor-pointer`}
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 ${isDrawerShown ? "z-[-1]" : ""
+                  } cursor-pointer`}
                 onClick={() => {
                   router.push(`/${currentUser?.profile.username}`);
                 }}
@@ -656,14 +660,12 @@ const Header = () => {
 
       {pathname.includes("/communities/") && community !== null && (
         <div
-          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${
-            isDrawerShown ? "z-[-1]" : "z-0"
-          }`}
+          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"
+            }`}
         >
           <div
-            className={`flex flex-col justify-center items-center ${
-              isDrawerShown && "z-[-1]"
-            } py-20`}
+            className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"
+              } py-20`}
           >
             <h2 className="text-center">{community.name}</h2>
 

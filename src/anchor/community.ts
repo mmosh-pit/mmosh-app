@@ -89,140 +89,151 @@ export class Connectivity {
   async mintGenesisPass(
     input: _MintGensisInput,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
-    try {
-      this.reinit();
-      const admin = this.provider.publicKey;
-      if (!admin) throw "Wallet not found";
-      console.log("test0")
-      const mintKp = input.mintKp;
-      console.log("test2")
-      const collection = web3Consts.passCollection;
-      const collectionState = this.__getCollectionStateAccount(collection);
-      // const __profileCollectionInfo = await this.program.account.collectionState.fetch(collectionState)
-      // const __genesisProfile = __profileCollectionInfo.genesisProfile?.toBase58()
-      // if (__genesisProfile && __genesisProfile != web3.SystemProgram.programId.toBase58()) return { Ok: { signature: "", info: { profile: __profileCollectionInfo.genesisProfile?.toBase58() } } }
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        this.reinit();
+        const admin = this.provider.publicKey;
+        if (!admin) throw "Wallet not found";
+        console.log("test0")
+        const mintKp = input.mintKp;
+        console.log("test2")
+        const collection = web3Consts.passCollection;
+        const collectionState = this.__getCollectionStateAccount(collection);
 
-      const profile = mintKp.publicKey;
-      console.log("profile is ", profile.toBase58())
-
-
-      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
-        mintAuthority: admin,
-        mintKeypair: mintKp,
-        mintingInfo: {
-          tokenAmount: 1,
-          tokenReceiver: admin,
-        },
-      });
-
-      const mintTx = new web3.Transaction().add(...mintIxs);
-
-      mintTx.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      mintTx.feePayer = this.provider.publicKey;
-
-      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
-      let feeInsMint;
-      if (feeEstimateMint > 0) {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimateMint,
+        const profile = mintKp.publicKey;
+        console.log("profile is ", profile.toBase58())
+  
+  
+        const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+          mintAuthority: admin,
+          mintKeypair: mintKp,
+          mintingInfo: {
+            tokenAmount: 1,
+            tokenReceiver: admin,
+          },
         });
-      } else {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
+  
+        const mintTx = new web3.Transaction().add(...mintIxs);
+  
+        mintTx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        mintTx.feePayer = this.provider.publicKey;
+  
+        const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+        let feeInsMint;
+        if (feeEstimateMint > 0) {
+          feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimateMint,
+          });
+        } else {
+          feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        mintTx.add(feeInsMint);
+  
+        this.txis = [];
+        const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+          mintKp,
+        ]);
+  
+        await sleep(5000)
+  
+        const profileState = this.__getProfileStateAccount(profile);
+        const profileMetadata = BaseMpl.getMetadataAccount(profile);
+        const profileEdition = BaseMpl.getEditionAccount(profile);
+        const collectionMetadata = BaseMpl.getMetadataAccount(collection);
+        const collectionEdition = BaseMpl.getEditionAccount(collection);
+        // const collectionState = this.__getCollectionStateAccount(collection)
+        const collectionAuthorityRecord =
+          BaseMpl.getCollectionAuthorityRecordAccount(collection, this.mainState);
+        const subCollectionAuthorityRecord =
+          BaseMpl.getCollectionAuthorityRecordAccount(profile, this.mainState);
+        const adminAta = getAssociatedTokenAddressSync(profile, admin);
+  
+        console.log("test3", this.mainState)
+  
+        const parentMainState = web3.PublicKey.findProgramAddressSync(
+          [Seeds.mainState],
+          this.programId,
+        )[0];
+  
+        console.log("test4", parentMainState)
+  
+        let symbol:any = input.symbol;
+        let name:any = input.name;
+        let uri:any = input.uri;
+        let info:any = input.input
+  
+  
+        console.log("test5", info)
+  
+        const ix = await this.program.methods
+          .mintGenesisPass(name,symbol,uri,info)
+          .accounts({
+            user:admin,
+            userProfileAta: adminAta,
+            profile,
+            mainState: this.mainState,
+            parentMainState,
+            collection,
+            mplProgram,
+            profileState,
+            associatedTokenProgram,
+            tokenProgram,
+            systemProgram,
+            profileEdition,
+            profileMetadata,
+            collectionEdition,
+            collectionMetadata,
+            collectionState,
+            sysvarInstructions,
+          })
+          .instruction();
+        this.txis.push(ix);
+  
+        const tx = new web3.Transaction().add(...this.txis);
+        tx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        tx.feePayer = this.provider.publicKey;
+  
+        const feeEstimate = await this.getPriorityFeeEstimate(tx);
+        let feeIns;
+        if (feeEstimate > 0) {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        tx.add(feeIns);
+  
+        this.txis = [];
+        const signature = await this.provider.sendAndConfirm(tx,[mintKp]);
+        return {
+          Ok: { signature, info: { profile: profile.toBase58() } },
+        };
+      } catch (error:any) {
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
       }
-      mintTx.add(feeInsMint);
-
-      this.txis = [];
-      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
-        mintKp,
-      ]);
-
-      await sleep(5000)
-
-      const profileState = this.__getProfileStateAccount(profile);
-      const profileMetadata = BaseMpl.getMetadataAccount(profile);
-      const profileEdition = BaseMpl.getEditionAccount(profile);
-      const collectionMetadata = BaseMpl.getMetadataAccount(collection);
-      const collectionEdition = BaseMpl.getEditionAccount(collection);
-      // const collectionState = this.__getCollectionStateAccount(collection)
-      const collectionAuthorityRecord =
-        BaseMpl.getCollectionAuthorityRecordAccount(collection, this.mainState);
-      const subCollectionAuthorityRecord =
-        BaseMpl.getCollectionAuthorityRecordAccount(profile, this.mainState);
-      const adminAta = getAssociatedTokenAddressSync(profile, admin);
-
-      console.log("test3", this.mainState)
-
-      const parentMainState = web3.PublicKey.findProgramAddressSync(
-        [Seeds.mainState],
-        this.programId,
-      )[0];
-
-      console.log("test4", parentMainState)
-
-      let symbol:any = input.symbol;
-      let name:any = input.name;
-      let uri:any = input.uri;
-      let info:any = input.input
-
-
-      console.log("test5", info)
-
-      const ix = await this.program.methods
-        .mintGenesisPass(name,symbol,uri,info)
-        .accounts({
-          user:admin,
-          userProfileAta: adminAta,
-          profile,
-          mainState: this.mainState,
-          parentMainState,
-          collection,
-          mplProgram,
-          profileState,
-          associatedTokenProgram,
-          tokenProgram,
-          systemProgram,
-          profileEdition,
-          profileMetadata,
-          collectionEdition,
-          collectionMetadata,
-          collectionState,
-          sysvarInstructions,
-        })
-        .instruction();
-      this.txis.push(ix);
-
-      const tx = new web3.Transaction().add(...this.txis);
-      tx.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      tx.feePayer = this.provider.publicKey;
-
-      const feeEstimate = await this.getPriorityFeeEstimate(tx);
-      let feeIns;
-      if (feeEstimate > 0) {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimate,
-        });
-      } else {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
-      }
-      tx.add(feeIns);
-
-      this.txis = [];
-      const signature = await this.provider.sendAndConfirm(tx,[mintKp]);
-      return {
-        Ok: { signature, info: { profile: profile.toBase58() } },
-      };
-    } catch (e) {
-      log({ error: e });
-      return { Err: e };
     }
+    return { Err: "Unreachable" };
   }
   
   reinit() {
@@ -267,6 +278,7 @@ export class Connectivity {
   }
 
   async sendProjectPrice(profile:any, amount:any): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
         const user = this.provider.publicKey;
         let myProfile = new anchor.web3.PublicKey(profile)
@@ -434,69 +446,99 @@ export class Connectivity {
             info: { profile: profile },
           },
         };
-      } catch (error) {
-        log({ error });
-        return { Err: error };
+      } catch (error:any) {
+        
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
       }
+    }
+    return { Err: "Unreachable" };
   }
 
   async setupLookupTable(
     addresses: web3.PublicKey[] = [],
   ): Promise<Result<TxPassType<{ lookupTable: string }>, any>> {
-    try {
-      const slot = await this.connection.getSlot();
-      const [lookupTableInst, lookupTableAddress] =
-        web3.AddressLookupTableProgram.createLookupTable({
-          authority: this.provider.publicKey,
-          payer: this.provider.publicKey,
-          recentSlot: slot - 1,
-        });
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        const slot = await this.connection.getSlot();
+        const [lookupTableInst, lookupTableAddress] =
+          web3.AddressLookupTableProgram.createLookupTable({
+            authority: this.provider.publicKey,
+            payer: this.provider.publicKey,
+            recentSlot: slot - 1,
+          });
 
-      const extendInstruction =
-        web3.AddressLookupTableProgram.extendLookupTable({
-          payer: this.provider.publicKey,
-          authority: this.provider.publicKey,
-          lookupTable: lookupTableAddress,
-          addresses,
-        });
-      const freezeInstruction =
-        web3.AddressLookupTableProgram.freezeLookupTable({
-          lookupTable: lookupTableAddress, // The address of the lookup table to freeze
-          authority: this.provider.publicKey, // The authority (i.e., the account with permission to modify the lookup table)
-        });
+        const extendInstruction =
+          web3.AddressLookupTableProgram.extendLookupTable({
+            payer: this.provider.publicKey,
+            authority: this.provider.publicKey,
+            lookupTable: lookupTableAddress,
+            addresses,
+          });
+        const freezeInstruction =
+          web3.AddressLookupTableProgram.freezeLookupTable({
+            lookupTable: lookupTableAddress, // The address of the lookup table to freeze
+            authority: this.provider.publicKey, // The authority (i.e., the account with permission to modify the lookup table)
+          });
 
-      const transaction = new web3.Transaction().add(
-        lookupTableInst,
-        extendInstruction,
-        freezeInstruction,
-      );
+        const transaction = new web3.Transaction().add(
+          lookupTableInst,
+          extendInstruction,
+          freezeInstruction,
+        );
 
-      transaction.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      transaction.feePayer = this.provider.publicKey;
+        transaction.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        transaction.feePayer = this.provider.publicKey;
 
-      const feeEstimate = await this.getPriorityFeeEstimate(transaction);
-      let feeIns;
-      if (feeEstimate > 0) {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimate,
-        });
-      } else {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
+        const feeEstimate = await this.getPriorityFeeEstimate(transaction);
+        let feeIns;
+        if (feeEstimate > 0) {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        transaction.add(feeIns);
+
+        const signature = await this.provider.sendAndConfirm(transaction as any);
+        return {
+          Ok: { signature, info: { lookupTable: lookupTableAddress.toBase58() } },
+        };
+      } catch (error:any) {
+        
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
       }
-      transaction.add(feeIns);
-
-      const signature = await this.provider.sendAndConfirm(transaction as any);
-      return {
-        Ok: { signature, info: { lookupTable: lookupTableAddress.toBase58() } },
-      };
-    } catch (err) {
-      log("Error: ", err);
-      return { Err: err };
+    
     }
+    return { Err: "Unreachable" };
   }
 
   async mintPass(

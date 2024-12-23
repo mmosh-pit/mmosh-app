@@ -197,16 +197,6 @@ export default function ProjectCreateStep1({
       return false;
     }
 
-    if (fields.desc.length > 160) {
-      if (isMessage) {
-        createMessage(
-          "Description should have less than 160 characters",
-          "danger-container",
-        );
-      }
-      return false;
-    }
-
     if (fields.image.preview.length == 0) {
       if (isMessage) {
         createMessage("Project pass Image is required", "danger-container");
@@ -346,6 +336,27 @@ export default function ProjectCreateStep1({
             },
           ],
         };
+
+        if(fields.website.length > 0) {
+          projectBody.attributes.push({
+            trait_type: "Website",
+            value: fields.website,
+          })
+        }
+
+        if(fields.telegram.length > 0) {
+          projectBody.attributes.push({
+            trait_type: "Telegram",
+            value: fields.telegram,
+          })
+        }
+
+        if(fields.twitter.length > 0) {
+          projectBody.attributes.push({
+            trait_type: "Bluesky",
+            value: fields.twitter,
+          })
+        }
 
         const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
         if (projectMetaURI === "") {
@@ -544,7 +555,7 @@ export default function ProjectCreateStep1({
                   title="Description"
                   required
                   helperText=""
-                  placeholder="Describe your Community within 160 characters."
+                  placeholder="Describe your Community."
                   value={fields.desc}
                   onChange={(e) =>
                     setFields({ ...fields, desc: e.target.value })
@@ -582,7 +593,7 @@ export default function ProjectCreateStep1({
                 <Input
                   type="text"
                   title="Project Website"
-                  required
+                  required={false}
                   helperText=""
                   placeholder="https://www.example.com/"
                   value={fields.website}
@@ -595,7 +606,7 @@ export default function ProjectCreateStep1({
                 <Input
                   type="text"
                   title="Project Telegram"
-                  required
+                  required={false}
                   helperText=""
                   placeholder="https://t.me/example"
                   value={fields.telegram}
@@ -608,7 +619,7 @@ export default function ProjectCreateStep1({
                 <Input
                   type="text"
                   title="Project Bluesky"
-                  required
+                  required={false}
                   helperText=""
                   placeholder="https://bsky.app/profile/example.bsky.social"
                   value={fields.twitter}

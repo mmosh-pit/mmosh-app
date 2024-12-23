@@ -26,6 +26,8 @@ export const web3Consts = {
   rootCollection: new web3.PublicKey(process.env.NEXT_PUBLIC_ROOT_COLLECTION!),
   passCollection: new web3.PublicKey(process.env.NEXT_PUBLIC_PASS_COLLECTION!),
   LAMPORTS_PER_OPOS: 1000_000_000,
+  MAX_RETRIES: 3,
+  INITIAL_BACKOFF: 500,
   Seeds: {
     mainState: utf8.encode("main_state4"),
     profileState: utf8.encode("profile_state1"),

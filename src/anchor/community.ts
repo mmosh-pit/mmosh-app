@@ -89,140 +89,151 @@ export class Connectivity {
   async mintGenesisPass(
     input: _MintGensisInput,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
-    try {
-      this.reinit();
-      const admin = this.provider.publicKey;
-      if (!admin) throw "Wallet not found";
-      console.log("test0")
-      const mintKp = input.mintKp;
-      console.log("test2")
-      const collection = web3Consts.passCollection;
-      const collectionState = this.__getCollectionStateAccount(collection);
-      // const __profileCollectionInfo = await this.program.account.collectionState.fetch(collectionState)
-      // const __genesisProfile = __profileCollectionInfo.genesisProfile?.toBase58()
-      // if (__genesisProfile && __genesisProfile != web3.SystemProgram.programId.toBase58()) return { Ok: { signature: "", info: { profile: __profileCollectionInfo.genesisProfile?.toBase58() } } }
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        this.reinit();
+        const admin = this.provider.publicKey;
+        if (!admin) throw "Wallet not found";
+        console.log("test0")
+        const mintKp = input.mintKp;
+        console.log("test2")
+        const collection = web3Consts.passCollection;
+        const collectionState = this.__getCollectionStateAccount(collection);
 
-      const profile = mintKp.publicKey;
-      console.log("profile is ", profile.toBase58())
-
-
-      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
-        mintAuthority: admin,
-        mintKeypair: mintKp,
-        mintingInfo: {
-          tokenAmount: 1,
-          tokenReceiver: admin,
-        },
-      });
-
-      const mintTx = new web3.Transaction().add(...mintIxs);
-
-      mintTx.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      mintTx.feePayer = this.provider.publicKey;
-
-      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
-      let feeInsMint;
-      if (feeEstimateMint > 0) {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimateMint,
+        const profile = mintKp.publicKey;
+        console.log("profile is ", profile.toBase58())
+  
+  
+        const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+          mintAuthority: admin,
+          mintKeypair: mintKp,
+          mintingInfo: {
+            tokenAmount: 1,
+            tokenReceiver: admin,
+          },
         });
-      } else {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
+  
+        const mintTx = new web3.Transaction().add(...mintIxs);
+  
+        mintTx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        mintTx.feePayer = this.provider.publicKey;
+  
+        const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+        let feeInsMint;
+        if (feeEstimateMint > 0) {
+          feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimateMint,
+          });
+        } else {
+          feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        mintTx.add(feeInsMint);
+  
+        this.txis = [];
+        const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+          mintKp,
+        ]);
+  
+        await sleep(5000)
+  
+        const profileState = this.__getProfileStateAccount(profile);
+        const profileMetadata = BaseMpl.getMetadataAccount(profile);
+        const profileEdition = BaseMpl.getEditionAccount(profile);
+        const collectionMetadata = BaseMpl.getMetadataAccount(collection);
+        const collectionEdition = BaseMpl.getEditionAccount(collection);
+        // const collectionState = this.__getCollectionStateAccount(collection)
+        const collectionAuthorityRecord =
+          BaseMpl.getCollectionAuthorityRecordAccount(collection, this.mainState);
+        const subCollectionAuthorityRecord =
+          BaseMpl.getCollectionAuthorityRecordAccount(profile, this.mainState);
+        const adminAta = getAssociatedTokenAddressSync(profile, admin);
+  
+        console.log("test3", this.mainState)
+  
+        const parentMainState = web3.PublicKey.findProgramAddressSync(
+          [Seeds.mainState],
+          this.programId,
+        )[0];
+  
+        console.log("test4", parentMainState)
+  
+        let symbol:any = input.symbol;
+        let name:any = input.name;
+        let uri:any = input.uri;
+        let info:any = input.input
+  
+  
+        console.log("test5", info)
+  
+        const ix = await this.program.methods
+          .mintGenesisPass(name,symbol,uri,info)
+          .accounts({
+            user:admin,
+            userProfileAta: adminAta,
+            profile,
+            mainState: this.mainState,
+            parentMainState,
+            collection,
+            mplProgram,
+            profileState,
+            associatedTokenProgram,
+            tokenProgram,
+            systemProgram,
+            profileEdition,
+            profileMetadata,
+            collectionEdition,
+            collectionMetadata,
+            collectionState,
+            sysvarInstructions,
+          })
+          .instruction();
+        this.txis.push(ix);
+  
+        const tx = new web3.Transaction().add(...this.txis);
+        tx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        tx.feePayer = this.provider.publicKey;
+  
+        const feeEstimate = await this.getPriorityFeeEstimate(tx);
+        let feeIns;
+        if (feeEstimate > 0) {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        tx.add(feeIns);
+  
+        this.txis = [];
+        const signature = await this.provider.sendAndConfirm(tx,[mintKp]);
+        return {
+          Ok: { signature, info: { profile: profile.toBase58() } },
+        };
+      } catch (error:any) {
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
       }
-      mintTx.add(feeInsMint);
-
-      this.txis = [];
-      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
-        mintKp,
-      ]);
-
-      await sleep(5000)
-
-      const profileState = this.__getProfileStateAccount(profile);
-      const profileMetadata = BaseMpl.getMetadataAccount(profile);
-      const profileEdition = BaseMpl.getEditionAccount(profile);
-      const collectionMetadata = BaseMpl.getMetadataAccount(collection);
-      const collectionEdition = BaseMpl.getEditionAccount(collection);
-      // const collectionState = this.__getCollectionStateAccount(collection)
-      const collectionAuthorityRecord =
-        BaseMpl.getCollectionAuthorityRecordAccount(collection, this.mainState);
-      const subCollectionAuthorityRecord =
-        BaseMpl.getCollectionAuthorityRecordAccount(profile, this.mainState);
-      const adminAta = getAssociatedTokenAddressSync(profile, admin);
-
-      console.log("test3", this.mainState)
-
-      const parentMainState = web3.PublicKey.findProgramAddressSync(
-        [Seeds.mainState],
-        this.programId,
-      )[0];
-
-      console.log("test4", parentMainState)
-
-      let symbol:any = input.symbol;
-      let name:any = input.name;
-      let uri:any = input.uri;
-      let info:any = input.input
-
-
-      console.log("test5", info)
-
-      const ix = await this.program.methods
-        .mintGenesisPass(name,symbol,uri,info)
-        .accounts({
-          user:admin,
-          userProfileAta: adminAta,
-          profile,
-          mainState: this.mainState,
-          parentMainState,
-          collection,
-          mplProgram,
-          profileState,
-          associatedTokenProgram,
-          tokenProgram,
-          systemProgram,
-          profileEdition,
-          profileMetadata,
-          collectionEdition,
-          collectionMetadata,
-          collectionState,
-          sysvarInstructions,
-        })
-        .instruction();
-      this.txis.push(ix);
-
-      const tx = new web3.Transaction().add(...this.txis);
-      tx.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      tx.feePayer = this.provider.publicKey;
-
-      const feeEstimate = await this.getPriorityFeeEstimate(tx);
-      let feeIns;
-      if (feeEstimate > 0) {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimate,
-        });
-      } else {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
-      }
-      tx.add(feeIns);
-
-      this.txis = [];
-      const signature = await this.provider.sendAndConfirm(tx,[mintKp]);
-      return {
-        Ok: { signature, info: { profile: profile.toBase58() } },
-      };
-    } catch (e) {
-      log({ error: e });
-      return { Err: e };
     }
+    return { Err: "Unreachable" };
   }
   
   reinit() {
@@ -267,6 +278,7 @@ export class Connectivity {
   }
 
   async sendProjectPrice(profile:any, amount:any): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
         const user = this.provider.publicKey;
         let myProfile = new anchor.web3.PublicKey(profile)
@@ -434,658 +446,718 @@ export class Connectivity {
             info: { profile: profile },
           },
         };
-      } catch (error) {
-        log({ error });
-        return { Err: error };
+      } catch (error:any) {
+        
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
       }
+    }
+    return { Err: "Unreachable" };
   }
 
   async setupLookupTable(
     addresses: web3.PublicKey[] = [],
   ): Promise<Result<TxPassType<{ lookupTable: string }>, any>> {
-    try {
-      const slot = await this.connection.getSlot();
-      const [lookupTableInst, lookupTableAddress] =
-        web3.AddressLookupTableProgram.createLookupTable({
-          authority: this.provider.publicKey,
-          payer: this.provider.publicKey,
-          recentSlot: slot - 1,
-        });
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        const slot = await this.connection.getSlot();
+        const [lookupTableInst, lookupTableAddress] =
+          web3.AddressLookupTableProgram.createLookupTable({
+            authority: this.provider.publicKey,
+            payer: this.provider.publicKey,
+            recentSlot: slot - 1,
+          });
 
-      const extendInstruction =
-        web3.AddressLookupTableProgram.extendLookupTable({
-          payer: this.provider.publicKey,
-          authority: this.provider.publicKey,
-          lookupTable: lookupTableAddress,
-          addresses,
-        });
-      const freezeInstruction =
-        web3.AddressLookupTableProgram.freezeLookupTable({
-          lookupTable: lookupTableAddress, // The address of the lookup table to freeze
-          authority: this.provider.publicKey, // The authority (i.e., the account with permission to modify the lookup table)
-        });
+        const extendInstruction =
+          web3.AddressLookupTableProgram.extendLookupTable({
+            payer: this.provider.publicKey,
+            authority: this.provider.publicKey,
+            lookupTable: lookupTableAddress,
+            addresses,
+          });
+        const freezeInstruction =
+          web3.AddressLookupTableProgram.freezeLookupTable({
+            lookupTable: lookupTableAddress, // The address of the lookup table to freeze
+            authority: this.provider.publicKey, // The authority (i.e., the account with permission to modify the lookup table)
+          });
 
-      const transaction = new web3.Transaction().add(
-        lookupTableInst,
-        extendInstruction,
-        freezeInstruction,
-      );
+        const transaction = new web3.Transaction().add(
+          lookupTableInst,
+          extendInstruction,
+          freezeInstruction,
+        );
 
-      transaction.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      transaction.feePayer = this.provider.publicKey;
+        transaction.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        transaction.feePayer = this.provider.publicKey;
 
-      const feeEstimate = await this.getPriorityFeeEstimate(transaction);
-      let feeIns;
-      if (feeEstimate > 0) {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimate,
-        });
-      } else {
-        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
+        const feeEstimate = await this.getPriorityFeeEstimate(transaction);
+        let feeIns;
+        if (feeEstimate > 0) {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        transaction.add(feeIns);
+
+        const signature = await this.provider.sendAndConfirm(transaction as any);
+        return {
+          Ok: { signature, info: { lookupTable: lookupTableAddress.toBase58() } },
+        };
+      } catch (error:any) {
+        
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
       }
-      transaction.add(feeIns);
-
-      const signature = await this.provider.sendAndConfirm(transaction as any);
-      return {
-        Ok: { signature, info: { lookupTable: lookupTableAddress.toBase58() } },
-      };
-    } catch (err) {
-      log("Error: ", err);
-      return { Err: err };
+    
     }
+    return { Err: "Unreachable" };
   }
 
   async mintPass(
     input: _MintProfileByAtInput,
     userProfile: string
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
-    try {
-      this.reinit();
-      this.baseSpl.__reinit();
-      const user = this.provider.publicKey;
-      if (!user) throw "Wallet not found";
-      let { name, symbol, uriHash, activationToken, genesisProfile, commonLut } = input;
-      if (typeof activationToken == "string")
-        activationToken = new web3.PublicKey(activationToken);
-      if (typeof genesisProfile == "string")
-        genesisProfile = new web3.PublicKey(activationToken);
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        this.reinit();
+        this.baseSpl.__reinit();
+        const user = this.provider.publicKey;
+        if (!user) throw "Wallet not found";
+        let { name, symbol, uriHash, activationToken, genesisProfile, commonLut } = input;
+        if (typeof activationToken == "string")
+          activationToken = new web3.PublicKey(activationToken);
+        if (typeof genesisProfile == "string")
+          genesisProfile = new web3.PublicKey(activationToken);
 
-      console.log("mint pass 1")
-      symbol = symbol ?? "";
-      uriHash = uriHash ?? "";
-      console.log("mint pass 2")
-      const activationTokenState =
-        this.__getActivationTokenStateAccount(activationToken);
-      const activationTokenStateInfo =
-        await this.program.account.activationTokenState.fetch(
-          activationTokenState,
-        );
-        console.log("mint pass 3")
-      const parentProfile = activationTokenStateInfo.parentProfile;
-      const parentProfileStateInfo =
-        await this.program.account.profileState.fetch(
-          this.__getProfileStateAccount(parentProfile),
-        );
-        console.log("mint pass 4")
-      const lut = parentProfileStateInfo.lut;
-      const parentProfileNftInfo = await this.metaplex
-        .nfts()
-        .findByMint({ mintAddress: parentProfile, loadJsonMetadata: false });
-        console.log("mint pass 4")
-      const collection = parentProfileNftInfo?.collection?.address;
-      if (!collection) return { Err: "Collection info not found" };
-      const collectionMetadata = BaseMpl.getMetadataAccount(collection);
-      const collectionEdition = BaseMpl.getEditionAccount(collection);
-      const mintKp = web3.Keypair.generate();
-      const profile = mintKp.publicKey;
+        console.log("mint pass 1")
+        symbol = symbol ?? "";
+        uriHash = uriHash ?? "";
+        console.log("mint pass 2")
+        const activationTokenState =
+          this.__getActivationTokenStateAccount(activationToken);
+        const activationTokenStateInfo =
+          await this.program.account.activationTokenState.fetch(
+            activationTokenState,
+          );
+          console.log("mint pass 3")
+        const parentProfile = activationTokenStateInfo.parentProfile;
+        const parentProfileStateInfo =
+          await this.program.account.profileState.fetch(
+            this.__getProfileStateAccount(parentProfile),
+          );
+          console.log("mint pass 4")
+        const lut = parentProfileStateInfo.lut;
+        const parentProfileNftInfo = await this.metaplex
+          .nfts()
+          .findByMint({ mintAddress: parentProfile, loadJsonMetadata: false });
+          console.log("mint pass 4")
+        const collection = parentProfileNftInfo?.collection?.address;
+        if (!collection) return { Err: "Collection info not found" };
+        const collectionMetadata = BaseMpl.getMetadataAccount(collection);
+        const collectionEdition = BaseMpl.getEditionAccount(collection);
+        const mintKp = web3.Keypair.generate();
+        const profile = mintKp.publicKey;
 
 
-      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
-        mintAuthority: user,
-        mintKeypair: mintKp,
-        mintingInfo: {
-          tokenAmount: 1,
-          tokenReceiver: user,
-        },
-      });
-
-      const mintTx = new web3.Transaction().add(...mintIxs);
-
-      mintTx.recentBlockhash = (
-        await this.connection.getLatestBlockhash()
-      ).blockhash;
-      mintTx.feePayer = this.provider.publicKey;
-
-      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
-      let feeInsMint;
-      if (feeEstimateMint > 0) {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: feeEstimateMint,
+        const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+          mintAuthority: user,
+          mintKeypair: mintKp,
+          mintingInfo: {
+            tokenAmount: 1,
+            tokenReceiver: user,
+          },
         });
-      } else {
-        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1_400_000,
-        });
-      }
-      mintTx.add(feeInsMint);
 
-      this.txis = [];
-      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
-        mintKp,
-      ]);
+        const mintTx = new web3.Transaction().add(...mintIxs);
 
-      await sleep(5000)
+        mintTx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        mintTx.feePayer = this.provider.publicKey;
 
-      const userProfileAta = getAssociatedTokenAddressSync(profile, user);
-      const { ata: userActivationTokenAta } =
-        await this.baseSpl.__getOrCreateTokenAccountInstruction(
-          { mint: activationToken, owner: user },
-          this.ixCallBack,
+        const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+        let feeInsMint;
+        if (feeEstimateMint > 0) {
+          feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimateMint,
+          });
+        } else {
+          feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        mintTx.add(feeInsMint);
+
+        this.txis = [];
+        const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+          mintKp,
+        ]);
+
+        await sleep(5000)
+
+        const userProfileAta = getAssociatedTokenAddressSync(profile, user);
+        const { ata: userActivationTokenAta } =
+          await this.baseSpl.__getOrCreateTokenAccountInstruction(
+            { mint: activationToken, owner: user },
+            this.ixCallBack,
+          );
+          console.log("mint pass 6")
+        const profileMetadata = BaseMpl.getMetadataAccount(profile);
+        const profileEdition = BaseMpl.getEditionAccount(profile);
+        const profileState = this.__getProfileStateAccount(profile);
+        const parentProfileState = this.__getProfileStateAccount(parentProfile);
+        const mainStateInfo = await this.program.account.mainState.fetch(
+          this.mainState,
         );
-        console.log("mint pass 6")
-      const profileMetadata = BaseMpl.getMetadataAccount(profile);
-      const profileEdition = BaseMpl.getEditionAccount(profile);
-      const profileState = this.__getProfileStateAccount(profile);
-      const parentProfileState = this.__getProfileStateAccount(parentProfile);
-      const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
-      );
-      console.log("mint pass 7")
-      const {
-        currentGenesisProfileHolder,
-        currentGrandParentProfileHolder,
-        currentParentProfileHolder,
-        currentGenesisProfileHolderAta,
-        parentProfileHolderOposAta,
-        grandParentProfileHolderOposAta,
-      } = await this.__getProfileHoldersInfo(
-        parentProfileStateInfo.lineage,
-        parentProfile,
-        genesisProfile,
-        mainStateInfo.oposToken
-      );
-
-      console.log("mint pass 8")
-      const userOposAta = getAssociatedTokenAddressSync(mainStateInfo.oposToken, user);
-      const parentMainState = web3.PublicKey.findProgramAddressSync(
-        [Seeds.mainState],
-        this.programId,
-      )[0];
-      console.log("mint pass 9")
-      const ix = await this.program.methods
-        .mintPassByAt(name, symbol, uriHash)
-        .accounts({
-          profile, // 1
-          project: this.projectId,
-          user, // 2
-          oposToken: mainStateInfo.oposToken, // 3
-          userProfileAta, // 5
-          mainState: this.mainState, // 6
-          parentMainState,
-          collection, // 7
-          mplProgram, // 8
-          profileState, // 9
-          tokenProgram, // 10
-          systemProgram, // 11
-          profileEdition, // 12
-          activationToken, // 13
-          profileMetadata, // 14
-          collectionEdition, // 15
-          collectionMetadata, // 16
-          parentProfileState, // 17
-          sysvarInstructions, // 18
-          userActivationTokenAta, // 19
-          associatedTokenProgram, // 20
-          parentProfile
-        })
-        .instruction();
-      this.txis.push(ix);
-
-      let cost = mainStateInfo.profileMintingCost.toNumber()
-
-      let profileHolderInfo;
-      if(cost > 0) {
-        console.log("mint pass 71", userProfile)
-        console.log("mint pass 711", mainStateInfo.oposToken.toBase58())
-        let myProfile = new anchor.web3.PublicKey(userProfile)
-        const myProfileState = this.__getProfileStateAccount(myProfile);
-        console.log("mint pass 72")
-        let myProfileStateInfo =
-          await this.program.account.profileState.fetch(myProfileState);
-        console.log("mint pass 73")
-        profileHolderInfo = await this.__getProfileHoldersInfo(
-          myProfileStateInfo.lineage,
-          myProfile,
-          web3Consts.genesisProfile,
+        console.log("mint pass 7")
+        const {
+          currentGenesisProfileHolder,
+          currentGrandParentProfileHolder,
+          currentParentProfileHolder,
+          currentGenesisProfileHolderAta,
+          parentProfileHolderOposAta,
+          grandParentProfileHolderOposAta,
+        } = await this.__getProfileHoldersInfo(
+          parentProfileStateInfo.lineage,
+          parentProfile,
+          genesisProfile,
           mainStateInfo.oposToken
         );
-        let holdersfullInfo = [];
 
-        holdersfullInfo.push({
-           receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-           vallue: cost * ((mainStateInfo.mintingCostDistribution.genesis / 100) / 100)
-        })
-  
-        holdersfullInfo.push({
-          receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-          vallue: cost * ((mainStateInfo.mintingCostDistribution.parent / 100) / 100)
-        })
-  
-        holdersfullInfo.push({
-          receiver: currentGenesisProfileHolder.toBase58(),
-          vallue: cost * ((mainStateInfo.mintingCostDistribution.grandParent / 100) / 100)
-       })
-  
-       holdersfullInfo.push({
-        receiver: currentParentProfileHolder.toBase58(),
-        vallue: cost * ((mainStateInfo.mintingCostDistribution.greatGrandParent / 100) / 100)
-       })
-  
-       holdersfullInfo.push({
-        receiver: currentGrandParentProfileHolder.toBase58(),
-        vallue: cost * ((mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100) / 100)
-       })
-  
-       var holdermap:any = [];
-       holdersfullInfo.reduce(function(res:any, value:any) {
-         if (!res[value.receiver]) {
-           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
-           holdermap.push(res[value.receiver])
-         }
-         res[value.receiver].vallue += value.vallue;
-         return res;
-       }, {});
-  
-       for (let index = 0; index < holdermap.length; index++) {
-           const element = holdermap[index];
-           let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
-           for (let index = 0; index < createShare.length; index++) {
-               this.txis.push(createShare[index]);
-           }
-       }
-      }
-    
+        console.log("mint pass 8")
+        const userOposAta = getAssociatedTokenAddressSync(mainStateInfo.oposToken, user);
+        const parentMainState = web3.PublicKey.findProgramAddressSync(
+          [Seeds.mainState],
+          this.programId,
+        )[0];
+        console.log("mint pass 9")
+        const ix = await this.program.methods
+          .mintPassByAt(name, symbol, uriHash)
+          .accounts({
+            profile, // 1
+            project: this.projectId,
+            user, // 2
+            oposToken: mainStateInfo.oposToken, // 3
+            userProfileAta, // 5
+            mainState: this.mainState, // 6
+            parentMainState,
+            collection, // 7
+            mplProgram, // 8
+            profileState, // 9
+            tokenProgram, // 10
+            systemProgram, // 11
+            profileEdition, // 12
+            activationToken, // 13
+            profileMetadata, // 14
+            collectionEdition, // 15
+            collectionMetadata, // 16
+            parentProfileState, // 17
+            sysvarInstructions, // 18
+            userActivationTokenAta, // 19
+            associatedTokenProgram, // 20
+            parentProfile
+          })
+          .instruction();
+        this.txis.push(ix);
 
-     
-      console.log("mint pass 10", commonLut)
-      const commonLutInfo = await (
-        await this.connection.getAddressLookupTable(new anchor.web3.PublicKey(commonLut))
-      ).value;
-      console.log("mint pass 11")
-      const lutsInfo:any = [commonLutInfo];
+        let cost = mainStateInfo.profileMintingCost.toNumber()
 
-      const freezeInstructions = await this.calculatePriorityFee(
-        ix,
-        lutsInfo,
-        mintKp,
-      );
+        let profileHolderInfo;
+        if(cost > 0) {
+          console.log("mint pass 71", userProfile)
+          console.log("mint pass 711", mainStateInfo.oposToken.toBase58())
+          let myProfile = new anchor.web3.PublicKey(userProfile)
+          const myProfileState = this.__getProfileStateAccount(myProfile);
+          console.log("mint pass 72")
+          let myProfileStateInfo =
+            await this.program.account.profileState.fetch(myProfileState);
+          console.log("mint pass 73")
+          profileHolderInfo = await this.__getProfileHoldersInfo(
+            myProfileStateInfo.lineage,
+            myProfile,
+            web3Consts.genesisProfile,
+            mainStateInfo.oposToken
+          );
+          let holdersfullInfo = [];
 
-      console.log("mint pass 12")
-      for (let index = 0; index < freezeInstructions.length; index++) {
-        const element = freezeInstructions[index];
-        this.txis.push(element);
-      }
-
-      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
-      const message = new web3.TransactionMessage({
-        payerKey: this.provider.publicKey,
-        recentBlockhash: blockhash,
-        instructions: [...this.txis],
-      }).compileToV0Message(lutsInfo);
-      console.log("mint pass 13")
-      const tx = new web3.VersionedTransaction(message);
-      tx.sign([mintKp]);
-      this.txis = [];
-      console.log("mint pass 14")
-      // const signedTx = await this.provider.wallet.signTransaction(tx as any);
-      // const txLen = signedTx.serialize().length;
-      // log({ txLen, luts: lutsInfo.length });
-
-      const signature = await this.provider.sendAndConfirm(tx as any);
-
-      if(cost > 0 && profileHolderInfo) {
-        await this.storeRoyalty(user.toBase58(), [
-          {
+          holdersfullInfo.push({
             receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-            amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.genesis / 10000),
-          },
-          {
+            vallue: cost * ((mainStateInfo.mintingCostDistribution.genesis / 100) / 100)
+          })
+    
+          holdersfullInfo.push({
             receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-            amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.parent / 10000),
-          },
-          {
+            vallue: cost * ((mainStateInfo.mintingCostDistribution.parent / 100) / 100)
+          })
+    
+          holdersfullInfo.push({
             receiver: currentGenesisProfileHolder.toBase58(),
-            amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.grandParent / 10000),
-          },
-          {
-            receiver: currentParentProfileHolder.toBase58(),
-            amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
-          },
-          {
-            receiver: currentGrandParentProfileHolder.toBase58(),
-            amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
-          },
-        ],mainStateInfo.oposToken.toBase58());
-  
-      }
+            vallue: cost * ((mainStateInfo.mintingCostDistribution.grandParent / 100) / 100)
+        })
+    
+        holdersfullInfo.push({
+          receiver: currentParentProfileHolder.toBase58(),
+          vallue: cost * ((mainStateInfo.mintingCostDistribution.greatGrandParent / 100) / 100)
+        })
+    
+        holdersfullInfo.push({
+          receiver: currentGrandParentProfileHolder.toBase58(),
+          vallue: cost * ((mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100) / 100)
+        })
+    
+        var holdermap:any = [];
+        holdersfullInfo.reduce(function(res:any, value:any) {
+          if (!res[value.receiver]) {
+            res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+            holdermap.push(res[value.receiver])
+          }
+          res[value.receiver].vallue += value.vallue;
+          return res;
+        }, {});
+    
+        for (let index = 0; index < holdermap.length; index++) {
+            const element = holdermap[index];
+            let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
+            for (let index = 0; index < createShare.length; index++) {
+                this.txis.push(createShare[index]);
+            }
+        }
+        }
+      
 
-      console.log("mint pass 15")
-      return {
-        Ok: {
-          signature,
-          info: { profile: profile.toBase58() },
-        },
-      };
-    } catch (error) {
-      log({ error });
-      return { Err: error };
+      
+        console.log("mint pass 10", commonLut)
+        const commonLutInfo = await (
+          await this.connection.getAddressLookupTable(new anchor.web3.PublicKey(commonLut))
+        ).value;
+        console.log("mint pass 11")
+        const lutsInfo:any = [commonLutInfo];
+
+        const freezeInstructions = await this.calculatePriorityFee(
+          ix,
+          lutsInfo,
+          mintKp,
+        );
+
+        console.log("mint pass 12")
+        for (let index = 0; index < freezeInstructions.length; index++) {
+          const element = freezeInstructions[index];
+          this.txis.push(element);
+        }
+
+        const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+        const message = new web3.TransactionMessage({
+          payerKey: this.provider.publicKey,
+          recentBlockhash: blockhash,
+          instructions: [...this.txis],
+        }).compileToV0Message(lutsInfo);
+        console.log("mint pass 13")
+        const tx = new web3.VersionedTransaction(message);
+        tx.sign([mintKp]);
+        this.txis = [];
+        console.log("mint pass 14")
+        // const signedTx = await this.provider.wallet.signTransaction(tx as any);
+        // const txLen = signedTx.serialize().length;
+        // log({ txLen, luts: lutsInfo.length });
+
+        const signature = await this.provider.sendAndConfirm(tx as any);
+
+        if(cost > 0 && profileHolderInfo) {
+          await this.storeRoyalty(user.toBase58(), [
+            {
+              receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+              amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.genesis / 10000),
+            },
+            {
+              receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+              amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.parent / 10000),
+            },
+            {
+              receiver: currentGenesisProfileHolder.toBase58(),
+              amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.grandParent / 10000),
+            },
+            {
+              receiver: currentParentProfileHolder.toBase58(),
+              amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
+            },
+            {
+              receiver: currentGrandParentProfileHolder.toBase58(),
+              amount: (mainStateInfo.profileMintingCost.toNumber() / web3Consts.LAMPORTS_PER_OPOS) * (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
+            },
+          ],mainStateInfo.oposToken.toBase58());
+    
+        }
+
+        console.log("mint pass 15")
+        return {
+          Ok: {
+            signature,
+            info: { profile: profile.toBase58() },
+          },
+        };
+      } catch (error:any) {
+          
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
+      }
     }
+    return { Err: "Unreachable" };
   }
 
   async mintGuestPass(
     input: _MintGuestPass,
     userProfile: string,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
-    try {
-      this.reinit();
-      this.baseSpl.__reinit();
-      const user = this.provider.publicKey;
-      if (!user) throw "Wallet not found";
-      let {
-        name,
-        symbol,
-        uriHash,
-        genesisProfile,
-        commonLut,
-      } = input;
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        this.reinit();
+        this.baseSpl.__reinit();
+        const user = this.provider.publicKey;
+        if (!user) throw "Wallet not found";
+        let {
+          name,
+          symbol,
+          uriHash,
+          genesisProfile,
+          commonLut,
+        } = input;
 
-      if (typeof genesisProfile == "string")
-        genesisProfile = new web3.PublicKey(genesisProfile);
+        if (typeof genesisProfile == "string")
+          genesisProfile = new web3.PublicKey(genesisProfile);
 
-      console.log("mint pass 1");
-      symbol = symbol ?? "";
-      uriHash = uriHash ?? "";
-      console.log("mint pass 2");
+        console.log("mint pass 1");
+        symbol = symbol ?? "";
+        uriHash = uriHash ?? "";
+        console.log("mint pass 2");
 
 
-      console.log("mint pass 3");
-      const parentProfileStateInfo =
-        await this.program.account.profileState.fetch(
-          this.__getProfileStateAccount(genesisProfile),
+        console.log("mint pass 3");
+        const parentProfileStateInfo =
+          await this.program.account.profileState.fetch(
+            this.__getProfileStateAccount(genesisProfile),
+          );
+        console.log("mint pass 4");
+        const lut = parentProfileStateInfo.lut;
+        const parentProfileNftInfo = await this.metaplex
+          .nfts()
+          .findByMint({ mintAddress: genesisProfile, loadJsonMetadata: false });
+        console.log("mint pass 4");
+        const collection = parentProfileNftInfo?.collection?.address;
+        if (!collection) return { Err: "Collection info not found" };
+        const collectionMetadata = BaseMpl.getMetadataAccount(collection);
+        const collectionEdition = BaseMpl.getEditionAccount(collection);
+        const mintKp = web3.Keypair.generate();
+        const profile = mintKp.publicKey;
+
+
+        const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+          mintAuthority: user,
+          mintKeypair: mintKp,
+          mintingInfo: {
+            tokenAmount: 1,
+            tokenReceiver: user,
+          },
+        });
+
+        const mintTx = new web3.Transaction().add(...mintIxs);
+
+        this.txis = [];
+
+        for (let index = 0; index < mintIxs.length; index++) {
+          const element = mintIxs[index];
+          this.txis.push(element)
+        }
+
+        const userProfileAta = getAssociatedTokenAddressSync(profile, user);
+
+    
+        const profileMetadata = BaseMpl.getMetadataAccount(profile);
+        const profileEdition = BaseMpl.getEditionAccount(profile);
+        const profileState = this.__getProfileStateAccount(profile);
+        const parentProfileState = this.__getProfileStateAccount(genesisProfile);
+        const mainStateInfo = await this.program.account.mainState.fetch(
+          this.mainState,
         );
-      console.log("mint pass 4");
-      const lut = parentProfileStateInfo.lut;
-      const parentProfileNftInfo = await this.metaplex
-        .nfts()
-        .findByMint({ mintAddress: genesisProfile, loadJsonMetadata: false });
-      console.log("mint pass 4");
-      const collection = parentProfileNftInfo?.collection?.address;
-      if (!collection) return { Err: "Collection info not found" };
-      const collectionMetadata = BaseMpl.getMetadataAccount(collection);
-      const collectionEdition = BaseMpl.getEditionAccount(collection);
-      const mintKp = web3.Keypair.generate();
-      const profile = mintKp.publicKey;
-
-
-      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
-        mintAuthority: user,
-        mintKeypair: mintKp,
-        mintingInfo: {
-          tokenAmount: 1,
-          tokenReceiver: user,
-        },
-      });
-
-      const mintTx = new web3.Transaction().add(...mintIxs);
-
-      this.txis = [];
-
-      for (let index = 0; index < mintIxs.length; index++) {
-        const element = mintIxs[index];
-        this.txis.push(element)
-      }
-
-      const userProfileAta = getAssociatedTokenAddressSync(profile, user);
-
-   
-      const profileMetadata = BaseMpl.getMetadataAccount(profile);
-      const profileEdition = BaseMpl.getEditionAccount(profile);
-      const profileState = this.__getProfileStateAccount(profile);
-      const parentProfileState = this.__getProfileStateAccount(genesisProfile);
-      const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
-      );
-      console.log("mint pass 7");
-      const {
-        currentGenesisProfileHolder,
-        currentGrandParentProfileHolder,
-        currentParentProfileHolder,
-      } = await this.__getProfileHoldersInfo(
-        parentProfileStateInfo.lineage,
-        genesisProfile,
-        genesisProfile,
-        mainStateInfo.oposToken,
-      );
-
-
-      console.log("mint pass 74");
-
-      console.log("mint pass 8");
-      const userOposAta = getAssociatedTokenAddressSync(
-        mainStateInfo.oposToken,
-        user,
-      );
-      const parentMainState = web3.PublicKey.findProgramAddressSync(
-        [Seeds.mainState],
-        this.programId,
-      )[0];
-      console.log("mint pass 9");
-      const ix = await this.program.methods
-        .mintGuestPass(name, symbol, uriHash)
-        .accounts({
-          profile, // 1
-          project: this.projectId,
-          user, // 2
-          userProfileAta, // 5
-          mainState: this.mainState, // 6
-          parentMainState,
-          collection, // 7
-          mplProgram, // 8
-          profileState, // 9
-          tokenProgram, // 10
-          systemProgram, // 11
-          profileEdition, // 12
-          profileMetadata, // 14
-          collectionEdition, // 15
-          collectionMetadata, // 16
-          parentProfileState, // 17
-          sysvarInstructions, // 18
-          associatedTokenProgram, // 20
-          parentProfile: genesisProfile,
-        })
-        .instruction();
-      this.txis.push(ix);
-
-      let cost = mainStateInfo.profileMintingCost.toNumber();
-
-      console.log("mainStateInfo.oposToken ", mainStateInfo.oposToken.toBase58())
-      console.log("mainStateInfo.profileMintingCost ", cost)
-      let profileHolderInfo;
-      if(cost > 0) {
-        console.log("mint pass 71", userProfile);
-        console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
-        let myProfile = new anchor.web3.PublicKey(userProfile);
-        const myProfileState = this.__getProfileStateAccount(myProfile);
-        console.log("mint pass 72");
-        let myProfileStateInfo =
-          await this.program.account.profileState.fetch(myProfileState);
-        console.log("mint pass 73");
-        profileHolderInfo = await this.__getProfileHoldersInfo(
-          myProfileStateInfo.lineage,
-          myProfile,
-          web3Consts.genesisProfile,
+        console.log("mint pass 7");
+        const {
+          currentGenesisProfileHolder,
+          currentGrandParentProfileHolder,
+          currentParentProfileHolder,
+        } = await this.__getProfileHoldersInfo(
+          parentProfileStateInfo.lineage,
+          genesisProfile,
+          genesisProfile,
           mainStateInfo.oposToken,
         );
 
-        let holdersfullInfo = [];
 
-        holdersfullInfo.push({
-          receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-          vallue:
-            cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
-        });
-  
-        holdersfullInfo.push({
-          receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-          vallue:
-            cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
-        });
-  
-        holdersfullInfo.push({
-          receiver: currentGenesisProfileHolder.toBase58(),
-          vallue:
-            cost *
-            (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
-        });
-  
-        holdersfullInfo.push({
-          receiver: currentParentProfileHolder.toBase58(),
-          vallue:
-            cost *
-            (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
-        });
-  
-        holdersfullInfo.push({
-          receiver: currentGrandParentProfileHolder.toBase58(),
-          vallue:
-            cost *
-            (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-        });
-  
-        const holdermap: any = [];
-        holdersfullInfo.reduce(function (res: any, value) {
-          if (!res[value.receiver]) {
-            res[value.receiver] = { receiver: value.receiver, vallue: 0 };
-            holdermap.push(res[value.receiver]);
-          }
-          res[value.receiver].vallue += value.vallue;
-          return res;
-        }, {});
+        console.log("mint pass 74");
 
-
-  
-        for (let index = 0; index < holdermap.length; index++) {
-          const element = holdermap[index];
-          let createShare: any = await this.baseSpl.transfer_token_modified({
-            mint: mainStateInfo.oposToken,
-            sender: user,
-            receiver: new anchor.web3.PublicKey(element.receiver),
-            init_if_needed: true,
-            amount: Math.ceil(element.vallue),
-          });
-          for (let index = 0; index < createShare.length; index++) {
-            this.txis.push(createShare[index]);
-          }
-        }
-  
-      }
-
-      console.log("mint pass 10", commonLut);
-      const commonLutInfo = await (
-        await this.connection.getAddressLookupTable(
-          new anchor.web3.PublicKey(commonLut),
-        )
-      ).value;
-      console.log("mint pass 11");
-      const lutsInfo = [commonLutInfo!];
-
-      const freezeInstructions = await this.calculatePriorityFee(
-        ix,
-        lutsInfo,
-        mintKp,
-      );
-
-      console.log("mint pass 12");
-      for (let index = 0; index < freezeInstructions.length; index++) {
-        const element = freezeInstructions[index];
-        this.txis.push(element);
-      }
-
-      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
-      const message = new web3.TransactionMessage({
-        payerKey: this.provider.publicKey,
-        recentBlockhash: blockhash,
-        instructions: [...this.txis],
-      }).compileToV0Message(lutsInfo);
-      console.log("mint pass 13");
-      const tx = new web3.VersionedTransaction(message);
-      tx.sign([mintKp]);
-      this.txis = [];
-      console.log("mint pass 14");
-      // const signedTx = await this.provider.wallet.signTransaction(tx as any);
-      // const txLen = signedTx.serialize().length;
-      // log({ txLen, luts: lutsInfo.length });
-
-      const signature = await this.provider.sendAndConfirm(tx as any);
-      if(cost > 0 && profileHolderInfo) {
-        await this.storeRoyalty(
-          user.toBase58(),
-          [
-            {
-              receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
-              amount:
-                (mainStateInfo.profileMintingCost.toNumber() /
-                  web3Consts.LAMPORTS_PER_OPOS) *
-                (mainStateInfo.mintingCostDistribution.genesis / 10000),
-            },
-            {
-              receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
-              amount:
-                (mainStateInfo.profileMintingCost.toNumber() /
-                  web3Consts.LAMPORTS_PER_OPOS) *
-                (mainStateInfo.mintingCostDistribution.parent / 10000),
-            },
-            {
-              receiver: currentGenesisProfileHolder.toBase58(),
-              amount:
-                (mainStateInfo.profileMintingCost.toNumber() /
-                  web3Consts.LAMPORTS_PER_OPOS) *
-                (mainStateInfo.mintingCostDistribution.grandParent / 10000),
-            },
-            {
-              receiver: currentParentProfileHolder.toBase58(),
-              amount:
-                (mainStateInfo.profileMintingCost.toNumber() /
-                  web3Consts.LAMPORTS_PER_OPOS) *
-                (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
-            },
-            {
-              receiver: currentGrandParentProfileHolder.toBase58(),
-              amount:
-                (mainStateInfo.profileMintingCost.toNumber() /
-                  web3Consts.LAMPORTS_PER_OPOS) *
-                (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
-            },
-          ],
-          mainStateInfo.oposToken.toBase58(),
+        console.log("mint pass 8");
+        const userOposAta = getAssociatedTokenAddressSync(
+          mainStateInfo.oposToken,
+          user,
         );
-      }
+        const parentMainState = web3.PublicKey.findProgramAddressSync(
+          [Seeds.mainState],
+          this.programId,
+        )[0];
+        console.log("mint pass 9");
+        const ix = await this.program.methods
+          .mintGuestPass(name, symbol, uriHash)
+          .accounts({
+            profile, // 1
+            project: this.projectId,
+            user, // 2
+            userProfileAta, // 5
+            mainState: this.mainState, // 6
+            parentMainState,
+            collection, // 7
+            mplProgram, // 8
+            profileState, // 9
+            tokenProgram, // 10
+            systemProgram, // 11
+            profileEdition, // 12
+            profileMetadata, // 14
+            collectionEdition, // 15
+            collectionMetadata, // 16
+            parentProfileState, // 17
+            sysvarInstructions, // 18
+            associatedTokenProgram, // 20
+            parentProfile: genesisProfile,
+          })
+          .instruction();
+        this.txis.push(ix);
 
-      console.log("mint pass 15");
-      return {
-        Ok: {
-          signature,
-          info: { profile: profile.toBase58() },
-        },
-      };
-    } catch (error) {
-      log({ error });
-      return { Err: error };
+        let cost = mainStateInfo.profileMintingCost.toNumber();
+
+        console.log("mainStateInfo.oposToken ", mainStateInfo.oposToken.toBase58())
+        console.log("mainStateInfo.profileMintingCost ", cost)
+        let profileHolderInfo;
+        if(cost > 0) {
+          console.log("mint pass 71", userProfile);
+          console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
+          let myProfile = new anchor.web3.PublicKey(userProfile);
+          const myProfileState = this.__getProfileStateAccount(myProfile);
+          console.log("mint pass 72");
+          let myProfileStateInfo =
+            await this.program.account.profileState.fetch(myProfileState);
+          console.log("mint pass 73");
+          profileHolderInfo = await this.__getProfileHoldersInfo(
+            myProfileStateInfo.lineage,
+            myProfile,
+            web3Consts.genesisProfile,
+            mainStateInfo.oposToken,
+          );
+
+          let holdersfullInfo = [];
+
+          holdersfullInfo.push({
+            receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+            vallue:
+              cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          });
+    
+          holdersfullInfo.push({
+            receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+            vallue:
+              cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          });
+    
+          holdersfullInfo.push({
+            receiver: currentGenesisProfileHolder.toBase58(),
+            vallue:
+              cost *
+              (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          });
+    
+          holdersfullInfo.push({
+            receiver: currentParentProfileHolder.toBase58(),
+            vallue:
+              cost *
+              (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          });
+    
+          holdersfullInfo.push({
+            receiver: currentGrandParentProfileHolder.toBase58(),
+            vallue:
+              cost *
+              (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          });
+    
+          const holdermap: any = [];
+          holdersfullInfo.reduce(function (res: any, value) {
+            if (!res[value.receiver]) {
+              res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+              holdermap.push(res[value.receiver]);
+            }
+            res[value.receiver].vallue += value.vallue;
+            return res;
+          }, {});
+
+
+    
+          for (let index = 0; index < holdermap.length; index++) {
+            const element = holdermap[index];
+            let createShare: any = await this.baseSpl.transfer_token_modified({
+              mint: mainStateInfo.oposToken,
+              sender: user,
+              receiver: new anchor.web3.PublicKey(element.receiver),
+              init_if_needed: true,
+              amount: Math.ceil(element.vallue),
+            });
+            for (let index = 0; index < createShare.length; index++) {
+              this.txis.push(createShare[index]);
+            }
+          }
+    
+        }
+
+        console.log("mint pass 10", commonLut);
+        const commonLutInfo = await (
+          await this.connection.getAddressLookupTable(
+            new anchor.web3.PublicKey(commonLut),
+          )
+        ).value;
+        console.log("mint pass 11");
+        const lutsInfo = [commonLutInfo!];
+
+        const freezeInstructions = await this.calculatePriorityFee(
+          ix,
+          lutsInfo,
+          mintKp,
+        );
+
+        console.log("mint pass 12");
+        for (let index = 0; index < freezeInstructions.length; index++) {
+          const element = freezeInstructions[index];
+          this.txis.push(element);
+        }
+
+        const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+        const message = new web3.TransactionMessage({
+          payerKey: this.provider.publicKey,
+          recentBlockhash: blockhash,
+          instructions: [...this.txis],
+        }).compileToV0Message(lutsInfo);
+        console.log("mint pass 13");
+        const tx = new web3.VersionedTransaction(message);
+        tx.sign([mintKp]);
+        this.txis = [];
+        console.log("mint pass 14");
+        // const signedTx = await this.provider.wallet.signTransaction(tx as any);
+        // const txLen = signedTx.serialize().length;
+        // log({ txLen, luts: lutsInfo.length });
+
+        const signature = await this.provider.sendAndConfirm(tx as any);
+        if(cost > 0 && profileHolderInfo) {
+          await this.storeRoyalty(
+            user.toBase58(),
+            [
+              {
+                receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+                amount:
+                  (mainStateInfo.profileMintingCost.toNumber() /
+                    web3Consts.LAMPORTS_PER_OPOS) *
+                  (mainStateInfo.mintingCostDistribution.genesis / 10000),
+              },
+              {
+                receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+                amount:
+                  (mainStateInfo.profileMintingCost.toNumber() /
+                    web3Consts.LAMPORTS_PER_OPOS) *
+                  (mainStateInfo.mintingCostDistribution.parent / 10000),
+              },
+              {
+                receiver: currentGenesisProfileHolder.toBase58(),
+                amount:
+                  (mainStateInfo.profileMintingCost.toNumber() /
+                    web3Consts.LAMPORTS_PER_OPOS) *
+                  (mainStateInfo.mintingCostDistribution.grandParent / 10000),
+              },
+              {
+                receiver: currentParentProfileHolder.toBase58(),
+                amount:
+                  (mainStateInfo.profileMintingCost.toNumber() /
+                    web3Consts.LAMPORTS_PER_OPOS) *
+                  (mainStateInfo.mintingCostDistribution.greatGrandParent / 10000),
+              },
+              {
+                receiver: currentGrandParentProfileHolder.toBase58(),
+                amount:
+                  (mainStateInfo.profileMintingCost.toNumber() /
+                    web3Consts.LAMPORTS_PER_OPOS) *
+                  (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 10000),
+              },
+            ],
+            mainStateInfo.oposToken.toBase58(),
+          );
+        }
+
+        console.log("mint pass 15");
+        return {
+          Ok: {
+            signature,
+            info: { profile: profile.toBase58() },
+          },
+        };
+      } catch (error:any) {
+            
+        log({ error: error });
+        const isRetryable =
+        error.message?.includes("blockhash not found") ||
+        error.message?.includes("timeout") ||
+        error.message?.includes("rate limit") ||
+        error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF * Math.pow(2, attempt) * (0.5 + Math.random());
+        await sleep(backoff);
+      }
     }
+    return { Err: "Unreachable" };
   }
 
   async mintFreePass(

@@ -321,19 +321,7 @@ export default function ProjectCreateStep1({
             {
               trait_type: "Founder",
               value: "Moto",
-            },
-            {
-              trait_type: "Website",
-              value: fields.website,
-            },
-            {
-              trait_type: "Telegram",
-              value: fields.telegram,
-            },
-            {
-              trait_type: "Bluesky",
-              value: fields.twitter,
-            },
+            }
           ],
         };
 

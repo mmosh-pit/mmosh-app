@@ -34,7 +34,7 @@ const ProjectCard = (projectData: any) => {
         </div>
 
         <div className="my-4">
-          <p className="text-white text-base text-with-ellipsis">
+          <p className="text-white text-base text-with-ellipsis max-w-[70%]">
             {projectData.data.desc}
           </p>
         </div>
@@ -50,7 +50,9 @@ const ProjectCard = (projectData: any) => {
           <a
             className="text-sm text-[#FF00C7] underline"
             href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/projects/${projectData.data.symbol.toLowerCase()}`}
-          >{`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/projects/${projectData.data.symbol.toLowerCase()}`}</a>
+          >
+            {projectData.data.symbol.toLowerCase()}
+          </a>
         </div>
       </div>
     </div>

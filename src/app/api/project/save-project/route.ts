@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
     distribution,
     invitationprice,
     discount,
+    creator
   } = await req.json();
 
   const project = await collection.findOne({
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
       presalestartdate,
       presaleenddate,
       dexlistingdate,
+      creator,
       created_date: new Date(),
       updated_date: new Date(),
     });

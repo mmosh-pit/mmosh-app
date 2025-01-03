@@ -8,9 +8,17 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
+import useWallet from "@/utils/wallet";
+import axios from "axios";
+import { useConnection } from "@solana/wallet-adapter-react";
+import * as anchor from "@coral-xyz/anchor";
+import { Connectivity as Community } from "@/anchor/community";
+import { web3Consts } from "@/anchor/web3Consts";
+import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 
-export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any }) {
-    
+export default function ProjectCreateStep3({ onPageChange, symbol }: { onPageChange: any, symbol:any }) {
+    const wallet: any = useWallet();
+    const connection = useConnection();
     const navigate = useRouter();
     const [fields, setFields] = useState({
         image: {
@@ -32,6 +40,7 @@ export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any
     const [msgText, setMsgText] = useState("");
 
     const [isReady, setIsReady] = useState(false)
+    const [projectDetail, setProjectDetail] =  React.useState<any>(null)
 
     React.useEffect(() => {
         if (!image) return;
@@ -44,12 +53,20 @@ export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any
     }, [image]);
     
     React.useEffect(()=>{
-        if(localStorage.getItem("projectstep3")) {
-          let savedData:any = localStorage.getItem("projectstep3");
-          setFields(JSON.parse(savedData));
-          setIsReady(true)
-        }
+        getProjectDetailFromAPI()
     },[])
+
+    const getProjectDetailFromAPI = async() => {
+        try {
+            setLoading(true)
+            let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+            setProjectDetail(listResult.data)
+            setLoading(false)
+        } catch (error) {
+            setLoading(false)
+            setProjectDetail(null)
+        }
+      }
 
     React.useEffect(()=>{
        setIsReady(validateFields(false))
@@ -135,13 +152,57 @@ export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any
                 let imageUri = await pinImageToShadowDrive(imageFile)
                 fields.image.preview = imageUri;
             }
-            localStorage.setItem("projectstep3",JSON.stringify(fields));
-            onPageChange("step4")
-        }
-    }
 
-    const goBack = () => {
-        onPageChange("step2")
+            const env = new anchor.AnchorProvider(connection.connection, wallet, {
+               preflightCommitment: "processed",
+            });
+            anchor.setProvider(env);
+            let communityConnection: Community = new Community(
+                env,
+                web3Consts.programID,
+                new anchor.web3.PublicKey(projectDetail.project.key),
+            );
+
+            let coinBody = {
+                name: fields.name,
+                symbol: fields.symbol,
+                description: fields.desc,
+                image: fields.image.preview,
+            };
+            const coinMetaURI: any = await pinFileToShadowDriveUrl(coinBody);
+            if (coinMetaURI === "") {
+                createMessage(
+                "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
+                "danger-container",
+                );
+                return;
+            }
+            console.log("coinMetaURI", coinMetaURI);
+    
+            // creating community coins
+
+            let mintKey = await communityConnection.createCoin(
+                fields.name,
+                fields.symbol,
+                coinMetaURI,
+                fields.supply * web3Consts.LAMPORTS_PER_OPOS,
+                9,
+            );
+
+            await axios.post("/api/project/save-coins", {
+                name: fields.name,
+                symbol: fields.symbol,
+                image: fields.image.preview,
+                key: mintKey,
+                desc: fields.desc,
+                supply: fields.supply,
+                decimals: 9,
+                creator: wallet.publicKey.toBase58(),
+                listingprice: fields.listingPrice,
+                projectkey: projectDetail.project.key
+            });
+            navigate.push("/projects/" + symbol);
+        }
     }
 
     const prepareNumber = (inputValue:any) => {
@@ -166,16 +227,6 @@ export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any
                 <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
             )}
             <div className="background-content">
-                <div className="flex flex-col items-center justify-center w-full">
-                    <div className="relative w-full flex flex-col justify-center items-center pt-5">
-                        <div className="max-w-md">
-                            <h2 className="text-center text-white font-goudy font-normal text-xl">Launch Your Project</h2>
-                            <h3 className="text-center text-white font-goudy text-sub-title-font-size pt-2.5">Step 3</h3>
-                            <h3 className="text-center text-white font-goudy font-normal text-sub-title-font-size pt-1.5">Design Your Community Coin</h3>
-                            <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">The design of your Community Coin should reflect the culture of your community and the power of your project.</p>
-                        </div>
-                    </div>
-                </div>
                 <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -257,10 +308,9 @@ export default function ProjectCreateStep3({ onPageChange }: { onPageChange: any
                             </div>
                     </div>
                     <div className="flex justify-center mt-10">
-                        <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
                         {!loading &&
                             <>
-                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep4} disabled={!isReady}>Next</button>
+                                <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={gotoStep4} disabled={!isReady}>Mint</button>
                             </>
                         }
                         {loading &&

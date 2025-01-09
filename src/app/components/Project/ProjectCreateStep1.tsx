@@ -65,15 +65,6 @@ export default function ProjectCreateStep1({
     invitationType: "none",
     invitationPrice: 0,
     discount: 0.0,
-    isExternalCoin: true,
-    externalCoin: {
-      name: "MMOSH: The Stoked Token",
-      address: process.env.NEXT_PUBLIC_OPOS_TOKEN,
-      image:
-        "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-      symbol: "MMOSH",
-      decimals: 9,
-    },
   });
 
   const [isReady, setIsReady] = useState(false);
@@ -212,15 +203,6 @@ export default function ProjectCreateStep1({
       if (fields.discount == 0) {
         if (isMessage) {
           createMessage("Discount not mentioned", "danger-container");
-        }
-        return false;
-      }
-    }
-
-    if (fields.isExternalCoin === true) {
-      if (fields.externalCoin.address === "") {
-        if (isMessage) {
-          createMessage("Coin not choosed", "danger-container");
         }
         return false;
       }
@@ -433,6 +415,8 @@ export default function ProjectCreateStep1({
     return inputValue;
   };
 
+
+
   return (
     <>
       {showMsg && (
@@ -449,10 +433,7 @@ export default function ProjectCreateStep1({
       <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
               <div className="xl:col-span-2">
-                <ImagePicker
-                  changeImage={setImage}
-                  image={fields.image.preview}
-                />
+                <ImagePicker changeImage={setImage} image={fields.image.preview} />
               </div>
               <div className="xl:col-span-3">
                 <div className="form-element pt-2.5">
@@ -494,7 +475,8 @@ export default function ProjectCreateStep1({
                       setFields({ ...fields, desc: e.target.value })
                     }
                   />
-                </div>
+              </div>
+
               </div>
               <div className="xl:col-span-3">
                 <div className="form-element pt-2.5">

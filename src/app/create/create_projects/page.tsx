@@ -179,7 +179,7 @@ export default function ProjectCreate() {
             <ProjectCreateStep8 onPageChange={onPageChange}/>
          }
          {selectedOption === "Media" &&
-            <ProjectCreateStep9 onPageChange={onPageChange}/>
+            <ProjectCreateStep9 onPageChange={onPageChange} symbol={selectedProjectType}/>
          }
          {/* {currentStep === "step10" &&
             <ProjectCreateStep10 onPageChange={onPageChange}/>

@@ -30,9 +30,9 @@ export default function ProjectCreate() {
    const [selectedStudioType, setSelectedStudioType] = useState("Project");
 
    const [projectType, setProjectType] = useState([
-      { label: "New Project", value: "New Project" },
+      { label: "New Agent", value: "New Agent" },
    ]);
-   const [selectedProjectType, setSelectedProjectType] = useState("New Project");
+   const [selectedProjectType, setSelectedProjectType] = useState("New Agent");
 
    const [options, setOptions] = useState([
       { label: "Agent Pass", value: "Agent Pass" },
@@ -45,7 +45,7 @@ export default function ProjectCreate() {
         `/api/project/mylist?creator=${address}`,
       );
       let newTypes = [
-        {label: "New Project", value: "New Project" }
+        {label: "New Agent", value: "New Agent" }
       ];
       for (let index = 0; index < result.data.length; index++) {
         const element = result.data[index]
@@ -92,7 +92,7 @@ export default function ProjectCreate() {
             <div className="relative w-full flex flex-col justify-center items-center pt-10">
                <div className="max-w-md">
                <h2 className="text-center text-white font-goudy font-normal text-xl">
-                  Design Studio
+                  Agent Studio
                </h2>
                </div>
             </div>
@@ -100,8 +100,8 @@ export default function ProjectCreate() {
 
          <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
             <div className="mb-10">
-               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-               <div>
+               <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+               {/* <div>
                   <Select
                   value={selectedStudioType}
                   onChange={(e) =>{
@@ -110,18 +110,18 @@ export default function ProjectCreate() {
                      }}
                      options={studioType}
                   />
-               </div>
-               <div>
+               </div> */}
+               <div className="lg:col-start-2 xl:col-start-2">
                   <Select
                      value={selectedProjectType}
                      onChange={(e) => {
-                     if(e.target.value !== "New Project") {
+                     if(e.target.value !== "New Agent") {
                         setOptions([
                            { label: "Tools", value: "Tools" },
-                           { label: "Media", value: "Media" },
-                           { label: "Prompts", value: "Prompts" },
+                           { label: "Assets", value: "Assets" },
+                           { label: "Intent", value: "Intent" },
                            { label: "License", value: "License" },
-                           { label: "Agent Coins", value: "Agent Coins" },
+                           { label: "Coins", value: "Coins" },
                            { label: "Teams", value: "Teams" },
                            { label: "Communities", value: "Communities" },
                            { label: "Listing", value: "Listing" },
@@ -160,7 +160,7 @@ export default function ProjectCreate() {
          {selectedOption === "Communities" &&
             <ProjectCreateStep2 onPageChange={onPageChange}/>
          }
-         {selectedOption === "Agent Coins" &&
+         {selectedOption === "Coins" &&
             <ProjectCreateStep3 onPageChange={onPageChange} symbol={selectedProjectType}/>
          }
          {selectedOption === "step4" &&
@@ -178,7 +178,7 @@ export default function ProjectCreate() {
          {selectedOption === "Listing" &&
             <ProjectCreateStep8 onPageChange={onPageChange}/>
          }
-         {selectedOption === "Media" &&
+         {selectedOption === "Assets" &&
             <ProjectCreateStep9 onPageChange={onPageChange} symbol={selectedProjectType}/>
          }
          {/* {currentStep === "step10" &&

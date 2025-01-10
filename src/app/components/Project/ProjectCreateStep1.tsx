@@ -180,11 +180,13 @@ export default function ProjectCreateStep1({
       return false;
     }
 
-    if (fields.website.length > 0 && !isValidHttpUrl(fields.website)) {
-      if (isMessage) {
-        createMessage("Invalid website url", "danger-container");
+    if (fields.website.length > 0) {
+      if(!isValidHttpUrl(fields.website)) {
+        if (isMessage) {
+          createMessage("Invalid website url", "danger-container");
+        }
+        return false;
       }
-      return false;
     }
 
     if (
@@ -454,7 +456,7 @@ export default function ProjectCreateStep1({
                     type="text"
                     title="Symbol"
                     required
-                    helperText="10 characters"
+                    helperText="Symbol can only be letters and numbers up to 10 characters"
                     placeholder="Symbol"
                     value={fields.symbol}
                     onChange={(e) =>

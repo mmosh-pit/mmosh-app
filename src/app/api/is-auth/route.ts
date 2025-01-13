@@ -14,9 +14,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(false);
   }
 
+  console.log("Checking if User is auth with session: ", session?.value);
+
   const user = await collection.findOne({
     sessions: session?.value,
   });
+
+  console.log("User: ", user);
 
   return NextResponse.json(user !== null);
 }

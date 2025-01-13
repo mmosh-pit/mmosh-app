@@ -52,14 +52,19 @@ const Code = () => {
     setHasError(false);
     try {
       const { confirmPassword, ...data } = form;
-      const response = await axios.post("/api/signup", {
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/signup`;
+      const response = await axios.post(url, {
         ...data,
         referredBy: referAddress,
-        code: formCodes.join(""),
+        code: Number(formCodes.join("")),
       });
-      setForm({ ...form, address: response.data });
+
+      const token = response.data.data.token;
+      document.cookie = `session=${token}`;
+      setForm({ ...form, address: response.data.data.user.address });
       router.replace("/sign-up/link");
-    } catch (_) {
+    } catch (err) {
+      console.error(err);
       setHasError(true);
     }
 

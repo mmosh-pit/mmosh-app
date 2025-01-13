@@ -43,6 +43,15 @@ import {
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
 
+function getCookie(name: string) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  if (!parts.pop()) return "";
+
+  if (parts.length === 2) return parts.pop()!.split(";").shift();
+}
+
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
 const COMMUNITY_PTVB_COIN = process.env.NEXT_PUBLIC_PTVB_TOKEN;
@@ -428,12 +437,20 @@ const Header = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!wallet || bags !== null) return;
+    if (
+      (!wallet || bags !== null) &&
+      !["sign-up", "login", "password"].includes(pathname)
+    )
+      return;
     fetchAllBalances();
   }, [wallet]);
 
   React.useEffect(() => {
-    if (wallet?.publicKey && !renderedUserInfo.current) {
+    if (
+      wallet?.publicKey &&
+      !renderedUserInfo.current &&
+      !["sign-up", "login", "password"].includes(pathname)
+    ) {
       renderedUserInfo.current = true;
       getProfileInfo();
     } else {
@@ -475,7 +492,16 @@ const Header = () => {
     if (isLoadingLogout) return;
 
     setIsLoadingLogout(true);
-    await axios.put("/api/logout");
+    const value =
+      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
+
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`;
+    await axios.delete(url, {
+      headers: {
+        Authorization: `Bearer ${value}`,
+      },
+    });
+    document.cookie = "";
     setIsLoadingLogout(false);
 
     setIsUserAuthenticated(false);
@@ -485,7 +511,17 @@ const Header = () => {
   const fetchPrivateKey = React.useCallback(async () => {
     if (!isUserAuthenticated) return;
 
-    const res = await axios.get(`/api/get-user-private-key`);
+    const value =
+      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
+
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/private-key`,
+      {
+        headers: {
+          Authorization: `Bearer ${value}`,
+        },
+      },
+    );
 
     const data = res.data;
 

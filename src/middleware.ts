@@ -4,15 +4,14 @@ import { cookies } from "next/headers";
 export default async function middleware(req: NextRequest) {
   if (
     (req.method !== "GET" || req.url.includes("get-user-private-key")) &&
-    !req.url.includes("signup") &&
-    !req.url.includes("request-verification") &&
-    !req.url.includes("login") &&
     !req.url.includes("onramp-session") &&
     !req.url.includes("forgot-password") &&
-    !req.url.includes("reset-password") && !req.url.includes("inform") &&
+    !req.url.includes("reset-password") &&
+    !req.url.includes("inform") &&
     !req.url.includes("document")
   ) {
     const cookie = cookies().get("session")?.value;
+    console.log("Cookie: ", cookie);
 
     if (!cookie) {
       return NextResponse.json("", { status: 401 });

@@ -55,10 +55,13 @@ const AuthModal = () => {
       setError("");
       setIsLoading(true);
       try {
-        await axios.post("/api/login", {
-          email: form.email,
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`;
+        const res = await axios.post(url, {
+          handle: form.email,
           password: form.password,
         });
+
+        document.cookie = `session=${res.data.data.token}`;
         close();
         setShowAuthOverlay(false);
         setIsAuthModalOpen(false);
@@ -132,7 +135,7 @@ const AuthModal = () => {
         <div className="w-full flex flex-col items-center mt-8 mb-4">
           <Button
             title="Log In"
-            action={() => {}}
+            action={() => { }}
             size="large"
             isPrimary
             type="submit"

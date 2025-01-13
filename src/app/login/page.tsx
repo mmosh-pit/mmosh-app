@@ -34,10 +34,13 @@ const Login = () => {
       setError("");
       setIsLoading(true);
       try {
-        await axios.post("/api/login", {
-          email,
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`;
+        const res = await axios.post(url, {
+          handle: email,
           password,
         });
+
+        document.cookie = `session=${res.data.data.token}`;
         router.replace("/coins");
       } catch (err: any) {
         setError(
@@ -116,7 +119,7 @@ const Login = () => {
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
           title="Log In"
-          action={() => {}}
+          action={() => { }}
           size="large"
           isPrimary
           type="submit"

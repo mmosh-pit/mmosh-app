@@ -63,11 +63,12 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      await axios.post("/api/request-verification", {
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/request-code`;
+      await axios.post(url, {
         email: form.email,
       });
       router.push("/sign-up/code");
-    } catch (_) {}
+    } catch (_) { }
     setIsLoading(false);
   };
 
@@ -179,7 +180,7 @@ const SignUp = () => {
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
           title="Sign Up"
-          action={() => {}}
+          action={() => { }}
           size="large"
           type="submit"
           isPrimary

@@ -26,15 +26,15 @@ const Tabs = () => {
           <div className="flex flex-col w-[150px] py-2 px-4 absolute top-[20px] right-[-25px] bg-[#17155C] rounded-lg border-[1px] border-[#FFFFFF30]">
             <p
               className="text-sm text-white mb-2"
-              onClick={() => router.push("/opos")}
+              onClick={() => router.push("/chat")}
             >
-              Ask OPOS
+              Chat
             </p>
             <p
               className="text-sm text-white"
-              onClick={() => router.push("/opos/inform")}
+              onClick={() => router.push("/chat/inform")}
             >
-              Inform OPOS
+              Inform
             </p>
           </div>
         )}

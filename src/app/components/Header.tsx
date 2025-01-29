@@ -633,10 +633,10 @@ const Header = () => {
               <button
                 className="relative bg-[#3A34888A] px-4 py-3 rounded-full"
                 onClick={() => {
-                  router.push("/opos");
+                  router.push("/chat");
                 }}
               >
-                <p className="md:text-base text-sm text-white ">OPOS</p>
+                <p className="md:text-base text-sm text-white ">Chat</p>
               </button>
             )}
 

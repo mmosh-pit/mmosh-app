@@ -88,8 +88,6 @@ export async function GET(req: NextRequest) {
     filter.$and = [{ created_date: { $gte: filterDate } }];
   }
 
-  console.log("filter", filter);
-
   const volumeresult = await directoryCollection
     .aggregate([
       {

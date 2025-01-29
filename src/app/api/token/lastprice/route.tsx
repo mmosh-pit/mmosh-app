@@ -1,4 +1,3 @@
-import axios from "axios";
 import { db } from "../../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,13 +8,11 @@ export async function GET(req: NextRequest) {
   let price = 0;
   try {
     const key = searchParams.get("key");
-    console.log("key", key);
     let priceresult = await collection
       .find({ key: key })
       .limit(1)
       .sort({ created_date: -1 })
       .toArray();
-    console.log("key", priceresult);
     if (priceresult.length > 0) {
       price = priceresult[0].price;
     }

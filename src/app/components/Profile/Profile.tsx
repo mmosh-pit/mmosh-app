@@ -37,10 +37,6 @@ const Profile = ({ username }: { username: any }) => {
   const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
   const [isSecTooltipShown, setIsSecTooltipShown] = React.useState(false);
   const [userData, setUserData] = React.useState<User>();
-  const [rankData, setRankData] = React.useState({
-    points: 0,
-    rank: 0,
-  });
   const [lhcWallet, setLhcWallet] = React.useState("");
   const [_, setUserStatus] = useAtom(status);
 
@@ -72,17 +68,9 @@ const Profile = ({ username }: { username: any }) => {
     );
   }, [username, currentUser]);
 
-  const getRankData = React.useCallback(async () => {
-    const result = await axios.get(
-      `/api/get-rank-data?user=${userData?.telegram.id}`,
-    );
-
-    setRankData(result.data);
-  }, [userData]);
-
   const getLhcWallet = React.useCallback(async () => {
     const result = await axios.get(
-      `/api/get-lhc-address?id=${userData?.telegram.id}`,
+      `/api/get-lhc-address?id=${userData?.telegram?.id}`,
     );
 
     setLhcWallet(result.data?.addressPublicKey);
@@ -120,7 +108,6 @@ const Profile = ({ username }: { username: any }) => {
   React.useEffect(() => {
     if (!userData) return;
 
-    getRankData();
     getLhcWallet();
   }, [userData]);
 
@@ -432,23 +419,23 @@ const Profile = ({ username }: { username: any }) => {
                           <>
                             {(connectionStatus == 0 ||
                               connectionStatus == 5) && (
-                              <span
-                                className="cursor-pointer ml-2.5 mt-1"
-                                onClick={sendConnectionRequest}
-                              >
-                                <EmptyHeartSvg />
-                              </span>
-                            )}
+                                <span
+                                  className="cursor-pointer ml-2.5 mt-1"
+                                  onClick={sendConnectionRequest}
+                                >
+                                  <EmptyHeartSvg />
+                                </span>
+                              )}
 
                             {(connectionStatus == 1 ||
                               connectionStatus == 2) && (
-                              <span
-                                className="cursor-pointer ml-2.5"
-                                onClick={sendConnectionRequest}
-                              >
-                                <HeartSvg />
-                              </span>
-                            )}
+                                <span
+                                  className="cursor-pointer ml-2.5"
+                                  onClick={sendConnectionRequest}
+                                >
+                                  <HeartSvg />
+                                </span>
+                              )}
 
                             {connectionStatus == 4 && (
                               <span

@@ -43,15 +43,6 @@ import {
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
 
-function getCookie(name: string) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-
-  if (!parts.pop()) return "";
-
-  if (parts.length === 2) return parts.pop()!.split(";").shift();
-}
-
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
 const COMMUNITY_PTVB_COIN = process.env.NEXT_PUBLIC_PTVB_TOKEN;
@@ -111,9 +102,18 @@ const Header = () => {
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
-    const result = await axios.get("/api/get-current-user");
+    const value =
+      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`;
+    const result = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${value}`,
+      },
+    });
 
-    const user = result.data;
+    console.log("Result: ", result);
+
+    const user = result.data?.data?.user;
 
     setShowAuthOverlay(!user);
     setIsAuthModalOpen(!user);
@@ -633,7 +633,7 @@ const Header = () => {
               <button
                 className="relative bg-[#3A34888A] px-4 py-3 rounded-full"
                 onClick={() => {
-                  router.push("/inform");
+                  router.push("/opos");
                 }}
               >
                 <p className="md:text-base text-sm text-white ">OPOS</p>

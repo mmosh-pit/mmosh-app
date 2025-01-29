@@ -10,8 +10,8 @@ export async function GET(req: NextRequest) {
 
   const session = cookieStore.get("session");
 
-  if (session === null) {
-    return NextResponse.json(false);
+  if (!session) {
+    return NextResponse.json(null);
   }
 
   const user = await collection.findOne({

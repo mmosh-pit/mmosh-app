@@ -1,19 +1,12 @@
 "use client";
 
 import ImagePicker from "@/app/components/ImagePicker";
-import Button from "@/app/components/common/Button";
 import Input from "@/app/components/common/Input";
-import Radio from "@/app/components/common/Radio";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
-import ArrowDown from "@/assets/icons/ArrowDown";
-import Modal from "react-modal";
-import SearchIcon from "@/assets/icons/SearchIcon";
 import axios from "axios";
-import { Bars } from "react-loader-spinner";
-import TokenCard from "./TokenCard";
 
 import BalanceBox from "../common/BalanceBox";
 import { useConnection } from "@solana/wallet-adapter-react";
@@ -26,11 +19,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 
-export default function ProjectCreateStep1({
-  onPageChange,
-}: {
-  onPageChange: any;
-}) {
+export default function ProjectCreateStep1({ }: {}) {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
@@ -69,7 +58,6 @@ export default function ProjectCreateStep1({
 
   const [isReady, setIsReady] = useState(false);
 
-
   const [usdPrice, setUsdPrice] = useState(0);
   const [buttonText, setButtonText] = useState("Mint");
 
@@ -90,7 +78,6 @@ export default function ProjectCreateStep1({
     }
     getMmoshPrice();
   }, []);
-
 
   const getMmoshPrice = async () => {
     const mmoshUsdcPrice = await axios.get(
@@ -181,7 +168,7 @@ export default function ProjectCreateStep1({
     }
 
     if (fields.website.length > 0) {
-      if(!isValidHttpUrl(fields.website)) {
+      if (!isValidHttpUrl(fields.website)) {
         if (isMessage) {
           createMessage("Invalid website url", "danger-container");
         }
@@ -290,29 +277,29 @@ export default function ProjectCreateStep1({
             {
               trait_type: "Founder",
               value: "Moto",
-            }
+            },
           ],
         };
 
-        if(fields.website.length > 0) {
+        if (fields.website.length > 0) {
           projectBody.attributes.push({
             trait_type: "Website",
             value: fields.website,
-          })
+          });
         }
 
-        if(fields.telegram.length > 0) {
+        if (fields.telegram.length > 0) {
           projectBody.attributes.push({
             trait_type: "Telegram",
             value: fields.telegram,
-          })
+          });
         }
 
-        if(fields.twitter.length > 0) {
+        if (fields.twitter.length > 0) {
           projectBody.attributes.push({
             trait_type: "Bluesky",
             value: fields.twitter,
-          })
+          });
         }
 
         const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
@@ -368,13 +355,19 @@ export default function ProjectCreateStep1({
         const res4: any = await communityConnection.registerCommonLut();
         console.log("register lookup result ", res4);
 
-        setButtonText("Buying new Project...")
-        const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,25000);
-        if(res5.Err) {
-            createMessage("error creating new project","danger-container")
-            return
+        setButtonText("Buying new Project...");
+        console.log("Profile info: ", profileInfo);
+        const res5 = await communityConnection.sendProjectPrice(
+          profileInfo?.profile.address,
+          25000,
+        );
+
+        if (res5.Err) {
+          console.log("Error is here... ", res5.Err);
+          createMessage("error creating new project", "danger-container");
+          return;
         }
-        console.log("send price result ", res5.Ok?.info)
+        console.log("send price result ", res5.Ok?.info);
 
         await axios.post("/api/project/save-project", {
           name: fields.name,
@@ -417,8 +410,6 @@ export default function ProjectCreateStep1({
     return inputValue;
   };
 
-
-
   return (
     <>
       {showMsg && (
@@ -433,145 +424,140 @@ export default function ProjectCreateStep1({
       )}
 
       <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
-              <div className="xl:col-span-2">
-                <ImagePicker changeImage={setImage} image={fields.image.preview} />
-              </div>
-              <div className="xl:col-span-3">
-                <div className="form-element pt-2.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
+          <div className="xl:col-span-2">
+            <ImagePicker changeImage={setImage} image={fields.image.preview} />
+          </div>
+          <div className="xl:col-span-3">
+            <div className="form-element pt-2.5">
+              <Input
+                type="text"
+                title="Name"
+                required
+                helperText="Up to 50 characters, can have spaces."
+                placeholder="Name"
+                value={fields.name}
+                onChange={(e) => setFields({ ...fields, name: e.target.value })}
+              />
+            </div>
+            <div className="form-element pt-2.5">
+              <Input
+                type="text"
+                title="Symbol"
+                required
+                helperText="Symbol can only be letters and numbers up to 10 characters"
+                placeholder="Symbol"
+                value={fields.symbol}
+                onChange={(e) =>
+                  setFields({ ...fields, symbol: e.target.value })
+                }
+              />
+            </div>
+            <div className="form-element pt-2.5">
+              <Input
+                textarea
+                type="text"
+                title="Description"
+                required
+                helperText=""
+                placeholder="Describe your Community."
+                value={fields.desc}
+                onChange={(e) => setFields({ ...fields, desc: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="xl:col-span-3">
+            <div className="form-element pt-2.5">
+              <div className="grid grid-cols-12 gap-4">
+                <div className="form-element col-span-9">
                   <Input
                     type="text"
-                    title="Name"
+                    title="Project Pass Price"
                     required
-                    helperText="Up to 50 characters, can have spaces."
-                    placeholder="Name"
-                    value={fields.name}
-                    onChange={(e) =>
-                      setFields({ ...fields, name: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="form-element pt-2.5">
-                  <Input
-                    type="text"
-                    title="Symbol"
-                    required
-                    helperText="Symbol can only be letters and numbers up to 10 characters"
-                    placeholder="Symbol"
-                    value={fields.symbol}
-                    onChange={(e) =>
-                      setFields({ ...fields, symbol: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="form-element pt-2.5">
-                  <Input
-                    textarea
-                    type="text"
-                    title="Description"
-                    required
                     helperText=""
-                    placeholder="Describe your Community."
-                    value={fields.desc}
-                    onChange={(e) =>
-                      setFields({ ...fields, desc: e.target.value })
+                    placeholder="0"
+                    value={
+                      fields.passPrice > 0 ? fields.passPrice.toString() : ""
                     }
-                  />
-              </div>
-
-              </div>
-              <div className="xl:col-span-3">
-                <div className="form-element pt-2.5">
-                  <div className="grid grid-cols-12 gap-4">
-                    <div className="form-element col-span-9">
-                      <Input
-                        type="text"
-                        title="Project Pass Price"
-                        required
-                        helperText=""
-                        placeholder="0"
-                        value={
-                          fields.passPrice > 0 ? fields.passPrice.toString() : ""
-                        }
-                        onChange={(e) =>
-                          setFields({
-                            ...fields,
-                            passPrice: prepareNumber(Number(e.target.value)),
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="col-span-3 mt-7 text-white text-header-small-font-size">
-                      MMOSH = {usdPrice * fields.passPrice} USD
-                    </div>
-                  </div>
-                </div>
-                <div className="form-element pt-2.5">
-                  <Input
-                    type="text"
-                    title="Project Website"
-                    required={false}
-                    helperText=""
-                    placeholder="https://www.example.com/"
-                    value={fields.website}
                     onChange={(e) =>
-                      setFields({ ...fields, website: e.target.value })
+                      setFields({
+                        ...fields,
+                        passPrice: prepareNumber(Number(e.target.value)),
+                      })
                     }
                   />
                 </div>
-                <div className="form-element pt-2.5">
-                  <Input
-                    type="text"
-                    title="Project Telegram"
-                    required={false}
-                    helperText=""
-                    placeholder="https://t.me/example"
-                    value={fields.telegram}
-                    onChange={(e) =>
-                      setFields({ ...fields, telegram: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="form-element pt-2.5">
-                  <Input
-                    type="text"
-                    title="Project Bluesky"
-                    required={false}
-                    helperText=""
-                    placeholder="https://bsky.app/profile/example.bsky.social"
-                    value={fields.twitter}
-                    onChange={(e) =>
-                      setFields({ ...fields, twitter: e.target.value })
-                    }
-                  />
+                <div className="col-span-3 mt-7 text-white text-header-small-font-size">
+                  MMOSH = {usdPrice * fields.passPrice} USD
                 </div>
               </div>
             </div>
-            <div className="flex justify-center mt-10">
-              {!loading && (
-                <button
-                  className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                  onClick={mintGensisPass}
-                  disabled={!isReady}
-                >
-                  Mint
-                </button>
-              )}
-              {loading && (
-                <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white">
-                  {buttonText}
-                </button>
-              )}
+            <div className="form-element pt-2.5">
+              <Input
+                type="text"
+                title="Project Website"
+                required={false}
+                helperText=""
+                placeholder="https://www.example.com/"
+                value={fields.website}
+                onChange={(e) =>
+                  setFields({ ...fields, website: e.target.value })
+                }
+              />
             </div>
-            <div className="w-full flex flex-col justify-center items-center mt-5">
-              <div className="flex flex-col justify-center items-center">
-                <p className="text-sm text-white">Price: 25,000 MMOSH</p>
-                <p className="text-tiny text-white">
-                  plus a small amount of SOL for gas fees
-                </p>
-              </div>
-              <BalanceBox />
+            <div className="form-element pt-2.5">
+              <Input
+                type="text"
+                title="Project Telegram"
+                required={false}
+                helperText=""
+                placeholder="https://t.me/example"
+                value={fields.telegram}
+                onChange={(e) =>
+                  setFields({ ...fields, telegram: e.target.value })
+                }
+              />
             </div>
+            <div className="form-element pt-2.5">
+              <Input
+                type="text"
+                title="Project Bluesky"
+                required={false}
+                helperText=""
+                placeholder="https://bsky.app/profile/example.bsky.social"
+                value={fields.twitter}
+                onChange={(e) =>
+                  setFields({ ...fields, twitter: e.target.value })
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-center mt-10">
+          {!loading && (
+            <button
+              className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+              onClick={mintGensisPass}
+              disabled={!isReady}
+            >
+              Mint
+            </button>
+          )}
+          {loading && (
+            <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white">
+              {buttonText}
+            </button>
+          )}
+        </div>
+        <div className="w-full flex flex-col justify-center items-center mt-5">
+          <div className="flex flex-col justify-center items-center">
+            <p className="text-sm text-white">Price: 25,000 MMOSH</p>
+            <p className="text-tiny text-white">
+              plus a small amount of SOL for gas fees
+            </p>
+          </div>
+          <BalanceBox />
+        </div>
       </div>
     </>
   );

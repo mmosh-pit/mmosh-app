@@ -111,8 +111,6 @@ const Header = () => {
       },
     });
 
-    console.log("Result: ", result);
-
     const user = result.data?.data?.user;
 
     setShowAuthOverlay(!user);

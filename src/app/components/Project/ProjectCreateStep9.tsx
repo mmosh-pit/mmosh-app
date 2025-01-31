@@ -48,7 +48,11 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     setFiles(files);
   }, [projectDetail]);
 
-  const uploadAction = (fileUri: any, fileType: any, fileName: any) => {
+  const uploadAction = (
+    fileUri: string,
+    fileType: string,
+    fileName: string,
+  ) => {
     const newFiles = [];
     newFiles.push({
       preview: fileUri,
@@ -57,7 +61,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       isPrivate: false,
       saved: false,
     });
-    setFiles(newFiles);
+    setFiles([...files, ...newFiles]);
   };
 
   const removeFileAction = React.useCallback(

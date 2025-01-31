@@ -9,13 +9,11 @@ export async function POST(req: NextRequest) {
   for (let index = 0; index < files.length; index++) {
     const element = files[index];
     await collection.insertOne({
-        media: element,
-        projectkey,
-        created_date: new Date(),
-        updated_date: new Date()
+      media: element,
+      projectkey,
+      created_date: new Date(),
+      updated_date: new Date(),
     });
   }
   return NextResponse.json("", { status: 200 });
-
 }
-

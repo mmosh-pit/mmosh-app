@@ -82,9 +82,8 @@ const InformDocument = ({ aiDocument, onDelete, isCoin = false }: Props) => {
   const getPositionedValues = () => {
     const bounds = divRef.current!.getBoundingClientRect();
 
-    return `top-[${
-      bounds.top - 25
-    }px] left-[${bounds.left}px] right-[${bounds.right}px]`;
+    return `top-[${bounds.top - 25
+      }px] left-[${bounds.left}px] right-[${bounds.right}px]`;
   };
 
   return (

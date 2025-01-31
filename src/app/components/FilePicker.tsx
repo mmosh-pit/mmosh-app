@@ -1,20 +1,16 @@
-import Image from "next/image";
 import * as React from "react";
 
-import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import ImageIcon from "@/assets/icons/ImageIcon";
 import FileIcon from "@/assets/icons/FileIcon";
 import AddIcon from "@/assets/icons/AddIcon";
 
 type Props = {
   changeFile: (file: File | null) => void;
   file: string;
-  isButton: boolean
+  isButton: boolean;
 };
 
-const FilePicker = ({ changeFile, file, isButton }: Props) => {
+const FilePicker = ({ changeFile, isButton }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const isMobile = useCheckMobileScreen();
 
   const handleChangeInput = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +27,7 @@ const FilePicker = ({ changeFile, file, isButton }: Props) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        changeFile(e.dataTransfer.files[0]);
+      changeFile(e.dataTransfer.files[0]);
     }
     // eslint-disable-next-line
   }, []);
@@ -76,34 +72,43 @@ const FilePicker = ({ changeFile, file, isButton }: Props) => {
       onDrop={(e) => handleDrop(e)}
       className="w-full h-full"
     >
-        <input
-            ref={inputRef}
-            type="file"
-            accept="application/pdf,application/msword,
+      <input
+        ref={inputRef}
+        type="file"
+        accept="application/pdf,application/msword,
   application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            style={{ display: "none" }}
-            onChange={handleChangeInput}
-        />
-        {!isButton &&
-            <div className="cursor-pointer" onClick={triggerClick}>
-                <h5 className="text-header-small-font-size text-while font-poppins text-center font-bold">File 1</h5>
-                <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                    <p className="text-para-font-size light-gray-color text-center">PDF or Docx</p>
-                    <div className="w-8 mx-auto"><FileIcon /></div>
-                    <p className="text-para-font-size light-gray-color text-center"><span className="font-semibold">Drag and Drop file</span> or <span className="font-semibold">Browse media</span> on your device</p>
-                </div>
+        style={{ display: "none" }}
+        onChange={handleChangeInput}
+      />
+      {!isButton && (
+        <div className="cursor-pointer" onClick={triggerClick}>
+          <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
+            <p className="text-para-font-size light-gray-color text-center">
+              PDF or Docx
+            </p>
+            <div className="w-8 mx-auto">
+              <FileIcon />
             </div>
-        }
+            <p className="text-para-font-size light-gray-color text-center">
+              <span className="font-semibold">Drag and Drop file</span> or{" "}
+              <span className="font-semibold">Browse media</span> on your device
+            </p>
+          </div>
+        </div>
+      )}
 
-        {isButton &&
-            <div className="h-full">
-                <h3 className="flex h-full justify-center items-center">
-                <div className="cursor-pointer" onClick={triggerClick}>
-                    <AddIcon />
-                </div>
-                <span className="text-para-font-size text-while font-poppins p-1.5">Add File</span></h3>
+      {isButton && (
+        <div className="h-full">
+          <h3 className="flex h-full justify-center items-center">
+            <div className="cursor-pointer" onClick={triggerClick}>
+              <AddIcon />
             </div>
-        }
+            <span className="text-para-font-size text-while font-poppins p-1.5">
+              Add File
+            </span>
+          </h3>
+        </div>
+      )}
     </div>
   );
 };

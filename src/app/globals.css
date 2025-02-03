@@ -1095,3 +1095,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border-radius: 9999px;
   cursor: pointer;
 }
+
+textarea::placeholder {
+  transform: translateY(8px);
+}

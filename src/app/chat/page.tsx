@@ -174,61 +174,60 @@ export default function OPOS() {
   return (
     <div className="background-content flex w-full h-full justify-center">
       <div className="lg:w-[60%] md:w-[75%] w-[90%] h-[65vh] flex flex-col p-2 rounded-xl mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px]">
-        <div className="bg-[#030234] flex w-full justify-center items-center">
-          <div className="relative w-[3vmax] h-[5vmax]">
-            <Image
-              src="https://storage.googleapis.com/mmosh-assets/uncle-psy.png"
-              alt="Uncle Psy"
-              layout="fill"
-            />
-          </div>
-
-          <div className="relative w-[8vmax] h-[5vmax] mx-8">
-            <Image
-              src="https://storage.googleapis.com/mmosh-assets/opos-logo.png"
-              alt="Opos logo"
-              layout="fill"
-            />
-          </div>
-
-          <div className="relative w-[3vmax] h-[5vmax]">
-            <Image
-              src="https://storage.googleapis.com/mmosh-assets/aunt-bea.png"
-              alt="Aunt Bea"
-              layout="fill"
-            />
-          </div>
-        </div>
-
-        <div className="w-full flex flex-col items-center mt-4">
-          <h4 className="text-xl">Ask Uncle Psy and Aunt Bea</h4>
-          <p className="text-base">The Composable Opossums.</p>
-        </div>
+        <div className="bg-[#030234] w-full py-8 rounded-t-xl" />
 
         <div
-          className="w-full h-full flex flex-col grow overflow-y-auto px-4"
+          className="w-full h-full flex flex-col grow overflow-y-auto px-16"
           ref={messagesRef}
         >
+          {messages.length === 0 && (
+            <div className="flex self-center flex-col items-center justify-center h-full">
+              <p className="text-base">Hi!</p>
+              <p className="text-base">How can I assist you today?</p>
+            </div>
+          )}
+
           {messages.map((message, index) => (
             <div
-              className="w-full flex items-center justify-start my-1 rounded-lg"
+              className={`w-full flex items-center ${message.type === "bot" ? "justify-start" : "justify-end"} my-1 rounded-lg`}
               key={`${message.type}-${index}`}
             >
-              <div className="relative w-[2vmax] h-[2vmax]">
-                <Image
-                  layout="fill"
-                  src={getMessageImage(message)}
-                  alt="image"
-                  className="rounded-full"
-                />
-              </div>
+              {message.type === "bot" ? (
+                <>
+                  <div className="relative w-[2vmax] h-[2vmax]">
+                    <Image
+                      layout="fill"
+                      src={getMessageImage(message)}
+                      alt="image"
+                      className="rounded-full"
+                    />
+                  </div>
 
-              <div className="w-full justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
-                <p className="text-base text-white">
-                  {getMessageUsername(message)}
-                </p>
-                <Markdown children={message.message} />
-              </div>
+                  <div className="w-full justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
+                    <p className="text-base text-white">
+                      {getMessageUsername(message)}
+                    </p>
+                    <Markdown children={message.message} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
+                    <p className="text-base text-white text-end">
+                      {getMessageUsername(message)}
+                    </p>
+                    <Markdown children={message.message} />
+                  </div>
+                  <div className="relative w-[2vmax] h-[2vmax]">
+                    <Image
+                      layout="fill"
+                      src={getMessageImage(message)}
+                      alt="image"
+                      className="rounded-full"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           ))}
 
@@ -269,10 +268,11 @@ export default function OPOS() {
               sendToAI();
             }}
           >
-            <input
+            <textarea
               className="home-ai-textfield w-full mr-4 px-2"
-              type="text"
               placeholder="Ask Uncle Psy and Aunt Bea"
+              rows={2}
+              wrap="hard"
               value={text}
               onChange={(e) => {
                 setText(e.target.value);

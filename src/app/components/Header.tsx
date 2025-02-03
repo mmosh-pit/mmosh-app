@@ -610,9 +610,28 @@ const Header = () => {
                 )}
               </div>
             )}
+
+            <WalletMultiButton
+              startIcon={undefined}
+              style={{
+                background:
+                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
+                padding: isMobileScreen ? "0 0.4em" : "0 0.8em",
+                borderRadius: 15,
+                marginLeft: "0.5rem",
+                marginRight: "0.5rem",
+              }}
+            >
+              <p className="md:text-base text-sm text-white">
+                {wallet?.publicKey
+                  ? walletAddressShortener(wallet.publicKey.toString())
+                  : "Connect"}
+              </p>
+            </WalletMultiButton>
+
             {currentUser?.profile?.image && (
               <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 ${isDrawerShown ? "z-[-1]" : ""
+                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
                   } cursor-pointer`}
                 onClick={() => {
                   router.push(`/${currentUser?.profile.username}`);
@@ -627,14 +646,14 @@ const Header = () => {
               </div>
             )}
 
-            {!isMobileScreen && (
+            {!isMobileScreen && isUserAuthenticated && (
               <button
-                className="relative bg-[#3A34888A] px-4 py-3 rounded-full"
-                onClick={() => {
-                  router.push("/chat");
-                }}
+                className="relative bg-[#3A34888A] px-2 py-3 rounded-xl ml-2"
+                onClick={() => router.push("/settings")}
               >
-                <p className="md:text-base text-sm text-white ">Chat</p>
+                <p className="md:text-base text-sm text-white settings-btn">
+                  Settings
+                </p>
               </button>
             )}
 
@@ -658,34 +677,6 @@ const Header = () => {
                     {isUserAuthenticated ? "Logout" : "Log In"}
                   </p>
                 )}
-              </button>
-            )}
-
-            <WalletMultiButton
-              startIcon={undefined}
-              style={{
-                background:
-                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: isMobileScreen ? "0 0.4em" : "0 0.8em",
-                borderRadius: 15,
-                marginLeft: "0.5rem",
-              }}
-            >
-              <p className="md:text-base text-sm text-white">
-                {wallet?.publicKey
-                  ? walletAddressShortener(wallet.publicKey.toString())
-                  : "Connect"}
-              </p>
-            </WalletMultiButton>
-
-            {!isMobileScreen && isUserAuthenticated && (
-              <button
-                className="relative bg-[#3A34888A] px-2 py-3 rounded-xl ml-2"
-                onClick={() => router.push("/settings")}
-              >
-                <p className="md:text-base text-sm text-white settings-btn">
-                  Settings
-                </p>
               </button>
             )}
           </div>

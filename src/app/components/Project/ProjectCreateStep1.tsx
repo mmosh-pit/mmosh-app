@@ -13,7 +13,7 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import useWallet from "@/utils/wallet";
 import { useAtom } from "jotai";
-import { userWeb3Info } from "@/app/store";
+import { data, userWeb3Info } from "@/app/store";
 import { Connectivity as Community } from "@/anchor/community";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
@@ -23,6 +23,7 @@ export default function ProjectCreateStep1({ }: {}) {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
+  const [currentUser] = useAtom(data);
 
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
@@ -391,6 +392,7 @@ export default function ProjectCreateStep1({ }: {}) {
           presaleenddate: "",
           dexlistingdate: "",
           creator: wallet.publicKey.toBase58(),
+          creatorUsername: currentUser?.profile?.username,
         });
         setButtonText("Mint");
         localStorage.removeItem("projectstep1");

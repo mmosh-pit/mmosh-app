@@ -16,7 +16,7 @@ const AddIcon = (props: Props) => (
         height="28"
         rx="14"
         fill="#9A9A9A"
-        fill-opacity="0.07"
+        fillOpacity="0.07"
       />
       <rect
         x="1"

@@ -550,7 +550,7 @@ const Header = () => {
             <MobileDrawer />
           ) : (
             <div
-              className="flex justify-end w-[30%] mr-12 cursor-pointer"
+              className="flex justify-end w-[20%] mr-12 cursor-pointer"
               onClick={() => {
                 router.push("/");
               }}
@@ -567,7 +567,7 @@ const Header = () => {
 
           {!isMobileScreen && <Tabs />}
 
-          <div className="flex items-center justify-end max-w-[50%] md:w-[40%] lg:w-[30%]">
+          <div className="flex items-center justify-end max-w-[45%] md:w-[35%] lg:w-[20%]">
             {currentUser?.profilenft && (
               <div className="dropdown pr-6 ml-4">
                 <a

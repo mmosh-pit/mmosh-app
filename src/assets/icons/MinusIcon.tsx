@@ -3,7 +3,7 @@ type Props = React.SVGProps<SVGSVGElement>;
 const MinusIcon = (props: Props) => (
 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_bi_9226_17032)">
-<rect x="1" y="1" width="28" height="28" rx="14" fill="#9A9A9A" fill-opacity="0.07"/>
+<rect x="1" y="1" width="28" height="28" rx="14" fill="#9A9A9A" fillOpacity="0.07"/>
 <rect x="1" y="1" width="28" height="28" rx="14" stroke="#9F9F9F" stroke-opacity="0.22"/>
 </g>
 <rect x="9" y="14" width="12" height="2" rx="1" fill="white"/>

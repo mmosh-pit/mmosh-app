@@ -7,9 +7,10 @@ type Props = {
   changeFile: (file: File | null) => void;
   file: string;
   isButton: boolean;
+  multiple?: boolean;
 };
 
-const FilePicker = ({ changeFile, isButton }: Props) => {
+const FilePicker = ({ changeFile, isButton, multiple }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const handleChangeInput = React.useCallback(
@@ -75,6 +76,7 @@ const FilePicker = ({ changeFile, isButton }: Props) => {
       <input
         ref={inputRef}
         type="file"
+        multiple={multiple}
         accept="application/pdf,application/msword,
   application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         style={{ display: "none" }}

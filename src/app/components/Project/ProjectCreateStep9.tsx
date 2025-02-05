@@ -2,12 +2,11 @@
 
 import FilePicker from "@/app/components/FilePicker";
 import { init, uploadFile } from "@/app/lib/firebase";
-import DownloadIcon from "@/assets/icons/DownloadIcon";
-import FileIcon from "@/assets/icons/FileIcon";
-import RemoveIcon from "@/assets/icons/RemoveIcon";
+import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import axios from "axios";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import AssetItem from "./AssetItem";
 
 export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
   const [loading, setLoading] = useState(false);
@@ -21,6 +20,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     }[]
   >([]);
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
+  const [text, setText] = React.useState("");
 
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
@@ -203,6 +203,48 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     setLoading(false);
   }, [files, projectDetail]);
 
+  const sendToAI = React.useCallback(async () => {
+    if (!projectDetail) return;
+    setLoading(true);
+
+    const formData = new FormData();
+
+    const projectKey = projectDetail?.project.key;
+
+    formData.append("name", projectKey);
+    formData.append("urls", "None");
+
+    formData.append("text", text);
+
+    formData.append(
+      "metadata",
+      JSON.stringify({
+        project: projectKey,
+        name: text,
+      }),
+    );
+
+    await axios.post(
+      "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+      formData,
+    );
+
+    const data = {
+      preview: text,
+      name: "",
+      type: "text",
+      isPrivate: false,
+      saved: true,
+    };
+
+    await axios.post("/api/project/save-media", {
+      files: [data],
+      projectkey: projectDetail.project.key,
+    });
+    setLoading(false);
+    createMessage("Text uploaded successfully", "success-container");
+  }, [text, projectDetail]);
+
   const isValidHttpUrl = (url: any) => {
     try {
       const newUrl = new URL(url);
@@ -277,6 +319,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
         {files.length === 0 ? (
           <div className="self-center md:w-[75%] w-[90%] mt-4">
             <FilePicker
+              multiple
               file={""}
               isButton={false}
               changeFile={(file: any) => {
@@ -293,53 +336,17 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
                   <div className="grid grid-cols-3 gap-4">
                     <>
                       {files.map((fileItem, i: number) => (
-                        <div key={i}>
-                          <h5 className="text-header-small-font-size text-while font-poppins text-center font-bold">
-                            File {i + 1}
-                          </h5>
-                          <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center">
-                            <p className="text-para-font-size light-gray-color text-center break-all max-w-[100%]">
-                              {fileItem.name}
-                            </p>
-                            <div className="w-8 mx-auto">
-                              <FileIcon />
-                            </div>
-
-                            <div className="flex items-center justify-center w-full mt-4">
-                              <p className="text-xs">Public</p>
-                              <input
-                                type="checkbox"
-                                className="toggle border-[#0061FF] bg-[#0061FF] [--tglbg:#1B1B1B] hover:bg-[#0061FF] mx-1"
-                                checked={fileItem.isPrivate}
-                                onClick={() => {
-                                  onChangePrivacy(!fileItem.isPrivate, i);
-                                }}
-                              />
-                              <p className="text-xs">Private</p>
-                            </div>
-
-                            <div className="flex justify-center mt-4">
-                              <a
-                                className="cursor-pointer"
-                                href={fileItem.preview}
-                                target="_blank"
-                              >
-                                <DownloadIcon />
-                              </a>
-                              <div
-                                className="cursor-pointer ml-3"
-                                onClick={() => {
-                                  removeFileAction(i);
-                                }}
-                              >
-                                <RemoveIcon />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <AssetItem
+                          key={i}
+                          index={i}
+                          file={fileItem}
+                          removeFile={removeFileAction}
+                          onChangePrivacy={onChangePrivacy}
+                        />
                       ))}
                     </>
                     <FilePicker
+                      multiple
                       file={""}
                       isButton={true}
                       changeFile={(file: any) => {
@@ -368,6 +375,35 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
             </div>
           </div>
         )}
+
+        <div className="w-full md:w-[80%] pb-4 px-12 mt-8">
+          <form
+            className="w-full flex justify-between p-2 bg-[#BBBBBB21] border-[1px] border-[#06052D] rounded-lg"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendToAI();
+            }}
+          >
+            <textarea
+              className="home-ai-textfield w-full mr-4 px-2"
+              placeholder="Ask Uncle Psy and Aunt Bea"
+              rows={2}
+              wrap="hard"
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value);
+              }}
+            />
+
+            <button
+              className={`p-3 rounded-lg ${!text ? "bg-[#565656]" : "bg-[#FFF]"}`}
+              disabled={!text || loading}
+              type="submit"
+            >
+              <ArrowUpHome />
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

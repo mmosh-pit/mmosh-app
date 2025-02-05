@@ -9,9 +9,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") as string;
   const search = searchParams.get("searchText") as string;
-  let match = {$match: {}};
-  if(search && type === "directory") {
-     match = {
+  let match = { $match: {} };
+  if (search && type === "directory") {
+    match = {
       $match: {
         $or: [
           { name: { $regex: new RegExp(search, "ig") } },
@@ -19,36 +19,35 @@ export async function GET(req: NextRequest) {
           { desc: { $regex: new RegExp(search, "ig") } },
         ],
       },
-    }
+    };
   }
 
-  if(type !== "directory") {
+  if (type !== "directory") {
     const dexExpiry = new Date().toISOString();
-    if(search) {
+    if (search) {
       match = {
         $match: {
           $and: [
-            {"dexlistingdate": {$gt: dexExpiry}},
+            { dexlistingdate: { $gt: dexExpiry } },
             {
               $or: [
                 { name: { $regex: new RegExp(search, "ig") } },
                 { symbol: { $regex: new RegExp(search, "ig") } },
                 { desc: { $regex: new RegExp(search, "ig") } },
               ],
-            }
-          ]
+            },
+          ],
         },
-      }
+      };
     } else {
-      match = { $match: { dexlistingdate: { $gt: dexExpiry } } }
+      match = { $match: { dexlistingdate: { $gt: dexExpiry } } };
     }
-
   }
 
   const result = await db
     .collection("mmosh-app-project")
     .aggregate([
-     match,
+      match,
       {
         $lookup: {
           from: "mmosh-app-project-coins",
@@ -102,6 +101,8 @@ export async function GET(req: NextRequest) {
           dexlistingdate: 1,
           presalesupply: 1,
           minpresalesupply: 1,
+          creatorUsername: 1,
+          creator: 1,
           coins: "$coins",
           community: "$community",
           profiles: "$profiles",
@@ -109,7 +110,7 @@ export async function GET(req: NextRequest) {
           pass: "$pass",
         },
       },
-      {$sort: {created_date: -1}},
+      { $sort: { created_date: -1 } },
     ])
     .limit(100)
     .toArray();

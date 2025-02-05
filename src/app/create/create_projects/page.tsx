@@ -89,6 +89,7 @@ export default function ProjectCreate() {
                         { label: "Manage Offerings", value: "Offerings" },
                         { label: "Manage Coins", value: "Coins" },
                         { label: "Manage Teams", value: "Teams" },
+                        { label: "Instruct Agent", value: "Instruct" },
                       ]);
                       setSelectedOption("Agent Coins");
                     } else {
@@ -160,6 +161,15 @@ export default function ProjectCreate() {
               Coming soon! You’ll be able to build and manage a team to inform
               your agent, refine the instructions, support your subscribers,
               promote your token and help out in many other ways.
+            </p>
+          </div>
+        )}
+
+        {selectedOption === "Instruct" && (
+          <div className="flex justify-center">
+            <p className="text-base">
+              Coming soon! You’ll be able to refine your agent’s personality and
+              instruct them to perform a wide variety of tasks.
             </p>
           </div>
         )}

@@ -39,9 +39,12 @@ const ProjectCard = (projectData: any) => {
         </div>
 
         <div className="flex items-center">
-          <p className="text-white text-lg text-[#FF00C7] underline">
+          <a
+            className="text-white text-lg text-[#FF00C7] underline"
+            href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${projectData.data.creatorUsername}`}
+          >
             @{projectData.data.creatorUsername}
-          </p>
+          </a>
           <p className="text-base"> • {projectData.data.creatorUsername}</p>
         </div>
 

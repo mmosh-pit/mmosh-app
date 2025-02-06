@@ -24,10 +24,10 @@ const AssetItem = ({
       <h5 className="text-header-small-font-size text-while font-poppins text-center font-bold">
         File {index + 1}
       </h5>
-      <div className="backdrop-container rounded-xl px-5 py-10 border border-white border-opacity-20 text-center flex flex-col">
+      <div className="backdrop-container rounded-xl px-5 pb-10 border border-white border-opacity-20 text-center flex flex-col justify-around h-[300px]">
         {file.type === "text" && (
           <div
-            className="cursor-pointer self-end ml-3"
+            className="cursor-pointer self-end ml-3 mt-2"
             onClick={() => {
               removeFile(index);
             }}
@@ -35,6 +35,8 @@ const AssetItem = ({
             <RemoveIcon />
           </div>
         )}
+
+        <div className="pt-10" />
 
         {file.type !== "text" && (
           <p className="text-para-font-size light-gray-color text-center break-all max-w-[100%]">

@@ -241,6 +241,12 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       files: [data],
       projectkey: projectDetail.project.key,
     });
+
+    setFiles((prev) => {
+      const result = [...prev, data];
+
+      return result;
+    });
     setLoading(false);
     createMessage("Text uploaded successfully", "success-container");
   }, [text, projectDetail]);

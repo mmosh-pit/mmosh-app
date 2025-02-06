@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Select from "@/app/components/common/Select";
 import useWallet from "@/utils/wallet";
 import axios from "axios";
+import AgentStudioToolsCreate from "@/app/components/Project/AgentStudioToolsCreate";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();
@@ -84,14 +85,14 @@ export default function ProjectCreate() {
                     if (e.target.value !== "New Personal Agent") {
                       setOptions([
                         { label: "Tools", value: "Tools" },
-                        { label: "Inform Agent", value: "inform" },
+                        { label: "Inform Agent", value: "Inform" },
                         { label: "Intent", value: "Intent" },
                         { label: "Manage Offerings", value: "Offerings" },
                         { label: "Manage Coins", value: "Coins" },
                         { label: "Manage Teams", value: "Teams" },
                         { label: "Instruct Agent", value: "Instruct" },
                       ]);
-                      setSelectedOption("Agent Coins");
+                      setSelectedOption("Tools");
                     } else {
                       setOptions([
                         { label: "Tokenize Agent", value: "Tokenize Agent" },
@@ -117,6 +118,11 @@ export default function ProjectCreate() {
         </div>
 
         {selectedOption === "Tokenize Agent" && <ProjectCreateStep1 />}
+
+        {selectedOption === "Tools" && (
+          <AgentStudioToolsCreate symbol={selectedProjectType} />
+        )}
+
         {selectedOption === "Communities" && (
           <ProjectCreateStep2 onPageChange={onPageChange} />
         )}
@@ -141,7 +147,7 @@ export default function ProjectCreate() {
         {selectedOption === "Listing" && (
           <ProjectCreateStep8 onPageChange={onPageChange} />
         )}
-        {selectedOption === "inform" && (
+        {selectedOption === "Inform" && (
           <ProjectCreateStep9 symbol={selectedProjectType} />
         )}
 

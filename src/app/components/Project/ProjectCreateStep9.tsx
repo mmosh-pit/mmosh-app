@@ -166,6 +166,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
         fields.preview = await uploadFile(file, file.name, "bot");
       }
       fields.isPrivate = false;
+      fields.saved = true;
       fileList.push(fields);
     }
 

@@ -31,12 +31,12 @@ const BlueskyAgentOption = ({ symbol }: { symbol: string }) => {
 
   return (
     <div className="flex flex-col items-start">
-      <div className="flex items-center bg-[#D9D9D938] border-[1px] border-[#FFFFFFEB] rounded-lg">
-        <BlueskyIcon /> Bluesky
+      <div className="flex items-center bg-[#D9D9D938] border-[1px] border-[#FFFFFFEB] rounded-2xl px-3 py-1 mb-2">
+        <BlueskyIcon /> <p className="ml-2 text-white text-sm">Bluesky</p>
       </div>
 
       <div
-        className={`flex flex-wrap ${blueskyConnections.length === 0 ? "justify-center" : "justify-around"} md:min-w-[60%] min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] rounded-lg p-6`}
+        className={`flex flex-wrap ${blueskyConnections.length === 0 ? "justify-center" : "justify-around"} md:min-w-[60%] min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] rounded-lg p-6 min-h-[200px]`}
       >
         {blueskyConnections.map((conn) => (
           <div className="flex flex-col bg-[#00000078] border-[1px] border-[#FFFFFF08] p-2">
@@ -51,8 +51,8 @@ const BlueskyAgentOption = ({ symbol }: { symbol: string }) => {
         ))}
 
         {isAddMode ? (
-          <div className="flex flex-col self-center bg-[#03000754] backdrop-filter backdrop-blur-[8px] p-4">
-            <h5 className="text-white max-w-[70%]">
+          <div className="flex flex-col items-center self-center bg-[#03000754] backdrop-filter backdrop-blur-[8px] p-4">
+            <h5 className="text-white max-w-[70%] text-center mb-4">
               What Bluesky account do you want to share with your agent?
             </h5>
 
@@ -76,7 +76,7 @@ const BlueskyAgentOption = ({ symbol }: { symbol: string }) => {
               placeholder="Password"
             />
 
-            <div className="my-2" />
+            <div className="my-4" />
 
             <Button
               size="small"
@@ -87,12 +87,19 @@ const BlueskyAgentOption = ({ symbol }: { symbol: string }) => {
             />
           </div>
         ) : (
-          <div className="flex items-center" onClick={() => setIsAddMode(true)}>
-            <div className="rounded-full border-[1.5px] border-[#9F9F9F38] bg-[#9A9A9A12] p-1 mr-2">
+          <div
+            className="flex items-center cursor-pointer"
+            onClick={() => setIsAddMode(true)}
+          >
+            <div className="rounded-full border-[1.5px] border-[#9F9F9F38] bg-[#9A9A9A12] px-2 mr-2">
               <p className="font-bold text-lg text-white">+</p>
             </div>
 
-            <p className="text-base text-white">Another account</p>
+            <p className="text-base text-white">
+              {blueskyConnections.length === 0
+                ? "Add Account"
+                : "Another Account"}
+            </p>
           </div>
         )}
       </div>

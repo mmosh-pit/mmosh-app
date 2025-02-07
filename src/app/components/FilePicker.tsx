@@ -18,7 +18,9 @@ const FilePicker = ({ changeFile, isButton, multiple }: Props) => {
       if (!event.target.files) return;
       if (!event.target.files.item(0)) return;
 
-      changeFile(event.target.files.item(0));
+      for (const file of event.target.files) {
+        changeFile(file);
+      }
     },
     // eslint-disable-next-line
     [],
@@ -28,7 +30,9 @@ const FilePicker = ({ changeFile, isButton, multiple }: Props) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      changeFile(e.dataTransfer.files[0]);
+      for (const file of e.dataTransfer.files) {
+        changeFile(file);
+      }
     }
     // eslint-disable-next-line
   }, []);

@@ -174,17 +174,56 @@ export default function OPOS() {
   return (
     <div className="background-content flex w-full h-full justify-center">
       <div className="lg:w-[60%] md:w-[75%] w-[90%] h-[65vh] flex flex-col p-2 rounded-xl mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px]">
-        <div className="bg-[#030234] w-full py-8 rounded-t-xl" />
+        <div className="flex justify-center items-center bg-[#030234] w-full py-2 rounded-t-xl">
+          <div className="flex flex-col">
+            <div className="relative w-[4vmax] h-[5vmax]">
+              <Image
+                src="https://storage.googleapis.com/mmosh-assets/uncle_psy.png"
+                alt="Uncle Psy"
+                layout="fill"
+              />
+            </div>
+            <p className="text-base text-white">Uncle Psy</p>
+          </div>
+
+          <div className="mx-4" />
+
+          <div className="flex flex-col">
+            <div className="relative w-[4vmax] h-[5vmax]">
+              <Image
+                src="https://storage.googleapis.com/mmosh-assets/aunt_bea.png"
+                alt="Aunt Bea"
+                layout="fill"
+              />
+            </div>
+            <p className="text-base text-white">Aunt Bea</p>
+          </div>
+        </div>
 
         <div
-          className="w-full h-full flex flex-col grow overflow-y-auto px-16"
+          className="w-full h-full flex flex-col items-center grow overflow-y-auto px-16"
           ref={messagesRef}
         >
-          {messages.length === 0 && (
-            <div className="flex self-center flex-col items-center justify-center h-full">
-              <p className="text-base">Hi!</p>
-              <p className="text-base">How can I assist you today?</p>
-            </div>
+          <div className="flex flex-col items-center max-w-[85%] mt-8">
+            <p className="text-sm text-[#C1C1C1] text-center">
+              Hello, I’m Uncle Psy, your Kinship Greeter! Aunt Bea and I
+              currently have two active agents, CAT-FAWN Connection, a
+              self-hypnosis program for mental, physical, spiritual and
+              emotional wellbeing, and FULL Disclosure Bot, which is working to
+              expose hidden forces and nefarious programs and reveal the truth
+              of our Star Trek future.
+            </p>
+
+            <div className="my-2" />
+
+            <p className="text-sm text-[#C1C1C1] text-center">
+              You can address your questions and requests to me, Aunt Bea or to
+              any of the active agents.
+            </p>
+          </div>
+
+          {messages.length > 0 && (
+            <div className="my-2 h-[2px] w-full bg-[#2D2C56]" />
           )}
 
           {messages.map((message, index) => (

@@ -320,9 +320,11 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
           <div className="relative w-full flex flex-col justify-center items-center pt-5">
             <div className="max-w-md">
               <p className="text-para-font-size light-gray-color text-center para-line-height pt-2.5 text-light-gray leading-4">
-                Upload your white paper and other materials to inform MMOSH Bot
-                about your project. MMOSH Bot will answer questions and inform
-                the community.
+                Inform your agent about the topic. Add as many documents as you
+                like. Your Agent will reference these materials in all
+                conversations and when taking actions on your behalf. Please
+                allow three to five minutes for your agent to process the
+                uploaded materials and make them available in the chat.
               </p>
             </div>
           </div>

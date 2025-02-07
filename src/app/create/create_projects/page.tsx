@@ -52,6 +52,9 @@ export default function ProjectCreate() {
 
   const onPageChange = () => { };
 
+  const projectSymbol =
+    selectedProjectType !== "New Personal Agent" ? selectedProjectType : "";
+
   return (
     <>
       <div className="background-content">
@@ -84,18 +87,27 @@ export default function ProjectCreate() {
                   onChange={(e) => {
                     if (e.target.value !== "New Personal Agent") {
                       setOptions([
-                        { label: "Tools", value: "Tools" },
-                        { label: "Inform Agent", value: "Inform" },
+                        { label: `Empower ${projectSymbol}`, value: "Tools" },
+                        { label: `Inform ${projectSymbol}`, value: "Inform" },
                         { label: "Intent", value: "Intent" },
                         { label: "Manage Offerings", value: "Offerings" },
-                        { label: "Manage Coins", value: "Coins" },
+                        {
+                          label: `Set ${projectSymbol}'s Tokenomics`,
+                          value: "Coins",
+                        },
                         { label: "Manage Teams", value: "Teams" },
-                        { label: "Instruct Agent", value: "Instruct" },
+                        {
+                          label: `Instruct ${projectSymbol}`,
+                          value: "Instruct",
+                        },
                       ]);
                       setSelectedOption("Tools");
                     } else {
                       setOptions([
-                        { label: "Tokenize Agent", value: "Tokenize Agent" },
+                        {
+                          label: `Deploy ${projectSymbol}`,
+                          value: "Tokenize Agent",
+                        },
                       ]);
                       setSelectedOption("Tokenize Agent");
                     }

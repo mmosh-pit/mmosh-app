@@ -9,6 +9,9 @@ import { useAtom } from "jotai";
 import Markdown from "markdown-to-jsx";
 import { Bars } from "react-loader-spinner";
 import { bagsNfts } from "../store/bags";
+import axios from "axios";
+
+let source: any;
 
 export default function OPOS() {
   const lastBotMessageIndex = React.useRef(0);
@@ -16,6 +19,7 @@ export default function OPOS() {
   const [user] = useAtom(userData);
   const [nfts] = useAtom(bagsNfts);
 
+  const [agents, setAgents] = React.useState<AgentData[]>([]);
   const [text, setText] = React.useState("");
   const [availableNamespaces, setAvailableNamespaces] = React.useState<
     string[]
@@ -24,7 +28,32 @@ export default function OPOS() {
   const [isDisabled, setIsDisabled] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const [areProjectsLoading, setAreProjectsLoading] = React.useState(true);
+
   const messagesRef = React.useRef<HTMLDivElement>(null);
+
+  const getProjectsFromAPI = async (keyword: any) => {
+    try {
+      if (source) {
+        source.cancel();
+        source = null;
+      }
+      source = axios.CancelToken.source();
+      setAreProjectsLoading(true);
+      let url = "/api/project/list?type=directory";
+      if (keyword.length > 0) {
+        url = url + "&&searchText=" + keyword;
+      }
+      const listResult = await axios.get(url, {
+        cancelToken: source.token,
+      });
+      setAgents(listResult.data);
+      setAreProjectsLoading(false);
+    } catch (error) {
+      setAreProjectsLoading(false);
+      setAgents([]);
+    }
+  };
 
   const sendToAI = async () => {
     const namespaces = ["PUBLIC", ...availableNamespaces];
@@ -32,6 +61,16 @@ export default function OPOS() {
     if (currentUser?.profilenft) {
       namespaces.push("PRIVATE");
     }
+
+    let systemPrompt = "";
+
+    for (const agent of agents) {
+      if (availableNamespaces.includes(agent.key)) {
+        systemPrompt = agent.system_prompt ?? "";
+      }
+    }
+
+    console.log("Sending with system promp: ", systemPrompt);
 
     try {
       setIsDisabled(true);
@@ -56,6 +95,7 @@ export default function OPOS() {
             username: currentUser?.profile.username ?? user?.name ?? "Visitor",
             prompt: text,
             namespaces: namespaces,
+            system_prompt: systemPrompt !== "" ? systemPrompt : null,
           }),
         },
       );
@@ -166,6 +206,10 @@ export default function OPOS() {
 
     setAvailableNamespaces(namespaces);
   }, [nfts]);
+
+  React.useEffect(() => {
+    getProjectsFromAPI("");
+  }, [currentUser]);
 
   React.useEffect(() => {
     setupAvailableNamespaces();
@@ -320,7 +364,7 @@ export default function OPOS() {
 
             <button
               className={`p-3 rounded-lg ${!text ? "bg-[#565656]" : "bg-[#FFF]"}`}
-              disabled={!text || isDisabled}
+              disabled={!text || isDisabled || areProjectsLoading}
               type="submit"
             >
               <ArrowUpHome />

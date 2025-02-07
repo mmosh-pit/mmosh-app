@@ -52,9 +52,6 @@ export default function ProjectCreate() {
 
   const onPageChange = () => { };
 
-  const projectSymbol =
-    selectedProjectType !== "New Personal Agent" ? selectedProjectType : "";
-
   return (
     <>
       <div className="background-content">
@@ -85,19 +82,21 @@ export default function ProjectCreate() {
                 <Select
                   value={selectedProjectType}
                   onChange={(e) => {
+                    const projectName = projectType.find(
+                      (val) => val.value === e.target.value,
+                    )?.label;
                     if (e.target.value !== "New Personal Agent") {
                       setOptions([
-                        { label: `Empower ${projectSymbol}`, value: "Tools" },
-                        { label: `Inform ${projectSymbol}`, value: "Inform" },
-                        { label: "Intent", value: "Intent" },
+                        { label: `Empower ${projectName}`, value: "Tools" },
+                        { label: `Inform ${projectName}`, value: "Inform" },
                         { label: "Manage Offerings", value: "Offerings" },
                         {
-                          label: `Set ${projectSymbol}'s Tokenomics`,
+                          label: `Set ${projectName}'s Tokenomics`,
                           value: "Coins",
                         },
                         { label: "Manage Teams", value: "Teams" },
                         {
-                          label: `Instruct ${projectSymbol}`,
+                          label: `Instruct ${projectName}`,
                           value: "Instruct",
                         },
                       ]);
@@ -105,7 +104,7 @@ export default function ProjectCreate() {
                     } else {
                       setOptions([
                         {
-                          label: `Deploy ${projectSymbol}`,
+                          label: `Deploy ${projectName}`,
                           value: "Tokenize Agent",
                         },
                       ]);

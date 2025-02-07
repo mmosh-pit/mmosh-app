@@ -60,6 +60,9 @@ const AssetItem = ({
             type="checkbox"
             className="toggle border-[#0061FF] bg-[#0061FF] [--tglbg:#1B1B1B] hover:bg-[#0061FF] mx-1"
             checked={file.isPrivate}
+            onChange={() => {
+              onChangePrivacy(!file.isPrivate, index);
+            }}
             onClick={() => {
               onChangePrivacy(!file.isPrivate, index);
             }}

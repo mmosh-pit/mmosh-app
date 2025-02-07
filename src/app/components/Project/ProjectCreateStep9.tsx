@@ -48,21 +48,25 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     setFiles(files);
   }, [projectDetail]);
 
-  const uploadAction = (
-    fileUri: string,
-    fileType: string,
-    fileName: string,
-  ) => {
-    const newFiles = [];
-    newFiles.push({
-      preview: fileUri,
-      type: fileType,
-      name: fileName,
-      isPrivate: false,
-      saved: false,
-    });
-    setFiles([...files, ...newFiles]);
-  };
+  const uploadAction = React.useCallback(
+    (fileUri: string, fileType: string, fileName: string) => {
+      setFiles((prev) => {
+        const newFile = {
+          preview: fileUri,
+          type: fileType,
+          name: fileName,
+          isPrivate: false,
+          saved: false,
+        };
+
+        const newFiles = [...prev];
+        newFiles.push(newFile);
+
+        return newFiles;
+      });
+    },
+    [],
+  );
 
   const removeFileAction = React.useCallback(
     async (deletedIndex: number) => {
@@ -340,7 +344,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
             <div className="grid grid-cols-12">
               <div className="col-span-12 xl:col-start-4 xl:col-span-6 lg:col-start-4 lg:col-span-6">
                 <div className="backdrop-container rounded-xl p-5 border border-white border-opacity-20 mb-10 ">
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-4 overflow-y-auto">
                     <>
                       {files.map((fileItem, i: number) => (
                         <AssetItem
@@ -352,15 +356,17 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
                         />
                       ))}
                     </>
-                    <FilePicker
-                      multiple
-                      file={""}
-                      isButton={true}
-                      changeFile={(file: any) => {
-                        const objectUrl = URL.createObjectURL(file);
-                        uploadAction(objectUrl, file.type, file.name);
-                      }}
-                    />
+                    <div className="grid-item">
+                      <FilePicker
+                        multiple
+                        file={""}
+                        isButton={true}
+                        changeFile={(file: any) => {
+                          const objectUrl = URL.createObjectURL(file);
+                          uploadAction(objectUrl, file.type, file.name);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

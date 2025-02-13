@@ -9,7 +9,7 @@ export async function PUT(req: NextRequest) {
   await collection.updateOne(
     {
       projectkey,
-      "media.name": file.name,
+      "media.id": file.id,
     },
     {
       $set: {

@@ -234,7 +234,7 @@ const CreateCoin = () => {
           message: res.message,
         });
         setIsLoading(false);
-        return
+        return;
       }
 
       const fileUrls = [];
@@ -430,9 +430,8 @@ const CreateCoin = () => {
   return (
     <>
       <div
-        className={`w-full relative flex flex-col items-center ${
-          isDrawerShown ? "z-[-1]" : ""
-        }`}
+        className={`w-full relative flex flex-col items-center ${isDrawerShown ? "z-[-1]" : ""
+          }`}
       >
         <MessageBanner message={message.message} type={message.type} />
         <div className="w-full flex flex-col justify-center items-center mt-20">
@@ -535,7 +534,7 @@ const CreateCoin = () => {
                             type="radio"
                             className="radio radio-secondary candidates-checkboxes"
                             checked={form.position === "for"}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                           <p className="text-white text-base md:ml-2">For</p>
                         </div>
@@ -551,7 +550,7 @@ const CreateCoin = () => {
                             type="radio"
                             className="radio radio-secondary candidates-checkboxes"
                             checked={form.position === "against"}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                           <p className="text-white text-base md:ml-2">
                             Against
@@ -580,7 +579,7 @@ const CreateCoin = () => {
                             type="radio"
                             className="radio radio-secondary candidates-checkboxes"
                             checked={form.bonding === "ptvr"}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                           <p className="text-white text-base md:ml-2">PTVR</p>
                         </div>
@@ -596,7 +595,7 @@ const CreateCoin = () => {
                             type="radio"
                             className="radio radio-secondary candidates-checkboxes"
                             checked={form.bonding === "ptvb"}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                           <p className="text-white text-base md:ml-2">PTVB</p>
                         </div>

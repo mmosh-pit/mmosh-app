@@ -17,6 +17,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       name: string;
       isPrivate: boolean;
       saved: boolean;
+      id: string;
     }[]
   >([]);
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
@@ -41,6 +42,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
         type: item.media.type,
         name: item.media.name,
         isPrivate: item.media.isPrivate,
+        id: item.media.id,
         saved: true,
       });
     }
@@ -57,6 +59,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
           name: fileName,
           isPrivate: false,
           saved: false,
+          id: uuidv4(),
         };
 
         const newFiles = [...prev];
@@ -70,7 +73,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
   const removeFileAction = React.useCallback(
     async (deletedIndex: number) => {
-      const name = files[deletedIndex].name;
+      const id = files[deletedIndex].id;
 
       const newFiles = [];
       for (let index = 0; index < files.length; index++) {
@@ -83,24 +86,21 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
       setFiles(newFiles);
       await axios.delete(
-        `/api/project/delete-media?project=${projectDetail.project.key}&name=${name}`,
+        `/api/project/delete-media?project=${projectDetail.project.key}&id=${id}`,
       );
-      await removeFileByMetadata(name);
+      await removeFileByMetadata(id);
     },
     [files, projectDetail],
   );
 
   const removeFileByMetadata = React.useCallback(
-    async (name: string) => {
+    async (id: string) => {
       const projectKey = projectDetail?.project.key;
 
-      const metadata = JSON.stringify({
-        project: projectKey,
-        name: name,
-      });
+      const metadata = `${projectKey}-${id}`;
 
       await axios.delete(
-        `https://mmoshapi-uodcouqmia-uc.a.run.app/delete_by_metadata?metadata=${metadata}`,
+        `https://mmoshapi-uodcouqmia-uc.a.run.app/delete_by_metadata?metadata=${encodeURIComponent(metadata)}`,
       );
     },
     [projectDetail],
@@ -119,14 +119,11 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       });
 
       const preview = files[documentIndex].preview;
-      const name = files[documentIndex].name;
+      const id = files[documentIndex].id;
 
-      await removeFileByMetadata(name);
+      await removeFileByMetadata(id);
 
-      const metadata = JSON.stringify({
-        project: projectKey,
-        name: name,
-      });
+      const metadata = `${projectKey}-${id}`;
 
       const formData = new FormData();
       formData.append("name", isPrivate ? projectKey : "PUBLIC");
@@ -142,7 +139,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       await axios.put("/api/project/update-media-privacy", {
         projectkey: projectKey,
         file: {
-          name,
+          id,
           isPrivate,
         },
       });
@@ -150,7 +147,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     [projectDetail, files],
   );
 
-  const gotoStep10 = React.useCallback(async () => {
+  const submitFiles = React.useCallback(async () => {
     if (!projectDetail) return;
 
     setLoading(true);
@@ -158,7 +155,6 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
     for (let index = 0; index < files.length; index++) {
       const fields = files[index];
-
       if (fields.saved) continue;
 
       if (!isValidHttpUrl(fields.preview)) {
@@ -183,13 +179,9 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
       formData.append("text", "None");
 
-      formData.append(
-        "metadata",
-        JSON.stringify({
-          project: projectKey,
-          name: field.name,
-        }),
-      );
+      const metadata = `${projectKey}-${field.id}`;
+
+      formData.append("metadata", metadata);
 
       await axios.post(
         "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
@@ -221,13 +213,11 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
     formData.append("text", text);
 
-    formData.append(
-      "metadata",
-      JSON.stringify({
-        project: projectKey,
-        name: text,
-      }),
-    );
+    const id = uuidv4();
+
+    const metadata = `${projectKey}-${id}`;
+
+    formData.append("metadata", metadata);
 
     await axios.post(
       "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
@@ -240,6 +230,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       type: "text",
       isPrivate: false,
       saved: true,
+      id,
     };
 
     await axios.post("/api/project/save-media", {
@@ -377,7 +368,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
               {!loading && (
                 <button
                   className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white"
-                  onClick={gotoStep10}
+                  onClick={submitFiles}
                 >
                   Submit
                 </button>

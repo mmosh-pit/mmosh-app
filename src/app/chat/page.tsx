@@ -95,7 +95,7 @@ export default function OPOS() {
       namespaces.push("PRIVATE");
     }
 
-    let systemPrompt = "";
+    let systemPrompt = DEFAULT_SYSTEM_PROMPT;
 
     for (const agent of agents) {
       if (availableNamespaces.includes(agent.key)) {

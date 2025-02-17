@@ -25,7 +25,7 @@ const AddIcon = (props: Props) => (
         height="28"
         rx="14"
         stroke="#9F9F9F"
-        stroke-opacity="0.22"
+        strokeOpacity="0.22"
       />
     </g>
     <path
@@ -42,7 +42,7 @@ const AddIcon = (props: Props) => (
         filterUnits="userSpaceOnUse"
         color-interpolation-filters="sRGB"
       >
-        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+        <feFlood floodOpacity="0" result="BackgroundImageFix" />
         <feGaussianBlur in="BackgroundImageFix" stdDeviation="19.5" />
         <feComposite
           in2="SourceAlpha"

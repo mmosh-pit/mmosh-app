@@ -5,7 +5,6 @@ import { isDrawerOpen } from "@/app/store";
 import { useAtom } from "jotai";
 import Image from "next/image";
 import axios from "axios";
-
 import Button from "@/app/components/common/Button";
 import { DirectoryCoin } from "@/app/models/directoryCoin";
 import CoinCardItem from "@/app/components/common/CoinCardItem";
@@ -27,6 +26,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 
 const Project = ({ params }: { params: { symbol: string } }) => {
   const navigate = useRouter();
+  const [usdPrice, setUsdPrice] = React.useState(0);
   const connection = useConnection();
   const wallet = useAnchorWallet();
   const [profileInfo] = useAtom(userWeb3Info);
@@ -90,6 +90,10 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     getUsers();
     getProjectDetailFromAPI()
   },[])
+
+  React.useEffect(()=>{
+
+  },[usdPrice])
 
   React.useEffect(()=>{
     if(wallet && projectDetail) {
@@ -384,6 +388,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
       return "";
     }
   };
+
 
   return (
     <>

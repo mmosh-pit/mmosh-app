@@ -9,4 +9,6 @@ export type Coin = {
   decimals?: number;
   basesymbol: string;
   iscoin?: boolean;
+  status?: string;
+  pool?: string
 };

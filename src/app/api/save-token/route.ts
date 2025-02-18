@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
     token: tokenAddress,
     bonding: bondingAddress,
     basesymbol,
+    pool:"",
+    status: "active",
     created_date: new Date(),
     updated_date: new Date(),
     creatorUsername,

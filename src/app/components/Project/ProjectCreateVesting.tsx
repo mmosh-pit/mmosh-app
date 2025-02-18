@@ -8,14 +8,11 @@ import Select from "@/app/components/common/Select";
 import AddIcon from "@/assets/icons/AddIcon";
 import Calender from "@/assets/icons/Calender";
 import TimeIcon from "@/assets/icons/TimeIcon";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-export default function ProjectCreateStep7({
-  onPageChange,
-}: {
-  onPageChange: any;
-}) {
+export default function ProjectCreateVesting({ onPageChange, symbol }: { onPageChange: any, symbol:any }) {
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
   const [fields, setFields] = useState([
@@ -37,13 +34,23 @@ export default function ProjectCreateStep7({
   const [msgClass, setMsgClass] = useState("");
   const [msgText, setMsgText] = useState("");
   const [isReady, setIsReady] = useState(false);
+  const [projectDetail, setProjectDetail] =  React.useState<any>(null)
 
   React.useEffect(() => {
-    if (localStorage.getItem("projectstep6")) {
-      let savedData: any = localStorage.getItem("projectstep6");
-      setFields(JSON.parse(savedData));
-    }
+    getProjectDetailFromAPI()
   }, []);
+
+  const getProjectDetailFromAPI = async() => {
+    try {
+        setLoading(true)
+        let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+        setProjectDetail(listResult.data)
+        setLoading(false)
+    } catch (error) {
+        setLoading(false)
+        setProjectDetail(null)
+    }
+  }
 
   React.useEffect(() => {
     setIsReady(validateFields(false));

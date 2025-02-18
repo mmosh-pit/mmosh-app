@@ -1,12 +1,12 @@
 "use client";
 
 import ProjectCreateStep1 from "@/app/components/Project/ProjectCreateStep1";
-import ProjectCreateStep2 from "@/app/components/Project/ProjectCreateStep2";
+import ProjectCreateStep2 from "@/app/components/Project/ProjectCreateCommunity";
 import ProjectCreateStep3 from "@/app/components/Project/ProjectCreateStep3";
 import ProjectCreateStep4 from "@/app/components/Project/ProjectCreateStep4";
 import ProjectCreateStep5 from "@/app/components/Project/ProjectCreateStep5";
 import ProjectCreateStep6 from "@/app/components/Project/ProjectCreateStep6";
-import ProjectCreateStep7 from "@/app/components/Project/ProjectCreateStep7";
+import ProjectCreateStep7 from "@/app/components/Project/ProjectCreateVesting";
 import ProjectCreateStep8 from "@/app/components/Project/ProjectCreateStep8";
 import ProjectCreateStep9 from "@/app/components/Project/ProjectCreateStep9";
 import ProjectCreateStep10 from "@/app/components/Project/ProjectCreateStep10";
@@ -15,6 +15,8 @@ import next from "next";
 import Select from "@/app/components/common/Select";
 import useWallet from "@/utils/wallet";
 import axios from "axios";
+import ProjectCreateCommunity from "@/app/components/Project/ProjectCreateCommunity";
+import ProjectCreateTeams from "@/app/components/Project/ProjectCreateTeams";
 
 export default function ProjectCreate() {
    const wallet: any = useWallet();
@@ -158,7 +160,10 @@ export default function ProjectCreate() {
             <ProjectCreateStep1 onPageChange={onPageChange}/>
          }
          {selectedOption === "Communities" &&
-            <ProjectCreateStep2 onPageChange={onPageChange}/>
+            <ProjectCreateCommunity onPageChange={onPageChange} symbol={selectedProjectType}/>
+         }
+         {selectedOption === "Teams" &&
+            <ProjectCreateTeams onPageChange={onPageChange} symbol={selectedProjectType}/>
          }
          {selectedOption === "Coins" &&
             <ProjectCreateStep3 onPageChange={onPageChange} symbol={selectedProjectType}/>
@@ -173,7 +178,7 @@ export default function ProjectCreate() {
             <ProjectCreateStep6 onPageChange={onPageChange}/>
          } */}
          {selectedOption === "Vesting" &&
-            <ProjectCreateStep7 onPageChange={onPageChange}/>
+            <ProjectCreateStep7 onPageChange={onPageChange} symbol={selectedProjectType}/>
          }
          {selectedOption === "Listing" &&
             <ProjectCreateStep8 onPageChange={onPageChange}/>

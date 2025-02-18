@@ -240,7 +240,8 @@ export default function ProjectCreateStep3({ onPageChange, symbol }: { onPageCha
                     decimals: 9,
                     creator: wallet.publicKey.toBase58(),
                     listingprice: fields.listingPrice,
-                    projectkey: projectDetail.project.key
+                    projectkey: projectDetail.project.key,
+                    external: false
                 });
             } else {
                 await axios.post("/api/project/save-coins", {
@@ -253,7 +254,8 @@ export default function ProjectCreateStep3({ onPageChange, symbol }: { onPageCha
                     decimals: fields.externalCoin.decimals,
                     creator: wallet.publicKey.toBase58(),
                     listingprice: 0,
-                    projectkey: projectDetail.project.key
+                    projectkey: projectDetail.project.key,
+                    external: true
                 });
             }
 

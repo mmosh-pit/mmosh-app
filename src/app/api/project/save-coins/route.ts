@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-project-coins");
 
-  const { name, symbol, image, key, desc, supply, creator, listingprice, projectkey, decimals  } = await req.json();
+  const { name, symbol, image, key, desc, supply, creator, listingprice, projectkey, decimals, external  } = await req.json();
 
   const communityCoins = await collection.findOne({
     key: key,
@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
         pricepercentage: 0,
         coingeckoid: "",
         decimals,
+        external,
         created_date: new Date(),
         updated_date: new Date()
     });

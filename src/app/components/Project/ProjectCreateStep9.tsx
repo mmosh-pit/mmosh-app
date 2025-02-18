@@ -118,31 +118,35 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
         return newFiles;
       });
 
-      const preview = files[documentIndex].preview;
-      const id = files[documentIndex].id;
+      const file = files[documentIndex];
 
-      await removeFileByMetadata(id);
+      if (file.saved) {
+        const preview = file.preview;
+        const id = file.id;
 
-      const metadata = `${projectKey}-${id}`;
+        await removeFileByMetadata(id);
 
-      const formData = new FormData();
-      formData.append("name", isPrivate ? projectKey : "PUBLIC");
-      formData.append("urls", preview);
-      formData.append("metadata", metadata);
-      formData.append("text", "None");
+        const metadata = `${projectKey}-${id}`;
 
-      await axios.post(
-        "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
-        formData,
-      );
+        const formData = new FormData();
+        formData.append("name", isPrivate ? projectKey : "PUBLIC");
+        formData.append("urls", preview);
+        formData.append("metadata", metadata);
+        formData.append("text", "None");
 
-      await axios.put("/api/project/update-media-privacy", {
-        projectkey: projectKey,
-        file: {
-          id,
-          isPrivate,
-        },
-      });
+        await axios.post(
+          "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+          formData,
+        );
+
+        await axios.put("/api/project/update-media-privacy", {
+          projectkey: projectKey,
+          file: {
+            id,
+            isPrivate,
+          },
+        });
+      }
     },
     [projectDetail, files],
   );
@@ -174,7 +178,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
     for (const field of fileList) {
       const formData = new FormData();
-      formData.append("name", projectKey);
+      formData.append("name", field.isPrivate ? projectKey : "PUBLIC");
       formData.append("urls", field.preview);
 
       formData.append("text", "None");

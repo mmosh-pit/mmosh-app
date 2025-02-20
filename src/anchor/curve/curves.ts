@@ -117,6 +117,40 @@ export interface ISellArgs {
   slippage: number /* Decimal number. max price will be (1 + slippage) * price_for_desired_target_amount */;
 }
 
+
+export interface ITransferReservesArgs {
+  /** The payer to run this transaction, defaults to provider.wallet */
+  payer?: PublicKey;
+  tokenBonding: PublicKey;
+  amount: BN | number;
+  /**
+   * The destination for the reserves **Default:** ata of destinationWallet
+   */
+  destination?: PublicKey;
+  /**
+   * The destination wallet for the reserves **Default:**
+   */
+  destinationWallet?: PublicKey;
+  /**
+   * Optional (**Default**: Reserve authority on the token bonding). This parameter is only needed when updating the reserve
+   * authority in the same txn as ruunning transfer
+   */
+  reserveAuthority?: PublicKey;
+}
+
+export interface ICloseArgs {
+  tokenBonding: PublicKey;
+  /** The payer to run this transaction. **Default:** provider.wallet */
+  payer?: PublicKey;
+  /** Account to receive the rent sol. **Default**: provide.wallet */
+  refund?: PublicKey;
+  /**
+   * Optional (**Default**: General authority on the token bonding). This parameter is only needed when updating the general
+   * authority in the same txn as ruunning close
+   */
+  generalAuthority?: PublicKey;
+}
+
 /**
  * Unified curve interface wrapping the raw CurveV0
  */

@@ -4,6 +4,7 @@ import { Wallet } from "@coral-xyz/anchor/dist/cjs/provider";
 import { bs58, utf8 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { IDL, Mmoshforge } from "../mmoshforge";
+import {AmmImpl, PROGRAM_ID as MER_PROGRAM_ID} from "@mercurial-finance/dynamic-amm-sdk"
 
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -14,12 +15,14 @@ import { Metaplex, Metadata as MetadataM } from "@metaplex-foundation/js";
 import {
   BondingPricing,
   IBuyArgs,
+  ICloseArgs,
   ICreateTokenBondingArgs,
   ICreateTokenBondingOutput,
   ICurve,
   IInitializeCurveArgs,
   IPricingCurve,
   ISellArgs,
+  ITransferReservesArgs,
   fromCurve,
 } from "./curves";
 import {
@@ -58,6 +61,17 @@ import {
 } from "forge-spl-token";
 import { web3Consts } from "../web3Consts";
 import { BaseSpl } from "../base/baseSpl";
+import { SEEDS } from "@mercurial-finance/dynamic-amm-sdk/dist/cjs/src/amm/constants";
+
+export type AllocationByPercentage = {
+  address: anchor.web3.PublicKey;
+  percentage: number;
+};
+
+export type AllocationByAmount = {
+  address: anchor.web3.PublicKey;
+  amount: BN;
+};
 
 export type ProgramStateV0 = IdlAccounts<Mmoshforge>["programStateV0"];
 export type CurveV0 = IdlAccounts<Mmoshforge>["curveV0"];
@@ -419,6 +433,192 @@ export class Connectivity {
 
     return targetMintKeypair.publicKey.toBase58();
   }
+
+  fromAllocationsToAmount(lpAmount: BN, allocations: AllocationByPercentage[]): AllocationByAmount[] {
+    const sumPercentage = allocations.reduce((partialSum, a) => partialSum + a.percentage, 0);
+    if (sumPercentage === 0) {
+      throw Error('sumPercentage is zero');
+    }
+  
+    let amounts: AllocationByAmount[] = [];
+    let sum = new BN(0);
+    for (let i = 0; i < allocations.length - 1; i++) {
+      const amount = lpAmount.mul(new BN(allocations[i].percentage)).div(new BN(sumPercentage));
+      sum = sum.add(amount);
+      amounts.push({
+        address: allocations[i].address,
+        amount,
+      });
+    }
+    // the last wallet get remaining amount
+    amounts.push({
+      address: allocations[allocations.length - 1].address,
+      amount: lpAmount.sub(sum),
+    });
+    return amounts;
+  }
+
+  async addAddtionalToken(mint: anchor.web3.PublicKey, supply: number): Promise<string> {
+
+    const tokenATA = await getAssociatedTokenAddressSync(
+      mint,
+      this.provider.publicKey,
+    );
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    const info = await this.provider.connection.getAccountInfo(tokenATA);
+
+    if (!info) {
+      const ix = createAssociatedTokenAccountInstruction(
+        this.provider.publicKey,
+        tokenATA,
+        this.provider.publicKey,
+        mint,
+      );
+      instructions.push(ix);
+    }
+    
+    const ix = createMintToInstruction(mint, tokenATA, this.provider.publicKey, supply);
+    instructions.push(ix);
+
+
+    const tx = new web3.Transaction().add(...instructions);
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = this.provider.publicKey;
+
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
+    }
+    tx.add(feeIns);
+    const signature = await this.provider.sendAndConfirm(tx);
+
+    return signature;
+  }
+
+  getSecondKey(key1: anchor.web3.PublicKey, key2: anchor.web3.PublicKey) {
+    const buf1:any = key1.toBuffer();
+    const buf2:any = key2.toBuffer();
+    // Buf1 > buf2
+    if (Buffer.compare(buf1, buf2) === 1) {
+      return buf2;
+    }
+    return buf1;
+  }
+
+  getFirstKey(key1: anchor.web3.PublicKey, key2: anchor.web3.PublicKey) {
+    const buf1:any = key1.toBuffer();
+    const buf2:any = key2.toBuffer();
+    // Buf1 > buf2
+    if (Buffer.compare(buf1, buf2) === 1) {
+      return buf1;
+    }
+    return buf2;
+  }
+
+  derivePoolAddressWithConfig(
+    tokenA: anchor.web3.PublicKey,
+    tokenB: anchor.web3.PublicKey,
+    config: anchor.web3.PublicKey,
+    programId: anchor.web3.PublicKey,
+  ) {
+    const [poolPubkey] = anchor.web3.PublicKey.findProgramAddressSync(
+      [this.getFirstKey(tokenA, tokenB), this.getSecondKey(tokenA, tokenB), config.toBuffer()],
+      programId,
+    );
+  
+    return poolPubkey;
+  }
+
+  async createPoolAndLockLiquidity(
+    tokenAMint: anchor.web3.PublicKey,
+    tokenBMint: anchor.web3.PublicKey,
+    tokenAAmount: BN,
+    tokenBAmount: BN,
+    config: anchor.web3.PublicKey,
+    allocations: AllocationByPercentage[],
+  ): Promise<string>  {
+    const programID = new anchor.web3.PublicKey(MER_PROGRAM_ID);
+    const poolPubkey = this.derivePoolAddressWithConfig(tokenAMint, tokenBMint, config, programID);
+    // Create the pool
+    console.log('create pool %s', poolPubkey);
+    let transactions = await AmmImpl.createPermissionlessConstantProductPoolWithConfig(
+      this.provider.connection,
+      this.provider.publicKey,
+      tokenAMint,
+      tokenBMint,
+      tokenAAmount,
+      tokenBAmount,
+      config,
+    );
+    for (const tx of transactions) {
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+  
+      const feeEstimate = await this.getPriorityFeeEstimate(tx);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      tx.add(feeIns);
+      const signature = await this.provider.sendAndConfirm(tx);
+      console.log('transaction %s', signature);
+    }
+  
+    // Create escrow and lock liquidity
+    // await delay(15000)
+    // const [lpMint] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from(SEEDS.LP_MINT), poolPubkey.toBuffer()], programID);
+    // const payerPoolLp = await getAssociatedTokenAddress(lpMint, this.provider.publicKey);
+    // const payerPoolLpBalance = (await this.provider.connection.getTokenAccountBalance(payerPoolLp)).value.amount;
+    // console.log('payerPoolLpBalance %s', payerPoolLpBalance.toString());
+
+    // let allocationByAmounts =this.fromAllocationsToAmount(new BN(payerPoolLpBalance), allocations);
+    // const pool = await AmmImpl.create(this.provider.connection, poolPubkey);
+    // for (const allocation of allocationByAmounts) {
+    //   console.log('Lock liquidity %s', allocation.address.toString());
+    //   let tx = await pool.lockLiquidity(allocation.address, allocation.amount, this.provider.publicKey);
+    //   tx.recentBlockhash = (
+    //     await this.connection.getLatestBlockhash()
+    //   ).blockhash;
+    //   tx.feePayer = this.provider.publicKey;
+
+    //   const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    //   let feeIns;
+    //   if (feeEstimate > 0) {
+    //     feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+    //       microLamports: feeEstimate,
+    //     });
+    //   } else {
+    //     feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+    //       units: 1_400_000,
+    //     });
+    //   }
+    //   tx.add(feeIns);
+    //   const signature = await this.provider.sendAndConfirm(tx);
+    //   console.log('transaction %s', signature);
+    // }
+
+    return poolPubkey.toBase58()
+  }
+
+
   async createTokenBonding(
     args: ICreateTokenBondingArgs,
   ): Promise<ICreateTokenBondingOutput> {
@@ -1410,6 +1610,231 @@ export class Connectivity {
     };
   }
 
+  /**
+   * Runs {@link closeInstructions}
+   * @param args
+   */
+  async transferReserves(
+      args: ITransferReservesArgs,
+    ): Promise<string> {
+      try {
+        const tokenObj = await this.transferReservesInstructions(args);
+        const tx = new web3.Transaction().add(...tokenObj.instructions);
+        tx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        tx.feePayer = this.provider.publicKey;
+        
+        const feeEstimate = await this.getPriorityFeeEstimate(tx);
+        let feeIns;
+        if (feeEstimate > 0) {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        tx.add(feeIns);
+        const signature = await this.provider.sendAndConfirm(
+          tx,
+          tokenObj.signers,
+        );
+        console.log("transfer reserve ", signature);
+        return signature;
+      } catch (error) {
+        console.log("error is", error);
+        return "";
+      }
+  }
+
+  /**
+   * Instructions to transfer the reserves of the bonding curve
+   *
+   * @param param0
+   * @returns
+   */
+  async transferReservesInstructions({
+    tokenBonding,
+    destination,
+    amount,
+    reserveAuthority,
+    destinationWallet = this.provider.publicKey,
+    payer = this.provider.publicKey,
+  }: ITransferReservesArgs): Promise<InstructionResult<null>> {
+    const tokenBondingAcct = (await this.getTokenBonding(tokenBonding))!;
+    const state = (await this.getState())!;
+    const isNative =
+      tokenBondingAcct.baseMint.equals(NATIVE_MINT) ||
+      tokenBondingAcct.baseMint.equals(state.wrappedSolMint);
+    const baseMint = await getMintInfo(
+      this.provider,
+      tokenBondingAcct.baseMint
+    );
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    if (!tokenBondingAcct.reserveAuthority) {
+      throw new Error(
+        "Cannot transfer reserves on a bonding account with no reserve authority"
+      );
+    }
+
+    if (!destination && isNative) {
+      destination = destinationWallet;
+    }
+
+    const destAcct =
+      destination &&
+      (await this.provider.connection.getAccountInfo(destination));
+
+    // Destination is a wallet, need to get the ATA
+    if (
+      !isNative &&
+      (!destAcct || destAcct.owner.equals(anchor.web3.SystemProgram.programId))
+    ) {
+      const ataDestination = await Token.getAssociatedTokenAddress(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        tokenBondingAcct.baseMint,
+        destinationWallet,
+        false // Explicitly don't allow owner off curve. You need to pass destination as an already created thing to do this
+      );
+      if (!(await this.accountExists(ataDestination))) {
+        instructions.push(
+          Token.createAssociatedTokenAccountInstruction(
+            ASSOCIATED_TOKEN_PROGRAM_ID,
+            TOKEN_PROGRAM_ID,
+            tokenBondingAcct.baseMint,
+            ataDestination,
+            destinationWallet,
+            payer
+          )
+        );
+      }
+
+      destination = ataDestination;
+    }
+
+    const common = {
+      tokenBonding,
+      reserveAuthority:
+        reserveAuthority || (tokenBondingAcct.reserveAuthority! as anchor.web3.PublicKey),
+      baseMint: tokenBondingAcct.baseMint,
+      baseStorage: tokenBondingAcct.baseStorage,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    };
+    const args = {
+      amount: toBN(amount, baseMint),
+    };
+    if (isNative) {
+      instructions.push(
+        await this.program.methods.transferReservesNativeV0(args).accounts({
+            common,
+            destination: destination!,
+            state: state.publicKey,
+            wrappedSolMint: state.wrappedSolMint,
+            mintAuthority: (
+              await this.wrappedSolMintAuthorityKey(this.programId)
+            )[0],
+            solStorage: state.solStorage,
+            systemProgram: anchor.web3.SystemProgram.programId,
+        }).instruction()
+      );
+    } else {
+      instructions.push(
+        await this.program.methods.transferReservesV0(args).accounts({
+            common,
+            destination: destination!,
+        }).instruction()
+      );
+    }
+    return {
+      output: null,
+      signers: [],
+      instructions,
+    };
+  }
+
+    /**
+   * Runs {@link closeInstructions}
+   * @param args
+   */
+    async close(
+      args: ICloseArgs,
+    ): Promise<string> {
+      try {
+        const tokenObj = await this.closeInstructions(args);
+        const tx = new web3.Transaction().add(...tokenObj.instructions);
+        tx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        tx.feePayer = this.provider.publicKey;
+        
+        const feeEstimate = await this.getPriorityFeeEstimate(tx);
+        let feeIns;
+        if (feeEstimate > 0) {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        tx.add(feeIns);
+        const signature = await this.provider.sendAndConfirm(
+          tx,
+          tokenObj.signers,
+        );
+        console.log("sell ", signature);
+        return signature;
+      } catch (error) {
+        console.log("error is", error);
+        return "";
+      }
+    }
+  
+
+    /**
+   * Instructions to close the bonding curve
+   *
+   * @param param0
+   * @returns
+   */
+    async closeInstructions({
+      tokenBonding,
+      generalAuthority,
+      refund = this.provider.publicKey,
+    }: ICloseArgs): Promise<InstructionResult<null>> {
+      const tokenBondingAcct = (await this.getTokenBonding(tokenBonding))!;
+  
+      if (!tokenBondingAcct.generalAuthority) {
+        throw new Error(
+          "Cannot close a bonding account with no general authority"
+        );
+      }
+  
+      return {
+        output: null,
+        signers: [],
+        instructions: [
+          await this.program.methods.closeTokenBondingV0().accounts({
+              refund,
+              tokenBonding,
+              generalAuthority:
+                generalAuthority ||
+                (tokenBondingAcct.generalAuthority! as anchor.web3.PublicKey),
+              targetMint: tokenBondingAcct.targetMint,
+              baseStorage: tokenBondingAcct.baseStorage,
+              tokenProgram: TOKEN_PROGRAM_ID,
+          }).instruction()
+        ],
+      };
+    }
+  
+  
+
   async getUnixTime(): Promise<number> {
     const acc = await this.provider.connection.getAccountInfo(
       anchor.web3.SYSVAR_CLOCK_PUBKEY,
@@ -1470,7 +1895,7 @@ export class Connectivity {
     index: number = 0,
     programId: anchor.web3.PublicKey,
   ): Promise<[anchor.web3.PublicKey, number]> {
-    const pad = Buffer.alloc(2);
+    const pad:any = Buffer.alloc(2);
     new BN(index, 16, "le").toArrayLike(Buffer).copy(pad);
     return anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("token-bonding", "utf-8"), targetMint!.toBuffer(), pad],

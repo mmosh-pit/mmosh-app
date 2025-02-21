@@ -2,7 +2,7 @@ import * as React from "react";
 import { useAtom } from "jotai";
 
 import DateTypeSelector from "../../common/DateTypeSelector";
-import { Coin } from "@/app/models/coin";
+import { Coin, CoinDetail } from "@/app/models/coin";
 import { coinStats, selectedDateType } from "@/app/store/coins";
 import TVL from "../../CoinDirectory/TVL";
 import Volume from "../../CoinDirectory/Volume";
@@ -24,7 +24,7 @@ const typeOptions = [
 ];
 
 type Props = {
-  coin: Coin;
+  coin: CoinDetail;
   base: Coin;
   supply?: Number
 };

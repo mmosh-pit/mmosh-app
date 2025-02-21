@@ -37,6 +37,7 @@ const Input = ({
           value={value}
           onChange={onChange}
           readOnly={readonly}
+          rows={5}
           className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full text-xs backdrop-container"
         ></textarea>
       );

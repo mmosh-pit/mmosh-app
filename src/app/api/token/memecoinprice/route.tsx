@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
         prices.push({
             key: element.bonding,
             price: buyValue,
-            type: element.basesymbol
+            type: element.base.symbol
         })
     }
 

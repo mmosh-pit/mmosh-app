@@ -2,7 +2,7 @@
 
 import ProjectCreateStep1 from "@/app/components/Project/ProjectCreateStep1";
 import ProjectCreateStep2 from "@/app/components/Project/ProjectCreateStep2";
-import ProjectCreateStep3 from "@/app/components/Project/ProjectCreateStep3";
+import AgentCoin from "@/app/components/Project/AgentCoin";
 import ProjectCreateStep4 from "@/app/components/Project/ProjectCreateStep4";
 import ProjectCreateStep7 from "@/app/components/Project/ProjectCreateStep7";
 import ProjectCreateStep8 from "@/app/components/Project/ProjectCreateStep8";
@@ -138,7 +138,7 @@ export default function ProjectCreate() {
           <ProjectCreateStep2 onPageChange={onPageChange} />
         )}
         {selectedOption === "Coins" && (
-          <ProjectCreateStep3
+          <AgentCoin
             onPageChange={onPageChange}
             symbol={selectedProjectType}
           />

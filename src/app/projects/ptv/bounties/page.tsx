@@ -1209,14 +1209,10 @@ const Page = () => {
                           <div className="my-2">
                             <CoinListItem
                               token={coin.token}
-                              bonding={coin.bonding}
                               name={coin.name}
-                              basesymbol={coin.basesymbol}
                               desc={coin.desc}
-                              creatorUsername={coin.creatorUsername}
                               symbol={coin.symbol}
                               image={coin.image}
-                              iscoin={coin.iscoin}
                               decimals={coin.decimals}
                               onTokenSelect={handleTokenSelect}
                               key={coin.token}

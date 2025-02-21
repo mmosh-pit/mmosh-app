@@ -4,9 +4,19 @@ export type Coin = {
   desc: string;
   token: string;
   image: string;
+  decimals: number;
+};
+
+
+export type CoinDetail = {
+  base: Coin;
+  target: Coin;
+  token: string;
+  symbol: string;
   bonding: string;
+  status: string;
+  pool: string;
+  maxsupplyusd: number;
+  expiredDate: string;
   creatorUsername: string;
-  decimals?: number;
-  basesymbol: string;
-  iscoin?: boolean;
 };

@@ -1,4 +1,4 @@
-import { Coin } from "@/app/models/coin";
+import { Coin, CoinDetail } from "@/app/models/coin";
 import axios from "axios";
 import * as React from "react";
 import DateTypeSelector from "../common/DateTypeSelector";
@@ -12,7 +12,7 @@ type Props = {
   bonding?: string;
   height?: number;
   base?: Coin;
-  coin?: Coin;
+  coin?: CoinDetail;
   supply?: any;
 };
 
@@ -62,7 +62,7 @@ const Price = ({ height, base, coin, supply }: Props) => {
     try {
       let usdPrice = await getBaseTokenPrice();
       let priceResult = await axios.get(
-        `/api/token/price?key=${base?.bonding}&type=${type}`,
+        `/api/token/price?key=${coin?.bonding}&type=${type}`,
       );
       console.log("priceResult.data ", priceResult.data);
       if (priceResult.data?.prices) {

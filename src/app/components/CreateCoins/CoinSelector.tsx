@@ -26,6 +26,7 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
       symbol: "MMOSH",
       bonding: "",
       creatorUsername: "",
+      decimals: 9
     },
     {
       name: "Pump the Vote Blue",
@@ -36,7 +37,9 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
       symbol: "PTVB",
       bonding: "",
       creatorUsername: "",
+      decimals: 9
     },
+
     {
       name: "Pump the Vote Red",
       desc: "",
@@ -46,6 +49,7 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
       symbol: "PTVR",
       bonding: "",
       creatorUsername: "",
+      decimals: 9
     },
   ];
 
@@ -123,15 +127,13 @@ const CoinSelector = ({ selectedCoin, onTokenSelect }: Props) => {
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
-                    basesymbol=""
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
                     image={coin.image}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
+                    decimals={coin.decimals}
                   />
                 </div>
               );

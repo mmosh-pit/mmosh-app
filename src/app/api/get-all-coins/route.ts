@@ -15,10 +15,10 @@ export async function GET(req: NextRequest) {
 
     filter["$or"] = [
       {
-        name: { $regex: searchText, $options: "i" },
+        "target.name": { $regex: searchText, $options: "i" },
       },
       {
-        desc: { $regex: searchText, $options: "i" },
+        "target.desc": { $regex: searchText, $options: "i" },
       },
     ];
   }

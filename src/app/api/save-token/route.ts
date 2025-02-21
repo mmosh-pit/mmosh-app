@@ -1,38 +1,23 @@
+import { CoinDetail } from "@/app/models/coin";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const tokenCollection = db.collection("mmosh-app-tokens");
-  const {
-    name,
-    symbol,
-    desc,
-    image,
-    tokenAddress,
-    bondingAddress,
-    creatorUsername,
-    basesymbol,
-  } = await req.json();
+  const data: CoinDetail = await req.json();
 
   const token = await tokenCollection.findOne({
-    token: tokenAddress,
+    token: data.token,
   });
 
   if (token) {
     return NextResponse.json("", { status: 200 });
   }
 
-  tokenCollection.insertOne({
-    name,
-    symbol: symbol.toLowerCase(),
-    image,
-    desc,
-    token: tokenAddress,
-    bonding: bondingAddress,
-    basesymbol,
-    created_date: new Date(),
-    updated_date: new Date(),
-    creatorUsername,
-  });
+  let params:any = data;
+  params.created_date = new Date();
+  params.updated_date = new Date();
+
+  tokenCollection.insertOne(params);
   return NextResponse.json("", { status: 200 });
 }

@@ -63,61 +63,19 @@ const Swap = () => {
     } else {
       setTargetToken(token);
     }
-    if (token.iscoin) {
-      if (isBase) {
-        if (targetToken.token == "") {
-          return;
-        }
-        if (!targetToken.iscoin) {
-          console.log("onTokenSelect targetToken.iscoin", targetToken);
-          setTargetToken(defaultBaseToken);
-          return;
-        }
-      } else {
-        if (baseToken.token == "") {
-          return;
-        }
-        if (!baseToken.iscoin) {
-          console.log("onTokenSelect baseToken.iscoin", baseToken);
-          setBaseToken(defaultBaseToken);
-          return;
-        }
-      }
-    } else {
-      await loadMemecoin(token, isBase);
-    }
+
+    await loadMemecoin(token, isBase);
+    
 
     let isCurve = true;
     if (isBase) {
       setBaseToken(token);
-      if (targetToken?.iscoin && token.iscoin) {
-        isCurve = false;
-      }
     } else {
       setTargetToken(token);
-      if (baseToken?.iscoin && token.iscoin) {
-        isCurve = false;
-      }
     }
 
-    if (isCurve) {
       await loadMemecoin(token, isBase);
-    } else {
-      let base;
-      let target;
-      if (isBase) {
-        base = token;
-        target = targetToken;
-      } else {
-        base = baseToken;
-        target = token;
-      }
-      const result: any = await getSwapPricesForJup(base, target, wallet!);
-      console.log("jup result ", result);
-      setIsJupiter(true);
-      setBaseToken(result.baseToken);
-      setTargetToken(result.targetToken);
-    }
+
   };
 
   const loadMemecoin = async (token: SwapCoin, isBase: boolean) => {
@@ -139,56 +97,11 @@ const Swap = () => {
     }
     try {
       setSwapLoading(true);
-      if (baseToken.iscoin && targetToken.iscoin) {
-        const result = await getquote({
-          inputMint: baseToken.token,
-          outputMint: targetToken.token,
-          lamportValue:
-            baseToken.value *
-            (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000),
-        });
-        if (result.status) {
-          const swapResult = await getSwapTransaction({
-            quote: result.data,
-            wallet: wallet?.publicKey.toBase58(),
-          });
-          let txHex = swapResult.data;
 
-          const connection = new Connection(
-            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-            {
-              confirmTransactionInitialTimeout: 120000,
-            },
-          );
-          const env = new anchor.AnchorProvider(connection, wallet, {
-            preflightCommitment: "processed",
-          });
-
-          anchor.setProvider(env);
-
-          const userConn: UserConn = new UserConn(env, web3Consts.programID);
-          const tx = anchor.web3.VersionedTransaction.deserialize(
-            Buffer.from(txHex, "base64"),
-          );
-          const signature = await userConn.provider.sendAndConfirm(tx);
-
-          console.log("signature", signature);
-          setResult({
-            res: "success",
-            message: "Congrats! Your token have been swapped successfully",
-          });
-          setBaseToken(defaultBaseToken);
-          setTargetToken(networkCoins[0]);
-          setSwapLoading(false);
-        } else {
-          setResult({ res: "error", message: "error on jupiter swap" });
-          setSwapLoading(false);
-        }
-      } else {
         const response = await swapTokens(targetToken, baseToken, wallet!);
         setResult({ res: response.type, message: response.message });
         setSwapLoading(false);
-      }
+      
       setTimeout(() => {
         setResult({ res: "", message: "" });
       }, 4000);
@@ -240,42 +153,20 @@ const Swap = () => {
 
       if (baseToken.token == "" || targetToken.token == "") return;
 
-      if (baseToken.iscoin || targetToken.iscoin) {
-        console.log("baseToken.decimals", baseToken.decimals);
-        setBaseToken({ ...baseToken!, value });
-        const result = await getquote({
-          inputMint: baseToken.token,
-          outputMint: targetToken.token,
-          lamportValue:
-            value *
-            (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000),
-        });
-        if (result.status) {
-          console.log(targetToken.decimals);
 
-          setTargetToken({
-            ...targetToken!,
-            value:
-              result.data.outAmount /
-              (targetToken.decimals == 9
-                ? web3Consts.LAMPORTS_PER_OPOS
-                : 1000_000),
-          });
-        }
-      } else {
-        const isMMOSHBase =
-          baseToken?.token === web3Consts.oposToken.toBase58() ||
-          baseToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN ||
-          baseToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN;
+      const isMMOSHBase =
+        baseToken?.token === web3Consts.oposToken.toBase58() ||
+        baseToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN ||
+        baseToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN;
 
-        setBaseToken({ ...baseToken!, value });
+      setBaseToken({ ...baseToken!, value });
 
-        const buyValue = isMMOSHBase
-          ? curve!.buyWithBaseAmount(value - value * 0.06)
-          : curve!.sellTargetAmount(value - value * 0.06);
+      const buyValue = isMMOSHBase
+        ? curve!.buyWithBaseAmount(value - value * 0.06)
+        : curve!.sellTargetAmount(value - value * 0.06);
 
-        setTargetToken({ ...targetToken!, value: buyValue });
-      }
+      setTargetToken({ ...targetToken!, value: buyValue });
+    
     },
     [baseToken, targetToken],
   );

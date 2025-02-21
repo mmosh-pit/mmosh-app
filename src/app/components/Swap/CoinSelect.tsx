@@ -68,15 +68,8 @@ const CoinSelect = ({
       }
     }
 
-    const regularCoins = newCoinList.filter(
-      (coin) => !["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
-    );
-    const politicalMemecoins = newCoinList.filter((coin) =>
-      ["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
-    );
 
-    setCoinsList(regularCoins);
-    setPoliticalCoins(politicalMemecoins);
+    setCoinsList(newCoinList);
 
     setRecentCoins(recentCoins.data);
   };
@@ -165,13 +158,9 @@ const CoinSelect = ({
                   onTokenSelect={handleTokenSelect}
                   symbol={coin.symbol}
                   desc={coin.desc}
-                  basesymbol={coin.basesymbol}
                   name={coin.name}
                   image={coin.image}
                   token={coin.token}
-                  bonding={coin.bonding}
-                  creatorUsername={coin.creatorUsername}
-                  iscoin={coin.iscoin}
                   decimals={coin.decimals}
                 />
               ))}
@@ -188,14 +177,10 @@ const CoinSelect = ({
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
-                    basesymbol=""
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
@@ -213,14 +198,10 @@ const CoinSelect = ({
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
-                    basesymbol=""
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
@@ -238,14 +219,10 @@ const CoinSelect = ({
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
-                    basesymbol={coin.basesymbol}
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
@@ -265,14 +242,10 @@ const CoinSelect = ({
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
-                    basesymbol={coin.basesymbol}
                     symbol={coin.symbol}
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}

@@ -2,9 +2,10 @@ import * as anchor from "@coral-xyz/anchor";
 
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { web3Consts } from "@/anchor/web3Consts";
-import { Coin } from "@/app/models/coin";
+import { Coin, CoinDetail } from "@/app/models/coin";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
+import axios from "axios";
 
 export const getSwapTokenInfo = async (
   token: Coin,
@@ -34,27 +35,28 @@ export const getSwapTokenInfo = async (
     symbol: token.symbol,
     token: token.token,
     image: token.image,
-    creatorUsername: token.creatorUsername,
     desc: token.desc,
-    basesymbol: "",
     balance: balances.base,
-    bonding: token.bonding,
     value: 0,
+    decimals:token.decimals
   };
 
+  const result = await axios.get<CoinDetail>(
+    `/api/get-token-by-symbol?symbol=${token.symbol}`,
+  );
+  
   const base = {
-    name: "MMOSH: The Stoked Token",
-    symbol: "MMOSH",
-    token: web3Consts.oposToken.toBase58(),
+    name: result.data.base.name,
+    symbol: result.data.base.symbol,
+    token: result.data.base.token,
     image:
-      "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-    creatorUsername: "",
-    desc: "",
-    basesymbol: "",
+    result.data.base.image,
+    desc: result.data.base.desc,
     balance: balances.target,
-    bonding: token.bonding,
     value: 0,
+    decimals: result.data.base.decimals
   };
+
 
   let targetToken = null;
   let baseToken = null;
@@ -68,7 +70,7 @@ export const getSwapTokenInfo = async (
   }
 
   const pricing = await curveConn.getPricing(
-    new anchor.web3.PublicKey(token.bonding),
+    new anchor.web3.PublicKey(result.data.bonding),
   );
 
   return { pricing, solBalance: balances.sol, targetToken, baseToken };

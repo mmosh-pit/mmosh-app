@@ -11,6 +11,7 @@ import { CoinDirectoryItem } from "@/app/models/coinDirectoryItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import { list } from "firebase/storage";
 import { getPriceForPTV } from "./jupiter";
+import { CoinDetail } from "@/app/models/coin";
 
 export const swapTokens = async (
   baseToken: SwapCoin,
@@ -25,11 +26,15 @@ export const swapTokens = async (
     preflightCommitment: "processed",
   });
 
+  const result = await axios.get<CoinDetail>(
+    `/api/get-token-by-symbol?symbol=${targetToken.symbol}`,
+  );
+
   anchor.setProvider(env);
   const curveConn: CurveConn = new CurveConn(env, web3Consts.programID);
   const userConn: UserConn = new UserConn(env, web3Consts.programID);
   const tokenBondingAcct = await curveConn.getTokenBonding(
-    new anchor.web3.PublicKey(targetToken.bonding),
+    new anchor.web3.PublicKey(result.data.bonding),
   );
   const genesisUser = await userConn.getGensisProfileOwner();
   const ownerUser = await userConn.getNftProfileOwner(
@@ -133,7 +138,7 @@ export const swapTokens = async (
       let buyres;
       if (targetToken.token == web3Consts.oposToken.toBase58()) {
         buyres = await curveConn.buy({
-          tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+          tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
           desiredTargetAmount: new anchor.BN(
             baseToken.value * web3Consts.LAMPORTS_PER_OPOS,
           ),
@@ -142,7 +147,7 @@ export const swapTokens = async (
       } else {
         const buytx = await axios.post("/api/ptv/swap", {
           coin: targetToken.token,
-          bonding: targetToken.bonding,
+          bonding: result.data.bonding,
           supply: baseToken.value,
           address: wallet.publicKey.toBase58(),
         });
@@ -168,7 +173,7 @@ export const swapTokens = async (
           });
           if (balance > targetToken.value) {
             buyres = await curveConn.buy({
-              tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+              tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
               desiredTargetAmount: new anchor.BN(
                 baseToken.value * web3Consts.LAMPORTS_PER_OPOS,
               ),
@@ -223,7 +228,7 @@ export const swapTokens = async (
           userConn.txis = [];
 
           let tokenObj = await curveConn.sellInstructions({
-            tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+            tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
             targetAmount: new anchor.BN(supply * web3Consts.LAMPORTS_PER_OPOS),
             slippage: 0.5,
             destination: destination,
@@ -262,7 +267,7 @@ export const swapTokens = async (
               baseToken.token == process.env.NEXT_PUBLIC_PTVR_TOKEN
             ) {
               const curve = await curveConn.getPricing(
-                new anchor.web3.PublicKey(targetToken.bonding),
+                new anchor.web3.PublicKey(result.data.bonding),
               );
               const value = targetToken.value;
               await axios.post("/api/ptv/update-rewards", {
@@ -275,14 +280,14 @@ export const swapTokens = async (
           }
         } else {
           sellres = await curveConn.sell({
-            tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+            tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
             targetAmount: new anchor.BN(supply * web3Consts.LAMPORTS_PER_OPOS),
             slippage: 0.5,
           });
         }
       } else {
         sellres = await curveConn.sell({
-          tokenBonding: new anchor.web3.PublicKey(targetToken.bonding),
+          tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
           targetAmount: new anchor.BN(supply * web3Consts.LAMPORTS_PER_OPOS),
           slippage: 0.5,
         });
@@ -302,7 +307,7 @@ export const swapTokens = async (
         basename: targetToken.name,
         basesymbol: targetToken.symbol,
         baseimg: targetToken.image,
-        bonding: targetToken.bonding,
+        bonding: result.data.bonding,
         targetkey: baseToken.token,
         targetname: baseToken.name,
         targetsymbol: baseToken.symbol,
@@ -319,7 +324,7 @@ export const swapTokens = async (
         basename: baseToken.name,
         basesymbol: baseToken.symbol,
         baseimg: baseToken.image,
-        bonding: baseToken.bonding,
+        bonding: result.data.bonding,
         targetkey: targetToken.token,
         targetname: targetToken.name,
         targetsymbol: targetToken.symbol,

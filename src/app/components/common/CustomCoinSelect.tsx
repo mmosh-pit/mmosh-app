@@ -163,15 +163,13 @@ const CustomCoinSelect = ({
               {recentCoins.map((coin) => (
                 <RecentCoin
                   token={coin.token}
-                  bonding={coin.bonding}
                   desc={coin.desc}
-                  creatorUsername={coin.creatorUsername}
-                  basesymbol={coin.basesymbol}
                   name={coin.name}
                   symbol={coin.symbol}
                   image={coin.image}
                   onTokenSelect={onTokenSelect}
                   key={coin.token}
+                  decimals={coin.decimals}
                 />
               ))}
             </div>
@@ -183,15 +181,13 @@ const CustomCoinSelect = ({
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
-                    basesymbol={coin.basesymbol}
                     symbol={coin.symbol}
                     image={coin.image}
                     onTokenSelect={onTokenSelect}
                     key={coin.token}
+                    decimals={coin.decimals}
                   />
                 </div>
               );

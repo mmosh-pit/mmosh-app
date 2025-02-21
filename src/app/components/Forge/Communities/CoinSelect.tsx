@@ -46,15 +46,8 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
 
     const coinList = listResult.data;
 
-    const regularCoins = coinList.filter(
-      (coin) => !["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
-    );
-    const politicalMemecoins = coinList.filter((coin) =>
-      ["PTVB", "PTVR"].includes(coin.basesymbol.toUpperCase()),
-    );
 
-    setCoinsList(regularCoins);
-    setPoliticalCoins(politicalMemecoins);
+    setCoinsList(coinList);
     fetching.current = false;
   }, [searchText]);
 
@@ -129,15 +122,13 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
               {recentCoins.map((coin) => (
                 <RecentCoin
                   token={coin.token}
-                  bonding={coin.bonding}
                   desc={coin.desc}
-                  creatorUsername={coin.creatorUsername}
-                  basesymbol={coin.basesymbol}
                   name={coin.name}
                   symbol={coin.symbol}
                   image={coin.image}
                   onTokenSelect={handleTokenSelect}
                   key={coin.token}
+                  decimals={coin.decimals}
                 />
               ))}
             </div>
@@ -153,14 +144,10 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
-                    basesymbol=""
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
@@ -178,14 +165,10 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
-                    basesymbol=""
                     symbol={coin.symbol}
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
@@ -203,14 +186,10 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
-                    basesymbol={coin.basesymbol}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
                     symbol={coin.symbol}
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
@@ -230,14 +209,10 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
                 <div className="my-2">
                   <CoinListItem
                     token={coin.token}
-                    bonding={coin.bonding}
                     name={coin.name}
                     desc={coin.desc}
-                    creatorUsername={coin.creatorUsername}
-                    basesymbol={coin.basesymbol}
                     symbol={coin.symbol}
                     image={coin.image}
-                    iscoin={coin.iscoin}
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}

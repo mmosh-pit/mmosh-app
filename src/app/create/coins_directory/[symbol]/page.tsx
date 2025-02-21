@@ -4,7 +4,7 @@ import axios from "axios";
 
 import ArrowBack from "@/assets/icons/ArrowBack";
 import { useRouter } from "next/navigation";
-import { Coin } from "@/app/models/coin";
+import { Coin, CoinDetail } from "@/app/models/coin";
 import Graphics from "@/app/components/Forge/CoinPage/Graphics";
 import Stats from "@/app/components/Forge/CoinPage/Stats";
 import TransactionsTable from "@/app/components/Forge/CoinPage/TransactionsTable";
@@ -20,7 +20,7 @@ const Page = ({ params }: { params: { symbol: string } }) => {
   const rendered = React.useRef(false);
 
   const [baseCoin, setBaseCoin] = React.useState<Coin | null>(null);
-  const [coin, setCoin] = React.useState<Coin | null>(null);
+  const [coin, setCoin] = React.useState<CoinDetail | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const goBack = React.useCallback(() => {
@@ -53,23 +53,14 @@ const Page = ({ params }: { params: { symbol: string } }) => {
       .nfts()
       .findByMint({ mintAddress: bondingResult?.baseMint });
 
-    setBaseCoin({
-      name: mintDetail.name,
-      symbol: mintDetail.symbol,
-      desc: mintDetail.json?.description ? mintDetail.json?.description : "",
-      token: mintDetail.address.toBase58(),
-      image: mintDetail.json?.image ? mintDetail.json?.image : "",
-      basesymbol: "",
-      bonding: coin?.bonding ? coin.bonding : "",
-      creatorUsername: coin?.creatorUsername ? coin.creatorUsername : "",
-    });
+    setBaseCoin(coin?.base!);
   };
 
   const fetchCoinData = React.useCallback(async () => {
     try {
       setIsLoading(true);
       console.log("Queryiiing");
-      const result = await axios.get<Coin>(
+      const result = await axios.get<CoinDetail>(
         `/api/get-token-by-symbol?symbol=${params.symbol}`,
       );
       setIsLoading(false);
@@ -124,12 +115,12 @@ const Page = ({ params }: { params: { symbol: string } }) => {
               <div className="flex items-center">
                 <div className="relative">
                   <img
-                    src={coin.image}
+                    src={coin.target.image}
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </div>
 
-                <h6 className="mx-2">{coin.name}</h6>
+                <h6 className="mx-2">{coin.target.name}</h6>
                 <p className="text-tiny">{coin.symbol}</p>
               </div>
             </div>

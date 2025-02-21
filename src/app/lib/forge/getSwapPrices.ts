@@ -6,6 +6,7 @@ import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { SwapCoin } from "@/app/models/swapCoin";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
+import { CoinDetail } from "@/app/models/coin";
 
 export const getSwapPrices = async (
   token: SwapCoin,
@@ -20,10 +21,14 @@ export const getSwapPrices = async (
     preflightCommitment: "processed",
   });
 
+  const result = await axios.get<CoinDetail>(
+    `/api/get-token-by-symbol?symbol=${token.symbol}`,
+  );
+
   anchor.setProvider(env);
   const curveConn = new CurveConn(env, web3Consts.programID);
   const bondingResult = await curveConn.getTokenBonding(
-    new anchor.web3.PublicKey(token.bonding),
+    new anchor.web3.PublicKey(result.data.bonding),
   );
 
   if(!bondingResult) {
@@ -57,7 +62,7 @@ export const getSwapPrices = async (
     token: bondingResult?.baseMint.toBase58(),
     image: mintDetail.json?.image,
     balance: baseBalance,
-    bonding: token.bonding,
+    bonding: result.data.bonding,
     desc: "",
     creatorUsername: "",
     value: 0,
@@ -73,15 +78,15 @@ export const getSwapPrices = async (
     token: token.token,
     image: token.image,
     balance: balances.base,
-    bonding: token.bonding,
+    bonding:result.data.bonding,
     desc: token.desc,
-    creatorUsername: token.creatorUsername,
+    creatorUsername: result.data.creatorUsername,
     value: 0,
   };
 
 
   const curve = await curveConn.getPricing(
-    new anchor.web3.PublicKey(token.bonding),
+    new anchor.web3.PublicKey(result.data.bonding),
   );
 
   return {
@@ -152,11 +157,8 @@ export const getSwapPricesForJup = async (
     token: baseToken.token,
     image: baseToken.image,
     balance: baseToken.symbol.toLowerCase() === "wsol" ? balances.sol :  balances.base + baseBalance,
-    bonding: "",
     desc: "",
-    creatorUsername: "",
     value: 0,
-    iscoin: baseToken.iscoin,
     decimals: baseToken.decimals
   };
 
@@ -166,11 +168,8 @@ export const getSwapPricesForJup = async (
     token: targetToken.token,
     image: targetToken.image,
     balance: targetToken.symbol.toLowerCase() === "wsol" ? balances.sol : balances.target + targetBalance,
-    bonding: "",
     desc: "",
-    creatorUsername: "",
     value: 0,
-    iscoin: targetToken.iscoin,
     decimals: targetToken.decimals
   };
 

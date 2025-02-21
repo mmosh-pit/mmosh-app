@@ -13,11 +13,11 @@ export async function GET(req: NextRequest) {
   if (param != "" && basesymbol) {
     query = {
       $and: [
-        { basesymbol: basesymbol },
+        { "base.symbol": basesymbol },
         {
           $or: [
             {
-              name: {
+              "target.name": {
                 $regex: new RegExp(param, "ig"),
               },
             },
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     query = {
       $or: [
         {
-          name: {
+          "target.name": {
             $regex: new RegExp(param, "ig"),
           },
         },
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       ],
     };
   } else if (param == "" && basesymbol) {
-    query = { basesymbol: basesymbol };
+    query = { "base.symbol": basesymbol };
   }
   const result = await collection.find(query).toArray();
   return NextResponse.json([...result], {

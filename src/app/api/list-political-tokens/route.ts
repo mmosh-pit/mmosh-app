@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     let search = {
       $or: [
         {
-          name: {
+          "target.name": {
             $regex: new RegExp(param, "ig"),
           },
         },

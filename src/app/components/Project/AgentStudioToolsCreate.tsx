@@ -8,17 +8,13 @@ import TelegramAgentOption from "./TelegramAgentOption";
 const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
   const [selectedOption, setSelectedOption] = React.useState(0);
 
-  const [isLoading, setIsLoading] = React.useState(false);
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
 
   const getProjectDetailFromAPI = React.useCallback(async () => {
     try {
-      setIsLoading(true);
       let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
       setProjectDetail(listResult.data);
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       setProjectDetail(null);
     }
   }, [symbol]);

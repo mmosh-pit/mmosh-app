@@ -12,6 +12,7 @@ import Select from "@/app/components/common/Select";
 import useWallet from "@/utils/wallet";
 import axios from "axios";
 import AgentStudioToolsCreate from "@/app/components/Project/AgentStudioToolsCreate";
+import InstructAgent from "@/app/components/Project/InstructAgent";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();
@@ -138,10 +139,7 @@ export default function ProjectCreate() {
           <ProjectCreateStep2 onPageChange={onPageChange} />
         )}
         {selectedOption === "Coins" && (
-          <AgentCoin
-            onPageChange={onPageChange}
-            symbol={selectedProjectType}
-          />
+          <AgentCoin onPageChange={onPageChange} symbol={selectedProjectType} />
         )}
         {selectedOption === "step4" && (
           <ProjectCreateStep4 onPageChange={onPageChange} />
@@ -183,12 +181,7 @@ export default function ProjectCreate() {
         )}
 
         {selectedOption === "Instruct" && (
-          <div className="flex justify-center">
-            <p className="text-base">
-              Coming soon! You’ll be able to refine your agent’s personality and
-              instruct them to perform a wide variety of tasks.
-            </p>
-          </div>
+          <InstructAgent symbol={selectedProjectType} />
         )}
         {/* {currentStep === "step10" &&
             <ProjectCreateStep10 onPageChange={onPageChange}/>

@@ -19,7 +19,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 
-export default function ProjectCreateStep1({ }: {}) {
+export default function AgentPass({ }: {}) {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);

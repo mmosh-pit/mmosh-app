@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("token");
 
-  const token = await collection.findOne({ token: param });
+  const token = await collection.findOne({ "target.token": param });
   if (token) {
     return NextResponse.json(token, {
       status: 200,

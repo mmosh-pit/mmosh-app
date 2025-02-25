@@ -715,7 +715,8 @@ export class Connectivity {
     const state = (await this.getState())!;
 
     // let isNative =
-    let isNative = false;
+    let isNative =
+      baseMint.equals(NATIVE_MINT) || baseMint.equals(state.wrappedSolMint);
     if (isNative) {
       baseMint = state.wrappedSolMint;
     }

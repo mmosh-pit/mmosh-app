@@ -18,63 +18,76 @@ import { isDrawerOpen } from "@/app/store";
 import {
   getquote,
   getSwapTransaction,
-  networkCoins,
 } from "@/app/lib/forge/jupiter";
 
 import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import useWallet from "@/utils/wallet";
+import baseCoins from "../lib/baseCoins";
 
 const defaultBaseToken = {
   name: "",
   symbol: "Select",
   token: "",
-  basesymbol: "",
   image: "",
   balance: 0,
-  bonding: "",
   value: 0,
   desc: "",
-  creatorUsername: "",
   decimals: 9,
-  iscoin: false,
 };
 
 const Swap = () => {
   const wallet = useWallet();
-
   const [isDrawerShown] = useAtom(isDrawerOpen);
-
   const [swapLoading, setSwapLoading] = React.useState(false);
   const [result, setResult] = React.useState({ res: "", message: "" });
-
   const [baseToken, setBaseToken] = React.useState<SwapCoin>(defaultBaseToken);
-  const [targetToken, setTargetToken] = React.useState<SwapCoin>(
-    networkCoins[0],
-  );
+  const [targetToken, setTargetToken] = React.useState<SwapCoin>({
+    ...baseCoins[0],
+    balance: 0,
+    value: 0
+  });
 
   const [curve, setCurve] = React.useState<BondingPricing>();
   const [isJupiter, setIsJupiter] = React.useState(false);
 
   const onTokenSelect = async (token: SwapCoin, isBase: boolean) => {
+    let base;
+    let target;
     if (isBase) {
+      base = token
+      target = targetToken
       setBaseToken(token);
     } else {
+      base = baseToken
+      target = token
       setTargetToken(token);
     }
 
-    await loadMemecoin(token, isBase);
-    
-
-    let isCurve = true;
-    if (isBase) {
-      setBaseToken(token);
-    } else {
-      setTargetToken(token);
+    if(base.token == "" || target.token) {
+      return
     }
 
-      await loadMemecoin(token, isBase);
+    if(base.token === target.token) {
+      setResult({ res: "error", message: "cannot swap same coin" });
+      return
+    }
+
+    if(baseToken.is_memecoin && targetToken.is_memecoin) {
+      setResult({ res: "error", message: "one coin only be memecoin" });
+    }
+
+    if(!baseToken.is_memecoin && !targetToken.is_memecoin) {
+      const result: any = await getSwapPricesForJup(base, target, wallet!);
+      console.log("jup result ", result);
+      setIsJupiter(true);
+      setBaseToken(result.baseToken);
+      setTargetToken(result.targetToken);
+    } else {
+      let memecoin = baseToken.is_memecoin ? base : target
+      await loadMemecoin(memecoin, isBase);
+    }
 
   };
 
@@ -98,9 +111,61 @@ const Swap = () => {
     try {
       setSwapLoading(true);
 
+      if (!baseToken.is_memecoin && !targetToken.is_memecoin) {
+        const result = await getquote({
+          inputMint: baseToken.token,
+          outputMint: targetToken.token,
+          lamportValue:
+            baseToken.value *
+            (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000),
+        });
+        if (result.status) {
+          const swapResult = await getSwapTransaction({
+            quote: result.data,
+            wallet: wallet?.publicKey.toBase58(),
+          });
+          let txHex:any = swapResult.data;
+
+          const connection = new Connection(
+            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+            {
+              confirmTransactionInitialTimeout: 120000,
+            },
+          );
+          const env = new anchor.AnchorProvider(connection, wallet, {
+            preflightCommitment: "processed",
+          });
+
+          anchor.setProvider(env);
+
+          const userConn: UserConn = new UserConn(env, web3Consts.programID);
+          const tx = anchor.web3.VersionedTransaction.deserialize(
+            Buffer.from(txHex, "base64"),
+          );
+          const signature = await userConn.provider.sendAndConfirm(tx);
+
+          console.log("signature", signature);
+          setResult({
+            res: "success",
+            message: "Congrats! Your token have been swapped successfully",
+          });
+          setBaseToken(defaultBaseToken);
+          setTargetToken({
+            ...baseCoins[0],
+            balance: 0,
+            value: 0
+          });
+          setSwapLoading(false);
+        } else {
+          setResult({ res: "error", message: "error on jupiter swap" });
+          setSwapLoading(false);
+        }
+      } else {
+
         const response = await swapTokens(targetToken, baseToken, wallet!);
         setResult({ res: response.type, message: response.message });
         setSwapLoading(false);
+      }
       
       setTimeout(() => {
         setResult({ res: "", message: "" });
@@ -115,10 +180,7 @@ const Swap = () => {
     if (!baseToken.token) return;
 
     if (targetToken!.value > targetToken!.balance) {
-      const isMMOSHBase =
-        targetToken?.token === web3Consts.oposToken.toBase58() ||
-        targetToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN ||
-        targetToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN;
+      const isMMOSHBase = !targetToken.is_memecoin;
 
       const value = targetToken!.balance;
 
@@ -153,19 +215,36 @@ const Swap = () => {
 
       if (baseToken.token == "" || targetToken.token == "") return;
 
+      if (!baseToken.is_memecoin || !targetToken.is_memecoin) {
+        console.log("baseToken.decimals", baseToken.decimals);
+        setBaseToken({ ...baseToken!, value });
+        const result = await getquote({
+          inputMint: baseToken.token,
+          outputMint: targetToken.token,
+          lamportValue:
+            value *
+            (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000),
+        });
+        if (result.status) {
+          console.log(targetToken.decimals);
 
-      const isMMOSHBase =
-        baseToken?.token === web3Consts.oposToken.toBase58() ||
-        baseToken?.token === process.env.NEXT_PUBLIC_PTVR_TOKEN ||
-        baseToken?.token === process.env.NEXT_PUBLIC_PTVB_TOKEN;
-
-      setBaseToken({ ...baseToken!, value });
-
-      const buyValue = isMMOSHBase
-        ? curve!.buyWithBaseAmount(value - value * 0.06)
-        : curve!.sellTargetAmount(value - value * 0.06);
-
-      setTargetToken({ ...targetToken!, value: buyValue });
+          setTargetToken({
+            ...targetToken!,
+            value:
+              result.data.outAmount /
+              (targetToken.decimals == 9
+                ? web3Consts.LAMPORTS_PER_OPOS
+                : 1000_000),
+          });
+        }
+      } else {
+        const isMMOSHBase = !baseToken.is_memecoin
+        setBaseToken({ ...baseToken!, value });
+        const buyValue = isMMOSHBase
+          ? curve!.buyWithBaseAmount(value - value * 0.06)
+          : curve!.sellTargetAmount(value - value * 0.06);
+        setTargetToken({ ...targetToken!, value: buyValue });
+      }
     
     },
     [baseToken, targetToken],

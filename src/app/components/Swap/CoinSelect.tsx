@@ -40,9 +40,6 @@ const CoinSelect = ({
 
   const getCoinsList = async () => {
     const listResult = await axios.get(`/api/list-tokens?search=${searchText}&&status=active`);
-
-
-
     let coinFinalList:any = []
     for (let index = 0; index < listResult.data.length; index++) {
       const element = listResult.data[index].target
@@ -151,20 +148,6 @@ const CoinSelect = ({
               />
             </div>
 
-            <div>
-              {recentCoins.map((coin) => (
-                <RecentCoin
-                  onTokenSelect={handleTokenSelect}
-                  symbol={coin.symbol}
-                  desc={coin.desc}
-                  name={coin.name}
-                  image={coin.image}
-                  token={coin.token}
-                  decimals={coin.decimals}
-                />
-              ))}
-            </div>
-
             <div className="w-full h-[1px] bg-[#36357C] px-2 mb-8 mt-2" />
 
             <div className="w-full mb-4 mt-6">
@@ -183,6 +166,7 @@ const CoinSelect = ({
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
+                    is_memecoin={coin.is_memecoin}
                   />
                 </div>
               );
@@ -207,6 +191,7 @@ const CoinSelect = ({
                           decimals={coin.decimals}
                           onTokenSelect={handleTokenSelect}
                           key={coin.token}
+                          is_memecoin={coin.is_memecoin}
                         />
                       </div>
                     );
@@ -230,33 +215,12 @@ const CoinSelect = ({
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
+                    is_memecoin={coin.is_memecoin}
                   />
                 </div>
               );
             })}
 
-            <div className="w-full mb-4 mt-6">
-              <p className="text-lg text-white font-bold">
-                Political Memecoins
-              </p>
-            </div>
-
-            {politicalCoins.map((coin) => {
-              return (
-                <div className="my-2">
-                  <CoinListItem
-                    token={coin.token}
-                    name={coin.name}
-                    desc={coin.desc}
-                    symbol={coin.symbol}
-                    image={coin.image}
-                    decimals={coin.decimals}
-                    onTokenSelect={handleTokenSelect}
-                    key={coin.token}
-                  />
-                </div>
-              );
-            })}
           </div>
         </div>
       </dialog>

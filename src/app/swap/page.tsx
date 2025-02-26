@@ -58,34 +58,47 @@ const Swap = () => {
     if (isBase) {
       base = token
       target = targetToken
-      setBaseToken(token);
+      setBaseToken(base)
     } else {
       base = baseToken
       target = token
-      setTargetToken(token);
+      setTargetToken(target)
     }
 
-    if(base.token == "" || target.token) {
+    console.log("onTokenSelect 0", isBase)
+
+    console.log("onTokenSelect 0", base)
+
+    console.log("onTokenSelect 0", target)
+
+    if(base.token == "" || target.token == "") {
+      console.log("onTokenSelect 1")
       return
     }
 
     if(base.token === target.token) {
+      console.log("onTokenSelect 2")
       setResult({ res: "error", message: "cannot swap same coin" });
       return
     }
 
-    if(baseToken.is_memecoin && targetToken.is_memecoin) {
+    console.log("onTokenSelect 3")
+    if(base.is_memecoin && target.is_memecoin) {
+      console.log("onTokenSelect 4")
       setResult({ res: "error", message: "one coin only be memecoin" });
     }
 
-    if(!baseToken.is_memecoin && !targetToken.is_memecoin) {
+    console.log("onTokenSelect 5")
+    if(!base.is_memecoin && !target.is_memecoin) {
+      console.log("onTokenSelect 6")
       const result: any = await getSwapPricesForJup(base, target, wallet!);
       console.log("jup result ", result);
       setIsJupiter(true);
       setBaseToken(result.baseToken);
       setTargetToken(result.targetToken);
     } else {
-      let memecoin = baseToken.is_memecoin ? base : target
+      console.log("onTokenSelect 7")
+      let memecoin = base.is_memecoin ? base : target
       await loadMemecoin(memecoin, isBase);
     }
 
@@ -163,6 +176,7 @@ const Swap = () => {
       } else {
 
         const response = await swapTokens(targetToken, baseToken, wallet!);
+        console.log("response ", response)
         setResult({ res: response.type, message: response.message });
         setSwapLoading(false);
       }
@@ -215,7 +229,7 @@ const Swap = () => {
 
       if (baseToken.token == "" || targetToken.token == "") return;
 
-      if (!baseToken.is_memecoin || !targetToken.is_memecoin) {
+      if (!baseToken.is_memecoin && !targetToken.is_memecoin) {
         console.log("baseToken.decimals", baseToken.decimals);
         setBaseToken({ ...baseToken!, value });
         const result = await getquote({
@@ -238,7 +252,9 @@ const Swap = () => {
           });
         }
       } else {
-        const isMMOSHBase = !baseToken.is_memecoin
+        const isMMOSHBase = !baseToken.is_memecoin 
+
+
         setBaseToken({ ...baseToken!, value });
         const buyValue = isMMOSHBase
           ? curve!.buyWithBaseAmount(value - value * 0.06)

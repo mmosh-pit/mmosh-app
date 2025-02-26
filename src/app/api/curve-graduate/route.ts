@@ -12,7 +12,6 @@ import { Coin } from "@/app/models/coin";
 
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
-  const { searchParams } = new URL(req.url);
 
   const result = await collection.findOne({status:"ready"});
   if(!result) {

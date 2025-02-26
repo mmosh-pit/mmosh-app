@@ -341,24 +341,8 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
                     web3Consts.programID,
                 );
     
-                let coinBody = {
-                    name: fields.name,
-                    symbol: fields.symbol,
-                    description: fields.desc,
-                    image: fields.image.preview,
-                };
-                setButtonStatus("Uploading metadata...");
-                const coinMetaURI: any = await pinFileToShadowDriveUrl(coinBody);
-                if (coinMetaURI === "") {
-                    createMessage(
-                    "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
-                    "danger-container",
-                    );
-                    return;
-                }
-                console.log("coinMetaURI", coinMetaURI);
                 setButtonStatus("Creating Coin...");
-                const targetMint = await curveConn.createTargetMint(name, symbol, coinMetaURI);
+                const targetMint = await curveConn.createTargetMint(fields.name, fields.symbol, fields.image.preview);
 
                 console.log("target mint", targetMint)
     
@@ -398,7 +382,7 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
                 const res = await curveConn.createTokenBonding({
                     name: fields.name,
                     symbol: fields.symbol,
-                    url: coinMetaURI,
+                    url: fields.image.preview,
                     curve: curve,
                     baseMint: new anchor.web3.PublicKey(selectedCoin.token),
                     generalAuthority: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY!),

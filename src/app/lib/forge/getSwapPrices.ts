@@ -35,36 +35,30 @@ export const getSwapPrices = async (
     return null
   }
 
-  const mintDetail = await curveConn.metaplex
-  .nfts()
-  .findByMint({ mintAddress: bondingResult?.baseMint });
-
   const balances = await curveConn.getTokenBalance(
     token.token,
-    9,
+    token.decimals,
     bondingResult?.baseMint.toBase58(),
-    9
+    result.data.base.decimals
   );
-  let baseBalance = 0
-  if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
-    baseBalance = balances.target
-  } else {
-    let coinData = await axios("/api/ptv/rewards?coin="+bondingResult?.baseMint.toBase58()+"&&wallet="+wallet?.publicKey.toBase58())
-    baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
-    if(baseBalance == 0) {
-      baseBalance = balances.target
-    }
-  }
+
+  console.log("getSwapPrices ", balances);
+
+  let baseBalance = balances.target
+  // if(bondingResult?.baseMint.toBase58() === web3Consts.oposToken.toBase58()) {
+  //   baseBalance = balances.target
+  // } else {
+  //   let coinData = await axios("/api/ptv/rewards?coin="+bondingResult?.baseMint.toBase58()+"&&wallet="+wallet?.publicKey.toBase58())
+  //   baseBalance = coinData.data ? (coinData.data.claimable + coinData.data.unstakable) : 0
+  //   if(baseBalance == 0) {
+  //     baseBalance = balances.target
+  //   }
+  // }
 
   const base = {
-    name: mintDetail.name,
-    symbol: mintDetail.symbol,
-    token: bondingResult?.baseMint.toBase58(),
-    image: mintDetail.json?.image,
-    balance: baseBalance,
-    bonding: result.data.bonding,
-    desc: "",
-    creatorUsername: "",
+    ...result.data.base,
+    is_memecoin: false,
+    balance: result.data.base.symbol.toLowerCase() == "sol" ? balances.sol : baseBalance,
     value: 0,
   };
 
@@ -73,14 +67,9 @@ export const getSwapPrices = async (
   console.log("basemint ", bondingResult?.baseMint.toBase58())
 
   const target = {
-    name: token.name,
-    symbol: token.symbol,
-    token: token.token,
-    image: token.image,
-    balance: balances.base,
-    bonding:result.data.bonding,
-    desc: token.desc,
-    creatorUsername: result.data.creatorUsername,
+    ...result.data.target,
+    is_memecoin: true,
+    balance: result.data.target.symbol.toLowerCase() == "sol" ? balances.sol :  balances.base,
     value: 0,
   };
 
@@ -88,6 +77,9 @@ export const getSwapPrices = async (
   const curve = await curveConn.getPricing(
     new anchor.web3.PublicKey(result.data.bonding),
   );
+
+  console.log("getSwapPrices base", base);
+  console.log("getSwapPrices base", target);
 
   return {
     curve,
@@ -156,7 +148,7 @@ export const getSwapPricesForJup = async (
     symbol: baseToken.symbol,
     token: baseToken.token,
     image: baseToken.image,
-    balance: baseToken.symbol.toLowerCase() === "wsol" ? balances.sol :  balances.base + baseBalance,
+    balance: baseToken.symbol.toLowerCase() === "sol" ? balances.sol :  balances.base + baseBalance,
     desc: "",
     value: 0,
     decimals: baseToken.decimals
@@ -167,7 +159,7 @@ export const getSwapPricesForJup = async (
     symbol: targetToken.symbol,
     token: targetToken.token,
     image: targetToken.image,
-    balance: targetToken.symbol.toLowerCase() === "wsol" ? balances.sol : balances.target + targetBalance,
+    balance: targetToken.symbol.toLowerCase() === "sol" ? balances.sol : balances.target + targetBalance,
     desc: "",
     value: 0,
     decimals: targetToken.decimals

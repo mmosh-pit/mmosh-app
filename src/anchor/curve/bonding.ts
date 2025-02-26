@@ -715,7 +715,8 @@ export class Connectivity {
     const state = (await this.getState())!;
 
     // let isNative =
-    let isNative = false;
+    let isNative =
+      baseMint.equals(NATIVE_MINT) || baseMint.equals(state.wrappedSolMint);
     if (isNative) {
       baseMint = state.wrappedSolMint;
     }
@@ -1175,11 +1176,13 @@ export class Connectivity {
     const tokenBondingAcct = (await this.getTokenBonding(tokenBonding))!;
     console.log("tokenBondingAcct", tokenBondingAcct.baseMint.toBase58());
     console.log("tokenBondingAcct", tokenBondingAcct.targetMint.toBase58());
-    // const isNative =
-    //   tokenBondingAcct.baseMint.equals(NATIVE_MINT) ||
-    //   tokenBondingAcct.baseMint.equals(state.wrappedSolMint);
+    const isNative =
+      tokenBondingAcct.baseMint.equals(NATIVE_MINT) ||
+      tokenBondingAcct.baseMint.equals(state.wrappedSolMint);
 
-    const isNative = false;
+    console.log("isnative ", isNative)
+
+    // const isNative = false;
 
     // @ts-ignore
     const targetMint = await getMintInfo(
@@ -1340,6 +1343,7 @@ export class Connectivity {
     };
 
     if (isNative) {
+      console.log("isnative 1", isNative)
       instructions.push(
         await this.program.methods
           .buyNativeV0(args)
@@ -1378,7 +1382,6 @@ export class Connectivity {
   }
 
   async sell(args: ISellArgs): Promise<string> {
-    try {
       const tokenObj = await this.sellInstructions(args);
       const tx = new web3.Transaction().add(...tokenObj.instructions);
       tx.recentBlockhash = (
@@ -1404,10 +1407,6 @@ export class Connectivity {
       );
       console.log("sell ", signature);
       return signature;
-    } catch (error) {
-      console.log("error is", error);
-      return "";
-    }
   }
 
   /**

@@ -3,15 +3,15 @@ import axios from "axios";
 import Image from "next/image";
 import { useAtom } from "jotai";
 
-import { Coin } from "@/app/models/coin";
+import { Coin, CoinDetail } from "@/app/models/coin";
 import Search from "../common/Search";
 import CoinListItem from "../common/CoinListItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import CloseIcon from "@/assets/icons/CloseIcon";
-import { networkCoins, communityCoins } from "@/app/lib/forge/jupiter";
 import { data } from "@/app/store";
 import RecentCoin from "../common/RecentCoin";
+import baseCoins from "@/app/lib/baseCoins";
 
 type Props = {
   selectedCoin: SwapCoin | null;
@@ -29,7 +29,7 @@ const CoinSelect = ({
   readonly,
 }: Props) => {
   const [coinsList, setCoinsList] = React.useState<Coin[]>([]);
-
+  const [communityCoins, setCommunityCoins] = React.useState<Coin[]>([]);
   const [politicalCoins, setPoliticalCoins] = React.useState<Coin[]>([]);
 
   const [recentCoins, setRecentCoins] = React.useState<Coin[]>([]);
@@ -39,39 +39,33 @@ const CoinSelect = ({
   const [currentUser] = useAtom(data);
 
   const getCoinsList = async () => {
-    const newCoinList: Coin[] = [];
-    const listResult = await axios.get(`/api/list-tokens?search=${searchText}`);
-
-    const recentCoins = await axios.get(
-      `/api/get-recent-coins?profile=${currentUser?.profilenft}`,
-    );
-
-    if (otherToken?.token === "") {
-      for (let index = 0; index < listResult.data.length; index++) {
-        const element = listResult.data[index];
-        element.decimals = 9;
-        element.iscoin = false;
-        newCoinList.push(element);
-      }
-    } else {
-      if (
-        otherToken?.symbol.toLowerCase() == "mmosh" ||
-        otherToken?.symbol.toLowerCase() == "ptvr" ||
-        otherToken?.symbol.toLowerCase() == "ptvb"
-      ) {
-        for (let index = 0; index < listResult.data.length; index++) {
-          const element = listResult.data[index];
-          element.decimals = 9;
-          element.iscoin = false;
-          newCoinList.push(element);
-        }
-      }
+    const listResult = await axios.get(`/api/list-tokens?search=${searchText}&&status=active`);
+    let coinFinalList:any = []
+    for (let index = 0; index < listResult.data.length; index++) {
+      const element = listResult.data[index].target
+      element.is_memecoin = true
+      coinFinalList.push(element);
     }
+    setCoinsList(coinFinalList)
+  };
 
+  const getCommunityCoin = async () => {
+    const listResult = await axios.get<CoinDetail[]>(
+      `/api/list-tokens?search=${searchText}&&status=completed`,
+    );
+    const coinData = listResult.data;
+    const uniqueArray = Array.from(new Set
+      (coinData.map((obj:CoinDetail) => obj.base.token)));
 
-    setCoinsList(newCoinList);
+    let coinFinalList:any = []
+    for (let index = 0; index < uniqueArray.length; index++) {
+      const element:any = uniqueArray[index]
+      element.is_memecoin = false
 
-    setRecentCoins(recentCoins.data);
+      coinFinalList.push(element);
+      
+    }
+    setCommunityCoins(coinFinalList);
   };
 
   const handleTokenSelect = (token: Coin) => {
@@ -85,10 +79,12 @@ const CoinSelect = ({
 
   React.useEffect(() => {
     getCoinsList();
+    getCommunityCoin()
   }, [searchText, isBase]);
 
   const onOpenModel = async () => {
     await getCoinsList();
+    await getCommunityCoin();
     (
       document.getElementById(
         isBase ? "coin_modal_base" : "coin_modal_target",
@@ -152,27 +148,13 @@ const CoinSelect = ({
               />
             </div>
 
-            <div>
-              {recentCoins.map((coin) => (
-                <RecentCoin
-                  onTokenSelect={handleTokenSelect}
-                  symbol={coin.symbol}
-                  desc={coin.desc}
-                  name={coin.name}
-                  image={coin.image}
-                  token={coin.token}
-                  decimals={coin.decimals}
-                />
-              ))}
-            </div>
-
             <div className="w-full h-[1px] bg-[#36357C] px-2 mb-8 mt-2" />
 
             <div className="w-full mb-4 mt-6">
               <p className="text-lg text-white font-bold">Network Tokens</p>
             </div>
 
-            {networkCoins.map((coin) => {
+            {baseCoins.map((coin) => {
               return (
                 <div className="my-2">
                   <CoinListItem
@@ -184,31 +166,38 @@ const CoinSelect = ({
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
+                    is_memecoin={coin.is_memecoin}
                   />
                 </div>
               );
             })}
 
-            <div className="w-full mb-4 mt-6">
-              <p className="text-lg text-white font-bold">Community Coins</p>
-            </div>
+            {communityCoins.length > 0 &&
+              <>
 
-            {communityCoins.map((coin) => {
-              return (
-                <div className="my-2">
-                  <CoinListItem
-                    token={coin.token}
-                    name={coin.name}
-                    desc={coin.desc}
-                    symbol={coin.symbol}
-                    image={coin.image}
-                    decimals={coin.decimals}
-                    onTokenSelect={handleTokenSelect}
-                    key={coin.token}
-                  />
-                </div>
-              );
-            })}
+                  <div className="w-full mb-4 mt-6">
+                    <p className="text-lg text-white font-bold">Community Coins</p>
+                  </div>
+
+                  {communityCoins.map((coin) => {
+                    return (
+                      <div className="my-2">
+                        <CoinListItem
+                          token={coin.token}
+                          name={coin.name}
+                          desc={coin.desc}
+                          symbol={coin.symbol}
+                          image={coin.image}
+                          decimals={coin.decimals}
+                          onTokenSelect={handleTokenSelect}
+                          key={coin.token}
+                          is_memecoin={coin.is_memecoin}
+                        />
+                      </div>
+                    );
+                  })}
+              </>
+            }
 
             <div className="w-full mb-4 mt-6">
               <p className="text-lg text-white font-bold">Memecoins</p>
@@ -226,33 +215,12 @@ const CoinSelect = ({
                     decimals={coin.decimals}
                     onTokenSelect={handleTokenSelect}
                     key={coin.token}
+                    is_memecoin={coin.is_memecoin}
                   />
                 </div>
               );
             })}
 
-            <div className="w-full mb-4 mt-6">
-              <p className="text-lg text-white font-bold">
-                Political Memecoins
-              </p>
-            </div>
-
-            {politicalCoins.map((coin) => {
-              return (
-                <div className="my-2">
-                  <CoinListItem
-                    token={coin.token}
-                    name={coin.name}
-                    desc={coin.desc}
-                    symbol={coin.symbol}
-                    image={coin.image}
-                    decimals={coin.decimals}
-                    onTokenSelect={handleTokenSelect}
-                    key={coin.token}
-                  />
-                </div>
-              );
-            })}
           </div>
         </div>
       </dialog>

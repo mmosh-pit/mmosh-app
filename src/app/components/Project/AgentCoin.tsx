@@ -33,6 +33,7 @@ import { calculatePrice, getCoinPrice } from "@/app/lib/forge/setupCoinPrice";
 import { ExponentialCurve, ExponentialCurveConfig } from "@/anchor/curve/curves";
 import { useAtom } from "jotai";
 import { data } from "@/app/store";
+import baseCoins from "@/app/lib/baseCoins";
 
 const customStyles = {
     content: {
@@ -307,10 +308,10 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
             return;
         }
 
-        if(projectDetail.coins.length > 0) {
-            createMessage( "Projext already have coin", "danger-container");
-            return;
-        }
+        // if(projectDetail.coins.length > 0) {
+        //     createMessage( "Projext already have coin", "danger-container");
+        //     return;
+        // }
 
         try {
             setLoading(true);
@@ -470,15 +471,19 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
     
     const openJupiterCoins = () => {
         setIsOpen(true);
-        getCoinsFromJupiter();
+        getCompletedCoins();
     };
     
-    const getCoinsFromJupiter = async () => {
+    const getCompletedCoins = async () => {
     try {
         setCoinLoader(true);
-        const result = await axios.get("https://token.jup.ag/strict");
-        setCoinAllList(result.data);
-        setCoinList(result.data);
+        const result = await axios.get("/api/list-tokens?status=completed");
+        let newCoinList:any = baseCoins
+        for (let index = 0; index < result.data.length; index++) {
+          newCoinList.push(result.data[index]);
+        }
+        setCoinAllList(newCoinList);
+        setCoinList(newCoinList);
         setCoinLoader(false);
     } catch (error) {
         setCoinLoader(false);
@@ -520,8 +525,8 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
         setSelectedCoin({
             name: token.name,
             desc: "",
-            image: token.logoURI,
-            token: token.address,
+            image: token.image,
+            token: token.token,
             symbol: token.symbol,
             decimals: token.decimals,
         })

@@ -8,18 +8,27 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const symbol = searchParams.get("symbol");
+  const address = searchParams.get("address");
 
   const projectCollection = db.collection("mmosh-app-project");
-  let projectData:any = await projectCollection.findOne({ symbol: symbol?.toUpperCase() });
 
-  if(!projectData) {
-    projectData = await projectCollection.findOne({ symbol: symbol });
-    if (!projectData) {
-      return NextResponse.json(null, {
-        status: 200,
-      });
+  let projectData:any;
+  if(symbol) {
+    projectData = await projectCollection.findOne({ symbol: symbol?.toUpperCase() });
+    if(!projectData) {
+      projectData = await projectCollection.findOne({ symbol: symbol });
+      if (!projectData) {
+        return NextResponse.json(null, {
+          status: 200,
+        });
+      }
     }
+  } else {
+    projectData = await projectCollection.findOne({ key: address });
   }
+
+
+
 
 
   const projectCoinCollection = db.collection("mmosh-app-project-coins");

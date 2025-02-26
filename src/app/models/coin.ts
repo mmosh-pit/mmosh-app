@@ -5,6 +5,7 @@ export type Coin = {
   token: string;
   image: string;
   decimals: number;
+  is_memecoin?: boolean
 };
 
 

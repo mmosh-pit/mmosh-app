@@ -3,15 +3,15 @@ import axios from "axios";
 import { useAtom } from "jotai";
 import Image from "next/image";
 
-import { Coin } from "@/app/models/coin";
+import { Coin, CoinDetail } from "@/app/models/coin";
 import { userWeb3Info } from "@/app/store";
 import Search from "../../common/Search";
 import RecentCoin from "../../common/RecentCoin";
 import CoinListItem from "../../common/CoinListItem";
 import { SwapCoin } from "@/app/models/swapCoin";
 import CloseIcon from "@/assets/icons/CloseIcon";
-import { networkCoins, communityCoins } from "@/app/lib/forge/jupiter";
 import useWallet from "@/utils/wallet";
+import baseCoins from "@/app/lib/baseCoins";
 
 type Props = {
   selectedCoin: SwapCoin | null;
@@ -25,29 +25,43 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
   const fetching = React.useRef(false);
 
   const [coinsList, setCoinsList] = React.useState<Coin[]>([]);
-  const [politicalCoins, setPoliticalCoins] = React.useState<Coin[]>([]);
-  const [recentCoins, setRecentCoins] = React.useState<Coin[]>([]);
+  const [communityCoins, setCommunityCoins] = React.useState<Coin[]>([]);
   const [searchText, setSearchText] = React.useState("");
 
-  const getRecentCoins = React.useCallback(async () => {
-    if (!profileInfo) return;
-    const result = await axios.get(
-      `/api/get-recent-coins?profile=${profileInfo?.profile.address}`,
-    );
-
-    setRecentCoins(result.data);
-  }, []);
 
   const getCoinsList = React.useCallback(async () => {
     fetching.current = true;
-    const listResult = await axios.get<Coin[]>(
-      `/api/list-tokens?search=${searchText}`,
+    const listResult = await axios.get<CoinDetail[]>(
+      `/api/list-tokens?search=${searchText}&&status=active`,
     );
 
-    const coinList = listResult.data;
+    let coinFinalList:any = []
+    for (let index = 0; index < listResult.data.length; index++) {
+      const element:any = listResult.data[index].target
+      element.is_memecoin = true
+      coinFinalList.push(element);
+    }
+    setCoinsList(coinFinalList)
+    fetching.current = false;
+  }, [searchText]);
 
+  const getCommunityCoin = React.useCallback(async () => {
+    fetching.current = true;
+    const listResult = await axios.get<CoinDetail[]>(
+      `/api/list-tokens?search=${searchText}&&status=completed`,
+    );
+    const coinData = listResult.data;
+    const uniqueArray = Array.from(new Set
+      (coinData.map((obj:CoinDetail) => obj.base.token)));
 
-    setCoinsList(coinList);
+    let coinFinalList:any = []
+    for (let index = 0; index < uniqueArray.length; index++) {
+      const element:any = uniqueArray[index]
+      element.is_memecoin = false
+      coinFinalList.push(element);
+      
+    }
+    setCommunityCoins(coinFinalList);
     fetching.current = false;
   }, [searchText]);
 
@@ -61,11 +75,8 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
 
   React.useEffect(() => {
     getCoinsList();
+    getCommunityCoin();
   }, [searchText]);
-
-  React.useEffect(() => {
-    getRecentCoins();
-  }, [profileInfo]);
 
   return (
     <>
@@ -118,28 +129,13 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
               />
             </div>
 
-            <div className="grid gap-4 grid-cols-auto">
-              {recentCoins.map((coin) => (
-                <RecentCoin
-                  token={coin.token}
-                  desc={coin.desc}
-                  name={coin.name}
-                  symbol={coin.symbol}
-                  image={coin.image}
-                  onTokenSelect={handleTokenSelect}
-                  key={coin.token}
-                  decimals={coin.decimals}
-                />
-              ))}
-            </div>
-
             <div className="w-full h-[0.5px] bg-[#36357C] px-2 mb-8 mt-2" />
 
             <div className="w-full mb-4 mt-6">
               <p className="text-lg text-white font-bold">Network Tokens</p>
             </div>
 
-            {networkCoins.map((coin) => {
+            {baseCoins.map((coin) => {
               return (
                 <div className="my-2">
                   <CoinListItem
@@ -156,26 +152,30 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
               );
             })}
 
-            <div className="w-full mb-4 mt-6">
-              <p className="text-lg text-white font-bold">Community Coins</p>
-            </div>
-
-            {communityCoins.map((coin) => {
-              return (
-                <div className="my-2">
-                  <CoinListItem
-                    token={coin.token}
-                    name={coin.name}
-                    desc={coin.desc}
-                    symbol={coin.symbol}
-                    image={coin.image}
-                    decimals={coin.decimals}
-                    onTokenSelect={handleTokenSelect}
-                    key={coin.token}
-                  />
+            {communityCoins.length > 0 &&
+              <>
+                <div className="w-full mb-4 mt-6">
+                  <p className="text-lg text-white font-bold">Community Coins</p>
                 </div>
-              );
-            })}
+
+                {communityCoins.map((coin) => {
+                  return (
+                    <div className="my-2">
+                      <CoinListItem
+                        token={coin.token}
+                        name={coin.name}
+                        desc={coin.desc}
+                        symbol={coin.symbol}
+                        image={coin.image}
+                        decimals={coin.decimals}
+                        onTokenSelect={handleTokenSelect}
+                        key={coin.token}
+                      />
+                    </div>
+                  );
+                })}
+              </>
+            }
 
             <div className="w-full mb-4 mt-6">
               <p className="text-lg text-white font-bold">Memecoins</p>
@@ -198,28 +198,6 @@ const CoinSelect = ({ selectedCoin, onTokenSelect }: Props) => {
               );
             })}
 
-            <div className="w-full mb-4 mt-6">
-              <p className="text-lg text-white font-bold">
-                Political Memecoins
-              </p>
-            </div>
-
-            {politicalCoins.map((coin) => {
-              return (
-                <div className="my-2">
-                  <CoinListItem
-                    token={coin.token}
-                    name={coin.name}
-                    desc={coin.desc}
-                    symbol={coin.symbol}
-                    image={coin.image}
-                    decimals={coin.decimals}
-                    onTokenSelect={handleTokenSelect}
-                    key={coin.token}
-                  />
-                </div>
-              );
-            })}
           </div>
         </div>
       </dialog>

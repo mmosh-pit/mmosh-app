@@ -1,6 +1,6 @@
 "use client";
 
-import ProjectCreateStep1 from "@/app/components/Project/ProjectCreateStep1";
+import AgentPass from "@/app/components/Project/AgentPass";
 import ProjectCreateStep2 from "@/app/components/Project/ProjectCreateStep2";
 import AgentCoin from "@/app/components/Project/AgentCoin";
 import ProjectCreateStep4 from "@/app/components/Project/ProjectCreateStep4";
@@ -129,7 +129,7 @@ export default function ProjectCreate() {
           </div>
         </div>
 
-        {selectedOption === "Tokenize Agent" && <ProjectCreateStep1 />}
+        {selectedOption === "Tokenize Agent" && <AgentPass />}
 
         {selectedOption === "Tools" && (
           <AgentStudioToolsCreate symbol={selectedProjectType} />

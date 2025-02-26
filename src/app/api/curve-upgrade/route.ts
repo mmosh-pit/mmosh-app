@@ -13,14 +13,19 @@ import { Coin } from "@/app/models/coin";
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-tokens");
   const { searchParams } = new URL(req.url);
+  const bonding = searchParams.get("bonding");
+  if(!bonding) {
+    return NextResponse.json({status: false, message:"bonding key param missing"}, {
+      status: 200,
+    });
+  }
 
-  const result = await collection.findOne({status:"ready"});
+  const result = await collection.findOne({bonding, status:"active"});
   if(!result) {
     return NextResponse.json({status: false, message:"coin not exist"}, {
       status: 200,
     });
   }
-  let bonding = result.bonding
 
 
   try {
@@ -46,31 +51,7 @@ export async function GET(req: NextRequest) {
   
     anchor.setProvider(env);
 
-    // const constantProductPool = await AmmImpl.create(connection, new anchor.web3.PublicKey("4YeotScQfAYc68RJ4VxruxgxX4BkJLygNFAWM3KyzEix"));
-
-    // const lpSupply = await constantProductPool.getLpSupply();
-
-    // console.log("lpSupply ", lpSupply.toNumber());
-
-    // const inAmountALamport = new anchor.BN(1 * 10 ** constantProductPool.tokenAMint.decimals); 
-
-    // // Get deposit quote for constant product
-    // const { poolTokenAmountOut, tokenAInAmount, tokenBInAmount } = constantProductPool.getDepositQuote(
-    // inAmountALamport,
-    // new anchor.BN(0),
-    // true,
-    // 0.5
-    // );
-
-    // console.log("poolTokenAmountOut ", poolTokenAmountOut.toNumber());
-    // console.log("tokenAInAmount ", tokenAInAmount.toNumber());
-    // console.log("tokenBInAmount ", tokenBInAmount.toNumber());
-
-
-    // return NextResponse.json({status: false, message:"coin not exist"}, {
-    //   status: 200,
-    // });
-
+ 
     const curveConn = new CurveConn(env, web3Consts.programID);
   
     const bondingResult = await curveConn.getTokenBonding(
@@ -98,76 +79,18 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({status: false, message:"Curve is expired"}, {
             status: 200,
         });
-      }
+    }
 
-
-    let curve = await curveConn.getPricing(
-      new anchor.web3.PublicKey(bonding),
-    )
-  
-    const price = await curve!.buyTargetAmount(1)
-    console.log("price ", price)
-
-    const supply = Math.ceil(marketCap / price) * (10 ** result.target.decimals);
-
-    console.log("supply to be minted ", supply)
-
-    // transfer reserve
-    const reserveRes = await curveConn.transferReserves({
-      tokenBonding:  new anchor.web3.PublicKey(bonding),
-      amount: bondingResult.reserveBalanceFromBonding,
-    })
-  
-    console.log("reserveRes", reserveRes)
-    await delay(15000)
-
-    // transfer reserve and change authority
-    const closeRes = await curveConn.close({
-      tokenBonding:  new anchor.web3.PublicKey(bonding),
-    })
-  
-    console.log("closeRes", closeRes)
-    await delay(15000)
-
-    // add required supply
-    const mintRes = await curveConn.addAddtionalToken(new anchor.web3.PublicKey(result.target.token), supply)
-    console.log("mintRes ", mintRes)
-    await delay(15000)
-
-    let allocations = [
-      {
-        address: new anchor.web3.PublicKey(result.base.token),
-        percentage: 80,
-      },
-      {
-        address: new anchor.web3.PublicKey(result.target.token),
-        percentage: 20,
-      },
-    ];
-
-    const poolAddress = await curveConn.createPoolAndLockLiquidity(
-      new anchor.web3.PublicKey(result.base.token),
-      new anchor.web3.PublicKey(result.target.token),
-      bondingResult.reserveBalanceFromBonding,
-      new anchor.BN(supply),
-      new anchor.web3.PublicKey('21PjsfQVgrn56jSypUT5qXwwSjwKWvuoBCKbVZrgTLz4'),
-      allocations
-    )
-
-    console.log("poolRes", poolAddress)
-
-    // update coin status and pool
     await collection.updateOne(
-      {
-        _id: result._id,
-      },
-      {
-        $set: {
-            status: "completed",
-            pool: poolAddress
+        {
+          _id: result._id,
         },
-      },
-    );
+        {
+          $set: {
+              status: "ready",
+          },
+        },
+      );
 
     return NextResponse.json({status: true}, {
       status: 200,

@@ -19,7 +19,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
 
-export default function AgentPass({ }: {}) {
+const AgentPass = ({ symbol }: { symbol?: string }) => {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
@@ -30,7 +30,6 @@ export default function AgentPass({ }: {}) {
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
   const [msgText, setMsgText] = useState("");
-
   const [image, setImage] = React.useState<File | null>(null);
 
   const [fields, setFields] = useState({
@@ -60,7 +59,8 @@ export default function AgentPass({ }: {}) {
   const [isReady, setIsReady] = useState(false);
 
   const [usdPrice, setUsdPrice] = useState(0);
-  const [buttonText, setButtonText] = useState("Mint");
+  const [buttonText, setButtonText] = useState(symbol ? "Modify": "Mint");
+  const [projectDetail, setProjectDetail] =  React.useState<any>(null)
 
   React.useEffect(() => {
     if (!image) return;
@@ -78,7 +78,37 @@ export default function AgentPass({ }: {}) {
       setFields(JSON.parse(savedData));
     }
     getMmoshPrice();
+    if(symbol) {
+      getProjectDetailFromAPI()
+    }
   }, []);
+
+  const getProjectDetailFromAPI = async() => {
+    try {
+        setLoading(true)
+        let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+        setFields({
+          ...fields,
+          image: {
+            preview: listResult.data.project.image,
+            type: "",
+          },
+          name: listResult.data.project.name,
+          symbol: listResult.data.project.symbol,
+          desc: listResult.data.project.desc,
+          passPrice: listResult.data.project.price,
+          website: listResult.data.project.website,
+          telegram: listResult.data.project.telegram,
+          twitter: listResult.data.project.twitter,
+        })
+        setProjectDetail(listResult.data)
+        setLoading(false)
+    } catch (error) {
+        setLoading(false)
+        setProjectDetail(null)
+    }
+  }
+
 
   const getMmoshPrice = async () => {
     const mmoshUsdcPrice = await axios.get(
@@ -107,6 +137,7 @@ export default function AgentPass({ }: {}) {
     setMsgClass(type);
     setShowMsg(true);
     setLoading(false);
+    setButtonText(symbol ? "Modify" : "Mint");
     if (type == "success-container") {
       setTimeout(() => {
         setShowMsg(false);
@@ -222,24 +253,26 @@ export default function AgentPass({ }: {}) {
   const mintGensisPass = async () => {
     setLoading(true);
     if (validateFields(true)) {
-      const result = await axios.get(
-        `/api/project/check-project?symbol=${fields.symbol}`,
-      );
-      if (result.data) {
-        createMessage("Symbol already exist", "danger-container");
-        return;
+      if(!symbol) {
+        const result = await axios.get(
+          `/api/project/check-project?symbol=${fields.symbol}`,
+        );
+        if (result.data) {
+          createMessage("Symbol already exist", "danger-container");
+          return;
+        }
+        if (!isValidHttpUrl(fields.image.preview)) {
+          let imageFile = await fetch(fields.image.preview)
+            .then((r) => r.blob())
+            .then(
+              (blobFile) =>
+                new File([blobFile], uuidv4(), { type: fields.image.type }),
+            );
+          let imageUri = await pinImageToShadowDrive(imageFile);
+          fields.image.preview = imageUri;
+        }
+        localStorage.setItem("projectstep1", JSON.stringify(fields));
       }
-      if (!isValidHttpUrl(fields.image.preview)) {
-        let imageFile = await fetch(fields.image.preview)
-          .then((r) => r.blob())
-          .then(
-            (blobFile) =>
-              new File([blobFile], uuidv4(), { type: fields.image.type }),
-          );
-        let imageUri = await pinImageToShadowDrive(imageFile);
-        fields.image.preview = imageUri;
-      }
-      localStorage.setItem("projectstep1", JSON.stringify(fields));
 
       const projectKeyPair = anchor.web3.Keypair.generate();
       const env = new anchor.AnchorProvider(connection.connection, wallet, {
@@ -249,7 +282,7 @@ export default function AgentPass({ }: {}) {
       let communityConnection: Community = new Community(
         env,
         web3Consts.programID,
-        projectKeyPair.publicKey,
+        symbol ? new anchor.web3.PublicKey(projectDetail.project.key) : projectKeyPair.publicKey,
       );
 
       try {
@@ -273,7 +306,7 @@ export default function AgentPass({ }: {}) {
             },
             {
               trait_type: "Project",
-              value: projectKeyPair.publicKey.toBase58(),
+              value: symbol ? projectDetail.project.key : projectKeyPair.publicKey.toBase58(),
             },
             {
               trait_type: "Founder",
@@ -310,6 +343,32 @@ export default function AgentPass({ }: {}) {
             "danger-container",
           );
           return;
+        }
+
+        if(symbol) {
+          let res = await communityConnection.updateToken({
+            mint: new anchor.web3.PublicKey(projectDetail.project.key),
+            authority: wallet.publicKey,
+            payer: wallet.publicKey,
+            name:fields.name,
+            symbol: fields.symbol,
+            uri: projectMetaURI,
+          });
+          console.log("update result", res);
+
+          setButtonText("Updating project...");
+          await axios.put("/api/project/update-project", {
+            key: projectDetail.project.key,
+            name: fields.name,
+            symbol: fields.symbol.toUpperCase(),
+            desc: fields.desc,
+            telegram: fields.telegram,
+            twitter: fields.twitter,
+            website: fields.website,
+          });
+          navigate.push("/projects/" + fields.symbol);
+          setLoading(false)
+          return
         }
 
         const profileMintingCost = new anchor.BN(
@@ -394,12 +453,12 @@ export default function AgentPass({ }: {}) {
           creator: wallet.publicKey.toBase58(),
           creatorUsername: currentUser?.profile?.username,
         });
-        setButtonText("Mint");
+        setButtonText(symbol ? "Modify" : "Mint");
         localStorage.removeItem("projectstep1");
         navigate.push("/projects/" + fields.symbol);
       } catch (error) {
         console.log("error ", error);
-        setButtonText("Mint");
+        setButtonText(symbol ? "Modify" : "Mint");
         setLoading(false);
       }
     }
@@ -428,7 +487,7 @@ export default function AgentPass({ }: {}) {
       <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
           <div className="xl:col-span-2">
-            <ImagePicker changeImage={setImage} image={fields.image.preview} />
+            <ImagePicker changeImage={setImage} image={fields.image.preview} readonly={symbol ? true : false} />
           </div>
           <div className="xl:col-span-3">
             <div className="form-element pt-2.5">
@@ -469,31 +528,33 @@ export default function AgentPass({ }: {}) {
             </div>
           </div>
           <div className="xl:col-span-3">
-            <div className="form-element pt-2.5">
-              <div className="grid grid-cols-12 gap-4">
-                <div className="form-element col-span-9">
-                  <Input
-                    type="text"
-                    title="Project Pass Price"
-                    required
-                    helperText=""
-                    placeholder="0"
-                    value={
-                      fields.passPrice > 0 ? fields.passPrice.toString() : ""
-                    }
-                    onChange={(e) =>
-                      setFields({
-                        ...fields,
-                        passPrice: prepareNumber(Number(e.target.value)),
-                      })
-                    }
-                  />
-                </div>
-                <div className="col-span-3 mt-7 text-white text-header-small-font-size">
-                  MMOSH = {usdPrice * fields.passPrice} USD
+            {!symbol &&
+              <div className="form-element pt-2.5">
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="form-element col-span-9">
+                    <Input
+                      type="text"
+                      title="Project Pass Price"
+                      required
+                      helperText=""
+                      placeholder="0"
+                      value={
+                        fields.passPrice > 0 ? fields.passPrice.toString() : ""
+                      }
+                      onChange={(e) =>
+                        setFields({
+                          ...fields,
+                          passPrice: prepareNumber(Number(e.target.value)),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="col-span-3 mt-7 text-white text-header-small-font-size">
+                    MMOSH = {usdPrice * fields.passPrice} USD
+                  </div>
                 </div>
               </div>
-            </div>
+            }
             <div className="form-element pt-2.5">
               <Input
                 type="text"
@@ -542,7 +603,7 @@ export default function AgentPass({ }: {}) {
               onClick={mintGensisPass}
               disabled={!isReady}
             >
-              Mint
+              {buttonText}
             </button>
           )}
           {loading && (
@@ -564,3 +625,5 @@ export default function AgentPass({ }: {}) {
     </>
   );
 }
+
+export default AgentPass;

@@ -7,9 +7,10 @@ type Props = {
   changeImage: (file: File | null) => void;
   image: string;
   rounded?: boolean;
-};
+  readonly?: boolean
+}
 
-const ImagePicker = ({ changeImage, image, rounded }: Props) => {
+const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const imageContainerRef = React.useRef<HTMLInputElement>(null);
   const [imageHeight, setImageHeight] = React.useState(0);
@@ -103,15 +104,17 @@ const ImagePicker = ({ changeImage, image, rounded }: Props) => {
               className={rounded ? "rounded-full" : ""}
             />
           </div>
-          <div
-            className="flex items-center relative mt-2 cursor-pointer"
-            onClick={triggerClick}
-          >
-            <div className="p-2 border-solid border-[1px] border-white rounded-full mr-2">
-              <ImageIcon />
+          {!readonly &&
+            <div
+              className="flex items-center relative mt-2 cursor-pointer"
+              onClick={triggerClick}
+            >
+              <div className="p-2 border-solid border-[1px] border-white rounded-full mr-2">
+                <ImageIcon />
+              </div>
+              <p className="text-tiny text-white">Replace Image</p>
             </div>
-            <p className="text-tiny text-white">Replace Image</p>
-          </div>
+          } 
         </div>
       ) : (
         <div

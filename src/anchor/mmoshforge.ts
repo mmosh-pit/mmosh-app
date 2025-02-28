@@ -1466,14 +1466,14 @@ export type Mmoshforge = {
     {
       "name": "updatePass",
       "discriminator": [
-        98,
-        67,
-        99,
-        206,
-        86,
-        115,
-        175,
-        1
+        228,
+        97,
+        218,
+        163,
+        10,
+        132,
+        75,
+        133
       ],
       "accounts": [
         {
@@ -4880,14 +4880,14 @@ export const IDL: Mmoshforge = {
     {
       "name": "updatePass",
       "discriminator": [
-        98,
-        67,
-        99,
-        206,
-        86,
-        115,
-        175,
-        1
+        228,
+        97,
+        218,
+        163,
+        10,
+        132,
+        75,
+        133
       ],
       "accounts": [
         {

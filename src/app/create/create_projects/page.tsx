@@ -88,6 +88,9 @@ export default function ProjectCreate() {
                     if (e.target.value !== "New Personal Agent") {
                       setOptions([
                         { label: `Empower ${projectName}`, value: "Tools" },
+                        {label: `Update ${projectName} Genesis Pass`,
+                        value: "Update",
+                        },
                         { label: `Inform ${projectName}`, value: "Inform" },
                         { label: "Manage Offerings", value: "Offerings" },
                         {
@@ -129,6 +132,7 @@ export default function ProjectCreate() {
         </div>
 
         {selectedOption === "Tokenize Agent" && <AgentPass />}
+        {selectedOption === "Update" && <AgentPass symbol={selectedProjectType}/>}
 
         {selectedOption === "Tools" && (
           <AgentStudioToolsCreate symbol={selectedProjectType} />

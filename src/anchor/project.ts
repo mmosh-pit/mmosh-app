@@ -1930,6 +1930,7 @@ export class Connectivity {
           } else if (
             element.trait_type == "Community" ||
             element.trait_type == "Project"
+            || element.trait_type == "Offer"
           ) {
             userData.project = element.value;
           }

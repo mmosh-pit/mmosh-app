@@ -12,6 +12,7 @@ import Select from "@/app/components/common/Select";
 import useWallet from "@/utils/wallet";
 import axios from "axios";
 import AgentStudioToolsCreate from "@/app/components/Project/AgentStudioToolsCreate";
+import AgentOffer from "@/app/components/Project/AgentOffer";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();
@@ -167,13 +168,7 @@ export default function ProjectCreate() {
         )}
 
         {selectedOption === "Offerings" && (
-          <div className="flex justify-center">
-            <p className="text-base">
-              Coming soon! Your agent will be able to offer goods and services,
-              both digital and physical, and sign up personal agents as
-              promotional partners for affiliate marketing programs.
-            </p>
-          </div>
+            <AgentOffer symbol={selectedProjectType} />
         )}
 
         {selectedOption === "Teams" && (

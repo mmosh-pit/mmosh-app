@@ -3463,7 +3463,7 @@ export class Connectivity {
           const element = result.data.attributes[index];
           if (element.trait_type == "Seniority") {
             userData.seniority = element.value;
-          } else if (element.trait_type == "Project") {
+          } else if (element.trait_type == "Project" || element.trait_type == "Offer") {
             userData.project = element.value;
           }
         }
@@ -3486,7 +3486,7 @@ export class Connectivity {
         };
         for (let index = 0; index < result.data.attributes.length; index++) {
           const element = result.data.attributes[index];
-          if (element.trait_type == "Project") {
+          if (element.trait_type == "Project" || element.trait_type == "Offer") {
             userData.project = element.value;
           }
         }

@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
   const projectOfferCollection = db.collection("mmosh-app-project-offer");
   const coins = await projectCoinCollection.find({ projectkey: projectData.key }).toArray();
-  const offers = await projectOfferCollection.find({ project: projectData.key }).toArray();
+  const offers = await projectOfferCollection.find({ project: projectData.key }).sort({created_date: -1}).limit(1).toArray();
 
   const updated_date = new Date();
   const communityCoinAccount = await projectCoinCollection.findOne({

@@ -286,7 +286,7 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
       );
 
       try {
-        setButtonText("Uploading project metadata...");
+        setButtonText("Uploading pass metadata...");
         let projectBody = {
           name: fields.name,
           symbol: fields.symbol,
@@ -356,7 +356,7 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
           });
           console.log("update result", res);
 
-          setButtonText("Updating project...");
+          setButtonText("Updating pass...");
           await axios.put("/api/project/update-project", {
             key: projectDetail.project.key,
             name: fields.name,
@@ -377,7 +377,7 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
         const invitationMintingCost = new anchor.BN(
           calcNonDecimalValue(fields.invitationPrice, 9),
         );
-        setButtonText("Minting Project...");
+        setButtonText("Minting Pass...");
         const res1: any = await communityConnection.mintGenesisPass({
           name: fields.name,
           symbol: fields.symbol,
@@ -415,7 +415,7 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
         const res4: any = await communityConnection.registerCommonLut();
         console.log("register lookup result ", res4);
 
-        setButtonText("Buying new Project...");
+        setButtonText("Buying new Pass...");
         console.log("Profile info: ", profileInfo);
         const res5 = await communityConnection.sendProjectPrice(
           profileInfo?.profile.address,

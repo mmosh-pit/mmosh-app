@@ -285,15 +285,9 @@ const AgentOffer = ({ symbol }: { symbol?: string }) => {
             return false;
           }
         } else {
-          if (fields.pricemonthly == 0) {
+          if (fields.pricemonthly == 0 && fields.priceyearly == 0) {
             if (isMessage) {
-              createMessage("Monthly Price not mentioned", "danger-container");
-            }
-            return false;
-          }
-          if (fields.priceyearly == 0) {
-            if (isMessage) {
-              createMessage("Yearly Price not mentioned", "danger-container");
+              createMessage("Subscription Price not mentioned", "danger-container");
             }
             return false;
           }

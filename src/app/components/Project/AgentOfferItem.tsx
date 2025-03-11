@@ -75,12 +75,16 @@ const AgentOfferItem = (offerData: any) => {
                         Price
                     </span>
                     </p>
-                    <div className="px-2 bg-[#19066B] rounded-lg mr-2">
-                       <p className="text-sm text-white">{"Monthly : USDC "+ offerData.data.pricemonthly}</p>
-                    </div>
-                    <div className="px-2 bg-[#19066B] rounded-lg">
-                       <p className="text-sm text-white">{"Yearly : USDC "+ offerData.data.priceyearly}</p>
-                    </div>
+                    {offerData.data.pricemonthly > 0 &&
+                      <div className="px-2 bg-[#19066B] rounded-lg mr-2">
+                        <p className="text-sm text-white">{"Monthly : USDC "+ offerData.data.pricemonthly}</p>
+                      </div>
+                    }
+                    {offerData.data.priceyearly > 0 &&
+                      <div className="px-2 bg-[#19066B] rounded-lg">
+                        <p className="text-sm text-white">{"Yearly : USDC "+ offerData.data.priceyearly}</p>
+                      </div>
+                    }
                 </div>
             </>
 

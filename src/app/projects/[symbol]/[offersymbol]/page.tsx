@@ -35,6 +35,8 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
     const [inviteLoading, setInviteLoading] = useState(false);
     const [hasInivtation, setHasInvitation] = useState(false)
 
+    const [owner, setOwner] = useState(false);
+
     useEffect(()=>{
         getProjectDetailFromAPI()
         getOfferDetailFromAPI()
@@ -48,7 +50,9 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
     useEffect(()=>{
         if(offerDetail) {
-            getCoinDetail()
+            checkHasInvitation()
+            getUserProfileInfo()
+            
         }
     },[offerDetail, wallet])
 
@@ -166,6 +170,34 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
 
     }
+
+    const getUserProfileInfo = async () => {
+        if(!wallet) {
+            return
+        }
+        const connection = new Connection(
+            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+            {
+              confirmTransactionInitialTimeout: 120000,
+            },
+          );
+        const env = new anchor.AnchorProvider(connection, wallet, {
+            preflightCommitment: "processed",
+        });
+
+        anchor.setProvider(env);
+        let projectConn: CommunityConn = new CommunityConn(env, web3Consts.programID, new anchor.web3.PublicKey(offerDetail.key));
+        let projectInfo = await projectConn.getProjectUserInfo(offerDetail.key);
+
+        if(projectInfo.profiles.length > 0) {
+            if(projectInfo.profiles[0].address == offerDetail.key) {
+                setOwner(true)
+            } else {
+                setOwner(false)
+            }
+        }
+        console.log("projectInfo ", projectInfo)
+    }
     
     const getProjectDetailFromAPI = async() => {
         try {
@@ -280,6 +312,10 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
     }
 
+    const showInvitation = () => {
+
+    }
+
     return (
         <>
             {showMsg && (
@@ -292,218 +328,238 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                 {msgText}
                 </div>
             )}
-            <div className="container mx-auto py-10">
-                {loading &&
-                    <div className="flex justify-center">
-                        <Bars
-                            height="80"
-                            width="80"
-                            color="rgba(255, 0, 199, 1)"
-                            ariaLabel="bars-loading"
-                            wrapperStyle={{}} 
-                            wrapperClass="bars-loading"
-                            visible={true}
-                        />
-                    </div>
-                }
-
-                {!loading && !offerDetail &&
-                    <div className="text-center mt-10">Offer not found</div>
-                }
-                {(!loading && offerDetail && projectDetail) &&
-                    <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
-                        <div className="col-span-1">
-                            <img
-                            src={offerDetail.image}
-                            alt="Profile Image"
-                            className="rounded-md object-cover"
+            <div className="drawer drawer-end">
+               <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
+                <div className="drawer-content">
+                    <div className="container mx-auto py-10">
+                    {loading &&
+                        <div className="flex justify-center">
+                            <Bars
+                                height="80"
+                                width="80"
+                                color="rgba(255, 0, 199, 1)"
+                                ariaLabel="bars-loading"
+                                wrapperStyle={{}} 
+                                wrapperClass="bars-loading"
+                                visible={true}
                             />
                         </div>
-                        <div className="col-span-2">
-                        <div className="md:flex justify-between mb-3.5">
-                            <div>
-                                <h2 className="text-white text-lg underline capitalize">
-                                    {offerDetail.name}
-                                </h2>
-                                <p className="text-white text-base underline">
-                                    {offerDetail.symbol}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="mb-3.5">
-                            <p className="text-base">{offerDetail.desc}</p>
-                        </div>
-                        <div className="md:flex mb-10">
-                            <div className="flex items-center rounded-lg md:mr-10 md:mb-0 mb-3.5">
-                                <p className="text-sm text-white">
-                                <span className="font-bold text-sm text-white mr-4">
-                                    Type of Offer
-                                </span>
-                                </p>
-                                <div className="px-2 bg-[#19066B] rounded-lg">
-                                <p className="text-sm text-white">{offerDetail.pricetype === "onetime" ? "One Time" : "Subscription"}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center rounded-lg md:mr-10 md:mb-0 mb-3.5">
-                                <p className="text-sm text-white">
-                                <span className="font-bold text-sm text-white mr-4">
-                                    Quantity
-                                </span>
-                                </p>
-                                <div className="px-2 bg-[#19066B] rounded-lg">
-                                    <input 
-                                    type="number" 
-                                    placeholder="0"
-                                    value={supplyValue > 0 ? supplyValue.toString() : ""}
-                                    onChange={(e) => setSupplyValue(prepareNumber(Number(e.target.value)))}
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex items-center rounded-lg md:mb-0 mb-3.5">
-                                <p className="text-sm text-white">
-                                <span className="font-bold text-sm text-white mr-4">
-                                    Available
-                                </span>
-                                </p>
-                                <div className="px-2 bg-[#19066B] rounded-lg">
-                                <p className="text-sm text-white">{offerDetail.supply > 0 ? offerDetail.supply : "Unlimited"}</p>
-                                </div>
-                            </div>     
-                        </div>
-                        {usdcPrice > 0 && (offerDetail.supply == 0 || offerDetail.supply >= (offerDetail.sold + supplyValue)) && 
-                            <>
-                                {offerDetail.pricetype === "onetime" && 
-                                        <div className="mb-10">
-                                            <p className="text-base">Current Price</p>
-                                            <h2 className="text-white text-lg uppercase mb-3.5">
-                                                {projectDetail.coins[0].symbol.toUpperCase()} 
-                                                {offerDetail.discount == 0 && 
-                                                <span className="ml-3.5 text-lg text-white">{(Number(offerDetail.priceonetime) / usdcPrice).toFixed(2)}</span>
-                                                }
-                                                {offerDetail.discount > 0 && 
-                                                <>
-                                                    <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.priceonetime) / usdcPrice).toFixed(2)}</span>
-                                                    <span className="ml-3.5 text-lg text-white">{((Number(offerDetail.priceonetime) - (Number(offerDetail.priceonetime) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)}</span>
-                                                </>
-                                                }
-                                                
-                                            </h2>
-                                            {!oneTimeLoading && 
-                                                <button
-                                                className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                onClick={()=>{mintOffer("onetime")}}
-                                                >
-                                                Mint Offer
-                                                </button>
-                                            
-                                            }
+                    }
 
-                                            {oneTimeLoading && 
-                                                <button
-                                                className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                >
-                                                Minting...
-                                                </button>
-                                            
-                                            }
-
-                                        </div>
+                    {!loading && !offerDetail &&
+                        <div className="text-center mt-10">Offer not found</div>
+                    }
+                    {(!loading && offerDetail && projectDetail) &&
+                        <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+                            <div className="col-span-1">
+                                <img
+                                src={offerDetail.image}
+                                alt="Profile Image"
+                                className="rounded-md object-cover"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                            <div className="md:flex justify-between mb-3.5">
+                                <div>
+                                    <h2 className="text-white text-lg underline capitalize">
+                                        {offerDetail.name}
+                                    </h2>
+                                    <p className="text-white text-base underline">
+                                        {offerDetail.symbol}
+                                    </p>
+                                </div>
+                                {offerDetail.invitationype != "none" && owner &&
+                                    <label htmlFor="my-drawer-4" className="drawer-button btn btn-primary bg-[#6607FF] text-white border-none hover:bg-primary hover:text-white md:mt-0 mt-5" onClick={showInvitation}>
+                                        Mint Invitation
+                                    </label>
                                 }
 
-                                {offerDetail.pricetype !== "onetime" && 
-                                    <div className="md:flex mb-10">
-                                        {offerDetail.pricemonthly > 0 &&
-                                            <div className="md:mb-0 md:mr-10 mb-3.5">
+                            </div>
+                            <div className="mb-3.5">
+                                <p className="text-base">{offerDetail.desc}</p>
+                            </div>
+                            <div className="md:flex mb-10">
+                                <div className="flex items-center rounded-lg md:mr-10 md:mb-0 mb-3.5">
+                                    <p className="text-sm text-white">
+                                    <span className="font-bold text-sm text-white mr-4">
+                                        Type of Offer
+                                    </span>
+                                    </p>
+                                    <div className="px-2 bg-[#19066B] rounded-lg">
+                                    <p className="text-sm text-white">{offerDetail.pricetype === "onetime" ? "One Time" : "Subscription"}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center rounded-lg md:mr-10 md:mb-0 mb-3.5">
+                                    <p className="text-sm text-white">
+                                    <span className="font-bold text-sm text-white mr-4">
+                                        Quantity
+                                    </span>
+                                    </p>
+                                    <div className="px-2 bg-[#19066B] rounded-lg">
+                                        <input 
+                                        type="number" 
+                                        placeholder="0"
+                                        value={supplyValue > 0 ? supplyValue.toString() : ""}
+                                        onChange={(e) => setSupplyValue(prepareNumber(Number(e.target.value)))}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex items-center rounded-lg md:mb-0 mb-3.5">
+                                    <p className="text-sm text-white">
+                                    <span className="font-bold text-sm text-white mr-4">
+                                        Available
+                                    </span>
+                                    </p>
+                                    <div className="px-2 bg-[#19066B] rounded-lg">
+                                    <p className="text-sm text-white">{offerDetail.supply > 0 ? offerDetail.supply : "Unlimited"}</p>
+                                    </div>
+                                </div>     
+                            </div>
+                            {usdcPrice > 0 && (offerDetail.supply == 0 || offerDetail.supply >= (offerDetail.sold + supplyValue)) && 
+                                <>
+                                    {offerDetail.pricetype === "onetime" && 
+                                            <div className="mb-10">
                                                 <p className="text-base">Current Price</p>
                                                 <h2 className="text-white text-lg uppercase mb-3.5">
                                                     {projectDetail.coins[0].symbol.toUpperCase()} 
                                                     {offerDetail.discount == 0 && 
-                                                        <span className="mr-3.5 ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)} / Monthly</span>
+                                                    <span className="ml-3.5 text-lg text-white">{(Number(offerDetail.priceonetime) / usdcPrice).toFixed(2)}</span>
                                                     }
                                                     {offerDetail.discount > 0 && 
                                                     <>
-                                                        <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)}</span>
-                                                        <span className="text-lg text-white">{((Number(offerDetail.pricemonthly) - (Number(offerDetail.pricemonthly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Monthly</span>
+                                                        <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.priceonetime) / usdcPrice).toFixed(2)}</span>
+                                                        <span className="ml-3.5 text-lg text-white">{((Number(offerDetail.priceonetime) - (Number(offerDetail.priceonetime) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)}</span>
                                                     </>
                                                     }
+                                                    
                                                 </h2>
-                                                {!monthlyLoading &&
+                                                {!oneTimeLoading && 
                                                     <button
                                                     className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                    onClick={()=>{mintOffer("month")}}
+                                                    onClick={()=>{mintOffer("onetime")}}
                                                     >
                                                     Mint Offer
                                                     </button>
+                                                
                                                 }
-                                                {monthlyLoading &&
+
+                                                {oneTimeLoading && 
                                                     <button
                                                     className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
                                                     >
                                                     Minting...
                                                     </button>
+                                                
                                                 }
-                                            </div>
-                                        }
 
-                                        {offerDetail.priceyearly > 0 &&
-                                            <div>
-                                                <p className="text-base">Current Price</p>
-                                                <h2 className="text-white text-lg uppercase mb-3.5">
-                                                    {projectDetail.coins[0].symbol.toUpperCase()}
-                                                    {offerDetail.discount == 0 && 
-                                                        <span className="text-lg ml-3.5 text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)} / Yearly</span>
-                                                    }
-                                                    {offerDetail.discount > 0 && 
-                                                    <>
-                                                        <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)}</span>
-                                                        <span className="ml-3.5 text-lg text-white">{((Number(offerDetail.priceyearly) - (Number(offerDetail.priceyearly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Yearly</span>
-                                                    </>
-                                                    }
-                                                </h2>
-                                                {!yearlyLoading &&
-                                                    <button
+                                            </div>
+                                    }
+
+                                    {offerDetail.pricetype !== "onetime" && 
+                                        <div className="md:flex mb-10">
+                                            {offerDetail.pricemonthly > 0 &&
+                                                <div className="md:mb-0 md:mr-10 mb-3.5">
+                                                    <p className="text-base">Current Price</p>
+                                                    <h2 className="text-white text-lg uppercase mb-3.5">
+                                                        {projectDetail.coins[0].symbol.toUpperCase()} 
+                                                        {offerDetail.discount == 0 && 
+                                                            <span className="mr-3.5 ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)} / Monthly</span>
+                                                        }
+                                                        {offerDetail.discount > 0 && 
+                                                        <>
+                                                            <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)}</span>
+                                                            <span className="text-lg text-white">{((Number(offerDetail.pricemonthly) - (Number(offerDetail.pricemonthly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Monthly</span>
+                                                        </>
+                                                        }
+                                                    </h2>
+                                                    {!monthlyLoading &&
+                                                        <button
                                                         className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                        onClick={()=>{mintOffer("year")}}
-                                                        > 
+                                                        onClick={()=>{mintOffer("month")}}
+                                                        >
                                                         Mint Offer
-                                                    </button>
-                                                }
-                                                {yearlyLoading &&
-                                                    <button
+                                                        </button>
+                                                    }
+                                                    {monthlyLoading &&
+                                                        <button
                                                         className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                        > 
+                                                        >
                                                         Minting...
-                                                    </button>
-                                                }
-                                            </div>
-                                        }
+                                                        </button>
+                                                    }
+                                                </div>
+                                            }
+
+                                            {offerDetail.priceyearly > 0 &&
+                                                <div>
+                                                    <p className="text-base">Current Price</p>
+                                                    <h2 className="text-white text-lg uppercase mb-3.5">
+                                                        {projectDetail.coins[0].symbol.toUpperCase()}
+                                                        {offerDetail.discount == 0 && 
+                                                            <span className="text-lg ml-3.5 text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)} / Yearly</span>
+                                                        }
+                                                        {offerDetail.discount > 0 && 
+                                                        <>
+                                                            <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)}</span>
+                                                            <span className="ml-3.5 text-lg text-white">{((Number(offerDetail.priceyearly) - (Number(offerDetail.priceyearly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Yearly</span>
+                                                        </>
+                                                        }
+                                                    </h2>
+                                                    {!yearlyLoading &&
+                                                        <button
+                                                            className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+                                                            onClick={()=>{mintOffer("year")}}
+                                                            > 
+                                                            Mint Offer
+                                                        </button>
+                                                    }
+                                                    {yearlyLoading &&
+                                                        <button
+                                                            className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+                                                            > 
+                                                            Minting...
+                                                        </button>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </>
+                            } 
+
+                            <div className="flex flex-col">
+                                <div className="flex items-center">
+                                    <p className="text-sm text-white">Current balance</p>
+                                    <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
+                                    {tokenBalance}
                                     </div>
-                                }
-                            </>
-                        } 
-
-                        <div className="flex flex-col">
-                            <div className="flex items-center">
-                                <p className="text-sm text-white">Current balance</p>
-                                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                                {tokenBalance}
+                                    <p className="text-sm text-white">{projectDetail.coins[0].symbol.toUpperCase()}</p>
                                 </div>
-                                <p className="text-sm text-white">{projectDetail.coins[0].symbol.toUpperCase()}</p>
+
+                                <div className="flex items-center">
+                                    <p className="text-sm text-white">Current balance</p>
+                                    <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
+                                    {profileInfo?.solBalance || 0}
+                                    </div>
+                                    <p className="text-sm text-white">SOL</p>
+                                </div>
                             </div>
 
-                            <div className="flex items-center">
-                                <p className="text-sm text-white">Current balance</p>
-                                <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                                {profileInfo?.solBalance || 0}
-                                </div>
-                                <p className="text-sm text-white">SOL</p>
-                            </div>
                         </div>
-
+                        </div>
+                    }
                     </div>
-                    </div>
-                }
+                </div>
+                <div className="drawer-side z-10">
+                    <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
+                    <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+                    {/* Sidebar content here */}
+                    <li><a>Sidebar Item 1</a></li>
+                    <li><a>Sidebar Item 2</a></li>
+                    </ul>
+                </div>
             </div>
+
         </>
     )
 }

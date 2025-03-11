@@ -13,6 +13,7 @@ import useWallet from "@/utils/wallet";
 import axios from "axios";
 import AgentStudioToolsCreate from "@/app/components/Project/AgentStudioToolsCreate";
 import InstructAgent from "@/app/components/Project/InstructAgent";
+import AgentOffer from "@/app/components/Project/AgentOffer";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();
@@ -89,8 +90,9 @@ export default function ProjectCreate() {
                     if (e.target.value !== "New Personal Agent") {
                       setOptions([
                         { label: `Empower ${projectName}`, value: "Tools" },
-                        {label: `Update ${projectName} Genesis Pass`,
-                        value: "Update",
+                        {
+                          label: `Update ${projectName} Genesis Pass`,
+                          value: "Update",
                         },
                         { label: `Inform ${projectName}`, value: "Inform" },
                         { label: "Manage Offerings", value: "Offerings" },
@@ -133,7 +135,9 @@ export default function ProjectCreate() {
         </div>
 
         {selectedOption === "Tokenize Agent" && <AgentPass />}
-        {selectedOption === "Update" && <AgentPass symbol={selectedProjectType}/>}
+        {selectedOption === "Update" && (
+          <AgentPass symbol={selectedProjectType} />
+        )}
 
         {selectedOption === "Tools" && (
           <AgentStudioToolsCreate symbol={selectedProjectType} />
@@ -165,13 +169,7 @@ export default function ProjectCreate() {
         )}
 
         {selectedOption === "Offerings" && (
-          <div className="flex justify-center">
-            <p className="text-base">
-              Coming soon! Your agent will be able to offer goods and services,
-              both digital and physical, and sign up personal agents as
-              promotional partners for affiliate marketing programs.
-            </p>
-          </div>
+          <AgentOffer symbol={selectedProjectType} />
         )}
 
         {selectedOption === "Teams" && (

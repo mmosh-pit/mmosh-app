@@ -132,7 +132,7 @@ export class Connectivity {
             userData.nouns = element.value;
           } else if (element.trait_type == "Pronoun") {
             userData.pronouns = element.value;
-          } else if (element.trait_type == "Community" || element.trait_type == "Project") {
+          } else if (element.trait_type == "Community" || element.trait_type == "Project"  || element.trait_type == "Offer") {
             userData.project = element.value;
           }
         }
@@ -156,7 +156,7 @@ export class Connectivity {
         if(result.data.attributes) {
           for (let index = 0; index < result.data.attributes.length; index++) {
             const element = result.data.attributes[index];
-            if (element.trait_type == "Community" || element.trait_type == "Project") {
+            if (element.trait_type == "Community" || element.trait_type == "Project" || element.trait_type == "Offer") {
               userData.project = element.value;
             }
           }

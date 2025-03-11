@@ -63,6 +63,7 @@ const AgentOffer = ({ symbol }: { symbol?: string }) => {
     const [currentMenu, setCurrentMenu] = useState("offer");
     const [offerPageContent, setOfferPageContent] = useState("list");
     const [invitationTypes, setInvitationTypes] = React.useState([
+        "required",
         "optional",
         "none",
     ]);

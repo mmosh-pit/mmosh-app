@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import { useAtom } from "jotai";
-import axios from "axios";
 
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
@@ -10,6 +9,7 @@ import { storeFormAtom } from "../store/signup";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
+import client from "../lib/httpClient";
 
 const SignUp = () => {
   const router = useRouter();
@@ -35,7 +35,7 @@ const SignUp = () => {
   };
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await axios.get("/api/is-auth");
+    const result = await client.get("/api/is-auth");
 
     if (result.data) {
       router.replace("/");
@@ -64,7 +64,7 @@ const SignUp = () => {
 
     try {
       const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/request-code`;
-      await axios.post(url, {
+      await client.post(url, {
         email: form.email,
       });
       router.push("/sign-up/code");

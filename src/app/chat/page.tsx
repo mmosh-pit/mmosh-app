@@ -4,11 +4,12 @@ import * as React from "react";
 import Image from "next/image";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import { AIChatMessage } from "../models/AIChatMessage";
-import { data, userData } from "../store";
+import { data, isAuth, userData } from "../store";
 import { useAtom } from "jotai";
 import Markdown from "markdown-to-jsx";
 import { Bars } from "react-loader-spinner";
 import { bagsNfts } from "../store/bags";
+import useWebSocket from "react-use-websocket";
 import axios from "axios";
 
 const DEFAULT_SYSTEM_PROMPT = `[System]
@@ -44,6 +45,8 @@ Remember to consistently reflect these attributes and instructions throughout ev
 [End System]
 `;
 
+const WS_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`;
+
 let source: any;
 
 export default function OPOS() {
@@ -51,6 +54,9 @@ export default function OPOS() {
   const [currentUser] = useAtom(data);
   const [user] = useAtom(userData);
   const [nfts] = useAtom(bagsNfts);
+  const [isLoggedIn] = useAtom(isAuth);
+
+  const [wsUrl, setWsUrl] = React.useState(WS_URL);
 
   const [agents, setAgents] = React.useState<AgentData[]>([]);
   const [text, setText] = React.useState("");
@@ -64,6 +70,11 @@ export default function OPOS() {
   const [areProjectsLoading, setAreProjectsLoading] = React.useState(true);
 
   const messagesRef = React.useRef<HTMLDivElement>(null);
+
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(wsUrl, {
+    share: false,
+    shouldReconnect: () => true,
+  });
 
   const getProjectsFromAPI = async (keyword: any) => {
     try {
@@ -103,84 +114,96 @@ export default function OPOS() {
       }
     }
 
-    console.log("Sending with system promp: ", systemPrompt);
-
-    try {
-      setIsDisabled(true);
-      setIsLoading(true);
-      setMessages([
-        ...messages,
-        {
-          type: "user",
-          message: text,
+    if (isLoggedIn) {
+      const message = {
+        event: "message",
+        data: {
+          text,
+          systemPrompt,
+          namespaces,
         },
-      ]);
-      setText("");
+      };
 
-      const response = await fetch(
-        "https://mmoshapi-uodcouqmia-uc.a.run.app/generate_stream/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: currentUser?.profile.username ?? user?.name ?? "Visitor",
-            prompt: text,
-            namespaces: namespaces,
-            system_prompt: systemPrompt !== "" ? systemPrompt : null,
-          }),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      if (!response.body) return;
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      let messageContent = "";
-
-      const existingMessages = [
-        ...messages,
-        {
-          type: "user",
-          message: text,
-        },
-      ];
-
-      setIsLoading(false);
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-
-        messageContent += chunk;
-
+      sendJsonMessage(message);
+    } else {
+      try {
+        setIsDisabled(true);
+        setIsLoading(true);
         setMessages([
-          ...existingMessages,
+          ...messages,
           {
-            type: "bot",
-            message: messageContent,
-            index: lastBotMessageIndex.current,
+            type: "user",
+            message: text,
           },
         ]);
+        setText("");
 
-        if (messagesRef.current) {
-          messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        const response = await fetch(
+          "https://mmoshapi-uodcouqmia-uc.a.run.app/generate_stream/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username:
+                currentUser?.profile.username ?? user?.name ?? "Visitor",
+              prompt: text,
+              namespaces: namespaces,
+              system_prompt: systemPrompt !== "" ? systemPrompt : null,
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
-      }
 
-      lastBotMessageIndex.current += 1;
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setIsDisabled(false);
+        if (!response.body) return;
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        let messageContent = "";
+
+        const existingMessages = [
+          ...messages,
+          {
+            type: "user",
+            message: text,
+          },
+        ];
+
+        setIsLoading(false);
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+
+          messageContent += chunk;
+
+          setMessages([
+            ...existingMessages,
+            {
+              type: "bot",
+              message: messageContent,
+              index: lastBotMessageIndex.current,
+            },
+          ]);
+
+          if (messagesRef.current) {
+            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+          }
+        }
+
+        lastBotMessageIndex.current += 1;
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setIsDisabled(false);
+      }
     }
   };
 
@@ -241,12 +264,62 @@ export default function OPOS() {
   }, [nfts]);
 
   React.useEffect(() => {
+    const message: any = lastJsonMessage;
+
+    if (!message) return;
+
+    if (message === "connected") return;
+
+    console.log("Got message: ", message);
+
+    if (message.event === "aiMessage" || message.event === "userMessage") {
+      const data = message.data;
+
+      if (data.type === "bot") {
+        setMessages((prev) => {
+          const newMessages = [...prev];
+
+          if (newMessages[newMessages.length - 1].type === "bot") {
+            newMessages[newMessages.length - 1].message += data.content;
+          } else {
+            newMessages.push({
+              message: data.content,
+              type: data.type,
+            });
+          }
+
+          return newMessages;
+        });
+
+        return;
+      }
+
+      setMessages((prev) => {
+        const newMessages = [...prev];
+
+        newMessages.push({
+          type: data.type,
+          message: data.content,
+        });
+
+        return newMessages;
+      });
+    }
+  }, [lastJsonMessage]);
+
+  React.useEffect(() => {
     getProjectsFromAPI("");
   }, [currentUser]);
 
   React.useEffect(() => {
     setupAvailableNamespaces();
   }, [nfts]);
+
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      setWsUrl(`${WS_URL}?token=${window.localStorage.getItem("token")}`);
+    }
+  }, [isLoggedIn]);
 
   return (
     <div className="background-content flex w-full h-full justify-center">

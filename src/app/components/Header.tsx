@@ -42,6 +42,7 @@ import {
 } from "../store/bags";
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
+import client from "../lib/httpClient";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
@@ -102,14 +103,8 @@ const Header = () => {
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
-    const value =
-      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`;
-    const result = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${value}`,
-      },
-    });
+    const result = await client.get(url);
 
     const user = result.data?.data?.user;
 
@@ -499,7 +494,7 @@ const Header = () => {
         Authorization: `Bearer ${value}`,
       },
     });
-    document.cookie = "";
+    window.localStorage.removeItem("token");
     setIsLoadingLogout(false);
 
     setIsUserAuthenticated(false);
@@ -509,16 +504,9 @@ const Header = () => {
   const fetchPrivateKey = React.useCallback(async () => {
     if (!isUserAuthenticated) return;
 
-    const value =
-      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
-
-    const res = await axios.get(
+    const res = await client.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/private-key`,
-      {
-        headers: {
-          Authorization: `Bearer ${value}`,
-        },
-      },
+      {},
     );
 
     const data = res.data;

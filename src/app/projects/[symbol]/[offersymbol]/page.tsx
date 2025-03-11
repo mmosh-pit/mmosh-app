@@ -194,8 +194,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                 receiver: wallet.publicKey?.toBase58(),
                 symbol: offerDetail.symbol,
                 type,
-                supply: supplyValue,
-                profile: profileInfo.profile.address
+                supply: supplyValue
             });
             if(result.data) {
                 const connection = new Connection(
@@ -228,6 +227,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
             setYearlyLoading(false)
             setInviteLoading(false)
         } catch (error) {
+            console.log("error ", error)
             createMessage("Something went wrong", "danger-container");
             setOneTimeLoading(false)
             setMonthlyLoading(false)
@@ -301,7 +301,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                                 <p className="text-sm text-white">{offerDetail.pricetype === "onetime" ? "One Time" : "Subscription"}</p>
                                 </div>
                             </div>
-                            {/* <div className="flex items-center rounded-lg md:mr-10 md:mb-0 mb-3.5">
+                            <div className="flex items-center rounded-lg md:mr-10 md:mb-0 mb-3.5">
                                 <p className="text-sm text-white">
                                 <span className="font-bold text-sm text-white mr-4">
                                     Quantity
@@ -315,7 +315,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                                     onChange={(e) => setSupplyValue(prepareNumber(Number(e.target.value)))}
                                     />
                                 </div>
-                            </div> */}
+                            </div>
                             <div className="flex items-center rounded-lg md:mb-0 mb-3.5">
                                 <p className="text-sm text-white">
                                 <span className="font-bold text-sm text-white mr-4">

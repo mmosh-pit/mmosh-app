@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
       symbol, 
       type,
       supply,
-      profile
     } = await req.json();
 
     const offerCollection = db.collection("mmosh-app-project-offer");
@@ -37,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     if(offerData.supply > 0) {
-      if(offerData.supply < (offerData.supply + supply)) {
+      if(offerData.supply < (offerData.sold + supply)) {
         console.log("insufficent supply")
         return NextResponse.json(null, {
           status: 200,
@@ -157,7 +156,7 @@ export async function POST(req: NextRequest) {
 
       console.log("balance", tokenBalance)
             
-      if(tokenBalance < price) {
+      if(tokenBalance < (price * supply)) {
         console.log("Insufficent fund")
         return NextResponse.json(null, 
         { status: 200 });
@@ -251,7 +250,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const passMetaURI: any = await pinFileToShadowDriveBackend(offerBody, receiver);
+      const passMetaURI: any = ""
 
       let result = await projectConn.mintGuestPassTx({
         name: offerData.name,
@@ -259,7 +258,7 @@ export async function POST(req: NextRequest) {
         uriHash: passMetaURI,
         genesisProfile: offerData.key,
         commonLut: offerData.lut
-      },receiver, receiver, price * (10 ** coinData.target.decimals), profile);
+      },receiver, receiver, (price * (10 ** coinData.target.decimals) * supply), supply);
 
       if(result.Ok?.info?.profile) {
         let transaction: VersionedTransaction = result.Ok?.info?.profile;

@@ -1551,7 +1551,7 @@ export class Connectivity {
     userProfile: string,
     payerProfile: string,
     cost?: number,
-    parent?: string
+    supply?: number
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
     try {
       this.reinit();
@@ -1600,7 +1600,7 @@ export class Connectivity {
         mintAuthority: user,
         mintKeypair: mintKp,
         mintingInfo: {
-          tokenAmount: 1,
+          tokenAmount: supply ? supply : 1,
           tokenReceiver: user,
         },
       });
@@ -1657,34 +1657,27 @@ export class Connectivity {
 
       let profileHolderInfo;
       console.log("cost ", cost)
-      console.log("parent ", parent)
-      if(cost && parent) {
-        const parentProfile = new anchor.web3.PublicKey(parent);
-
+      if(cost) {
         const {
           currentGenesisProfileHolder,
           currentGrandParentProfileHolder,
           currentParentProfileHolder,
-          currentGenesisProfileHolderAta,
-          parentProfileHolderOposAta,
-          grandParentProfileHolderOposAta,
         } = await this.__getProfileHoldersInfo(
           parentProfileStateInfo.lineage,
           genesisProfile,
-          parentProfile,
+          genesisProfile,
           mainStateInfo.oposToken
         );
         console.log("mint pass 71", userProfile)
         console.log("mint pass 711", mainStateInfo.oposToken.toBase58())
-        let myProfile = new anchor.web3.PublicKey(userProfile)
-        const myProfileState = this.__getProfileStateAccount(myProfile);
+        const myProfileState = this.__getProfileStateAccount(genesisProfile);
         console.log("mint pass 72")
         let myProfileStateInfo =
           await this.program.account.profileState.fetch(myProfileState);
         console.log("mint pass 73")
         profileHolderInfo = await this.__getProfileHoldersInfo(
           myProfileStateInfo.lineage,
-          myProfile,
+          genesisProfile,
           web3Consts.genesisProfile,
           mainStateInfo.oposToken
         );
@@ -1733,8 +1726,6 @@ export class Connectivity {
           }
       }
       }
-    
-
 
       console.log("mint pass 10", commonLut);
       const commonLutInfo = await (
@@ -1966,8 +1957,6 @@ export class Connectivity {
     }
     return { Err: "Unreachable" };
   }
-
-
 
   async registerCommonLut() {
     const collection = web3Consts.passCollection

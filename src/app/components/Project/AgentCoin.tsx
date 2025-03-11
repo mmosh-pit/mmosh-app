@@ -309,7 +309,7 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
         }
 
         if(projectDetail.coins.length > 0) {
-            createMessage( "Projext already have coin", "danger-container");
+            createMessage( "Project already have coin", "danger-container");
             return;
         }
 

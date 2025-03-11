@@ -3,10 +3,10 @@ import * as React from "react";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
+import client from "../lib/httpClient";
 
 const Login = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await axios.get("/api/is-auth");
+    const result = await client.get("/api/is-auth");
 
     if (result.data) {
       router.replace("/");
@@ -35,12 +35,12 @@ const Login = () => {
       setIsLoading(true);
       try {
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`;
-        const res = await axios.post(url, {
+        const res = await client.post(url, {
           handle: email,
           password,
         });
 
-        document.cookie = `session=${res.data.data.token}`;
+        window.localStorage.setItem("token", res.data.data.token);
         router.replace("/coins");
       } catch (err: any) {
         setError(

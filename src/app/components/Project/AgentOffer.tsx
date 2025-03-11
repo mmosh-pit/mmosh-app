@@ -19,6 +19,7 @@ import { fetchImage } from "@/app/lib/forge/fetchImage";
 import { generateCommunityInvitationImage } from "@/app/lib/forge/generateCommunityInvitationImage";
 import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
 import AgentOfferItem from "./AgentOfferItem";
+import { Bars } from "react-loader-spinner";
 
 const AgentOffer = ({ symbol }: { symbol?: string }) => {
     const connection = useConnection();
@@ -1070,6 +1071,19 @@ const AgentOffer = ({ symbol }: { symbol?: string }) => {
           }
           {offerPageContent == "list" && projectDetail &&
              <>
+                {offerLoading &&
+                  <div className="flex justify-center">
+                      <Bars
+                          height="80"
+                          width="80"
+                          color="rgba(255, 0, 199, 1)"
+                          ariaLabel="bars-loading"
+                          wrapperStyle={{}} 
+                          wrapperClass="bars-loading"
+                          visible={true}
+                      />
+                  </div>
+                }
                 {!offerLoading && offers.length > 0 &&
                   <div className="container mx-auto">
                     <div

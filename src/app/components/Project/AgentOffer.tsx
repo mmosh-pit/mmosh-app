@@ -571,6 +571,7 @@ const AgentOffer = ({ symbol }: { symbol?: string }) => {
                     desc: fields.desc,
                     image: fields.image.preview,
                     inviteimage: invitationImageUri,
+                    invitationype: fields.invitationType,
                     key: offerKeyPair.publicKey.toBase58(),
                     lut: res4.Ok.info.lookupTable,
                     badge,

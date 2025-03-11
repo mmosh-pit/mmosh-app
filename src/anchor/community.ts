@@ -1550,6 +1550,7 @@ export class Connectivity {
     input: _MintGuestPass,
     userProfile: string,
     payerProfile: string,
+    profileNft: string,
     cost?: number,
     supply?: number
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
@@ -1668,16 +1669,17 @@ export class Connectivity {
           genesisProfile,
           mainStateInfo.oposToken
         );
+        let myProfile = new anchor.web3.PublicKey(profileNft)
+        const myProfileState = this.__getProfileStateAccount(myProfile);
         console.log("mint pass 71", userProfile)
         console.log("mint pass 711", mainStateInfo.oposToken.toBase58())
-        const myProfileState = this.__getProfileStateAccount(genesisProfile);
         console.log("mint pass 72")
         let myProfileStateInfo =
           await this.program.account.profileState.fetch(myProfileState);
         console.log("mint pass 73")
         profileHolderInfo = await this.__getProfileHoldersInfo(
           myProfileStateInfo.lineage,
-          genesisProfile,
+          myProfile,
           web3Consts.genesisProfile,
           mainStateInfo.oposToken
         );
@@ -1775,7 +1777,10 @@ export class Connectivity {
   async mintPassTx(
     input: _MintProfileByAtInput,
     userProfile: string,
-    payerProfile: string
+    payerProfile: string,
+    profileNft: string,
+    cost?: number,
+    supply?: number
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
     for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
@@ -1824,7 +1829,7 @@ export class Connectivity {
           mintAuthority: user,
           mintKeypair: mintKp,
           mintingInfo: {
-            tokenAmount: 1,
+            tokenAmount: supply ? supply : 1,
             tokenReceiver: user,
           },
         });
@@ -1850,23 +1855,9 @@ export class Connectivity {
         const mainStateInfo = await this.program.account.mainState.fetch(
           this.mainState,
         );
-        console.log("mint pass 7")
-        const {
-          currentGenesisProfileHolder,
-          currentGrandParentProfileHolder,
-          currentParentProfileHolder,
-          currentGenesisProfileHolderAta,
-          parentProfileHolderOposAta,
-          grandParentProfileHolderOposAta,
-        } = await this.__getProfileHoldersInfo(
-          parentProfileStateInfo.lineage,
-          parentProfile,
-          genesisProfile,
-          mainStateInfo.oposToken
-        );
 
         console.log("mint pass 8")
-        const userOposAta = getAssociatedTokenAddressSync(mainStateInfo.oposToken, user);
+
         const parentMainState = web3.PublicKey.findProgramAddressSync(
           [Seeds.mainState],
           this.programId,
@@ -1900,6 +1891,79 @@ export class Connectivity {
           })
           .instruction();
         this.txis.push(ix);
+
+        let profileHolderInfo;
+        console.log("cost ", cost)
+        if(cost) {
+          const {
+            currentGenesisProfileHolder,
+            currentGrandParentProfileHolder,
+            currentParentProfileHolder,
+          } = await this.__getProfileHoldersInfo(
+            parentProfileStateInfo.lineage,
+            genesisProfile,
+            genesisProfile,
+            mainStateInfo.oposToken
+          );
+          console.log("mint pass 71", userProfile)
+          console.log("mint pass 711", mainStateInfo.oposToken.toBase58())
+          let myProfile = new anchor.web3.PublicKey(profileNft)
+          const myProfileState = this.__getProfileStateAccount(myProfile);
+          console.log("mint pass 72")
+          let myProfileStateInfo =
+            await this.program.account.profileState.fetch(myProfileState);
+          console.log("mint pass 73")
+          profileHolderInfo = await this.__getProfileHoldersInfo(
+            myProfileStateInfo.lineage,
+            myProfile,
+            web3Consts.genesisProfile,
+            mainStateInfo.oposToken
+          );
+          let holdersfullInfo = [];
+  
+          holdersfullInfo.push({
+            receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+            vallue: cost * ((mainStateInfo.mintingCostDistribution.genesis / 100) / 100)
+          })
+    
+          holdersfullInfo.push({
+            receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+            vallue: cost * ((mainStateInfo.mintingCostDistribution.parent / 100) / 100)
+          })
+    
+          holdersfullInfo.push({
+            receiver: currentGenesisProfileHolder.toBase58(),
+            vallue: cost * ((mainStateInfo.mintingCostDistribution.grandParent / 100) / 100)
+        })
+    
+        holdersfullInfo.push({
+          receiver: currentParentProfileHolder.toBase58(),
+          vallue: cost * ((mainStateInfo.mintingCostDistribution.greatGrandParent / 100) / 100)
+        })
+    
+        holdersfullInfo.push({
+          receiver: currentGrandParentProfileHolder.toBase58(),
+          vallue: cost * ((mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100) / 100)
+        })
+    
+        var holdermap:any = [];
+        holdersfullInfo.reduce(function(res:any, value:any) {
+          if (!res[value.receiver]) {
+            res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+            holdermap.push(res[value.receiver])
+          }
+          res[value.receiver].vallue += value.vallue;
+          return res;
+        }, {});
+    
+        for (let index = 0; index < holdermap.length; index++) {
+            const element = holdermap[index];
+            let createShare:any =  await this.baseSpl.transfer_token_modified({ mint: mainStateInfo.oposToken, sender: user, receiver: new anchor.web3.PublicKey(element.receiver), init_if_needed: true, amount: Math.ceil(element.vallue)});
+            for (let index = 0; index < createShare.length; index++) {
+                this.txis.push(createShare[index]);
+            }
+        }
+        }
       
         console.log("mint pass 10", commonLut)
         const commonLutInfo = await (

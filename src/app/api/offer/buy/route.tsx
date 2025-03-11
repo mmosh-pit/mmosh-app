@@ -22,6 +22,22 @@ export async function POST(req: NextRequest) {
     const projectCollection = db.collection("mmosh-app-project");
     const projectCoinCollection = db.collection("mmosh-app-project-coins");
     const tokenCollection = db.collection("mmosh-app-tokens");
+    const usercollection = db.collection("mmosh-app-profiles");
+
+    let userData = await usercollection.findOne({wallet: receiver})
+    if (!userData) {
+      console.log("User not found")
+      return NextResponse.json(null, {
+        status: 200,
+       });
+    }
+
+    if(!userData.profilenft) {
+      console.log("Profile not found")
+      return NextResponse.json(null, {
+        status: 200,
+      });
+    }
 
 
     let offerData:any  = await offerCollection.findOne({ symbol: symbol?.toUpperCase() });
@@ -43,6 +59,8 @@ export async function POST(req: NextRequest) {
         });
       }
     }
+
+
 
     try {
       let projectData:any = await projectCollection.findOne({ key: offerData.project });
@@ -137,14 +155,13 @@ export async function POST(req: NextRequest) {
          price = (Number(price) / priceInUsd).toFixed(2)
       }
 
+      if(offerData.invitationype === "required" && !hasInivtation) {
+        console.log("Invitation required to mint offer")
+        return NextResponse.json(null, 
+          { status: 200 });
+      }
 
       console.log("token price", price)
-
-      console.log("token balance params ",{
-        address: wallet.publicKey,
-        token: coinData.target.token,
-        decimals: 10 ** coinData.target.decimals
-      })
 
       let tokenBalance:any = await projectConn.getUserBalance({
                           address: new anchor.web3.PublicKey(receiver),
@@ -252,21 +269,33 @@ export async function POST(req: NextRequest) {
 
       const passMetaURI: any = ""
 
-      let result = await projectConn.mintGuestPassTx({
-        name: offerData.name,
-        symbol: offerData.symbol,
-        uriHash: passMetaURI,
-        genesisProfile: offerData.key,
-        commonLut: offerData.lut
-      },receiver, receiver, (price * (10 ** coinData.target.decimals) * supply), supply);
+      let result;
+      if(!hasInivtation) {
+        result = await projectConn.mintGuestPassTx({
+          name: offerData.name,
+          symbol: offerData.symbol,
+          uriHash: passMetaURI,
+          genesisProfile: offerData.key,
+          commonLut: offerData.lut
+        },receiver, receiver, userData.profilenft, (price * (10 ** coinData.target.decimals) * supply), supply);
+      } else {
+        result = await projectConn.mintPassTx({
+          name: offerData.name,
+          symbol: offerData.symbol,
+          uriHash: passMetaURI,
+          activationToken: offerData.badge,
+          genesisProfile: offerData.key,
+          commonLut: offerData.lut
+        },receiver, receiver, userData.profilenft, (price * (10 ** coinData.target.decimals) * supply), supply);
+      }
 
       if(result.Ok?.info?.profile) {
-        let transaction: VersionedTransaction = result.Ok?.info?.profile;
-        const serialized = Buffer.from(transaction.serialize()).toString('base64');
-        const payload = {transaction: serialized, message: "Congratulations on minting offer"};
-        return NextResponse.json(payload, {
-          status: 200,
-        });
+          let transaction: VersionedTransaction = result.Ok?.info?.profile;
+          const serialized = Buffer.from(transaction.serialize()).toString('base64');
+          const payload = {transaction: serialized, message: "Congratulations on minting offer"};
+          return NextResponse.json(payload, {
+            status: 200,
+          });
       }
       
 

@@ -10,6 +10,7 @@ import useWallet from "@/utils/wallet";
 import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
+import { Connectivity as CommunityConn } from "@/anchor/community";
 import { web3Consts } from "@/anchor/web3Consts";
 import { token } from "@metaplex-foundation/js";
 
@@ -32,6 +33,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
     const [monthlyLoading, setMonthlyLoading] = useState(false);
     const [yearlyLoading, setYearlyLoading] = useState(false);
     const [inviteLoading, setInviteLoading] = useState(false);
+    const [hasInivtation, setHasInvitation] = useState(false)
 
     useEffect(()=>{
         getProjectDetailFromAPI()
@@ -43,6 +45,12 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
             getCoinDetail()
         }
     },[projectDetail, wallet])
+
+    useEffect(()=>{
+        if(offerDetail) {
+            getCoinDetail()
+        }
+    },[offerDetail, wallet])
 
     const createMessage = (message: any, type: any) => {
         window.scrollTo(0, 0);
@@ -67,7 +75,6 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                 `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`,
             );
             getTokenPrice(result.data)
-            
         } catch (error) {
             console.log("getCoinDetail error", error)
             setLoading(false)
@@ -127,7 +134,38 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
             setLoading(false)
         }
 
-      };
+    };
+
+    const checkHasInvitation = async () => {
+        if(!wallet) {
+            setHasInvitation(false)
+            return;
+        }
+        const connection = new Connection(
+            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+            {
+              confirmTransactionInitialTimeout: 120000,
+            },
+          );
+        const env = new anchor.AnchorProvider(connection, wallet, {
+        preflightCommitment: "processed",
+        });
+
+        anchor.setProvider(env);
+
+        try {
+            const projectConn: CommunityConn = new CommunityConn(env, web3Consts.programID, new anchor.web3.PublicKey(offerDetail.key));
+            let isAvailable = await projectConn.isCreatorInvitation(
+                new anchor.web3.PublicKey(offerDetail.badge),
+                wallet.publicKey.toBase58()
+            )
+            setHasInvitation(isAvailable)
+        } catch (error) {
+            setHasInvitation(false)
+        }
+
+
+    }
     
     const getProjectDetailFromAPI = async() => {
         try {
@@ -177,6 +215,11 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
         if(!profileInfo.profile.address) {
             createMessage("profile is not created", "danger-container")
+            return
+        }
+
+        if(offerDetail.invitationype === "required" && !hasInivtation) {
+            createMessage("Invitation required to mint offer", "danger-container")
             return
         }
 
@@ -369,67 +412,71 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
                                 {offerDetail.pricetype !== "onetime" && 
                                     <div className="md:flex mb-10">
-                                        <div className="md:mb-0 md:mr-10 mb-3.5">
-                                            <p className="text-base">Current Price</p>
-                                            <h2 className="text-white text-lg uppercase mb-3.5">
-                                                {projectDetail.coins[0].symbol.toUpperCase()} 
-                                                {offerDetail.discount == 0 && 
-                                                    <span className="mr-3.5 ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)} / Monthly</span>
-                                                }
-                                                {offerDetail.discount > 0 && 
-                                                <>
-                                                    <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)}</span>
-                                                    <span className="text-lg text-white">{((Number(offerDetail.pricemonthly) - (Number(offerDetail.pricemonthly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Monthly</span>
-                                                </>
-                                                }
-                                            </h2>
-                                            {!monthlyLoading &&
-                                                <button
-                                                className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                onClick={()=>{mintOffer("month")}}
-                                                >
-                                                Mint Offer
-                                                </button>
-                                            }
-                                            {monthlyLoading &&
-                                                <button
-                                                className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                >
-                                                Minting...
-                                                </button>
-                                            }
-                                        </div>
-
-                                        <div>
-                                            <p className="text-base">Current Price</p>
-                                            <h2 className="text-white text-lg uppercase mb-3.5">
-                                                {projectDetail.coins[0].symbol.toUpperCase()}
-                                                {offerDetail.discount == 0 && 
-                                                    <span className="text-lg ml-3.5 text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)} / Yearly</span>
-                                                }
-                                                {offerDetail.discount > 0 && 
-                                                <>
-                                                    <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)}</span>
-                                                    <span className="ml-3.5 text-lg text-white">{((Number(offerDetail.priceyearly) - (Number(offerDetail.priceyearly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Yearly</span>
-                                                </>
-                                                }
-                                            </h2>
-                                            {!yearlyLoading &&
-                                                <button
+                                        {offerDetail.pricemonthly > 0 &&
+                                            <div className="md:mb-0 md:mr-10 mb-3.5">
+                                                <p className="text-base">Current Price</p>
+                                                <h2 className="text-white text-lg uppercase mb-3.5">
+                                                    {projectDetail.coins[0].symbol.toUpperCase()} 
+                                                    {offerDetail.discount == 0 && 
+                                                        <span className="mr-3.5 ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)} / Monthly</span>
+                                                    }
+                                                    {offerDetail.discount > 0 && 
+                                                    <>
+                                                        <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.pricemonthly) / usdcPrice).toFixed(2)}</span>
+                                                        <span className="text-lg text-white">{((Number(offerDetail.pricemonthly) - (Number(offerDetail.pricemonthly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Monthly</span>
+                                                    </>
+                                                    }
+                                                </h2>
+                                                {!monthlyLoading &&
+                                                    <button
                                                     className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                    onClick={()=>{mintOffer("year")}}
-                                                    > 
+                                                    onClick={()=>{mintOffer("month")}}
+                                                    >
                                                     Mint Offer
-                                                </button>
-                                            }
-                                            {yearlyLoading &&
-                                                <button
+                                                    </button>
+                                                }
+                                                {monthlyLoading &&
+                                                    <button
                                                     className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                                                    > 
+                                                    >
                                                     Minting...
-                                                </button>
-                                            }
-                                        </div>
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+
+                                        {offerDetail.priceyearly > 0 &&
+                                            <div>
+                                                <p className="text-base">Current Price</p>
+                                                <h2 className="text-white text-lg uppercase mb-3.5">
+                                                    {projectDetail.coins[0].symbol.toUpperCase()}
+                                                    {offerDetail.discount == 0 && 
+                                                        <span className="text-lg ml-3.5 text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)} / Yearly</span>
+                                                    }
+                                                    {offerDetail.discount > 0 && 
+                                                    <>
+                                                        <span className="line-through ml-3.5 text-lg text-white">{(Number(offerDetail.priceyearly) / usdcPrice).toFixed(2)}</span>
+                                                        <span className="ml-3.5 text-lg text-white">{((Number(offerDetail.priceyearly) - (Number(offerDetail.priceyearly) * (offerDetail.discount / 100))) / usdcPrice).toFixed(2)} / Yearly</span>
+                                                    </>
+                                                    }
+                                                </h2>
+                                                {!yearlyLoading &&
+                                                    <button
+                                                        className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+                                                        onClick={()=>{mintOffer("year")}}
+                                                        > 
+                                                        Mint Offer
+                                                    </button>
+                                                }
+                                                {yearlyLoading &&
+                                                    <button
+                                                        className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+                                                        > 
+                                                        Minting...
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
                                     </div>
                                 }
                             </>

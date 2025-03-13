@@ -746,7 +746,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
                         </div>
                         </div>
-                        <div className={!subscription ? "md:grid-cols-1" : "md:grid-cols-3" + " grid grid-cols-1 gap-4 my-10"}>
+                        <div className={(!subscription ? "md:grid-cols-1" : "md:grid-cols-3") + " grid grid-cols-1 gap-4 my-10"}>
                             {subscription &&
                                 <div className="col-span-1">
                                     {subscription &&

@@ -63,9 +63,9 @@ export async function GET(req: NextRequest) {
           } else if(element.trait_type === "Price") {
             price = element.value;
           } else if(element.trait_type === "Valid from") {
-            startDate = element.value;
+            startDate = new Date(element.value!);
           } else if(element.trait_type === "Valid up to") {
-            endDate = element.value;
+            endDate = new Date(element.value!);
           }
       }
     }

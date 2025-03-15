@@ -492,7 +492,6 @@ export default function ProjectCreateStep10({
           const stakePair = anchor.web3.Keypair.generate();
           const stakeres = await communityConnection.stakeCoin(
             stakeData[index],
-            stakePair,
           );
           console.log("stake signature ", stakeres);
         }

@@ -25,8 +25,11 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
     const [projectDetail, setProjectDetail] =  React.useState<any>(null)
     const [supplyValue, setSupplyValue] = useState(1)
     const [inputValue, setInputValue] = useState(0)
+    const [stakeValue, setStakeValue] = useState(0)
+    const [stakeType, setStakeType] = useState<any>("")
     const [usdcPrice, setUsdcPrice] = useState(0)
     const [tokenBalance, setTokenBlance] = useState(0)
+    const [stakeBalance, setStakeBlance] = useState(0)
     const wallet = useWallet();
 
     const [showMsg, setShowMsg] = useState(false);
@@ -38,11 +41,13 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
     const [monthlyLoading, setMonthlyLoading] = useState(false);
     const [yearlyLoading, setYearlyLoading] = useState(false);
     const [inviteLoading, setInviteLoading] = useState(false);
+    const [stakeLoading, setStakeLoading] = useState(false);
     const [hasInivtation, setHasInvitation] = useState(false)
 
     const [subscription, setSubscription] =  React.useState<any>(null)
 
     const [owner, setOwner] = useState(false);
+    const [coin, setCoin] = useState<CoinDetail | null>(null);
 
     const [histories, setHistories] = React.useState([]);
     const [historyLoading, setHistoryLoading] = useState(true);
@@ -54,6 +59,12 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
         getOfferDetailFromAPI()
 
     },[])
+
+    useEffect(()=>{
+       if(subscription) {
+          getStakeBalance()
+       }
+    },[subscription])
 
     useEffect(()=>{
         if(projectDetail) {
@@ -71,10 +82,13 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
      
     },[offerDetail, wallet])
 
-    const listHistoryApi = async (page: any) => {
-        if (!wallet) {
-          return;
+    useEffect(()=>{
+        if(stakeType != "") {
+            (document.getElementById("stake_modal") as any)?.showModal();
         }
+    },[stakeType])
+
+    const listHistoryApi = async (page: any) => {
         try {
           setHistoryLoading(true);
           setIsHistoryPaging(false);
@@ -100,7 +114,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
           setHistoryLoading(false);
           setHistories([]);
         }
-      };
+    };
     
     const nextHistoryPage = () => {
         let currentPage = historyPage + 1;
@@ -131,6 +145,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
             const result = await axios.get<CoinDetail>(
                 `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`,
             );
+            setCoin(result.data)
             getTokenPrice(result.data)
         } catch (error) {
             console.log("getCoinDetail error", error)
@@ -193,6 +208,34 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
 
     };
 
+    const getStakeBalance = async() => {
+        if(!wallet) {
+            setStakeBlance(0)
+            return;
+        }
+        const connection = new Connection(
+            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+            {
+              confirmTransactionInitialTimeout: 120000,
+            },
+          );
+        const env = new anchor.AnchorProvider(connection, wallet, {
+        preflightCommitment: "processed",
+        });
+
+        anchor.setProvider(env);
+
+        try {
+            const projectConn: CommunityConn = new CommunityConn(env, web3Consts.programID, new anchor.web3.PublicKey(projectDetail.coins[0].key));
+            let balance = await projectConn.getStakeBalance(
+                new anchor.web3.PublicKey(projectDetail.coins[0].key)
+            )
+            setStakeBlance(balance)
+        } catch (error) {
+            setStakeBlance(0)
+        }
+    }
+
     const checkHasInvitation = async () => {
         if(!wallet) {
             setHasInvitation(false)
@@ -220,8 +263,6 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
         } catch (error) {
             setHasInvitation(false)
         }
-
-
     }
 
     const getUserProfileInfo = async () => {
@@ -471,6 +512,95 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                 "Error on subscription action",
                 "danger-container",
             );
+        }
+    }
+
+    const depositAction = async () => {
+        setStakeValue(0)
+        setStakeType("deposit");
+
+    }
+
+    const withdrawAction = () => {
+        setStakeValue(0)
+        setStakeType("withdraw");
+    }
+
+    const stakeAction = async () => {
+        (document.getElementById("stake_modal") as any)?.close();
+        let value = stakeValue;
+        setStakeValue(0)
+        if(!coin) {
+            createMessage(
+                "Coin not found",
+                "danger-container",
+            );
+            return
+        }
+        if(!wallet) {
+            createMessage(
+                "Wallet not found",
+                "danger-container",
+            );
+            return
+        }
+
+        if(value <= 0) {
+            createMessage(
+                "Stake value is invalid",
+                "danger-container",
+            );
+            return
+        }
+
+        const connection = new Connection(
+            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+            {
+              confirmTransactionInitialTimeout: 120000,
+            },
+          );
+        const env = new anchor.AnchorProvider(connection, wallet, {
+           preflightCommitment: "processed",
+        });
+
+        console.log("project detail", projectDetail)
+
+        anchor.setProvider(env);
+        let projectConn: CommunityConn = new CommunityConn(
+            env,
+            web3Consts.programID,
+            new anchor.web3.PublicKey(projectDetail.project.key),
+        );
+        setStakeLoading(true)
+        try {
+            if(stakeType == "deposit") {
+    
+                const stakeres = await projectConn.stakeCoin({
+                    user: wallet.publicKey,
+                    mint: new anchor.web3.PublicKey(projectDetail.coins[0].key),
+                    value: Math.ceil(value * (10 ** coin?.target.decimals)),
+                    duration: 0,
+                  },
+                );
+                console.log("stake signature ", stakeres);
+                await delay(15000)
+            } else {
+                const unstakeres = await projectConn.unStakeCoin({
+                    stakeKey: wallet.publicKey,
+                    mint: new anchor.web3.PublicKey(projectDetail.coins[0].key),
+                    amount: Math.ceil(value * (10 ** coin?.target.decimals)),
+                  },
+                );
+                console.log("unstake signature ", unstakeres);
+                await delay(15000)
+            }
+            await getStakeBalance()
+            setStakeType("")
+            setStakeLoading(false)
+        } catch (error) {
+            setStakeType("")
+            setStakeLoading(false)
+            console.log("error ", error)
         }
     }
 
@@ -754,7 +884,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                                             <div className="card-body">
                                                 <h2 className="card-title">Subscription Details</h2>
                                                 <figure>
-                                                 <h2>Balance: {projectDetail.coins[0].symbol.toUpperCase()} 0</h2> 
+                                                 <h2>Balance: {projectDetail.coins[0].symbol.toUpperCase()} {stakeBalance}</h2> 
                                                 </figure>
                                                 <p className="text-base font-bold">
                                                     Current Plan:  
@@ -775,8 +905,17 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                                                     </span>
                                                 </p>
                                                 <div className="card-actions justify-between">
-                                                  <button className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none">Deposit</button>
-                                                  <button className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none">Withdraw</button>
+                                                 {!stakeLoading &&
+                                                    <>
+                                                        <button className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none" onClick={depositAction}>Deposit</button>
+                                                        <button className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none" onClick={withdrawAction}>Withdraw</button>
+                                                    </>
+                                                 }
+
+                                                 {stakeLoading &&
+                                                    <button className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none">Loading...</button>
+                                                 }
+
                                                   {subscription.status === "active" &&
                                                         <button className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none" onClick={actionSubscribe}>Cancel</button>
                                                   }
@@ -927,7 +1066,28 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                     </div>
                 </div>
             </div>
-
+            <dialog id="stake_modal" className="modal">
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg mb-3.5">Enter Amount</h3>
+                    <input 
+                    type="text" 
+                    placeholder="Enter Amount" 
+                    className="input w-full bg-[#BBBBBB21] border-[1px] border-[#06052D]" 
+                    value={stakeValue > 0 ? stakeValue.toString() : ""}
+                    onChange={(e) => setStakeValue(prepareNumber(Number(e.target.value)))}
+                    />
+                    <div className="modal-action">
+                        <form method="dialog">
+                           <button className="btn mr-5" onClick={()=>{
+                              (document.getElementById("stake_modal") as any)?.close();
+                              setStakeType("");
+                              setStakeValue(0);
+                           }}>Close</button>
+                            <button className="btn" onClick={stakeAction}>Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
         </>
     )
 }

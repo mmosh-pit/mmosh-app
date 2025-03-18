@@ -27,14 +27,14 @@ export async function POST(req: NextRequest) {
     let userData = await usercollection.findOne({wallet: receiver})
     if (!userData) {
       console.log("User not found")
-      return NextResponse.json(null, {
+      return NextResponse.json({status: false, message: "User not found"}, {
         status: 200,
        });
     }
 
     if(!userData.profilenft) {
       console.log("Profile not found")
-      return NextResponse.json(null, {
+      return NextResponse.json({status: false, message: "Profile not found"}, {
         status: 200,
       });
     }
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         offerData = await offerCollection.findOne({ symbol: symbol });
         if (!offerData) {
           console.log("offer not available")
-            return NextResponse.json(null, {
+            return NextResponse.json({status: false, message: "Offer not available"}, {
                 status: 200,
             });
         }
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     if(offerData.supply > 0) {
       if(offerData.supply < (offerData.sold + supply)) {
         console.log("insufficent supply")
-        return NextResponse.json(null, {
+        return NextResponse.json({status: false, message: "Insufficent supply"}, {
           status: 200,
         });
       }
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
           coinData = await tokenCollection.findOne({ symbol: projectCoins[0].symbol });
           if (!coinData) {
             console.log("coin not available")
-              return NextResponse.json(null, {
+              return NextResponse.json({status: false, message: "Coin not available"}, {
                   status: 200,
               });
           }
@@ -174,8 +174,7 @@ export async function POST(req: NextRequest) {
       console.log("balance", tokenBalance)
             
       if(tokenBalance < (price * supply)) {
-        console.log("Insufficent fund")
-        return NextResponse.json(null, 
+        return NextResponse.json({status: false, message: "Insufficent fund"}, 
         { status: 200 });
       }
 
@@ -206,7 +205,7 @@ export async function POST(req: NextRequest) {
           },
           {
             trait_type: "Seniority",
-            value: 0
+            value: offerData.seniority ? offerData.seniority : 1
           },
           {
             trait_type: "Payments",
@@ -241,33 +240,65 @@ export async function POST(req: NextRequest) {
           trait_type: "Annual Subscription Price",
           value: offerData.priceyearly,
         });
+
+       
+        offerBody.attributes.push({
+          trait_type: "Valid from",
+          value: new Date(),
+        });
+
+        let date = new Date(); // Now
+        if(type === "month") {
+          date.setDate(date.getDate() + 30);
+          offerBody.attributes.push({
+            trait_type: "Valid up to",
+            value: date,
+          });
+        } else if (type === "year") {
+          date.setDate(date.getDate() + 365);
+          offerBody.attributes.push({
+            trait_type: "Valid up to",
+            value: date,
+          });
+        }
       }
+
+      offerBody.attributes.push({
+        trait_type: "Purchase Type",
+        value: type,
+      });
 
       if (offerData.discount > 0) {
         offerBody.attributes.push({
           trait_type: "Discount",
           value: offerData.discount + "%",
         });
-
-        if(hasInivtation) {
-          let date = new Date(); // Now
-          if(type === "month") {
-            date.setDate(date.getDate() + 30);
-            offerBody.attributes.push({
-              trait_type: "Valid up to",
-              value: date,
-            });
-          } else if (type === "year") {
-            date.setDate(date.getDate() + 365);
-            offerBody.attributes.push({
-              trait_type: "Valid up to",
-              value: date,
-            });
-          }
-        }
       }
 
-      const passMetaURI: any = ""
+      offerBody.attributes.push({
+        trait_type: "Buyer",
+        value: receiver,
+      });
+
+      offerBody.attributes.push({
+        trait_type: "Supply",
+        value: supply,
+      });
+
+      offerBody.attributes.push({
+        trait_type: "Price",
+        value: (price * supply),
+      });
+
+      console.log("offer body", offerBody)
+
+      const passMetaURI: any = await pinFileToShadowDriveBackend(offerBody, receiver);
+      if(passMetaURI == "") {
+        console.log("error on creating meta uri")
+        return NextResponse.json({status: false, message: "Error on creating meta uri"}, {
+          status: 200,
+        });
+      }
 
       let result;
       if(!hasInivtation) {
@@ -292,19 +323,19 @@ export async function POST(req: NextRequest) {
       if(result.Ok?.info?.profile) {
           let transaction: VersionedTransaction = result.Ok?.info?.profile;
           const serialized = Buffer.from(transaction.serialize()).toString('base64');
-          const payload = {transaction: serialized, message: "Congratulations on minting offer"};
+          const payload = {status: true, transaction: serialized, message: "Congratulations on minting offer"};
           return NextResponse.json(payload, {
             status: 200,
           });
       }
       
 
-      return NextResponse.json(null, {
+      return NextResponse.json({status: false, message: "Something went wrong"}, {
         status: 200,
       });
     } catch (error) {
       console.log("error ", error)
-      return NextResponse.json(null, {
+      return NextResponse.json({status: false, message: "Something went wrong"}, {
         status: 200,
       });
     }

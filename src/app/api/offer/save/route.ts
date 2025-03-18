@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         badge,
         supply,
         sold: 0,
+        seniority: 0,
         created_date: new Date(),
         updated_date: new Date(),
     });

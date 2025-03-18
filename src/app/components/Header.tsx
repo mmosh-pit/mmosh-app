@@ -43,6 +43,8 @@ import {
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
 import client from "../lib/httpClient";
+import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
+import MessageBanner from "./common/MessageBanner";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
@@ -543,13 +545,7 @@ const Header = () => {
                 router.push("/");
               }}
             >
-              <div className="relative w-[2vmax] h-[2vmax]">
-                <Image
-                  src="https://storage.googleapis.com/mmosh-assets/kinship.png"
-                  alt="Kinship"
-                  layout="fill"
-                />
-              </div>
+              <KinshipMainIcon />
             </div>
           )}
 
@@ -686,6 +682,11 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      <MessageBanner
+        type="info"
+        message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
+      />
     </header>
   );
 };

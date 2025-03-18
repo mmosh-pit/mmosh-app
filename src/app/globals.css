@@ -4,6 +4,11 @@
 
 body {
   height: max-content;
+  overflow-y: hidden;
+}
+
+main {
+  overflow-y: hidden;
 }
 
 p {

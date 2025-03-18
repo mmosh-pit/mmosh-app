@@ -116,7 +116,7 @@ export const pinFileToShadowDriveBackend = async (jsonData: any, name:any) => {
     );
     const keypair = Keypair.fromSecretKey(private_arrray);
     const drive = await new ShdwDrive(
-      new Connection(Config.mainRpcURL),
+      new Connection("https://api.mainnet-beta.solana.com"),
       new NodeWallet(keypair),
     ).init();
 

@@ -3558,14 +3558,14 @@ export class Connectivity {
       return targetMintKeypair.publicKey.toBase58();
   }
 
-  async stakeCoin(element: any, stakeKey: anchor.web3.Keypair): Promise<string> {
+  async stakeCoin(element: any): Promise<string> {
     
     const instructions: anchor.web3.TransactionInstruction[] = [];
     
     console.log("stakecoin 1", element)
 
     const vaultState = web3.PublicKey.findProgramAddressSync(
-      [web3Consts.Seeds.vault, stakeKey.publicKey.toBuffer(), element.mint.toBuffer()],
+      [web3Consts.Seeds.vault, this.provider.publicKey.toBuffer(), element.mint.toBuffer()],
       this.programId,
     )[0]
     console.log("stakecoin 2")
@@ -3576,30 +3576,55 @@ export class Connectivity {
       true
     );
 
-    console.log("stakecoin 3")
-
 
     const ownerAta = getAssociatedTokenAddressSync(element.mint, this.provider.publicKey);
 
-    console.log("stakecoin 4")
+    console.log("stakecoin 4", vaultState.toBase58())
+    let vaultInfo
+    try {
+      vaultInfo =
+      await this.program.account.vaultState.fetch(vaultState);
+    } catch (error) {
+      console.log("error ", error)
+    }
+    
 
-    const ix1 =  await this.program.methods.initVault(new BN(element.duration), new BN(element.value)).accounts({
-      owner: this.provider.publicKey,
-      ownerAta,
-      authority: element.user,
-      mint: element.mint,
-      stakeKey: stakeKey.publicKey,
-      vault: vaultState,
-      tokenAccount: nftTokenAccount,
-      associatedTokenProgram,
-      systemProgram,
-      tokenProgram,
-      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
-    }).instruction()
-    instructions.push(ix1);
+    if(vaultInfo) {
+      console.log("stakecoin 5 1")
+      const ix1 =  await this.program.methods.stakeVault(new BN(element.value)).accounts({
+        owner: this.provider.publicKey,
+        ownerAta,
+        mint: element.mint,
+        stakeKey: this.provider.publicKey,
+        vault: vaultState,
+        tokenAccount: nftTokenAccount,
+        associatedTokenProgram,
+        systemProgram,
+        tokenProgram,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+      }).instruction()
+      instructions.push(ix1);
+    } else {
+      console.log("stakecoin 5 2")
+      const ix1 =  await this.program.methods.initVault(new BN(element.duration), new BN(element.value)).accounts({
+        owner: this.provider.publicKey,
+        ownerAta,
+        mint: element.mint,
+        stakeKey: this.provider.publicKey,
+        vault: vaultState,
+        authority: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY!),
+        tokenAccount: nftTokenAccount,
+        associatedTokenProgram,
+        systemProgram,
+        tokenProgram,
+        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+        clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+      }).instruction()
+      instructions.push(ix1);
+    }
 
-    console.log("stakecoin 5")
+   
 
     const tx = new web3.Transaction().add(...instructions);
 
@@ -3623,9 +3648,28 @@ export class Connectivity {
     tx.add(feeIns);
     console.log("stakecoin 6")
     const signature = await this.provider.sendAndConfirm(tx, []);
-    await this.saveStakeAccount(stakeKey.publicKey.toBase58(), element.mint.toBase58(),element.user.toBase58(),element.value / web3Consts.LAMPORTS_PER_OPOS, element.duration, element.type)
-    console.log("stakecoin 7")
     return signature
+  }
+
+  async getStakeBalance(mint: any): Promise<number> {
+    const vaultState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.vault, this.provider.publicKey.toBuffer(), mint.toBuffer()],
+      this.programId,
+    )[0]
+
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      mint,
+      vaultState,
+      true
+    );
+
+    try {
+      const infoes = await this.connection.getTokenAccountBalance(nftTokenAccount);
+      console.log("getStakeBalance ", infoes)
+      return infoes.value.uiAmount ? infoes.value.uiAmount : 0
+    } catch (error) {
+      return 0
+    }
   }
 
   async unStakeCoin(input: {
@@ -3694,9 +3738,6 @@ export class Connectivity {
     }
     tx.add(feeIns);
     const signature = await this.provider.sendAndConfirm(tx, []);
-    await axios.put("/api/project/update-stake-account", {
-      key: stakeKey.toBase58(),
-    });
     return signature;
   }
 

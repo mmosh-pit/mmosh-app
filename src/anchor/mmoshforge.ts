@@ -1937,9 +1937,6 @@ export type Mmoshforge = {
           name: "mint";
         },
         {
-          name: "authority";
-        },
-        {
           name: "stakeKey";
         },
         {
@@ -5349,9 +5346,6 @@ export const IDL: Mmoshforge = {
         },
         {
           name: "mint",
-        },
-        {
-          name: "authority",
         },
         {
           name: "stakeKey",

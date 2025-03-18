@@ -3,12 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(req: NextRequest) {
   const collection = db.collection("mmosh-app-project");
+  const chatCollection = db.collection("chats");
 
   const data = await req.json();
 
   await collection.updateOne(
     {
       key: data.project,
+    },
+    {
+      $set: {
+        system_prompt: data.systemPrompt,
+      },
+    },
+  );
+
+  await chatCollection.updateMany(
+    {
+      "chatAgent.key": data.project,
     },
     {
       $set: {

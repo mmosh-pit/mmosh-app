@@ -42,6 +42,11 @@ export default function OPOS() {
               return newChats;
             }
 
+            if (messages.length === 0) {
+              newChats[currentChatIdx].messages = [message];
+              return newChats;
+            }
+
             if (
               messages[messages.length - 1].type === "bot" &&
               message.type === "bot"

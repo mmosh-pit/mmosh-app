@@ -1,7 +1,7 @@
 "use client";
 
 import AgentPass from "@/app/components/Project/AgentPass";
-import ProjectCreateStep2 from "@/app/components/Project/ProjectCreateStep2";
+import AgentTeam from "@/app/components/Project/AgentTeam";
 import AgentCoin from "@/app/components/Project/AgentCoin";
 import ProjectCreateStep4 from "@/app/components/Project/ProjectCreateStep4";
 import ProjectCreateStep7 from "@/app/components/Project/ProjectCreateStep7";
@@ -30,7 +30,7 @@ export default function ProjectCreate() {
 
   const getProjectList = async (address: any) => {
     try {
-      const result = await axios.get(`/api/project/mylist?creator=${address}`);
+      const result = await axios.get(`/api/project/mylist`);
       let newTypes = [
         { label: "New Personal Agent", value: "New Personal Agent" },
       ];
@@ -50,6 +50,92 @@ export default function ProjectCreate() {
     }
     getProjectList(wallet.publicKey.toBase58());
   }, [wallet]);
+
+  useEffect(()=>{
+     if(selectedProjectType === "New Personal Agent") {
+        setOptions([{ label: "Tokenize Agent", value: "Tokenize Agent" }]);
+     } else {
+        getProjectDetailFromAPI(selectedProjectType)
+     }
+  },[selectedProjectType])
+
+  const getProjectDetailFromAPI = async(symbol:any) => {
+    try {
+        const projectName = projectType.find(
+          (val) => val.value === symbol,
+        )?.label;
+        let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+        if(listResult.data.project.creator == wallet.publicKey.toBase58()) {
+          setOptions([
+            { label: `Empower ${projectName}`, value: "Tools" },
+            {label: `Update ${projectName} Genesis Pass`,
+            value: "Update",
+            },
+            { label: `Inform ${projectName}`, value: "Inform" },
+            { label: "Manage Offerings", value: "Offerings" },
+            {
+              label: `Set ${projectName}'s Tokenomics`,
+              value: "Coins",
+            },
+            { label: "Manage Teams", value: "Teams" },
+            {
+              label: `Instruct ${projectName}`,
+              value: "Instruct",
+            },
+          ]);
+        } else {
+          let role = ""
+          for (let index = 0; index < listResult.data.profiles.length; index++) {
+            const element = listResult.data.profiles[index];
+            if(element.profiles.length > 0) {
+              if(element.profiles[0].wallet ===  wallet.publicKey.toBase58()) {
+                role = element.role
+                break;
+              }
+            }
+          }
+          if(role == "Owner") {
+            setOptions([
+              {label: `Update ${projectName} Genesis Pass`,
+              value: "Update",
+              },
+            ]);
+          } else if (role == "Admin") {
+            setOptions([
+              { label: "Manage Teams", value: "Teams" },
+            ]);
+          } else if (role == "Treasurer") {
+            setOptions([
+              {
+                label: `Set ${projectName}'s Tokenomics`,
+                value: "Coins",
+              },
+            ]);
+          } else if (role == "Connector") {
+            setOptions([
+              { label: `Empower ${projectName}`, value: "Tools" },
+            ]);
+          } else if (role == "Partner") {
+            setOptions([
+              { label: "Manage Offerings", value: "Offerings" },
+            ]);
+          } else if (role == "Producer") {
+            setOptions([
+              {
+                label: `Instruct ${projectName}`,
+                value: "Instruct",
+              },
+            ]);
+          } else if (role == "Contributor") {
+            setOptions([
+              { label: `Inform ${projectName}`, value: "Inform" },
+            ]);
+          }
+        }
+    } catch (error) {
+      setOptions([]);
+    }
+}
 
   const onPageChange = () => { };
 
@@ -139,8 +225,8 @@ export default function ProjectCreate() {
           <AgentStudioToolsCreate symbol={selectedProjectType} />
         )}
 
-        {selectedOption === "Communities" && (
-          <ProjectCreateStep2 onPageChange={onPageChange} />
+        {selectedOption === "Teams" && (
+          <AgentTeam onPageChange={onPageChange} symbol={selectedProjectType} />
         )}
         {selectedOption === "Coins" && (
           <AgentCoin
@@ -169,16 +255,6 @@ export default function ProjectCreate() {
 
         {selectedOption === "Offerings" && (
             <AgentOffer symbol={selectedProjectType} />
-        )}
-
-        {selectedOption === "Teams" && (
-          <div className="flex justify-center">
-            <p className="text-base">
-              Coming soon! You’ll be able to build and manage a team to inform
-              your agent, refine the instructions, support your subscribers,
-              promote your token and help out in many other ways.
-            </p>
-          </div>
         )}
 
         {selectedOption === "Instruct" && (

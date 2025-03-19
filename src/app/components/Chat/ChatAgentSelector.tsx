@@ -7,6 +7,7 @@ import { chatsStore, selectedChatStore } from "@/app/store/chat";
 import { data } from "@/app/store";
 import KinshipIcon from "@/assets/icons/KinshipIcon";
 import client from "@/app/lib/httpClient";
+import moment from "moment";
 
 const ChatAgentSelector = () => {
   const [currentUser] = useAtom(data);
@@ -79,10 +80,20 @@ const ChatAgentSelector = () => {
                   </div>
 
                   <p className="text-sm">{chat.chatAgent?.name}</p>
+
+                  {chat.lastMessage?.id && (
+                    <p className="text-sm truncate max-w-[14vmax] mt-2">
+                      {chat.lastMessage!.content}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              <p className="text-sm">20:07</p>
+              {chat.lastMessage?.id && (
+                <p className="text-sm">
+                  {moment(chat.lastMessage?.created_at).format("hh:mm")}
+                </p>
+              )}
             </div>
           ))}
         </div>

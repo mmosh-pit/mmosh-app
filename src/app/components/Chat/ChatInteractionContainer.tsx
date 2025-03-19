@@ -10,12 +10,15 @@ import { Message } from "@/app/models/chat";
 import { Bars } from "react-loader-spinner";
 
 const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
+  const textbox = React.useRef<HTMLTextAreaElement>(null);
+
   const [user] = useAtom(userData);
   const [currentUser] = useAtom(data);
 
   const [selectedChat] = useAtom(selectedChatStore);
 
   const [text, setText] = React.useState("");
+  const [rows, setRows] = React.useState(1);
 
   const messages = selectedChat?.messages;
 
@@ -78,6 +81,29 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
     [selectedChat, socket],
   );
 
+  const handleEnter = (evt: any) => {
+    if (evt.keyCode == 13 && !evt.shiftKey) {
+      evt.preventDefault();
+      sendMessage(text);
+      adjustHeight();
+      return;
+    }
+
+    if (evt.keyCode == 13 && evt.shiftKey) {
+      setText(text + "\n");
+      setRows(rows + 1);
+      adjustHeight();
+      evt.preventDefault();
+    }
+  };
+
+  const adjustHeight = () => {
+    if (textbox.current) {
+      textbox.current.style.height = "inherit";
+      textbox.current.style.height = `${textbox.current.scrollHeight}px`;
+    }
+  };
+
   const isLoading = messages
     ? messages.length > 0
       ? messages[selectedChat?.messages.length - 1].is_loading
@@ -87,9 +113,16 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
   React.useEffect(() => {
     const objDiv = document.getElementById("message-container");
     if (objDiv) {
-      objDiv.scrollTop = objDiv.offsetTop;
+      // objDiv.scrollTop = objDiv.offsetTop;
+      setTimeout(function() {
+        objDiv.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }, 100);
     }
-  }, []);
+  }, [messages]);
 
   return (
     <div className="w-[75%] flex justify-center">
@@ -99,7 +132,7 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
         <div className="w-[90%] flex flex-col p-2 rounded-xl mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 h-[65vh]">
           <>
             <div
-              className="w-full h-full flex flex-col items-center grow overflow-y-auto px-16 pb-8"
+              className="w-full h-full flex flex-col items-center grow overflow-x-hidden px-16 pb-8"
               id="message-container"
             >
               {messages?.map((message, index) => (
@@ -168,12 +201,17 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
                 }}
               >
                 <textarea
+                  ref={textbox}
                   className="home-ai-textfield w-full mr-4 px-2"
                   placeholder="Type here"
-                  rows={2}
+                  rows={rows}
                   wrap="hard"
                   value={text}
+                  // onKeyUp={handleEnter}
+                  onKeyDown={handleEnter}
                   onChange={(e) => {
+                    adjustHeight();
+
                     setText(e.target.value);
                   }}
                 />

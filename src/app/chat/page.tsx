@@ -39,11 +39,13 @@ export default function OPOS() {
 
             if (!messages) {
               newChats[currentChatIdx].messages = [message];
+              newChats[currentChatIdx].lastMessage = message;
               return newChats;
             }
 
             if (messages.length === 0) {
               newChats[currentChatIdx].messages = [message];
+              newChats[currentChatIdx].lastMessage = message;
               return newChats;
             }
 
@@ -52,9 +54,16 @@ export default function OPOS() {
               message.type === "bot"
             ) {
               messages[messages.length - 1].content += message.content;
+              if (newChats[currentChatIdx].lastMessage?.id) {
+                newChats[currentChatIdx].lastMessage!.content +=
+                  message.content;
+              } else {
+                newChats[currentChatIdx].lastMessage = message;
+              }
               messages[messages.length - 1].is_loading = false;
             } else {
               newChats[currentChatIdx].messages.push(message);
+              newChats[currentChatIdx].lastMessage = message;
             }
 
             return newChats;

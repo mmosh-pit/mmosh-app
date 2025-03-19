@@ -68,6 +68,20 @@ export default function OPOS() {
 
             return newChats;
           });
+
+          const objDiv = document.getElementById("message-container");
+          if (objDiv) {
+            console.log(
+              "Offset height: ",
+              objDiv.offsetHeight,
+              objDiv.offsetTop,
+            );
+            setTimeout(function() {
+              objDiv.scrollTo({
+                top: -objDiv.offsetTop,
+              });
+            }, 100);
+          }
         }
       };
     }

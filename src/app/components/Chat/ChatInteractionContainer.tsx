@@ -113,16 +113,14 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
   React.useEffect(() => {
     const objDiv = document.getElementById("message-container");
     if (objDiv) {
-      // objDiv.scrollTop = objDiv.offsetTop;
+      console.log("Offset height: ", objDiv.offsetHeight, objDiv.offsetTop);
       setTimeout(function() {
-        objDiv.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-          inline: "nearest",
+        objDiv.scrollTo({
+          top: objDiv.offsetTop,
         });
       }, 100);
     }
-  }, [messages]);
+  }, [selectedChat?.messages]);
 
   return (
     <div className="w-[75%] flex justify-center">

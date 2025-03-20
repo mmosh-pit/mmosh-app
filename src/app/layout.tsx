@@ -47,7 +47,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ConfigHOC>
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main className="h-full">{children}</main>
           <AuthOverlay />
         </ConfigHOC>
       </body>

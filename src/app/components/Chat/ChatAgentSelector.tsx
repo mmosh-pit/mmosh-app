@@ -60,6 +60,7 @@ const ChatAgentSelector = () => {
 
       if (defaultChat) {
         setChats([defaultChat, ...otherChats]);
+        setSelectedChat(defaultChat);
       } else {
         setChats(otherChats);
       }
@@ -75,7 +76,7 @@ const ChatAgentSelector = () => {
   }, [currentUser]);
 
   return (
-    <div className="flex flex-col w-[25%] bg-[#181747] backdrop-filter backdrop-blur-[6px] px-4 py-2 overflow-y-auto">
+    <div className="flex flex-col w-[25%] bg-[#181747] backdrop-filter backdrop-blur-[6px] px-4 py-2">
       {areChatsLoading ? (
         <div className="self-center">
           <Bars
@@ -89,7 +90,7 @@ const ChatAgentSelector = () => {
           />
         </div>
       ) : (
-        <div className="py-4">
+        <div className="py-4 overflow-y-auto h-[80%]">
           {chats.map((chat) => (
             <div
               className="my-4 px-4 flex justify-between cursor-pointer"

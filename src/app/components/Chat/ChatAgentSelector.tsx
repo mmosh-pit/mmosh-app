@@ -26,7 +26,43 @@ const ChatAgentSelector = () => {
       }
 
       const listResult = await client.get(url);
-      setChats(listResult.data.data);
+
+      let defaultChat;
+
+      const otherChats = [];
+
+      for (const chat of listResult.data.data) {
+        if (chat?.chatAgent.symbol === "KIN") {
+          defaultChat = chat;
+          continue;
+        }
+
+        otherChats.push(chat);
+      }
+
+      otherChats.sort((a, b) => {
+        if (
+          new Date(a.lastMessage?.created_at) <
+          new Date(b.lastMessage?.created_at)
+        ) {
+          return 1;
+        }
+
+        if (
+          new Date(b.lastMessage?.created_at) <
+          new Date(a.lastMessage?.created_at)
+        ) {
+          return -1;
+        }
+
+        return 0;
+      });
+
+      if (defaultChat) {
+        setChats([defaultChat, ...otherChats]);
+      } else {
+        setChats(otherChats);
+      }
       setAreChatsLoading(false);
     } catch (error) {
       setAreChatsLoading(false);
@@ -39,7 +75,7 @@ const ChatAgentSelector = () => {
   }, [currentUser]);
 
   return (
-    <div className="flex flex-col w-[25%] bg-[#181747] backdrop-filter backdrop-blur-[6px] px-4 py-2">
+    <div className="flex flex-col w-[25%] bg-[#181747] backdrop-filter backdrop-blur-[6px] px-4 py-2 overflow-y-auto">
       {areChatsLoading ? (
         <div className="self-center">
           <Bars

@@ -4,6 +4,11 @@
 
 body {
   height: max-content;
+  overflow-y: hidden;
+}
+
+main {
+  overflow-y: hidden;
 }
 
 p {
@@ -125,7 +130,6 @@ h6 {
 .background-content {
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 100vh;
   /* background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png"); */
   background: #09073a;
 }

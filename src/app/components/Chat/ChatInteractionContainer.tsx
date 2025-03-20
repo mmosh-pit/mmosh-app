@@ -100,7 +100,7 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
   const adjustHeight = () => {
     if (textbox.current) {
       textbox.current.style.height = "inherit";
-      textbox.current.style.height = `${textbox.current.scrollHeight}px`;
+      textbox.current.style.height = `${textbox.current.scrollHeight > 300 ? 300 : textbox.current.scrollHeight}px`;
     }
   };
 
@@ -113,7 +113,6 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
   React.useEffect(() => {
     const objDiv = document.getElementById("message-container");
     if (objDiv) {
-      console.log("Offset height: ", objDiv.offsetHeight, objDiv.offsetTop);
       setTimeout(function() {
         objDiv.scrollTo({
           top: objDiv.offsetTop,

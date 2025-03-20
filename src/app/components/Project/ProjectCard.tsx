@@ -2,6 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import BotIcon from "@/assets/icons/BotIcon";
+import PersonIcon from "@/assets/icons/PersonIcon";
+import CoinIcon from "@/assets/icons/CoinIcon";
 
 const ProjectCard = (projectData: any) => {
   const router = useRouter();
@@ -29,7 +32,8 @@ const ProjectCard = (projectData: any) => {
 
       <div className="w-full flex flex-col">
         <div className="flex items-center">
-          <p className="text-white text-lg underline">
+          <BotIcon />
+          <p className="text-white text-lg underline ml-2">
             {" "}
             <span className="font-bold text-white text-lg">
               {projectData.data.name}
@@ -39,13 +43,20 @@ const ProjectCard = (projectData: any) => {
         </div>
 
         <div className="flex items-center">
+          <PersonIcon />
           <a
-            className="text-white text-lg text-[#FF00C7] underline"
+            className="text-base text-[#FF00C7] underline ml-2"
             href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${projectData.data.creatorUsername}`}
           >
             @{projectData.data.creatorUsername}
           </a>
-          <p className="text-base"> • {projectData.data.creatorUsername}</p>
+
+          <p className="text-lg text-white mx-2"> • </p>
+
+          <CoinIcon />
+          <p className="text-base underline uppercase ml-2">
+            {projectData.data.creatorUsername}
+          </p>
         </div>
 
         <div className="my-4">

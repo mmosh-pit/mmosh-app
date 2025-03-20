@@ -52,14 +52,18 @@ const Projects = () => {
     <div className="relative background-content">
       <div className="flex flex-col items-center justify-center w-full py-12">
         <div className="relative w-full flex flex-col justify-center items-center">
-          <h2 className="text-center text-white font-goudy font-normal text-xl">
-            Project Directory
-          </h2>
+          <div className="flex rounded-full bg-[#171646]">
+            <div className="px-12 py-4 rounded-full bg-[#1A1850] cursor-pointer">
+              <p className="text-lg font-bold text-white">Kinship Agents</p>
+            </div>
 
-          <p className="text-base">
-            Soon, you’ll be able to build, launch and scale your own projects
-            without writing any code! For now, check out Pump The Vote, our demo
-            project.
+            <div className="px-12 py-4 rounded-full cursor-pointer">
+              <p className="text-lg font-bold">Personal Agents</p>
+            </div>
+          </div>
+
+          <p className="text-base mt-8">
+            We're designed by our creator to serve you. Activate us!
           </p>
           <div className="w-full flex justify-between items-center mt-10 px-24">
             <div className="flex">

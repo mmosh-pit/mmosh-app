@@ -3,13 +3,13 @@ import ProjectCard from "@/app/components/Project/ProjectCard";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Bars } from "react-loader-spinner";
 let source: any;
 const Projects = () => {
   const navigate = useRouter();
   const [projectLoading, setProjectLoading] = useState(true);
-  const [selectedSortOption, setSelectedSortOption] = useState("");
+  const [selectedSortOption, setSelectedSortOption] = useState("Subscribers");
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [projects, setProjects] = useState([]);
@@ -46,6 +46,11 @@ const Projects = () => {
     }
   };
 
+  const selectOption = useCallback((option: string) => {
+    setSelectedSortOption(option);
+    setIsOpenDropdown(false);
+  }, []);
+
   const onProjectSelect = (projectItem: any) => {
     navigate.push(`/projects/${projectItem.data.symbol.toLowerCase()}`);
   };
@@ -68,34 +73,43 @@ const Projects = () => {
             We're designed by our creator to serve you. Activate us!
           </p>
           <div className="w-full flex justify-between items-center mt-10 px-24">
-            <div className="flex">
-              <p className="text-sm text-white">Sort by </p> <SimpleArrowDown />
-              <div className="relative">
-                <p className="text-base text-white">Subscribers</p>
+            <div className="flex items-center">
+              <button
+                className="flex items-center"
+                onClick={() => setIsOpenDropdown(!isOpenDropdown)}
+              >
+                <p className="text-sm text-white mr-1">Sort by </p>{" "}
+                <SimpleArrowDown />
+              </button>
+              <div className="relative ml-3">
+                <p className="text-base text-white">{selectedSortOption}</p>
 
                 {isOpenDropdown && (
-                  <div className="absolute flex border-[1px] border-[#D4D4D421] rounded-md p-4 bg-[#0B004870]">
+                  <div className="absolute flex flex-col border-[1px] border-[#D4D4D421] rounded-md p-4 bg-[#0B004870] z-10 backdrop-filter backdrop-blur-[24px]">
                     <p
                       className="font-bold text-base text-white my-1 cursor-pointer"
-                      onClick={() => setSelectedSortOption("Subscribers")}
+                      onClick={() => selectOption("Subscribers")}
                     >
                       Subscribers
                     </p>
                     <p
                       className="font-bold text-base text-white my-1 cursor-pointer"
-                      onClick={() => setSelectedSortOption("Market Cap")}
+                      onClick={() => selectOption("Market Cap")}
                     >
                       Market Cap
                     </p>
                     <p
                       className="font-bold text-base text-white my-1 cursor-pointer"
-                      onClick={() => setSelectedSortOption("Alphabetical")}
+                      onClick={() => selectOption("Alphabetical")}
                     >
                       Alphabetical
                     </p>
-                    <p className="font-bold text-base text-white my-1">
-                      Trending <sub className="italic">coming soon</sub>
-                    </p>
+                    <div className="flex my-1">
+                      <p className="font-bold text-base text-white">Trending</p>
+                      <p className="ml-1 italic font-bold text-tiny text-white">
+                        coming soon
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>

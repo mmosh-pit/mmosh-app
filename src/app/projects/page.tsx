@@ -9,6 +9,8 @@ let source: any;
 const Projects = () => {
   const navigate = useRouter();
   const [projectLoading, setProjectLoading] = useState(true);
+  const [selectedSortOption, setSelectedSortOption] = useState("");
+  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [projects, setProjects] = useState([]);
 
@@ -67,7 +69,36 @@ const Projects = () => {
           </p>
           <div className="w-full flex justify-between items-center mt-10 px-24">
             <div className="flex">
-              <p className="text-sm text-white">Sort by Subscribers</p>
+              <p className="text-sm text-white">Sort by </p> <SimpleArrowDown />
+              <div className="relative">
+                <p className="text-base text-white">Subscribers</p>
+
+                {isOpenDropdown && (
+                  <div className="absolute flex border-[1px] border-[#D4D4D421] rounded-md p-4 bg-[#0B004870]">
+                    <p
+                      className="font-bold text-base text-white my-1 cursor-pointer"
+                      onClick={() => setSelectedSortOption("Subscribers")}
+                    >
+                      Subscribers
+                    </p>
+                    <p
+                      className="font-bold text-base text-white my-1 cursor-pointer"
+                      onClick={() => setSelectedSortOption("Market Cap")}
+                    >
+                      Market Cap
+                    </p>
+                    <p
+                      className="font-bold text-base text-white my-1 cursor-pointer"
+                      onClick={() => setSelectedSortOption("Alphabetical")}
+                    >
+                      Alphabetical
+                    </p>
+                    <p className="font-bold text-base text-white my-1">
+                      Trending <sub className="italic">coming soon</sub>
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="relative flex search-container">
               <button className="btn btn-circle bg-search h-10 w-10 min-h-0">

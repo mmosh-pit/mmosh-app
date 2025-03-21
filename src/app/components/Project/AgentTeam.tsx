@@ -9,14 +9,24 @@ import Image from "next/image";
 import ArrowBack from "@/assets/icons/ArrowBack";
 import Select from "../common/Select";
 import CloseIcon from "@/assets/icons/CloseIcon";
+import { useRouter } from "next/navigation";
+import MinusIcon from "@/assets/icons/MinusIcon";
+import Search from "../common/Search";
+import * as anchor from "@coral-xyz/anchor";
+import { Connectivity as ProjectConn } from "@/anchor/project";
+import { web3Consts } from "@/anchor/web3Consts";
+import { Connection, PublicKey } from "@solana/web3.js";
+import useWallet from "@/utils/wallet";
+import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 
 export default function AgentTeam({ onPageChange, symbol }: { onPageChange: any, symbol:any })  {
+  const navigate = useRouter();
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
   const [msgText, setMsgText] = useState("");
   const [keyword, setKeyword] = React.useState("");
   const [profileInfo] = useAtom(userWeb3Info);
-
+  const wallet: any = useWallet();
   const [roles, setRoles] = useState<any>([
     { label: "Founder", value: "Founder", data: [], enabled: true },
     { label: "Owner", value: "Owner", data: [], enabled: true },
@@ -41,6 +51,8 @@ export default function AgentTeam({ onPageChange, symbol }: { onPageChange: any,
 
   const [loading, setLoading] = useState(false)
   const [teamLoading, setTeamLoading] = useState(false)
+  const [selectedRole, setSelectedRole] = React.useState<any>(null)
+  const [selectedProfileRole, setSelectedProfileRole] = React.useState<any>(null)
 
 
   useEffect(() => {
@@ -170,6 +182,13 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
 
   const saveTeam = async() => {
     try {
+      if(!wallet) {
+        createMessage(
+          "Wallet is not connected",
+          "danger-container",
+          );
+          return;
+      }
       if(!projectDetail) {
         createMessage(
           "Project details not found",
@@ -192,22 +211,85 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
           return
       }
       setLoading(true)
-      await axios.post("/api/project/save-profile", {
-        name: currentProfile.name,
-        profilekey: currentProfile.wallet,
-        role: selectedRoles,
-        projectkey: projectDetail.project.key,
-        key: ""
-      });
-  
-   
-      createMessage(
-        "Agent team role is successfully assigned to " + currentProfile.name,
-        "success-container",
-        );
 
-      getProjectDetailFromAPI()
-      
+      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+        confirmTransactionInitialTimeout: 120000
+      });
+
+      const env = new anchor.AnchorProvider(connection, wallet, {
+        preflightCommitment: "processed",
+      });
+      const projectConn: ProjectConn = new ProjectConn(
+        env,
+        web3Consts.programID,
+        new anchor.web3.PublicKey(projectDetail.project.key),
+      );
+
+      const body = {
+        name: projectDetail.project.name,
+        symbol: projectDetail.project.symbol,
+        description: projectDetail.project.desc,
+        image: projectDetail.project.image,
+        enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
+        family: "Kinship Codes",
+        collection: "Kinship Roles",
+        attributes: [
+          {
+            trait_type: "Project",
+            value: projectDetail.project.key,
+          },
+          {
+            trait_type: "Role",
+            value: selectedRoles,
+          },
+        ],
+      };
+
+      const shadowHash: any = await pinFileToShadowDrive(body);
+      if (shadowHash === "") {
+        createMessage(
+          "There was an error while minting your role. Please, try again.",
+          "danger-container"
+        );
+        return
+      }
+
+      const res = await projectConn.mintRolePass(
+        {
+          name: projectDetail.project.name,
+          symbol: projectDetail.project.symbol,
+          uriHash: shadowHash,
+          genesisProfile: projectDetail.project.key,
+          commonLut: new PublicKey(projectDetail.project.lut),
+        },
+        profileInfo?.profile.address!,
+      );
+
+      if (res.Ok) {
+        await axios.post("/api/project/save-profile", {
+          name: currentProfile.name,
+          profilekey: currentProfile.wallet,
+          role: selectedRoles,
+          projectkey: projectDetail.project.key,
+          key: res.Ok?.info?.profile
+        });
+    
+     
+        createMessage(
+          "Agent team role is successfully assigned to " + currentProfile.name,
+          "success-container",
+          );
+  
+        getProjectDetailFromAPI()  
+      } else {
+        createMessage(
+          "Something went wrong",
+          "danger-container",
+        );
+      }
+  
+
+
     } catch (error) {
       createMessage(
         "Something went wrong",
@@ -229,13 +311,43 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
       setRoles(newRoles)
   }
 
+  useEffect(()=>{
+     if(selectedProfileRole) {
+        (document.getElementById("delete_modal") as any)?.showModal();
+     }
+  },[selectedProfileRole])
+
+  const deleteProfile = async(role:any, profile:any) => {
+      setSelectedRole(role.value)
+      setSelectedProfileRole(profile)
+  }
+
+  const deleteRoleProfile = async() => {
+     (document.getElementById("delete_modal") as any)?.close()
+
+     setSelectedRole(null)
+     setSelectedProfileRole(null)
+
+     await axios.post("/api/project/delete-profile", {
+      profilekey: selectedProfileRole.wallet,
+      projectkey: projectDetail.project.key,
+    });
+
+     createMessage(
+      selectedProfileRole.profile.name + " removed successfully ",
+      "success-container",
+     );
+
+     getProjectDetailFromAPI()
+  }
+
 
   return (
     <>
       {showMsg && (
         <div
           className={
-            "message-container text-white text-center text-header-small-font-size py-5 px-3.5 " +
+            "message-container text-white text-center text-header-small-font-size mb-5 py-5 px-3.5 " +
             msgClass
           }
         >
@@ -265,7 +377,7 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                       ))}
                     </div>
                 </div>
-                <button className="btn btn-primary bg-[#6607FF] text-white border-none hover:bg-primary hover:text-white md:mt-0 mt-5" onClick={()=>{setPageType("members");}}>
+                <button className="btn btn-primary bg-[#6607FF] text-white border-none hover:bg-primary hover:text-white md:mt-0 mt-5" onClick={()=>{ (document.getElementById("user_modal") as any)?.showModal();}}>
                       Add new Members
                 </button>
              </div>
@@ -293,10 +405,10 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                                 {role.data.map((profile: any) => (
                                   <>
                                       <div
-                                        className="flex bg-[#030007] bg-opacity-40 px-4 py-2 rounded-2xl border-[1px] border-[#353485] cursor-pointer"
+                                        className="relative bg-[#030007] bg-opacity-40 p-2.5 rounded-2xl border-[1px] border-[#353485] cursor-pointer min-h-[120px]"
                                       >
-                                        <div className="self-center max-w-[30%] mr-8">
-                                          <div className="relative w-[7vmax] h-[7vmax]">
+                                        <div className="self-center absolute left-2.5 top-2.5 mr-8">
+                                          <div className="w-[100px] h-[100px]">
                                             <Image
                                               src={profile.profile.image}
                                               alt="Profile Image"
@@ -306,18 +418,27 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                                           </div>
                                         </div>
                                   
-                                        <div className="w-full flex flex-col">
-                                          <div className="flex items-center">
-                                            <p className="text-white text-base underline">
-                                              {" "}
-                                              <span className="font-bold text-white text-base capitalize">
-                                                {profile.profile.name}
-                                              </span>{" "}
-                                              • {profile.profile.username}
-                                            </p>
-                                          </div>
-                                  
-                                          <div className="my-4">
+                                        <div className="pl-[120px]">
+
+                                          <p className="text-white text-base">
+                                            <div className="member-header relative pr-10">
+                                              <h2 className="font-bold text-white text-base capitalize break-words">
+                                                {profile.profile.name} 
+                                              </h2>
+                                              {role.value != "Founder" &&
+                                                <div className="delete-action absolute right-0 top-0" onClick={()=>{
+                                                    deleteProfile(role, profile)
+                                                }}>
+                                                  <MinusIcon />
+                                                </div>
+                                              }
+                                            </div>
+                                            <p className="cursor-pointer text-primary text-sm underline" onClick={()=>{
+                                                navigate.push("/" + profile.profile.username)
+                                            }}>@{profile.profile.username}</p>
+                                          </p>
+    
+                                          <div className="mt-2.5">
                                             <p className="text-white text-base text-with-ellipsis max-w-[70%] line-clamp-2">
                                               {profile.profile.bio}
                                             </p>
@@ -338,120 +459,10 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
              }
              </>
           }
-          {pageType === "members" &&
-             <>
-               <div className="flex justify-between">
-                  <div className="flex text-white cursor-pointer mb-5" onClick={()=>{
-                      setPageType("roles")
-                  }}>
-                      <span className="mr-2.5 mt-1"><ArrowBack /></span> Back
-                  </div>
-                  <div className="search-container mb-10 w-[300px] mx-auto">
-                    <label
-                    className={
-                        "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
-                    }
-                    >
-                    <div className="p-2">
-                        <SearchIcon />
-                    </div>
-                    <input
-                        type="text"
-                        className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
-                        placeholder="Look up members"
-                        value={keyword}
-                        onChange={onMemberSearch}
-                    />
-                    </label>
-                  </div>
-                  <div></div>
-               </div>
-                {profileLoading && (
-                  <div className="flex justify-center">
-                    <Bars
-                      height="80"
-                      width="80"
-                      color="rgba(255, 0, 199, 1)"
-                      ariaLabel="bars-loading"
-                      wrapperStyle={{}}
-                      wrapperClass="bars-loading"
-                      visible={true}
-                    />
-                  </div>
-                )}
-                {!profileLoading && (
-                  <>
-                    {profiles.length > 0 &&
-                      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
-                      {profiles.map((profile: any) => (
-                        <>
-                            <div
-                              className="flex bg-[#030007] bg-opacity-40 px-4 py-2 rounded-2xl border-[1px] border-[#353485] cursor-pointer"
-                              onClick={() => {
-                                onProfileSelect(profile);
-                              }}
-                            >
-                              <div className="self-center max-w-[30%] mr-8">
-                                <div className="relative w-[7vmax] h-[7vmax]">
-                                  <Image
-                                    src={profile.profile.image}
-                                    alt="Profile Image"
-                                    className="rounded-md object-cover"
-                                    layout="fill"
-                                  />
-                                </div>
-                              </div>
-                        
-                              <div className="w-full flex flex-col">
-                                <div className="flex items-center">
-                                  <p className="text-white text-base underline">
-                                    {" "}
-                                    <span className="font-bold text-white text-base capitalize">
-                                      {profile.profile.name}
-                                    </span>{" "}
-                                    • {profile.profile.username}
-                                  </p>
-                                </div>
-                        
-                                <div className="my-4">
-                                  <p className="text-white text-base text-with-ellipsis max-w-[70%] line-clamp-2">
-                                    {profile.profile.bio}
-                                  </p>
-                                </div>
-                        
-
-                              </div>
-                        
-                            </div>
-                        </>
-                      ))}
-                      </div>
-                    }
-                  </>
-                )}
-                {!profileLoading && profiles.length == 0 && (
-                  <div className="mb-5 text-header-small-font-size text-center">
-                    {" "}
-                    No profile found{" "}
-                  </div>
-                )}
-
-                {isProfilePaging && !profileLoading && (
-                  <div className="flex justify-center">
-                    <button
-                      className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
-                      onClick={nextProfilePage}
-                    >
-                      Load More
-                    </button>
-                  </div>
-                )}
-             </>
-          }
           {pageType === "details" &&
              <>
                <div className="flex text-white cursor-pointer mb-5" onClick={()=>{
-                  setPageType("members")
+                  setPageType("roles")
                }}>
                   <span className="mr-2.5 mt-1"><ArrowBack /></span> Back
                </div>
@@ -499,9 +510,8 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
      
                           </div>
                           <p className="text-white text-base text-primary">
-                              {"@"}
                               <span className="text-primary text-base capitalize">
-                                {currentProfile.profile.username}
+                                @{currentProfile.profile.username}
                               </span>
                           </p>
                   
@@ -539,6 +549,150 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
           }
         </div>
       </div>
+
+      <dialog id="delete_modal" className="modal">
+        <div className="flex flex-col modal-box w-[40%] bg-[#02001A] p-8">
+          <div className="custom-select-open grow">
+            <div className="flex w-full justify-between mb-2">
+              <p className="text-large text-white font-bold">Confirmation</p>
+
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  (document.getElementById("delete_modal") as any)?.close()
+                  setSelectedRole(null)
+                  setSelectedProfileRole(null)
+                }}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            <p className="mb-5">Are you sure to delete this profile?</p>
+            <div className="flex justify-end">
+                <button className="btn btn-primary bg-[#6607FF] text-white border-none hover:bg-primary hover:text-white" onClick={deleteRoleProfile}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog id="user_modal" className="modal">
+        <div className="flex flex-col modal-box w-[40%] bg-[#02001A] p-8">
+          <div className="custom-select-open grow">
+            <div className="flex w-full justify-between mb-2">
+              <p></p>
+              <p className="text-large text-white font-bold">Invite</p>
+
+              <button
+                className="cursor-pointer"
+                onClick={() => {
+                  (document.getElementById("user_modal") as any)?.close()
+                }}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            <div className="search-container mb-5 w-full mx-auto">
+                    <label
+                    className={
+                        "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
+                    }
+                    >
+                    <div className="p-2">
+                        <SearchIcon />
+                    </div>
+                    <input
+                        type="text"
+                        className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
+                        placeholder="Look up members"
+                        value={keyword}
+                        onChange={onMemberSearch}
+                    />
+                    </label>
+            </div>
+            {profileLoading && (
+                  <div className="flex justify-center">
+                    <Bars
+                      height="80"
+                      width="80"
+                      color="rgba(255, 0, 199, 1)"
+                      ariaLabel="bars-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="bars-loading"
+                      visible={true}
+                    />
+                  </div>
+                )}
+                {!profileLoading && (
+                  <>
+                    {profiles.length > 0 &&
+                      <div className="grid grid-cols-1 gap-4 mb-5">
+                      {profiles.map((profile: any) => (
+                        <>
+                          <div
+                            className="relative bg-[#030007] bg-opacity-40 p-2.5 pb-10 cursor-pointer min-h-[120px]"
+                            onClick={()=>{
+                              (document.getElementById("user_modal") as any)?.close()
+                              onProfileSelect(profile);
+                            }}
+                          >
+                            <div className="self-center absolute left-2.5 top-2.5 mr-8">
+                              <div className="w-[100px] h-[100px]">
+                                <Image
+                                  src={profile.profile.image}
+                                  alt="Profile Image"
+                                  className="rounded-md object-cover"
+                                  layout="fill"
+                                />
+                              </div>
+                            </div>
+                      
+                            <div className="pl-[120px]">
+
+                              <p className="text-white text-base">
+                                <div className="member-header relative pr-10">
+                                  <h2 className="font-bold text-white text-base capitalize break-words">
+                                    {profile.profile.name} 
+                                  </h2>
+                                </div>
+                                <p className="cursor-pointer text-sm">@{profile.profile.username}</p>
+                              </p>
+
+                              <div className="mt-2.5">
+                                <p className="text-white text-base text-with-ellipsis max-w-[70%] line-clamp-2">
+                                  {profile.profile.bio}
+                                </p>
+                              </div>
+                      
+
+                            </div>
+                      
+                          </div>
+                        </>
+                      ))}
+                      </div>
+                    }
+                  </>
+                )}
+                {!profileLoading && profiles.length == 0 && (
+                  <div className="mb-5 text-header-small-font-size text-center">
+                    {" "}
+                    No profile found{" "}
+                  </div>
+                )}
+
+                {isProfilePaging && !profileLoading && (
+                  <div className="flex justify-center">
+                    <button
+                      className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white"
+                      onClick={nextProfilePage}
+                    >
+                      Load More
+                    </button>
+                  </div>
+                )}
+          </div>
+        </div>
+      </dialog>
     </>
   );
 }

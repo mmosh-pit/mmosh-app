@@ -46,9 +46,35 @@ export async function GET(req: NextRequest) {
     .toArray();
 
   const projectProfileCollection = db.collection("mmosh-app-project-profiles");
-  const profiles = await projectProfileCollection
-    .find({ projectkey: projectData.key })
-    .toArray();
+  const profiles = await projectProfileCollection.aggregate(
+    [
+      { $match: { projectkey: projectData.key } },
+       {
+         $lookup: {
+           from: "mmosh-app-profiles",
+           localField: "profilekey",
+           foreignField: "wallet",
+           as: "profiles",
+         },
+       },
+       {
+         $lookup: {
+           from: "mmosh-app-profiles",
+           localField: "coin",
+           foreignField: "key",
+           as: "coins",
+         },
+       },
+       {
+         $project: {
+           projectkey: 1,
+           role: 1,
+           key: 1,
+           profiles: "$profiles",
+         },
+       },
+     ]
+  ).toArray();;
 
   const projectTokenomicsCollection = db.collection(
     "mmosh-app-project-tokenomics",

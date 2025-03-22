@@ -7,8 +7,8 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const creator = searchParams.get("creator") as string;
-  let match = { $match: { creator: creator } } 
+  const creator = searchParams.get("creator");
+  let match = creator ? { $match: { creator: creator } } : { $match: { } }
 
 
   const result = await db

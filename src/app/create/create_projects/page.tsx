@@ -169,37 +169,6 @@ export default function ProjectCreate() {
                 <Select
                   value={selectedProjectType}
                   onChange={(e) => {
-                    const projectName = projectType.find(
-                      (val) => val.value === e.target.value,
-                    )?.label;
-                    if (e.target.value !== "New Personal Agent") {
-                      setOptions([
-                        { label: `Empower ${projectName}`, value: "Tools" },
-                        {label: `Update ${projectName} Genesis Pass`,
-                        value: "Update",
-                        },
-                        { label: `Inform ${projectName}`, value: "Inform" },
-                        { label: "Manage Offerings", value: "Offerings" },
-                        {
-                          label: `Set ${projectName}'s Tokenomics`,
-                          value: "Coins",
-                        },
-                        { label: "Manage Teams", value: "Teams" },
-                        {
-                          label: `Instruct ${projectName}`,
-                          value: "Instruct",
-                        },
-                      ]);
-                      setSelectedOption("Tools");
-                    } else {
-                      setOptions([
-                        {
-                          label: `Deploy ${projectName}`,
-                          value: "Tokenize Agent",
-                        },
-                      ]);
-                      setSelectedOption("Tokenize Agent");
-                    }
                     setSelectedProjectType(e.target.value);
                   }}
                   options={projectType}

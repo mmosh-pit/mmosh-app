@@ -404,6 +404,7 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                             <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
                                 {role.data.map((profile: any) => (
                                   <>
+                                  {profile.profile &&
                                       <div
                                         className="relative bg-[#030007] bg-opacity-40 p-2.5 rounded-2xl border-[1px] border-[#353485] cursor-pointer min-h-[120px]"
                                       >
@@ -448,6 +449,8 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                                         </div>
                                   
                                       </div>
+                                  }
+
                                   </>
                                 ))}
                             </div>
@@ -628,6 +631,7 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                       <div className="grid grid-cols-1 gap-4 mb-5">
                       {profiles.map((profile: any) => (
                         <>
+                        {profile.profile &&
                           <div
                             className="relative bg-[#030007] bg-opacity-40 p-2.5 pb-10 cursor-pointer min-h-[120px]"
                             onClick={()=>{
@@ -667,6 +671,7 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                             </div>
                       
                           </div>
+                        }
                         </>
                       ))}
                       </div>

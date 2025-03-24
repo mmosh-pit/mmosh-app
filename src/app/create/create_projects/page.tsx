@@ -52,91 +52,79 @@ export default function ProjectCreate() {
     getProjectList(wallet.publicKey.toBase58());
   }, [wallet]);
 
-  useEffect(()=>{
-     if(selectedProjectType === "New Personal Agent") {
-        setOptions([{ label: "Tokenize Agent", value: "Tokenize Agent" }]);
-     } else {
-        getProjectDetailFromAPI(selectedProjectType)
-     }
-  },[selectedProjectType])
+  useEffect(() => {
+    if (selectedProjectType === "New Personal Agent") {
+      setOptions([{ label: "Tokenize Agent", value: "Tokenize Agent" }]);
+    } else {
+      getProjectDetailFromAPI(selectedProjectType);
+    }
+  }, [selectedProjectType]);
 
-  const getProjectDetailFromAPI = async(symbol:any) => {
+  const getProjectDetailFromAPI = async (symbol: any) => {
     try {
-        const projectName = projectType.find(
-          (val) => val.value === symbol,
-        )?.label;
-        let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
-        if(listResult.data.project.creator == wallet.publicKey.toBase58()) {
+      const projectName = projectType.find(
+        (val) => val.value === symbol,
+      )?.label;
+      let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+      if (listResult.data.project.creator == wallet.publicKey.toBase58()) {
+        setOptions([
+          { label: `Empower ${projectName}`, value: "Tools" },
+          { label: `Update ${projectName} Genesis Pass`, value: "Update" },
+          { label: `Inform ${projectName}`, value: "Inform" },
+          { label: "Manage Offerings", value: "Offerings" },
+          {
+            label: `Set ${projectName}'s Tokenomics`,
+            value: "Coins",
+          },
+          { label: "Manage Teams", value: "Teams" },
+          {
+            label: `Instruct ${projectName}`,
+            value: "Instruct",
+          },
+        ]);
+      } else {
+        let role = "";
+        for (let index = 0; index < listResult.data.profiles.length; index++) {
+          const element = listResult.data.profiles[index];
+          if (element.profiles.length > 0) {
+            if (element.profiles[0].wallet === wallet.publicKey.toBase58()) {
+              role = element.role;
+              break;
+            }
+          }
+        }
+        if (role == "Owner") {
           setOptions([
-            { label: `Empower ${projectName}`, value: "Tools" },
-            {label: `Update ${projectName} Genesis Pass`,
-            value: "Update",
-            },
-            { label: `Inform ${projectName}`, value: "Inform" },
-            { label: "Manage Offerings", value: "Offerings" },
+            { label: `Update ${projectName} Genesis Pass`, value: "Update" },
+          ]);
+        } else if (role == "Admin") {
+          setOptions([{ label: "Manage Teams", value: "Teams" }]);
+        } else if (role == "Treasurer") {
+          setOptions([
             {
               label: `Set ${projectName}'s Tokenomics`,
               value: "Coins",
             },
-            { label: "Manage Teams", value: "Teams" },
+          ]);
+        } else if (role == "Connector") {
+          setOptions([{ label: `Empower ${projectName}`, value: "Tools" }]);
+        } else if (role == "Partner") {
+          setOptions([{ label: "Manage Offerings", value: "Offerings" }]);
+        } else if (role == "Producer") {
+          setOptions([
             {
               label: `Instruct ${projectName}`,
               value: "Instruct",
             },
           ]);
-        } else {
-          let role = ""
-          for (let index = 0; index < listResult.data.profiles.length; index++) {
-            const element = listResult.data.profiles[index];
-            if(element.profiles.length > 0) {
-              if(element.profiles[0].wallet ===  wallet.publicKey.toBase58()) {
-                role = element.role
-                break;
-              }
-            }
-          }
-          if(role == "Owner") {
-            setOptions([
-              {label: `Update ${projectName} Genesis Pass`,
-              value: "Update",
-              },
-            ]);
-          } else if (role == "Admin") {
-            setOptions([
-              { label: "Manage Teams", value: "Teams" },
-            ]);
-          } else if (role == "Treasurer") {
-            setOptions([
-              {
-                label: `Set ${projectName}'s Tokenomics`,
-                value: "Coins",
-              },
-            ]);
-          } else if (role == "Connector") {
-            setOptions([
-              { label: `Empower ${projectName}`, value: "Tools" },
-            ]);
-          } else if (role == "Partner") {
-            setOptions([
-              { label: "Manage Offerings", value: "Offerings" },
-            ]);
-          } else if (role == "Producer") {
-            setOptions([
-              {
-                label: `Instruct ${projectName}`,
-                value: "Instruct",
-              },
-            ]);
-          } else if (role == "Contributor") {
-            setOptions([
-              { label: `Inform ${projectName}`, value: "Inform" },
-            ]);
-          }
+        } else if (role == "Contributor") {
+          setOptions([{ label: `Inform ${projectName}`, value: "Inform" }]);
         }
+      }
     } catch (error) {
       setOptions([]);
     }
-}
+  };
 
   const onPageChange = () => { };
 
@@ -170,38 +158,6 @@ export default function ProjectCreate() {
                 <Select
                   value={selectedProjectType}
                   onChange={(e) => {
-                    const projectName = projectType.find(
-                      (val) => val.value === e.target.value,
-                    )?.label;
-                    if (e.target.value !== "New Personal Agent") {
-                      setOptions([
-                        { label: `Empower ${projectName}`, value: "Tools" },
-                        {
-                          label: `Update ${projectName} Genesis Pass`,
-                          value: "Update",
-                        },
-                        { label: `Inform ${projectName}`, value: "Inform" },
-                        { label: "Manage Offerings", value: "Offerings" },
-                        {
-                          label: `Set ${projectName}'s Tokenomics`,
-                          value: "Coins",
-                        },
-                        { label: "Manage Teams", value: "Teams" },
-                        {
-                          label: `Instruct ${projectName}`,
-                          value: "Instruct",
-                        },
-                      ]);
-                      setSelectedOption("Tools");
-                    } else {
-                      setOptions([
-                        {
-                          label: `Deploy ${projectName}`,
-                          value: "Tokenize Agent",
-                        },
-                      ]);
-                      setSelectedOption("Tokenize Agent");
-                    }
                     setSelectedProjectType(e.target.value);
                   }}
                   options={projectType}

@@ -434,7 +434,7 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                                                 </div>
                                               }
                                             </div>
-                                            <p className="cursor-pointer text-primary text-sm underline" onClick={()=>{
+                                            <p className="cursor-pointer text-primary text-sm underline break-words" onClick={()=>{
                                                 navigate.push("/" + profile.profile.username)
                                             }}>@{profile.profile.username}</p>
                                           </p>
@@ -658,7 +658,7 @@ const updateRoleData = (type:any, values:any, newRoles:any) => {
                                     {profile.profile.name} 
                                   </h2>
                                 </div>
-                                <p className="cursor-pointer text-sm">@{profile.profile.username}</p>
+                                <p className="cursor-pointer text-sm break-words">@{profile.profile.username}</p>
                               </p>
 
                               <div className="mt-2.5">

@@ -19,13 +19,13 @@ export default function ProjectCreate() {
   const wallet: any = useWallet();
 
   const [projectType, setProjectType] = useState([
-    { label: "New Personal Agent", value: "New Personal Agent" },
+    { label: "New Personal Agent", value: "personal" },
+    { label: "New Kinship Agent", value: "kinship" },
   ]);
-  const [selectedProjectType, setSelectedProjectType] =
-    useState("New Personal Agent");
+  const [selectedProjectType, setSelectedProjectType] = useState("personal");
 
   const [options, setOptions] = useState([
-    { label: "Tokenize Agent", value: "Tokenize Agent" },
+    { label: "Deploy New Personal Agent", value: "Tokenize Agent" },
   ]);
   const [selectedOption, setSelectedOption] = useState("Tokenize Agent");
 
@@ -33,7 +33,8 @@ export default function ProjectCreate() {
     try {
       const result = await axios.get(`/api/project/mylist`);
       let newTypes = [
-        { label: "New Personal Agent", value: "New Personal Agent" },
+        { label: "New Personal Agent", value: "personal" },
+        { label: "New Kinship Agent", value: "kinship" },
       ];
       for (let index = 0; index < result.data.length; index++) {
         const element = result.data[index];
@@ -158,6 +159,38 @@ export default function ProjectCreate() {
                 <Select
                   value={selectedProjectType}
                   onChange={(e) => {
+                    const projectName = projectType.find(
+                      (val) => val.value === e.target.value,
+                    )?.label;
+                    if (!["personal", "kinship"].includes(e.target.value)) {
+                      setOptions([
+                        { label: `Empower ${projectName}`, value: "Tools" },
+                        {
+                          label: `Update ${projectName} Genesis Pass`,
+                          value: "Update",
+                        },
+                        { label: `Inform ${projectName}`, value: "Inform" },
+                        { label: "Manage Offerings", value: "Offerings" },
+                        {
+                          label: `Set ${projectName}'s Tokenomics`,
+                          value: "Coins",
+                        },
+                        { label: "Manage Teams", value: "Teams" },
+                        {
+                          label: `Instruct ${projectName}`,
+                          value: "Instruct",
+                        },
+                      ]);
+                      setSelectedOption("Tools");
+                    } else {
+                      setOptions([
+                        {
+                          label: `Deploy ${projectName}`,
+                          value: "Tokenize Agent",
+                        },
+                      ]);
+                      setSelectedOption("Tokenize Agent");
+                    }
                     setSelectedProjectType(e.target.value);
                   }}
                   options={projectType}
@@ -176,9 +209,11 @@ export default function ProjectCreate() {
           </div>
         </div>
 
-        {selectedOption === "Tokenize Agent" && <AgentPass />}
+        {selectedOption === "Tokenize Agent" && (
+          <AgentPass type={selectedProjectType} />
+        )}
         {selectedOption === "Update" && (
-          <AgentPass symbol={selectedProjectType} />
+          <AgentPass symbol={selectedProjectType} type={selectedProjectType} />
         )}
 
         {selectedOption === "Tools" && (

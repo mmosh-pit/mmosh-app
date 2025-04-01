@@ -14,8 +14,15 @@ export async function GET(req: NextRequest) {
     .aggregate([
       { $match: { agentId: param } },
       {
+        $project: {
+          userId: {
+            $toObjectId: "$userId",
+          },
+        },
+      },
+      {
         $lookup: {
-          from: "mmosh-users",
+          from: "mmosh-app-profiles",
           localField: "userId",
           foreignField: "_id",
           as: "user",
@@ -27,8 +34,15 @@ export async function GET(req: NextRequest) {
           preserveNullAndEmptyArrays: false,
         },
       },
+      {
+        $project: {
+          "user.profile": 1,
+        },
+      },
     ])
     .toArray();
 
-  return NextResponse.json(results);
+  console.log("Resulting users: ", results);
+
+  return NextResponse.json(results.map((e) => e.user));
 }

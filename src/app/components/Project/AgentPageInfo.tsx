@@ -1,11 +1,22 @@
 import axios from "axios";
 import * as React from "react";
-import SimpleMemberCard from "../common/SimpleMemberCard";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
+import SimpleMemberCard from "../common/SimpleMemberCard";
 import { AgentStats } from "@/app/models/AgentStats";
 import { User } from "@/app/models/user";
+import AgentOfferItem from "./AgentOfferItem";
 
-const AgentPageInfo = ({ agentKey }: { agentKey: string }) => {
+const AgentPageInfo = ({
+  agentKey,
+  roles,
+}: {
+  agentKey: string;
+  roles: any;
+}) => {
+  const navigate = useRouter();
+
   const [members, setMembers] = React.useState<User[]>([]);
   const [offers, setOffers] = React.useState<any[]>([]);
 
@@ -14,7 +25,6 @@ const AgentPageInfo = ({ agentKey }: { agentKey: string }) => {
     subscribers: 0,
     teams: 0,
   });
-
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   const getTabStyles = React.useCallback(
@@ -97,7 +107,7 @@ const AgentPageInfo = ({ agentKey }: { agentKey: string }) => {
       </div>
 
       {selectedTab === 0 && (
-        <div className="w-full h-full grid grid-cols-auto gap-4 2xl:px-8 md:px-4 px-6 py-6 overflow-y-auto">
+        <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 2xl:px-8 md:px-4 px-6 py-6 overflow-y-auto">
           {members.map((member) => (
             <SimpleMemberCard user={member} />
           ))}
@@ -105,9 +115,74 @@ const AgentPageInfo = ({ agentKey }: { agentKey: string }) => {
       )}
 
       {selectedTab === 1 && (
-        <div className="w-full h-full grid grid-cols-auto gap-4 2xl:px-8 md:px-4 px-6 py-6 overflow-y-auto">
+        <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 2xl:px-8 md:px-4 px-6 py-6 overflow-y-auto">
           {offers.map((offer) => (
-            <></>
+            <AgentOfferItem data={offer} project={agentKey} />
+          ))}
+        </div>
+      )}
+
+      {selectedTab === 2 && (
+        <div className="w-full h-full gap-4 2xl:px-8 md:px-4 px-6 py-6 overflow-y-auto">
+          {roles.map((role: any) => (
+            <>
+              {role.data.length > 0 && role.enabled && (
+                <>
+                  <h2 className="text-base text-white mb-2.5">
+                    {role.value}
+                    <span className="font-normal text-sm ml-1">
+                      ({role.data.length})
+                    </span>
+                  </h2>
+                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
+                    {role.data.map((profile: any) => (
+                      <>
+                        {profile.profile && (
+                          <div className="relative bg-[#030007] bg-opacity-40 p-2.5 rounded-2xl border-[1px] border-[#353485] cursor-pointer min-h-[120px]">
+                            <div className="self-center absolute left-2.5 top-2.5 mr-8">
+                              <div className="w-[100px] h-[100px]">
+                                <Image
+                                  src={profile.profile.image}
+                                  alt="Profile Image"
+                                  className="rounded-md object-cover"
+                                  layout="fill"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="pl-[120px]">
+                              <p className="text-white text-base">
+                                <div className="member-header relative pr-10">
+                                  <h2 className="font-bold text-white text-base capitalize break-words">
+                                    {profile.profile.name}
+                                  </h2>
+                                </div>
+                                <p
+                                  className="cursor-pointer text-primary text-sm underline"
+                                  onClick={() => {
+                                    navigate.push(
+                                      "/" + profile.profile.username,
+                                    );
+                                  }}
+                                >
+                                  @{profile.profile.username}
+                                </p>
+                              </p>
+
+                              <div className="mt-2.5">
+                                <p className="text-white text-base text-with-ellipsis max-w-[70%] line-clamp-2">
+                                  {profile.profile.bio}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
           ))}
         </div>
       )}

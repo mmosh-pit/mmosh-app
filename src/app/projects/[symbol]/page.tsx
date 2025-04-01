@@ -14,6 +14,57 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import AgentPageInfo from "@/app/components/Project/AgentPageInfo";
 
+const defaultRoleData: any = [
+  {
+    label: "Founder",
+    value: "Founder",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Owner",
+    value: "Owner",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Admin",
+    value: "Admin",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Treasurer",
+    value: "Treasurer",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Connector",
+    value: "Connector",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Partner",
+    value: "Partner",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Producer",
+    value: "Producer",
+    data: [],
+    enabled: true,
+  },
+  {
+    label: "Contributor",
+    value: "Contributor",
+    data: [],
+    enabled: true,
+  },
+];
+
 const Project = ({ params }: { params: { symbol: string } }) => {
   const connection = useConnection();
   const wallet = useAnchorWallet();
@@ -23,6 +74,8 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
   const [creatorInfo, setCreatorInfo] = React.useState<any>(null);
   const [isOwner, setOwner] = React.useState(false);
+  const [roles, setRoles] = React.useState<any>([...defaultRoleData]);
+
   const [projectInfo, setProjectInfo] = React.useState<any>({
     profiles: [],
     activationTokens: [],
@@ -51,7 +104,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
 
   React.useEffect(() => {
     getProjectDetailFromAPI();
-  }, []);
+  }, [params.symbol]);
 
   React.useEffect(() => {
     if (wallet && projectDetail) {
@@ -62,14 +115,42 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const getProjectDetailFromAPI = async () => {
     try {
       setProjectLoading(true);
-      let listResult = await axios.get(
+      const listResult = await axios.get(
         `/api/project/detail?symbol=${params.symbol}`,
       );
+
+      const user = await axios.get(
+        `/api/get-wallet-data?wallet=${listResult.data.project.creator}`,
+      );
+
+      let newRole = [...defaultRoleData];
+
+      newRole = updateRoleData("Founder", [user.data], newRole);
+
+      for (let index = 0; index < listResult.data.profiles.length; index++) {
+        const element = listResult.data.profiles[index];
+        newRole = updateRoleData(element.role, element.profiles, newRole);
+      }
+
+      setRoles(newRole);
+
       setProjectDetail(listResult.data);
     } catch (error) {
       setProjectLoading(false);
       setProjectDetail(null);
     }
+  };
+
+  const updateRoleData = (type: any, values: any, newRoles: any) => {
+    for (let index = 0; index < newRoles.length; index++) {
+      const element = roles[index];
+      if (element.value == type) {
+        for (let i = 0; i < values.length; i++) {
+          newRoles[index].data.push(values[i]);
+        }
+      }
+    }
+    return newRoles;
   };
 
   const getUserProfileInfo = async () => {
@@ -444,7 +525,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
           </div>
 
           {projectDetail?.project && (
-            <AgentPageInfo agentKey={projectDetail.project.key} />
+            <AgentPageInfo agentKey={projectDetail.project.key} roles={roles} />
           )}
         </div>
       </div>

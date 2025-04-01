@@ -8,7 +8,9 @@ import axios from "axios";
 const client = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL!,
   timeout: 20000,
-  headers: { "content-type": "application/json" },
+  headers: {
+    "content-type": "application/json",
+  },
 });
 
 // Custom middleware for requests (this one just logs the error).

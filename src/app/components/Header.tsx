@@ -347,6 +347,8 @@ const Header = () => {
 
     const profileInfo = await userConn.getUserInfo();
 
+    console.log("Resulting profile info: ", profileInfo);
+
     const genesis = profileInfo.activationTokens[0]?.genesis;
     const activation = profileInfo.activationTokens[0]?.activation;
 

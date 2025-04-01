@@ -8,6 +8,7 @@ import { data } from "@/app/store";
 import KinshipIcon from "@/assets/icons/KinshipIcon";
 import client from "@/app/lib/httpClient";
 import moment from "moment";
+import PersonalIcon from "@/assets/icons/PersonalIcon";
 
 const ChatAgentSelector = () => {
   const [currentUser] = useAtom(data);
@@ -113,7 +114,11 @@ const ChatAgentSelector = () => {
                       @{chat.chatAgent?.symbol}
                     </p>
 
-                    <KinshipIcon />
+                    {chat.chatAgent?.type === "personal" ? (
+                      <PersonalIcon />
+                    ) : (
+                      <KinshipIcon />
+                    )}
                   </div>
 
                   <p className="text-sm">{chat.chatAgent?.name}</p>

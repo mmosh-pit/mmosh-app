@@ -132,7 +132,11 @@ export class Connectivity {
             userData.nouns = element.value;
           } else if (element.trait_type == "Pronoun") {
             userData.pronouns = element.value;
-          } else if (element.trait_type == "Community" || element.trait_type == "Project"  || element.trait_type == "Offer") {
+          } else if (
+            element.trait_type == "Community" ||
+            element.trait_type == "Project" ||
+            element.trait_type == "Offer"
+          ) {
             userData.project = element.value;
           }
         }
@@ -153,10 +157,14 @@ export class Connectivity {
         let userData: any = {
           project: "",
         };
-        if(result.data.attributes) {
+        if (result.data.attributes) {
           for (let index = 0; index < result.data.attributes.length; index++) {
             const element = result.data.attributes[index];
-            if (element.trait_type == "Community" || element.trait_type == "Project" || element.trait_type == "Offer") {
+            if (
+              element.trait_type == "Community" ||
+              element.trait_type == "Project" ||
+              element.trait_type == "Offer"
+            ) {
               userData.project = element.value;
             }
           }
@@ -276,7 +284,6 @@ export class Connectivity {
       const mintKp = web3.Keypair.generate();
       const profile = mintKp.publicKey;
 
-
       const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
         mintAuthority: user,
         mintKeypair: mintKp,
@@ -311,8 +318,7 @@ export class Connectivity {
         mintKp,
       ]);
 
-      await sleep(5000)
-
+      await sleep(5000);
 
       const userProfileAta = getAssociatedTokenAddressSync(profile, user);
       const { ata: userActivationTokenAta } =
@@ -411,7 +417,7 @@ export class Connectivity {
       });
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function (res: any, value) {
+      holdersfullInfo.reduce(function(res: any, value) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
           holdermap.push(res[value.receiver]);
@@ -1043,6 +1049,7 @@ export class Connectivity {
       const activationTokens = [];
       let totalChild = 0;
       let seniority = 0;
+
       for (let i of _userNfts) {
         const nftInfo: any = i;
         const collectionInfo = i?.collection;
@@ -1093,7 +1100,7 @@ export class Connectivity {
           const collectionInfo = i?.collection;
           if (
             collectionInfo?.address.toBase58() ==
-              web3Consts.badgeCollection.toBase58() &&
+            web3Consts.badgeCollection.toBase58() &&
             hasInvitation &&
             i?.mintAddress == profileStateInfo.activationToken?.toBase58()
           ) {
@@ -1145,7 +1152,7 @@ export class Connectivity {
 
               if (
                 collectionInfo?.address.toBase58() ==
-                  web3Consts.badgeCollection.toBase58() &&
+                web3Consts.badgeCollection.toBase58() &&
                 i.symbol == "INVITE"
               ) {
                 let isCreator = false;
@@ -1165,7 +1172,7 @@ export class Connectivity {
                     continue;
                   }
                 } else {
-                  continue
+                  continue;
                 }
 
                 try {
@@ -1344,16 +1351,16 @@ export class Connectivity {
       const genesisProfileAta = (
         await this.connection.getTokenLargestAccounts(nftAddress)
       ).value[0].address;
-  
+
       const atasInfo = await this.connection.getMultipleAccountsInfo([
         genesisProfileAta,
       ]);
-  
+
       const genesisProfileAtaHolder = unpackAccount(
         genesisProfileAta,
         atasInfo[0],
       ).owner;
-  
+
       return {
         profileHolder: genesisProfileAtaHolder,
       };
@@ -1362,23 +1369,24 @@ export class Connectivity {
         profileHolder: web3.PublicKey.default,
       };
     }
-
   }
 
   async getUserBalance(tokenData: any) {
     try {
       const user = tokenData.address;
       if (!user) throw "Wallet not found";
-      console.log("user is ", user)
-      const userOposAta = getAssociatedTokenAddressSync(new anchor.web3.PublicKey(tokenData.token), user);
+      console.log("user is ", user);
+      const userOposAta = getAssociatedTokenAddressSync(
+        new anchor.web3.PublicKey(tokenData.token),
+        user,
+      );
       const infoes = await this.connection.getTokenAccountBalance(userOposAta);
-      console.log("infoes ", infoes)
-      return infoes.value.uiAmount ? infoes.value.uiAmount : 0
+      console.log("infoes ", infoes);
+      return infoes.value.uiAmount ? infoes.value.uiAmount : 0;
     } catch (error) {
-      console.log("error ", error)
-      return 0
+      console.log("error ", error);
+      return 0;
     }
-
   }
 
   async __getProfileHoldersInfo(
@@ -1414,7 +1422,7 @@ export class Connectivity {
     const grandParentProfile = input.parent;
     const greatGrandParentProfile = input.grandParent;
     const ggreateGrandParentProfile = input.greatGrandParent;
-    
+
     const currentParentProfileHolderAta = (
       await this.connection.getTokenLargestAccounts(parentProfile)
     ).value[0].address;
@@ -1522,17 +1530,17 @@ export class Connectivity {
           mint: input.mint,
           mainState: this.mainState, // 6
           metadata: profileMetadata,
-          sysvarInstructions
+          sysvarInstructions,
         })
         .instruction();
-      this.txis.push(ix)
+      this.txis.push(ix);
       const tx = new web3.Transaction().add(...this.txis);
-  
+
       tx.recentBlockhash = (
         await this.connection.getLatestBlockhash()
       ).blockhash;
       tx.feePayer = this.provider.publicKey;
-  
+
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;
       if (feeEstimate > 0) {
@@ -1545,7 +1553,7 @@ export class Connectivity {
         });
       }
       tx.add(feeIns);
-  
+
       this.txis = [];
       const signature = await this.provider.sendAndConfirm(tx);
       return { Ok: { signature, info: {} } };
@@ -1553,21 +1561,19 @@ export class Connectivity {
       log({ error });
       return { Err: error };
     }
-
   }
 
   async sendShare(
     token: any,
-    holdersfullInfo: any
+    holdersfullInfo: any,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
       this.baseSpl.__reinit();
       const user = this.provider.publicKey;
 
-
       const holdermap: any = [];
-      holdersfullInfo.reduce(function (res: any, value:any) {
+      holdersfullInfo.reduce(function(res: any, value: any) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, value: 0 };
           holdermap.push(res[value.receiver]);
@@ -1615,7 +1621,7 @@ export class Connectivity {
       return {
         Ok: {
           signature,
-          info: { profile: ""},
+          info: { profile: "" },
         },
       };
     } catch (error) {

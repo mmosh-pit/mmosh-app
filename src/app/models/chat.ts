@@ -24,6 +24,7 @@ interface Agent {
   symbol: string;
   systemPrompt: string;
   creatorUsername: string;
+  type: string;
 }
 
 export interface Chat {

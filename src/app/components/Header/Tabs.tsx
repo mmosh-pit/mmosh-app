@@ -60,16 +60,6 @@ const Tabs = () => {
       >
         Wallet
       </a>
-
-      <div className="lg:mx-6 md:mx-3" />
-      <a
-        className="text-base text-white cursor-pointer"
-        onClick={() => {
-          router.push("/atm");
-        }}
-      >
-        ATM
-      </a>
     </div>
   );
 };

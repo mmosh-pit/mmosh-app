@@ -40,6 +40,9 @@ const Login = () => {
           password,
         });
 
+        await axios.post("/api/frost/configure", {
+          email,
+        });
         document.cookie = `session=${res.data.data.token}`;
         router.replace("/coins");
       } catch (err: any) {

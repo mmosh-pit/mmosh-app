@@ -62,6 +62,10 @@ const Code = () => {
       const token = response.data.data.token;
       document.cookie = `session=${token}`;
       setForm({ ...form, address: response.data.data.user.address });
+
+      await axios.post("/api/frost/configure", {
+        email: form.email,
+      });
       router.replace("/sign-up/link");
     } catch (err) {
       console.error(err);

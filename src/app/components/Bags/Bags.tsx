@@ -1,7 +1,6 @@
 import currencyFormatter from "@/app/lib/currencyFormatter";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import CopyIcon from "@/assets/icons/CopyIcon";
-import useWallet from "@/utils/wallet";
 import * as React from "react";
 import NFTs from "./NFTs";
 import Coins from "./Coins";
@@ -13,6 +12,7 @@ import BuyIcon from "@/assets/icons/BuyIcon";
 import ReceiveIcon from "@/assets/icons/ReceiveIcon";
 import RewardsIcon from "@/assets/icons/RewardsIcon";
 import SendWalletIcon from "@/assets/icons/SendWalletIcon";
+import axios from "axios";
 
 type Props = {
   onSelectAsset: (asset: BagsNFT) => void;
@@ -24,9 +24,21 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   const [search, setSearch] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
   const router = useRouter();
-  const wallet = useWallet();
-
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
+  const [address, setAddress] = React.useState("");
+
+  React.useEffect(()=>{
+     getMyAddress()
+  },[])
+
+  const getMyAddress = async() => {
+     try {
+        const result = await axios.get("/api/frost/address");
+        setAddress(result.data.data)
+     } catch (error) {
+        setAddress("")
+     }
+  }
 
   const copyToClipboard = React.useCallback(async (text: string) => {
     setIsTooltipShown(true);
@@ -36,6 +48,8 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
       setIsTooltipShown(false);
     }, 2000);
   }, []);
+
+
 
   return (
     <div className="w-full h-screen min-w-[3vmax] flex flex-col items-center items-center justify-start mt-8">
@@ -52,12 +66,12 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           <h6>{currencyFormatter(totalBalance)}</h6>
           <div className="flex">
             <p className="text-base text-white">
-              {walletAddressShortener(wallet?.publicKey?.toString() ?? "")}
+              {walletAddressShortener(address)}
             </p>
             <button
               className="cursor-pointer ml-2"
               onClick={() =>
-                copyToClipboard(wallet?.publicKey.toString() ?? "")
+                copyToClipboard(address)
               }
             >
               {isTooltipShown && (

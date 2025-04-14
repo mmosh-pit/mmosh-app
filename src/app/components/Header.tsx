@@ -106,14 +106,14 @@ const Header = () => {
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`;
-    const result = await client.get(url);
+    // const result = await client.get(url);
 
-    const user = result.data?.data?.user;
+    // const user = result.data?.data?.user;
 
-    setShowAuthOverlay(!user);
-    setIsAuthModalOpen(!user);
-    setIsUserAuthenticated(!!user);
-    setUser(user);
+    // setShowAuthOverlay(!user);
+    // setIsAuthModalOpen(!user);
+    // setIsUserAuthenticated(!!user);
+    // setUser(user);
   }, []);
 
   const getAllTokenAddreses = React.useCallback(async () => {

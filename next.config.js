@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const path = require('node:path');
 const webpack = require("webpack");
 
 module.exports = {
@@ -18,8 +19,9 @@ module.exports = {
       },
     ],
   },
-  webpack: (config) => {
+  webpack: (config, _context) => {
     config.resolve.fallback = { fs: false };
+    config.resolve.alias['jotai'] = path.resolve(__dirname, 'node_modules/jotai')
 
     config.plugins.push(
       new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {

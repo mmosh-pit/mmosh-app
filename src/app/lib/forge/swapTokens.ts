@@ -1,5 +1,4 @@
 import * as anchor from "@coral-xyz/anchor";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 
 import { Connectivity as UserConn } from "@/anchor/user";
@@ -12,11 +11,12 @@ import { SwapCoin } from "@/app/models/swapCoin";
 import { list } from "firebase/storage";
 import { getPriceForPTV } from "./jupiter";
 import { CoinDetail } from "@/app/models/coin";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export const swapTokens = async (
   baseToken: SwapCoin,
   targetToken: SwapCoin,
-  wallet: AnchorWallet,
+  wallet: FrostWallet,
 ): Promise<MintResultMessage> => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
     confirmTransactionInitialTimeout: 120000,

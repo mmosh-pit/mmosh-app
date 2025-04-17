@@ -152,8 +152,9 @@ const Swap = () => {
           anchor.setProvider(env);
 
           const userConn: UserConn = new UserConn(env, web3Consts.programID);
+          const data:any = Buffer.from(txHex, "base64");
           const tx = anchor.web3.VersionedTransaction.deserialize(
-            Buffer.from(txHex, "base64"),
+            data,
           );
           const signature = await userConn.provider.sendAndConfirm(tx);
 

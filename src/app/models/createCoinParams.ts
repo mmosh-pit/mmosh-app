@@ -1,6 +1,6 @@
 import * as React from "react";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Candidate } from "./candidate";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export type CreateCoinParams = {
   username: string;
@@ -9,7 +9,7 @@ export type CreateCoinParams = {
   description: string;
   imageFile: File | null;
   preview: string;
-  wallet: AnchorWallet;
+  wallet: FrostWallet;
   multiplier: number;
   supply: number;
   initialPrice: number;
@@ -25,7 +25,7 @@ export type CreateProjectCoinParams = {
   description: string;
   imageFile: File | null;
   preview: string;
-  wallet: AnchorWallet;
+  wallet: FrostWallet;
   multiplier: number;
   supply: number;
   initialPrice: number;

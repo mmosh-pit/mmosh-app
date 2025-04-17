@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useAtom } from "jotai";
 import { userWeb3Info } from "@/app/store";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import { Connectivity as ProjectConn } from "@/anchor/community";
 import * as anchor from "@coral-xyz/anchor";
 import { web3Consts } from "@/anchor/web3Consts";

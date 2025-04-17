@@ -3,10 +3,10 @@ import * as anchor from "@coral-xyz/anchor";
 
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import axios from "axios";
+import { FrostWallet } from "@/utils/frostWallet";
 
-export async function fetchUserData(wallet: AnchorWallet) {
+export async function fetchUserData(wallet: FrostWallet) {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
     confirmTransactionInitialTimeout: 120000
   });

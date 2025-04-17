@@ -5,7 +5,6 @@ import axios from "axios";
 import { User } from "../models/user";
 import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
 import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 import { useAtom } from "jotai";
 import { data } from "../store";
@@ -19,11 +18,12 @@ import EmptyHeartSvg from "./Profile/EmptyHeartSvg";
 import HeartSvg from "./Profile/HeartSvg";
 import LinkedHeartSvg from "./Profile/LinkedHeartSvg";
 import InBoundHeart from "./Profile/InBoundHeart";
+import { FrostWallet } from "@/utils/frostWallet";
 
 type Props = {
   user: User;
   isHome: boolean;
-  wallet?: AnchorWallet;
+  wallet?: FrostWallet;
   currentuser?: User;
   connection: Connection;
 };

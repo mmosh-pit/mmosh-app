@@ -13,7 +13,7 @@ import {
 } from "../store";
 import LineageFilterOptions from "./Profile/LineageFilterOptions";
 import ConnectionFilterOptions from "./Profile/ConnectionFilterOptions";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import useCheckMobileScreen from "../lib/useCheckMobileScreen";
 import useWallet from "@/utils/wallet";
 

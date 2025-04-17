@@ -1,4 +1,3 @@
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import useWallet from "@/utils/wallet";
 
@@ -23,22 +22,6 @@ const NoConnectedWallet = () => {
         </p>
       </div>
 
-      <div className="mt-4">
-        <WalletMultiButton
-          startIcon={undefined}
-          style={{
-            backgroundColor: "#CD068E",
-            padding: "1em 4em",
-            borderRadius: 15,
-          }}
-        >
-          <p className="text-white text-lg">
-            {wallet?.publicKey
-              ? walletAddressShortener(wallet.publicKey.toString())
-              : "Connect your Wallet"}
-          </p>
-        </WalletMultiButton>
-      </div>
     </div>
   );
 };

@@ -19,7 +19,8 @@ import CommunityCard from "@/app/components/common/CommunityCard";
 import { useRouter } from "next/navigation";
 import { userWeb3Info } from "@/app/store";
 import * as anchor from "@coral-xyz/anchor";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
+import useWallet from "@/utils/wallet";
 import { Connectivity as ProjectConn } from "@/anchor/community";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
@@ -28,7 +29,7 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 const Project = ({ params }: { params: { symbol: string } }) => {
   const navigate = useRouter();
   const connection = useConnection();
-  const wallet = useAnchorWallet();
+  const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [profile, setProfile] = React.useState("")
   const [projectLoading, setProjectLoading] = React.useState(true);

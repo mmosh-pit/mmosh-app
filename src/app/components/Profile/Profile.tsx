@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import axios from "axios";
 import Image from "next/image";
 import { useAtom } from "jotai";

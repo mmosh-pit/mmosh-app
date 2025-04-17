@@ -7,16 +7,16 @@ import {
 
 import * as anchor from "@coral-xyz/anchor";
 
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import {
   createTransferCheckedInstruction,
   getAssociatedTokenAddress,
 } from "forge-spl-token";
 import { getExplorerLink } from "@solana-developers/helpers";
 import { getOrCreateTokenAccountInstruction } from "./getOrCreateAssociatedTokenAccount";
+import { FrostWallet } from "./frostWallet";
 
 export async function transferAsset(
-  wallet: AnchorWallet,
+  wallet: FrostWallet,
   mintAddress: string,
   receiver: string,
   amount: string,

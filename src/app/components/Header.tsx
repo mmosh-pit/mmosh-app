@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
 import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
@@ -610,24 +609,6 @@ const Header = () => {
                 )}
               </div>
             )}
-
-            <WalletMultiButton
-              startIcon={undefined}
-              style={{
-                background:
-                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: isMobileScreen ? "0 0.4em" : "0 0.8em",
-                borderRadius: 15,
-                marginLeft: "0.5rem",
-                marginRight: "0.5rem",
-              }}
-            >
-              <p className="md:text-base text-sm text-white">
-                {wallet?.publicKey
-                  ? walletAddressShortener(wallet.publicKey.toString())
-                  : "Connect"}
-              </p>
-            </WalletMultiButton>
 
             {currentUser?.profile?.image && (
               <div

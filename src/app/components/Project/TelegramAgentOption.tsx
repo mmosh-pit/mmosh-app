@@ -237,16 +237,19 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
         >
           <div className="flex flex-col w-full">
             <div className="flex items-center self-end mb-2">
+              <button className="border-white border-[1px] rounded-full p-2">
+                <p className="text-white text-sm">Download Chat History</p>
+              </button>
+
               <div
-                className="cursor-pointer self-end mr-3"
+                className="flex items-center cursor-pointer ml-2"
                 onClick={() => {
                   removeGroup(conn.handle);
                 }}
               >
                 <RemoveIcon />
+                <p className="text-sm text-white font-bold ml-1">Delete</p>
               </div>
-
-              <p className="text-sm text-white font-bold">Delete</p>
             </div>
 
             <div className="flex justify-between items-center">

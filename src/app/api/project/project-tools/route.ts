@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
         projection: {
           "data.handle": 1,
           "data.privacy": 1,
+          "data.instructions": 1,
         },
       },
     )

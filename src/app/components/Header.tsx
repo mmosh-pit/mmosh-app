@@ -5,7 +5,6 @@ import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import {
   appPrivateKey,
@@ -41,6 +40,9 @@ import {
 } from "../store/bags";
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
+import client from "../lib/httpClient";
+import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
+import MessageBanner from "./common/MessageBanner";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
@@ -101,14 +103,8 @@ const Header = () => {
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
-    const value =
-      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`;
-    const result = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${value}`,
-      },
-    });
+    const result = await client.get(url);
 
     const user = result.data?.data?.user;
 
@@ -349,6 +345,8 @@ const Header = () => {
 
     const profileInfo = await userConn.getUserInfo();
 
+    console.log("Resulting profile info: ", profileInfo);
+
     const genesis = profileInfo.activationTokens[0]?.genesis;
     const activation = profileInfo.activationTokens[0]?.activation;
 
@@ -470,14 +468,6 @@ const Header = () => {
     }
   }, [wallet, incomingWalletToken]);
 
-  if (
-    pathname.includes("sign-up") ||
-    pathname.includes("login") ||
-    pathname.includes("password")
-  ) {
-    return <></>;
-  }
-
   const resetNotification = async () => {
     await axios.put("/api/notifications/update", {
       wallet: wallet?.publicKey.toBase58(),
@@ -489,16 +479,8 @@ const Header = () => {
     if (isLoadingLogout) return;
 
     setIsLoadingLogout(true);
-    const value =
-      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
-
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`;
-    await axios.delete(url, {
-      headers: {
-        Authorization: `Bearer ${value}`,
-      },
-    });
-    document.cookie = "";
+    await client.delete("/logout", {});
+    window.localStorage.removeItem("token");
     setIsLoadingLogout(false);
 
     setIsUserAuthenticated(false);
@@ -508,16 +490,9 @@ const Header = () => {
   const fetchPrivateKey = React.useCallback(async () => {
     if (!isUserAuthenticated) return;
 
-    const value =
-      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
-
-    const res = await axios.get(
+    const res = await client.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/private-key`,
-      {
-        headers: {
-          Authorization: `Bearer ${value}`,
-        },
-      },
+      {},
     );
 
     const data = res.data;
@@ -537,6 +512,14 @@ const Header = () => {
 
   const isMobileScreen = screenSize < 1200;
 
+  if (
+    pathname.includes("sign-up") ||
+    pathname.includes("login") ||
+    pathname.includes("password")
+  ) {
+    return <></>;
+  }
+
   if (pathname === "/tos" || pathname === "/privacy" || pathname === "/") {
     return <></>;
   }
@@ -554,13 +537,7 @@ const Header = () => {
                 router.push("/");
               }}
             >
-              <div className="relative w-[2vmax] h-[2vmax]">
-                <Image
-                  src="https://storage.googleapis.com/mmosh-assets/kinship.png"
-                  alt="Kinship"
-                  layout="fill"
-                />
-              </div>
+              <KinshipMainIcon />
             </div>
           )}
 
@@ -679,6 +656,11 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      <MessageBanner
+        type="info"
+        message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
+      />
     </header>
   );
 };

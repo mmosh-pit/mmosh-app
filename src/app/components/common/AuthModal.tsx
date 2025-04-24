@@ -61,7 +61,7 @@ const AuthModal = () => {
           password: form.password,
         });
 
-        document.cookie = `session=${res.data.data.token}`;
+        window.localStorage.setItem("token", res.data.data.token);
         close();
         setShowAuthOverlay(false);
         setIsAuthModalOpen(false);

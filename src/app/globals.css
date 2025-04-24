@@ -125,7 +125,6 @@ h6 {
 .background-content {
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 100vh;
   /* background: url("https://storage.googleapis.com/hellbenders-public-c095b-assets/hellbendersWebAssets/texture.png"); */
   background: #09073a;
 }
@@ -1099,3 +1098,63 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 textarea::placeholder {
   transform: translateY(8px);
 }
+
+/* POST STYLES */
+
+.post-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+.post-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.post-card:hover {
+  cursor: pointer;
+}
+
+.post-card-image {
+  width: 100%;
+  height: 200px; /* Adjust as needed */
+  object-fit: cover;
+}
+.post-card h2 {
+  font-size: 1.5rem;
+  margin: 1rem;
+}
+.post-card-excerpt {
+  margin: 0 1rem 1rem;
+  color: #555;
+}
+.post-card-meta {
+  margin: 0 1rem 1rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+a {
+  /* Basic link styling */
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* .home-loggedin-bg { */
+/*   background: conic-gradient( */
+/*     from 20deg at 30% 0%, */
+/*     rgba(73, 118, 233, 0.18) -2.47deg, */
+/*     #316bff 1.81deg, */
+/*     #032886 76.1deg, */
+/*     rgba(19, 22, 26, 0.131006) 121.11deg, */
+/*     rgba(7, 11, 22, 0) 300.72deg, */
+/*     rgba(0, 0, 0, 0) 349.73deg, */
+/*     rgba(73, 118, 233, 0.18) 357.53deg, */
+/*     #316bff 361.81deg */
+/*   ); */
+/* } */

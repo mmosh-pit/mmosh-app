@@ -19,6 +19,20 @@ const config: Config = {
         "theme-blue": "#180E4F",
         "claim-color": "#6537BB"
       },
+      backgroundImage: {
+        'conic-fancy': `conic-gradient(
+          from 90deg at 50% 50%,
+          #316BFF 1.8121deg,
+          #032886 76.1039deg,
+          rgba(19, 22, 26, 0.13) 121.1119deg,
+          rgba(7, 11, 22, 0.00) 300.7217deg,
+          rgba(0, 0, 0, 0.00) 349.7334deg,
+          rgba(73, 118, 233, 0.18) 357.5344deg
+        )`,
+      },
+      fontFamily: {
+        sf: ['"SF Pro Display"', 'ui-sans-serif', 'system-ui'],
+      },
     },
     fontSize: {
       xs: "0.75rem",

@@ -1,11 +1,11 @@
 "use client";
 import * as React from "react";
-import Image from "next/image";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
+import client from "../lib/httpClient";
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -16,7 +16,7 @@ const ForgotPassword = () => {
   const [success, setSuccess] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await axios.get("/api/is-auth");
+    const result = await client.get("/is-auth");
 
     if (result.data) {
       router.replace("/");
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
           email,
         });
         setSuccess(true);
-      } catch (_) {}
+      } catch (_) { }
 
       setIsLoading(false);
     },
@@ -78,7 +78,7 @@ const ForgotPassword = () => {
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
           title="Reset your Password!"
-          action={() => {}}
+          action={() => { }}
           size="large"
           isPrimary
           type="submit"

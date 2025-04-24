@@ -12,7 +12,7 @@ import BuyIcon from "@/assets/icons/BuyIcon";
 import ReceiveIcon from "@/assets/icons/ReceiveIcon";
 import RewardsIcon from "@/assets/icons/RewardsIcon";
 import SendWalletIcon from "@/assets/icons/SendWalletIcon";
-import axios from "axios";
+import client from "@/app/lib/httpClient";
 
 type Props = {
   onSelectAsset: (asset: BagsNFT) => void;
@@ -27,18 +27,18 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [address, setAddress] = React.useState("");
 
-  React.useEffect(()=>{
-     getMyAddress()
-  },[])
+  React.useEffect(() => {
+    getMyAddress();
+  }, []);
 
-  const getMyAddress = async() => {
-     try {
-        const result = await axios.get("/api/frost/address");
-        setAddress(result.data.data)
-     } catch (error) {
-        setAddress("")
-     }
-  }
+  const getMyAddress = async () => {
+    try {
+      const result = await client.get("/address");
+      setAddress(result.data.data);
+    } catch (error) {
+      setAddress("");
+    }
+  };
 
   const copyToClipboard = React.useCallback(async (text: string) => {
     setIsTooltipShown(true);
@@ -48,8 +48,6 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
       setIsTooltipShown(false);
     }, 2000);
   }, []);
-
-
 
   return (
     <div className="w-full h-screen min-w-[3vmax] flex flex-col items-center items-center justify-start mt-8">
@@ -70,9 +68,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
             </p>
             <button
               className="cursor-pointer ml-2"
-              onClick={() =>
-                copyToClipboard(address)
-              }
+              onClick={() => copyToClipboard(address)}
             >
               {isTooltipShown && (
                 <div className="absolute z-10 mb-20 inline-block rounded-xl bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">

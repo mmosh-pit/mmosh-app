@@ -8,6 +8,7 @@ import Button from "../common/Button";
 const TelegramAgentOption = ({ project }: { project: string }) => {
   const [handle, setHandle] = React.useState("");
   const [status, setStatus] = React.useState("open");
+  const [instructions, setInstructions] = React.useState("");
 
   const [telegramConnections, setTelegramConnections] = React.useState<
     TelegramConnection[]
@@ -26,6 +27,7 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
       response.data.map((val: any) => ({
         handle: val.data.handle,
         privacy: val.data.privacy,
+        instructions: val.data.instructions,
       })),
     );
   }, [project]);
@@ -59,6 +61,7 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
         data: {
           handle: handle,
           privacy: status,
+          instructions,
         },
       })
       .catch((err: AxiosError) => {
@@ -83,6 +86,7 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
           newConns.push({
             handle,
             privacy: status,
+            instructions,
           });
           setHandle("");
           setStatus("open");
@@ -95,7 +99,7 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
           "success-container",
         );
       });
-  }, [project, handle, status]);
+  }, [project, handle, status, instructions]);
 
   const removeGroup = React.useCallback(async (handle: string) => {
     setIsLoading(true);
@@ -203,13 +207,27 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
           </div>
         </div>
 
-        <Button
-          size="small"
-          title="Save"
-          isLoading={isLoading}
-          action={addTool}
-          isPrimary
+        <Input
+          title="Instructions"
+          placeholder="Enter instructions for the Agent to follow when interacting through this account."
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
+          type="text"
+          textarea
+          required={false}
         />
+
+        <div className="my-2" />
+
+        <div className="lg:max-w-[30%] md:max-w-[50%] max-w-[65%]">
+          <Button
+            size="large"
+            title="Save"
+            isLoading={isLoading}
+            action={addTool}
+            isPrimary
+          />
+        </div>
       </div>
 
       {telegramConnections.map((conn, index) => (
@@ -217,43 +235,51 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
           className="w-full flex justify-between items-center my-2 bg-[#03000733] rounded-lg py-8 px-12 backdrop-filter backdrop-blur-[8.6px]"
           key={`${conn.handle}-${index}`}
         >
-          <div className="flex flex-col">
-            <p className="text-sm text-white">
-              Need to be an admin in the group before you link it here
-            </p>
+          <div className="flex flex-col w-full">
+            <div className="flex items-center self-end mb-2">
+              <button className="border-white border-[1px] rounded-full p-2">
+                <p className="text-white text-sm">Download Chat History</p>
+              </button>
 
-            <p className="my-4 text-sm text-white">
-              https://t.me/{conn.handle}
-            </p>
-
-            <div className="flex items-center">
               <div
-                className="cursor-pointer self-end mr-3"
+                className="flex items-center cursor-pointer ml-2"
                 onClick={() => {
                   removeGroup(conn.handle);
                 }}
               >
                 <RemoveIcon />
+                <p className="text-sm text-white font-bold ml-1">Delete</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col">
+                <p className="text-sm text-white">
+                  Need to be an admin in the group before you link it here
+                </p>
+
+                <p className="my-4 text-sm text-white">
+                  https://t.me/{conn.handle}
+                </p>
               </div>
 
-              <p className="text-sm text-white font-bold">Delete</p>
-            </div>
-          </div>
+              <div className="flex flex-col">
+                <p className="text-sm text-white">Group's Privacy</p>
 
-          <div className="flex flex-col">
-            <p className="text-sm text-white">Group's Privacy</p>
-
-            <div className="flex items-center justify-center mt-4">
-              <input
-                id="checkbox3"
-                type="checkbox"
-                className="radio radio-secondary candidates-checkboxes"
-                defaultChecked
-              />
-              <p className="text-sm ml-1">
-                {conn.privacy === "open" ? "Open" : "Subscribers Only"}
-              </p>
+                <div className="flex items-center justify-center mt-4">
+                  <input
+                    id="checkbox3"
+                    type="checkbox"
+                    className="radio radio-secondary candidates-checkboxes"
+                    defaultChecked
+                  />
+                  <p className="text-sm ml-1">
+                    {conn.privacy === "open" ? "Open" : "Subscribers Only"}
+                  </p>
+                </div>
+              </div>
             </div>
+            <p className="text-sm text-white">{conn.instructions}</p>
           </div>
         </div>
       ))}

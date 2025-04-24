@@ -13,19 +13,26 @@ import useConnection from "@/utils/connection";
 import * as anchor from "@coral-xyz/anchor";
 import useWallet from "@/utils/wallet";
 import { useAtom } from "jotai";
-import { data, userWeb3Info } from "@/app/store";
+import { data, isAuth, userWeb3Info } from "@/app/store";
 import { Connectivity as Community } from "@/anchor/community";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
-import { LAMPORTS_PER_SOL, SystemProgram, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import {
+  LAMPORTS_PER_SOL,
+  SystemProgram,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import client from "@/app/lib/httpClient";
 
-const AgentPass = ({ symbol }: { symbol?: string }) => {
+const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser] = useAtom(data);
+  const [isAuthenticated] = useAtom(isAuth);
 
   const navigate = useRouter();
   const [loading, setLoading] = useState(false);
@@ -61,8 +68,8 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
   const [isReady, setIsReady] = useState(false);
 
   const [usdPrice, setUsdPrice] = useState(0);
-  const [buttonText, setButtonText] = useState(symbol ? "Modify": "Mint");
-  const [projectDetail, setProjectDetail] =  React.useState<any>(null)
+  const [buttonText, setButtonText] = useState(symbol ? "Modify" : "Mint");
+  const [projectDetail, setProjectDetail] = React.useState<any>(null);
 
   React.useEffect(() => {
     if (!image) return;
@@ -80,37 +87,36 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
       setFields(JSON.parse(savedData));
     }
     getMmoshPrice();
-    if(symbol) {
-      getProjectDetailFromAPI()
+    if (symbol) {
+      getProjectDetailFromAPI();
     }
   }, []);
 
-  const getProjectDetailFromAPI = async() => {
+  const getProjectDetailFromAPI = async () => {
     try {
-        setLoading(true)
-        let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
-        setFields({
-          ...fields,
-          image: {
-            preview: listResult.data.project.image,
-            type: "",
-          },
-          name: listResult.data.project.name,
-          symbol: listResult.data.project.symbol,
-          desc: listResult.data.project.desc,
-          passPrice: listResult.data.project.price,
-          website: listResult.data.project.website,
-          telegram: listResult.data.project.telegram,
-          twitter: listResult.data.project.twitter,
-        })
-        setProjectDetail(listResult.data)
-        setLoading(false)
+      setLoading(true);
+      let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+      setFields({
+        ...fields,
+        image: {
+          preview: listResult.data.project.image,
+          type: "",
+        },
+        name: listResult.data.project.name,
+        symbol: listResult.data.project.symbol,
+        desc: listResult.data.project.desc,
+        passPrice: listResult.data.project.price,
+        website: listResult.data.project.website,
+        telegram: listResult.data.project.telegram,
+        twitter: listResult.data.project.twitter,
+      });
+      setProjectDetail(listResult.data);
+      setLoading(false);
     } catch (error) {
-        setLoading(false)
-        setProjectDetail(null)
+      setLoading(false);
+      setProjectDetail(null);
     }
-  }
-
+  };
 
   const getMmoshPrice = async () => {
     const mmoshUsdcPrice = await axios.get(
@@ -122,16 +128,6 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
   React.useEffect(() => {
     setIsReady(validateFields(false));
   }, [fields]);
-
-  const getTotalPercentage = () => {
-    return (
-      Number(fields.priceDistribution.echosystem) +
-      Number(fields.priceDistribution.creator) +
-      Number(fields.priceDistribution.curator) +
-      Number(fields.priceDistribution.promoter) +
-      Number(fields.priceDistribution.scout)
-    );
-  };
 
   const createMessage = (message: any, type: any) => {
     window.scrollTo(0, 0);
@@ -210,34 +206,6 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
       }
     }
 
-    if (
-      fields.invitationType == "required" ||
-      fields.invitationType == "optional"
-    ) {
-      if (fields.invitationPrice == 0) {
-        if (isMessage) {
-          createMessage("Invitation price not mentioned", "danger-container");
-        }
-        return false;
-      }
-    }
-
-    if (fields.invitationType == "optional") {
-      if (fields.discount == 0) {
-        if (isMessage) {
-          createMessage("Discount not mentioned", "danger-container");
-        }
-        return false;
-      }
-    }
-
-    if (getTotalPercentage() != 100) {
-      if (isMessage) {
-        createMessage("Price distribution is not 100%", "danger-container");
-      }
-      return false;
-    }
-
     return true;
   };
 
@@ -253,9 +221,11 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
   const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
 
   const mintGensisPass = async () => {
+    if (!isAuthenticated) return;
+
     setLoading(true);
     if (validateFields(true)) {
-      if(!symbol) {
+      if (!symbol) {
         const result = await axios.get(
           `/api/project/check-project?symbol=${fields.symbol}`,
         );
@@ -284,7 +254,9 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
       let communityConnection: Community = new Community(
         env,
         web3Consts.programID,
-        symbol ? new anchor.web3.PublicKey(projectDetail.project.key) : projectKeyPair.publicKey,
+        symbol
+          ? new anchor.web3.PublicKey(projectDetail.project.key)
+          : projectKeyPair.publicKey,
       );
 
       try {
@@ -308,7 +280,9 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
             },
             {
               trait_type: "Project",
-              value: symbol ? projectDetail.project.key : projectKeyPair.publicKey.toBase58(),
+              value: symbol
+                ? projectDetail.project.key
+                : projectKeyPair.publicKey.toBase58(),
             },
             {
               trait_type: "Founder",
@@ -347,12 +321,12 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
           return;
         }
 
-        if(symbol) {
+        if (symbol) {
           let res = await communityConnection.updateToken({
             mint: new anchor.web3.PublicKey(projectDetail.project.key),
             authority: wallet.publicKey,
             payer: wallet.publicKey,
-            name:fields.name,
+            name: fields.name,
             symbol: fields.symbol,
             uri: projectMetaURI,
           });
@@ -369,8 +343,8 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
             website: fields.website,
           });
           navigate.push("/projects/" + fields.symbol);
-          setLoading(false)
-          return
+          setLoading(false);
+          return;
         }
 
         const profileMintingCost = new anchor.BN(
@@ -431,7 +405,7 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
         }
         console.log("send price result ", res5.Ok?.info);
 
-        await axios.post("/api/project/save-project", {
+        await client.post("/agents/create", {
           name: fields.name,
           symbol: fields.symbol.toUpperCase(),
           desc: fields.desc,
@@ -454,6 +428,7 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
           dexlistingdate: "",
           creator: wallet.publicKey.toBase58(),
           creatorUsername: currentUser?.profile?.username,
+          type,
         });
         setButtonText(symbol ? "Modify" : "Mint");
         localStorage.removeItem("projectstep1");
@@ -474,45 +449,40 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
 
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-    console.log("wallet.publicKey ", wallet.publicKey.toBase58())
+    console.log("wallet.publicKey ", wallet.publicKey.toBase58());
 
     try {
-      console.log("testing 1")
-      let txis:any = SystemProgram.transfer({
+      console.log("testing 1");
+      let txis: any = SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: new anchor.web3.PublicKey(
           "HMvvRsoHAjCcCK6YUckdTezaxgZ9QBJApK1hY6NLfZA4",
         ),
         lamports: 0.01 * LAMPORTS_PER_SOL,
-      })
-      console.log("testing 2")
+      });
+      console.log("testing 2");
       const latestBlockhash = await connection.connection.getLatestBlockhash();
-      
+
       // const tx1 = await new anchor.web3.Transaction().add(...txis);
       // txis = [];
-      console.log("testing 3")
+      console.log("testing 3");
       const messageV0 = new TransactionMessage({
         payerKey: wallet.publicKey,
         recentBlockhash: latestBlockhash.blockhash,
         instructions: [txis],
       }).compileToV0Message(); // 👈 compile to v0 message
-    
-      console.log("testing 4")
+
+      console.log("testing 4");
       // Create and sign the versioned transaction
       const tx = new VersionedTransaction(messageV0);
-      console.log("testing 5")
+      console.log("testing 5");
       const res3 = await userConn.provider.sendAndConfirm(tx);
-  
+
       console.log("res3 ", res3);
     } catch (error) {
-      console.log("error ", error)
+      console.log("error ", error);
     }
-
-
-
-
-
-  }
+  };
 
   const prepareNumber = (inputValue: any) => {
     if (isNaN(inputValue)) {
@@ -537,7 +507,11 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
       <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
           <div className="xl:col-span-2">
-            <ImagePicker changeImage={setImage} image={fields.image.preview} readonly={symbol ? true : false} />
+            <ImagePicker
+              changeImage={setImage}
+              image={fields.image.preview}
+              readonly={symbol ? true : false}
+            />
           </div>
           <div className="xl:col-span-3">
             <div className="form-element pt-2.5">
@@ -578,33 +552,6 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
             </div>
           </div>
           <div className="xl:col-span-3">
-            {!symbol &&
-              <div className="form-element pt-2.5">
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="form-element col-span-9">
-                    <Input
-                      type="text"
-                      title="Project Pass Price"
-                      required
-                      helperText=""
-                      placeholder="0"
-                      value={
-                        fields.passPrice > 0 ? fields.passPrice.toString() : ""
-                      }
-                      onChange={(e) =>
-                        setFields({
-                          ...fields,
-                          passPrice: prepareNumber(Number(e.target.value)),
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="col-span-3 mt-7 text-white text-header-small-font-size">
-                    MMOSH = {usdPrice * fields.passPrice} USD
-                  </div>
-                </div>
-              </div>
-            }
             <div className="form-element pt-2.5">
               <Input
                 type="text"
@@ -644,6 +591,19 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
                 }
               />
             </div>
+
+            <div className="form-element pt-2.5">
+              <Input
+                type="text"
+                title="Agent Email Address"
+                required={false}
+                readonly
+                helperText=""
+                placeholder=""
+                value={`${fields.symbol}@kinship.codes`}
+                onChange={() => { }}
+              />
+            </div>
           </div>
         </div>
         <div className="flex justify-center mt-10">
@@ -674,6 +634,6 @@ const AgentPass = ({ symbol }: { symbol?: string }) => {
       </div>
     </>
   );
-}
+};
 
 export default AgentPass;

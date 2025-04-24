@@ -2,6 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import BotIcon from "@/assets/icons/BotIcon";
+import PersonIcon from "@/assets/icons/PersonIcon";
+import CoinIcon from "@/assets/icons/CoinIcon";
 
 const ProjectCard = (projectData: any) => {
   const router = useRouter();
@@ -16,7 +19,7 @@ const ProjectCard = (projectData: any) => {
         );
       }}
     >
-      <div className="self-center max-w-[30%] mr-8">
+      <div className="self-center max-w-[30%] 2xl:mr-8 mr-4">
         <div className="relative w-[7vmax] h-[7vmax]">
           <Image
             src={projectData.data.image}
@@ -27,11 +30,12 @@ const ProjectCard = (projectData: any) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col justify-between">
         <div className="flex items-center">
-          <p className="text-white text-lg underline">
+          <BotIcon />
+          <p className="text-white 2xl:text-lg text-base underline ml-2">
             {" "}
-            <span className="font-bold text-white text-lg">
+            <span className="font-bold text-white 2xl:text-lg text-base">
               {projectData.data.name}
             </span>{" "}
             • {projectData.data.symbol}
@@ -39,24 +43,31 @@ const ProjectCard = (projectData: any) => {
         </div>
 
         <div className="flex items-center">
+          <PersonIcon />
           <a
-            className="text-white text-lg text-[#FF00C7] underline"
+            className="2xl:text-base text-sm text-[#FF00C7] underline ml-2"
             href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${projectData.data.creatorUsername}`}
           >
             @{projectData.data.creatorUsername}
           </a>
-          <p className="text-base"> • {projectData.data.creatorUsername}</p>
+
+          <p className="2xl:text-lg text-base text-white mx-2"> • </p>
+
+          <CoinIcon />
+          <p className="2xl:text-base text-sm underline uppercase ml-2">
+            {projectData.data.creatorUsername}
+          </p>
         </div>
 
-        <div className="my-4">
-          <p className="text-white text-base text-with-ellipsis max-w-[70%]">
+        <div className="2xl:my-4 my-3">
+          <p className="text-white 2xl:text-base text-sm text-with-ellipsis max-w-[70%]">
             {projectData.data.desc}
           </p>
         </div>
 
-        <div className="flex flex-col mt-4">
+        <div className="flex flex-col 2xl:mt-4 mt-2">
           <div className="flex items-center rounded-lg px-2">
-            <p className="text-sm text-white">
+            <p className="2xl:text-sm text-xs text-white">
               <span className="font-bold text-sm text-white mr-4">
                 Subscribers
               </span>
@@ -67,20 +78,20 @@ const ProjectCard = (projectData: any) => {
           </div>
 
           <div className="flex items-center rounded-lg px-2 mt-2">
-            <p className="text-sm text-white">
+            <p className="2xl:text-sm text-xs text-white">
               <span className="font-bold text-sm text-white mr-4">
                 Market Cap
               </span>
             </p>
             <div className="px-2 bg-[#19066B] rounded-lg">
-              <p className="text-sm text-white">123 USDC</p>
+              <p className="2xl:text-sm text-xs text-white">123 USDC</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="self-start rounded-full w-[20%] h-8 bg-[#FF00AE] flex justify-center items-center">
-        <p className="text-base text-white">Activate</p>
+        <p className="2xl:text-base text-sm text-white">Activate</p>
       </div>
     </div>
   );

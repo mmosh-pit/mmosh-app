@@ -61,10 +61,10 @@ const Profile = ({ username }: { username: any }) => {
       ...result.data,
     });
     setConnectionStatus(
-      result.data.profile.connection ? result.data.profile.connection : 0,
+      result.data?.profile.connection ? result.data.profile.connection : 0,
     );
     setHasRequest(
-      result.data.profile.request ? result.data.profile.request : false,
+      result.data?.profile.request ? result.data.profile.request : false,
     );
   }, [username, currentUser]);
 

@@ -57,15 +57,6 @@ export async function transferAsset(
       .getLatestBlockhash()
       .then((res) => res.blockhash);
 
-    console.log("Sending values: ", {
-      tokenAccount1Pubkey: tokenAccount1Pubkey.toBase58(),
-      mintPubkey: mintPubkey.toBase58(),
-      associatedTokenTo: ata.toBase58(),
-      wallet: wallet.publicKey.toBase58(),
-      amount: Number(amount) * decimalMultiplier,
-      decimals,
-    });
-
     const instructions = [];
 
     if (ix) instructions.push(ix);

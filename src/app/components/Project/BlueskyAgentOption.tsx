@@ -10,6 +10,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
 
   const [blueskyHandle, setBlueskyHandle] = React.useState("");
   const [blueskyPassword, setBlueskyPassword] = React.useState("");
+  const [instructions, setInstructions] = React.useState("");
 
   const [isAddMode, setIsAddMode] = React.useState(false);
 
@@ -30,6 +31,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
       response.data.map((val: any) => ({
         handle: val.data.handle,
         password: "",
+        instructions: val.data.instructions,
       })),
     );
   }, [project]);
@@ -47,6 +49,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
         data: {
           handle: blueskyHandle,
           password: blueskyPassword,
+          instructions,
         },
       })
       .catch((err: AxiosError) => {
@@ -76,6 +79,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
           newConns.push({
             handle: blueskyHandle,
             password: "",
+            instructions,
           });
           setBlueskyHandle("");
           setBlueskyPassword("");
@@ -89,7 +93,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
           "success-container",
         );
       });
-  }, [project, blueskyHandle, blueskyPassword]);
+  }, [project, blueskyHandle, blueskyPassword, instructions]);
 
   const removeBskyAcc = React.useCallback(
     async (handle: string) => {
@@ -147,9 +151,22 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
               className="min-w-[300px] flex flex-col justify-between bg-[#00000078] border-[1px] border-[#FFFFFF08] rounded-lg py-4 px-2"
               key={`${conn.handle}-${index}`}
             >
-              <p className="text-base text-white">Bluesky handle</p>
+              <div className="flex justify-between items-center">
+                <p className="text-base text-white">Bluesky handle</p>
+
+                <button className="border-white border-[1px] rounded-full p-2">
+                  <p className="text-white text-sm">Download Bluesky History</p>
+                </button>
+              </div>
 
               <p className="text-sm text-white ml-2">{conn.handle}</p>
+
+              <div className="flex flex-col my-3">
+                <p className="text-base text-white font-bold">System Prompt</p>
+
+                <div className="my-1" />
+                <p className="text-sm">{conn.instructions}</p>
+              </div>
 
               <button
                 className="border-[1px] border-white rounded-lg px-4 py-2 cursor-pointer self-center"
@@ -168,35 +185,51 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
                 What Bluesky account do you want to share with your agent?
               </h5>
 
-              <Input
-                title="Bluesky Handle"
-                type="text"
-                value={blueskyHandle}
-                onChange={(e) => setBlueskyHandle(e.target.value)}
-                required={false}
-                placeholder="example.bsky.social"
-              />
+              <div className="flex justify-between items-start">
+                <div className="w-[30vmax] flex flex-col items-center justify-between">
+                  <Input
+                    title="Bluesky Handle"
+                    type="text"
+                    value={blueskyHandle}
+                    onChange={(e) => setBlueskyHandle(e.target.value)}
+                    required={false}
+                    placeholder="example.bsky.social"
+                  />
 
-              <div className="my-2" />
+                  <div className="my-2" />
 
-              <Input
-                title="Password"
-                type="password"
-                value={blueskyPassword}
-                onChange={(e) => setBlueskyPassword(e.target.value)}
-                required={false}
-                placeholder="Password"
-              />
+                  <Input
+                    title="Password"
+                    type="password"
+                    value={blueskyPassword}
+                    onChange={(e) => setBlueskyPassword(e.target.value)}
+                    required={false}
+                    placeholder="Password"
+                  />
 
-              <div className="my-4" />
+                  <div className="my-4" />
 
-              <Button
-                size="small"
-                title="Connect"
-                action={addTool}
-                isLoading={isLoading}
-                isPrimary
-              />
+                  <Button
+                    size="small"
+                    title="Connect"
+                    action={addTool}
+                    isLoading={isLoading}
+                    isPrimary
+                  />
+                </div>
+
+                <div className="px-8" />
+
+                <Input
+                  title="Instructions"
+                  placeholder="Enter instructions for the Agent to follow when interacting through this account."
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  type="text"
+                  textarea
+                  required={false}
+                />
+              </div>
             </div>
           ) : (
             <div

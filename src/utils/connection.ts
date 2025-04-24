@@ -7,7 +7,7 @@ interface ConnectionContextState {
     connection: Connection;
 }
 
-const useWallet = () => {
+const useConnection = () => {
   const [connection] = React.useState<ConnectionContextState>({
     connection: new Connection(
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
@@ -20,5 +20,5 @@ const useWallet = () => {
   return connection;
 };
 
-export default useWallet;
+export default useConnection;
 

@@ -1,9 +1,9 @@
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import React from "react";
 import { Coin } from "./coin";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export type CreateCommunityParams = {
-  wallet: AnchorWallet;
+  wallet: FrostWallet;
   discount: string;
   invitationPrice: number;
   profileCost: number;

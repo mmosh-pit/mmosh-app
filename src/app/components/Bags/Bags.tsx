@@ -1,7 +1,6 @@
 import currencyFormatter from "@/app/lib/currencyFormatter";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import CopyIcon from "@/assets/icons/CopyIcon";
-import useWallet from "@/utils/wallet";
 import * as React from "react";
 import NFTs from "./NFTs";
 import Coins from "./Coins";
@@ -13,6 +12,7 @@ import BuyIcon from "@/assets/icons/BuyIcon";
 import ReceiveIcon from "@/assets/icons/ReceiveIcon";
 import RewardsIcon from "@/assets/icons/RewardsIcon";
 import SendWalletIcon from "@/assets/icons/SendWalletIcon";
+import client from "@/app/lib/httpClient";
 
 type Props = {
   onSelectAsset: (asset: BagsNFT) => void;
@@ -24,9 +24,21 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   const [search, setSearch] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
   const router = useRouter();
-  const wallet = useWallet();
-
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
+  const [address, setAddress] = React.useState("");
+
+  React.useEffect(() => {
+    getMyAddress();
+  }, []);
+
+  const getMyAddress = async () => {
+    try {
+      const result = await client.get("/address");
+      setAddress(result.data.data);
+    } catch (error) {
+      setAddress("");
+    }
+  };
 
   const copyToClipboard = React.useCallback(async (text: string) => {
     setIsTooltipShown(true);
@@ -52,13 +64,11 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           <h6>{currencyFormatter(totalBalance)}</h6>
           <div className="flex">
             <p className="text-base text-white">
-              {walletAddressShortener(wallet?.publicKey?.toString() ?? "")}
+              {walletAddressShortener(address)}
             </p>
             <button
               className="cursor-pointer ml-2"
-              onClick={() =>
-                copyToClipboard(wallet?.publicKey.toString() ?? "")
-              }
+              onClick={() => copyToClipboard(address)}
             >
               {isTooltipShown && (
                 <div className="absolute z-10 mb-20 inline-block rounded-xl bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">

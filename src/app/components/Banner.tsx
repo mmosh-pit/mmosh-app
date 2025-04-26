@@ -2,7 +2,6 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import Image from "next/image";
 import { data, status, userWeb3Info, web3InfoLoading } from "../store";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import useWallet from "@/utils/wallet";
 
 const Banner = () => {
@@ -62,17 +61,6 @@ const Banner = () => {
               </p>
             </div>
 
-            <WalletMultiButton
-              startIcon={undefined}
-              style={{
-                position: "relative",
-                background: "#CD068E",
-                padding: "0 2em",
-                borderRadius: 15,
-              }}
-            >
-              <p className="text-sm text-white">Connect Wallet</p>
-            </WalletMultiButton>
           </div>
 
           <div

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Connectivity as Community } from "@/anchor/community";
 import { Connectivity as UserConn } from "@/anchor/user";
 import * as anchor from "@coral-xyz/anchor";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import useWallet from "@/utils/wallet";
 import { web3Consts } from "@/anchor/web3Consts";
 import { userWeb3Info } from "@/app/store";

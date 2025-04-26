@@ -3,13 +3,13 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Coin, CoinDetail } from "@/app/models/coin";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
 import axios from "axios";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export const getSwapTokenInfo = async (
   token: Coin,
-  wallet: AnchorWallet,
+  wallet: FrostWallet,
   switcher = false,
 ) => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {

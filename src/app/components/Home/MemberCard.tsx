@@ -6,7 +6,6 @@ import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
 import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
 import { User } from "@/app/models/user";
 import EmptyHeartSvg from "../Profile/EmptyHeartSvg";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
@@ -18,10 +17,11 @@ import LinkedHeartSvg from "../Profile/LinkedHeartSvg";
 import InBoundHeart from "../Profile/InBoundHeart";
 import { data } from "@/app/store";
 import { useAtom } from "jotai";
+import { FrostWallet } from "@/utils/frostWallet";
 
 type Props = {
   user: User;
-  wallet?: AnchorWallet;
+  wallet?: FrostWallet;
   currentuser?: User;
   connection: Connection;
 };

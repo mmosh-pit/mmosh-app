@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import useWallet from "@/utils/wallet";
 import axios from "axios";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { web3Consts } from "@/anchor/web3Consts";

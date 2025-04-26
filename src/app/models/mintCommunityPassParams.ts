@@ -1,9 +1,9 @@
 import * as React from "react";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Community } from "./community";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export type MintCommunityPassParams = {
-  wallet: AnchorWallet;
+  wallet: FrostWallet;
   setMintStatus: React.Dispatch<React.SetStateAction<string>>;
   community: Community;
   projectInfo: any;

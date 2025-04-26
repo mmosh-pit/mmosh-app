@@ -179,8 +179,9 @@ export const createProjectCoin = async ({
         address: wallet.publicKey.toBase58(),
       });
       if (buytx.data.status) {
+        const data:any =  Buffer.from(buytx.data.transaction, "base64");
         const tx = anchor.web3.VersionedTransaction.deserialize(
-          Buffer.from(buytx.data.transaction, "base64"),
+          data,
         );
         buyres = await curveConn.provider.sendAndConfirm(tx);
         if (buyres) {

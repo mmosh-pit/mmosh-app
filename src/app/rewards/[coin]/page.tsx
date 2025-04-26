@@ -173,8 +173,9 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
         anchor.setProvider(env);
 
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
+        const data:any = Buffer.from(result.data.transaction, "base64");
         const tx = anchor.web3.VersionedTransaction.deserialize(
-          Buffer.from(result.data.transaction, "base64"),
+          data,
         );
         const signature = await userConn.provider.sendAndConfirm(tx);
         await axios.post("/api/ptv/update-rewards", {

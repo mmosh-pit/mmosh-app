@@ -1,5 +1,4 @@
 import { data, userWeb3Info } from "@/app/store";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import Input from "@/app/components/common/Input";
 import axios from "axios";
 import { useAtom } from "jotai";
@@ -20,6 +19,8 @@ import { generateCommunityInvitationImage } from "@/app/lib/forge/generateCommun
 import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
 import AgentOfferItem from "./AgentOfferItem";
 import { Bars } from "react-loader-spinner";
+import useWallet from "@/utils/wallet";
+import useConnection from "@/utils/connection";
 
 const AgentOffer = ({ symbol }: { symbol?: string }) => {
     const connection = useConnection();

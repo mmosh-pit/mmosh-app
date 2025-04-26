@@ -1,32 +1,83 @@
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { appPrivateKey } from "@/app/store";
-import { AnchorWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
-import { Keypair } from "@solana/web3.js";
-import bs58 from "bs58";
-import { useAtom } from "jotai";
+import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import * as React from "react";
+import { FrostWallet } from "./frostWallet";
+import * as anchor from "@coral-xyz/anchor";
+import client from "@/app/lib/httpClient";
 
 const useWallet = () => {
-  const externalWallet = useAnchorWallet();
-  const [privateKey] = useAtom(appPrivateKey);
-
-  const [wallet, setWallet] = React.useState<AnchorWallet>();
+  const [wallet, setWallet] = React.useState<FrostWallet>();
 
   React.useEffect(() => {
-    if (!privateKey) return;
-    try {
-      const keypair = Keypair.fromSecretKey(bs58.decode(privateKey));
-      const wallet = new MyWallet(keypair);
+    getMyWallet();
+  }, []);
 
-      setWallet(wallet);
+  const getMyWallet = async () => {
+    try {
+      const result = await client.get("/address");
+      const frostWallet: FrostWallet = {
+        publicKey: new PublicKey(result.data.data),
+        signTransaction: async <T extends Transaction | VersionedTransaction>(
+          tx: T,
+        ): Promise<T> => {
+          // mock or actual signing logic
+          if ("version" in tx) {
+            console.log("version transaction");
+            const messageBytes: any = tx.message.serialize();
+            const hex = Buffer.from(messageBytes).toString("hex");
+
+            console.log("message hex", hex);
+
+            const result = await client.post("/sign", { message: hex });
+
+            console.log("Request data response: ", result.data.data);
+            console.log("message address", result.data.data.address);
+            console.log("message signature", result.data.data.signature);
+
+            const signature: any = Buffer.from(
+              result.data.data.signature,
+              "hex",
+            );
+            tx.signatures = [signature];
+          } else {
+            console.log("normal transaction");
+
+            const message: any = tx.compileMessage(); // ✅ works for legacy Transaction
+            const messageBytes = message.serialize();
+            const hex = Buffer.from(messageBytes).toString("hex");
+
+            console.log("message hex", hex);
+
+            const result = await client.post("/sign", { message: hex });
+
+            console.log("Request data response: ", result.data);
+            console.log("message address", result.data.data.address);
+            console.log("message signature", result.data.data.signature);
+
+            tx.addSignature(
+              new anchor.web3.PublicKey(result.data.data.address),
+              Buffer.from(result.data.data.signature, "hex"),
+            );
+          }
+
+          return tx;
+        },
+        signAllTransactions: async <
+          T extends Transaction | VersionedTransaction,
+        >(
+          txs: T[],
+        ): Promise<T[]> => {
+          // mock or actual signing logic
+          console.log("signAllTransactions started");
+          return txs;
+        },
+      };
+      setWallet(frostWallet);
     } catch (err) {
       console.error(err);
     }
-  }, [privateKey]);
+  };
 
-  return externalWallet ?? wallet;
+  return wallet;
 };
 
 export default useWallet;
-
-class MyWallet extends NodeWallet {}

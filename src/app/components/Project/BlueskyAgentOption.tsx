@@ -27,8 +27,6 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
       `/api/project/project-tools?project=${project}&type=bsky`,
     );
 
-    console.log("Bsky tool response: ", response);
-
     setBlueskyConnections(
       response.data.map((val: any) => ({
         handle: val.data.handle,
@@ -153,7 +151,13 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
               className="min-w-[300px] flex flex-col justify-between bg-[#00000078] border-[1px] border-[#FFFFFF08] rounded-lg py-4 px-2"
               key={`${conn.handle}-${index}`}
             >
-              <p className="text-base text-white">Bluesky handle</p>
+              <div className="flex justify-between items-center">
+                <p className="text-base text-white">Bluesky handle</p>
+
+                <button className="border-white border-[1px] rounded-full p-2">
+                  <p className="text-white text-sm">Download Bluesky History</p>
+                </button>
+              </div>
 
               <p className="text-sm text-white ml-2">{conn.handle}</p>
 

@@ -27,7 +27,7 @@ const ResetPassword = () => {
   const [error, setError] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await client.get("/api/is-auth");
+    const result = await client.get("/is-auth");
 
     if (result.data) {
       router.replace("/");

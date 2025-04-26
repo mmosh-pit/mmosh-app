@@ -1,10 +1,10 @@
 import * as React from "react";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import { Community } from "./community";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export type MintInvitationParams = {
   amount: number;
-  wallet: AnchorWallet;
+  wallet: FrostWallet;
   setInvitationStatus: React.Dispatch<React.SetStateAction<string>>;
   pronouns?: string;
   userName?: string;

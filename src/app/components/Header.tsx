@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import Image from "next/image";
-import { walletAddressShortener } from "../lib/walletAddressShortener";
 import { useAtom } from "jotai";
 import {
   appPrivateKey,
@@ -106,14 +104,14 @@ const Header = () => {
   const checkIfIsAuthenticated = React.useCallback(async () => {
     if (pathname === "/tos" || pathname === "/privacy") return;
     const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`;
-    // const result = await client.get(url);
+    const result = await client.get(url);
 
-    // const user = result.data?.data?.user;
+    const user = result.data?.data?.user;
 
-    // setShowAuthOverlay(!user);
-    // setIsAuthModalOpen(!user);
-    // setIsUserAuthenticated(!!user);
-    // setUser(user);
+    setShowAuthOverlay(!user);
+    setIsAuthModalOpen(!user);
+    setIsUserAuthenticated(!!user);
+    setUser(user);
   }, []);
 
   const getAllTokenAddreses = React.useCallback(async () => {
@@ -470,14 +468,6 @@ const Header = () => {
     }
   }, [wallet, incomingWalletToken]);
 
-  if (
-    pathname.includes("sign-up") ||
-    pathname.includes("login") ||
-    pathname.includes("password")
-  ) {
-    return <></>;
-  }
-
   const resetNotification = async () => {
     await axios.put("/api/notifications/update", {
       wallet: wallet?.publicKey.toBase58(),
@@ -489,15 +479,7 @@ const Header = () => {
     if (isLoadingLogout) return;
 
     setIsLoadingLogout(true);
-    const value =
-      ("; " + document.cookie).split(`; session=`).pop()!.split(";")[0] ?? "";
-
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`;
-    await axios.delete(url, {
-      headers: {
-        Authorization: `Bearer ${value}`,
-      },
-    });
+    await client.delete("/logout", {});
     window.localStorage.removeItem("token");
     setIsLoadingLogout(false);
 
@@ -529,6 +511,14 @@ const Header = () => {
   }, [isUserAuthenticated]);
 
   const isMobileScreen = screenSize < 1200;
+
+  if (
+    pathname.includes("sign-up") ||
+    pathname.includes("login") ||
+    pathname.includes("password")
+  ) {
+    return <></>;
+  }
 
   if (pathname === "/tos" || pathname === "/privacy" || pathname === "/") {
     return <></>;
@@ -596,24 +586,6 @@ const Header = () => {
                 )}
               </div>
             )}
-
-            <WalletMultiButton
-              startIcon={undefined}
-              style={{
-                background:
-                  "linear-gradient(91deg, #D858BC -3.59%, #3C00FF 102.16%)",
-                padding: isMobileScreen ? "0 0.4em" : "0 0.8em",
-                borderRadius: 15,
-                marginLeft: "0.5rem",
-                marginRight: "0.5rem",
-              }}
-            >
-              <p className="md:text-base text-sm text-white">
-                {wallet?.publicKey
-                  ? walletAddressShortener(wallet.publicKey.toString())
-                  : "Connect"}
-              </p>
-            </WalletMultiButton>
 
             {currentUser?.profile?.image && (
               <div

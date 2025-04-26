@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 import { User } from "@/app/models/user";
 import { selectedSearchFilter } from "@/app/store/home";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import { textSearch } from "@/app/store/membership";
 import UserCard from "../UserCard";
 import { data } from "@/app/store";

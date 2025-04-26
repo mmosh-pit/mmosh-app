@@ -1,11 +1,11 @@
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as ProjectConn } from "@/anchor/project";
 import { Connection } from "@solana/web3.js";
 import { web3Consts } from "@/anchor/web3Consts";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export const getCommunityProjectInfo = async (
-  wallet: AnchorWallet,
+  wallet: FrostWallet,
   address: string,
 ) => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {

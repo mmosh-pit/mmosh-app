@@ -1144,3 +1144,17 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* .home-loggedin-bg { */
+/*   background: conic-gradient( */
+/*     from 20deg at 30% 0%, */
+/*     rgba(73, 118, 233, 0.18) -2.47deg, */
+/*     #316bff 1.81deg, */
+/*     #032886 76.1deg, */
+/*     rgba(19, 22, 26, 0.131006) 121.11deg, */
+/*     rgba(7, 11, 22, 0) 300.72deg, */
+/*     rgba(0, 0, 0, 0) 349.73deg, */
+/*     rgba(73, 118, 233, 0.18) 357.53deg, */
+/*     #316bff 361.81deg */
+/*   ); */
+/* } */

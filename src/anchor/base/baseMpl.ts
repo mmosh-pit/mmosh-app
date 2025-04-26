@@ -1,6 +1,5 @@
 import { AnchorProvider, BN, Program, web3 } from "@coral-xyz/anchor";
 import { utf8 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-// import { WalletContextState } from "@solana/wallet-adapter-react";
 import { BaseSpl } from "./baseSpl";
 import Config from "./../web3Config.json";
 import {

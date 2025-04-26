@@ -9,15 +9,22 @@ import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import axios from "axios";
 
 import BalanceBox from "../common/BalanceBox";
-import { useConnection } from "@solana/wallet-adapter-react";
+import useConnection from "@/utils/connection";
 import * as anchor from "@coral-xyz/anchor";
 import useWallet from "@/utils/wallet";
 import { useAtom } from "jotai";
 import { data, isAuth, userWeb3Info } from "@/app/store";
 import { Connectivity as Community } from "@/anchor/community";
+import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
+import {
+  LAMPORTS_PER_SOL,
+  SystemProgram,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import client from "@/app/lib/httpClient";
 
 const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
@@ -432,6 +439,56 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
         setLoading(false);
       }
     }
+  };
+
+  const testFrost = async () => {
+    const env = new anchor.AnchorProvider(connection.connection, wallet, {
+      preflightCommitment: "processed",
+    });
+    anchor.setProvider(env);
+
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+    console.log("wallet.publicKey ", wallet.publicKey.toBase58());
+
+    try {
+      console.log("testing 1");
+      let txis: any = SystemProgram.transfer({
+        fromPubkey: wallet.publicKey,
+        toPubkey: new anchor.web3.PublicKey(
+          "HMvvRsoHAjCcCK6YUckdTezaxgZ9QBJApK1hY6NLfZA4",
+        ),
+        lamports: 0.01 * LAMPORTS_PER_SOL,
+      });
+      console.log("testing 2");
+      const latestBlockhash = await connection.connection.getLatestBlockhash();
+
+      // const tx1 = await new anchor.web3.Transaction().add(...txis);
+      // txis = [];
+      console.log("testing 3");
+      const messageV0 = new TransactionMessage({
+        payerKey: wallet.publicKey,
+        recentBlockhash: latestBlockhash.blockhash,
+        instructions: [txis],
+      }).compileToV0Message(); // 👈 compile to v0 message
+
+      console.log("testing 4");
+      // Create and sign the versioned transaction
+      const tx = new VersionedTransaction(messageV0);
+      console.log("testing 5");
+      const res3 = await userConn.provider.sendAndConfirm(tx);
+
+      console.log("res3 ", res3);
+    } catch (error) {
+      console.log("error ", error);
+    }
+  };
+
+  const prepareNumber = (inputValue: any) => {
+    if (isNaN(inputValue)) {
+      return 0;
+    }
+    return inputValue;
   };
 
   return (

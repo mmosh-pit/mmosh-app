@@ -1,16 +1,16 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Connection } from "@solana/web3.js";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 
 import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { SwapCoin } from "@/app/models/swapCoin";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import { CoinDetail } from "@/app/models/coin";
+import { FrostWallet } from "@/utils/frostWallet";
 
 export const getSwapPrices = async (
   token: SwapCoin,
-  wallet: AnchorWallet,
+  wallet: FrostWallet,
   isBase: boolean,
 ) => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
@@ -92,7 +92,7 @@ export const getSwapPrices = async (
 export const getSwapPricesForJup = async (
   baseToken: SwapCoin,
   targetToken: SwapCoin,
-  wallet: AnchorWallet,
+  wallet: FrostWallet,
 ) => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
     confirmTransactionInitialTimeout: 120000

@@ -390,15 +390,15 @@ export default function LandingPage() {
                 Camp counselors, high school teachers, college professors,
                 executive coaches, ceremonial leaders, healers, artists,
                 musicians, authors, trainers, mentors, friends, relatives and
-                therapists
+                therapists.
               </div>
               <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                As much as I've learned from two-leggeds, I've gained even more
-                from my guides in the more than human world, including
-                Woodpecker, Spider, Deer, the Cloud People, the Star People,
-                Hermit Crab, and all the members of the four-leggeds, winged
-                nation, swimming nation, the standing nation, the mycelials and
-                the many varieties of creepy crawlers.
+                I’ve learned just as much, if not more, from my guides in the
+                more than human world, including Woodpecker, Spider, Deer, the
+                Cloud People, the Star People, Hermit Crab, and all the members
+                of the four-leggeds, winged nation, swimming nation, the
+                standing nation, the mycelials and the many varieties of creepy
+                crawlers.
               </div>
               <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Sometimes the change came from an intense experience over the
@@ -411,7 +411,7 @@ export default function LandingPage() {
                 for you.
               </div>
               <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                Social media, search engines and marketplaces drown out the
+                Social media, search engines and marketplaces drowns out the
                 voices that liberate and inspire, and amplify the deafening
                 drone of fear, deceit and control. Big centralized AI platforms
                 can accelerate this process, blending the worst elements of

@@ -14,9 +14,6 @@ type HomeModalSignUpFormProps = {
 const HomeModalSignUpForm = ({ onSuccess }: HomeModalSignUpFormProps) => {
   const [form, setForm] = useAtom(storeFormAtom);
 
-  const [email, setEmail] = React.useState("");
-  const [name, setName] = React.useState("");
-
   const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
   const [emailError, setEmailError] = React.useState(false);
 
@@ -55,7 +52,9 @@ const HomeModalSignUpForm = ({ onSuccess }: HomeModalSignUpFormProps) => {
         email: form.email,
       });
       onSuccess();
-    } catch (_) { }
+    } catch (err) {
+      console.error(err);
+    }
     setIsLoading(false);
   };
 
@@ -73,8 +72,8 @@ const HomeModalSignUpForm = ({ onSuccess }: HomeModalSignUpFormProps) => {
       <div className="flex flex-col mb-4 max-w-[60%]">
         <Input
           placeholder="First name or Alias"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
           type="text"
           title="First name or Alias"
           required
@@ -84,8 +83,8 @@ const HomeModalSignUpForm = ({ onSuccess }: HomeModalSignUpFormProps) => {
 
         <Input
           placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
           type="text"
           error={emailError}
           helperText={emailError ? "Invalid Email Address" : ""}

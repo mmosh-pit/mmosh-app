@@ -86,7 +86,7 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
   );
 
   return (
-    <div className="w-full min-h-full flex flex-col items-center background-content pt-32 relative">
+    <div className="w-full min-h-full flex flex-col items-center pt-4 px-6 relative">
       <div className="flex flex-col items-center my-6">
         <div className="flex justify-center mb-2">
           <h1 className="text-[1.5vmax] font-bold font-goudy">

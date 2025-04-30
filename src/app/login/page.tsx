@@ -7,6 +7,8 @@ import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 import client from "../lib/httpClient";
+import { useAtom } from "jotai";
+import { isAuth, isAuthOverlayOpen, userData } from "../store";
 
 const Login = () => {
   const router = useRouter();
@@ -20,11 +22,20 @@ const Login = () => {
 
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
 
+  const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
+  const [__, setIsUserAuthenticated] = useAtom(isAuth);
+  const [___, setUser] = useAtom(userData);
+
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await client.get("/is-auth");
 
     if (result.data) {
       router.replace("/");
+      const user = result.data?.data?.user;
+
+      setShowAuthOverlay(!user);
+      setIsUserAuthenticated(!!user);
+      setUser(user);
     }
   }, []);
 
@@ -41,6 +52,9 @@ const Login = () => {
         });
 
         window.localStorage.setItem("token", res.data.data.token);
+        setIsUserAuthenticated(true);
+        setShowAuthOverlay(false);
+        setUser(res.data.data.user);
         router.replace("/coins");
       } catch (err: any) {
         setError(

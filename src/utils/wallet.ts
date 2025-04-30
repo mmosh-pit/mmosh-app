@@ -24,20 +24,21 @@ const useWallet = () => {
             console.log("version transaction");
             const messageBytes: any = tx.message.serialize();
             const hex = Buffer.from(messageBytes).toString("hex");
-
-            console.log("message hex", hex);
-
             const result = await client.post("/sign", { message: hex });
-
-            console.log("Request data response: ", result.data.data);
-            console.log("message address", result.data.data.address);
-            console.log("message signature", result.data.data.signature);
-
             const signature: any = Buffer.from(
               result.data.data.signature,
               "hex",
             );
-            tx.signatures = [signature];
+
+            const signerIndex = tx.message.staticAccountKeys.findIndex((key) =>
+              key.equals(frostWallet.publicKey),
+            );
+          
+            if (signerIndex === -1) {
+              throw new Error("Signer public key not found in account keys");
+            }
+          
+            tx.signatures[signerIndex] = signature;
           } else {
             console.log("normal transaction");
 

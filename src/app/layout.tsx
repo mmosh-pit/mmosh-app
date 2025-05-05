@@ -22,10 +22,10 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Kinship Codes",
-  description: "It’s All Related",
+  title: "Kinship Bots",
+  description: "where AI Belongs",
   openGraph: {
-    images: ["https://storage.googleapis.com/mmosh-assets/kinship_codes.png"],
+    images: ["https://storage.googleapis.com/mmosh-assets/kinship_bots.png"],
   },
 };
 

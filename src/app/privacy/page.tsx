@@ -1,21 +1,20 @@
 const Privacy = () => (
   <div className="flex flex-col items-center tos-container w-full min-h-screen">
     <h1 className="text-2xl text-white font-bold">
-      Liquid Hearts Club - Privacy Policy
+      KINSHIP BOTS CLUB PRIVACY POLICY
     </h1>
 
-    <p>Last modified date: October 30, 2024</p>
+    <p>Last modified date: May 5, 2025</p>
 
     <p>
-      This privacy policy ("Privacy Policy") explains how Liquid Hearts Club
-      (“LHC,” "our," "we," or "us") collects, uses, and discloses information
-      about you. This Privacy Policy applies when you use{" "}
-      <a href="https://liquidhearts.app" target="_blank">
-        https://liquidhearts.app
+      This privacy policy ("Privacy Policy") explains how Kinship Bots Club
+      (“KBC,” "our," "we," or "us") collects, uses, and discloses information
+      about you. This Privacy Policy applies when you{" "}
+      <a href="https://kinshipbots.com" target="_blank">
+        https://kinshipbots.com
       </a>{" "}
-      (the "Website"), contact our team by email or Telegram, engage with us on
-      social media, participate in our project on a Web app, mobile app or
-      Telegram bot, or otherwise interact with us.
+      (the "Website"), use our mobile app, contact our team by email or
+      Telegram, engage with us on social media, or otherwise interact with us.
     </p>
 
     <p>
@@ -34,11 +33,11 @@ const Privacy = () => (
     <p>
       We collect information you provide directly to us. For example, you share
       information directly with us when you fill out a form, make a purchase,
-      mint a token, communicate with us via third-party platforms, participate
-      in a contest or promotion, request customer support, or otherwise
-      communicate with us. The types of personal information we may collect
-      include your name, email address, postal address, wallet address, phone
-      number, credit card and other payment information, and any other
+      mint a token, connect with us on third-party platforms, participate in a
+      contest or promotion, request customer support, or otherwise communicate
+      with us. The types of personal information we may collect include your
+      name, email address, biographical data, postal address, wallet address,
+      phone number, credit card and other payment information, and any other
       information you choose to provide.
     </p>
 
@@ -164,7 +163,7 @@ const Privacy = () => (
         We may share personal information if we believe that your actions are
         inconsistent with our user agreements or policies, if we believe that
         you have violated the law, or if we believe it is necessary to protect
-        the rights, property, and safety of LHC, our users, the public, or
+        the rights, property, and safety of KBC, our users, the public, or
         others.
       </li>
       <li>
@@ -190,19 +189,15 @@ const Privacy = () => (
     <h2>ANALYTICS</h2>
 
     <p>
-      We allow others to provide analytics services on our behalf across the web
-      and in mobile apps. These entities may use cookies, web beacons, device
-      identifiers, and other technologies to collect information about your use
-      of our Website and other websites and applications, including your IP
-      address, web browser, mobile network information, pages viewed, time spent
-      on pages or in mobile apps, links clicked, and conversion information.
-      This information may be used by LHC and others to, among other things,
-      research, analyze and track data, determine the popularity of certain
-      content, and better understand your online activity. However, if you have
-      deleted and disabled cookies, these uses will not be possible to the
-      extent they are based on cookie information. We use Google Analytics to
-      analyze traffic. You can find out more information about Google Analytics
-      cookies by visiting the following location provided:{" "}
+      your IP address, web browser, mobile network information, pages viewed,
+      time spent on pages or in mobile apps, links clicked, and conversion
+      information. This information may be used by KBC and others to, among
+      other things, research, analyze and track data, determine the popularity
+      of certain content, and better understand your online activity. However,
+      if you have deleted and disabled cookies, these uses will not be possible
+      to the extent they are based on cookie information. We use Google
+      Analytics to analyze traffic. You can find out more information about
+      Google Analytics cookies by visiting the following location provided:{" "}
       <a
         href="https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage"
         target="_blank"
@@ -290,7 +285,7 @@ const Privacy = () => (
       collect, use, and disclose, (2) request deletion of your personal
       information, and (3) not be discriminated against for exercising these
       rights. You may make these requests by contacting us by email at
-      support@liquidhearts.club. We will verify your request by asking you to
+      support@kinship.systems. We will verify your request by asking you to
       provide information related to your recent interactions with us. We will
       not discriminate against you if you exercise your rights under the CCPA.
     </p>
@@ -352,7 +347,7 @@ const Privacy = () => (
       format, the right to ask that your personal data be corrected or erased,
       and the right to object to, or request that we restrict, certain
       processing. If you would like to exercise any of these rights, please
-      contact our technology services provider at support@liquidhearts.com.
+      contact our technology services provider at support@kinship.systems.
     </p>
 
     <h3>Questions or Complaints</h3>
@@ -395,7 +390,7 @@ const Privacy = () => (
 
     <p>
       If you have any questions about this Privacy Policy, please contact us at
-      support@liquidhearts.club.
+      support@kinship.systems.
     </p>
   </div>
 );

@@ -1,9 +1,7 @@
 const TOS = () => {
   return (
     <div className="flex flex-col items-center tos-container w-full min-h-screen">
-      <h1 className="text-2xl text-white font-bold">
-        Liquid Hearts Club - Terms of Service
-      </h1>
+      <h1 className="text-2xl text-white font-bold">Terms of Service</h1>
 
       <p>
         Please read these terms carefully and keep a copy of them for your
@@ -32,27 +30,23 @@ const TOS = () => {
         This End User License Agreement and Terms of Service (“EULA” or “Terms”)
         is a binding contract between you, an individual user or site visitor,
         whether personally or on behalf of an entity (“user,” “you,” “your”) and
-        Liquid Hearts Club (“LHC,” “we,” “us” or “our”) concerning use of the
-        our services (the “Service”), including this website as well as any
-        other media form, media channel, bot, app or mobile website related,
-        linked, or otherwise connected thereto (collectively, the “Site”).
-        Currently, LHC maintains and operates{" "}
-        <a href="https://liquidhearts.app" target="_blank">
-          https://liquidhearts.app
+        Kinship Bots Club (“KBC,” “we,” “us” or “our”) concerning use of the our
+        services (the “Service”), including this website{" "}
+        <a href="https://kinshipbots.com" target="_blank">
+          https://kinshipbots.com
         </a>{" "}
-        as an opt-in service for creating, sharing, buying and selling community
-        coins and memecoins.
-      </p>
-
-      <p>
-        For the avoidance of doubt, LHC does not control the Massively
+        as well as any other media form, media channel, bot, app or mobile
+        website related, linked, or otherwise connected thereto (collectively,
+        the “Site”). Currently, KBC maintains and operates the Site as an opt-in
+        service for creating, promoting and enjoying token-gated agentic AI
+        “bots”. For the avoidance of doubt, KBC does not control the Massively
         Multiplayer On-chain Shared Hallucination (“MMOSH”) protocol on which we
         operate, Telegram or any other systems, networks, apps, protocols,
-        devices or platforms on which we might appear. LHC cannot control
+        devices or platforms on which we might appear. KBC cannot control
         activity and data on MMOSH, the activities of persons who develop and
         use applications on MMOSH, the distribution of royalties on MMOSH, or
         use of MMOSH. MMOSH is an open-source protocol that was developed and is
-        maintained by LHC. The genesis ecosystem for the MMOSH Protocol is MMOSH
+        maintained by KBC. The genesis ecosystem for the MMOSH Protocol is MMOSH
         DAO. Any third party may develop applications, protocols, networks and
         services that use MMOSH, so our tokens and other materials may appear in
         various contexts outside our control.
@@ -77,18 +71,14 @@ const TOS = () => {
         stay informed of updates. You will be subject to, and will be deemed to
         have been made aware of and to have accepted, the changes in any revised
         EULA by your continued use of the Service after the date such revised
-        EULA is posted.
-      </p>
-
-      <p>
-        The information provided on the Site is not intended for distribution to
-        or use by any person or entity in any jurisdiction or country where such
-        distribution or use would be contrary to law or regulation or which
-        would subject us to any registration requirement within such
-        jurisdiction or country. Accordingly, those persons who choose to access
-        the Site from other locations do so on their own initiative and are
-        solely responsible for compliance with local laws, if and to the extent
-        local laws are applicable.
+        EULA is posted. The information provided on the Site is not intended for
+        distribution to or use by any person or entity in any jurisdiction or
+        country where such distribution or use would be contrary to law or
+        regulation or which would subject us to any registration requirement
+        within such jurisdiction or country. Accordingly, those persons who
+        choose to access the Site from other locations do so on their own
+        initiative and are solely responsible for compliance with local laws, if
+        and to the extent local laws are applicable.
       </p>
 
       <p>
@@ -113,7 +103,7 @@ const TOS = () => {
             PLEASE NOTE: THE “DISPUTE RESOLUTION” SECTION OF THIS EULA CONTAINS
             AN ARBITRATION CLAUSE THAT REQUIRES DISPUTES TO BE ARBITRATED ON AN
             INDIVIDUAL BASIS, AND PROHIBITS CLASS ACTION CLAIMS. IT AFFECTS HOW
-            DISPUTES BETWEEN YOU AND LHC ARE RESOLVED. BY ACCEPTING THIS EULA,
+            DISPUTES BETWEEN YOU AND KBC ARE RESOLVED. BY ACCEPTING THIS EULA,
             YOU AGREE TO BE BOUND BY THIS ARBITRATION PROVISION. PLEASE READ IT
             CAREFULLY.
           </strong>
@@ -125,7 +115,7 @@ const TOS = () => {
       <p>
         The Service is licensed, not sold, to you for use only under the terms
         of the EULA, subject to your complete and ongoing compliance with the
-        terms and conditions of the EULA. LHC hereby grants you a personal,
+        terms and conditions of the EULA. KBC hereby grants you a personal,
         limited, revocable, non-transferable license to access and use the
         Service solely for your own use.
       </p>
@@ -306,13 +296,13 @@ const TOS = () => {
       <h2>TRADEMARKS</h2>
 
       <p>
-        “Liquid Hearts Club” and our logos, our product or service names, our
-        slogans and the look and feel of the Service are trademarks of LCH and
+        “Kinship Bots Club” and our logos, our product or service names, our
+        slogans and the look and feel of the Service are trademarks of KBC and
         may not be copied, imitated or used, in whole or in part, without our
-        prior written permission, which may be obtained by emailing Liquid
-        Hearts Club, our technical partners, at support@liquidhearts.club. All
-        other trademarks, registered trademarks, product names and company names
-        or logos mentioned on the Service are the property of their respective
+        prior written permission, which may be obtained by emailing Kinship Bots
+        Club, our technical partners, at support@kinshipbots.com. All other
+        trademarks, registered trademarks, product names and company names or
+        logos mentioned on the Service are the property of their respective
         owners. Reference to any products, services, processes or other
         information by trade name, trademark, manufacturer, supplier or
         otherwise does not constitute or imply endorsement, sponsorship or
@@ -323,7 +313,7 @@ const TOS = () => {
 
       <p>
         Please read the following section carefully because it requires you to
-        arbitrate certain disputes and claims with LHC and limits the manner in
+        arbitrate certain disputes and claims with KBC and limits the manner in
         which you can seek relief from us, unless you opt out of arbitration by
         following the instructions set forth below. No class or representative
         actions or arbitrations are allowed under this arbitration provision. In
@@ -332,33 +322,33 @@ const TOS = () => {
       </p>
 
       <p>
-        (a) No Representative Actions. You and LHC agree that any dispute
+        (a) No Representative Actions. You and KBC agree that any dispute
         arising out of or related to this EULA or the Service is personal to you
-        and LHC and that any dispute will be resolved solely through individual
+        and KBC and that any dispute will be resolved solely through individual
         action, and will not be brought as a class arbitration, class action or
         any other type of representative proceeding.
       </p>
 
       <p>
-        (b) Arbitration of Disputes. You and LHC waive your rights to a jury
+        (b) Arbitration of Disputes. You and KBC waive your rights to a jury
         trial and to have any other dispute arising out of or related to this
         EULA and the Service, including claims related to privacy and data
         security, (collectively, “Disputes”) resolved in court. Instead, for any
-        Dispute that you have against LHC you agree to first contact LHC and
+        Dispute that you have against KBC you agree to first contact KBC and
         attempt to resolve the claim informally by sending a written notice of
-        your claim (“Notice”) to LHC by email at support@liquidhearts.club or by
-        US mail addressed to Liquid Hearts Club, P.O. Box 2085, Shepherdstown,
-        WV 25443. The Notice must (a) include your name, residence address,
-        email address, and telephone number; (b) describe the nature and basis
-        of the Dispute; and (c) set forth the specific relief sought. Our notice
-        to you will be similar in form to that described above. If you and LHC
-        cannot reach an agreement to resolve the Dispute within thirty (30) days
-        after such Notice is received, then either party may submit the Dispute
-        to binding arbitration administered by JAMS or, under the limited
+        your claim (“Notice”) to KBC by email at support@kinshipbots.com or by
+        US mail addressed to Kinship Bots Club, P.O. Box 2085, Shepherdstown, WV
+        25443. The Notice must (a) include your name, residence address, email
+        address, and telephone number; (b) describe the nature and basis of the
+        Dispute; and (c) set forth the specific relief sought. Our notice to you
+        will be similar in form to that described above. If you and KBC cannot
+        reach an agreement to resolve the Dispute within thirty (30) days after
+        such Notice is received, then either party may submit the Dispute to
+        binding arbitration administered by JAMS or, under the limited
         circumstances set forth above, in court. All Disputes submitted to JAMS
         will be resolved through confidential, binding arbitration before one
         arbitrator. Arbitration proceedings will be held in Martinsburg, WV. You
-        and LHC agree that Disputes will be held in accordance with the JAMS
+        and KBC agree that Disputes will be held in accordance with the JAMS
         Streamlined Arbitration Rules and Procedures (“JAMS Rules”). The most
         recent version of the JAMS Rules are available on the JAMS website and
         are hereby incorporated by reference. You either acknowledge and agree
@@ -368,7 +358,7 @@ const TOS = () => {
       </p>
 
       <p>
-        (c) You and LHC agree that these Terms affect interstate commerce and
+        (c) You and KBC agree that these Terms affect interstate commerce and
         that the enforceability of this Section will be substantively and
         procedurally governed by the Federal Arbitration Act, 9 U.S.C. § 1, et
         seq. (the “FAA”), to the maximum extent permitted by applicable law. As
@@ -384,7 +374,7 @@ const TOS = () => {
 
       <p>
         (d) The arbitration will allow for the discovery or exchange of
-        non-privileged information relevant to the Dispute. The arbitrator, LHC,
+        non-privileged information relevant to the Dispute. The arbitrator, KBC,
         and you will maintain the confidentiality of any arbitration
         proceedings, judgments and awards, including information gathered,
         prepared and presented for purposes of the arbitration or related to the
@@ -399,10 +389,10 @@ const TOS = () => {
       </p>
 
       <p>
-        (e) You and LHC agree that for any arbitration you initiate, you will
+        (e) You and KBC agree that for any arbitration you initiate, you will
         pay the filing fee (up to a maximum of $250 if you are a consumer), and
-        LHC will pay the remaining JAMS fees and costs. For any arbitration
-        initiated by LHC, LHC will pay all JAMS fees and costs. You and LHC
+        KBC will pay the remaining JAMS fees and costs. For any arbitration
+        initiated by KBC, KBC will pay all JAMS fees and costs. You and KBC
         agree that the State of West Virginia shall have exclusive jurisdiction
         over any appeals and the enforcement of an arbitration award.
       </p>
@@ -410,13 +400,13 @@ const TOS = () => {
       <p>
         (f) Any Dispute must be filed within one year after the relevant claim
         arose; otherwise, the Dispute is permanently barred, which means that
-        you and LHC will not have the right to assert the claim.
+        you and KBC will not have the right to assert the claim.
       </p>
 
       <p>
         (g) You have the right to opt out of binding arbitration within 30 days
         of the date you first accepted the terms of this Section by mailing an
-        opt-out notice to LHC at P.O. Box 2085, Shepherdstown, WV 25443. In
+        opt-out notice to KBC at P.O. Box 2085, Shepherdstown, WV 25443. In
         order to be effective, the opt-out notice must include your full name
         and address and clearly indicate your intent to opt out of binding
         arbitration. By opting out of binding arbitration, you are agreeing to
@@ -458,7 +448,7 @@ const TOS = () => {
         inaccuracies, or omissions, including descriptions, pricing,
         availability, and various other information. We reserve the right to
         correct any errors, inaccuracies, or omissions and to change or update
-        the information on the Site at any time, without prior notice. LHC does
+        the information on the Site at any time, without prior notice. KBC does
         not warrant that the content will be uninterrupted or error free or free
         of computer viruses, contaminants or other harmful items.
       </p>
@@ -467,7 +457,7 @@ const TOS = () => {
 
       <p>
         THE SITE AND SERVICE IS PROVIDED ON AN “AS-IS” AND “AS-AVAILABLE” BASIS.
-        TO THE MAXIMUM EXTENT PERMITTED BY LAW, LHC WILL NOT BE LIABLE FOR ANY
+        TO THE MAXIMUM EXTENT PERMITTED BY LAW, KBC WILL NOT BE LIABLE FOR ANY
         DAMAGES OF ANY KIND ARISING FROM THE USE OF THE SITE OR SERVICE,
         INCLUDING, BUT NOT LIMITED TO INDIRECT, INCIDENTAL, PUNITIVE, EXEMPLARY,
         SPECIAL OR CONSEQUENTIAL DAMAGES, EVEN IF WE HAVE BEEN ADVISED OF THE
@@ -505,9 +495,9 @@ const TOS = () => {
       </p>
 
       <p>
-        LHC may link to products and services offered by third parties through
+        KBC may link to products and services offered by third parties through
         the Service. These third-party products and services are not offered by
-        LHC and LHC is not responsible for any damages or losses that you might
+        KBC and KBC is not responsible for any damages or losses that you might
         incur as a result of your use or purchase of these products and
         services.
       </p>
@@ -527,7 +517,7 @@ const TOS = () => {
       <h2>INDEMNIFICATION</h2>
 
       <p>
-        You hereby agree to defend, indemnify, and hold LHC harmless from and
+        You hereby agree to defend, indemnify, and hold KBC harmless from and
         against any loss, damage, liability, claim, or demand, including
         reasonable attorneys’ fees and expenses, made by any third party due to
         or arising out of: (1) use of the Service; (2) breach of this EULA; (3)
@@ -611,9 +601,9 @@ const TOS = () => {
 
       <p>
         You may withdraw your consent to receive Communications under this EULA
-        by contacting us at support@liquidhearts.club. We will process your
-        request to withdraw your consent to receive electronic Communications in
-        a reasonable time. After we process your request, your access and use of
+        by contacting us at support@kinshpbots.com. We will process your request
+        to withdraw your consent to receive electronic Communications in a
+        reasonable time. After we process your request, your access and use of
         the Service will terminate.
       </p>
 
@@ -621,10 +611,9 @@ const TOS = () => {
 
       <p>
         You may request that we mail a paper copy of any electronic
-        Communication by contacting us at support@liquidhearts.club. We may
-        charge you fees associated with processing and mailing your request. We
-        will send a copy of the Communication to you within a reasonable
-        timeframe.
+        Communication by contacting us at support@kinshipbots.com. We may charge
+        you fees associated with processing and mailing your request. We will
+        send a copy of the Communication to you within a reasonable timeframe.
       </p>
 
       <h2>Termination and Changes</h2>
@@ -674,7 +663,7 @@ const TOS = () => {
       <p>
         In order to resolve a complaint regarding the Site or to receive further
         information regarding use of the Service, please contact us at:
-        support@liquidhearts.club.
+        support@kinshipbots.com.
       </p>
     </div>
   );

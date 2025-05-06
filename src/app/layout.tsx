@@ -5,6 +5,7 @@ import ConfigHOC from "./components/ConfigHOC";
 import Header from "./components/Header";
 import "./globals.css";
 import AuthOverlay from "./components/common/AuthOverlay";
+import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,6 +49,7 @@ export default function RootLayout({
         <ConfigHOC>
           <Header />
           <main className="h-full">{children}</main>
+          <Footer />
           <AuthOverlay />
         </ConfigHOC>
       </body>

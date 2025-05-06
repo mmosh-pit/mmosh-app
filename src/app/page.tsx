@@ -331,7 +331,7 @@ export default function LandingPage() {
           </button>
         </section>
 
-        <section className="py-10 sm:max-w-[1144px] mx-auto">
+        <section className="py-10 max-w-[1144px] mx-auto px-4">
           <div className="text-center max-w-5xl mx-auto mb-12">
             <h3 className=" transition duration-300 text-center text-4xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
               Inform, Instruct, Unleash

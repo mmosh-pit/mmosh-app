@@ -9,6 +9,8 @@ import ThreadsIcon from "@/assets/icons/ThreadsIcon";
 import YoutubeIcon from "@/assets/icons/YoutubeIcon";
 import TiktokIcon from "@/assets/icons/TiktokIcon";
 import XIcon from "@/assets/icons/XIcon";
+import { useAtom } from "jotai";
+import { isAuth } from "../store";
 
 const buttons = [
   {
@@ -59,10 +61,18 @@ const buttons = [
 ];
 
 const HomeLoggedInPage = () => {
+  const [_, setIsAuth] = useAtom(isAuth);
+
   return (
     <div className="w-full h-full background-content flex flex-col home-loggedin-bg">
       <div className="flex justify-between items-center px-16 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] rounded-full w-[80%] lg:w-[60%] self-center">
-        <KinshipBots />
+        <button
+          onClick={() => {
+            setIsAuth(false);
+          }}
+        >
+          <KinshipBots />
+        </button>
 
         <Button
           action={() => { }}

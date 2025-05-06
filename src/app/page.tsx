@@ -9,8 +9,12 @@ import { isAuth } from "./store";
 import HomeLoggedInPage from "./components/HomeLoggedInPage";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import Button from "./components/common/Button";
+import useCheckDeviceScreenSize from "./lib/useCheckDeviceScreenSize";
+import HomeMobileDrawer from "./components/HomeMobileDrawer";
 
 export default function LandingPage() {
+  const screenSize = useCheckDeviceScreenSize();
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [itemsPerSlide, setItemsPerSlide] = useState(1);
 
@@ -58,6 +62,8 @@ export default function LandingPage() {
     currentSlide * itemsPerSlide + itemsPerSlide,
   );
 
+  const isMobileScreen = screenSize < 1200;
+
   if (isUserAuthenticated) return <HomeLoggedInPage />;
 
   return (
@@ -66,73 +72,84 @@ export default function LandingPage() {
         <div className="flex justify-between items-center px-16 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] rounded-full w-[90%] lg:w-[80%] self-center">
           <KinshipBots />
 
-          <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                belowHeroRef.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Overview
-            </a>
+          {isMobileScreen ? (
+            <HomeMobileDrawer
+              belowHeroRef={belowHeroRef}
+              safeSection={safeSection}
+              testimonialsSection={testimonialsSection}
+              founderSection={founderSection}
+              whySection={whySection}
+              howItWorksSection={howItWorksSection}
+            />
+          ) : (
+            <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() =>
+                  belowHeroRef.current?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Overview
+              </a>
 
-            <div className="lg:mx-4 md:mx-2" />
+              <div className="lg:mx-4 md:mx-2" />
 
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                howItWorksSection.current?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              How it Works
-            </a>
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() =>
+                  howItWorksSection.current?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+                }
+              >
+                How it Works
+              </a>
 
-            <div className="lg:mx-4 md:mx-2" />
+              <div className="lg:mx-4 md:mx-2" />
 
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                whySection.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Why Join?
-            </a>
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() =>
+                  whySection.current?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Why Join?
+              </a>
 
-            <div className="lg:mx-4 md:mx-2" />
+              <div className="lg:mx-4 md:mx-2" />
 
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                founderSection.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              From our Founder
-            </a>
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() =>
+                  founderSection.current?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                From our Founder
+              </a>
 
-            <div className="lg:mx-4 md:mx-2" />
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                testimonialsSection.current?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              Testimonials
-            </a>
+              <div className="lg:mx-4 md:mx-2" />
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() =>
+                  testimonialsSection.current?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+                }
+              >
+                Testimonials
+              </a>
 
-            <div className="lg:mx-4 md:mx-2" />
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                safeSection.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Safety
-            </a>
-          </div>
+              <div className="lg:mx-4 md:mx-2" />
+              <a
+                className="text-base text-white cursor-pointer"
+                onClick={() =>
+                  safeSection.current?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                Safety
+              </a>
+            </div>
+          )}
 
           <Button
             action={() => setIsModalOpen(true)}

@@ -54,7 +54,7 @@ const HomeMobileDrawer = ({
               Overview
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className=" my-6" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -67,7 +67,7 @@ const HomeMobileDrawer = ({
               How it Works
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className=" my-6" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -78,7 +78,7 @@ const HomeMobileDrawer = ({
               Why Join?
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className=" my-6" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -89,7 +89,7 @@ const HomeMobileDrawer = ({
               From our Founder
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className=" my-6" />
             <a
               className="text-base text-white cursor-pointer"
               onClick={() =>
@@ -101,7 +101,7 @@ const HomeMobileDrawer = ({
               Testimonials
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className=" my-6" />
             <a
               className="text-base text-white cursor-pointer"
               onClick={() =>

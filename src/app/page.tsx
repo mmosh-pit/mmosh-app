@@ -69,8 +69,8 @@ export default function LandingPage() {
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
-        <div className="flex justify-between items-center px-16 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] rounded-full w-[90%] lg:w-[80%] self-center">
-          <KinshipBots />
+        <div className="flex justify-between items-center md:px-16 px-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] rounded-full w-full lg:w-[80%] self-center">
+          {!isMobileScreen && <KinshipBots />}
 
           {isMobileScreen ? (
             <HomeMobileDrawer

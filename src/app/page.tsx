@@ -11,6 +11,7 @@ import KinshipBots from "@/assets/icons/KinshipBots";
 import Button from "./components/common/Button";
 import useCheckDeviceScreenSize from "./lib/useCheckDeviceScreenSize";
 import HomeMobileDrawer from "./components/HomeMobileDrawer";
+import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
 
 export default function LandingPage() {
   const screenSize = useCheckDeviceScreenSize();
@@ -82,14 +83,26 @@ export default function LandingPage() {
           )}
 
           {isMobileScreen ? (
-            <HomeMobileDrawer
-              belowHeroRef={belowHeroRef}
-              safeSection={safeSection}
-              testimonialsSection={testimonialsSection}
-              founderSection={founderSection}
-              whySection={whySection}
-              howItWorksSection={howItWorksSection}
-            />
+            <div className="flex flex-col items-center justify-center">
+              <button
+                onClick={() =>
+                  mainSection.current?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                <KinshipMainIcon width={20} height={20} />
+              </button>
+
+              <div className="mb-2" />
+
+              <HomeMobileDrawer
+                belowHeroRef={belowHeroRef}
+                safeSection={safeSection}
+                testimonialsSection={testimonialsSection}
+                founderSection={founderSection}
+                whySection={whySection}
+                howItWorksSection={howItWorksSection}
+              />
+            </div>
           ) : (
             <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
               <a

@@ -2,12 +2,10 @@
 import Script from "next/script";
 import { useAtom } from "jotai";
 
-import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { settings } from "../store";
 
 const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
-  const endpoint = process.env.NEXT_PUBLIC_SOLANA_CLUSTER!;
   const pathname = usePathname();
   const [isOnSettings] = useAtom(settings);
 
@@ -44,7 +42,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
         src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
       ></Script>
 
-        <div className={getClassName()}>{children}</div>
+      <div className={getClassName()}>{children}</div>
     </>
   );
 };

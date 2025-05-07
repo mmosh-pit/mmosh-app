@@ -22,6 +22,7 @@ export default function LandingPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
   const homeSection = useRef<HTMLDivElement>(null);
   const howItWorksSection = useRef<HTMLDivElement>(null);
@@ -69,8 +70,16 @@ export default function LandingPage() {
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
-        <div className="flex justify-between items-center md:px-16 px-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] rounded-full w-full lg:w-[80%] self-center">
-          {!isMobileScreen && <KinshipBots />}
+        <div className="flex justify-between items-center md:px-16 px-4 py-8 bg-[#32323212] md:backdrop-filter md:backdrop-blur-[13px] md:rounded-full w-full lg:w-[80%] self-center">
+          {!isMobileScreen && (
+            <button
+              onClick={() =>
+                mainSection.current?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              <KinshipBots />
+            </button>
+          )}
 
           {isMobileScreen ? (
             <HomeMobileDrawer
@@ -162,7 +171,10 @@ export default function LandingPage() {
       </header>
 
       <AlertModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <div className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full">
+      <div
+        className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"
+        ref={mainSection}
+      >
         <div className="text-center relative">
           <div className="relative">
             <video

@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   }
 
   const data = await db
-    .collection("mmosh-app-profiles")
+    .collection("mmosh-users")
     .find(
       { profilenft: { $exists: true } },
       {

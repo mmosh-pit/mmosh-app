@@ -2,7 +2,7 @@ import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const collection = db.collection("mmosh-app-profiles");
+  const collection = db.collection("mmosh-users");
 
   const data = await req.json();
 

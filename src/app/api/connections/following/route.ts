@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
      match,
       {
         $lookup: {
-          from: "mmosh-app-profiles",
+          from: "mmosh-users",
           localField: "receiver_id",
           foreignField: "wallet",
           as: "receiver",
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
       },
       {
         $lookup: {
-          from: "mmosh-app-profiles",
+          from: "mmosh-users",
           localField: "sender_id",
           foreignField: "wallet",
           as: "sender",

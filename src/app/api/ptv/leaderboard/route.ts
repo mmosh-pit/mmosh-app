@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
      match,
       {
         $lookup: {
-          from: "mmosh-app-profiles",
+          from: "mmosh-users",
           localField: "wallet",
           foreignField: "wallet",
           as: "profiles",
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
       },
       {
         $lookup: {
-          from: "mmosh-app-profiles",
+          from: "mmosh-users",
           localField: "coin",
           foreignField: "key",
           as: "coins",

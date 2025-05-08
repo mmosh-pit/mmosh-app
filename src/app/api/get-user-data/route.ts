@@ -2,7 +2,7 @@ import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const collection = db.collection("mmosh-app-profiles");
+  const collection = db.collection("mmosh-users");
 
   const { searchParams } = new URL(req.url);
   const param = searchParams.get("username");
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   );
 
   if(requester) {
-    const sender = await db.collection("mmosh-app-profiles").findOne(
+    const sender = await db.collection("mmosh-users").findOne(
       {
        wallet: requester,
       }

@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
           reward,
         })
 
-        const receiverDetail:any = await db.collection("mmosh-app-profiles").findOne({
+        const receiverDetail:any = await db.collection("mmosh-users").findOne({
           wallet: element.receiver,
         });
   
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
           coin: data.coin,
           reward,
         })
-        const receiverDetail:any = await db.collection("mmosh-app-profiles").findOne({
+        const receiverDetail:any = await db.collection("mmosh-users").findOne({
           wallet: element.receiver,
         });
   
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
           coin: data.coin,
           reward,
         })
-        const receiverDetail:any = await db.collection("mmosh-app-profiles").findOne({
+        const receiverDetail:any = await db.collection("mmosh-users").findOne({
           wallet: element.sender,
         });
   
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
         coin: data.coin,
         reward,
       })
-      const receiverDetail:any = await db.collection("mmosh-app-profiles").findOne({
+      const receiverDetail:any = await db.collection("mmosh-users").findOne({
         wallet: element,
       });
 
@@ -198,7 +198,7 @@ export async function POST(req: NextRequest) {
         coin: data.coin,
         reward,
       })
-      const receiverDetail:any = await db.collection("mmosh-app-profiles").findOne({
+      const receiverDetail:any = await db.collection("mmosh-users").findOne({
         wallet: element,
       });
 
@@ -224,7 +224,7 @@ export async function POST(req: NextRequest) {
         coin: data.coin,
         reward,
       })
-      const receiverDetail:any = await db.collection("mmosh-app-profiles").findOne({
+      const receiverDetail:any = await db.collection("mmosh-users").findOne({
         wallet: element,
       });
 

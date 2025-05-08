@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
        match,
         {
           $lookup: {
-            from: "mmosh-app-profiles",
+            from: "mmosh-users",
             localField: "receiver_id",
             foreignField: "wallet",
             as: "receiver",
@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
         },
         {
           $lookup: {
-            from: "mmosh-app-profiles",
+            from: "mmosh-users",
             localField: "sender_id",
             foreignField: "wallet",
             as: "sender",
@@ -153,7 +153,7 @@ export async function GET(req: NextRequest) {
   const sortDirectionValue = sortDirection === "desc" ? -1 : 1;
 
   const profiles = await db
-    .collection("mmosh-app-profiles")
+    .collection("mmosh-users")
     .find(profilesFilter, {
       projection: {
         _id: 0,
@@ -175,7 +175,7 @@ export async function GET(req: NextRequest) {
   }
 
   if(requester) {
-    const user = await db.collection("mmosh-app-profiles").findOne(
+    const user = await db.collection("mmosh-users").findOne(
       {
        wallet: requester,
       }

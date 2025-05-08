@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     console.log("test a")
 
     const collection = db.collection("mmosh-app-connections");
-    const usercollection = db.collection("mmosh-app-profiles");
+    const usercollection = db.collection("mmosh-users");
 
     console.log("test b")
 

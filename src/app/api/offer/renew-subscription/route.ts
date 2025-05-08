@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const projectCollection = db.collection("mmosh-app-project");
     const projectCoinCollection = db.collection("mmosh-app-project-coins");
     const tokenCollection = db.collection("mmosh-app-tokens");
-    const usercollection = db.collection("mmosh-app-profiles");
+    const usercollection = db.collection("mmosh-users");
 
     const data = await collection
     .findOne({end: { $lt: new Date() }, status: "active"})

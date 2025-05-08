@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   // Create the reCAPTCHA client.
   // TODO: Cache the client generation code (recommended) or call client.close() before exiting the method.
 
-  const collection = db.collection("mmosh-app-profiles");
+  const collection = db.collection("mmosh-users");
 
   const { token, wallet } = await req.json();
 

@@ -231,7 +231,7 @@ export default function LandingPage() {
                     className="flex m-auto md-[46px] px-4 py-[6px] md:px-[32px] md:py-[12px] mt-5 font-bold text-xs justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE] cursor-pointer"
                     onClick={() => setIsModalOpen(true)}
                   >
-                    Claim Your Early Acces
+                    Claim Your Early Access
                   </button>
 
                   <button

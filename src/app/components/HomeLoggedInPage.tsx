@@ -1,5 +1,3 @@
-import KinshipBots from "@/assets/icons/KinshipBots";
-import Button from "./common/Button";
 import BlueskyIcon from "@/assets/icons/BlueskyIcon";
 import LinkedinIcon from "@/assets/icons/LinkedinIcon";
 import SubstackIcon from "@/assets/icons/SubstackIcon";
@@ -9,8 +7,8 @@ import ThreadsIcon from "@/assets/icons/ThreadsIcon";
 import YoutubeIcon from "@/assets/icons/YoutubeIcon";
 import TiktokIcon from "@/assets/icons/TiktokIcon";
 import XIcon from "@/assets/icons/XIcon";
-import { useAtom } from "jotai";
-import { isAuth } from "../store";
+import Button from "./common/Button";
+import { useRouter } from "next/navigation";
 
 const buttons = [
   {
@@ -61,42 +59,36 @@ const buttons = [
 ];
 
 const HomeLoggedInPage = () => {
-  const [_, setIsAuth] = useAtom(isAuth);
+  const router = useRouter();
 
   return (
     <div className="w-full h-full background-content flex flex-col home-loggedin-bg">
-      <div className="flex justify-between items-center px-16 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] rounded-full w-[80%] lg:w-[60%] self-center">
-        <button
-          onClick={() => {
-            setIsAuth(false);
-          }}
-        >
-          <KinshipBots />
-        </button>
-
-        <Button
-          action={() => { }}
-          size="small"
-          isPrimary
-          title="Join Us!"
-          isLoading={false}
-        />
-      </div>
-
       <div className="w-full flex flex-col items-center py-8">
         <h1 className="text-[4vmax] transition duration-300 mt-5 sm:mt-0 text-[3vmax] md:text-[5vmax] sm:leading-[70px] font-goudy bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2 ">
           Welcome Home
         </h1>
 
-        <div className="my-2" />
+        <div className="my-6" />
 
         <p className="text-xl text-white md:max-w-[40%] max-w-[60%] text-center">
           We're still building out our platform, and we'll let you know as soon
-          as we're ready to greet you. Until then, come meet up with us on your
-          favorite social networks.
+          as we're ready to greet you. Until then, feel free to poke around
+          using the menu up top. You’ll see most of this is broken, but still
+          pretty exciting. Please come join us on your favorite social networks.
+          We’ll be adding the links as we set up accounts.
         </p>
 
-        <div className="my-8" />
+        <div className="my-4 max-w-[60%] md:max-w-[40%]">
+          <Button
+            title="Chat with Ambient Agents"
+            isPrimary
+            size="large"
+            action={() => router.push("/chat")}
+            isLoading={false}
+          />
+        </div>
+
+        <div className="my-6" />
 
         <div className="grid grid-cols-3 grid-rows-3 gap-6">
           {buttons.map((val) => (

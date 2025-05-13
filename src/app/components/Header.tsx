@@ -41,8 +41,8 @@ import {
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
 import client from "../lib/httpClient";
-import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
 import MessageBanner from "./common/MessageBanner";
+import KinshipBots from "@/assets/icons/KinshipBots";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
@@ -520,7 +520,11 @@ const Header = () => {
     return <></>;
   }
 
-  if (pathname === "/tos" || pathname === "/privacy" || pathname === "/") {
+  if (
+    pathname === "/tos" ||
+    pathname === "/privacy" ||
+    (pathname === "/" && !isUserAuthenticated)
+  ) {
     return <></>;
   }
 
@@ -534,10 +538,14 @@ const Header = () => {
             <div
               className="flex justify-end w-[20%] mr-12 cursor-pointer"
               onClick={() => {
+                if (pathname === "/" && isUserAuthenticated) {
+                  setIsUserAuthenticated(false);
+                  return;
+                }
                 router.push("/");
               }}
             >
-              <KinshipMainIcon />
+              <KinshipBots />
             </div>
           )}
 
@@ -657,10 +665,12 @@ const Header = () => {
         </div>
       )}
 
-      <MessageBanner
-        type="info"
-        message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
-      />
+      {pathname !== "/" && (
+        <MessageBanner
+          type="info"
+          message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
+        />
+      )}
     </header>
   );
 };

@@ -1,7 +1,7 @@
 export type Mmoshforge = {
   address: string;
   metadata: {
-    name: "mmoshforge";
+    name: "mmosh_program";
     version: "0.1.0";
     spec: "0.1.0";
     description: "Created with Anchor";
@@ -3412,7 +3412,7 @@ export type Mmoshforge = {
 export const IDL: Mmoshforge = {
   address: process.env.NEXT_PUBLIC_PROGRAM_ID!,
   metadata: {
-    name: "mmoshforge",
+    name: "mmosh_program",
     version: "0.1.0",
     spec: "0.1.0",
     description: "Created with Anchor",

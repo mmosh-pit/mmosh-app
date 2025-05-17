@@ -121,7 +121,7 @@ const Header = () => {
       setIsUserAuthenticated(!!user);
       setUser(user);
     } catch (err) {
-      router.replace("/");
+      // router.replace("/");
     }
   }, []);
 

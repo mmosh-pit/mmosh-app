@@ -11,20 +11,20 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
 
   const getClassName = () => {
     if (pathname.includes("create_") || pathname.includes("create/coins"))
-      return "bg-without-picture h-screen";
+      return "bg-without-picture";
 
     if (pathname.includes("create") || pathname.includes("communities"))
-      return "common-bg h-screen";
+      return "common-bg";
 
     if (pathname === "/tos" || pathname === "/privacy") {
       return "bg-tos";
     }
 
     if (pathname !== "/coins" || isOnSettings) {
-      return "bg-profile h-screen";
+      return "bg-profile";
     }
 
-    return "common-bg h-screen";
+    return "common-bg";
   };
 
   return (
@@ -42,7 +42,7 @@ const ConfigHOC = ({ children }: { children: React.ReactNode }) => {
         src={`https://www.google.com/recaptcha/enterprise.js?render=${process.env.NEXT_PUBLIC_RECAPTCHA_KEY}`}
       ></Script>
 
-      <div className={getClassName()}>{children}</div>
+      <div className={`${getClassName()} flex flex-col h-full`}>{children}</div>
     </>
   );
 };

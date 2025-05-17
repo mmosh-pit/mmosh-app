@@ -2,8 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  height: 100vh;
+  background-color: #09073a !important;
+}
+
 body {
-  height: max-content;
+  height: 100%;
+  display: flex;
+  flex-flow: column;
 }
 
 footer {

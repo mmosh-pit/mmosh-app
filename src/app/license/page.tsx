@@ -125,3 +125,5 @@ const License = () => (
     </ol>
   </div>
 );
+
+export default License;

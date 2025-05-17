@@ -83,7 +83,7 @@ export default function OPOS() {
   }, [socket]);
 
   return (
-    <div className="background-content flex w-full h-full justify-center overflow-y-hidden min-h-full">
+    <div className="background-content flex w-full h-[100vh] justify-center overflow-y-hidden min-h-full">
       <ChatAgentSelector />
 
       <ChatInteractionContainer socket={socket} />

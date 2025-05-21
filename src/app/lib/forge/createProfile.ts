@@ -16,18 +16,36 @@ export const createProfile = async ({
   wallet,
   image,
   form,
-  profileInfo,
   preview,
+  parentProfile,
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet, {
+      preflightCommitment: "processed",
+    });
+    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+
     const seniority = (await getTotalMints()) + 1;
+    const generationData = await userConn.getProfileChilds(parentProfile);
+    const generation = generationData.generation;
+    const profileLineage = await userConn.getProfileLineage(parentProfile);
+    if(profileLineage.promoter === "") {
+      return {
+        type: "error",
+        message:
+          "We’re sorry, there was an error while trying to find parent profile.",
+      };
+    }
     const genesisProfile = web3Consts.genesisProfile;
-    const activationToken = new PublicKey(profileInfo.activationToken);
 
     let fullname = form.name;
     if (form.lastName.length > 0) {
       fullname = fullname + " " + form.lastName;
     }
+
 
     const body = {
       name: fullname,
@@ -48,7 +66,7 @@ export const createProfile = async ({
         },
         {
           trait_type: "Gen",
-          value: profileInfo.generation,
+          value: generation,
         },
         {
           trait_type: "Seniority",
@@ -76,8 +94,6 @@ export const createProfile = async ({
         },
       ],
     };
-
-    const profileLineage = profileInfo.profileLineage;
 
     // get promoter name
     if (profileLineage.promoter.length > 0) {
@@ -190,18 +206,12 @@ export const createProfile = async ({
         type: "error",
       };
     }
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet, {
-      preflightCommitment: "processed",
-    });
-    const userConn: UserConn = new UserConn(env, web3Consts.programID);
-    const res = await userConn.mintProfileByActivationToken({
+
+    const res = await userConn.mintProfile({
       name: form.username.substring(0, 15),
       symbol: form.username.substring(0, 10).toUpperCase(),
       uriHash: shadowHash,
-      activationToken,
+      parentProfile,
       genesisProfile,
       commonLut: web3Consts.commonLut,
     });

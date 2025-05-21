@@ -7,6 +7,8 @@ import {
   LineageInfo,
   Result,
   TxPassType,
+  _MintGuestPass,
+  _MintProfile,
   _MintProfileByAtInput,
   _MintProfileInput,
   _MintSubscriptionToken,
@@ -73,6 +75,7 @@ export class Connectivity {
       this.txis.push(...ixs);
     }
   };
+
   __getProfileStateAccount(mint: web3.PublicKey | string): web3.PublicKey {
     if (typeof mint == "string") mint = new web3.PublicKey(mint);
     return web3.PublicKey.findProgramAddressSync(
@@ -492,6 +495,278 @@ export class Connectivity {
           {
             receiver: currentGgreatGrandParentProfileHolder.toBase58(),
             amount: 600,
+          },
+        ],
+        web3Consts.oposToken,
+      );
+
+      await this.storeLineage(
+        user.toBase58(),
+        {
+          promotor: parentProfile.toBase58(),
+          scout: grandParentProfile.toBase58(),
+          recruitor: greatGrandParentProfile.toBase58(),
+          originator: ggreateGrandParentProfile.toBase58(),
+          gensis: genesisProfile.toBase58(),
+        },
+        profile.toBase58(),
+      );
+
+      return {
+        Ok: {
+          signature,
+          info: { profile: profile.toBase58() },
+        },
+      };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+  }
+
+  async mintProfile(
+    input: _MintProfile,
+  ): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    try {
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      if (!user) throw "Wallet not found";
+      let {
+        name,
+        symbol,
+        uriHash,
+        parentProfile,
+        genesisProfile,
+        commonLut,
+      } = input;
+
+      if (typeof parentProfile == "string")
+        parentProfile = new web3.PublicKey(parentProfile);
+
+      if (typeof genesisProfile == "string")
+        genesisProfile = new web3.PublicKey(genesisProfile);
+
+      symbol = symbol ?? "";
+      uriHash = uriHash ?? "";
+
+      const parentProfileStateInfo =
+        await this.program.account.profileState.fetch(
+          this.__getProfileStateAccount(parentProfile),
+        );
+      // const lut = parentProfileStateInfo.lut;
+      const parentProfileNftInfo = await this.metaplex
+        .nfts()
+        .findByMint({ mintAddress: parentProfile, loadJsonMetadata: false });
+      const collection = parentProfileNftInfo?.collection?.address;
+      if (!collection) return { Err: "Collection info not found" };
+      const collectionMetadata = BaseMpl.getMetadataAccount(collection);
+      const collectionEdition = BaseMpl.getEditionAccount(collection);
+      const mintKp = web3.Keypair.generate();
+      const profile = mintKp.publicKey;
+
+      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+        mintAuthority: user,
+        mintKeypair: mintKp,
+        mintingInfo: {
+          tokenAmount: 1,
+          tokenReceiver: user,
+        },
+      });
+
+      const mintTx = new web3.Transaction().add(...mintIxs);
+
+      mintTx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      mintTx.feePayer = this.provider.publicKey;
+
+      const feeEstimateMint = await this.getPriorityFeeEstimate(mintTx);
+      let feeInsMint;
+      if (feeEstimateMint > 0) {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimateMint,
+        });
+      } else {
+        feeInsMint = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      mintTx.add(feeInsMint);
+
+      this.txis = [];
+      const mintsignature = await this.provider.sendAndConfirm(mintTx, [
+        mintKp,
+      ]);
+
+      await sleep(5000);
+
+      const userProfileAta = getAssociatedTokenAddressSync(profile, user);
+
+      const profileMetadata = BaseMpl.getMetadataAccount(profile);
+      const profileEdition = BaseMpl.getEditionAccount(profile);
+      const profileState = this.__getProfileStateAccount(profile);
+      const parentProfileState = this.__getProfileStateAccount(parentProfile);
+
+      const {
+        //profiles
+        grandParentProfile,
+        greatGrandParentProfile,
+        ggreateGrandParentProfile,
+        //
+        currentGreatGrandParentProfileHolder,
+        currentGgreatGrandParentProfileHolder,
+        currentGrandParentProfileHolder,
+        currentGenesisProfileHolder,
+        currentParentProfileHolder,
+      } = await this.__getProfileHoldersInfo(
+        parentProfileStateInfo.lineage,
+        parentProfile,
+        genesisProfile,
+      );
+      // const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
+
+      const ix = await this.program.methods
+        .mintProfile(name, symbol, uriHash)
+        .accounts({
+          profile, // 1
+          user, // 2
+          oposToken, // 3
+          userProfileAta, // 5
+          mainState: this.mainState, // 6
+          collection, // 7
+          mplProgram, // 8
+          profileState, // 9
+          tokenProgram, // 10
+          systemProgram, // 11
+          profileEdition, // 12
+          profileMetadata, // 14
+          collectionEdition, // 15
+          collectionMetadata, // 16
+          parentProfileState, // 17
+          sysvarInstructions, // 18
+          associatedTokenProgram, // 20
+          parentProfile,
+        })
+        .instruction();
+      this.txis.push(ix);
+
+      const mainStateInfo = await this.program.account.mainState.fetch(
+        this.mainState,
+      );
+      let cost = 8 * (10**6);
+
+      let holdersfullInfo = [];
+
+      holdersfullInfo.push({
+        receiver: currentGenesisProfileHolder.toBase58(),
+        vallue:
+          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentParentProfileHolder.toBase58(),
+        vallue:
+          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentGrandParentProfileHolder.toBase58(),
+        vallue:
+          cost *
+          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentGreatGrandParentProfileHolder.toBase58(),
+        vallue:
+          cost *
+          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentGgreatGrandParentProfileHolder.toBase58(),
+        vallue:
+          cost *
+          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+      });
+
+      const holdermap: any = [];
+      holdersfullInfo.reduce(function(res: any, value) {
+        if (!res[value.receiver]) {
+          res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+          holdermap.push(res[value.receiver]);
+        }
+        res[value.receiver].vallue += value.vallue;
+        return res;
+      }, {});
+
+      for (let index = 0; index < holdermap.length; index++) {
+        const element = holdermap[index];
+        let createShare: any = await this.baseSpl.transfer_token_modified({
+          mint: usdcToken,
+          sender: user,
+          receiver: new anchor.web3.PublicKey(element.receiver),
+          init_if_needed: true,
+          amount: Math.ceil(element.vallue),
+        });
+        for (let index = 0; index < createShare.length; index++) {
+          this.txis.push(createShare[index]);
+        }
+      }
+
+      const commonLutInfo = (
+        await this.connection.getAddressLookupTable(commonLut)
+      ).value;
+
+      const lutsInfo = [commonLutInfo!];
+
+      const freezeInstructions = await this.calculatePriorityFee(
+        ix,
+        lutsInfo,
+        mintKp,
+      );
+
+      for (let index = 0; index < freezeInstructions.length; index++) {
+        const element = freezeInstructions[index];
+        this.txis.push(element);
+      }
+
+      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+      const message = new web3.TransactionMessage({
+        payerKey: this.provider.publicKey,
+        recentBlockhash: blockhash,
+        instructions: [...this.txis],
+      }).compileToV0Message(lutsInfo);
+
+      const tx = new web3.VersionedTransaction(message);
+      tx.sign([mintKp]);
+      this.txis = [];
+
+      // const signedTx = await this.provider.wallet.signTransaction(tx as any);
+      // const txLen = signedTx.serialize().length;
+      // log({ txLen, luts: lutsInfo.length });
+
+      const signature = await this.provider.sendAndConfirm(tx as any);
+
+      await this.storeRoyalty(
+        user.toBase58(),
+        [
+          {
+            receiver: currentGenesisProfileHolder.toBase58(),
+            amount: 8 * .6,
+          },
+          {
+            receiver: currentParentProfileHolder.toBase58(),
+            amount: 8 * .2,
+          },
+          {
+            receiver: currentGrandParentProfileHolder.toBase58(),
+            amount: 8 * .1,
+          },
+          {
+            receiver: currentGgreatGrandParentProfileHolder.toBase58(),
+            amount: 6 * .03,
           },
         ],
         web3Consts.oposToken,
@@ -1145,67 +1420,67 @@ export class Connectivity {
           };
         }
       } else {
-        for (let i of _userNfts) {
-          if (i) {
-            if (i.symbol) {
-              const collectionInfo = i?.collection;
+        // for (let i of _userNfts) {
+        //   if (i) {
+        //     if (i.symbol) {
+        //       const collectionInfo = i?.collection;
 
-              if (
-                collectionInfo?.address.toBase58() ==
-                web3Consts.badgeCollection.toBase58() &&
-                i.symbol == "INVITE"
-              ) {
-                let isCreator = false;
-                for (let index = 0; index < i.creators.length; index++) {
-                  if (i.creators[index].address.toBase58() == user.toBase58()) {
-                    isCreator = true;
-                    break;
-                  }
-                }
-                if (isCreator) {
-                  continue;
-                }
+        //       if (
+        //         collectionInfo?.address.toBase58() ==
+        //         web3Consts.badgeCollection.toBase58() &&
+        //         i.symbol == "INVITE"
+        //       ) {
+        //         let isCreator = false;
+        //         for (let index = 0; index < i.creators.length; index++) {
+        //           if (i.creators[index].address.toBase58() == user.toBase58()) {
+        //             isCreator = true;
+        //             break;
+        //           }
+        //         }
+        //         if (isCreator) {
+        //           continue;
+        //         }
 
-                const metadata = await this.getInvitationMetdata(i?.uri);
-                if (metadata) {
-                  if (metadata.project != "") {
-                    continue;
-                  }
-                } else {
-                  continue;
-                }
+        //         const metadata = await this.getInvitationMetdata(i?.uri);
+        //         if (metadata) {
+        //           if (metadata.project != "") {
+        //             continue;
+        //           }
+        //         } else {
+        //           continue;
+        //         }
 
-                try {
-                  const nftInfo: any = i;
-                  const activationTokenState =
-                    this.__getActivationTokenStateAccount(nftInfo.mintAddress);
-                  const activationTokenStateInfo =
-                    await this.program.account.activationTokenState.fetch(
-                      activationTokenState,
-                    );
-                  const parentProfile = activationTokenStateInfo.parentProfile;
+        //         try {
+        //           const nftInfo: any = i;
+        //           const activationTokenState =
+        //             this.__getActivationTokenStateAccount(nftInfo.mintAddress);
+        //           const activationTokenStateInfo =
+        //             await this.program.account.activationTokenState.fetch(
+        //               activationTokenState,
+        //             );
+        //           const parentProfile = activationTokenStateInfo.parentProfile;
 
-                  activationTokens.push({
-                    name: i.name,
-                    genesis: parentProfile.toBase58(),
-                    activation: nftInfo.mintAddress.toBase58(),
-                  });
+        //           activationTokens.push({
+        //             name: i.name,
+        //             genesis: parentProfile.toBase58(),
+        //             activation: nftInfo.mintAddress.toBase58(),
+        //           });
 
-                  const generationData =
-                    await this.getProfileChilds(parentProfile);
-                  totalChild = generationData.totalChild;
-                  generation = generationData.generation;
-                  profilelineage = await this.getProfileLineage(parentProfile);
-                } catch (error) {
-                  console.log("error invite ", error);
-                }
-              }
-              if (activationTokens.length > 0) {
-                break;
-              }
-            }
-          }
-        }
+        //           const generationData =
+        //             await this.getProfileChilds(parentProfile);
+        //           totalChild = generationData.totalChild;
+        //           generation = generationData.generation;
+        //           profilelineage = await this.getProfileLineage(parentProfile);
+        //         } catch (error) {
+        //           console.log("error invite ", error);
+        //         }
+        //       }
+        //       if (activationTokens.length > 0) {
+        //         break;
+        //       }
+        //     }
+        //   }
+        // }
       }
       const profileInfo = {
         solBalance,
@@ -1292,6 +1567,7 @@ export class Connectivity {
       };
     }
   }
+
   async getActivationTokenBalance(userActivationAta: web3.PublicKey) {
     try {
       const infoes = await this.connection.getTokenSupply(userActivationAta);

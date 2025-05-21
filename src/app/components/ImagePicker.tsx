@@ -94,7 +94,7 @@ const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
           <div
             className="flex w-full relative"
             ref={imageContainerRef}
-            style={{ height: imageHeight + "px" }}
+            style={{ height: imageHeight * .8 + "px" }}
           >
             <Image
               src={image}
@@ -121,7 +121,7 @@ const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
           className="flex flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 rounded-md select-none cursor-pointer backdrop-container"
           onClick={triggerClick}
           ref={imageContainerRef}
-          style={{ height: imageHeight + "px" }}
+          style={{ height: imageHeight * .8 + "px" }}
         >
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
             1080 x 1080

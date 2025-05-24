@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import { ProfileForm } from "./profileForm";
 import { ProfileInfo } from "./profileInfo";
 import { FrostWallet } from "@/utils/frostWallet";
@@ -8,4 +9,5 @@ export type CreateProfileParams = {
   image: File | null;
   preview: string;
   wallet: FrostWallet;
+  parentProfile: PublicKey
 };

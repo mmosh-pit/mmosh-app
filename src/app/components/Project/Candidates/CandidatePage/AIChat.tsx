@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 
 import { CandidateInfo } from "@/app/models/candidateInfo";
 import { AIChatMessage } from "@/app/models/AIChatMessage";
-import { data, userData } from "@/app/store";
+import { data } from "@/app/store";
 import Markdown from "markdown-to-jsx";
 import { Bars } from "react-loader-spinner";
 
@@ -15,7 +15,6 @@ type Props = {
 
 const AIChat = ({ symbols }: Props) => {
   const [currentUser] = useAtom(data);
-  const [user] = useAtom(userData);
 
   const [messages, setMessages] = React.useState<AIChatMessage[]>([]);
   // const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
@@ -31,9 +30,6 @@ const AIChat = ({ symbols }: Props) => {
     (message: AIChatMessage) => {
       if (message.type === "user") {
         if (!currentUser) {
-          if (!user)
-            return "https://storage.googleapis.com/mmosh-assets/g_avatar.png";
-
           return "https://storage.googleapis.com/mmosh-assets/v_avatar.png";
         }
 
@@ -72,8 +68,7 @@ const AIChat = ({ symbols }: Props) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username:
-                currentUser?.profile.username ?? user?.name ?? "Visitor",
+              username: currentUser?.profile.username ?? "Visitor",
               prompt: currentText,
               namespaces: symbols,
               // metafield: JSON.stringify({

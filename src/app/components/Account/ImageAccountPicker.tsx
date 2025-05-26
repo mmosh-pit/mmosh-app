@@ -87,8 +87,8 @@ const ImageAccountPicker = ({
         onChange={handleChangeInput}
       />
       {image ? (
-        <div className="flex flex-col">
-          <div className="flex w-full relative" ref={imageContainerRef}>
+        <div className="flex flex-col h-full">
+          <div className="flex w-full h-full relative" ref={imageContainerRef}>
             <Image
               src={image}
               alt="Identity"

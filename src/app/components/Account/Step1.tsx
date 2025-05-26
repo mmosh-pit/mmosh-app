@@ -7,6 +7,8 @@ import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import RichTextEditor from "./RichTextEditor";
 import { useAtom } from "jotai";
 import { onboardingForm, onboardingStep } from "@/app/store/account";
+import client from "@/app/lib/httpClient";
+import { uploadFile } from "@/app/lib/firebase";
 
 const PronounsSelectOptions = [
   {
@@ -27,6 +29,7 @@ const Step1 = () => {
   const isMobileScreen = useCheckMobileScreen();
   const [bannerImage, setBannerImage] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const [profileImage, setProfileImage] = React.useState<File | null>(null);
   const [profilePreview, setProfilePreview] = React.useState("");
@@ -46,10 +49,58 @@ const Step1 = () => {
     setProfilePreview(objectUrl);
   }, [profileImage]);
 
+  //  Picture  string `json:"picture"`
+  // Banner   string `jsos:"banner"`
+  // Name     string `json:"name"`
+  // Username string `json:"username"`
+  // Website  string `json:"website"`
+  // Pronouns string `json:"pronouns"`
+  // Bio      string `json:"bio"`
+
+  const saveUserData = React.useCallback(async () => {
+    setIsLoading(true);
+
+    let bannerResult = "";
+    let imageResult = "";
+
+    if (!bannerImage || !profileImage) return;
+
+    try {
+      const date = new Date().getMilliseconds();
+
+      bannerResult = await uploadFile(
+        bannerImage,
+        `${form.username}-banner-${date}`,
+        "banners",
+      );
+
+      imageResult = await uploadFile(
+        profileImage,
+        `${form.username}-guest_profile-${date}`,
+        "images",
+      );
+
+      await client.put("/guest-data", {
+        ...form,
+        banner: bannerResult,
+        picture: imageResult,
+      });
+    } catch (err) {
+      // TODO add logic to remove image
+      if (bannerResult) {
+      }
+      if (imageResult) {
+      }
+    }
+
+    setSelectedStep(1);
+    setIsLoading(false);
+  }, [form, profileImage]);
+
   return (
     <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-32 px-6 flex flex-col md:w-[75%] w-[90%] mt-4">
       <div className="self-end">
-        <p className="text-sm">Step 1 of 6</p>
+        <p className="text-sm">Step 1 of 5</p>
       </div>
 
       <div className="flex flex-col self-center">
@@ -205,9 +256,9 @@ const Step1 = () => {
 
         <Button
           title="Save and Next"
-          isLoading={false}
+          isLoading={isLoading}
           action={() => {
-            setSelectedStep(1);
+            saveUserData();
           }}
           size="small"
           isPrimary

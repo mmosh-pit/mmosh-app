@@ -39,9 +39,12 @@ const RichTextEditor = () => {
     }
   }, []);
 
-  const handleContentChange = React.useCallback((event: any) => {
-    setForm({ ...form, bio: event.target.innerHTML });
-  }, []);
+  const handleContentChange = React.useCallback(
+    (event: any) => {
+      setForm({ ...form, bio: event.target.innerHTML });
+    },
+    [form],
+  );
 
   React.useEffect(() => {
     if (editorRef.current) {

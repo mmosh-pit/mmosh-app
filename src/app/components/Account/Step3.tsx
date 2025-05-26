@@ -8,6 +8,7 @@ import CopyIcon from "@/assets/icons/CopyIcon";
 import Button from "../common/Button";
 import useWallet from "@/utils/wallet";
 import { CryptoElements, OnrampElement } from "../atm/StripeCryptoElements";
+import client from "@/app/lib/httpClient";
 
 const stripeOnrampPromise = loadStripeOnramp(
   process.env.NEXT_PUBLIC_STRIPE_KEY!,
@@ -40,6 +41,13 @@ const Step3 = () => {
     console.log("ONRAMP CHANGED????");
   }, []);
 
+  const goToNextStep = React.useCallback(() => {
+    setSelectedStep(3);
+    client.put("/onboarding-step", {
+      step: 3,
+    });
+  }, []);
+
   return (
     <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4 justify-between">
       <div className="w-full flex justify-between">
@@ -47,7 +55,7 @@ const Step3 = () => {
           <ArrowBack />
         </button>
 
-        <p className="text-sm">Step 3 of 6</p>
+        <p className="text-sm">Step 3 of 5</p>
       </div>
 
       <div className="flex flex-col self-center mb-12 justify-center items-center">
@@ -128,9 +136,7 @@ const Step3 = () => {
         <Button
           title="Skip"
           isLoading={false}
-          action={() => {
-            setSelectedStep(3);
-          }}
+          action={goToNextStep}
           size="small"
           isPrimary={false}
         />
@@ -140,9 +146,7 @@ const Step3 = () => {
         <Button
           title="Buy Crypto"
           isLoading={false}
-          action={() => {
-            setSelectedStep(3);
-          }}
+          action={goToNextStep}
           size="small"
           isPrimary
         />

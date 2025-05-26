@@ -13,7 +13,7 @@ const Step6 = () => {
   return (
     <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4">
       <div className="w-full flex justify-between">
-        <button onClick={() => setSelectedStep(1)}>
+        <button onClick={() => setSelectedStep(4)}>
           <ArrowBack />
         </button>
 
@@ -21,7 +21,7 @@ const Step6 = () => {
           Verify your Profile to Claim Your Rewards!
         </p>
 
-        <p className="text-sm">Step 4 of 6</p>
+        <p className="text-sm">Step 6 of 6</p>
       </div>
 
       <div className="flex flex-col">
@@ -48,7 +48,7 @@ const Step6 = () => {
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center mt-6">
           <p className="text-sm text-white">
             Enter and confirm your mobile phone number to be verified as an
             individual human user.

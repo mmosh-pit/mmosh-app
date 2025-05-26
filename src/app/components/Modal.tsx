@@ -1,6 +1,7 @@
 import * as React from "react";
 import HomeModalSignUpForm from "./HomeModalSignUpForm";
 import HomeModalCodeForm from "./HomeModalCodeForm";
+import { useRouter } from "next/navigation";
 
 type ModalProps = {
   isOpen: boolean;
@@ -43,12 +44,20 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
 const AlertModal = ({ isOpen, onClose }: AlertModalProps) => {
   const [step, setStep] = React.useState(0);
+  const router = useRouter();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {step == 0 && <HomeModalSignUpForm onSuccess={() => setStep(1)} />}
 
-      {step == 1 && <HomeModalCodeForm onSuccess={() => onClose()} />}
+      {step == 1 && (
+        <HomeModalCodeForm
+          onSuccess={() => {
+            router.push("/account");
+            onClose();
+          }}
+        />
+      )}
     </Modal>
   );
 };

@@ -23,6 +23,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import useWallet from "@/utils/wallet";
 import { BondingPricing } from "@/anchor/curve/curves";
+import client from "@/app/lib/httpClient";
 
 const defaultBaseToken = {
   name: "",
@@ -256,14 +257,21 @@ const Step4 = () => {
     [baseToken, targetToken],
   );
 
+  const goToNextStep = React.useCallback(() => {
+    setSelectedStep(4);
+    client.put("/onboarding-step", {
+      step: 4,
+    });
+  }, []);
+
   return (
     <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4">
       <div className="w-full flex justify-between">
-        <button onClick={() => setSelectedStep(1)}>
+        <button onClick={() => setSelectedStep(2)}>
           <ArrowBack />
         </button>
 
-        <p className="text-sm">Step 4 of 6</p>
+        <p className="text-sm">Step 4 of 5</p>
       </div>
 
       <div className="flex flex-col self-center mb-12 justify-center items-center">
@@ -386,7 +394,7 @@ const Step4 = () => {
                 isLoading={false}
                 title="Skip"
                 size="large"
-                action={() => setSelectedStep(5)}
+                action={goToNextStep}
                 isPrimary={false}
               />
 

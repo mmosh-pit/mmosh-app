@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@atproto/api": "^0.13.19",
-    "@coral-xyz/anchor": "^0.30.0",
+    "@coral-xyz/anchor": "^0.31.1",
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
     "@mercurial-finance/dynamic-amm-sdk": "^1.1.23",
     "@metaplex-foundation/js": "^0.20.1",
@@ -25,7 +25,7 @@
     "@solana/web3.js": "^1.87.6",
     "@strata-foundation/spl-utils": "^3.11.2",
     "@stripe/crypto": "^0.0.4",
-    "@stripe/stripe-js": "^4.3.0",
+    "@stripe/stripe-js": "7.3.0",
     "@types/uuid": "^9.0.8",
     "@web-std/file": "^3.0.3",
     "apexcharts": "4.0.0",
@@ -50,7 +50,7 @@
     "react-modal": "^3.16.1",
     "react-telegram-login": "^1.1.2",
     "recharts": "2.12.7",
-    "stripe": "16.12.0",
+    "stripe": "18.1.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

@@ -10,10 +10,14 @@ type Props = {
   readonly?: boolean;
 };
 
-const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
+const ImageAccountPicker = ({
+  changeImage,
+  image,
+  rounded,
+  readonly,
+}: Props) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const imageContainerRef = React.useRef<HTMLInputElement>(null);
-  const [imageHeight, setImageHeight] = React.useState(0);
 
   const handleChangeInput = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,13 +71,6 @@ const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
     inputRef.current.click();
   }, []);
 
-  React.useLayoutEffect(() => {
-    if (imageContainerRef.current !== null) {
-      const { width } = imageContainerRef.current.getBoundingClientRect();
-      setImageHeight(width);
-    }
-  }, [image]);
-
   return (
     <div
       onDragEnter={(e) => handleDrag(e)}
@@ -90,12 +87,8 @@ const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
         onChange={handleChangeInput}
       />
       {image ? (
-        <div className="flex flex-col">
-          <div
-            className="flex w-full relative"
-            ref={imageContainerRef}
-            style={{ height: imageHeight * .8 + "px" }}
-          >
+        <div className="flex flex-col h-full">
+          <div className="flex w-full h-full relative" ref={imageContainerRef}>
             <Image
               src={image}
               alt="Identity"
@@ -118,10 +111,9 @@ const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
         </div>
       ) : (
         <div
-          className="flex flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 rounded-md select-none cursor-pointer backdrop-container"
+          className={`flex flex-col justify-center items-center border-[1px] border-solid border-[#FFF] border-opacity-20 select-none cursor-pointer backdrop-container h-full ${rounded ? "rounded-full" : "rounded-md"}`}
           onClick={triggerClick}
           ref={imageContainerRef}
-          style={{ height: imageHeight * .8 + "px" }}
         >
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
             1080 x 1080
@@ -150,4 +142,4 @@ const ImagePicker = ({ changeImage, image, rounded, readonly }: Props) => {
   );
 };
 
-export default ImagePicker;
+export default ImageAccountPicker;

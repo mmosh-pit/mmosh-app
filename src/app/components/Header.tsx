@@ -15,7 +15,6 @@ import {
   isAuthModalOpen,
   isAuthOverlayOpen,
   isDrawerOpen,
-  userData,
   userWeb3Info,
   web3InfoLoading,
 } from "../store";
@@ -79,7 +78,6 @@ const Header = () => {
   const [______, setPrivateKey] = useAtom(appPrivateKey);
   const [_______, setPublicKey] = useAtom(appPublicKey);
   const [________, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
-  const [_________, setUser] = useAtom(userData);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -119,7 +117,7 @@ const Header = () => {
       setShowAuthOverlay(!user);
       setIsAuthModalOpen(!user);
       setIsUserAuthenticated(!!user);
-      setUser(user);
+      setCurrentUser(user);
     } catch (err) {
       // router.replace("/");
     }

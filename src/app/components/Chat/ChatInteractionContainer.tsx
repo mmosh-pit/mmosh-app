@@ -2,7 +2,7 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import Image from "next/image";
 
-import { data, userData } from "@/app/store";
+import { data } from "@/app/store";
 import Markdown from "markdown-to-jsx";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import { selectedChatStore } from "@/app/store/chat";
@@ -12,7 +12,6 @@ import { Bars } from "react-loader-spinner";
 const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
   const textbox = React.useRef<HTMLTextAreaElement>(null);
 
-  const [user] = useAtom(userData);
   const [currentUser] = useAtom(data);
 
   const [selectedChat] = useAtom(selectedChatStore);
@@ -26,8 +25,7 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
     (message: Message) => {
       if (message.type === "user") {
         if (!currentUser) {
-          if (!user)
-            return "https://storage.googleapis.com/mmosh-assets/g_avatar.png";
+          if (currentUser!.guest_data) return currentUser!.guest_data.picture;
 
           return "https://storage.googleapis.com/mmosh-assets/v_avatar.png";
         }
@@ -41,16 +39,16 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, user, selectedChat],
+    [currentUser, selectedChat],
   );
 
   const getMessageUsername = React.useCallback(
     (message: Message) => {
       if (message.type === "user") {
         if (!currentUser) {
-          if (!user) return "Guest";
+          if (!currentUser!.guest_data) return "Guest";
 
-          return user.name;
+          return currentUser!.guest_data.name;
         }
 
         return currentUser!.profile.username;
@@ -58,7 +56,7 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, user, selectedChat],
+    [currentUser, selectedChat],
   );
 
   const sendMessage = React.useCallback(

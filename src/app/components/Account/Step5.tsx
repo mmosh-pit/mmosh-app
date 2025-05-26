@@ -1,19 +1,19 @@
 import * as React from "react";
-import axios from "axios";
-import { useAtom } from "jotai";
-import { useRouter, useSearchParams } from "next/navigation";
-
-import { data, userWeb3Info, web3InfoLoading } from "@/app/store";
-import MessageBanner from "../common/MessageBanner";
-import ImagePicker from "../ImagePicker";
 import { createProfile } from "@/app/lib/forge/createProfile";
-import Input from "../common/Input";
-import Select from "../common/Select";
-import Button from "../common/Button";
-import BalanceBox from "../common/BalanceBox";
+import axios from "axios";
+import { data, userWeb3Info } from "@/app/store";
+import { useAtom } from "jotai";
 import useWallet from "@/utils/wallet";
 import { PublicKey } from "@solana/web3.js";
+import Input from "../common/Input";
+import Button from "../common/Button";
+import Select from "../common/Select";
+import MessageBanner from "../common/MessageBanner";
 import ArrowBack from "@/assets/icons/ArrowBack";
+import ImagePicker from "../ImagePicker";
+import { onboardingStep, referredUser } from "@/app/store/account";
+import client from "@/app/lib/httpClient";
+import { useRouter } from "next/navigation";
 
 const PronounsSelectOptions = [
   {
@@ -30,17 +30,30 @@ const PronounsSelectOptions = [
   },
 ];
 
-const CreateProfile = () => {
+const Step5 = () => {
+  const router = useRouter();
+
   const wallet = useWallet();
-  const navigate = useRouter();
-  const searchParams = useSearchParams()   
   const [profileInfo] = useAtom(userWeb3Info);
-  const [isLoadingProfile] = useAtom(web3InfoLoading);
   const [_, setCurrentUser] = useAtom(data);
+  const [__, setSelectedStep] = useAtom(onboardingStep);
+  const [referrer] = useAtom(referredUser);
+
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
   const [referer, setReferer] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const [message, setMessage] = React.useState({
+    type: "",
+    message: "",
+  });
+
+  const [error, setError] = React.useState({
+    error: false,
+    message: "",
+  });
+
   const [form, setForm] = React.useState({
     name: "",
     lastName: "",
@@ -53,46 +66,33 @@ const CreateProfile = () => {
     pronouns: "they/them",
   });
 
-  const [message, setMessage] = React.useState({
-    type: "",
-    message: "",
-  });
-
-  const [error, setError] = React.useState({
-    error: false,
-    message: "",
-  });
-
   React.useEffect(() => {
-   const referer = searchParams.get("referer");
-   if(referer) {
-       lookupReferer(referer)
-   } else {
-       setReferer("")
-   }
-  }, [])
+    if (referrer) {
+      lookupReferer(referrer);
+    }
+  }, [referrer]);
 
   const lookupReferer = async (username: any) => {
-      try {
-          const res = await axios.get(`/api/get-user-data?username=${username}`);
-          console.log("lookupReferer ", res.data)
-          if(res.data) {
-              setReferer(res.data.profilenft)
-          } else {
-            setError({
-              error: true,
-              message: "Username added as referer is invalid",
-            });
-            setReferer("")
-          }
-      } catch (error) {
-          setError({
-            error: true,
-            message: "Username added as referer is invalid",
-          });
-          setReferer("")
+    try {
+      const res = await axios.get(`/api/get-user-data?username=${username}`);
+      console.log("lookupReferer ", res.data);
+      if (res.data) {
+        setReferer(res.data.profilenft);
+      } else {
+        setError({
+          error: true,
+          message: "Username added as referer is invalid",
+        });
+        setReferer("");
       }
-  }
+    } catch (error) {
+      setError({
+        error: true,
+        message: "Username added as referer is invalid",
+      });
+      setReferer("");
+    }
+  };
 
   const checkForUsername = React.useCallback(async () => {
     if (["create"].includes(form.username.toLowerCase())) {
@@ -132,14 +132,13 @@ const CreateProfile = () => {
       createMessage("Invalid activation token", "error");
       return false;
     }
-    
-    console.log("profileInfo.profile ", profileInfo.profile)
+
+    console.log("profileInfo.profile ", profileInfo.profile);
 
     if (profileInfo.profile.address !== undefined) {
       createMessage("User already have profile address", "error");
       return false;
     }
-
 
     if (profileInfo.genesisToken == "") {
       createMessage("Invalid gensis token", "error");
@@ -176,7 +175,7 @@ const CreateProfile = () => {
       return false;
     }
 
-    if(referer == "") {
+    if (referer == "") {
       if (form.host.length == 0) {
         createMessage("Host is required", "error");
         return false;
@@ -187,11 +186,7 @@ const CreateProfile = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (
-      !validateFields() ||
-      !profileInfo ||
-      !wallet
-    ) {
+    if (!validateFields() || !profileInfo || !wallet) {
       return;
     }
 
@@ -200,17 +195,17 @@ const CreateProfile = () => {
     setIsLoading(true);
 
     let parentProfile;
-    if(referer == "") {
+    if (referer == "") {
       const res = await axios.get(`/api/get-user-data?username=${form.host}`);
-      console.log("lookupHost ", res.data)
-      if(res.data) {
-        parentProfile = res.data.profilenft
+      console.log("lookupHost ", res.data);
+      if (res.data) {
+        parentProfile = res.data.profilenft;
       } else {
         createMessage("Host is invalid", "error");
-        return
+        return;
       }
     } else {
-        parentProfile = referer
+      parentProfile = referer;
     }
 
     const result = await createProfile({
@@ -219,7 +214,7 @@ const CreateProfile = () => {
       image,
       form,
       preview,
-      parentProfile: new PublicKey(referer)
+      parentProfile: new PublicKey(referer),
     });
 
     createMessage(result.message, result.type);
@@ -230,7 +225,7 @@ const CreateProfile = () => {
       });
 
       setTimeout(() => {
-        navigate.replace(`/create`);
+        router.replace(`/chat`);
       }, 5000);
     }
     setIsLoading(false);
@@ -242,13 +237,16 @@ const CreateProfile = () => {
     setPreview(objectUrl);
   }, [image]);
 
-  const goBack = () => {
-     //TODO: need to include navigation 
-  }
+  const goBack = React.useCallback(() => {
+    setSelectedStep(3);
+  }, []);
 
-  const skipStep = () => {
-     //TODO: need to include navigation 
-  }
+  const skipStep = React.useCallback(() => {
+    router.replace("/chat");
+    client.put("/onboarding-step", {
+      step: 5,
+    });
+  }, []);
 
   return (
     <div className="w-full flex justify-center">
@@ -258,15 +256,18 @@ const CreateProfile = () => {
           <div className="p-5">
             <div className="text-center relative">
               <h4 className="text-white font-goudy font-normal mb-8">
-                Mint Your Free <br/>Membership Profile!
+                Mint Your Free <br />
+                Membership Profile!
               </h4>
               <p className="text-base max-w-2xl mx-auto light-gray-color">
-                  Membership has it's privileges! With a lifetime Membership Profile, you can create own personal
-                  and community bots, connect with other members, earn royalties, referral rewards and income from the
-                  goods and services you offer to other members
+                Membership has it's privileges! With a lifetime Membership
+                Profile, you can create own personal and community bots, connect
+                with other members, earn royalties, referral rewards and income
+                from the goods and services you offer to other members
               </p>
               <p className="text-base max-w-2xl mx-auto light-gray-color mt-2.5">
-                you'll only be paying 8 USDC and about 21 cents in network fees for Lifetime membership
+                you'll only be paying 8 USDC and about 21 cents in network fees
+                for Lifetime membership
               </p>
               <div
                 className="absolute left-0 top-0 cursor-pointer"
@@ -276,7 +277,7 @@ const CreateProfile = () => {
               </div>
 
               <p className="text-base light-gray-color absolute right-0 top-0">
-                Step 5 of 6
+                Step 5 of 5
               </p>
             </div>
             <div className="w-full self-start mt-8">
@@ -311,7 +312,9 @@ const CreateProfile = () => {
                   helperText="Up to 15 characters"
                   placeholder="Last Name"
                   value={form.lastName}
-                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, lastName: e.target.value })
+                  }
                 />
 
                 <div className="my-2" />
@@ -372,47 +375,49 @@ const CreateProfile = () => {
                   value={form.link}
                   onChange={(e) => setForm({ ...form, link: e.target.value })}
                 />
-
               </div>
             </div>
 
-          {referer == "" &&
-            <div className="w-full self-start mt-10">
-              <p className="text-lg text-white">Your Host</p>
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
-                <Input
-                  type="text"
-                  title="Username"
-                  required
-                  error={error.error}
-                  value={form.host}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      host: e.target.value.replace(/\s/g, ""),
-                    })
-                  }
-                  placeholder="Host Username"
-                />
+            {referer == "" && (
+              <div className="w-full self-start mt-10">
+                <p className="text-lg text-white">Your Host</p>
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
+                  <Input
+                    type="text"
+                    title="Username"
+                    required
+                    error={error.error}
+                    value={form.host}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        host: e.target.value.replace(/\s/g, ""),
+                      })
+                    }
+                    placeholder="Host Username"
+                  />
+                </div>
               </div>
-            </div>
-          }
-
+            )}
 
             <div className="mt-10">
               <div className="flex justify-center items-center space-x-4">
-               <button className="btn btn-outline text-white border-white hover:bg-white hover:text-black" onClick={skipStep}>Skip</button>
-               <div>
-                <Button
-                  isLoading={isLoading}
-                  isPrimary
-                  title="Mint Your Profile"
-                  size="large"
-                  action={submitForm}
-                  disabled={isLoading}
-                />
-               </div>
-
+                <button
+                  className="btn btn-outline text-white border-white hover:bg-white hover:text-black"
+                  onClick={skipStep}
+                >
+                  Skip
+                </button>
+                <div>
+                  <Button
+                    isLoading={isLoading}
+                    isPrimary
+                    title="Mint Your Profile"
+                    size="large"
+                    action={submitForm}
+                    disabled={isLoading}
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col justify-center items-center mt-5">
@@ -446,4 +451,4 @@ const CreateProfile = () => {
   );
 };
 
-export default CreateProfile;
+export default Step5;

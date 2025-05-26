@@ -1,10 +1,24 @@
 export type User = {
+  name: string;
+  email: string;
   wallet: string;
   profile: Profile;
   telegram: Telegram;
   twitter: Twitter;
   profilenft: string;
   royalty: number;
+  guest_data: GuestData;
+  onboarding_step: number;
+};
+
+type GuestData = {
+  picture: string;
+  banner: string;
+  name: string;
+  username: string;
+  website: string;
+  pronouns: string;
+  bio: string;
 };
 
 type Profile = {
@@ -19,10 +33,10 @@ type Profile = {
   following: number;
   follower: number;
   connectionnft: string;
-  connectionbadge: string
-  connection: number
-  isprivate: boolean
-  request: boolean
+  connectionbadge: string;
+  connection: number;
+  isprivate: boolean;
+  request: boolean;
 };
 
 type Telegram = {

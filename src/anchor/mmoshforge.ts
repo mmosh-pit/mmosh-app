@@ -1,7 +1,7 @@
 export type Mmoshforge = {
   address: string;
   metadata: {
-    name: "mmoshforge";
+    name: "mmosh_program";
     version: "0.1.0";
     spec: "0.1.0";
     description: "Created with Anchor";
@@ -1523,6 +1523,93 @@ export type Mmoshforge = {
           "type": "string"
         }
       ]
+    },
+    {
+      name: "mintProfile";
+      discriminator: [196, 209, 171, 134, 147, 51, 39, 81];
+      accounts: [
+        {
+          name: "user";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "mplProgram";
+        },
+        {
+          name: "tokenProgram";
+        },
+        {
+          name: "associatedTokenProgram";
+        },
+        {
+          name: "systemProgram";
+        },
+        {
+          name: "oposToken";
+        },
+        {
+          name: "mainState";
+          writable: true;
+        },
+        {
+          name: "profile";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "userProfileAta";
+          writable: true;
+        },
+        {
+          name: "profileState";
+          writable: true;
+        },
+        {
+          name: "profileMetadata";
+          writable: true;
+        },
+        {
+          name: "profileEdition";
+          writable: true;
+        },
+        {
+          name: "parentProfileState";
+          writable: true;
+        },
+        {
+          name: "collection";
+          writable: true;
+        },
+        {
+          name: "collectionMetadata";
+          writable: true;
+        },
+        {
+          name: "collectionEdition";
+          writable: true;
+        },
+        {
+          name: "sysvarInstructions";
+        },
+        {
+          name: "parentProfile";
+        },
+      ];
+      args: [
+        {
+          name: "name";
+          type: "string";
+        },
+        {
+          name: "symbol";
+          type: "string";
+        },
+        {
+          name: "uriHash";
+          type: "string";
+        },
+      ];
     },
     {
       name: "mintProfileByAt";
@@ -3412,7 +3499,7 @@ export type Mmoshforge = {
 export const IDL: Mmoshforge = {
   address: process.env.NEXT_PUBLIC_PROGRAM_ID!,
   metadata: {
-    name: "mmoshforge",
+    name: "mmosh_program",
     version: "0.1.0",
     spec: "0.1.0",
     description: "Created with Anchor",
@@ -4934,6 +5021,93 @@ export const IDL: Mmoshforge = {
           "type": "string"
         }
       ]
+    },
+    {
+      name: "mintProfile",
+      discriminator: [196, 209, 171, 134, 147, 51, 39, 81],
+      accounts: [
+        {
+          name: "user",
+          writable: true,
+          signer: true,
+        },
+        {
+          name: "mplProgram",
+        },
+        {
+          name: "tokenProgram",
+        },
+        {
+          name: "associatedTokenProgram",
+        },
+        {
+          name: "systemProgram",
+        },
+        {
+          name: "oposToken",
+        },
+        {
+          name: "mainState",
+          writable: true,
+        },
+        {
+          name: "profile",
+          writable: true,
+          signer: true,
+        },
+        {
+          name: "userProfileAta",
+          writable: true,
+        },
+        {
+          name: "profileState",
+          writable: true,
+        },
+        {
+          name: "profileMetadata",
+          writable: true,
+        },
+        {
+          name: "profileEdition",
+          writable: true,
+        },
+        {
+          name: "parentProfileState",
+          writable: true,
+        },
+        {
+          name: "collection",
+          writable: true,
+        },
+        {
+          name: "collectionMetadata",
+          writable: true,
+        },
+        {
+          name: "collectionEdition",
+          writable: true,
+        },
+        {
+          name: "sysvarInstructions",
+        },
+        {
+          name: "parentProfile",
+        },
+      ],
+      args: [
+        {
+          name: "name",
+          type: "string",
+        },
+        {
+          name: "symbol",
+          type: "string",
+        },
+        {
+          name: "uriHash",
+          type: "string",
+        },
+      ],
     },
     {
       name: "mintProfileByAt",

@@ -8,7 +8,7 @@ import EyeIcon from "@/assets/icons/EyeIcon";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 import client from "../lib/httpClient";
 import { useAtom } from "jotai";
-import { isAuth, isAuthOverlayOpen, userData } from "../store";
+import { data, isAuth, isAuthOverlayOpen } from "../store";
 
 const Login = () => {
   const router = useRouter();
@@ -24,7 +24,7 @@ const Login = () => {
 
   const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [__, setIsUserAuthenticated] = useAtom(isAuth);
-  const [___, setUser] = useAtom(userData);
+  const [___, setUser] = useAtom(data);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
     const result = await client.get("/is-auth");

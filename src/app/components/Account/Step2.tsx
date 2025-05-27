@@ -33,7 +33,7 @@ const Step2 = () => {
   }, [referralUsername]);
 
   return (
-    <div className="flex flex-col w-full justify-center items-center">
+    <div className="flex flex-col w-full justify-center items-center overflow-y-hidden">
       {status && (
         <MessageBanner
           type={status}
@@ -55,12 +55,12 @@ const Step2 = () => {
             <p className="text-sm">Step 2 of 5</p>
           </div>
 
-          <div className="flex flex-col self-center mb-12 justify-center items-center">
+          <div className="flex flex-col self-center mb-8 justify-center items-center">
             <p className="text-white font-goudy text-base text-center">
               Who Referred You?
             </p>
 
-            <p className="text-sm text-center md:max-w-[50%] max-w-[75%]">
+            <p className="text-sm text-center md:max-w-[70%] max-w-[85%]">
               Enter the username of the person who referred you, and both of you
               will receive a gift of appreciation in your Kinship Wallet that
               you can use once your Profile is verified.

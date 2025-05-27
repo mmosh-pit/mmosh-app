@@ -1,3 +1,6 @@
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+
 import { onboardingForm } from "@/app/store/account";
 import BoldIcon from "@/assets/icons/BoldIcon";
 import EmojiIcon from "@/assets/icons/EmojiIcon";
@@ -31,10 +34,10 @@ const RichTextEditor = () => {
     [selectedModes],
   );
 
-  const insertEmoji = React.useCallback((emoji: string) => {
+  const insertEmoji = React.useCallback((emoji: any) => {
     if (editorRef.current) {
       editorRef.current.focus();
-      document.execCommand("insertHTML", false, emoji);
+      document.execCommand("insertHTML", false, emoji.native);
       setShowEmojiPicker(false);
     }
   }, []);
@@ -53,12 +56,13 @@ const RichTextEditor = () => {
   }, []);
 
   return (
-    <div className="border-[1px] border-[#FFFFFF30] rounded-lg flex flex-col">
+    <div className="border-[1px] border-[#FFFFFF30] rounded-lg flex flex-col relative">
       <div
         ref={editorRef}
         contentEditable={true}
         onInput={handleContentChange} // Use onInput to track changes
-        className="p-6 h-64"
+        className="p-6 h-64 relative"
+        data-text="Minimum of 25 characters. Maximum 280 characters"
       />
       <div className="px-3 py-1 flex items-center space-x-2 relative border-t border-t-[#FFFFFF30]">
         <button
@@ -91,16 +95,12 @@ const RichTextEditor = () => {
             <EmojiIcon />
           </button>
           {showEmojiPicker && (
-            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-slate-600 p-3 rounded-lg shadow-xl grid grid-cols-4 gap-2 border border-slate-500">
-              {emojis.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => insertEmoji(emoji)}
-                  className="p-2 text-xl rounded-md hover:bg-sky-500 transition-colors duration-150"
-                >
-                  {emoji}
-                </button>
-              ))}
+            <div className="absolute z-10 bottom-[50px]">
+              <Picker
+                data={data}
+                onEmojiSelect={insertEmoji}
+                onClickOutside={() => setShowEmojiPicker(false)}
+              />
             </div>
           )}
         </div>

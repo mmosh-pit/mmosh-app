@@ -1173,3 +1173,7 @@ a:hover {
 /*     #316bff 361.81deg */
 /*   ); */
 /* } */
+
+[contentEditable="true"]:empty:not(:focus):before {
+  content: attr(data-text);
+}

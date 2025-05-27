@@ -11,6 +11,8 @@
   "dependencies": {
     "@atproto/api": "^0.13.19",
     "@coral-xyz/anchor": "^0.31.1",
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@google-cloud/recaptcha-enterprise": "^5.2.0",
     "@mercurial-finance/dynamic-amm-sdk": "^1.1.23",
     "@metaplex-foundation/js": "^0.20.1",
@@ -33,6 +35,7 @@
     "axios": "^1.6.2",
     "blinksights-sdk": "^1.0.14",
     "bs58": "^5.0.0",
+    "emoji-mart": "^5.6.0",
     "firebase": "^10.7.1",
     "forge-spl-token": "git+https://github.com/mmosh-pit/forge-spl-token.git",
     "html-to-image": "^1.11.11",

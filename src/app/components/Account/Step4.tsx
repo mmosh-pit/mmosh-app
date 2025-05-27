@@ -275,9 +275,7 @@ const Step4 = () => {
       </div>
 
       <div className="flex flex-col self-center mb-12 justify-center items-center">
-        <p className="text-white font-goudy text-base text-center">
-          Load Your Wallet
-        </p>
+        <p className="text-white font-goudy text-base text-center">Swap</p>
 
         <div className="my-2" />
 

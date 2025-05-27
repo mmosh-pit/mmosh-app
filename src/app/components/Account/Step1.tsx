@@ -9,6 +9,7 @@ import { useAtom } from "jotai";
 import { onboardingForm, onboardingStep } from "@/app/store/account";
 import client from "@/app/lib/httpClient";
 import { uploadFile } from "@/app/lib/firebase";
+import { storeFormAtom } from "@/app/store/signup";
 
 const PronounsSelectOptions = [
   {
@@ -26,6 +27,8 @@ const PronounsSelectOptions = [
 ];
 
 const Step1 = () => {
+  const [landingForm] = useAtom(storeFormAtom);
+
   const isMobileScreen = useCheckMobileScreen();
   const [bannerImage, setBannerImage] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState("");
@@ -44,21 +47,24 @@ const Step1 = () => {
   }, [bannerImage]);
 
   React.useEffect(() => {
+    setForm({ ...form, name: landingForm.name });
+  }, [landingForm.name]);
+
+  React.useEffect(() => {
     if (!profileImage) return;
     const objectUrl = URL.createObjectURL(profileImage);
     setProfilePreview(objectUrl);
   }, [profileImage]);
 
-  //  Picture  string `json:"picture"`
-  // Banner   string `jsos:"banner"`
-  // Name     string `json:"name"`
-  // Username string `json:"username"`
-  // Website  string `json:"website"`
-  // Pronouns string `json:"pronouns"`
-  // Bio      string `json:"bio"`
-
   const saveUserData = React.useCallback(async () => {
     setIsLoading(true);
+
+    if (form.bio.length < 25) return;
+    if (!form.name) return;
+    if (!form.username) return;
+    if (form.username.length < 3) return;
+    if (form.username.length > 20) return;
+    if (form.name.length > 50) return;
 
     let bannerResult = "";
     let imageResult = "";
@@ -124,25 +130,28 @@ const Step1 = () => {
         </div>
       </div>
 
-      <div className="w-full flex mt-4">
+      <div className="w-full flex md:flex-row flex-col mt-4">
         <div className="w-full flex flex-col md:w-[35%]">
           <div className="flex md:flex-col">
-            <p className="text-sm">Profile Picture</p>
-            <div className="h-[200px] w-[200px] self-center">
-              <ImageAccountPicker
-                changeImage={setProfileImage}
-                image={profilePreview}
-                rounded
-              />
+            <div className="flex flex-col">
+              <p className="text-sm">Profile Picture</p>
+              <div className="h-[200px] w-[200px] self-center">
+                <ImageAccountPicker
+                  changeImage={setProfileImage}
+                  image={profilePreview}
+                  rounded
+                />
+              </div>
             </div>
 
             {isMobileScreen && (
-              <div className="w-full flex flex-col">
-                <div className="flex">
+              <div className="w-full flex flex-col ml-6">
+                <div className="flex flex-col">
                   <Input
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     title="Name"
+                    helperText="Up to 50 characters, can have spaces."
                     required
                     type="text"
                     placeholder="Name"
@@ -157,6 +166,7 @@ const Step1 = () => {
                     }
                     title="Username"
                     required
+                    helperText="Username must have between 3 and 20 characters."
                     type="text"
                     placeholder="Username"
                   />
@@ -237,6 +247,10 @@ const Step1 = () => {
               onChange={(e) => setForm({ ...form, pronouns: e.target.value })}
               options={PronounsSelectOptions}
             />
+
+            <div className="my-4" />
+
+            <RichTextEditor />
           </>
         )}
       </div>

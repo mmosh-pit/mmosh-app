@@ -7,7 +7,7 @@ export const onboardingForm = atom({
   username: "",
   website: "",
   pronouns: "they/them",
-  bio: "<p className='text-sm text-gray'>Start typing here...</p>",
+  bio: "",
 });
 
 export const referredUser = atom("");

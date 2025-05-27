@@ -109,7 +109,7 @@ const Step2 = () => {
         )}
 
         {status === "success" && (
-          <div className="mt-8">
+          <div className="mt-8 self-center">
             <Button
               title="Next"
               isLoading={isLoading}

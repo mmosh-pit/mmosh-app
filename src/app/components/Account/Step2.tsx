@@ -33,7 +33,7 @@ const Step2 = () => {
   }, [referralUsername]);
 
   return (
-    <div className="flex flex-col w-full justify-center items-center overflow-y-hidden">
+    <div className="flex flex-col w-full items-center overflow-y-hidden mt-8">
       {status && (
         <MessageBanner
           type={status}
@@ -45,7 +45,7 @@ const Step2 = () => {
         />
       )}
 
-      <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4 h-[60%] justify-between">
+      <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4 min-h-[60%] justify-between">
         <div className="w-full flex flex-col mt-4">
           <div className="w-full flex justify-between">
             <button onClick={() => setSelectedStep(0)}>

@@ -5,7 +5,7 @@ import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import Button from "./common/Button";
 import client from "../lib/httpClient";
-import { isAuth } from "../store";
+import { isAuth, isAuthOverlayOpen } from "../store";
 
 type HomeModalCodeFormProps = {
   onSuccess: () => void;
@@ -31,6 +31,7 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
 
   const [referAddress] = useAtom(incomingReferAddress);
   const [_, setIsAuth] = useAtom(isAuth);
+  const [__, setOverlayVisible] = useAtom(isAuthOverlayOpen);
 
   const [hasError, setHasError] = React.useState(false);
 
@@ -58,6 +59,7 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
       const token = response.data.data.token;
       window.localStorage.setItem("token", token);
       setIsAuth(true);
+      setOverlayVisible(false);
       setForm({ ...form, address: response.data.data.user.address });
       onSuccess();
     } catch (err) {

@@ -91,6 +91,7 @@ const Step1 = () => {
         banner: bannerResult,
         picture: imageResult,
       });
+      setForm({ ...form, image: imageResult });
     } catch (err) {
       // TODO add logic to remove image
       if (bannerResult) {

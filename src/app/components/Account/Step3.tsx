@@ -140,16 +140,6 @@ const Step3 = () => {
           size="small"
           isPrimary={false}
         />
-
-        <div className="mx-4" />
-
-        <Button
-          title="Buy Crypto"
-          isLoading={false}
-          action={goToNextStep}
-          size="small"
-          isPrimary
-        />
       </div>
     </div>
   );

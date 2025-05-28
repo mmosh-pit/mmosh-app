@@ -92,7 +92,18 @@ const Step5 = () => {
     if (onboarding.image) {
       setPreview(onboarding.image);
     } else if (user) {
-      setPreview(user!.guest_data.picture ?? "");
+      const guestData = user!.guest_data;
+      setPreview(guestData.picture ?? "");
+      if (!onboarding.name) {
+        setForm({
+          ...form,
+          name: guestData.name,
+          username: guestData.username,
+          link: guestData.website,
+          pronouns: guestData.pronouns,
+          description: guestData.bio,
+        });
+      }
     }
   }, [onboarding, user]);
 

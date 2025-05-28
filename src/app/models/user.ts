@@ -9,6 +9,7 @@ export type User = {
   royalty: number;
   guest_data: GuestData;
   onboarding_step: number;
+  referred_by: string;
 };
 
 type GuestData = {

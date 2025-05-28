@@ -11,7 +11,11 @@ import Select from "../common/Select";
 import MessageBanner from "../common/MessageBanner";
 import ArrowBack from "@/assets/icons/ArrowBack";
 import ImagePicker from "../ImagePicker";
-import { onboardingStep, referredUser } from "@/app/store/account";
+import {
+  onboardingForm,
+  onboardingStep,
+  referredUser,
+} from "@/app/store/account";
 import client from "@/app/lib/httpClient";
 import { useRouter } from "next/navigation";
 
@@ -33,9 +37,10 @@ const PronounsSelectOptions = [
 const Step5 = () => {
   const router = useRouter();
 
+  const [onboarding] = useAtom(onboardingForm);
   const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
-  const [_, setCurrentUser] = useAtom(data);
+  const [user, setCurrentUser] = useAtom(data);
   const [__, setSelectedStep] = useAtom(onboardingStep);
   const [referrer] = useAtom(referredUser);
 
@@ -69,13 +74,31 @@ const Step5 = () => {
   React.useEffect(() => {
     if (referrer) {
       lookupReferer(referrer);
+    } else if (user) {
+      lookupReferer(user.referred_by);
     }
-  }, [referrer]);
+  }, [referrer, user]);
+
+  React.useEffect(() => {
+    setForm({
+      ...form,
+      name: onboarding.name,
+      username: onboarding.username,
+      description: onboarding.bio,
+      pronouns: onboarding.pronouns,
+      link: onboarding.website,
+      host: referrer,
+    });
+    if (onboarding.image) {
+      setPreview(onboarding.image);
+    } else if (user) {
+      setPreview(user!.guest_data.picture ?? "");
+    }
+  }, [onboarding, user]);
 
   const lookupReferer = async (username: any) => {
     try {
       const res = await axios.get(`/api/get-user-data?username=${username}`);
-      console.log("lookupReferer ", res.data);
       if (res.data) {
         setReferer(res.data.profilenft);
       } else {
@@ -128,12 +151,14 @@ const Step5 = () => {
   const validateFields = () => {
     if (!profileInfo) return;
 
+    if (referrer === "" && form.host !== "") {
+      lookupReferer(form.host);
+    }
+
     if (referer == "") {
       createMessage("Invalid activation token", "error");
       return false;
     }
-
-    console.log("profileInfo.profile ", profileInfo.profile);
 
     if (profileInfo.profile.address !== undefined) {
       createMessage("User already have profile address", "error");
@@ -208,10 +233,20 @@ const Step5 = () => {
       parentProfile = referer;
     }
 
+    let resultingImage = image;
+
+    if (!resultingImage && preview) {
+      const response = await fetch(preview);
+
+      const blob = await response.blob();
+
+      resultingImage = new File([blob], new Date().toTimeString());
+    }
+
     const result = await createProfile({
       wallet,
       profileInfo,
-      image,
+      image: resultingImage,
       form,
       preview,
       parentProfile: new PublicKey(referer),
@@ -378,7 +413,7 @@ const Step5 = () => {
               </div>
             </div>
 
-            {referer == "" && (
+            {referer === "" && (
               <div className="w-full self-start mt-10">
                 <p className="text-lg text-white">Your Host</p>
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">

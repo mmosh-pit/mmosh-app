@@ -8,6 +8,7 @@ export const onboardingForm = atom({
   website: "",
   pronouns: "they/them",
   bio: "",
+  image: "",
 });
 
 export const referredUser = atom("");

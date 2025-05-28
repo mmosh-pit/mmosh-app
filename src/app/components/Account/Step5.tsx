@@ -197,7 +197,7 @@ const Step5 = () => {
       return false;
     }
 
-    if (!image) {
+    if (!image && !preview) {
       createMessage("Image is required", "error");
       return false;
     }

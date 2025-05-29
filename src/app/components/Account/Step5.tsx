@@ -153,7 +153,7 @@ const Step5 = () => {
       return;
     }
 
-    setError({
+    setSymbolError({
       error: false,
       message: "",
     });

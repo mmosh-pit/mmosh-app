@@ -59,11 +59,17 @@ const Step5 = () => {
     message: "",
   });
 
+  const [symbolError, setSymbolError] = React.useState({
+    error: false,
+    message: "",
+  });
+
   const [form, setForm] = React.useState({
     name: "",
     lastName: "",
     username: "",
     host: "",
+    symbol: "",
     description: "",
     descriptor: "",
     noun: "",
@@ -127,6 +133,31 @@ const Step5 = () => {
       setReferer("");
     }
   };
+
+  const checkForSymbol = React.useCallback(async () => {
+    if (["create"].includes(form.username.toLowerCase())) {
+      setSymbolError({
+        error: true,
+        message: "Symbol already exists!",
+      });
+      return;
+    }
+
+    const result = await axios.get(`/api/check-symbol?username=${form.symbol}`);
+
+    if (result.data) {
+      setSymbolError({
+        error: true,
+        message: "Symbol already exists!",
+      });
+      return;
+    }
+
+    setError({
+      error: false,
+      message: "",
+    });
+  }, [form.symbol]);
 
   const checkForUsername = React.useCallback(async () => {
     if (["create"].includes(form.username.toLowerCase())) {
@@ -208,6 +239,21 @@ const Step5 = () => {
 
     if (form.username.length == 0) {
       createMessage("Username is required", "error");
+      return false;
+    }
+
+    if (form.symbol.length === 0) {
+      createMessage("Symbol is required", "error");
+      return false;
+    }
+
+    if (form.symbol.length > 10) {
+      createMessage("Symbol must be up to 10 characters long", "error");
+      return false;
+    }
+
+    if (form.username.length > 20 || form.username.length < 3) {
+      createMessage("Username must be between 3 and 20 characters", "error");
       return false;
     }
 
@@ -369,7 +415,11 @@ const Step5 = () => {
                   type="text"
                   title="Username"
                   required
-                  helperText={error.error ? error.message : "15 characters"}
+                  helperText={
+                    error.error
+                      ? error.message
+                      : "Usernames must have between 3 and 20 characters"
+                  }
                   error={error.error}
                   value={form.username}
                   onChange={(e) =>
@@ -379,6 +429,29 @@ const Step5 = () => {
                     })
                   }
                   onBlur={checkForUsername}
+                  placeholder="Username"
+                />
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="Symbol"
+                  required
+                  helperText={
+                    symbolError.error
+                      ? symbolError.message
+                      : "Symbol can only be letters and numbers up to 10 characters"
+                  }
+                  error={error.error}
+                  value={form.symbol}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      symbol: e.target.value.replace(/\s/g, ""),
+                    })
+                  }
+                  onBlur={checkForSymbol}
                   placeholder="Username"
                 />
 

@@ -32,7 +32,7 @@ export const createProfile = async ({
     const generationData = await userConn.getProfileChilds(parentProfile);
     const generation = generationData.generation;
     const profileLineage = await userConn.getProfileLineage(parentProfile);
-    if(profileLineage.promoter === "") {
+    if (profileLineage.promoter === "") {
       return {
         type: "error",
         message:
@@ -46,10 +46,9 @@ export const createProfile = async ({
       fullname = fullname + " " + form.lastName;
     }
 
-
     const body = {
       name: fullname,
-      symbol: form.username,
+      symbol: form.symbol,
       description: form.description,
       image: "",
       enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL + "/" + form.username,
@@ -209,7 +208,7 @@ export const createProfile = async ({
 
     const res = await userConn.mintProfile({
       name: form.username.substring(0, 15),
-      symbol: form.username.substring(0, 10).toUpperCase(),
+      symbol: form.symbol,
       uriHash: shadowHash,
       parentProfile,
       genesisProfile,
@@ -219,6 +218,7 @@ export const createProfile = async ({
     if (res.Ok) {
       const params = {
         username: form.username,
+        symbol: form.symbol,
         bio: form.description,
         pronouns: form.pronouns,
         name: fullname,

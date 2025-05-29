@@ -7,4 +7,5 @@ export type ProfileForm = {
   noun: string;
   link: string;
   pronouns: string;
+  symbol: string;
 };

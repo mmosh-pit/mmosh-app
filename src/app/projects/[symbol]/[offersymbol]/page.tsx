@@ -7,7 +7,7 @@ import { CoinDetail } from "@/app/models/coin";
 import { useAtom } from "jotai";
 import { userWeb3Info } from "@/app/store";
 import useWallet from "@/utils/wallet";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { Connectivity as CommunityConn } from "@/anchor/community";
@@ -25,6 +25,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
     const [projectDetail, setProjectDetail] =  React.useState<any>(null)
     const [supplyValue, setSupplyValue] = useState(1)
     const [inputValue, setInputValue] = useState(0)
+    const [receiverValue, setReceiverValue] = useState("")
     const [stakeValue, setStakeValue] = useState(0)
     const [stakeType, setStakeType] = useState<any>("")
     const [usdcPrice, setUsdcPrice] = useState(0)
@@ -429,6 +430,15 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
         }
     };
 
+    const isValidSolanaAddress = (address: string) =>  {
+        try {
+            new PublicKey(address); // will throw if invalid
+            return PublicKey.isOnCurve(new PublicKey(address)); // optional: checks if it's a valid curve point
+        } catch (e) {
+            return false;
+        }
+    }
+
     const inviteAction = async() => {
         if(!wallet) {
             createMessage(
@@ -439,6 +449,14 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
             return
         }
 
+        if(!isValidSolanaAddress(receiverValue)) {
+            createMessage(
+                "Receiver address is invalid",
+                 "warning-container",
+            );
+            return;
+        }
+
         if (Number(inputValue) == 0) {
             createMessage(
                 "Please Enter invitation mint count",
@@ -447,6 +465,7 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
               closeDrawer()
             return;
         }
+
         if (profileInfo?.solBalance == 0) {
             createMessage(
               "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
@@ -471,11 +490,28 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
         try {
             const res = await projectConn.createBadge({
                 amount: Number(inputValue),
-                subscriptionToken: new anchor.web3.PublicKey(offerDetail.badge)
+                subscriptionToken: new anchor.web3.PublicKey(offerDetail.badge),
             })
-    
+
+            await delay(15000)
             console.log("mintBadge ",res);
+
+            const res1 = await projectConn.transferBadge({
+                amount: Number(inputValue),
+                subscriptionToken: new anchor.web3.PublicKey(offerDetail.badge),
+                receiver: receiverValue
+            })
+
+            console.log("transferBadge ",res1);
+
             if(res.Ok) {
+                await axios.post("/api/project/save-invite", {
+                    wallet: receiverValue,
+                    value: inputValue,
+                    projectkey: projectDetail.project.key,
+                    key: offerDetail.badge,
+                    offerkey: offerDetail.key,
+                });
                 createMessage(
                     "Congrats! You have minted your Invitation(s) successfully.",
                     "success-container",
@@ -1047,7 +1083,18 @@ const Offer = ({ params }: { params: { symbol: string, offersymbol: string } }) 
                                             placeholder="0"
                                             value={inputValue > 0 ? inputValue.toString() : ""}
                                             onChange={(e) => setInputValue(prepareNumber(Number(e.target.value)))}
+                                    />
+                                    <div className="mt-2.5">
+                                        <Input
+                                                type="text"
+                                                title=""
+                                                required={false}
+                                                helperText=""
+                                                placeholder="Enter receiver address"
+                                                value={receiverValue}
+                                                onChange={(e) => setReceiverValue(e.target.value)}
                                         />
+                                    </div>
                                 </div>
                                 </div>
                                 <div className="text-center">

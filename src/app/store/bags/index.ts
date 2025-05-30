@@ -16,7 +16,6 @@ export type BagsCoins = {
   network: BagsCoin | null;
   stable: BagsCoin | null;
   native: BagsCoin | null;
-  community: BagsCoin[];
   memecoins: BagsCoin[];
   exosystem: BagsCoin[];
 };
@@ -38,6 +37,22 @@ export type BagsNFTAssets = {
   exosystem: BagsNFT[];
 };
 
+export type ConnectionConfirm = {
+  module: string
+  status: string;
+  data: any;
+};
+
+export type RequestConfirm = {
+  module: string
+  data: any;
+};
+
+export type BagsNotifier = {
+  message: string
+  type: string;
+};
+
 export const bagsCoins = atom<BagsCoins | null>(null);
 
 export const bagsNfts = atom<BagsNFTAssets | null>(null);
@@ -45,3 +60,9 @@ export const bagsNfts = atom<BagsNFTAssets | null>(null);
 export const bagsBalance = atom(0);
 
 export const genesisProfileUser = atom(false);
+
+
+export const bagsConfirmation = atom<RequestConfirm | null>(null);
+export const bagsModalAck = atom<ConnectionConfirm | null>(null);
+
+export const bagsNotifier = atom<BagsNotifier | null>(null);

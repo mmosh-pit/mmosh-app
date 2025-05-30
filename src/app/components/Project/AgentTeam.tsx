@@ -32,7 +32,7 @@ export default function AgentTeam({
   const [msgText, setMsgText] = useState("");
   const [keyword, setKeyword] = React.useState("");
   const [profileInfo] = useAtom(userWeb3Info);
-  const wallet: any = useWallet();
+  const wallet = useWallet();
   const [roles, setRoles] = useState<any>([
     { label: "Founder", value: "Founder", data: [], enabled: true },
     { label: "Owner", value: "Owner", data: [], enabled: true },
@@ -233,6 +233,8 @@ export default function AgentTeam({
     }
   };
 
+  const delay = (ms: any) => new Promise((res) => setTimeout(res, ms));
+
   const saveTeam = async () => {
     try {
       if (!wallet) {
@@ -312,9 +314,22 @@ export default function AgentTeam({
         profileInfo?.profile.address!,
       );
 
+      await delay(15000)
+
+      console.log("current profile", currentProfile)
+
+      const res1 = await projectConn.transferBadge({
+          amount: Number(1),
+          subscriptionToken: new anchor.web3.PublicKey(res.Ok?.info?.profile!),
+          receiver: currentProfile.wallet
+      })
+
+      console.log("res1", res1)
+
       if (res.Ok) {
         await axios.post("/api/project/save-profile", {
-          name: currentProfile.name,
+          sender: wallet.publicKey.toBase58(),
+          name: currentProfile.profile.name,
           profilekey: currentProfile.wallet,
           role: selectedRoles,
           projectkey: projectDetail.project.key,
@@ -322,7 +337,7 @@ export default function AgentTeam({
         });
 
         createMessage(
-          "Agent team role is successfully assigned to " + currentProfile.name,
+          "Agent team role is successfully assigned to " + currentProfile.profile.name,
           "success-container",
         );
 

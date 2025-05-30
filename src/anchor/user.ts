@@ -21,6 +21,8 @@ import { getAssociatedTokenAddressSync, unpackAccount } from "forge-spl-token";
 import { Metaplex } from "@metaplex-foundation/js";
 import { BaseSpl, UpdateToken } from "./base/baseSpl";
 import axios from "axios";
+import { getAccount } from "forge-spl-token";
+import { createBurnInstruction } from "forge-spl-token";
 
 const {
   systemProgram,
@@ -1871,6 +1873,64 @@ export class Connectivity {
           this.txis.push(createShare[index]);
         }
       }
+
+      const tx = new web3.Transaction().add(...this.txis);
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+
+      const feeEstimate = await this.getPriorityFeeEstimate(tx);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      tx.add(feeIns);
+
+      this.txis = [];
+      const signature = await this.provider.sendAndConfirm(tx as any);
+
+      return {
+        Ok: {
+          signature,
+          info: { profile: "" },
+        },
+      };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+  }
+
+  async burnToken(
+    token: anchor.web3.PublicKey
+  ): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    try {
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      const { ata: minterProfileAta } =
+        await this.baseSpl.__getOrCreateTokenAccountInstruction(
+          { mint: token, owner: user },
+          this.ixCallBack,
+        );
+
+      const burnIx = createBurnInstruction(
+        minterProfileAta,           // source token account
+        token,          // token mint
+        this.provider.publicKey, // authority
+        1,     // amount to burn (based on decimals)
+        [],            // multisig signers (empty for single-signer)
+        TOKEN_PROGRAM_ID
+      );
+
+       this.txis.push(burnIx);
 
       const tx = new web3.Transaction().add(...this.txis);
       tx.recentBlockhash = (

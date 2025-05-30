@@ -18,11 +18,11 @@ const CoinItem = ({ coin, onSelect }: Props) => {
 
   return (
     <div
-      className="flex justify-between bg-[#2E3C4E80] rounded-md my-2 cursor-pointer py-4 px-6"
+      className="flex justify-between bg-[#2E3C4E80] rounded-md my-2 cursor-pointer py-4 px-4"
       onClick={() => onSelect(coin)}
     >
       <div className="flex">
-        <div className="w-[3vmax] h-[3vmax] relative">
+        <div className="w-[50px] h-[50px] relative">
           <Image
             src={coin.image}
             alt="coin"
@@ -32,16 +32,18 @@ const CoinItem = ({ coin, onSelect }: Props) => {
         </div>
 
         <div className="flex flex-col justify-center ml-4">
-          <p className="underline text-white text-sm">{coin.name}</p>
-          <p className="text-sm">{getCoinBalance()}</p>
+          <p className="underline text-white text-sm uppercase">{coin.name}</p>
+          <p className="text-sm">{getCoinBalance()} {coin.symbol.toUpperCase()}</p>
         </div>
       </div>
 
-      <div className="flex flex-col justify-center self-center">
-        <p className="font-bold text-white text-sm">
-          ${abbreviateNumber(coin.usdcPrice)}
-        </p>
-      </div>
+      {coin.usdcPrice > 0 &&
+        <div className="flex flex-col justify-center self-center">
+          <p className="font-bold text-white text-sm">
+            ${abbreviateNumber(coin.usdcPrice)}
+          </p>
+        </div>
+      }
     </div>
   );
 };

@@ -5,7 +5,7 @@ import * as React from "react";
 import NFTs from "./NFTs";
 import Coins from "./Coins";
 import SearchBar from "../Project/Candidates/SearchBar";
-import { BagsCoin, BagsNFT } from "@/app/store/bags";
+import { BagsCoin, bagsConfirmation, bagsModalAck, BagsNFT, bagsNotifier } from "@/app/store/bags";
 import SwapIcon from "@/assets/icons/SwapIcon";
 import { useRouter } from "next/navigation";
 import BuyIcon from "@/assets/icons/BuyIcon";
@@ -13,6 +13,28 @@ import ReceiveIcon from "@/assets/icons/ReceiveIcon";
 import RewardsIcon from "@/assets/icons/RewardsIcon";
 import SendWalletIcon from "@/assets/icons/SendWalletIcon";
 import client from "@/app/lib/httpClient";
+import VaultIcon from "@/assets/icons/VaultIcon";
+import Bots from "./Bots";
+import Connections from "./Connections";
+import Offers from "./Offers";
+import Teams from "./Teams";
+import { useAtom } from "jotai";
+import Modal from "react-modal";
+import CloseIcon from "@/assets/icons/CloseIcon";
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#180E4F",
+    minWidth: "300px",
+    maxWidth: "500px",
+    width: "100%",
+  },
+};
 
 type Props = {
   onSelectAsset: (asset: BagsNFT) => void;
@@ -21,15 +43,35 @@ type Props = {
 };
 
 const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
+  const [showMsg, setShowMsg] = React.useState(false);
+  const [msgClass, setMsgClass] = React.useState("");
+  const [msgText, setMsgText] = React.useState("");
+  const [bagsRequest, setBagsRequest] = useAtom(bagsConfirmation);
   const [search, setSearch] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
   const router = useRouter();
   const [isTooltipShown, setIsTooltipShown] = React.useState(false);
   const [address, setAddress] = React.useState("");
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [_bagsAck, setBagsAck] = useAtom(bagsModalAck);
+  const [bagsNotify, setBagsNotify] = useAtom(bagsNotifier);
 
   React.useEffect(() => {
     getMyAddress();
   }, []);
+
+  React.useEffect(() => {
+    if(bagsRequest) {
+      setIsOpen(true)
+    }
+  }, [bagsRequest]);
+
+  React.useEffect(() => {
+    if(bagsNotify) {
+      createMessage(bagsNotify.message, bagsNotify.type)
+      setBagsNotify(null)
+    }
+  }, [bagsNotify]);
 
   const getMyAddress = async () => {
     try {
@@ -49,14 +91,42 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
     }, 2000);
   }, []);
 
-  return (
-    <div className="w-full h-screen min-w-[3vmax] flex flex-col items-center items-center justify-start mt-8">
-      <div className="flex items-center justify-center my-8">
-        <h6>My Bags</h6>
-      </div>
+  const closeModal = () => {
+    setIsOpen(false);
+    setBagsRequest(null)
+  };
 
+  const createMessage = (message: any, type: any) => {
+    window.scrollTo(0, 0);
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    if (type == "success-container") {
+      setTimeout(() => {
+        setShowMsg(false);
+      }, 4000);
+    } else {
+      setTimeout(() => {
+        setShowMsg(false);
+      }, 4000);
+    }
+  };
+
+  return (
+    <>
+    {showMsg && (
+      <div
+        className={
+          "message-container text-white text-center text-header-small-font-size mb-5 py-5 px-3.5 " +
+          msgClass
+        }
+      >
+        {msgText}
+      </div>
+    )}
+    <div className="w-full min-w-[3vmax] flex flex-col items-center items-center justify-start mt-8">
       <div className="flex items-center justify-center my-8">
-        <SearchBar setSearchText={setSearch} />
+        <h6>My Wallet</h6>
       </div>
 
       <div className="bags-background-card lg:w-[40%] md:w-[60%] w-[85%]">
@@ -80,9 +150,26 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           </div>
         </div>
 
+        <div className="flex items-center justify-center mt-6">
+          <div className="">
+              <SearchBar setSearchText={setSearch} />
+          </div>
+    
+        </div>
         <div className="w-full flex justify-evenly mt-6">
           <div
-            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl bg-[rgba(114,149,195,0.6)]"
+            onClick={() => {
+              router.push("/bags");
+            }}
+          >
+            <VaultIcon />
+
+            <p className="text-sm text-white mt-1">Vault</p>
+          </div>
+
+          <div
+            className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
             onClick={() => {
               router.push("/swap");
             }}
@@ -93,7 +180,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           </div>
 
           <div
-            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
             onClick={() => {
               router.push("/atm");
             }}
@@ -104,7 +191,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           </div>
 
           <div
-            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
             onClick={() => {
               // router.push("/atm");
             }}
@@ -115,7 +202,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           </div>
 
           <div
-            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
             onClick={() => {
               // router.push("/atm");
             }}
@@ -126,7 +213,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           </div>
 
           <div
-            className="min-w-[3vmax] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl"
+            className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
             onClick={() => {
               router.push("/rewards");
             }}
@@ -150,18 +237,95 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
             <p
               className={`text-base text-white ${selectedTab === 1 && "font-bold"}`}
             >
-              Codes
+              Bots
             </p>
           </button>
+
+          <button className="cursor-pointer" onClick={() => setSelectedTab(2)}>
+            <p
+              className={`text-base text-white ${selectedTab === 2 && "font-bold"}`}
+            >
+              Connections
+            </p>
+          </button>
+
+          <button className="cursor-pointer" onClick={() => setSelectedTab(3)}>
+            <p
+              className={`text-base text-white ${selectedTab === 3 && "font-bold"}`}
+            >
+              Offers
+            </p>
+          </button>
+
+          <button className="cursor-pointer" onClick={() => setSelectedTab(4)}>
+            <p
+              className={`text-base text-white ${selectedTab === 4 && "font-bold"}`}
+            >
+              Teams
+            </p>
+          </button>
+
+          <button className="cursor-pointer" onClick={() => setSelectedTab(5)}>
+            <p
+              className={`text-base text-white ${selectedTab === 5 && "font-bold"}`}
+            >
+              Badges
+            </p>
+          </button>
+
         </div>
 
-        {selectedTab === 0 ? (
-          <Coins onSelectCoin={onSelectCoin} />
-        ) : (
-          <NFTs onSelect={onSelectAsset} />
-        )}
+        <div className="max-h-96 overflow-y-auto overflow-x-hidden">
+          {selectedTab === 0 &&
+            <Coins onSelectCoin={onSelectCoin} />
+          }
+          {selectedTab === 1 &&
+            <Bots address={address} />
+          }
+          {selectedTab === 2 &&
+            <Connections address={address} />
+          }
+          {selectedTab === 3 &&
+            <Offers address={address} />
+          }
+          {selectedTab === 4 &&
+            <Teams address={address} />
+          }
+        </div>
+
+
       </div>
     </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+      >
+      <div className="flex justify-end">
+        <button
+          className="flex justify-end w-[10%]"
+          onClick={() => setIsOpen(false)}
+        >
+          <CloseIcon />
+        </button>
+      </div>
+
+      <p className="mt-5">This will remove <span className="capitalize font-bold">{bagsRequest?.module == "burn" ? "connections" : bagsRequest?.module}</span> from the blockchain forever and cannot be undone. You won't enjoy it benefit anymore. Are you sure you want to burn it?</p>
+
+      <div className="flex justify-center">
+          <button className="btn btn-primary bg-[#6607FF] text-white border-none hover:bg-primary hover:text-white mr-3" onClick={()=>{
+            setBagsAck({
+              module: bagsRequest!.module,
+              data: bagsRequest!.data,
+              status: "reject"
+            })
+            setIsOpen(false);
+          }}>Yes</button>
+          <button className="btn btn-primary bg-[#6607FF] text-white border-none hover:bg-primary hover:text-white" onClick={closeModal}>No</button>
+      </div>
+
+      </Modal>
+    </>
   );
 };
 

@@ -2318,9 +2318,11 @@ export class Connectivity {
       console.log("mintBadge 4")
       let parentProfileStateInfo =
         await this.program.account.profileState.fetch(parentProfileState);
-      console.log("mintBadge 5")
+
       if (!receiver) receiver = user;
       if (typeof receiver == "string") receiver = new web3.PublicKey(receiver);
+
+      console.log("mintBadge 5", receiver)
       const { ata: receiverAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
           { mint: subscriptionToken, owner: receiver },

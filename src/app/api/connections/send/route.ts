@@ -10,28 +10,18 @@ export async function POST(req: NextRequest) {
     // 4 - accept logic
     // 5 - decline logic
 
-    console.log("test a")
-
     const collection = db.collection("mmosh-app-connections");
     const usercollection = db.collection("mmosh-users");
 
-    console.log("test b")
-
     const { sender, receiver, status, badge} = await req.json();
-
-    console.log("test c")
     
     const senderDetail = await usercollection.findOne({
         wallet: sender,
     });
 
-    console.log("test d")
-
     const receiverDetail = await usercollection.findOne({
         wallet: receiver,
     });
-
-    console.log("test e")
 
     if(!receiverDetail || !senderDetail) {
         return NextResponse.json("", { status: 200 });
@@ -134,16 +124,11 @@ export async function POST(req: NextRequest) {
 
     // unfollow logic
     if(status == 3) {
-        await collection.updateOne(
+        await collection.deleteOne(
             {
                 sender: sender,
                 receiver: receiver,
-            },
-            {
-              $set: {
-                status: 3,
-              },
-            },
+            }
         );
     }
 
@@ -263,16 +248,11 @@ export async function POST(req: NextRequest) {
     }
 
     if(status == 5) {
-        await collection.updateOne(
+        await collection.deleteOne(
             {
                 sender: sender,
                 receiver: receiver,
-            },
-            {
-              $set: {
-                status: 3,
-              },
-            },
+            }
         );
         await sendNotification({
             type: "decline",

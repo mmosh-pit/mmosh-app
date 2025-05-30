@@ -8,6 +8,7 @@ import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Connection, Keypair } from "@solana/web3.js";
 export async function GET(req: NextRequest) {
     const offerCollection = db.collection("mmosh-app-project-offer");
+    const inviteCollection = db.collection("mmosh-app-project-invites");
     const receiptCollection = db.collection("mmosh-app-offer-receipt");
     const subscriptionCollection = db.collection("mmosh-app-offer-subscription");
     const { searchParams } = new URL(req.url);
@@ -138,6 +139,28 @@ export async function GET(req: NextRequest) {
       created_date: new Date(),
       updated_date: new Date(),
     });
+
+    if(offerData.badge) {
+      let inviteData = await inviteCollection.findOne({ offerkey: offerData.key, wallet: receiver});
+      if(inviteData) {
+        if(inviteData.value > 1) {
+          await inviteCollection.updateOne(
+            {
+              _id: inviteData._id,
+            },
+            {
+              $set: {
+                value: inviteData.value - 1, 
+              },
+            },
+          );
+        } else {
+          await inviteCollection.deleteOne({
+            offerkey: offerData.key, wallet: receiver
+          });
+        }
+      }
+    }
 
     await offerCollection.updateOne(
       {

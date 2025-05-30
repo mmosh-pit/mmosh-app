@@ -188,8 +188,6 @@ const Header = () => {
     let stableCoin: BagsCoin | null = null;
     let nativeCoin: BagsCoin | null = null;
 
-    const communityCoins: BagsCoin[] = [];
-
     const memecoins: BagsCoin[] = [];
 
     const exosystemCoins: BagsCoin[] = [];
@@ -232,12 +230,6 @@ const Header = () => {
           switch (value.id) {
             case SOL_ADDR:
               networkCoin = coin;
-              break;
-            case COMMUNITY_PTVB_COIN:
-              communityCoins.push(coin);
-              break;
-            case COMMUNITY_PTVR_COIN:
-              communityCoins.push(coin);
               break;
             case USDC_COIN:
               stableCoin = coin;
@@ -329,9 +321,8 @@ const Header = () => {
       native: nativeCoin,
       stable: stableCoin,
       network: networkCoin,
-      community: communityCoins,
-      exosystem: exosystemCoins,
-      memecoins: memecoins,
+      exosystem: exosystemCoins.sort((a, b) => b.balance - a.balance),
+      memecoins: memecoins.sort((a, b) => b.balance - a.balance),
     });
 
     setBagsNFTs({

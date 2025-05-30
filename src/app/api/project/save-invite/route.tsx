@@ -2,20 +2,20 @@ import { db } from "../../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const collection = db.collection("mmosh-app-project-profiles");
+  const collection = db.collection("mmosh-app-project-invites");
 
-  const { profilekey, role, projectkey, key, sender } = await req.json();
+  const { wallet, value, projectkey, offerkey, key } = await req.json();
 
   const profileDetails = await collection.findOne({
     projectkey: projectkey,
-    profilekey
+    wallet
   });
 
   if (!profileDetails) {
     await collection.insertOne({
-        sender,
-        profilekey,
-        role,
+        wallet,
+        value,
+        offerkey,
         projectkey,
         key,
         status: 0
@@ -28,8 +28,7 @@ export async function POST(req: NextRequest) {
       },
       {
         $set: {
-          role,
-          key
+          value
         },
       },
     );

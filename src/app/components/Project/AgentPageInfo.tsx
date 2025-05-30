@@ -19,7 +19,7 @@ const AgentPageInfo = ({
 
   const [members, setMembers] = React.useState<User[]>([]);
   const [offers, setOffers] = React.useState<any[]>([]);
-
+  const [projectDetail, setProjectDetail] =  React.useState<any>(null)
   const [stats, setStats] = React.useState<AgentStats>({
     offers: 0,
     subscribers: 0,
@@ -69,7 +69,17 @@ const AgentPageInfo = ({
     getAgentMembers();
     getAgentOffers();
     getAgentTeams();
+    getProjectDetailFromAPI()
   }, [agentKey]);
+
+  const getProjectDetailFromAPI = async() => {
+      try {
+          let listResult = await axios.get(`/api/project/detail?address=${agentKey}`);
+          setProjectDetail(listResult.data)
+      } catch (error) {
+          setProjectDetail(null)
+      }
+  }
 
   return (
     <div className="flex flex-col">
@@ -117,7 +127,7 @@ const AgentPageInfo = ({
       {selectedTab === 1 && (
         <div className="w-full h-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 2xl:px-8 md:px-4 px-6 py-6 overflow-y-auto">
           {offers.map((offer) => (
-            <AgentOfferItem data={offer} project={agentKey} />
+            <AgentOfferItem data={offer} project={projectDetail.project} />
           ))}
         </div>
       )}

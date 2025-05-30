@@ -27,7 +27,7 @@ const Inform = () => {
   const [_, setSearchText] = React.useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
 
-  const coins = [...(bags?.memecoins ?? []), ...(bags?.community ?? [])];
+  const coins = [...(bags?.memecoins ?? []), ...([])];
 
   const fetchAssetsAsGenesisUser = React.useCallback(async () => {
     const [profilesRes, coinsRes] = await Promise.all([

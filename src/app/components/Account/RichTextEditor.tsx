@@ -9,8 +9,6 @@ import UnderlineIcon from "@/assets/icons/UnderlineIcon";
 import { useAtom } from "jotai";
 import * as React from "react";
 
-const emojis = ["😀", "😂", "😍", "🤔", "🎉", "👍", "🙏", "🚀"];
-
 const RichTextEditor = () => {
   const [selectedModes, setSelectedModes] = React.useState<string[]>([]);
 
@@ -44,6 +42,8 @@ const RichTextEditor = () => {
 
   const handleContentChange = React.useCallback(
     (event: any) => {
+      if (form.bio.length >= 280) return;
+
       setForm({ ...form, bio: event.target.innerHTML });
     },
     [form],

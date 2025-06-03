@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 
 import { Connectivity as UserConn } from "@/anchor/user";
@@ -42,12 +42,11 @@ export const createProfile = async ({
     const genesisProfile = web3Consts.genesisProfile;
 
     let fullname = form.name;
-    if (form.lastName.length > 0) {
-      fullname = fullname + " " + form.lastName;
-    }
 
     const body = {
       name: fullname,
+      lastName: form.lastName,
+      displayName: form.displayName,
       symbol: form.symbol,
       description: form.description,
       image: "",
@@ -221,7 +220,9 @@ export const createProfile = async ({
         symbol: form.symbol,
         bio: form.description,
         pronouns: form.pronouns,
+        displayName: form.displayName,
         name: fullname,
+        lastName: form.lastName,
         image: body.image,
         descriptor: form.descriptor,
         nouns: form.noun,

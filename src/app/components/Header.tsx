@@ -45,9 +45,6 @@ import KinshipBots from "@/assets/icons/KinshipBots";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
-const COMMUNITY_PTVB_COIN = process.env.NEXT_PUBLIC_PTVB_TOKEN;
-const COMMUNITY_PTVR_COIN = process.env.NEXT_PUBLIC_PTVR_TOKEN;
-
 const USDC_COIN = process.env.NEXT_PUBLIC_USDC_TOKEN;
 
 const MMOSH_COIN = process.env.NEXT_PUBLIC_OPOS_TOKEN;

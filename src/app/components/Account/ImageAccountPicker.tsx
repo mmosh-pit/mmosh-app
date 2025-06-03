@@ -116,7 +116,7 @@ const ImageAccountPicker = ({
           ref={imageContainerRef}
         >
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
-            1080 x 1080
+            {rounded ? "1080 x 1080" : "1500 x 500"}
           </p>
           <p className="text-base font-montserrat text-para-font-size leading-3 font-light">
             Jpg, Png, Gif. Max 100 mb

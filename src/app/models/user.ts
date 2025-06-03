@@ -24,13 +24,17 @@ type GuestData = {
 
 type Profile = {
   name: string;
+  lastName: string;
+  displayName: string;
   username: string;
   bio: string;
   image: string;
   pronouns: string;
   seniority: number;
   descriptor: string;
+  symbol: string;
   nouns: string;
+  link: string;
   following: number;
   follower: number;
   connectionnft: string;

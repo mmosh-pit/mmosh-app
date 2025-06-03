@@ -44,6 +44,7 @@ const CreateProfile = () => {
   const [form, setForm] = React.useState({
     name: "",
     lastName: "",
+    displayName: "",
     username: "",
     host: "",
     description: "",

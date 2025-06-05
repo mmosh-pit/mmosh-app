@@ -118,6 +118,13 @@ const Step4 = () => {
         });
       }
     }
+
+    if (!form.host) {
+      setForm({
+        ...form,
+        host: user?.referred_by ?? referrer,
+      });
+    }
   }, [onboarding, user]);
 
   const lookupReferer = async (username: string) => {

@@ -49,9 +49,7 @@ const Step4 = () => {
   const [referrer] = useAtom(referredUser);
 
   const [image, setImage] = React.useState<File | null>(null);
-  const [preview, setPreview] = React.useState(
-    "https://storage.googleapis.com/mmosh-assets/default.jpg",
-  );
+  const [preview, setPreview] = React.useState("");
   const [referer, setReferer] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [bannerImage, setBannerImage] = React.useState<File | null>(null);
@@ -239,10 +237,6 @@ const Step4 = () => {
       return false;
     }
 
-    if (!image && !preview) {
-      createMessage("Image is required", "error");
-      return false;
-    }
     if (form.name.length == 0) {
       createMessage("First name is required", "error");
       return false;
@@ -321,12 +315,18 @@ const Step4 = () => {
       );
     }
 
+    let finalPreview = preview;
+
+    if (!preview) {
+      finalPreview = "https://storage.googleapis.com/mmosh-assets/default.jpg";
+    }
+
     const result = await createProfile({
       wallet,
       profileInfo,
       image: resultingImage,
       form,
-      preview,
+      preview: finalPreview,
       parentProfile: new PublicKey(referer),
       banner: resultingBanner,
     });

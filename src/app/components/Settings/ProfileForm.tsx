@@ -223,10 +223,6 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (!image) {
-      createMessage("Image is required", "error");
-      return false;
-    }
     if (form.name.length == 0) {
       createMessage("First name is required", "error");
       return false;
@@ -280,12 +276,18 @@ const ProfileForm = () => {
       );
     }
 
+    let finalPreview = preview;
+
+    if (!preview) {
+      finalPreview = "https://storage.googleapis.com/mmosh-assets/default.jpg";
+    }
+
     const result = await createProfile({
       wallet,
       profileInfo,
       image,
       form,
-      preview,
+      preview: finalPreview,
       parentProfile: new PublicKey(referer),
       banner: resultingBanner,
     });

@@ -247,6 +247,7 @@ const CreateProfile = () => {
       form,
       preview,
       parentProfile: new PublicKey(referer),
+      banner: "",
     });
 
     createMessage(result.message, result.type);

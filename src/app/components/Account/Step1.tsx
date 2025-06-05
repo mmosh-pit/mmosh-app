@@ -1,283 +1,122 @@
 import * as React from "react";
-import Input from "../common/Input";
-import Select from "../common/Select";
-import Button from "../common/Button";
-import ImageAccountPicker from "./ImageAccountPicker";
-import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
-import RichTextEditor from "./RichTextEditor";
-import { useAtom } from "jotai";
-import { onboardingForm, onboardingStep } from "@/app/store/account";
-import client from "@/app/lib/httpClient";
-import { uploadFile } from "@/app/lib/firebase";
-import { storeFormAtom } from "@/app/store/signup";
 
-const PronounsSelectOptions = [
-  {
-    label: "They/Them",
-    value: "they/them",
-  },
-  {
-    label: "He/Him",
-    value: "he/him",
-  },
-  {
-    label: "She/Her",
-    value: "she/her",
-  },
-];
+import ArrowBack from "@/assets/icons/ArrowBack";
+import Input from "../common/Input";
+import Button from "../common/Button";
+import { onboardingStep, referredUser } from "@/app/store/account";
+import { useAtom } from "jotai";
+import client from "@/app/lib/httpClient";
+import MessageBanner from "../common/MessageBanner";
 
 const Step1 = () => {
-  const [landingForm] = useAtom(storeFormAtom);
-
-  const isMobileScreen = useCheckMobileScreen();
-  const [bannerImage, setBannerImage] = React.useState<File | null>(null);
-  const [imagePreview, setImagePreview] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const [profileImage, setProfileImage] = React.useState<File | null>(null);
-  const [profilePreview, setProfilePreview] = React.useState("");
-
-  const [form, setForm] = useAtom(onboardingForm);
   const [_, setSelectedStep] = useAtom(onboardingStep);
+  const [referralUsername, setReferralUsername] = useAtom(referredUser);
 
-  React.useEffect(() => {
-    if (!bannerImage) return;
-    const objectUrl = URL.createObjectURL(bannerImage);
-    setImagePreview(objectUrl);
-  }, [bannerImage]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [status, setStatus] = React.useState("");
 
-  React.useEffect(() => {
-    setForm({ ...form, name: landingForm.name });
-  }, [landingForm.name]);
+  const saveReferr = React.useCallback(async () => {
+    if (referralUsername === "") return;
 
-  React.useEffect(() => {
-    if (!profileImage) return;
-    const objectUrl = URL.createObjectURL(profileImage);
-    setProfilePreview(objectUrl);
-  }, [profileImage]);
-
-  const saveUserData = React.useCallback(async () => {
     setIsLoading(true);
-
-    if (form.bio.length < 25) return;
-    if (!form.name) return;
-    if (!form.username) return;
-    if (form.username.length < 3) return;
-    if (form.username.length > 20) return;
-    if (form.name.length > 50) return;
-
-    let bannerResult = "";
-    let imageResult = "";
-
-    if (!bannerImage || !profileImage) return;
+    setStatus("");
 
     try {
-      const date = new Date().getMilliseconds();
-
-      bannerResult = await uploadFile(
-        bannerImage,
-        `${form.username}-banner-${date}`,
-        "banners",
-      );
-
-      imageResult = await uploadFile(
-        profileImage,
-        `${form.username}-guest_profile-${date}`,
-        "images",
-      );
-
-      await client.put("/guest-data", {
-        ...form,
-        banner: bannerResult,
-        picture: imageResult,
+      await client.put("/referred", {
+        user: referralUsername,
       });
-      setForm({ ...form, image: imageResult });
-    } catch (err) {
-      // TODO add logic to remove image
-      if (bannerResult) {
-      }
-      if (imageResult) {
-      }
+      setStatus("success");
+    } catch (_) {
+      setStatus("error");
     }
-
-    setSelectedStep(1);
     setIsLoading(false);
-  }, [form, profileImage]);
+  }, [referralUsername]);
 
   return (
-    <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-32 px-6 flex flex-col md:w-[75%] w-[90%] mt-4">
-      <div className="self-end">
-        <p className="text-sm">Step 1 of 5</p>
-      </div>
+    <div className="flex flex-col w-full items-center overflow-y-hidden mt-8">
+      {status && (
+        <MessageBanner
+          type={status}
+          message={
+            status === "error"
+              ? "We're sorry, we couldn't find a Member with that username. Check that there aren't any errors and try again."
+              : "Your referral code has been applied! You’ll receive your reward shortly."
+          }
+        />
+      )}
 
-      <div className="flex flex-col self-center">
-        <p className="text-white font-goudy text-base text-center">
-          Create your Guest Account
-        </p>
-
-        <p className="text-sm text-center">
-          Introduce yourself to the community by sharing some interesting
-          details about yourself.
-        </p>
-      </div>
-
-      <div className="flex flex-col">
-        <p className="text-sm">Banner Image</p>
-        <div className="h-[300px]">
-          <ImageAccountPicker
-            changeImage={setBannerImage}
-            image={imagePreview}
-          />
-        </div>
-      </div>
-
-      <div className="w-full flex md:flex-row flex-col mt-4">
-        <div className="w-full flex flex-col md:w-[35%]">
-          <div className="flex md:flex-col">
-            <div className="flex flex-col">
-              <p className="text-sm">Profile Picture</p>
-              <div className="h-[200px] w-[200px] self-center">
-                <ImageAccountPicker
-                  changeImage={setProfileImage}
-                  image={profilePreview}
-                  rounded
-                />
-              </div>
-            </div>
-
-            {isMobileScreen && (
-              <div className="w-full flex flex-col ml-6">
-                <div className="flex flex-col">
-                  <Input
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    title="Name"
-                    helperText="Up to 50 characters, can have spaces."
-                    required
-                    type="text"
-                    placeholder="Name"
-                  />
-
-                  <div className="my-4" />
-
-                  <Input
-                    value={form.username}
-                    onChange={(e) =>
-                      setForm({ ...form, username: e.target.value })
-                    }
-                    title="Username"
-                    required
-                    helperText="Username must have between 3 and 20 characters."
-                    type="text"
-                    placeholder="Username"
-                  />
-                </div>
-              </div>
-            )}
+      <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4 min-h-[60%] justify-between">
+        <div className="w-full flex flex-col mt-4">
+          <div className="w-full flex justify-end">
+            <p className="text-sm">Step 1 of 4</p>
           </div>
 
-          {!isMobileScreen && (
-            <>
-              <Input
-                value={form.website}
-                onChange={(e) => setForm({ ...form, website: e.target.value })}
-                title="Website"
-                required={false}
-                type="text"
-                placeholder="https://example.com"
-              />
+          <div className="flex flex-col self-center mb-8 justify-center items-center">
+            <p className="text-white font-goudy text-base text-center">
+              Who Referred You?
+            </p>
 
-              <div className="my-4" />
-
-              <Select
-                value={form.pronouns}
-                onChange={(e) => setForm({ ...form, pronouns: e.target.value })}
-                options={PronounsSelectOptions}
-              />
-            </>
-          )}
-        </div>
-
-        <div className="mx-4" />
-
-        {!isMobileScreen && (
-          <div className="w-full flex flex-col">
-            <div className="w-full flex">
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                title="Name"
-                required
-                type="text"
-                placeholder="Name"
-              />
-
-              <div className="mx-4" />
-
-              <Input
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                title="Username"
-                required
-                type="text"
-                placeholder="Username"
-              />
-            </div>
-
-            <div className="my-4" />
-
-            <RichTextEditor />
+            <p className="text-sm text-center md:max-w-[70%] max-w-[85%]">
+              Enter the username of the person who referred you, and both of you
+              will receive a gift of appreciation in your Kinship Wallet that
+              you can use once your Profile is verified.
+            </p>
           </div>
-        )}
 
-        {isMobileScreen && (
-          <>
+          <div className="md:w-[50%] w-[75%] self-center">
             <Input
-              value={form.website}
-              onChange={(e) => setForm({ ...form, website: e.target.value })}
-              title="Website"
+              title=""
+              placeholder="Referral Username"
               required={false}
               type="text"
-              placeholder="https://example.com"
+              value={referralUsername}
+              onChange={(e) => setReferralUsername(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {(status === "" || status === "error") && (
+          <div className="flex mt-8 self-center">
+            <Button
+              title="Skip"
+              isLoading={false}
+              action={() => {
+                client.put("/onboarding-step", {
+                  step: 2,
+                });
+                setSelectedStep(1);
+              }}
+              size="small"
+              isPrimary={false}
             />
 
-            <div className="my-4" />
+            <div className="mx-4" />
 
-            <Select
-              value={form.pronouns}
-              onChange={(e) => setForm({ ...form, pronouns: e.target.value })}
-              options={PronounsSelectOptions}
+            <Button
+              title="Claim Rewards"
+              isLoading={isLoading}
+              action={() => {
+                saveReferr();
+              }}
+              size="small"
+              isPrimary
             />
-
-            <div className="my-4" />
-
-            <RichTextEditor />
-          </>
+          </div>
         )}
-      </div>
 
-      <div className="flex mt-8 self-center">
-        <Button
-          title="Skip"
-          isLoading={false}
-          action={() => {
-            setSelectedStep(1);
-          }}
-          size="small"
-          isPrimary={false}
-        />
-
-        <div className="mx-4" />
-
-        <Button
-          title="Save and Next"
-          isLoading={isLoading}
-          action={() => {
-            saveUserData();
-          }}
-          size="small"
-          isPrimary
-        />
+        {status === "success" && (
+          <div className="mt-8 self-center">
+            <Button
+              title="Next"
+              isLoading={isLoading}
+              action={() => {
+                setSelectedStep(1);
+              }}
+              size="small"
+              isPrimary
+            />
+          </div>
+        )}
       </div>
     </div>
   );

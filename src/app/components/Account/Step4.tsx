@@ -346,14 +346,9 @@ const Step4 = () => {
   }, [wallet, profileInfo, image, form]);
 
   const saveUserData = React.useCallback(async () => {
-    setIsLoading(true);
+    if (!validateFields()) return;
 
-    if (form.description.length < 25) return;
-    if (!form.name) return;
-    if (!form.username) return;
-    if (form.username.length < 3) return;
-    if (form.username.length > 20) return;
-    if (form.name.length > 50) return;
+    setIsLoading(true);
 
     let bannerResult = "";
     let imageResult = "https://storage.googleapis.com/mmosh-assets/default.jpg";

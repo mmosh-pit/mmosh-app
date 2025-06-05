@@ -319,14 +319,8 @@ const ProfileForm = () => {
   }, [image]);
 
   const saveUserData = React.useCallback(async () => {
+    if (!validateFields()) return;
     setIsLoading(true);
-
-    if (form.description.length < 25) return;
-    if (!form.name) return;
-    if (!form.username) return;
-    if (form.username.length < 3) return;
-    if (form.username.length > 20) return;
-    if (form.name.length > 50) return;
 
     let bannerResult = "";
     let imageResult = "https://storage.googleapis.com/mmosh-assets/default.jpg";

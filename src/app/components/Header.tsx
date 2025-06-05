@@ -512,7 +512,8 @@ const Header = () => {
   if (
     pathname.includes("sign-up") ||
     pathname.includes("login") ||
-    pathname.includes("password")
+    pathname.includes("password") ||
+    pathname.includes("account")
   ) {
     return <></>;
   }

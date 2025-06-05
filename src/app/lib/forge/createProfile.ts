@@ -18,6 +18,7 @@ export const createProfile = async ({
   form,
   preview,
   parentProfile,
+  banner,
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
@@ -50,6 +51,7 @@ export const createProfile = async ({
       symbol: form.symbol,
       description: form.description,
       image: "",
+      banner,
       enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL + "/" + form.username,
       family: "MMOSH",
       collection: "MMOSH Profile Collection",
@@ -228,6 +230,7 @@ export const createProfile = async ({
         nouns: form.noun,
         link: form.link,
         seniority: seniority,
+        banner,
       };
 
       await updateUserData(params, wallet.publicKey.toString());

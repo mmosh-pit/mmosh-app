@@ -38,7 +38,9 @@ const ProfileForm = () => {
   const [profileInfo] = useAtom(userWeb3Info);
   const [userData, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
-  const [preview, setPreview] = React.useState("");
+  const [preview, setPreview] = React.useState(
+    "https://storage.googleapis.com/mmosh-assets/default.jpg",
+  );
   const [referer, setReferer] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [bannerImage, setBannerImage] = React.useState<File | null>(null);
@@ -78,6 +80,8 @@ const ProfileForm = () => {
         noun: profileData?.nouns,
         host: "",
       });
+
+      setHasProfile(profileData !== null);
     }
   }, [userData]);
 
@@ -266,6 +270,16 @@ const ProfileForm = () => {
       parentProfile = referer;
     }
 
+    let resultingBanner = imagePreview;
+
+    if (bannerImage) {
+      resultingBanner = await uploadFile(
+        bannerImage!,
+        `${form.username}-banner-${new Date().getMilliseconds()}`,
+        "banners",
+      );
+    }
+
     const result = await createProfile({
       wallet,
       profileInfo,
@@ -273,6 +287,7 @@ const ProfileForm = () => {
       form,
       preview,
       parentProfile: new PublicKey(referer),
+      banner: resultingBanner,
     });
 
     createMessage(result.message, result.type);
@@ -312,24 +327,26 @@ const ProfileForm = () => {
     if (form.name.length > 50) return;
 
     let bannerResult = "";
-    let imageResult = "";
-
-    if (!bannerImage || !image) return;
+    let imageResult = "https://storage.googleapis.com/mmosh-assets/default.jpg";
 
     try {
       const date = new Date().getMilliseconds();
 
-      bannerResult = await uploadFile(
-        bannerImage,
-        `${form.username}-banner-${date}`,
-        "banners",
-      );
+      if (bannerImage) {
+        bannerResult = await uploadFile(
+          bannerImage,
+          `${form.username}-banner-${date}`,
+          "banners",
+        );
+      }
 
-      imageResult = await uploadFile(
-        image,
-        `${form.username}-guest_profile-${date}`,
-        "images",
-      );
+      if (image) {
+        imageResult = await uploadFile(
+          image,
+          `${form.username}-guest_profile-${date}`,
+          "images",
+        );
+      }
 
       await client.put("/guest-data", {
         ...form,
@@ -538,21 +555,23 @@ const ProfileForm = () => {
 
             {!hasProfile && (
               <div className="flex mt-6 items-start justify-evenly">
-                <Button
-                  isLoading={isLoading}
-                  isPrimary
-                  title="Save as guest"
-                  size="small"
-                  disabled={isLoading}
-                  action={saveUserData}
-                />
+                <div className="w-[25%]">
+                  <Button
+                    isLoading={isLoading}
+                    isPrimary
+                    title="Save as guest"
+                    size="large"
+                    disabled={isLoading}
+                    action={saveUserData}
+                  />
+                </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col w-[25%]">
                   <Button
                     isLoading={isLoading}
                     isPrimary
                     title="Mint a Membership"
-                    size="small"
+                    size="large"
                     action={submitForm}
                     disabled={isLoading}
                   />
@@ -589,14 +608,16 @@ const ProfileForm = () => {
             )}
 
             {hasProfile && (
-              <Button
-                isLoading={isLoading}
-                isPrimary
-                title="Save your changes"
-                size="small"
-                disabled={isLoading}
-                action={() => { }}
-              />
+              <div className="w-[25%]">
+                <Button
+                  isLoading={isLoading}
+                  isPrimary
+                  title="Save your changes"
+                  size="large"
+                  disabled={isLoading}
+                  action={() => { }}
+                />
+              </div>
             )}
           </div>
         </div>

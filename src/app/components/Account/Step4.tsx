@@ -1,411 +1,696 @@
 import * as React from "react";
-
-import { onboardingStep } from "@/app/store/account";
-import ArrowBack from "@/assets/icons/ArrowBack";
-import WalletIcon from "@/assets/icons/WalletIcon";
+import { createProfile } from "@/app/lib/forge/createProfile";
+import axios from "axios";
+import { data, userWeb3Info } from "@/app/store";
 import { useAtom } from "jotai";
-import CoinSelect from "../Swap/CoinSelect";
-import Button from "../common/Button";
-import { SwapCoin } from "@/app/models/swapCoin";
-import baseCoins from "@/app/lib/baseCoins";
-import CompareArrows from "@/assets/icons/CompareArrows";
-
-import { swapTokens } from "@/app/lib/forge/swapTokens";
-import { web3Consts } from "@/anchor/web3Consts";
-import {
-  getSwapPrices,
-  getSwapPricesForJup,
-} from "@/app/lib/forge/getSwapPrices";
-import { getquote, getSwapTransaction } from "@/app/lib/forge/jupiter";
-
-import { Connection } from "@solana/web3.js";
-import * as anchor from "@coral-xyz/anchor";
-import { Connectivity as UserConn } from "@/anchor/user";
 import useWallet from "@/utils/wallet";
-import { BondingPricing } from "@/anchor/curve/curves";
+import { PublicKey } from "@solana/web3.js";
+import Input from "../common/Input";
+import Button from "../common/Button";
+import Select from "../common/Select";
+import MessageBanner from "../common/MessageBanner";
+import ArrowBack from "@/assets/icons/ArrowBack";
+import ImagePicker from "../ImagePicker";
+import {
+  onboardingForm,
+  onboardingStep,
+  referredUser,
+} from "@/app/store/account";
 import client from "@/app/lib/httpClient";
+import { useRouter } from "next/navigation";
+import ImageAccountPicker from "./ImageAccountPicker";
+import { uploadFile } from "@/app/lib/firebase";
+import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 
-const defaultBaseToken = {
-  name: "",
-  symbol: "Select",
-  token: "",
-  image: "",
-  balance: 0,
-  value: 0,
-  desc: "",
-  decimals: 9,
-};
+const PronounsSelectOptions = [
+  {
+    label: "They/Them",
+    value: "they/them",
+  },
+  {
+    label: "He/Him",
+    value: "he/him",
+  },
+  {
+    label: "She/Her",
+    value: "she/her",
+  },
+];
 
 const Step4 = () => {
-  const wallet = useWallet();
-  const [_, setSelectedStep] = useAtom(onboardingStep);
+  const router = useRouter();
+  const isMobileScreen = useCheckMobileScreen();
 
-  const [curve, setCurve] = React.useState<BondingPricing>();
-  const [swapLoading, setSwapLoading] = React.useState(false);
-  const [result, setResult] = React.useState({ res: "", message: "" });
-  const [baseToken, setBaseToken] = React.useState<SwapCoin>(defaultBaseToken);
-  const [targetToken, setTargetToken] = React.useState<SwapCoin>({
-    ...baseCoins[0],
-    balance: 0,
-    value: 0,
+  const [onboarding] = useAtom(onboardingForm);
+  const wallet = useWallet();
+  const [profileInfo] = useAtom(userWeb3Info);
+  const [user, setCurrentUser] = useAtom(data);
+  const [__, setSelectedStep] = useAtom(onboardingStep);
+  const [referrer] = useAtom(referredUser);
+
+  const [image, setImage] = React.useState<File | null>(null);
+  const [preview, setPreview] = React.useState(
+    "https://storage.googleapis.com/mmosh-assets/default.jpg",
+  );
+  const [referer, setReferer] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [bannerImage, setBannerImage] = React.useState<File | null>(null);
+  const [imagePreview, setImagePreview] = React.useState("");
+
+  const [message, setMessage] = React.useState({
+    type: "",
+    message: "",
   });
 
-  const onTokenSelect = async (token: SwapCoin, isBase: boolean) => {
-    let base;
-    let target;
-    if (isBase) {
-      base = token;
-      target = targetToken;
-      setBaseToken(base);
-    } else {
-      base = baseToken;
-      target = token;
-      setTargetToken(target);
+  const [error, setError] = React.useState({
+    error: false,
+    message: "",
+  });
+
+  const [symbolError, setSymbolError] = React.useState({
+    error: false,
+    message: "",
+  });
+
+  const [form, setForm] = React.useState({
+    displayName: "",
+    name: "",
+    lastName: "",
+    username: "",
+    host: "",
+    symbol: "",
+    description: "",
+    descriptor: "",
+    noun: "",
+    link: "",
+    pronouns: "they/them",
+  });
+
+  React.useEffect(() => {
+    if (referrer) {
+      lookupReferer(referrer);
+    } else if (user) {
+      lookupReferer(user.referred_by);
     }
+  }, [referrer, user]);
 
-    console.log("onTokenSelect 0", isBase);
-
-    console.log("onTokenSelect 0", base);
-
-    console.log("onTokenSelect 0", target);
-
-    if (base.token == "" || target.token == "") {
-      console.log("onTokenSelect 1");
-      return;
-    }
-
-    if (base.token === target.token) {
-      console.log("onTokenSelect 2");
-      setResult({ res: "error", message: "cannot swap same coin" });
-      return;
-    }
-
-    console.log("onTokenSelect 3");
-    if (base.is_memecoin && target.is_memecoin) {
-      console.log("onTokenSelect 4");
-      setResult({ res: "error", message: "one coin only be memecoin" });
-    }
-
-    console.log("onTokenSelect 5");
-    if (!base.is_memecoin && !target.is_memecoin) {
-      console.log("onTokenSelect 6");
-      const result: any = await getSwapPricesForJup(base, target, wallet!);
-      console.log("jup result ", result);
-      setBaseToken(result.baseToken);
-      setTargetToken(result.targetToken);
-    } else {
-      console.log("onTokenSelect 7");
-      let memecoin = base.is_memecoin ? base : target;
-      await loadMemecoin(memecoin, isBase);
-    }
-  };
-
-  const loadMemecoin = async (token: SwapCoin, isBase: boolean) => {
-    setSwapLoading(true);
-    const result: any = await getSwapPrices(token, wallet!, isBase);
-    if (result) {
-      setBaseToken(result.baseToken);
-      setTargetToken(result.targetToken);
-      setCurve(result.curve);
-    }
-    setSwapLoading(false);
-  };
-
-  const executeSwap = React.useCallback(async () => {
-    if (!wallet) {
-      setResult({ res: "error", message: "wallet is not connected" });
-      return;
-    }
-    try {
-      setSwapLoading(true);
-
-      if (!baseToken.is_memecoin && !targetToken.is_memecoin) {
-        const result = await getquote({
-          inputMint: baseToken.token,
-          outputMint: targetToken.token,
-          lamportValue:
-            baseToken.value *
-            (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000),
+  React.useEffect(() => {
+    setForm({
+      ...form,
+      name: onboarding.name,
+      username: onboarding.username,
+      description: onboarding.bio,
+      pronouns: onboarding.pronouns,
+      link: onboarding.website,
+      host: referrer,
+    });
+    if (onboarding.image) {
+      setPreview(onboarding.image);
+    } else if (user) {
+      const guestData = user!.guest_data;
+      setPreview(guestData.picture ?? "");
+      if (!onboarding.name) {
+        setForm({
+          ...form,
+          name: guestData.name,
+          username: guestData.username,
+          link: guestData.website,
+          pronouns: guestData.pronouns,
+          description: guestData.bio,
         });
-        if (result.status) {
-          const swapResult = await getSwapTransaction({
-            quote: result.data,
-            wallet: wallet?.publicKey.toBase58(),
-          });
-          let txHex: any = swapResult.data;
-
-          const connection = new Connection(
-            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-            {
-              confirmTransactionInitialTimeout: 120000,
-            },
-          );
-          const env = new anchor.AnchorProvider(connection, wallet, {
-            preflightCommitment: "processed",
-          });
-
-          anchor.setProvider(env);
-
-          const userConn: UserConn = new UserConn(env, web3Consts.programID);
-          const data: any = Buffer.from(txHex, "base64");
-          const tx = anchor.web3.VersionedTransaction.deserialize(data);
-          const signature = await userConn.provider.sendAndConfirm(tx);
-
-          console.log("signature", signature);
-          setResult({
-            res: "success",
-            message: "Congrats! Your token have been swapped successfully",
-          });
-          setBaseToken(defaultBaseToken);
-          setTargetToken({
-            ...baseCoins[0],
-            balance: 0,
-            value: 0,
-          });
-          setSwapLoading(false);
-        } else {
-          setResult({ res: "error", message: "error on jupiter swap" });
-          setSwapLoading(false);
-        }
-      } else {
-        const response = await swapTokens(targetToken, baseToken, wallet!);
-        console.log("response ", response);
-        setResult({ res: response.type, message: response.message });
-        setSwapLoading(false);
       }
+    }
+  }, [onboarding, user]);
+
+  const lookupReferer = async (username: string) => {
+    if (!username) return;
+
+    try {
+      const res = await axios.get(`/api/get-user-data?username=${username}`);
+      if (res.data) {
+        setReferer(res.data.profilenft);
+      } else {
+        setError({
+          error: true,
+          message: "Username added as referer is invalid",
+        });
+        setReferer("");
+      }
+    } catch (error) {
+      setError({
+        error: true,
+        message: "Username added as referer is invalid",
+      });
+      setReferer("");
+    }
+  };
+
+  const checkForSymbol = React.useCallback(async () => {
+    if (["create"].includes(form.username.toLowerCase())) {
+      setSymbolError({
+        error: true,
+        message: "Symbol already exists!",
+      });
+      return;
+    }
+
+    const result = await axios.get(`/api/check-symbol?username=${form.symbol}`);
+
+    if (result.data) {
+      setSymbolError({
+        error: true,
+        message: "Symbol already exists!",
+      });
+      return;
+    }
+
+    setSymbolError({
+      error: false,
+      message: "",
+    });
+  }, [form.symbol]);
+
+  const checkForUsername = React.useCallback(async () => {
+    if (["create"].includes(form.username.toLowerCase())) {
+      setError({
+        error: true,
+        message: "Username already exists!",
+      });
+      return;
+    }
+
+    const result = await axios.get(
+      `/api/check-username?username=${form.username}`,
+    );
+
+    if (result.data) {
+      setError({
+        error: true,
+        message: "Username already exists!",
+      });
+      return;
+    }
+
+    setError({
+      error: false,
+      message: "",
+    });
+  }, [form.username]);
+
+  const createMessage = React.useCallback((text: string, type: string) => {
+    setMessage({ message: text, type });
+  }, []);
+
+  const validateFields = () => {
+    if (!profileInfo) return;
+
+    if (referrer === "" && form.host !== "") {
+      lookupReferer(form.host);
+    }
+
+    if (referer == "") {
+      createMessage("Invalid activation token", "error");
+      return false;
+    }
+
+    if (profileInfo.profile.address !== undefined) {
+      createMessage("User already have profile address", "error");
+      return false;
+    }
+
+    if (profileInfo.genesisToken == "") {
+      createMessage("Invalid gensis token", "error");
+      return false;
+    }
+
+    if (profileInfo.solBalance < 0.04) {
+      createMessage(
+        "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
+        "warn",
+      );
+      return false;
+    }
+
+    if (profileInfo.usdcBalance < 8) {
+      createMessage(
+        "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
+        "warn",
+      );
+      return false;
+    }
+
+    if (!image && !preview) {
+      createMessage("Image is required", "error");
+      return false;
+    }
+    if (form.name.length == 0) {
+      createMessage("First name is required", "error");
+      return false;
+    }
+
+    if (form.username.length == 0) {
+      createMessage("Username is required", "error");
+      return false;
+    }
+
+    if (form.symbol.length === 0) {
+      createMessage("Symbol is required", "error");
+      return false;
+    }
+
+    if (form.symbol.length > 10) {
+      createMessage("Symbol must be up to 10 characters long", "error");
+      return false;
+    }
+
+    if (form.username.length > 20 || form.username.length < 3) {
+      createMessage("Username must be between 3 and 20 characters", "error");
+      return false;
+    }
+
+    if (referer == "") {
+      if (form.host.length == 0) {
+        createMessage("Host is required", "error");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const submitForm = React.useCallback(async () => {
+    if (!validateFields() || !profileInfo || !wallet) {
+      return;
+    }
+
+    createMessage("", "");
+
+    setIsLoading(true);
+
+    let parentProfile;
+    if (referer == "") {
+      const res = await axios.get(`/api/get-user-data?username=${form.host}`);
+      console.log("lookupHost ", res.data);
+      if (res.data) {
+        parentProfile = res.data.profilenft;
+      } else {
+        createMessage("Host is invalid", "error");
+        return;
+      }
+    } else {
+      parentProfile = referer;
+    }
+
+    let resultingImage = image;
+
+    if (!resultingImage && preview) {
+      const response = await fetch(preview);
+
+      const blob = await response.blob();
+
+      resultingImage = new File([blob], new Date().toTimeString());
+    }
+
+    let resultingBanner = imagePreview;
+
+    if (bannerImage) {
+      resultingBanner = await uploadFile(
+        bannerImage!,
+        `${form.username}-banner-${new Date().getMilliseconds()}`,
+        "banners",
+      );
+    }
+
+    const result = await createProfile({
+      wallet,
+      profileInfo,
+      image: resultingImage,
+      form,
+      preview,
+      parentProfile: new PublicKey(referer),
+      banner: resultingBanner,
+    });
+
+    createMessage(result.message, result.type);
+
+    if (result.type === "success") {
+      setCurrentUser((prev) => {
+        return { ...prev!, profile: result.data };
+      });
 
       setTimeout(() => {
-        setResult({ res: "", message: "" });
-      }, 4000);
-    } catch (error) {
-      setSwapLoading(false);
-      console.log("swap error ", error);
+        router.replace(`/chat`);
+      }, 5000);
     }
-  }, [baseToken, targetToken, wallet]);
+    setIsLoading(false);
+  }, [wallet, profileInfo, image, form]);
 
-  const switchCoins = React.useCallback(() => {
-    if (!baseToken.token) return;
+  const saveUserData = React.useCallback(async () => {
+    setIsLoading(true);
 
-    if (targetToken!.value > targetToken!.balance) {
-      const isMMOSHBase = !targetToken.is_memecoin;
+    if (form.description.length < 25) return;
+    if (!form.name) return;
+    if (!form.username) return;
+    if (form.username.length < 3) return;
+    if (form.username.length > 20) return;
+    if (form.name.length > 50) return;
 
-      const value = targetToken!.balance;
+    let bannerResult = "";
+    let imageResult = "https://storage.googleapis.com/mmosh-assets/default.jpg";
 
-      const buyValue = isMMOSHBase
-        ? curve!.buyWithBaseAmount(value - value * 0.06)
-        : curve!.sellTargetAmount(value - value * 0.06);
+    try {
+      const date = new Date().getMilliseconds();
 
-      setBaseToken({ ...targetToken!, value });
-      setTargetToken({ ...baseToken!, value: buyValue });
-      return;
+      if (bannerImage) {
+        bannerResult = await uploadFile(
+          bannerImage,
+          `${form.username}-banner-${date}`,
+          "banners",
+        );
+      }
+
+      if (image) {
+        imageResult = await uploadFile(
+          image,
+          `${form.username}-guest_profile-${date}`,
+          "images",
+        );
+      }
+
+      await client.put("/guest-data", {
+        ...form,
+        banner: bannerResult,
+        picture: imageResult,
+      });
+      setPreview(imageResult);
+    } catch (err) {
+      // TODO add logic to remove image
+      if (bannerResult) {
+      }
+      if (imageResult) {
+      }
     }
 
-    setTargetToken(baseToken);
-    setBaseToken(targetToken);
-  }, [baseToken, targetToken]);
+    setSelectedStep(1);
+    setIsLoading(false);
+  }, [form, image, bannerImage]);
 
-  const onChangeValue = React.useCallback(
-    async (value: number) => {
-      if (value === 0) {
-        setBaseToken({ ...baseToken!, value });
-        setTargetToken({ ...targetToken!, value });
-        return;
-      }
+  React.useEffect(() => {
+    if (!image) return;
+    const objectUrl = URL.createObjectURL(image);
+    setPreview(objectUrl);
+  }, [image]);
 
-      if (value < 0) {
-        setBaseToken({ ...baseToken!, value: 0 });
-        setTargetToken({ ...targetToken!, value });
-        return;
-      }
+  const goBack = React.useCallback(() => {
+    setSelectedStep(2);
+  }, []);
 
-      if (value > baseToken!.balance) return;
-
-      if (baseToken.token == "" || targetToken.token == "") return;
-
-      if (!baseToken.is_memecoin && !targetToken.is_memecoin) {
-        console.log("baseToken.decimals", baseToken.decimals);
-        setBaseToken({ ...baseToken!, value });
-        const result = await getquote({
-          inputMint: baseToken.token,
-          outputMint: targetToken.token,
-          lamportValue:
-            value *
-            (baseToken.decimals == 9 ? web3Consts.LAMPORTS_PER_OPOS : 1000_000),
-        });
-        if (result.status) {
-          console.log(targetToken.decimals);
-
-          setTargetToken({
-            ...targetToken!,
-            value:
-              result.data.outAmount /
-              (targetToken.decimals == 9
-                ? web3Consts.LAMPORTS_PER_OPOS
-                : 1000_000),
-          });
-        }
-      } else {
-        const isMMOSHBase = !baseToken.is_memecoin;
-
-        setBaseToken({ ...baseToken!, value });
-        const buyValue = isMMOSHBase
-          ? curve!.buyWithBaseAmount(value - value * 0.06)
-          : curve!.sellTargetAmount(value - value * 0.06);
-        setTargetToken({ ...targetToken!, value: buyValue });
-      }
-    },
-    [baseToken, targetToken],
-  );
-
-  const goToNextStep = React.useCallback(() => {
-    setSelectedStep(4);
+  const skipStep = React.useCallback(() => {
+    router.replace("/chat");
     client.put("/onboarding-step", {
-      step: 4,
+      step: 5,
     });
   }, []);
 
+  React.useEffect(() => {
+    if (!bannerImage) return;
+    const objectUrl = URL.createObjectURL(bannerImage);
+    setImagePreview(objectUrl);
+  }, [bannerImage]);
+
   return (
-    <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4">
-      <div className="w-full flex justify-between">
-        <button onClick={() => setSelectedStep(2)}>
-          <ArrowBack />
-        </button>
+    <div className="w-full flex justify-center">
+      <div className="flex flex-col items-center justify-center w-full">
+        <MessageBanner type={message.type} message={message.message} />
+        <div className="backdrop-container rounded-xl border border-white border-opacity-20 my-10 container mx-auto">
+          <div className="p-5">
+            <div className="text-center relative">
+              <h4 className="text-white font-goudy font-normal mb-8">
+                Mint Your Free <br />
+                Membership Profile!
+              </h4>
+              <p className="text-base max-w-2xl mx-auto light-gray-color">
+                Membership has it's privileges! With a lifetime Membership
+                Profile, you can create own personal and community bots, connect
+                with other members, earn royalties, referral rewards and income
+                from the goods and services you offer to other members
+              </p>
+              <p className="text-base max-w-2xl mx-auto light-gray-color mt-2.5">
+                you'll only be paying 8 USDC and about 21 cents in network fees
+                for Lifetime membership
+              </p>
+              <div
+                className="absolute left-0 top-0 cursor-pointer"
+                onClick={goBack}
+              >
+                <ArrowBack />
+              </div>
 
-        <p className="text-sm">Step 4 of 5</p>
-      </div>
+              <p className="text-base light-gray-color absolute right-0 top-0">
+                Step 4 of 4
+              </p>
+            </div>
+            <div className="w-full h-full flex flex-col p-5">
+              <div className="mb-4">
+                <p className="text-lg text-white font-bold">About You</p>
+              </div>
 
-      <div className="flex flex-col self-center mb-12 justify-center items-center">
-        <p className="text-white font-goudy text-base text-center">Swap</p>
+              <div className="flex flex-col mb-4">
+                <p className="text-sm">Banner Image</p>
+                <div className="h-[200px]">
+                  <ImageAccountPicker
+                    changeImage={setBannerImage}
+                    image={imagePreview}
+                  />
+                </div>
+              </div>
+            </div>
 
-        <div className="my-2" />
-
-        <p className="text-sm text-center md:max-w-[50%] max-w-[75%]">
-          Swap some of your SOL for USDC, a stablecoin pegged to the US Dollar,
-          or purchase Bot Coins you can use for a range of goods and services.
-          Make sure you keep at least a few dollars of SOL for network fees!
-        </p>
-      </div>
-
-      <div className="swap-container-card mt-8 max-h-[550px] md:p-4 lg:p-6 rounded-xl">
-        <div className="swap-container-inner mx-12 p-8">
-          <div className="flex w-full flex-col justify-between">
-            <div className="w-full flex justify-between">
-              <p className="font-bold text-white text-sm mr-2">You're Paying</p>
-              <div className="flex items-center">
-                <WalletIcon />
-                <p className="font-normal text-sm text-white mx-1">
-                  {baseToken.balance}
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 mt-4">
+              <div>
+                <p className="text-sm">
+                  Avatar<sup>*</sup>
+                  <ImagePicker changeImage={setImage} image={preview} />
                 </p>
-                {baseToken.symbol !== "Select" && (
-                  <p className="font-normal text-sm text-white">
-                    {baseToken.symbol}
+              </div>
+
+              <div>
+                <Input
+                  type="text"
+                  title="Display Name"
+                  required
+                  helperText="Up to 50 characters, can have spaces."
+                  placeholder="Display Name"
+                  value={form.displayName}
+                  onChange={(e) =>
+                    setForm({ ...form, displayName: e.target.value })
+                  }
+                />
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="First Name or Alias"
+                  required
+                  helperText="Up to 50 characters, can have spaces."
+                  placeholder="Name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="Last Name"
+                  required={false}
+                  helperText="Up to 15 characters"
+                  placeholder="Last Name"
+                  value={form.lastName}
+                  onChange={(e) =>
+                    setForm({ ...form, lastName: e.target.value })
+                  }
+                />
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="Username"
+                  required
+                  helperText={
+                    error.error
+                      ? error.message
+                      : "Usernames must have between 3 and 20 characters"
+                  }
+                  error={error.error}
+                  value={form.username}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      username: e.target.value.replace(/\s/g, ""),
+                    })
+                  }
+                  onBlur={checkForUsername}
+                  placeholder="Username"
+                />
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="Symbol"
+                  required
+                  helperText={
+                    symbolError.error
+                      ? symbolError.message
+                      : "Symbol can only be letters and numbers up to 10 characters"
+                  }
+                  error={error.error}
+                  value={form.symbol}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      symbol: e.target.value.replace(/\s/g, ""),
+                    })
+                  }
+                  onBlur={checkForSymbol}
+                  placeholder="Symbol"
+                />
+              </div>
+
+              <div>
+                <div className="flex flex-col">
+                  <p className="text-xs text-white">
+                    Pronouns<sup>*</sup>
                   </p>
+                  <Select
+                    value={form.pronouns}
+                    onChange={(e) =>
+                      setForm({ ...form, pronouns: e.target.value })
+                    }
+                    options={PronounsSelectOptions}
+                  />
+                </div>
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="Bio"
+                  required={false}
+                  placeholder="Tell us about yourself in one paragraph or less"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  textarea
+                />
+
+                <div className="my-2" />
+
+                <Input
+                  type="text"
+                  title="Web Link"
+                  required={false}
+                  placeholder="https://your.domain"
+                  value={form.link}
+                  onChange={(e) => setForm({ ...form, link: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {referer === "" && (
+              <div className="w-full self-start mt-10">
+                <p className="text-lg text-white">Your Host</p>
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
+                  <Input
+                    type="text"
+                    title="Username"
+                    required
+                    error={error.error}
+                    value={form.host}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        host: e.target.value.replace(/\s/g, ""),
+                      })
+                    }
+                    placeholder="Host Username"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="mt-10 flex flex-col">
+              <div className="flex justify-evenly items-start space-x-4">
+                {!isMobileScreen && (
+                  <div className="w-[25%]">
+                    <button
+                      className="btn btn-outline text-white border-white hover:bg-white hover:text-black w-full"
+                      onClick={skipStep}
+                    >
+                      Skip
+                    </button>
+                  </div>
                 )}
+
+                <div className="flex flex-col justify-center items-center w-[25%]">
+                  <Button
+                    isLoading={isLoading}
+                    isPrimary
+                    title="Mint Your Profile"
+                    size="large"
+                    action={submitForm}
+                    disabled={isLoading}
+                  />
+
+                  <div className="flex flex-col justify-center items-center mt-5">
+                    <p className="text-sm text-white">Price: 8 USDC</p>
+                    <p className="text-tiny text-white">
+                      plus a small amount of SOL for gas fees
+                    </p>
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-center">
+                      <p className="text-sm text-white">Current balance</p>
+                      <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
+                        {profileInfo?.usdcBalance || 0}
+                      </div>
+                      <p className="text-sm text-white">USDC</p>
+                    </div>
+
+                    <div className="flex items-center mt-2 justify-center">
+                      <p className="text-sm text-white">Current balance</p>
+                      <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
+                        {profileInfo?.solBalance || 0}
+                      </div>
+                      <p className="text-sm text-white">SOL</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-[25%]">
+                  <button
+                    className="btn btn-outline text-white border-white hover:bg-white hover:text-black w-full"
+                    onClick={saveUserData}
+                  >
+                    Save as Guest
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="w-full flex justify-between px-1 py-2 bg-[#00000021] rounded-md border-white border-opacity-[0.05] border-[1px]">
-              <CoinSelect
-                key={"base"}
-                selectedCoin={baseToken}
-                onTokenSelect={onTokenSelect}
-                otherToken={targetToken}
-                isBase={true}
-                readonly={false}
-              />
-
-              <div className="w-[25%] flex justify-end">
-                <input
-                  value={baseToken.value}
-                  readOnly={!baseToken.token}
-                  type="number"
-                  onChange={(e) => {
-                    const number = Number(e.target.value);
-
-                    if (Number.isNaN(number)) return;
-
-                    onChangeValue(number);
-                  }}
-                  placeholder="0.00"
-                  className="input max-w-[100%] text-center text-xs bg-transparent placeholder-white placeholder-opacity-[0.3]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <button
-            onClick={switchCoins}
-            className="swap-arrows-button rounded-full mt-8 mb-4"
-          >
-            <CompareArrows />
-          </button>
-
-          <div className="flex w-full flex-col justify-between">
-            <div className="w-full flex justify-between">
-              <p className="font-bold text-white text-sm mr-2">To receive</p>
-              <div className="flex items-center">
-                <WalletIcon />
-                <p className="font-normal text-sm text-white ml-1">
-                  {targetToken.balance}
-                </p>
-                <p className="font-normal text-sm text-white ml-1">
-                  {targetToken.symbol}
-                </p>
-              </div>
-            </div>
-
-            <div className="w-full flex justify-between px-1 py-2 bg-[#DEDDFC12] rounded-md border-white border-opacity-[0.05] border-[1px]">
-              <CoinSelect
-                key={"target"}
-                selectedCoin={targetToken}
-                onTokenSelect={onTokenSelect}
-                isBase={false}
-                otherToken={baseToken}
-                readonly={false}
-              />
-
-              <div className="w-[25%] flex justify-end">
-                <input
-                  readOnly={true}
-                  value={targetToken.value}
-                  onChange={() => { }}
-                  className="input max-w-[100%] text-center text-xs bg-transparent placeholder-white placeholder-opacity-[0.3]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col mt-4">
-            {result.res === "error" && (
-              <p className="text-red-600 text-center mb-2 text-sm">
-                There was an error while swapping your tokens. Please, try again
-              </p>
-            )}
-            {result.res === "success" && (
-              <p className="text-green-500 text-center mb-2 text-sm">
-                Congrats! Your tokens have been swapped successfully
-              </p>
-            )}
-
-            <div className="flex">
-              <Button
-                isLoading={false}
-                title="Skip"
-                size="large"
-                action={goToNextStep}
-                isPrimary={false}
-              />
-
-              <div className="mx-4" />
-
-              <Button
-                disabled={baseToken.value === 0 || swapLoading}
-                isLoading={swapLoading}
-                title="Swap"
-                size="large"
-                action={executeSwap}
-                isPrimary
-              />
+              {isMobileScreen && (
+                <div className="w-[25%]">
+                  <button
+                    className="btn btn-outline text-white border-white hover:bg-white hover:text-black w-full"
+                    onClick={skipStep}
+                  >
+                    Skip
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

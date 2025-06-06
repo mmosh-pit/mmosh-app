@@ -350,7 +350,30 @@ const Step4 = () => {
   }, [wallet, profileInfo, image, form]);
 
   const saveUserData = React.useCallback(async () => {
-    if (!validateFields()) return;
+    if (form.name.length == 0) {
+      createMessage("First name is required", "error");
+      return;
+    }
+
+    if (form.username.length == 0) {
+      createMessage("Username is required", "error");
+      return;
+    }
+
+    if (form.symbol.length === 0) {
+      createMessage("Symbol is required", "error");
+      return;
+    }
+
+    if (form.symbol.length > 10) {
+      createMessage("Symbol must be up to 10 characters long", "error");
+      return;
+    }
+
+    if (form.username.length > 20 || form.username.length < 3) {
+      createMessage("Username must be between 3 and 20 characters", "error");
+      return;
+    }
 
     setIsLoading(true);
 

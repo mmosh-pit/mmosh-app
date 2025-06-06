@@ -124,6 +124,7 @@ const Step4 = () => {
         ...form,
         host: user?.referred_by ?? referrer,
       });
+      lookupReferer(user?.referred_by ?? referrer);
     }
   }, [onboarding, user]);
 
@@ -208,10 +209,6 @@ const Step4 = () => {
 
   const validateFields = () => {
     if (!profileInfo) return;
-
-    if (referrer === "" && form.host !== "") {
-      lookupReferer(form.host);
-    }
 
     if (referer == "") {
       createMessage("Invalid activation token", "error");

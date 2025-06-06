@@ -7,7 +7,6 @@ import useWallet from "@/utils/wallet";
 import { PublicKey } from "@solana/web3.js";
 import Input from "../common/Input";
 import Button from "../common/Button";
-import Select from "../common/Select";
 import MessageBanner from "../common/MessageBanner";
 import ArrowBack from "@/assets/icons/ArrowBack";
 import ImagePicker from "../ImagePicker";
@@ -21,21 +20,6 @@ import { useRouter } from "next/navigation";
 import ImageAccountPicker from "./ImageAccountPicker";
 import { uploadFile } from "@/app/lib/firebase";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
-
-const PronounsSelectOptions = [
-  {
-    label: "They/Them",
-    value: "they/them",
-  },
-  {
-    label: "He/Him",
-    value: "he/him",
-  },
-  {
-    label: "She/Her",
-    value: "she/her",
-  },
-];
 
 const Step4 = () => {
   const router = useRouter();
@@ -65,23 +49,16 @@ const Step4 = () => {
     message: "",
   });
 
-  const [symbolError, setSymbolError] = React.useState({
-    error: false,
-    message: "",
-  });
-
   const [form, setForm] = React.useState({
     displayName: "",
     name: "",
     lastName: "",
     username: "",
     host: "",
-    symbol: "",
     description: "",
     descriptor: "",
     noun: "",
     link: "",
-    pronouns: "they/them",
   });
 
   React.useEffect(() => {
@@ -98,7 +75,6 @@ const Step4 = () => {
       name: onboarding.name,
       username: onboarding.username,
       description: onboarding.bio,
-      pronouns: onboarding.pronouns,
       link: onboarding.website,
       host: referrer,
     });
@@ -113,7 +89,6 @@ const Step4 = () => {
           name: guestData.name,
           username: guestData.username,
           link: guestData.website,
-          pronouns: guestData.pronouns,
           description: guestData.bio,
         });
       }
@@ -150,31 +125,6 @@ const Step4 = () => {
       setReferer("");
     }
   };
-
-  const checkForSymbol = React.useCallback(async () => {
-    if (["create"].includes(form.username.toLowerCase())) {
-      setSymbolError({
-        error: true,
-        message: "Symbol already exists!",
-      });
-      return;
-    }
-
-    const result = await axios.get(`/api/check-symbol?username=${form.symbol}`);
-
-    if (result.data) {
-      setSymbolError({
-        error: true,
-        message: "Symbol already exists!",
-      });
-      return;
-    }
-
-    setSymbolError({
-      error: false,
-      message: "",
-    });
-  }, [form.symbol]);
 
   const checkForUsername = React.useCallback(async () => {
     if (["create"].includes(form.username.toLowerCase())) {
@@ -248,16 +198,6 @@ const Step4 = () => {
 
     if (form.username.length == 0) {
       createMessage("Username is required", "error");
-      return false;
-    }
-
-    if (form.symbol.length === 0) {
-      createMessage("Symbol is required", "error");
-      return false;
-    }
-
-    if (form.symbol.length > 10) {
-      createMessage("Symbol must be up to 10 characters long", "error");
       return false;
     }
 
@@ -357,16 +297,6 @@ const Step4 = () => {
 
     if (form.username.length == 0) {
       createMessage("Username is required", "error");
-      return;
-    }
-
-    if (form.symbol.length === 0) {
-      createMessage("Symbol is required", "error");
-      return;
-    }
-
-    if (form.symbol.length > 10) {
-      createMessage("Symbol must be up to 10 characters long", "error");
       return;
     }
 
@@ -557,47 +487,9 @@ const Step4 = () => {
                   onBlur={checkForUsername}
                   placeholder="Username"
                 />
-
-                <div className="my-2" />
-
-                <Input
-                  type="text"
-                  title="Symbol"
-                  required
-                  helperText={
-                    symbolError.error
-                      ? symbolError.message
-                      : "Symbol can only be letters and numbers up to 10 characters"
-                  }
-                  error={error.error}
-                  value={form.symbol}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      symbol: e.target.value.replace(/\s/g, ""),
-                    })
-                  }
-                  onBlur={checkForSymbol}
-                  placeholder="Symbol"
-                />
               </div>
 
               <div>
-                <div className="flex flex-col">
-                  <p className="text-xs text-white">
-                    Pronouns<sup>*</sup>
-                  </p>
-                  <Select
-                    value={form.pronouns}
-                    onChange={(e) =>
-                      setForm({ ...form, pronouns: e.target.value })
-                    }
-                    options={PronounsSelectOptions}
-                  />
-                </div>
-
-                <div className="my-2" />
-
                 <Input
                   type="text"
                   title="Bio"

@@ -8,28 +8,12 @@ import MessageBanner from "../common/MessageBanner";
 import ImagePicker from "../ImagePicker";
 import { createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
-import Select from "../common/Select";
 import Button from "../common/Button";
 import useWallet from "@/utils/wallet";
 import { PublicKey } from "@solana/web3.js";
 import ImageAccountPicker from "../Account/ImageAccountPicker";
 import { uploadFile } from "@/app/lib/firebase";
 import client from "@/app/lib/httpClient";
-
-const PronounsSelectOptions = [
-  {
-    label: "They/Them",
-    value: "they/them",
-  },
-  {
-    label: "He/Him",
-    value: "he/him",
-  },
-  {
-    label: "She/Her",
-    value: "she/her",
-  },
-];
 
 const ProfileForm = () => {
   const wallet = useWallet();
@@ -57,9 +41,7 @@ const ProfileForm = () => {
     description: "",
     descriptor: "",
     noun: "",
-    symbol: "",
     link: "",
-    pronouns: "they/them",
   });
 
   React.useEffect(() => {
@@ -70,9 +52,7 @@ const ProfileForm = () => {
       setForm({
         name: profileData?.name || guestData?.name,
         username: profileData?.username || guestData?.username,
-        symbol: profileData?.symbol || guestData?.username,
         description: profileData?.bio || guestData?.bio,
-        pronouns: profileData?.pronouns || guestData?.pronouns,
         link: profileData?.link || guestData?.website,
         descriptor: profileData?.descriptor,
         lastName: profileData?.lastName,
@@ -91,11 +71,6 @@ const ProfileForm = () => {
   });
 
   const [error, setError] = React.useState({
-    error: false,
-    message: "",
-  });
-
-  const [symbolError, setSymbolError] = React.useState({
     error: false,
     message: "",
   });
@@ -130,31 +105,6 @@ const ProfileForm = () => {
       setReferer("");
     }
   };
-
-  const checkForSymbol = React.useCallback(async () => {
-    if (["create"].includes(form.username.toLowerCase())) {
-      setSymbolError({
-        error: true,
-        message: "Symbol already exists!",
-      });
-      return;
-    }
-
-    const result = await axios.get(`/api/check-symbol?username=${form.symbol}`);
-
-    if (result.data) {
-      setSymbolError({
-        error: true,
-        message: "Symbol already exists!",
-      });
-      return;
-    }
-
-    setSymbolError({
-      error: false,
-      message: "",
-    });
-  }, [form.symbol]);
 
   const checkForUsername = React.useCallback(async () => {
     if (["create"].includes(form.username.toLowerCase())) {
@@ -327,16 +277,6 @@ const ProfileForm = () => {
       return;
     }
 
-    if (form.symbol.length === 0) {
-      createMessage("Symbol is required", "error");
-      return;
-    }
-
-    if (form.symbol.length > 10) {
-      createMessage("Symbol must be up to 10 characters long", "error");
-      return;
-    }
-
     if (form.username.length > 20 || form.username.length < 3) {
       createMessage("Username must be between 3 and 20 characters", "error");
       return;
@@ -482,47 +422,9 @@ const ProfileForm = () => {
                   onBlur={checkForUsername}
                   placeholder="Username"
                 />
-
-                <div className="my-2" />
-
-                <Input
-                  type="text"
-                  title="Symbol"
-                  required
-                  helperText={
-                    symbolError.error
-                      ? symbolError.message
-                      : "Symbol can only be letters and numbers up to 10 characters"
-                  }
-                  error={error.error}
-                  value={form.symbol}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      symbol: e.target.value.replace(/\s/g, ""),
-                    })
-                  }
-                  onBlur={checkForSymbol}
-                  placeholder="Symbol"
-                />
               </div>
 
               <div className="flex flex-col">
-                <div className="flex flex-col">
-                  <p className="text-xs text-white">
-                    Pronouns<sup>*</sup>
-                  </p>
-                  <Select
-                    value={form.pronouns}
-                    onChange={(e) =>
-                      setForm({ ...form, pronouns: e.target.value })
-                    }
-                    options={PronounsSelectOptions}
-                  />
-                </div>
-
-                <div className="my-2" />
-
                 <Input
                   type="text"
                   title="Bio"

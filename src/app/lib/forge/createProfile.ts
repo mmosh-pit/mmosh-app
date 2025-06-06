@@ -48,7 +48,7 @@ export const createProfile = async ({
       name: fullname,
       lastName: form.lastName,
       displayName: form.displayName,
-      symbol: form.symbol,
+      symbol: form.username.substring(0, 10),
       description: form.description,
       image: "",
       banner,
@@ -87,10 +87,6 @@ export const createProfile = async ({
         {
           trait_type: "Noun",
           value: form.noun,
-        },
-        {
-          trait_type: "Pronoun",
-          value: form.pronouns,
         },
       ],
     };
@@ -209,7 +205,7 @@ export const createProfile = async ({
 
     const res = await userConn.mintProfile({
       name: form.username.substring(0, 15),
-      symbol: form.symbol,
+      symbol: form.username.substring(0, 10),
       uriHash: shadowHash,
       parentProfile,
       genesisProfile,
@@ -219,9 +215,8 @@ export const createProfile = async ({
     if (res.Ok) {
       const params = {
         username: form.username,
-        symbol: form.symbol,
+        symbol: form.username.substring(0, 10),
         bio: form.description,
-        pronouns: form.pronouns,
         displayName: form.displayName,
         name: fullname,
         lastName: form.lastName,

@@ -310,6 +310,7 @@ const ProfileForm = () => {
         banner: bannerResult,
         picture: imageResult,
       });
+      createMessage("Your guest data has been successfully saved!", "success");
       setImagePreview(imageResult);
     } catch (err) {
       // TODO add logic to remove image

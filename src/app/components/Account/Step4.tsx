@@ -85,9 +85,12 @@ const Step4 = () => {
   });
 
   React.useEffect(() => {
+    console.log("Cycle to check referrer");
     if (referrer) {
+      console.log("Has a referrer already loaded");
       lookupReferer(referrer);
     } else if (user) {
+      console.log("Has referrer from the User");
       lookupReferer(user.referred_by);
     }
   }, [referrer, user]);
@@ -124,15 +127,19 @@ const Step4 = () => {
         ...form,
         host: user?.referred_by ?? referrer,
       });
-      lookupReferer(user?.referred_by ?? referrer);
     }
   }, [onboarding, user]);
 
   const lookupReferer = async (username: string) => {
     if (!username) return;
 
+    console.log("Looking up referrer with username: ", username);
+
     try {
       const res = await axios.get(`/api/get-user-data?username=${username}`);
+
+      console.log("Got referrer result data: ", res.data);
+
       if (res.data) {
         setReferer(res.data.profilenft);
       } else {

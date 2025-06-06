@@ -379,19 +379,11 @@ const Header = () => {
     if (profileNft?.address) {
       username = profileNft.userinfo.username;
 
-      const res = await axios.get(`/api/get-user-data?username=${username}`);
-      setCurrentUser(res.data);
       const notificationResult = await axios.get(
         "/api/notifications?wallet=" + wallet?.publicKey.toBase58(),
       );
       setBadge(notificationResult.data.unread);
       setNotifications(notificationResult.data.data);
-    } else {
-      const res = await axios.get(
-        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
-      );
-
-      setCurrentUser(res.data);
     }
 
     setProfileInfo({
@@ -451,19 +443,19 @@ const Header = () => {
     checkIfIsAuthenticated();
   }, [wallet]);
 
-  React.useEffect(() => {
-    if (wallet?.publicKey && incomingWalletToken !== "") {
-      (async () => {
-        const result = await axios.post("/api/link-social-wallet", {
-          token: incomingWalletToken,
-          wallet: wallet.publicKey.toString(),
-        });
-
-        setCurrentUser(result.data);
-        setIncomingWalletToken("");
-      })();
-    }
-  }, [wallet, incomingWalletToken]);
+  // React.useEffect(() => {
+  //   if (wallet?.publicKey && incomingWalletToken !== "") {
+  //     (async () => {
+  //       const result = await axios.post("/api/link-social-wallet", {
+  //         token: incomingWalletToken,
+  //         wallet: wallet.publicKey.toString(),
+  //       });
+  //
+  //       setCurrentUser(result.data);
+  //       setIncomingWalletToken("");
+  //     })();
+  //   }
+  // }, [wallet, incomingWalletToken]);
 
   const resetNotification = async () => {
     await axios.put("/api/notifications/update", {

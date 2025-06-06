@@ -260,7 +260,7 @@ const Step3 = () => {
   const goToNextStep = React.useCallback(() => {
     setSelectedStep(3);
     client.put("/onboarding-step", {
-      step: 4,
+      step: 3,
     });
   }, []);
 

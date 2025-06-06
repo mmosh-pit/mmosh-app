@@ -82,7 +82,7 @@ const Step1 = () => {
               isLoading={false}
               action={() => {
                 client.put("/onboarding-step", {
-                  step: 2,
+                  step: 1,
                 });
                 setSelectedStep(1);
               }}

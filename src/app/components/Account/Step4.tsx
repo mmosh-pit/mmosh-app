@@ -208,6 +208,7 @@ const Step4 = () => {
   }, []);
 
   const validateFields = () => {
+    console.log("Profile info: ", profileInfo);
     if (!profileInfo) return;
 
     console.log("Is referrer empty here? ", referer, form.host);
@@ -279,7 +280,7 @@ const Step4 = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (!validateFields() || !profileInfo || !wallet) {
+    if (!validateFields() || !wallet || !profileInfo) {
       return;
     }
 
@@ -394,7 +395,7 @@ const Step4 = () => {
 
     setSelectedStep(1);
     setIsLoading(false);
-  }, [form, image, bannerImage]);
+  }, [form, image, bannerImage, profileInfo, wallet, profileInfo]);
 
   React.useEffect(() => {
     if (!image) return;

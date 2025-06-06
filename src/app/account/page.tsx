@@ -22,7 +22,7 @@ const Account = () => {
     if (selectedStep === 2) return <Step3 />;
     if (selectedStep === 3) return <Step4 />;
 
-    return <Step2 />;
+    return <Step1 />;
   };
 
   React.useEffect(() => {

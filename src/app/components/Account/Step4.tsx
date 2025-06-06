@@ -85,12 +85,9 @@ const Step4 = () => {
   });
 
   React.useEffect(() => {
-    console.log("Cycle to check referrer");
     if (referrer) {
-      console.log("Has a referrer already loaded");
       lookupReferer(referrer);
     } else if (user) {
-      console.log("Has referrer from the User");
       lookupReferer(user.referred_by);
     }
   }, [referrer, user]);
@@ -133,12 +130,8 @@ const Step4 = () => {
   const lookupReferer = async (username: string) => {
     if (!username) return;
 
-    console.log("Looking up referrer with username: ", username);
-
     try {
       const res = await axios.get(`/api/get-user-data?username=${username}`);
-
-      console.log("Got referrer result data: ", res.data);
 
       if (res.data) {
         setReferer(res.data.profilenft);
@@ -217,7 +210,9 @@ const Step4 = () => {
   const validateFields = () => {
     if (!profileInfo) return;
 
-    if (referer == "") {
+    console.log("Is referrer empty here? ", referer, form.host);
+
+    if (referer === "") {
       createMessage("Invalid activation token", "error");
       return false;
     }

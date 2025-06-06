@@ -208,10 +208,7 @@ const Step4 = () => {
   }, []);
 
   const validateFields = () => {
-    console.log("Profile info: ", profileInfo);
     if (!profileInfo) return;
-
-    console.log("Is referrer empty here? ", referer, form.host);
 
     if (referer === "") {
       createMessage("Invalid activation token", "error");

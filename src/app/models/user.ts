@@ -20,6 +20,8 @@ type GuestData = {
   website: string;
   pronouns: string;
   bio: string;
+  lastName: string;
+  displayName: string;
 };
 
 type Profile = {

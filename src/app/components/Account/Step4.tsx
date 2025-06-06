@@ -70,17 +70,7 @@ const Step4 = () => {
   }, [referrer, user]);
 
   React.useEffect(() => {
-    setForm({
-      ...form,
-      name: onboarding.name,
-      username: onboarding.username,
-      description: onboarding.bio,
-      link: onboarding.website,
-      host: referrer,
-    });
-    if (onboarding.image) {
-      setPreview(onboarding.image);
-    } else if (user) {
+    if (user) {
       const guestData = user!.guest_data;
       setPreview(guestData.picture ?? "");
       if (!onboarding.name) {
@@ -90,6 +80,8 @@ const Step4 = () => {
           username: guestData.username,
           link: guestData.website,
           description: guestData.bio,
+          lastName: guestData.lastName,
+          displayName: guestData.displayName,
         });
       }
     }

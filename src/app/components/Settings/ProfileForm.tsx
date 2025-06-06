@@ -61,7 +61,7 @@ const ProfileForm = () => {
         host: "",
       });
 
-      setHasProfile(profileData !== null);
+      setHasProfile(!!userData!.profilenft);
     }
   }, [userData]);
 
@@ -528,7 +528,7 @@ const ProfileForm = () => {
             )}
 
             {hasProfile && (
-              <div className="w-[25%]">
+              <div className="w-[25%] self-center">
                 <Button
                   isLoading={isLoading}
                   isPrimary

@@ -254,7 +254,7 @@ const Step4 = () => {
     let finalPreview = preview;
 
     if (!preview) {
-      finalPreview = "https://storage.googleapis.com/mmosh-assets/default.jpg";
+      finalPreview = "https://storage.googleapis.com/mmosh-assets/default.png";
     }
 
     const result = await createProfile({
@@ -300,7 +300,7 @@ const Step4 = () => {
     setIsLoading(true);
 
     let bannerResult = "";
-    let imageResult = "https://storage.googleapis.com/mmosh-assets/default.jpg";
+    let imageResult = "https://storage.googleapis.com/mmosh-assets/default.png";
 
     try {
       const date = new Date().getMilliseconds();

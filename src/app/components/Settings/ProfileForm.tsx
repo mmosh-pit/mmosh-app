@@ -23,7 +23,7 @@ const ProfileForm = () => {
   const [userData, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState(
-    "https://storage.googleapis.com/mmosh-assets/default.jpg",
+    "https://storage.googleapis.com/mmosh-assets/default.png",
   );
   const [referer, setReferer] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -227,7 +227,7 @@ const ProfileForm = () => {
     let finalPreview = preview;
 
     if (!preview) {
-      finalPreview = "https://storage.googleapis.com/mmosh-assets/default.jpg";
+      finalPreview = "https://storage.googleapis.com/mmosh-assets/default.png";
     }
 
     const result = await createProfile({
@@ -284,7 +284,7 @@ const ProfileForm = () => {
     setIsLoading(true);
 
     let bannerResult = "";
-    let imageResult = "https://storage.googleapis.com/mmosh-assets/default.jpg";
+    let imageResult = "https://storage.googleapis.com/mmosh-assets/default.png";
 
     try {
       const date = new Date().getMilliseconds();

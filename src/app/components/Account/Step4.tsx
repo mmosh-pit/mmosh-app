@@ -335,6 +335,12 @@ const Step4 = () => {
         picture: imageResult,
       });
       setPreview(imageResult);
+
+      createMessage("Your guest data has been successfully saved!", "success");
+
+      setTimeout(() => {
+        router.replace(`/chat`);
+      }, 5000);
     } catch (err) {
       // TODO add logic to remove image
       if (bannerResult) {
@@ -343,7 +349,6 @@ const Step4 = () => {
       }
     }
 
-    setSelectedStep(1);
     setIsLoading(false);
   }, [form, image, bannerImage, profileInfo, wallet, profileInfo]);
 

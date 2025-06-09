@@ -344,7 +344,7 @@ const ProfileForm = () => {
           )}
         </div>
 
-        <div className="bg-[#03000754] rounded-2xl px-24 py-4">
+        <div className="bg-[#03000754] rounded-2xl px-24 py-4 md:min-w-[85%] min-w-[90%]">
           <div className="w-full h-full flex flex-col p-5">
             <div className="mb-4">
               <p className="text-lg text-white font-bold">About You</p>

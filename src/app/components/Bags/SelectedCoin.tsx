@@ -6,6 +6,7 @@ import ArrowBack from "@/assets/icons/ArrowBack";
 import useWallet from "@/utils/wallet";
 import CopyIcon from "@/assets/icons/CopyIcon";
 import SendIcon from "@/assets/icons/SendIcon";
+import { NATIVE_MINT } from "forge-spl-token";
 
 type Props = {
   selectedCoin: BagsCoin | BagsNFT;
@@ -51,6 +52,9 @@ const SelectedCoin = ({
 
         <div className="bags-background-card-balance-card" id="balance-card">
           <h6>{currencyFormatter(totalBalance)}</h6>
+          {selectedCoin.tokenAddress != NATIVE_MINT.toBase58() &&
+             <h6>{selectedCoin.symbol.toUpperCase()} {selectedCoin.balance}</h6>
+          }
           <div className="flex">
             <p className="text-base text-white">
               {walletAddressShortener(wallet?.publicKey?.toString() ?? "")}

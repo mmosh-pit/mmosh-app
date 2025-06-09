@@ -19,6 +19,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
   const [amount, setAmount] = React.useState("0");
 
   const [isSending, setIsSending] = React.useState(false);
+  const [ismax, setIsmax] = React.useState(false)
 
   const [result, setResult] = React.useState("");
 
@@ -35,6 +36,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
       destination,
       amount,
       decimals,
+      ismax
     );
 
     setIsSending(false);
@@ -94,7 +96,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
 
   return (
     <div className="w-full h-screen flex flex-col items-center justify-start mt-8">
-      <div className="bags-background-card lg:w-[40%] md:w-[60%] w-[85%]">
+      <div className="bags-background-card lg:w-[60%] md:w-[60%] w-[85%]">
         <div className="flex w-full justify-between px-8 py-4">
           <button className="cursor-pointer w-[33%]" onClick={goBack}>
             <ArrowBack />
@@ -141,6 +143,9 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
 
                   setAmount(e.target.value);
                 }}
+                onFocus={()=>{
+                  setIsmax(false)
+                }}
                 type="text"
                 placeholder="Amount"
                 title=""
@@ -151,7 +156,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
                       {selectedCoin.symbol.toUpperCase()}
                     </p>
                     <button
-                      className="send-max-button rounded-xl px-2 py-1"
+                      className={(ismax ? "bg-primary" : "send-max-button") +" rounded-xl px-2 py-1"}
                       onClick={() => {
                         if ("decimals" in selectedCoin) {
                           const decimals = "1".padEnd(
@@ -167,6 +172,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
 
                           setAmount(max <= 0 ? "0" : max.toString());
                         }
+                        setIsmax(ismax ? false : true)
                       }}
                     >
                       Max

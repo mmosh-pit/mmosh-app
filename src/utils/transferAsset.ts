@@ -10,10 +10,13 @@ import * as anchor from "@coral-xyz/anchor";
 import {
   createTransferCheckedInstruction,
   getAssociatedTokenAddress,
+  NATIVE_MINT,
 } from "forge-spl-token";
 import { getExplorerLink } from "@solana-developers/helpers";
 import { getOrCreateTokenAccountInstruction } from "./getOrCreateAssociatedTokenAccount";
 import { FrostWallet } from "./frostWallet";
+import { Connectivity as UserConn } from "@/anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
 
 export async function transferAsset(
   wallet: FrostWallet,
@@ -21,86 +24,115 @@ export async function transferAsset(
   receiver: string,
   amount: string,
   decimals: number,
+  isMax: boolean,
   retries = 0,
 ): Promise<string> {
   try {
     // connection to Solana.
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!);
+    const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        {
+          confirmTransactionInitialTimeout: 120000,
+        },
+     );
     const env = new anchor.AnchorProvider(connection, wallet, {
       preflightCommitment: "processed",
     });
+
+    anchor.setProvider(env);
+    let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     // Mint address of the NFT.
     const mintPubkey = new PublicKey(mintAddress);
     // Recipient of the NFT.
     const receiverPubkey = new PublicKey(receiver);
 
-    // Original Token Account
-    const tokenAccount1Pubkey = await getAssociatedTokenAddress(
-      mintPubkey,
-      wallet.publicKey,
-    );
-
-    const { ata, ix } = await getOrCreateTokenAccountInstruction(
-      {
-        mint: mintPubkey,
-        owner: receiverPubkey,
-        payer: wallet.publicKey,
-      },
-      connection,
-    );
-
-    const decimalMultiplier =
-      Number("1".padEnd(decimals, "0")) * (decimals === 0 ? 1 : 10);
-
-    const blockhash = await connection
-      .getLatestBlockhash()
-      .then((res) => res.blockhash);
-
     const instructions = [];
 
-    if (ix) instructions.push(ix);
 
-    instructions.push(
-      createTransferCheckedInstruction(
-        tokenAccount1Pubkey,
-        mintPubkey,
-        ata,
-        wallet.publicKey,
-        Number(amount) * decimalMultiplier,
-        decimals,
-        // [],
-        // TOKEN_PROGRAM_ID,
-      ),
-    );
 
-    const messageV0 = new TransactionMessage({
-      payerKey: wallet.publicKey,
-      recentBlockhash: blockhash,
-      instructions,
-    }).compileToV0Message();
+    const decimalMultiplier =
+    Number("1".padEnd(decimals, "0")) * (decimals === 0 ? 1 : 10);
 
-    const transaction = new VersionedTransaction(messageV0);
-
-    const txid = await env.sendAndConfirm(transaction);
-
-    const explorerLink = getExplorerLink("transaction", txid, "mainnet-beta");
-
-    return explorerLink;
-  } catch (err) {
-    if (retries < 3) {
-      return transferAsset(
-        wallet,
-        mintAddress,
-        receiver,
-        amount,
-        decimals,
-        retries + 1,
-      );
+    if(mintAddress == NATIVE_MINT.toBase58()) {
+        let finalAmount = Math.ceil(Number(amount) * decimalMultiplier)
+        if(isMax) {
+            let finalFee = await getFinalFee(finalAmount, wallet.publicKey, receiverPubkey, userConn);
+            finalAmount = finalAmount - finalFee;
+        } 
+        const transferIx = anchor.web3.SystemProgram.transfer({
+          fromPubkey: wallet.publicKey,
+          toPubkey: receiverPubkey,
+          lamports: finalAmount,
+        });
+        instructions.push(transferIx);
+    } else {
+      let createShare:any =  await userConn.baseSpl.transfer_token_modified({ mint: mintPubkey, sender: wallet.publicKey, receiver: receiverPubkey, init_if_needed: true, amount: Math.ceil(Number(amount) * decimalMultiplier)});
+      for (let index = 0; index < createShare.length; index++) {
+          instructions.push(createShare[index]);
+      }
     }
 
-    console.error("Got error trying to send: ", err);
 
+    const transaction = new anchor.web3.Transaction().add(...instructions);
+
+    transaction.recentBlockhash = (
+      await userConn.connection.getLatestBlockhash()
+    ).blockhash;
+    transaction.feePayer = userConn.provider.publicKey;
+
+    const feeEstimate = await userConn.getPriorityFeeEstimate(transaction);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = anchor.web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
+    }
+    transaction.add(feeIns);
+
+    const txid = await userConn.provider.sendAndConfirm(transaction as any);
+
+    const explorerLink = getExplorerLink("transaction", txid, "mainnet-beta");
+    return explorerLink;
+  } catch (err) {
+    console.error("Got error trying to send: ", err);
     return "";
   }
 }
+
+const getFinalFee = async(amountLamports: any, sender: PublicKey, receiver: PublicKey, userConn: UserConn) => {
+  // 1. Create the transfer instruction
+  const transferIx = anchor.web3.SystemProgram.transfer({
+    fromPubkey: sender,
+    toPubkey: receiver,
+    lamports: amountLamports,
+  });
+
+    // 2. Build transaction (add transfer only first)
+  const tx = new anchor.web3.Transaction().add(transferIx);
+
+  // Dummy sign for serialization
+  tx.recentBlockhash = (await userConn.connection.getLatestBlockhash()).blockhash;
+  tx.feePayer = sender;
+
+  let feeEstimate = await userConn.getPriorityFeeEstimate(tx);
+  console.log("feeEstimate ", feeEstimate)
+
+  const baseFee = 5000 * tx.signatures.length;
+  console.log("basefee ", baseFee)
+  const computeUnitLimit = 1_400_000;
+  let priorityFee =  Math.floor((feeEstimate * computeUnitLimit) / 1_000_000)
+  console.log("priorityFee ", priorityFee)
+  const totalFee = baseFee + priorityFee ;
+
+  const rentBuffer = 2039280; 
+
+  console.log("totalFee ", totalFee)
+  
+  return totalFee + rentBuffer
+}
+

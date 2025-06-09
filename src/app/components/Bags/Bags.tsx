@@ -5,7 +5,7 @@ import * as React from "react";
 import NFTs from "./NFTs";
 import Coins from "./Coins";
 import SearchBar from "../Project/Candidates/SearchBar";
-import { BagsCoin, bagsConfirmation, bagsModalAck, BagsNFT, bagsNotifier } from "@/app/store/bags";
+import { BagsCoin, bagsCoins, bagsConfirmation, bagsModalAck, BagsNFT, bagsNotifier } from "@/app/store/bags";
 import SwapIcon from "@/assets/icons/SwapIcon";
 import { useRouter } from "next/navigation";
 import BuyIcon from "@/assets/icons/BuyIcon";
@@ -55,6 +55,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
   const [modalIsOpen, setIsOpen] = React.useState(false);
   const [_bagsAck, setBagsAck] = useAtom(bagsModalAck);
   const [bagsNotify, setBagsNotify] = useAtom(bagsNotifier);
+  const [bags] = useAtom(bagsCoins);
 
   React.useEffect(() => {
     getMyAddress();
@@ -193,7 +194,9 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
           <div
             className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
             onClick={() => {
-              // router.push("/atm");
+              if (bags) {
+                  onSelectCoin(bags.network!)
+              }
             }}
           >
             <SendWalletIcon />

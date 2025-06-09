@@ -11,6 +11,7 @@ type Props = {
   textarea?: boolean;
   readonly?: boolean;
   onBlur?: () => void;
+  onFocus?: () => void;
   error?: boolean;
   trailing?: React.ReactNode;
 };
@@ -20,6 +21,7 @@ const Input = ({
   type,
   value,
   onBlur,
+  onFocus,
   required,
   title,
   placeholder,
@@ -53,6 +55,7 @@ const Input = ({
           readOnly={readonly}
           onChange={onChange}
           onBlur={onBlur}
+          onFocus={onFocus}
           placeholder={placeholder}
           className="grow bg-transparent"
         />

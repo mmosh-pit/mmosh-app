@@ -25,6 +25,7 @@ const ProfileForm = () => {
   const [preview, setPreview] = React.useState(
     "https://storage.googleapis.com/mmosh-assets/default.png",
   );
+  const [hasReferer, setHasReferer] = React.useState(false);
   const [referer, setReferer] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [bannerImage, setBannerImage] = React.useState<File | null>(null);
@@ -62,6 +63,7 @@ const ProfileForm = () => {
       });
 
       setHasProfile(!!userData!.profilenft);
+      setHasReferer(!!userData!.referred_by);
     }
   }, [userData]);
 
@@ -451,7 +453,7 @@ const ProfileForm = () => {
               </div>
             </div>
 
-            {referer == "" && (
+            {!hasReferer && (
               <div className="w-full self-start mt-4">
                 <p className="text-lg text-white">Your Host</p>
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
@@ -475,15 +477,17 @@ const ProfileForm = () => {
 
             {!hasProfile && (
               <div className="flex mt-6 items-start justify-evenly">
-                <div className="w-[25%]">
+                <div className="w-[25%] flex flex-col justify-center items-center">
                   <Button
                     isLoading={isLoading}
-                    isPrimary
+                    isPrimary={false}
                     title="Save as guest"
                     size="large"
                     disabled={isLoading}
                     action={saveUserData}
                   />
+
+                  <p className="text-base text-white mt-4">Free</p>
                 </div>
 
                 <div className="flex flex-col w-[25%]">

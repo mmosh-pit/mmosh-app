@@ -18,7 +18,7 @@ const Button = ({
   type = "button",
 }: Props) => (
   <button
-    className={`${isPrimary ? "bg-[#CD068E]" : "bg-[#6536BB]"} ${size === "small" ? "py-2 px-4" : "w-full py-4 px-8"} rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
+    className={`${isPrimary ? "bg-[#CD068E]" : "bg-transparent border-[1px] border-[#FFFFFF80]"} ${size === "small" ? "py-2 px-4" : "w-full py-4 px-8"} rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
     type={type}
     onClick={action}
     disabled={disabled}

@@ -82,7 +82,7 @@ const ProfileForm = () => {
     if (referer) {
       lookupReferer(referer);
     } else if (userData) {
-      setReferer(userData!.referred_by);
+      lookupReferer(userData!.referred_by);
     }
   }, []);
 
@@ -142,7 +142,7 @@ const ProfileForm = () => {
   const validateFields = () => {
     if (!profileInfo) return;
 
-    if (referer == "") {
+    if (referer === "") {
       createMessage("Invalid activation token", "error");
       return false;
     }

@@ -19,8 +19,10 @@ const Account = () => {
   const [currentUser] = useAtom(data);
 
   const getStep = () => {
-    if (currentUser?.guest_data !== null || currentUser?.profilenft) {
-      router.replace("/chat");
+    if (currentUser !== null) {
+      if (currentUser!.guest_data !== null || currentUser!.profilenft !== "") {
+        router.replace("/chat");
+      }
     }
 
     if (selectedStep === 0) return <Step1 />;

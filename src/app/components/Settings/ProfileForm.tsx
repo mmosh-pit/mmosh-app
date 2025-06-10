@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { data, userWeb3Info } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
@@ -18,7 +18,6 @@ import client from "@/app/lib/httpClient";
 const ProfileForm = () => {
   const wallet = useWallet();
   const navigate = useRouter();
-  const searchParams = useSearchParams();
   const [profileInfo] = useAtom(userWeb3Info);
   const [userData, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
@@ -247,7 +246,7 @@ const ProfileForm = () => {
       });
 
       setTimeout(() => {
-        navigate.replace(`/create`);
+        navigate.replace(`/${form.username}`);
       }, 5000);
     }
     setIsLoading(false);

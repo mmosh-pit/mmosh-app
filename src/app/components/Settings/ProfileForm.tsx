@@ -78,13 +78,10 @@ const ProfileForm = () => {
   });
 
   React.useEffect(() => {
-    const referer = searchParams.get("referer");
-    if (referer) {
-      lookupReferer(referer);
-    } else if (userData) {
+    if (userData) {
       lookupReferer(userData!.referred_by);
     }
-  }, []);
+  }, [userData]);
 
   const lookupReferer = async (username: any) => {
     try {

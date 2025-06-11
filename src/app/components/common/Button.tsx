@@ -3,6 +3,7 @@ type Props = {
   action: () => void;
   isPrimary: boolean;
   isLoading: boolean;
+  color?: string;
   size: "small" | "large";
   type?: "button" | "submit";
   disabled?: boolean;
@@ -16,9 +17,10 @@ const Button = ({
   size,
   disabled,
   type = "button",
+  color,
 }: Props) => (
   <button
-    className={`${isPrimary ? "bg-[#CD068E]" : "bg-transparent border-[1px] border-[#FFFFFF80]"} ${size === "small" ? "py-2 px-4" : "w-full py-4 px-8"} rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
+    className={`${isPrimary ? color || "bg-[#CD068E]" : "bg-transparent border-[1px] border-[#FFFFFF80]"} ${size === "small" ? "py-2 px-4" : "w-full py-4 px-8"} rounded-md flex items-center justify-center text-center ${disabled && "opacity-70"}`}
     type={type}
     onClick={action}
     disabled={disabled}

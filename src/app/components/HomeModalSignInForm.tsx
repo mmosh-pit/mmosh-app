@@ -1,30 +1,39 @@
 import * as React from "react";
 import Input from "./common/Input";
-import { storeFormAtom } from "../store/signup";
-import { useAtom } from "jotai";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import client from "../lib/httpClient";
 import Button from "./common/Button";
+import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { data, isAuth, isAuthOverlayOpen } from "../store";
 
 type HomeModalSignUpFormProps = {
   onSuccess: () => void;
-  onLoginTapped: () => void;
+  onSignUpTapped: () => void;
 };
 
-const HomeModalSignUpForm = ({
+const HomeModalSignInForm = ({
   onSuccess,
-  onLoginTapped,
+  onSignUpTapped,
 }: HomeModalSignUpFormProps) => {
-  const [form, setForm] = useAtom(storeFormAtom);
+  const router = useRouter();
 
-  const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
+  const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
+  const [__, setIsUserAuthenticated] = useAtom(isAuth);
+  const [___, setUser] = useAtom(data);
+
+  const [form, setForm] = React.useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = React.useState("");
+
   const [emailError, setEmailError] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
-    React.useState(false);
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -36,28 +45,32 @@ const HomeModalSignUpForm = ({
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.password) return;
+    if (!form.email || !form.password) return;
 
     if (!validateEmail(form.email)) {
       setEmailError(true);
     }
 
-    if (form.password !== form.confirmPassword) {
-      setConfirmPasswordError(true);
-      return;
-    }
     setEmailError(false);
-    setConfirmPasswordError(false);
     setIsLoading(true);
 
     try {
-      const url = `/request-code`;
-      await client.post(url, {
-        email: form.email,
+      const url = `/login`;
+      const res = await client.post(url, {
+        handle: form.email,
+        password: form.password,
       });
+
+      window.localStorage.setItem("token", res.data.data.token);
+      setIsUserAuthenticated(true);
+      setShowAuthOverlay(false);
+      setUser(res.data.data.user);
+
+      router.replace("/chat");
       onSuccess();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err?.response?.data || "Failed to Login, please check support");
     }
     setIsLoading(false);
   };
@@ -68,32 +81,27 @@ const HomeModalSignUpForm = ({
       onSubmit={submit}
     >
       <h1 className="text-[1.5vmax] font-bold font-goudy text-white">
-        Create an Account
+        Welcome Home
       </h1>
-      <h2 className="text-[1vmax] font-bold font-goudy">
-        Your Life will never be the same again...
-      </h2>
+      <p className="text-base font-bold">
+        Enter your email address and password to log in.
+      </p>
       <div className="my-4" />
 
       <div className="flex flex-col mb-4 w-[60%]">
-        <Input
-          placeholder="First name or Alias"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          type="text"
-          title="First name or Alias"
-          required
-        />
-
-        <div className="my-2" />
-
         <Input
           placeholder="Email address"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           type="text"
-          error={emailError}
-          helperText={emailError ? "Invalid Email Address" : ""}
+          error={emailError || error === "user"}
+          helperText={
+            emailError
+              ? "Invalid Email Address"
+              : error === "user"
+                ? "User does not exists"
+                : ""
+          }
           title="Email address"
           required
         />
@@ -103,10 +111,11 @@ const HomeModalSignUpForm = ({
         <Input
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
-          error={confirmPasswordError}
           placeholder="Enter your password..."
           title="Password"
           type={isPasswordVisible ? "text" : "password"}
+          helperText={error === "password" ? "Incorrect password" : ""}
+          error={error === "password"}
           required={false}
           trailing={
             <button
@@ -119,43 +128,12 @@ const HomeModalSignUpForm = ({
             </button>
           }
         />
-
-        <div className="my-2" />
-
-        <Input
-          value={form.confirmPassword}
-          onChange={(e) =>
-            setForm({ ...form, confirmPassword: e.target.value })
-          }
-          type={isConfirmPasswordVisible ? "text" : "password"}
-          error={confirmPasswordError}
-          helperText={confirmPasswordError ? "Passwords must match!" : ""}
-          placeholder="Confirm your Password..."
-          title="Confirm Password"
-          required={false}
-          trailing={
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
-              }}
-            >
-              {isConfirmPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
-            </button>
-          }
-        />
-
-        <p className="text-xs text-[#A49E9E] mt-2">
-          By creating an account, you agree to emails about new features and
-          community updates. We respect your privacy and will protect your
-          personal information. You may unsubscribe at any time.
-        </p>
       </div>
 
       <Button
         type="submit"
         isLoading={isLoading}
-        title="Sign up"
+        title="Log In"
         isPrimary
         size="small"
         action={() => { }}
@@ -164,16 +142,16 @@ const HomeModalSignUpForm = ({
       <div className="my-2" />
 
       <p className="text-sm text-white">
-        Already have an account?{" "}
+        Don't have an account?{" "}
         <span
           className="cursor-pointer gradient-span text-base"
-          onClick={onLoginTapped}
+          onClick={onSignUpTapped}
         >
-          Log In here!
+          Sign Up here!
         </span>
       </p>
     </form>
   );
 };
 
-export default HomeModalSignUpForm;
+export default HomeModalSignInForm;

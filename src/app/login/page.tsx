@@ -45,7 +45,7 @@ const Login = () => {
       setError("");
       setIsLoading(true);
       try {
-        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`;
+        const url = `/login`;
         const res = await client.post(url, {
           handle: email,
           password,

@@ -22,6 +22,7 @@ export default function LandingPage() {
   const [isUserAuthenticated] = useAtom(isAuth);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialModalStep, setInitialModalStep] = useState(0);
 
   const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
@@ -65,6 +66,16 @@ export default function LandingPage() {
   );
 
   const isMobileScreen = screenSize < 1200;
+
+  const openSignUpModal = () => {
+    setInitialModalStep(0);
+    setIsModalOpen(true);
+  };
+
+  const openSignInModal = () => {
+    setInitialModalStep(2);
+    setIsModalOpen(true);
+  };
 
   if (isUserAuthenticated) return <HomeLoggedInPage />;
 
@@ -173,17 +184,34 @@ export default function LandingPage() {
             </div>
           )}
 
-          <Button
-            action={() => setIsModalOpen(true)}
-            size="small"
-            isPrimary
-            title="Join Us!"
-            isLoading={false}
-          />
+          <div className="flex">
+            <Button
+              action={openSignInModal}
+              size="small"
+              isPrimary
+              title="Log In"
+              color="bg-[#8C04E0]"
+              isLoading={false}
+            />
+
+            <div className="mx-2" />
+
+            <Button
+              action={openSignUpModal}
+              size="small"
+              isPrimary
+              title="Join Us!"
+              isLoading={false}
+            />
+          </div>
         </div>
       </header>
 
-      <AlertModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AlertModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialStep={initialModalStep}
+      />
       <div
         className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"
         ref={mainSection}
@@ -229,7 +257,7 @@ export default function LandingPage() {
                 <div className="w-full flex items-center justify-evenly">
                   <button
                     className="flex m-auto md-[46px] px-4 py-[6px] md:px-[32px] md:py-[12px] mt-5 font-bold text-xs justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE] cursor-pointer"
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={openSignUpModal}
                   >
                     Claim Your Early Access
                   </button>
@@ -307,7 +335,7 @@ export default function LandingPage() {
             </div>
             <button
               className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-              onClick={() => setIsModalOpen(true)}
+              onClick={openSignUpModal}
             >
               Get Early Access
             </button>
@@ -350,7 +378,7 @@ export default function LandingPage() {
           </div>
           <button
             className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openSignUpModal}
           >
             Be Among the First to Know
           </button>
@@ -464,7 +492,7 @@ export default function LandingPage() {
           </div>
           <button
             className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openSignUpModal}
           >
             Reserve Your Spot
           </button>
@@ -574,7 +602,7 @@ export default function LandingPage() {
           </div>
           <button
             className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openSignUpModal}
           >
             Join our Founding Members
           </button>
@@ -709,7 +737,7 @@ export default function LandingPage() {
           </div>
           <button
             className="flex m-auto h-[46px] px-[32px] py-[12px] mt-8 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openSignUpModal}
           >
             Join our Founding Members
           </button>
@@ -786,7 +814,7 @@ export default function LandingPage() {
 
           <button
             className="flex m-auto h-[46px] px-[32px] py-[12px] mt-8 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={() => setIsModalOpen(true)}
+            onClick={openSignUpModal}
           >
             Join Now For Priority Access
           </button>

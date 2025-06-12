@@ -3,7 +3,7 @@ type Props = React.SVGProps<SVGSVGElement>;
 const EyeIcon = (props: Props) => (
   <svg
     width="20"
-    height="14"
+    height="17"
     viewBox="0 0 20 14"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

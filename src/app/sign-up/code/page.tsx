@@ -7,6 +7,7 @@ import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import { useRouter } from "next/navigation";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
+import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
 
 function codeIsValid(myString: string) {
   return /\d/.test(myString);
@@ -89,61 +90,70 @@ const Code = () => {
   );
 
   return (
-    <div className="w-full min-h-full flex flex-col items-center background-content pt-32 relative">
-      <div className="flex flex-col items-center my-6">
-        <div className="flex justify-center w-[250px] h-[100px]">
-          <KinshipCodesLogin />
+    <div className="w-full min-h-full flex flex-col justify-center items-center background-content relative">
+      <div className="login-card-gradient flex flex-col items-center border-[1px] rounded-3xl border-[#FFFFFF65] w-[85%] md:w-[50%] lg:w-[40%] py-8">
+        <div className="flex justify-center">
+          <KinshipMainIcon />
         </div>
-        <p className="text-base mt-4">Enter code from Email</p>
-      </div>
 
-      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex justify-center my-4">
-        {formCodes.map((val, index) => (
-          <div className="flex justify-center items-center" key={index}>
-            <div className={`max-w-[4vmax] mx-1 ${getBorderByValue(val)}`}>
-              <SimpleInput
-                value={val ?? ""}
-                reference={divRefs[index]}
-                maxLength={1}
-                height="4vmax"
-                onPaste={(e) => {
-                  handlePastingCode(e.clipboardData.getData("Text"));
-                }}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setFormCodes((prev) => {
-                    const newCodes = [...prev];
-                    newCodes[index] = value;
+        <div className="flex flex-col items-center my-6">
+          <h6 className="my-4">You're almost there!</h6>
 
-                    return newCodes;
-                  });
+          <p className="text-sm">
+            Thank you for joining! Please check your inbox for the six-digit
+            verification code we just sent and enter it below to activate your
+            account
+          </p>
+        </div>
 
-                  if (index >= 0 && index <= formCodes.length - 1) {
-                    if (value) {
-                      divRefs[index + 1]?.current?.focus();
-                    } else {
-                      divRefs[index - 1]?.current?.focus();
+        <div className="w-[75%] md:w-[60%] lg:w-[50%] flex justify-center my-4">
+          {formCodes.map((val, index) => (
+            <div className="flex justify-center items-center" key={index}>
+              <div className={`max-w-[4vmax] mx-1 ${getBorderByValue(val)}`}>
+                <SimpleInput
+                  value={val ?? ""}
+                  reference={divRefs[index]}
+                  maxLength={1}
+                  height="4vmax"
+                  onPaste={(e) => {
+                    handlePastingCode(e.clipboardData.getData("Text"));
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormCodes((prev) => {
+                      const newCodes = [...prev];
+                      newCodes[index] = value;
+
+                      return newCodes;
+                    });
+
+                    if (index >= 0 && index <= formCodes.length - 1) {
+                      if (value) {
+                        divRefs[index + 1]?.current?.focus();
+                      } else {
+                        divRefs[index - 1]?.current?.focus();
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+              </div>
+              {index === 2 && (
+                <div className="h-[1px] w-[0.5vmax] mx-1 self-center bg-[#ECECEC]" />
+              )}
             </div>
-            {index === 2 && (
-              <div className="h-[1px] w-[0.5vmax] mx-1 self-center bg-[#ECECEC]" />
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
-        <Button
-          title="Next"
-          action={submitCode}
-          size="large"
-          isPrimary
-          disabled={!codeIsValid(formCodes.join(""))}
-          isLoading={isLoading}
-        />
+        <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
+          <Button
+            title="Next"
+            action={submitCode}
+            size="large"
+            isPrimary
+            disabled={!codeIsValid(formCodes.join(""))}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   );

@@ -94,11 +94,11 @@ const HomeModalSignInForm = ({
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           type="text"
-          error={emailError || error === "user"}
+          error={emailError || error.includes("user")}
           helperText={
             emailError
               ? "Invalid Email Address"
-              : error === "user"
+              : error.includes("user")
                 ? "User does not exists"
                 : ""
           }
@@ -114,8 +114,8 @@ const HomeModalSignInForm = ({
           placeholder="Enter your password..."
           title="Password"
           type={isPasswordVisible ? "text" : "password"}
-          helperText={error === "password" ? "Incorrect password" : ""}
-          error={error === "password"}
+          helperText={error.includes("password") ? "Incorrect password" : ""}
+          error={error.includes("password")}
           required={false}
           trailing={
             <button

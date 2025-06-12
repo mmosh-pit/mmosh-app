@@ -1,14 +1,14 @@
 "use client";
 import * as React from "react";
 import Input from "../components/common/Input";
-import Button from "../components/common/Button";
 import { useRouter } from "next/navigation";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
-import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 import client from "../lib/httpClient";
 import { useAtom } from "jotai";
 import { data, isAuth, isAuthOverlayOpen } from "../store";
+import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
+import ArrowRight from "@/assets/icons/ArrowRight";
 
 const Login = () => {
   const router = useRouter();
@@ -57,9 +57,9 @@ const Login = () => {
         setUser(res.data.data.user);
         router.replace("/coins");
       } catch (err: any) {
-        setError(
-          err?.response?.data || "Failed to Login, please check support",
-        );
+        const error = err?.response?.data?.errors;
+
+        setError(error[0] || "Failed to Login, please check support");
       }
 
       setIsLoading(false);
@@ -73,95 +73,93 @@ const Login = () => {
 
   return (
     <form
-      className="w-full min-h-full flex flex-col items-center background-content relative pt-32"
+      className="w-full min-h-full flex flex-col justify-center items-center background-content relative"
       onSubmit={submit}
     >
-      <div className="flex flex-col items-center my-6">
-        <div className="flex justify-center w-[250px] h-[100px] ">
-          <KinshipCodesLogin />
+      <div className="login-card-gradient flex flex-col items-center border-[1px] rounded-3xl border-[#FFFFFF65] w-[85%] md:w-[50%] lg:w-[40%] py-8">
+        <div className="flex flex-col items-center">
+          <KinshipMainIcon />
         </div>
-        <p className="text-base mt-4">It's All Related</p>
-      </div>
 
-      <h6 className="my-4">Log In</h6>
+        <div className="flex flex-col items-center my-4">
+          <h6 className="my-2">Welcome Home</h6>
+          <p className="text-sm">
+            Enter your email address and password to log in
+          </p>
+        </div>
 
-      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex flex-col my-4">
-        <Input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="text"
-          error={error === "user"}
-          helperText={error === "user" ? "User does not exists" : ""}
-          placeholder="Enter your email address..."
-          title="Email address"
-          required={false}
-        />
+        <div className="w-[75%] md:w-[60%] lg:w-[50%] flex flex-col mt-4">
+          <Input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            error={error.includes("user")}
+            helperText={error.includes("user") ? "User does not exists" : ""}
+            placeholder="Enter your email address..."
+            title="Email address"
+            required={false}
+          />
 
-        <div className="my-2" />
+          <div className="my-2" />
 
-        <Input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type={isPasswordVisible ? "text" : "password"}
-          placeholder="Enter your password..."
-          title="Password"
-          helperText={error === "password" ? "Incorrect password" : ""}
-          error={error === "password"}
-          required={false}
-          trailing={
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                setIsPasswordVisible(!isPasswordVisible);
-              }}
+          <Input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type={isPasswordVisible ? "text" : "password"}
+            placeholder="Enter your password..."
+            title="Password"
+            helperText={error.includes("password") ? "Incorrect password" : ""}
+            error={error.includes("password")}
+            required={false}
+            trailing={
+              <div className="flex">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsPasswordVisible(!isPasswordVisible);
+                  }}
+                  className="bg-[#FFFFFF12] p-2 rounded-lg"
+                >
+                  {isPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+                </button>
+
+                <div className="mx-1" />
+
+                <button
+                  type="submit"
+                  className="login-btn-gradient p-2 rounded-lg"
+                >
+                  {isLoading ? (
+                    <span className="loading loading-spinner loading-lg bg-[#BEEF00] w-[20px] h-[12px]"></span>
+                  ) : (
+                    <ArrowRight />
+                  )}
+                </button>
+              </div>
+            }
+          />
+        </div>
+
+        <div className="w-[75%] md:w-[60%] lg:w-[50%] flex items-center justify-end">
+          <a
+            className="text-xs underline cursor-pointer font-light"
+            onClick={() => router.push("/forgot-password")}
+          >
+            Forgot Password?
+          </a>
+        </div>
+
+        <div className="mt-6">
+          <p className="text-sm">
+            Don't have an account?{" "}
+            <span
+              className="cursor-pointer gradient-span text-sm"
+              onClick={() => router.push("/sign-up")}
             >
-              {isPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
-            </button>
-          }
-        />
-      </div>
-
-      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex items-center justify-end">
-        <a
-          className="text-sm underline cursor-pointer"
-          onClick={() => router.push("/forgot-password")}
-        >
-          Forgot Password?
-        </a>
-      </div>
-
-      <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
-        <Button
-          title="Log In"
-          action={() => { }}
-          size="large"
-          isPrimary
-          type="submit"
-          isLoading={isLoading}
-          disabled={!email || !password}
-        />
-      </div>
-
-      <div className="w-[60%] md:w-[35%] lg:w-[20%] my-2">
-        <Button
-          title="Create New Account"
-          action={() => {
-            router.push("/sign-up");
-          }}
-          size="large"
-          isPrimary={false}
-          isLoading={false}
-          disabled={isLoading}
-        />
-      </div>
-
-      <div className="flex justify-center w-[60%] md:w-[35%] lg:w-[20%] my-2">
-        <a
-          className="text-base underline"
-          href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/coins`}
-        >
-          Skip this, just take me to the coins
-        </a>
+              Sign up here!
+            </span>
+          </p>
+        </div>
       </div>
     </form>
   );

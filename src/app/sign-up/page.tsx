@@ -218,7 +218,7 @@ const SignUp = () => {
               className="cursor-pointer gradient-span text-sm"
               onClick={() => router.push("/login")}
             >
-              Sign In here!
+              Log In here!
             </span>
           </p>
         </div>

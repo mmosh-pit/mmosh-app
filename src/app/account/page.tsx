@@ -20,7 +20,10 @@ const Account = () => {
 
   const getStep = () => {
     if (currentUser !== null) {
-      if (currentUser!.guest_data !== null || currentUser!.profilenft !== "") {
+      if (
+        currentUser!.guest_data?.name !== "" ||
+        (currentUser!.profilenft !== "" && !!currentUser!.profilenft)
+      ) {
         router.replace("/chat");
       }
     }

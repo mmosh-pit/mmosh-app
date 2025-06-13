@@ -25,12 +25,14 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
     (message: Message) => {
       if (message.type === "user") {
         if (!currentUser) {
-          if (currentUser!.guest_data) return currentUser!.guest_data.picture;
-
           return "https://storage.googleapis.com/mmosh-assets/v_avatar.png";
         }
 
-        return currentUser!.profile.image;
+        if (!currentUser!.profile) {
+          return currentUser!.guest_data.picture;
+        }
+
+        return currentUser!.profile?.image;
       }
 
       if (message.type === "bot") {
@@ -46,12 +48,14 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
     (message: Message) => {
       if (message.type === "user") {
         if (!currentUser) {
-          if (!currentUser!.guest_data) return "Guest";
+          return "Guest";
+        }
 
+        if (!currentUser!.profile) {
           return currentUser!.guest_data.name;
         }
 
-        return currentUser!.profile.username;
+        return currentUser!.profile?.username;
       }
 
       return selectedChat?.chatAgent?.name;

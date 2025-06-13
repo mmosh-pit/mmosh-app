@@ -4,7 +4,7 @@ import axios from "axios";
 import { data, userWeb3Info } from "@/app/store";
 import { useAtom } from "jotai";
 import useWallet from "@/utils/wallet";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import MessageBanner from "../common/MessageBanner";
@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import ImageAccountPicker from "./ImageAccountPicker";
 import { uploadFile } from "@/app/lib/firebase";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
+import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
 
 const Step4 = () => {
   const router = useRouter();
@@ -32,6 +33,10 @@ const Step4 = () => {
   const [__, setSelectedStep] = useAtom(onboardingStep);
   const [referrer] = useAtom(referredUser);
 
+  const [balance, setBalance] = React.useState({
+    sol: 0,
+    usdc: 0,
+  });
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
   const [referer, setReferer] = React.useState("");
@@ -344,6 +349,38 @@ const Step4 = () => {
     setIsLoading(false);
   }, [form, image, bannerImage, profileInfo, wallet, profileInfo]);
 
+  const initiateBalanceChecking = React.useCallback(async () => {
+    if (!wallet) return;
+
+    const connection = new Connection(
+      process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+      "confirmed",
+    );
+    const address = new PublicKey(
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    );
+    const solBalance = await connection.getBalance(address);
+
+    const usdcMint = new PublicKey(process.env.NEXT_PUBLIC_USDC_TOKEN!); //new
+    const usdcAddress = await getAssociatedTokenAddress(
+      usdcMint,
+      wallet!.publicKey,
+    );
+
+    let usdcBalance = 0;
+
+    try {
+      const usdcDetails = await getAccount(connection, usdcAddress); //new
+      const usdcDecimals = 6; //new
+      usdcBalance = Number(usdcDetails.amount) / Math.pow(10, usdcDecimals); //new
+    } catch (_) { }
+
+    setBalance({
+      sol: solBalance / LAMPORTS_PER_SOL,
+      usdc: usdcBalance,
+    });
+  }, [wallet]);
+
   React.useEffect(() => {
     if (!image) return;
     const objectUrl = URL.createObjectURL(image);
@@ -360,6 +397,18 @@ const Step4 = () => {
       step: 5,
     });
   }, []);
+
+  React.useEffect(() => {
+    let interval: any = null;
+
+    if (wallet) {
+      interval = setInterval(() => {
+        initiateBalanceChecking();
+      }, 5000);
+    }
+
+    return () => clearInterval(interval);
+  }, [wallet]);
 
   React.useEffect(() => {
     if (!bannerImage) return;
@@ -567,7 +616,7 @@ const Step4 = () => {
                     <div className="flex items-center justify-center">
                       <p className="text-sm text-white">Current balance</p>
                       <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                        {profileInfo?.usdcBalance || 0}
+                        {balance.usdc || 0}
                       </div>
                       <p className="text-sm text-white">USDC</p>
                     </div>
@@ -575,7 +624,7 @@ const Step4 = () => {
                     <div className="flex items-center mt-2 justify-center">
                       <p className="text-sm text-white">Current balance</p>
                       <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                        {profileInfo?.solBalance || 0}
+                        {balance.sol || 0}
                       </div>
                       <p className="text-sm text-white">SOL</p>
                     </div>

@@ -10,10 +10,11 @@ import { createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import useWallet from "@/utils/wallet";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import ImageAccountPicker from "../Account/ImageAccountPicker";
 import { uploadFile } from "@/app/lib/firebase";
 import client from "@/app/lib/httpClient";
+import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
 
 const ProfileForm = () => {
   const wallet = useWallet();
@@ -42,6 +43,11 @@ const ProfileForm = () => {
     descriptor: "",
     noun: "",
     link: "",
+  });
+
+  const [balance, setBalance] = React.useState({
+    sol: 0,
+    usdc: 0,
   });
 
   React.useEffect(() => {
@@ -251,6 +257,50 @@ const ProfileForm = () => {
     }
     setIsLoading(false);
   }, [wallet, profileInfo, image, form]);
+
+  const initiateBalanceChecking = React.useCallback(async () => {
+    if (!wallet) return;
+
+    const connection = new Connection(
+      process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+      "confirmed",
+    );
+    const address = new PublicKey(
+      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    );
+    const solBalance = await connection.getBalance(address);
+
+    const usdcMint = new PublicKey(process.env.NEXT_PUBLIC_USDC_TOKEN!); //new
+    const usdcAddress = await getAssociatedTokenAddress(
+      usdcMint,
+      wallet!.publicKey,
+    );
+
+    let usdcBalance = 0;
+
+    try {
+      const usdcDetails = await getAccount(connection, usdcAddress); //new
+      const usdcDecimals = 6; //new
+      usdcBalance = Number(usdcDetails.amount) / Math.pow(10, usdcDecimals); //new
+    } catch (_) { }
+
+    setBalance({
+      sol: solBalance / LAMPORTS_PER_SOL,
+      usdc: usdcBalance,
+    });
+  }, [wallet]);
+
+  React.useEffect(() => {
+    let interval: any = null;
+
+    if (wallet) {
+      interval = setInterval(() => {
+        initiateBalanceChecking();
+      }, 5000);
+    }
+
+    return () => clearInterval(interval);
+  }, [wallet]);
 
   React.useEffect(() => {
     if (!bannerImage) return;
@@ -507,7 +557,7 @@ const ProfileForm = () => {
                       <p className="text-sm text-white">Current balance</p>
                       <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
                         <p className="text-sm text-white text-center">
-                          {profileInfo?.usdcBalance || 0}
+                          {balance.usdc || 0}
                         </p>
                       </div>
                       <p className="text-sm text-white">USDC</p>
@@ -517,7 +567,7 @@ const ProfileForm = () => {
                       <p className="text-sm text-white">Current balance</p>
                       <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
                         <p className="text-sm text-white text-center">
-                          {profileInfo?.solBalance || 0}
+                          {balance.sol || 0}
                         </p>
                       </div>
                       <p className="text-sm text-white">SOL</p>

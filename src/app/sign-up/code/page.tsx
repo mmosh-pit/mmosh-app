@@ -6,7 +6,6 @@ import Button from "../../components/common/Button";
 import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import { useRouter } from "next/navigation";
-import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
 import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
 
 function codeIsValid(myString: string) {
@@ -63,7 +62,7 @@ const Code = () => {
       const token = response.data.data.token;
       window.localStorage.setItem("token", token);
       setForm({ ...form, address: response.data.data.user.address });
-      router.replace("/sign-up/link");
+      router.replace("/account");
     } catch (err) {
       console.error(err);
       setHasError(true);

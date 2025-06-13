@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import ArrowBack from "@/assets/icons/ArrowBack";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import { onboardingStep, referredUser } from "@/app/store/account";
@@ -26,6 +25,7 @@ const Step1 = () => {
         user: referralUsername,
       });
       setStatus("success");
+      setSelectedStep(1);
     } catch (_) {
       setStatus("error");
     }
@@ -97,20 +97,6 @@ const Step1 = () => {
               isLoading={isLoading}
               action={() => {
                 saveReferr();
-              }}
-              size="small"
-              isPrimary
-            />
-          </div>
-        )}
-
-        {status === "success" && (
-          <div className="mt-8 self-center">
-            <Button
-              title="Next"
-              isLoading={isLoading}
-              action={() => {
-                setSelectedStep(1);
               }}
               size="small"
               isPrimary

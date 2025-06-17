@@ -20,7 +20,8 @@ const AuthOverlay = () => {
     pathname.includes("password") ||
     pathname === "/tos" ||
     pathname === "/privacy" ||
-    pathname === "/"
+    pathname === "/" ||
+    pathname === "/account"
   )
     return <></>;
 

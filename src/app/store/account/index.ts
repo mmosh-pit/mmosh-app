@@ -12,3 +12,5 @@ export const onboardingForm = atom({
 });
 
 export const referredUser = atom("");
+
+export const referredSuccess = atom(false);

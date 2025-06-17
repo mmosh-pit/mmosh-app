@@ -455,7 +455,7 @@ const Step4 = () => {
 
               <div className="flex flex-col mb-4">
                 <p className="text-sm">Banner Image</p>
-                <div className="h-[200px]">
+                <div className="h-[300px]">
                   <ImageAccountPicker
                     changeImage={setBannerImage}
                     image={imagePreview}

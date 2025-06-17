@@ -2,17 +2,39 @@ import * as React from "react";
 
 import Input from "../common/Input";
 import Button from "../common/Button";
-import { onboardingStep, referredUser } from "@/app/store/account";
+import {
+  onboardingStep,
+  referredSuccess,
+  referredUser,
+} from "@/app/store/account";
 import { useAtom } from "jotai";
 import client from "@/app/lib/httpClient";
 import MessageBanner from "../common/MessageBanner";
+import { data } from "@/app/store";
 
 const Step1 = () => {
+  const [currentUser] = useAtom(data);
   const [_, setSelectedStep] = useAtom(onboardingStep);
   const [referralUsername, setReferralUsername] = useAtom(referredUser);
+  const [__, setSuccess] = useAtom(referredSuccess);
 
+  const [isLocked, setIsLocked] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState("");
+
+  React.useEffect(() => {
+    if (currentUser !== null) {
+      if (!!currentUser!.referred_by) {
+        setIsLocked(true);
+      }
+
+      setReferralUsername(currentUser!.referred_by);
+    }
+
+    if (referralUsername !== "") {
+      setIsLocked(true);
+    }
+  }, [currentUser]);
 
   const saveReferr = React.useCallback(async () => {
     if (referralUsername === "") return;
@@ -24,8 +46,9 @@ const Step1 = () => {
       await client.put("/referred", {
         user: referralUsername,
       });
-      setStatus("success");
+      setSuccess(true);
       setSelectedStep(1);
+      setIsLocked(true);
     } catch (_) {
       setStatus("error");
     }
@@ -38,9 +61,7 @@ const Step1 = () => {
         <MessageBanner
           type={status}
           message={
-            status === "error"
-              ? "We're sorry, we couldn't find a Member with that username. Check that there aren't any errors and try again."
-              : "Your referral code has been applied! You’ll receive your reward shortly."
+            "We're sorry, we couldn't find a Member with that username. Check that there aren't any errors and try again."
           }
         />
       )}
@@ -68,6 +89,7 @@ const Step1 = () => {
               title=""
               placeholder="Referral Username"
               required={false}
+              readonly={isLocked}
               type="text"
               value={referralUsername}
               onChange={(e) => setReferralUsername(e.target.value)}

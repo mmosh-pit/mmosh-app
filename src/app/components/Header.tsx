@@ -115,6 +115,10 @@ const Header = () => {
       setIsAuthModalOpen(!user);
       setIsUserAuthenticated(!!user);
       setCurrentUser(user);
+
+      if (user.onboarding_step < 4) {
+        router.replace("/account");
+      }
     } catch (err) {
       // router.replace("/");
     }

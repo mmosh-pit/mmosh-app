@@ -97,7 +97,21 @@ const Step1 = () => {
           </div>
         </div>
 
-        {(status === "" || status === "error") && (
+        {isLocked && (
+          <div className="mt-8 self-center">
+            <Button
+              title="Next"
+              isLoading={false}
+              action={() => {
+                setSelectedStep(1);
+              }}
+              size="small"
+              isPrimary
+            />
+          </div>
+        )}
+
+        {(status === "" || status === "error") && !isLocked && (
           <div className="flex mt-8 self-center">
             <Button
               title="Skip"

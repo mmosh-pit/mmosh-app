@@ -93,7 +93,7 @@ const ImageAccountPicker = ({
               src={image}
               alt="Identity"
               fill
-              objectFit="cover"
+              objectFit="contain"
               className={rounded ? "rounded-full" : ""}
             />
           </div>

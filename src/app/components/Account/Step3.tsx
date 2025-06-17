@@ -49,6 +49,7 @@ const Step3 = () => {
     balance: 0,
     value: 0,
   });
+  const [hasSwapped, setHasSwapped] = React.useState(false);
 
   const onTokenSelect = async (token: SwapCoin, isBase: boolean) => {
     let base;
@@ -174,6 +175,7 @@ const Step3 = () => {
         setSwapLoading(false);
       }
 
+      setHasSwapped(true);
       setTimeout(() => {
         setResult({ res: "", message: "" });
       }, 4000);
@@ -286,8 +288,8 @@ const Step3 = () => {
         </p>
       </div>
 
-      <div className="swap-container-card mt-8 max-h-[550px] md:p-4 lg:p-6 rounded-xl">
-        <div className="swap-container-inner mx-12 p-8">
+      <div className="mt-8 max-h-[550px] w-[80%] md:w-[70%] lg:w-[55%] self-center md:p-4 lg:p-6 rounded-xl">
+        <div className="swap-container-inner p-8">
           <div className="flex w-full flex-col justify-between">
             <div className="w-full flex justify-between">
               <p className="font-bold text-white text-sm mr-2">You're Paying</p>
@@ -389,16 +391,6 @@ const Step3 = () => {
 
             <div className="flex">
               <Button
-                isLoading={false}
-                title="Skip"
-                size="large"
-                action={goToNextStep}
-                isPrimary={false}
-              />
-
-              <div className="mx-4" />
-
-              <Button
                 disabled={baseToken.value === 0 || swapLoading}
                 isLoading={swapLoading}
                 title="Swap"
@@ -409,6 +401,15 @@ const Step3 = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="mt-4 w-[80%] md:w-[70%] lg:w-[55%] self-center">
+        <Button
+          isLoading={false}
+          title={hasSwapped ? "Next" : "Skip"}
+          size="large"
+          action={goToNextStep}
+          isPrimary={false}
+        />
       </div>
     </div>
   );

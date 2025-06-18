@@ -67,6 +67,8 @@ const ProfileForm = () => {
         host: "",
       });
 
+      setPreview(profileData?.image ?? guestData?.picture ?? "");
+      setImagePreview(guestData?.banner);
       setHasProfile(!!userData!.profilenft);
       setHasReferer(!!userData!.referred_by);
     }
@@ -111,6 +113,8 @@ const ProfileForm = () => {
   };
 
   const checkForUsername = React.useCallback(async () => {
+    if (form.username === userData?.profile.username) return;
+
     if (["create"].includes(form.username.toLowerCase())) {
       setError({
         error: true,
@@ -135,7 +139,7 @@ const ProfileForm = () => {
       error: false,
       message: "",
     });
-  }, [form.username]);
+  }, [form.username, userData]);
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });

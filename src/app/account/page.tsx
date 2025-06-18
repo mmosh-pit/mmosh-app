@@ -8,7 +8,7 @@ import Step1 from "../components/Account/Step1";
 import Step2 from "../components/Account/Step2";
 import Step3 from "../components/Account/Step3";
 import Step4 from "../components/Account/Step4";
-import { data, isAuth } from "../store";
+import { data, isAuth, userWeb3Info } from "../store";
 import { useRouter } from "next/navigation";
 
 // "Onboarding"
@@ -17,6 +17,7 @@ const Account = () => {
   const [selectedStep, setSelectedStep] = useAtom(onboardingStep);
   const [isUserAuthenticated] = useAtom(isAuth);
   const [currentUser] = useAtom(data);
+  const [profileInfo] = useAtom(userWeb3Info);
 
   const getStep = () => {
     if (currentUser !== null) {
@@ -33,6 +34,10 @@ const Account = () => {
     if (selectedStep === 2) return <Step3 />;
     if (selectedStep === 3) return <Step4 />;
 
+    if (selectedStep >= 4) {
+      router.replace("/chat");
+    }
+
     return <Step1 />;
   };
 
@@ -42,6 +47,12 @@ const Account = () => {
       return;
     }
   }, [isUserAuthenticated]);
+
+  React.useEffect(() => {
+    if (profileInfo?.profile.address !== undefined) {
+      router.replace("/chat");
+    }
+  }, [profileInfo]);
 
   return (
     <div className="background-content flex w-full h-full justify-center overflow-y-hidden">

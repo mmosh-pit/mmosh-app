@@ -15,12 +15,18 @@ import ImageAccountPicker from "../Account/ImageAccountPicker";
 import { uploadFile } from "@/app/lib/firebase";
 import client from "@/app/lib/httpClient";
 import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
+import { Connectivity as UserConn } from "@/anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
+import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
+import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
+import * as anchor from "@coral-xyz/anchor";
+import { updateUserData } from "@/app/lib/forge/updateUserData";
 
 const ProfileForm = () => {
   const wallet = useWallet();
   const navigate = useRouter();
   const [profileInfo] = useAtom(userWeb3Info);
-  const [userData, setCurrentUser] = useAtom(data);
+  const [currentUser, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState(
     "https://storage.googleapis.com/mmosh-assets/default.png",
@@ -50,10 +56,12 @@ const ProfileForm = () => {
     usdc: 0,
   });
 
+  const [tokenInfo, setTokenInfo] = React.useState<any>(null);
+
   React.useEffect(() => {
-    if (userData) {
-      const guestData = userData!.guest_data;
-      const profileData = userData!.profile;
+    if (currentUser) {
+      const guestData = currentUser!.guest_data;
+      const profileData = currentUser!.profile;
 
       setForm({
         name: profileData?.name || guestData?.name,
@@ -68,11 +76,17 @@ const ProfileForm = () => {
       });
 
       setPreview(profileData?.image ?? guestData?.picture ?? "");
-      setImagePreview(guestData?.banner);
-      setHasProfile(!!userData!.profilenft);
-      setHasReferer(!!userData!.referred_by);
+      setImagePreview(profileData?.banner ?? guestData?.banner ?? "");
+      setHasProfile(currentUser!.profilenft !== "");
+      setHasReferer(!!currentUser!.referred_by);
     }
-  }, [userData]);
+  }, [currentUser]);
+
+  React.useEffect(() => {
+    if (profileInfo) {
+      setHasProfile(profileInfo?.profile.address !== undefined);
+    }
+  }, [profileInfo]);
 
   const [message, setMessage] = React.useState({
     type: "",
@@ -85,10 +99,10 @@ const ProfileForm = () => {
   });
 
   React.useEffect(() => {
-    if (userData) {
-      lookupReferer(userData!.referred_by);
+    if (currentUser) {
+      lookupReferer(currentUser!.referred_by);
     }
-  }, [userData]);
+  }, [currentUser]);
 
   const lookupReferer = async (username: any) => {
     try {
@@ -113,7 +127,7 @@ const ProfileForm = () => {
   };
 
   const checkForUsername = React.useCallback(async () => {
-    if (form.username === userData?.profile.username) return;
+    if (form.username === currentUser?.profile.username) return;
 
     if (["create"].includes(form.username.toLowerCase())) {
       setError({
@@ -139,7 +153,7 @@ const ProfileForm = () => {
       error: false,
       message: "",
     });
-  }, [form.username, userData]);
+  }, [form.username, currentUser]);
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });
@@ -375,6 +389,151 @@ const ProfileForm = () => {
     setIsLoading(false);
   }, [form, image]);
 
+  const updateProfile = React.useCallback(async () => {
+    if (
+      !validateFields() ||
+      !profileInfo ||
+      !wallet ||
+      !currentUser ||
+      !tokenInfo
+    ) {
+      return;
+    }
+
+    createMessage("", "");
+    setIsLoading(true);
+    const profile = currentUser.profile;
+    const json = tokenInfo.json;
+
+    const body = {
+      name: json.image,
+      symbol: json.symbol,
+      description: json.description,
+      image: json.image,
+      enternal_url: json.enternal_url,
+      family: "MMOSH",
+      collection: "MMOSH Profile Collection",
+      attributes: json.attributes,
+    };
+
+    body.enternal_url =
+      process.env.NEXT_PUBLIC_APP_MAIN_URL + "/" + form.username;
+    body.name = form.name + " " + form.lastName;
+    body.description = form.description;
+    for (let index = 0; index < body.attributes.length; index++) {
+      const element = body.attributes[index];
+      if (element.trait_type == "Full Name") {
+        body.attributes[index].value = form.name + " " + form.lastName;
+      } else if (element.trait_type == "Username") {
+        body.attributes[index].value = form.username;
+      } else if (element.trait_type == "Adjective") {
+        body.attributes[index].value = form.descriptor;
+      } else if (element.trait_type == "Noun") {
+        body.attributes[index].value = form.noun;
+      }
+    }
+
+    if (image) {
+      const imageUri = await pinImageToShadowDrive(image);
+      body.image = imageUri;
+      if (imageUri === "") {
+        createMessage(
+          "We’re sorry, there was an error while trying to uploading image. please try again later.",
+          "error",
+        );
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    const filenameArray = tokenInfo.uri.split("/");
+    const filename =
+      filenameArray.length > 0 ? filenameArray[filenameArray.length - 1] : "";
+    if (filename) {
+      createMessage("Metadata filename is missing", "error");
+      setIsLoading(false);
+    }
+
+    const shadowHash: any = await pinFileToShadowDrive(body);
+
+    profile.bio = form.description;
+    profile.nouns = form.noun;
+    profile.name = form.name + " " + form.lastName;
+    profile.username = form.username;
+    profile.descriptor = form.descriptor;
+    currentUser.profile = profile;
+
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+
+    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+    const res = await userConn.updateToken({
+      mint: new anchor.web3.PublicKey(profileInfo.profile.address),
+      authority: wallet.publicKey,
+      payer: wallet.publicKey,
+      name: form.username.substring(0, 15),
+      symbol: form.username.substring(0, 10).toUpperCase(),
+      uri: shadowHash,
+    });
+
+    if (res.Err) {
+      createMessage("Error on Blockchain call", "error");
+      setIsLoading(false);
+      return;
+    }
+
+    const updateProfile = currentUser.profile;
+    updateProfile.symbol = form.username.substring(0, 10);
+    updateProfile.bio = form.description;
+    updateProfile.displayName = form.displayName;
+    updateProfile.username = form.username;
+    updateProfile.name = form.name + " " + form.lastName;
+    updateProfile.lastName = form.lastName;
+    updateProfile.nouns = form.noun;
+    updateProfile.descriptor = form.descriptor;
+    updateProfile.image = body.image;
+    updateProfile.link = form.link;
+    updateProfile.banner = imagePreview;
+
+    await updateUserData(updateProfile);
+
+    currentUser.profile = updateProfile;
+
+    setCurrentUser(currentUser);
+    navigate.replace(`/` + form.username);
+    setIsLoading(false);
+  }, [wallet, profileInfo, image, form, tokenInfo]);
+
+  const getTokenInfo = React.useCallback(async () => {
+    if (profileInfo!.profile.address == undefined) return;
+
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet!, {
+      preflightCommitment: "processed",
+    });
+
+    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+    const nftInfo = await userConn.metaplex.nfts().findByMint({
+      mintAddress: new anchor.web3.PublicKey(profileInfo!.profile.address),
+    });
+
+    setTokenInfo(nftInfo);
+  }, [profileInfo]);
+
+  React.useEffect(() => {
+    if (profileInfo) {
+      getTokenInfo();
+    }
+  }, [profileInfo]);
+
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col items-center justify-center w-full">
@@ -589,7 +748,7 @@ const ProfileForm = () => {
                   title="Save your changes"
                   size="large"
                   disabled={isLoading}
-                  action={() => { }}
+                  action={updateProfile}
                 />
               </div>
             )}

@@ -40,7 +40,7 @@ const AuthOverlay = () => {
 
         <div className="w-full flex justify-center">
           <p className="text-base text-white">
-            Join Kinship Codes, It's All Related.
+            Join Kinship Bots, It's All Related.
           </p>
         </div>
 

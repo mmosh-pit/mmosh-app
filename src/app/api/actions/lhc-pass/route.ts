@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         symbol: "LHCGP",
         description: "Liquid Hearts Club is a privacy super app within the MMOSH ecosystem. The Liquid Hearts Club Guest Pass provides access to all available resources with the exception of referral rewards, which require a Profile granting Liquid Hearts Club membership.",
         image: "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/lhc.jpg",
-        enternal_url: "https://liquidhearts.app",
+        enternal_url: "https://kinshipbots.com",
         family: "MMOSH",
         collection: "MMOSH Pass Collection",
         attributes: [

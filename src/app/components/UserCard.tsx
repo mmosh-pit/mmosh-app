@@ -170,7 +170,7 @@ const UserCard = ({ user, wallet, currentuser, connection }: Props) => {
                 " cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
               image:
                 "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              external_url: "https://liquidhearts.app",
+              external_url: "https://kinshipbots.com",
               minter: currentuser.profile.name,
               attributes: [
                 {

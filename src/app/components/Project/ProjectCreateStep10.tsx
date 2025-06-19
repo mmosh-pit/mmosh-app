@@ -505,7 +505,7 @@ export default function ProjectCreateStep10({
         symbol: project.symbol,
         description: project.desc,
         image: project.image.preview,
-        enternal_url: "https://liquidhearts.app",
+        enternal_url: "https://kinshipbots.com",
         family: "MMOSH",
         collection: "MMOSH Pass Collection",
         attributes: [

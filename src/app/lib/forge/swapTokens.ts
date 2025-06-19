@@ -426,10 +426,10 @@ const sendTelegramNotification = async (
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Swap", url: "https://www.liquidhearts.app/swap" },
+            { text: "Swap", url: "https://www.kinshipbots.com/swap" },
             {
               text: "View",
-              url: "https://www.liquidhearts.app/coins/" + params.targetsymbol,
+              url: "https://www.kinshipbots.com/coins/" + params.targetsymbol,
             },
           ],
         ],

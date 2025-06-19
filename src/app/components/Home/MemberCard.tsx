@@ -156,7 +156,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
                 " cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
               image:
                 "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              external_url: "https://liquidhearts.app",
+              external_url: "https://kinshipbots.com",
               minter: currentuser.profile.name,
               attributes: [
                 {
@@ -394,9 +394,9 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
           </p>
           <a
             className="text-[#FF00C7] text-sm"
-            href={`https://liquidhearts.app/${user.profile.username}`}
+            href={`https://kinshipbots.com/${user.profile.username}`}
           >
-            liquidhearts.app/{user.profile.username}
+            kinshipbots.com/{user.profile.username}
           </a>
         </div>
         {user.profile.request && (

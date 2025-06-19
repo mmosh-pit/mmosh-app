@@ -266,7 +266,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
           symbol: fields.symbol,
           description: fields.desc,
           image: fields.image.preview,
-          enternal_url: "https://liquidhearts.app",
+          enternal_url: "https://kinshipbots.com",
           family: "MMOSH",
           collection: "MMOSH Pass Collection",
           attributes: [

@@ -33,6 +33,7 @@ type Profile = {
   image: string;
   pronouns: string;
   seniority: number;
+  banner: string;
   descriptor: string;
   symbol: string;
   nouns: string;

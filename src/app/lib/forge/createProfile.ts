@@ -228,7 +228,7 @@ export const createProfile = async ({
         banner,
       };
 
-      await updateUserData(params, wallet.publicKey.toString());
+      await updateUserData(params);
       await updateTotalMints(seniority);
 
       return {

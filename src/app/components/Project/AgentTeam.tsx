@@ -280,7 +280,7 @@ export default function AgentTeam({
         description: projectDetail.project.desc,
         image: projectDetail.project.image,
         enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
-        family: "Kinship Codes",
+        family: "Kinship Bots",
         collection: "Kinship Roles",
         attributes: [
           {
@@ -314,17 +314,17 @@ export default function AgentTeam({
         profileInfo?.profile.address!,
       );
 
-      await delay(15000)
+      await delay(15000);
 
-      console.log("current profile", currentProfile)
+      console.log("current profile", currentProfile);
 
       const res1 = await projectConn.transferBadge({
-          amount: Number(1),
-          subscriptionToken: new anchor.web3.PublicKey(res.Ok?.info?.profile!),
-          receiver: currentProfile.wallet
-      })
+        amount: Number(1),
+        subscriptionToken: new anchor.web3.PublicKey(res.Ok?.info?.profile!),
+        receiver: currentProfile.wallet,
+      });
 
-      console.log("res1", res1)
+      console.log("res1", res1);
 
       if (res.Ok) {
         await axios.post("/api/project/save-profile", {
@@ -337,7 +337,8 @@ export default function AgentTeam({
         });
 
         createMessage(
-          "Agent team role is successfully assigned to " + currentProfile.profile.name,
+          "Agent team role is successfully assigned to " +
+          currentProfile.profile.name,
           "success-container",
         );
 

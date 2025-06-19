@@ -229,12 +229,6 @@ export default function ProjectCreate() {
         {selectedOption === "step4" && (
           <ProjectCreateStep4 onPageChange={onPageChange} />
         )}
-        {/* {currentStep === "step5" &&
-            <ProjectCreateStep5 onPageChange={onPageChange}/>
-         }
-         {currentStep === "step6" &&
-            <ProjectCreateStep6 onPageChange={onPageChange}/>
-         } */}
         {selectedOption === "Vesting" && (
           <ProjectCreateStep7 onPageChange={onPageChange} />
         )}
@@ -252,9 +246,6 @@ export default function ProjectCreate() {
         {selectedOption === "Instruct" && (
           <InstructAgent symbol={selectedProjectType} />
         )}
-        {/* {currentStep === "step10" &&
-            <ProjectCreateStep10 onPageChange={onPageChange}/>
-         } */}
       </div>
     </>
   );

@@ -59,9 +59,9 @@ const SimpleMemberCard = ({ user }: Props) => {
           </p>
           <a
             className="text-[#FF00C7] text-sm"
-            href={`https://liquidhearts.app/${user.profile.username}`}
+            href={`https://kinshipbots.com/${user.profile.username}`}
           >
-            liquidhearts.app/{user.profile.username}
+            kinshipbots.com/{user.profile.username}
           </a>
         </div>
 

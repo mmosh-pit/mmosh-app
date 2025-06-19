@@ -222,7 +222,7 @@ const Profile = ({ username }: { username: any }) => {
                 " cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
               image:
                 "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              external_url: "https://liquidhearts.app",
+              external_url: "https://kinshipbots.com",
               minter: currentUser.profile.name,
               attributes: [
                 {
@@ -515,7 +515,7 @@ const Profile = ({ username }: { username: any }) => {
                     className="text-base font-white underline"
                     href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${userData?.profile?.username}`}
                   >
-                    {`liquidhearts.app/${userData?.profile?.username}`}
+                    {`kinshipbots.com/${userData?.profile?.username}`}
                   </a>
 
                   {!isMobile && (

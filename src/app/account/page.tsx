@@ -21,10 +21,7 @@ const Account = () => {
 
   const getStep = () => {
     if (currentUser !== null) {
-      if (
-        currentUser!.guest_data?.name !== "" ||
-        (currentUser!.profilenft !== "" && !!currentUser!.profilenft)
-      ) {
+      if (currentUser!.onboarding_step >= 4) {
         router.replace("/chat");
       }
     }

@@ -62,9 +62,18 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
     },
     [currentUser, selectedChat],
   );
-
   const sendMessage = React.useCallback(
     (content: string) => {
+      console.log(JSON.stringify({
+        data: {
+          chat_id: selectedChat!.id,
+          agent_id: selectedChat!.chatAgent!.id,
+          system_prompt: selectedChat!.chatAgent!.systemPrompt,
+          namespaces: [selectedChat!.chatAgent!.key, "PUBLIC", "MMOSH"],
+          content,
+        },
+        event: "message",
+      }))
       socket?.send(
         JSON.stringify({
           data: {

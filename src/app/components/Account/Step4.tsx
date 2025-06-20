@@ -77,11 +77,18 @@ const Step4 = () => {
   React.useEffect(() => {
     if (user) {
       const guestData = user!.guest_data;
+
+      let name = guestData.name;
+
+      if (name === "" || !name) {
+        name = user.name;
+      }
+
       setPreview(guestData.picture ?? "");
       if (!onboarding.name) {
         setForm({
           ...form,
-          name: guestData.name === "" ? user.name : guestData.name ?? "",
+          name,
           username: guestData.username,
           link: guestData.website,
           description: guestData.bio,

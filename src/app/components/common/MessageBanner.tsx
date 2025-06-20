@@ -1,4 +1,4 @@
-import Markdown from "markdown-to-jsx";
+import Markdown from "react-markdown";
 
 type Props = {
   message: string;

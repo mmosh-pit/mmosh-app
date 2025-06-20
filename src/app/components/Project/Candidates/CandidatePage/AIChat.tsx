@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { CandidateInfo } from "@/app/models/candidateInfo";
 import { AIChatMessage } from "@/app/models/AIChatMessage";
 import { data } from "@/app/store";
-import Markdown from "markdown-to-jsx";
+import Markdown from "react-markdown";
 import { Bars } from "react-loader-spinner";
 
 type Props = {

@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import Image from "next/image";
 
 import { data } from "@/app/store";
-import Markdown from "markdown-to-jsx";
+import Markdown from "react-markdown";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import { selectedChatStore } from "@/app/store/chat";
 import { Message } from "@/app/models/chat";

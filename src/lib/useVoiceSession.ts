@@ -81,26 +81,34 @@ export default function useVoiceSession() {
     setIsSessionActive(false);
     setDataChannel(null);
     peerConnection.current = null;
+    setEvents([]); // Clear events when stopping session
   }
 
   // Send a message to the model
   function sendClientEvent(message: any) {
-    if (dataChannel) {
-      const timestamp = new Date().toLocaleTimeString();
-      message.event_id = message.event_id || crypto.randomUUID();
+    if (dataChannel && dataChannel.readyState === 'open') {
+      try {
+        const timestamp = new Date().toLocaleTimeString();
+        // Ensure unique event ID for each message
+        if (!message.event_id) {
+          message.event_id = crypto.randomUUID();
+        }
 
-      // send event before setting timestamp since the backend peer doesn't expect this field
-      dataChannel.send(JSON.stringify(message));
+        // send event before setting timestamp since the backend peer doesn't expect this field
+        dataChannel.send(JSON.stringify(message));
 
-      // if guard just in case the timestamp exists by miracle
-      if (!message.timestamp) {
-        message.timestamp = timestamp;
+        // if guard just in case the timestamp exists by miracle
+        if (!message.timestamp) {
+          message.timestamp = timestamp;
+        }
+        setEvents((prev) => [message, ...prev]);
+      } catch (error) {
+        console.error("Failed to send message through data channel:", error);
       }
-      setEvents((prev) => [message, ...prev]);
     } else {
       console.error(
-        "Failed to send message - no data channel available",
-        message,
+        "Failed to send message - data channel not available or not open. State:",
+        dataChannel?.readyState
       );
     }
   }
@@ -140,8 +148,19 @@ export default function useVoiceSession() {
 
       // Set session active when the data channel is opened
       dataChannel.addEventListener("open", () => {
+        console.log("Data channel opened, setting session active");
         setIsSessionActive(true);
         setEvents([]);
+      });
+
+      // Handle data channel errors and state changes
+      dataChannel.addEventListener("error", (error) => {
+        console.error("Data channel error:", error);
+      });
+
+      dataChannel.addEventListener("close", () => {
+        console.log("Data channel closed");
+        setIsSessionActive(false);
       });
     }
   }, [dataChannel]);

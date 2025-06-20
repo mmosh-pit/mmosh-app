@@ -13,7 +13,7 @@ const genAI = new GoogleGenerativeAI(process.env.GENAI_API_KEY || "AIzaSyAai2W4h
 const indexName = process.env.PINECONE_INDEX || "mmosh-index";
 
 export async function POST(request: NextRequest) {
-  console.log("Search perodua");
+  console.log("Search information from PUBLIC namespace");
   try {
     const { query } = await request.json();
     
@@ -24,13 +24,13 @@ export async function POST(request: NextRequest) {
     // Get the index
     const index = pinecone.Index(indexName);
 
-    // Create embedding using Google's model (same as used for upload)
+    // Create embedding using Google's model
     const model = genAI.getGenerativeModel({ model: "models/embedding-001" });
     const result = await model.embedContent(query);
     const queryEmbedding = result.embedding.values;
 
-    // Search in the perodua namespace
-    const searchResponse = await index.namespace("perodua").query({
+    // Search in the PUBLIC namespace
+    const searchResponse = await index.namespace("PUBLIC").query({
       vector: queryEmbedding,
       topK: 5,
       includeMetadata: true,
@@ -48,14 +48,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       query,
       results,
-      message: `Found ${results.length} relevant results about Perodua cars`,
+      message: `Found ${results.length} relevant information results`,
       model: "models/embedding-001"
     });
 
   } catch (error) {
     console.error('Pinecone search error:', error);
     return NextResponse.json({ 
-      error: 'Failed to search Pinecone', 
+      error: 'Failed to search information', 
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }

@@ -42,8 +42,6 @@ const TelegramApp = () => {
     setIsLoading(false);
   }, []);
 
-  console.log("Current user: ", currentUser?.telegram);
-
   return (
     <div
       className={`flex flex-col justify-center items-center md:min-w-[60%] min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] rounded-lg p-6 min-h-[200px] mt-12 ${currentUser?.telegram?.id && "border-[1px] border-[#FF00AE59]"}`}
@@ -58,7 +56,7 @@ const TelegramApp = () => {
         />
       )}
 
-      {currentUser?.telegram?.id && (
+      {!!currentUser?.telegram?.id && (
         <div className="w-full h-full flex flex-col justify-between items-center rounded-lg py-2 px-2">
           <div className="flex flex-col items-center">
             <p className="text-base text-white">

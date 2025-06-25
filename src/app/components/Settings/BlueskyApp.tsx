@@ -38,7 +38,7 @@ const BlueskyApp = () => {
       }));
 
       createMessage(
-        "Successfully added bluesky account to your Agent",
+        "Your Bluesky account has been added successfully",
         "success-container",
       );
     } catch (err: any) {

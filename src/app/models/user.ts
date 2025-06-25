@@ -3,13 +3,19 @@ export type User = {
   email: string;
   wallet: string;
   profile: Profile;
-  telegram: Telegram;
+  telegram: Telegram | null;
   twitter: Twitter;
   profilenft: string;
   royalty: number;
   guest_data: GuestData;
   onboarding_step: number;
   referred_by: string;
+  bluesky: Bluesky | null;
+};
+
+type Bluesky = {
+  handle: string;
+  password: string;
 };
 
 type GuestData = {
@@ -51,7 +57,6 @@ type Telegram = {
   id: number;
   firstName: string;
   username: string;
-  points: number;
 };
 
 type Twitter = {

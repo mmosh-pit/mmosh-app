@@ -76,7 +76,6 @@ const Header = () => {
   const [_______, setPublicKey] = useAtom(appPublicKey);
   const [________, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
   const [currentUser, setCurrentUser] = useAtom(data);
-  const [incomingWalletToken, setIncomingWalletToken] = useAtom(incomingWallet);
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [bags, setBags] = useAtom(bagsCoins);
   const [__________, setBagsNFTs] = useAtom(bagsNfts);
@@ -117,6 +116,7 @@ const Header = () => {
       setCurrentUser(user);
 
       if (user.onboarding_step < 4) {
+        console.log("replacing because value; ", user.onboarding_step);
         router.replace("/account");
       }
     } catch (err) {
@@ -413,11 +413,6 @@ const Header = () => {
   React.useEffect(() => {
     if (!rendered.current) {
       init();
-      const param = searchParams.get("socialwallet");
-
-      if (param) {
-        setIncomingWalletToken(param);
-      }
       rendered.current = true;
     }
   }, []);
@@ -444,20 +439,6 @@ const Header = () => {
     }
     checkIfIsAuthenticated();
   }, [wallet]);
-
-  // React.useEffect(() => {
-  //   if (wallet?.publicKey && incomingWalletToken !== "") {
-  //     (async () => {
-  //       const result = await axios.post("/api/link-social-wallet", {
-  //         token: incomingWalletToken,
-  //         wallet: wallet.publicKey.toString(),
-  //       });
-  //
-  //       setCurrentUser(result.data);
-  //       setIncomingWalletToken("");
-  //     })();
-  //   }
-  // }, [wallet, incomingWalletToken]);
 
   const resetNotification = async () => {
     await axios.put("/api/notifications/update", {

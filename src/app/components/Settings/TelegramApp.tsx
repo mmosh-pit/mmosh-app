@@ -58,7 +58,7 @@ const TelegramApp = () => {
         />
       )}
 
-      {currentUser?.telegram && (
+      {currentUser?.telegram?.id && (
         <div className="w-full h-full flex flex-col justify-between items-center rounded-lg py-2 px-2">
           <div className="flex flex-col items-center">
             <p className="text-base text-white">

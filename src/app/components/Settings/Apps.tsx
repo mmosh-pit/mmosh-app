@@ -20,7 +20,7 @@ const Apps = () => {
 
       <div className="w-full flex justify-around mt-12">
         <button
-          className="flex items-center bg-[#D9D9D938] border-[1px] border-[#FFFFFFEB] rounded-2xl px-3 py-2 mb-2 min-w-[150px] justify-center"
+          className={`flex items-center bg-[#D9D9D938] ${selectedOption === 0 && "border-[1px] border-[#FFFFFFEB]"} rounded-2xl px-3 py-2 mb-2 min-w-[100px] justify-center`}
           onClick={() => setSelectedOption(0)}
         >
           <BlueskyIcon />
@@ -29,7 +29,7 @@ const Apps = () => {
         </button>
 
         <button
-          className="flex items-center bg-[#D9D9D938] border-[1px] border-[#FFFFFFEB] rounded-2xl px-3 py-2 mb-2 min-w-[150px] justify-center"
+          className={`flex items-center bg-[#D9D9D938] ${selectedOption === 1 && "border-[1px] border-[#FFFFFFEB]"} rounded-2xl px-3 py-2 mb-2 min-w-[100px] justify-center`}
           onClick={() => setSelectedOption(1)}
         >
           <TelegramIcon />

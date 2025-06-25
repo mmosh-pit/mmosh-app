@@ -10,7 +10,7 @@ const WithTelegramNoAccount = () => {
 
   const checkForTelegramAccount = React.useCallback(async () => {
     const user = await axios.get(
-      `/api/get-bot-user?id=${userData?.telegram.id}`,
+      `/api/get-bot-user?id=${userData?.telegram?.id}`,
     );
 
     if (user.data) {

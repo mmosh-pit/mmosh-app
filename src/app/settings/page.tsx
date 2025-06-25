@@ -23,13 +23,13 @@ const Settings = () => {
         </p>
 
         <button onClick={() => setSelectedPage(0)}>
-          <p className="text-base text-white">Account</p>
+          <p className="text-left text-base text-white">Account</p>
         </button>
 
         <div className="my-4" />
 
         <button onClick={() => setSelectedPage(1)}>
-          <p className="text-base text-white">Apps</p>
+          <p className="text-left text-base text-white">Apps</p>
         </button>
 
         <div className="my-4" />

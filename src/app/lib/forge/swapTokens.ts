@@ -26,13 +26,13 @@ export const swapTokens = async (
     preflightCommitment: "processed",
   });
 
-  let memecoin = baseToken.is_memecoin ? baseToken : targetToken
+  let memecoin = baseToken.is_memecoin ? baseToken : targetToken;
 
   const result = await axios.get<CoinDetail>(
     `/api/get-token-by-symbol?symbol=${memecoin.symbol}`,
   );
 
-  console.log("CoinDetail", result.data)
+  console.log("CoinDetail", result.data);
 
   anchor.setProvider(env);
   const curveConn: CurveConn = new CurveConn(env, web3Consts.programID);
@@ -56,25 +56,28 @@ export const swapTokens = async (
       hasProfile = true;
     }
   }
-  let projectToken = await axios.get(`/api/project/token-detail?symbol=`+memecoin.symbol);
+  let projectToken = await axios.get(
+    `/api/project/token-detail?symbol=` + memecoin.symbol,
+  );
 
-
-  let listResult = await axios.get(`/api/project/detail?address=`+projectToken.data.projectkey);
+  let listResult = await axios.get(
+    `/api/project/detail?address=` + projectToken.data.projectkey,
+  );
   const genesisPassUser = await userConn.getNftProfileOwner(
     new anchor.web3.PublicKey(listResult.data.project.key),
   );
 
   if (hasProfile) {
-    let creatorShare:any;
-    if(targetToken.symbol.toLowerCase() == "sol") {
-      console.log("ownerUser ", ownerUser.profileHolder.toBase58())
+    let creatorShare: any;
+    if (targetToken.symbol.toLowerCase() == "sol") {
+      console.log("ownerUser ", ownerUser.profileHolder.toBase58());
       creatorShare = anchor.web3.SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: ownerUser.profileHolder,
         lamports: Math.ceil(
-          targetToken.value * 0.03 * (10 ** targetToken.decimals),
-        )
-      })
+          targetToken.value * 0.03 * 10 ** targetToken.decimals,
+        ),
+      });
     } else {
       creatorShare = await userConn.baseSpl.transfer_token_modified({
         mint: new anchor.web3.PublicKey(targetToken.token),
@@ -82,21 +85,21 @@ export const swapTokens = async (
         receiver: ownerUser.profileHolder,
         init_if_needed: true,
         amount: Math.ceil(
-          targetToken.value * 0.03 * (10 ** targetToken.decimals),
+          targetToken.value * 0.03 * 10 ** targetToken.decimals,
         ),
       });
     }
 
-    let gensisPassShare:any;
-    if(targetToken.symbol.toLowerCase() == "sol") {
-      console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58())
+    let gensisPassShare: any;
+    if (targetToken.symbol.toLowerCase() == "sol") {
+      console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58());
       gensisPassShare = anchor.web3.SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: genesisPassUser.profileHolder,
         lamports: Math.ceil(
-          targetToken.value * 0.02 * (10 ** targetToken.decimals),
-        )
-      })
+          targetToken.value * 0.02 * 10 ** targetToken.decimals,
+        ),
+      });
     } else {
       gensisPassShare = await userConn.baseSpl.transfer_token_modified({
         mint: new anchor.web3.PublicKey(targetToken.token),
@@ -104,7 +107,7 @@ export const swapTokens = async (
         receiver: genesisPassUser.profileHolder,
         init_if_needed: true,
         amount: Math.ceil(
-          targetToken.value * 0.02 *  (10 ** targetToken.decimals),
+          targetToken.value * 0.02 * 10 ** targetToken.decimals,
         ),
       });
     }
@@ -117,16 +120,16 @@ export const swapTokens = async (
       curveConn.txis.push(gensisPassShare[index]);
     }
   } else {
-    let creatorShare:any;
-    if(targetToken.symbol.toLowerCase() == "sol") {
-      console.log("ownerUser ", ownerUser.profileHolder.toBase58())
+    let creatorShare: any;
+    if (targetToken.symbol.toLowerCase() == "sol") {
+      console.log("ownerUser ", ownerUser.profileHolder.toBase58());
       creatorShare = anchor.web3.SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: ownerUser.profileHolder,
         lamports: Math.ceil(
-          targetToken.value * 0.02 * (10 ** targetToken.decimals),
-        )
-      })
+          targetToken.value * 0.02 * 10 ** targetToken.decimals,
+        ),
+      });
     } else {
       creatorShare = await userConn.baseSpl.transfer_token_modified({
         mint: new anchor.web3.PublicKey(targetToken.token),
@@ -134,20 +137,20 @@ export const swapTokens = async (
         receiver: ownerUser.profileHolder,
         init_if_needed: true,
         amount: Math.ceil(
-          targetToken.value * 0.02 *  (10 ** targetToken.decimals),
+          targetToken.value * 0.02 * 10 ** targetToken.decimals,
         ),
       });
     }
-    let gensisPassShare:any;
-    if(targetToken.symbol.toLowerCase() == "sol") {
-      console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58())
+    let gensisPassShare: any;
+    if (targetToken.symbol.toLowerCase() == "sol") {
+      console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58());
       gensisPassShare = anchor.web3.SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: genesisPassUser.profileHolder,
         lamports: Math.ceil(
-          targetToken.value * 0.03 * (10 ** targetToken.decimals),
-        )
-      })
+          targetToken.value * 0.03 * 10 ** targetToken.decimals,
+        ),
+      });
     } else {
       gensisPassShare = await userConn.baseSpl.transfer_token_modified({
         mint: new anchor.web3.PublicKey(targetToken.token),
@@ -155,7 +158,7 @@ export const swapTokens = async (
         receiver: genesisPassUser.profileHolder,
         init_if_needed: true,
         amount: Math.ceil(
-          targetToken.value * 0.03 *  (10 ** targetToken.decimals),
+          targetToken.value * 0.03 * 10 ** targetToken.decimals,
         ),
       });
     }
@@ -169,22 +172,22 @@ export const swapTokens = async (
     }
   }
 
-  let genesisShare:any;
-  if(targetToken.symbol.toLowerCase() == "sol") {
+  let genesisShare: any;
+  if (targetToken.symbol.toLowerCase() == "sol") {
     genesisShare = anchor.web3.SystemProgram.transfer({
       fromPubkey: wallet.publicKey,
       toPubkey: genesisUser.profileHolder,
       lamports: Math.ceil(
-        targetToken.value * 0.01 * (10 ** targetToken.decimals),
-      )
-    })
+        targetToken.value * 0.01 * 10 ** targetToken.decimals,
+      ),
+    });
   } else {
     genesisShare = await userConn.baseSpl.transfer_token_modified({
       mint: new anchor.web3.PublicKey(targetToken.token),
       sender: wallet.publicKey,
       receiver: genesisUser.profileHolder,
       init_if_needed: true,
-      amount: Math.ceil(targetToken.value * 0.01 *  (10 ** targetToken.decimals)),
+      amount: Math.ceil(targetToken.value * 0.01 * 10 ** targetToken.decimals),
     });
   }
 
@@ -195,13 +198,13 @@ export const swapTokens = async (
   try {
     let tx;
     let buyres;
-    const isMMOSHBase = !targetToken.is_memecoin 
+    const isMMOSHBase = !targetToken.is_memecoin;
 
     if (isMMOSHBase) {
       let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-      let balance = 0
-      if(targetToken.symbol.toLowerCase() === "sol") {
+      let balance = 0;
+      if (targetToken.symbol.toLowerCase() === "sol") {
         const infoes = await userConn.connection.getMultipleAccountsInfo([
           new anchor.web3.PublicKey(userConn.provider.publicKey.toBase58()),
         ]);
@@ -216,14 +219,14 @@ export const swapTokens = async (
         });
       }
 
-      console.log("balance is ", balance)
-      console.log("desired amount ", baseToken.value)
+      console.log("balance is ", balance);
+      console.log("desired amount ", baseToken.value);
 
       if (balance > targetToken.value) {
         buyres = await curveConn.buy({
           tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
           desiredTargetAmount: new anchor.BN(
-            baseToken.value * (10 ** baseToken.decimals),
+            baseToken.value * 10 ** baseToken.decimals,
           ),
           slippage: 0.5,
         });
@@ -240,17 +243,14 @@ export const swapTokens = async (
       let supply = Math.ceil(targetToken.value - targetToken.value * 0.06);
       let sellres = await curveConn.sell({
         tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
-        targetAmount: new anchor.BN(supply * (10 ** targetToken.decimals)),
+        targetAmount: new anchor.BN(supply * 10 ** targetToken.decimals),
         slippage: 0.5,
       });
       tx = sellres;
     }
 
-  
     let params;
-    if (
-      !targetToken.is_memecoin
-    ) {
+    if (!targetToken.is_memecoin) {
       params = {
         basekey: targetToken.token,
         basename: targetToken.name,
@@ -306,13 +306,16 @@ export const swapTokens = async (
     if (tokenBondingAcct) {
       supply =
         tokenBondingAcct.supplyFromBonding.toNumber() /
-        (10 ** (!targetToken.is_memecoin ? targetToken.decimals : baseToken.decimals));
+        10 **
+        (!targetToken.is_memecoin
+          ? targetToken.decimals
+          : baseToken.decimals);
     }
 
     await sendTelegramNotification(params, creator, supply);
     await saveDirectory(params);
 
-    await tryCurveUpgrade(result.data)
+    await tryCurveUpgrade(result.data);
 
     await userConn.storeRoyalty(
       wallet.publicKey.toBase58(),
@@ -356,7 +359,7 @@ const saveDirectory = async (params: CoinDirectoryItem) => {
 };
 
 const tryCurveUpgrade = async (detail: CoinDetail) => {
-  await axios.get("/api/curve-upgrade?bonding="+ detail.bonding);
+  await axios.get("/api/curve-upgrade?bonding=" + detail.bonding);
 };
 
 const sendTelegramNotification = async (
@@ -392,7 +395,7 @@ const sendTelegramNotification = async (
 
     let communityCoinPrice = params.value / (params.value * params.price);
 
-    const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+    const botToken = process.env.NEXT_PUBLIC_BOT_TOKEN;
 
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
 

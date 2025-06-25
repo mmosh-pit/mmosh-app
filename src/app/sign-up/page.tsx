@@ -64,7 +64,7 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/request-code`;
+      const url = `/request-code`;
       await client.post(url, {
         email: form.email,
       });

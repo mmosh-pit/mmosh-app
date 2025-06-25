@@ -10,7 +10,6 @@ import {
   appPrivateKey,
   appPublicKey,
   data,
-  incomingWallet,
   isAuth,
   isAuthModalOpen,
   isAuthOverlayOpen,
@@ -103,7 +102,7 @@ const Header = () => {
       pathname === "license"
     )
       return;
-    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`;
+    const url = `/is-auth`;
 
     try {
       const result = await client.get(url);
@@ -458,29 +457,6 @@ const Header = () => {
     setIsUserAuthenticated(false);
     setShowAuthOverlay(true);
   };
-
-  const fetchPrivateKey = React.useCallback(async () => {
-    if (!isUserAuthenticated) return;
-
-    const res = await client.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/private-key`,
-      {},
-    );
-
-    const data = res.data;
-
-    const pKey = data.privateKey;
-    const publicKey = data.publicKey;
-
-    if (!pKey) return;
-
-    setPrivateKey(atob(pKey));
-    setPublicKey(publicKey);
-  }, [isUserAuthenticated]);
-
-  React.useEffect(() => {
-    fetchPrivateKey();
-  }, [isUserAuthenticated]);
 
   const isMobileScreen = screenSize < 1200;
 

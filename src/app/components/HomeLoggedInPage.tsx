@@ -83,7 +83,7 @@ const HomeLoggedInPage = () => {
             title="Chat with Ambient Agents"
             isPrimary
             size="large"
-            action={() => router.push("/chat")}
+            action={() => router.push("/bots")}
             isLoading={false}
           />
         </div>

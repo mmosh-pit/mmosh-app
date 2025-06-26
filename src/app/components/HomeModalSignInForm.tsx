@@ -66,7 +66,7 @@ const HomeModalSignInForm = ({
       setShowAuthOverlay(false);
       setUser(res.data.data.user);
 
-      router.replace("/chat");
+      router.replace("/bots");
       onSuccess();
     } catch (err: any) {
       console.error(err);

@@ -399,7 +399,7 @@ const Step4 = () => {
   }, []);
 
   const skipStep = React.useCallback(() => {
-    router.replace("/chat");
+    router.replace("/bots");
     client.put("/onboarding-step", {
       step: 5,
     });

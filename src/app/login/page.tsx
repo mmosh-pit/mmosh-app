@@ -55,7 +55,7 @@ const Login = () => {
         setIsUserAuthenticated(true);
         setShowAuthOverlay(false);
         setUser(res.data.data.user);
-        router.replace("/chat");
+        router.replace("/bots");
       } catch (err: any) {
         const error = err?.response?.data?.errors;
 

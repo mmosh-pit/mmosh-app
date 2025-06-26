@@ -8,21 +8,10 @@ const Tabs = () => {
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
-          router.push("/chat");
+          router.push("/bots");
         }}
       >
-        Chat
-      </a>
-
-      <div className="lg:mx-4 md:mx-2" />
-
-      <a
-        className="text-base text-white cursor-pointer"
-        onClick={() => {
-          router.push("/projects");
-        }}
-      >
-        Agents
+        Bots
       </a>
 
       <div className="lg:mx-4 md:mx-2" />
@@ -31,31 +20,40 @@ const Tabs = () => {
         className="text-base text-white cursor-pointer"
         onClick={() => router.push("/coins")}
       >
-        Agent Coins
+        Coins
+      </a>
+
+      <div className="lg:mx-4 md:mx-2" />
+
+      <a className="text-base text-white cursor-pointer">Offers</a>
+
+      <div className="lg:mx-4 md:mx-2" />
+
+      <a className="text-base text-white cursor-pointer">Launchpad</a>
+
+      <div className="lg:mx-4 md:mx-2" />
+
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/members")}
+      >
+        Members
       </a>
 
       <div className="lg:mx-4 md:mx-2" />
 
       <a
         className="flex items-center cursor-pointer relative "
-        onClick={() => router.push("/create/create_projects")}
+        onClick={() => router.push("/studio")}
       >
-        <p className="text-base text-white font-semibold">Agent Studio</p>
-      </a>
-
-      <div className="lg:mx-4 md:mx-2" />
-      <a
-        className="text-base text-white cursor-pointer"
-        onClick={() => router.push("/projects")}
-      >
-        Subscriptions
+        <p className="text-base text-white font-semibold">Studio</p>
       </a>
 
       <div className="lg:mx-4 md:mx-2" />
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
-          router.push("/bags");
+          router.push("/wallet");
         }}
       >
         Wallet

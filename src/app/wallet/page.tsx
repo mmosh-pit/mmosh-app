@@ -2,11 +2,7 @@
 import * as React from "react";
 
 import { useAtom } from "jotai";
-import {
-  BagsCoin,
-  BagsNFT,
-  bagsBalance,
-} from "../store/bags";
+import { BagsCoin, BagsNFT, bagsBalance } from "../store/bags";
 import useWallet from "@/utils/wallet";
 import Bags from "../components/Bags/Bags";
 import SelectedCoin from "../components/Bags/SelectedCoin";
@@ -23,7 +19,7 @@ const Page = () => {
 
   const onSelectCoin = React.useCallback((coin: BagsCoin) => {
     setSelectedAsset(coin);
-  }, []); 
+  }, []);
 
   if (isOnSend) {
     return (

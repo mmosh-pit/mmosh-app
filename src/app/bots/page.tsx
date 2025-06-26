@@ -71,7 +71,7 @@ export default function OPOS() {
 
           const objDiv = document.getElementById("message-container");
           if (objDiv) {
-            setTimeout(function() {
+            setTimeout(function () {
               objDiv.scrollTo({
                 top: -objDiv.offsetTop,
               });

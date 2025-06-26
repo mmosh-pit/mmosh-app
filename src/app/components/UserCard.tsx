@@ -408,7 +408,7 @@ const UserCard = ({ user, wallet, currentuser, connection }: Props) => {
             className="text-[#FF00C7] text-base"
             href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${user.profile.username}`}
           >
-            kinship.codes/{user.profile.username}
+            kinshipbots.com/{user.profile.username}
           </a>
         </div>
 

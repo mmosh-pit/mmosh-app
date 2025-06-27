@@ -210,6 +210,7 @@ export default function LandingPage() {
       <AlertModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        isHome={false}
         initialStep={initialModalStep}
       />
       <div

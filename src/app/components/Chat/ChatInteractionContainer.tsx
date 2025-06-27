@@ -5,19 +5,20 @@ import Image from "next/image";
 import { data } from "@/app/store";
 import Markdown from "react-markdown";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
-import { selectedChatStore } from "@/app/store/chat";
+import { selectedChatStore, chatsStore, chatsLoadingStore } from "@/app/store/chat";
 import { Message } from "@/app/models/chat";
 import { Bars } from "react-loader-spinner";
+import Avatar from "../common/Avatar";
 
 const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
-  const textbox = React.useRef<HTMLTextAreaElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [currentUser] = useAtom(data);
-
-  const [selectedChat] = useAtom(selectedChatStore);
+  const [chats, setChats] = useAtom(chatsStore);
+  const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
+  const [areChatsLoading] = useAtom(chatsLoadingStore);
 
   const [text, setText] = React.useState("");
-  const [rows, setRows] = React.useState(1);
 
   const messages = selectedChat?.messages;
 
@@ -63,55 +64,140 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
     [currentUser, selectedChat],
   );
   const sendMessage = React.useCallback(
-    (content: string) => {
-      console.log(JSON.stringify({
-        data: {
-          chat_id: selectedChat!.id,
-          agent_id: selectedChat!.chatAgent!.id,
-          system_prompt: selectedChat!.chatAgent!.systemPrompt,
-          namespaces: [selectedChat!.chatAgent!.key, "PUBLIC", "MMOSH"],
-          content,
-        },
-        event: "message",
-      }))
-      socket?.send(
-        JSON.stringify({
-          data: {
-            chat_id: selectedChat!.id,
-            agent_id: selectedChat!.chatAgent!.id,
-            system_prompt: selectedChat!.chatAgent!.systemPrompt,
-            namespaces: [selectedChat!.chatAgent!.key, "PUBLIC", "MMOSH"],
-            content,
-          },
-          event: "message",
-        }),
-      );
+    async (content: string) => {
+      if (!selectedChat?.messages) return;
+      
+      // Add user message to the chat immediately
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        content,
+        sender_id: currentUser?.profile?.username || "user",
+        type: "user",
+        created_at: new Date().toISOString(),
+        sender: currentUser?.profile?.username || "user",
+        is_loading: false,
+      };
 
+      // Add loading bot message
+      const loadingBotMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "",
+        sender_id: selectedChat.chatAgent!.id,
+        type: "bot",
+        created_at: new Date().toISOString(),
+        sender: selectedChat.chatAgent!.name,
+        is_loading: true,
+      };
+
+      // Update the selected chat with new messages
+      const updatedSelectedChat = {
+        ...selectedChat,
+        messages: [...selectedChat.messages, userMessage, loadingBotMessage],
+      };
+      
+      setSelectedChat(updatedSelectedChat);
+      
+      // Update the chats array
+      const updatedChats = chats.map(chat => 
+        chat.id === selectedChat.id ? updatedSelectedChat : chat
+      );
+      setChats(updatedChats);
+      
       setText("");
+
+      try {
+        const queryData = {
+          namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
+          query: content,
+          instructions: selectedChat!.chatAgent!.system_prompt,
+        };
+        
+        console.log("Message data being sent:", queryData);
+        
+        const response = await fetch("https://rewoo-api-1094217356440.us-central1.run.app/query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(queryData),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // Create the final bot message
+        const botMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          content: result.result,
+          sender_id: selectedChat.chatAgent!.id,
+          type: "bot",
+          created_at: new Date().toISOString(),
+          sender: selectedChat.chatAgent!.name,
+          is_loading: false,
+        };
+
+        // Replace the loading message with the actual response
+        const finalMessages = [...updatedSelectedChat.messages];
+        finalMessages[finalMessages.length - 1] = botMessage;
+        
+        const finalSelectedChat = {
+          ...updatedSelectedChat,
+          messages: finalMessages,
+        };
+        
+        setSelectedChat(finalSelectedChat);
+        
+        // Update the chats array
+        const finalChats = chats.map(chat => 
+          chat.id === selectedChat.id ? finalSelectedChat : chat
+        );
+        setChats(finalChats);
+        
+      } catch (error) {
+        console.error("Error sending message:", error);
+        
+        // Create error message
+        const errorMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          content: "Sorry, I encountered an error while processing your message. Please try again.",
+          sender_id: selectedChat.chatAgent!.id,
+          type: "bot",
+          created_at: new Date().toISOString(),
+          sender: selectedChat.chatAgent!.name,
+          is_loading: false,
+        };
+        
+        // Replace the loading message with error message
+        const finalMessages = [...updatedSelectedChat.messages];
+        finalMessages[finalMessages.length - 1] = errorMessage;
+        
+        const finalSelectedChat = {
+          ...updatedSelectedChat,
+          messages: finalMessages,
+        };
+        
+        setSelectedChat(finalSelectedChat);
+        
+        // Update the chats array
+        const finalChats = chats.map(chat => 
+          chat.id === selectedChat.id ? finalSelectedChat : chat
+        );
+        setChats(finalChats);
+      }
     },
-    [selectedChat, socket],
+    [selectedChat, currentUser, chats, setChats, setSelectedChat],
   );
 
   const handleEnter = (evt: any) => {
     if (evt.keyCode == 13 && !evt.shiftKey) {
       evt.preventDefault();
-      sendMessage(text);
-      adjustHeight();
+      if (text.trim()) {
+        sendMessage(text);
+      }
       return;
-    }
-
-    if (evt.keyCode == 13 && evt.shiftKey) {
-      setText(text + "\n");
-      setRows(rows + 1);
-      adjustHeight();
-      evt.preventDefault();
-    }
-  };
-
-  const adjustHeight = () => {
-    if (textbox.current) {
-      textbox.current.style.height = "inherit";
-      textbox.current.style.height = `${textbox.current.scrollHeight > 300 ? 300 : textbox.current.scrollHeight}px`;
     }
   };
 
@@ -121,119 +207,185 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
       : false
     : false;
 
+  // Auto-scroll to bottom when messages change
   React.useEffect(() => {
     const objDiv = document.getElementById("message-container");
     if (objDiv) {
-      setTimeout(function() {
-        objDiv.scrollTo({
-          top: objDiv.offsetTop,
-        });
+      setTimeout(() => {
+        objDiv.scrollTop = objDiv.scrollHeight;
       }, 100);
     }
   }, [selectedChat?.messages]);
 
+  // Auto-scroll to bottom when chat loads
+  React.useEffect(() => {
+    const objDiv = document.getElementById("message-container");
+    if (objDiv) {
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }
+  }, [selectedChat?.id]);
+
   return (
     <div className="w-[75%] flex justify-center">
-      {!selectedChat ? (
-        <></>
+      {areChatsLoading ? (
+        <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
+          <div className="text-center space-y-4">
+            <Bars
+              height="60"
+              width="60"
+              color="rgba(255, 0, 199, 1)"
+              ariaLabel="bars-loading"
+              wrapperStyle={{}}
+              wrapperClass="bars-loading"
+              visible={true}
+            />
+            <h3 className="text-xl text-white font-semibold">Loading chats...</h3>
+            <p className="text-gray-400">Please wait while we load your conversations</p>
+          </div>
+        </div>
+      ) : !selectedChat ? (
+        <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
+          <div className="text-center space-y-4">
+            <div className="text-6xl mb-4">💬</div>
+            <h3 className="text-xl text-white font-semibold">No chat selected</h3>
+            <p className="text-gray-400">Choose a chat agent from the sidebar to start a conversation</p>
+          </div>
+        </div>
       ) : (
-        <div className="w-[90%] flex flex-col p-2 rounded-xl mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 h-[65vh]">
-          <>
-            <div
-              className="w-full h-full flex flex-col items-center grow overflow-x-hidden px-16 pb-8"
-              id="message-container"
-            >
-              {messages?.map((message, index) => (
+        <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
+          {/* Chat Header */}
+          <div className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A]">
+            <Avatar 
+              src={selectedChat.chatAgent?.image} 
+              alt={selectedChat.chatAgent?.name} 
+              size={48}
+              className="mr-3"
+            />
+            <div>
+              <h3 className="text-lg font-semibold text-white">{selectedChat.chatAgent?.name}</h3>
+              <p className="text-sm text-gray-400">@{selectedChat.chatAgent?.symbol}</p>
+            </div>
+          </div>
+
+          {/* Messages Container */}
+          <div
+            className="flex-1 flex flex-col overflow-y-auto px-6 py-4 space-y-4"
+            id="message-container"
+            style={{ scrollBehavior: 'smooth' }}
+          >
+            {messages?.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center space-y-3">
+                  <div className="text-4xl mb-2">👋</div>
+                  <p className="text-gray-400">Start a conversation with {selectedChat.chatAgent?.name}!</p>
+                </div>
+              </div>
+            ) : (
+              messages?.map((message, index) => (
                 <div
-                  className={`w-full flex items-center ${message.type === "bot" ? "justify-start" : "justify-end"} my-1 rounded-lg`}
+                  className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
                   key={`${message.type}-${index}`}
                 >
-                  {message.type === "bot" ? (
-                    <>
-                      <div className="relative w-[2vmax] h-[2vmax]">
-                        <Image
-                          layout="fill"
-                          src={getMessageImage(message)}
-                          alt="image"
-                          className="rounded-full"
-                        />
-                      </div>
+                  <Avatar 
+                    src={getMessageImage(message)} 
+                    alt={getMessageUsername(message)} 
+                    size={40}
+                    className="flex-shrink-0"
+                  />
 
-                      <div className="w-full justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
-                        <p className="text-base text-white">
-                          {getMessageUsername(message)}
-                        </p>
-                        {message.is_loading ? (
+                  <div className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-400 font-medium">
+                        {getMessageUsername(message)}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    
+                    <div 
+                      className={`
+                        px-4 py-3 rounded-2xl 
+                        ${message.type === "user" 
+                          ? "bg-[#25235a] text-white rounded-tr-md" 
+                          : "bg-[#00073a] text-white rounded-tl-md"
+                        }
+                        ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
+                      `}
+                    >
+                      {message.is_loading ? (
+                        <div className="flex items-center space-x-2">
                           <Bars
-                            height="50"
-                            width="50"
+                            height="24"
+                            width="24"
                             color="rgba(255, 0, 199, 1)"
                             ariaLabel="bars-loading"
                             wrapperStyle={{}}
                             wrapperClass="bars-loading"
                             visible={true}
                           />
-                        ) : (
+                          <span className="text-sm text-gray-400">Thinking...</span>
+                        </div>
+                      ) : (
+                        <div className="text-base leading-relaxed">
                           <Markdown children={message.content} />
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="justify-between ml-4 flex flex-col py-2 px-6 rounded-lg">
-                        <p className="text-base text-white text-end">
-                          {getMessageUsername(message)}
-                        </p>
-                        <Markdown children={message.content} />
-                      </div>
-                      <div className="relative w-[2vmax] h-[2vmax]">
-                        <Image
-                          layout="fill"
-                          src={getMessageImage(message)}
-                          alt="image"
-                          className="rounded-full"
-                        />
-                      </div>
-                    </>
-                  )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              ))
+            )}
+          </div>
 
-            <div className="w-full pb-4 px-12 self-end">
-              <form
-                className="w-full flex justify-between p-2 bg-[#BBBBBB21] border-[1px] border-[#06052D] rounded-lg"
-                onSubmit={(e) => {
-                  e.preventDefault();
+          {/* Input Area */}
+          <div className="px-6 py-4 border-t border-[#FFFFFF1A]">
+            <form
+              className="flex items-center space-x-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (text.trim()) {
                   sendMessage(text);
-                }}
-              >
-                <textarea
-                  ref={textbox}
-                  className="home-ai-textfield w-full mr-4 px-2"
-                  placeholder="Type here"
-                  rows={rows}
-                  wrap="hard"
+                }
+              }}
+            >
+              <div className="flex-1 relative">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  className="w-full px-4 py-3 pr-12 bg-[#00073a] border border-[#FFFFFF1A] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4A4B6C] focus:border-transparent transition-all"
+                  placeholder="Type your message..."
                   value={text}
-                  // onKeyUp={handleEnter}
                   onKeyDown={handleEnter}
                   onChange={(e) => {
-                    adjustHeight();
-
                     setText(e.target.value);
                   }}
+                  maxLength={1000}
                 />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
+                  {text.length}/1000
+                </div>
+              </div>
 
-                <button
-                  className={`p-3 rounded-lg ${!text ? "bg-[#565656]" : "bg-[#FFF]"}`}
-                  disabled={!text || isLoading}
-                  type="submit"
-                >
+              <button
+                className={`
+                  flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200 
+                  ${!text.trim() || isLoading 
+                    ? "bg-[#565656] cursor-not-allowed" 
+                    : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
+                  }
+                `}
+                disabled={!text.trim() || isLoading}
+                type="submit"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
                   <ArrowUpHome />
-                </button>
-              </form>
-            </div>
-          </>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>

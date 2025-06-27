@@ -66,11 +66,12 @@ const HomeModalWaitlistForm = ({ onSuccess }: HomeModalWaitlistFormProps) => {
       className="flex flex-col justify-between items-center w-full"
       onSubmit={submit}
     >
-      <h1 className="text-[1.5vmax] font-bold font-goudy text-white">
-        Welcome Home
+      <h1 className="text-[1.2vmax] font-bold font-goudy text-white">
+        Gain Early Access to the Little Tech Revolution
       </h1>
       <p className="text-base font-bold">
-        Enter your email address and password to log in.
+        Join the Kinship Bots collective—where creators and AI agents join
+        forces against the algorithmic overlords!
       </p>
       <div className="my-4" />
 

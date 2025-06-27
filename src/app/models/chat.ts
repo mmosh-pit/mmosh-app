@@ -22,7 +22,7 @@ interface Agent {
   image: string;
   key: string;
   symbol: string;
-  systemPrompt: string;
+  system_prompt: string;
   creatorUsername: string;
   type: string;
 }

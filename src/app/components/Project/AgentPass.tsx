@@ -120,7 +120,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
 
   const getMmoshPrice = async () => {
     const mmoshUsdcPrice = await axios.get(
-      `https://api.jup.ag/price/v2?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
+      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
     );
     setUsdPrice(mmoshUsdcPrice.data?.data?.MMOSH?.price || 0.003);
   };

@@ -472,9 +472,10 @@ const Header = () => {
   if (
     pathname === "/tos" ||
     pathname === "/privacy" ||
-    pathname === "copyright" ||
-    pathname === "license" ||
-    (pathname === "/" && !isUserAuthenticated)
+    pathname === "/copyright" ||
+    pathname === "/license" ||
+    pathname === "/" ||
+    (pathname === "/preview" && !isUserAuthenticated)
   ) {
     return <></>;
   }

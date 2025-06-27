@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import AlertModal from "./components/Modal";
+import AlertModal from "../components/Modal";
 import { testimonials } from "@/constants/testimonials";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import { useAtom } from "jotai";
-import HomeLoggedInPage from "./components/HomeLoggedInPage";
+import { isAuth } from "../store";
+import HomeLoggedInPage from "../components/HomeLoggedInPage";
 import KinshipBots from "@/assets/icons/KinshipBots";
-import Button from "./components/common/Button";
-import useCheckDeviceScreenSize from "./lib/useCheckDeviceScreenSize";
-import HomeMobileDrawer from "./components/HomeMobileDrawer";
+import Button from "../components/common/Button";
+import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
+import HomeMobileDrawer from "../components/HomeMobileDrawer";
 import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
-import { alreadyWaiting } from "./store/home";
 
 export default function LandingPage() {
   const screenSize = useCheckDeviceScreenSize();
@@ -19,7 +19,7 @@ export default function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [itemsPerSlide, setItemsPerSlide] = useState(1);
 
-  const [isWaiting] = useAtom(alreadyWaiting);
+  const [isUserAuthenticated] = useAtom(isAuth);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [initialModalStep, setInitialModalStep] = useState(0);
@@ -77,7 +77,7 @@ export default function LandingPage() {
     setIsModalOpen(true);
   };
 
-  if (isWaiting) return <HomeLoggedInPage />;
+  if (isUserAuthenticated) return <HomeLoggedInPage />;
 
   return (
     <div className="relative h-full">
@@ -186,6 +186,17 @@ export default function LandingPage() {
 
           <div className="flex">
             <Button
+              action={openSignInModal}
+              size="small"
+              isPrimary
+              title="Log In"
+              color="bg-[#8C04E0]"
+              isLoading={false}
+            />
+
+            <div className="mx-2" />
+
+            <Button
               action={openSignUpModal}
               size="small"
               isPrimary
@@ -200,7 +211,6 @@ export default function LandingPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         initialStep={initialModalStep}
-        isHome
       />
       <div
         className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"

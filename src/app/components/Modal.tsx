@@ -3,6 +3,7 @@ import HomeModalSignUpForm from "./HomeModalSignUpForm";
 import HomeModalCodeForm from "./HomeModalCodeForm";
 import { useRouter } from "next/navigation";
 import HomeModalSignInForm from "./HomeModalSignInForm";
+import HomeModalWaitlistForm from "./HomeModalWaitlistForm";
 
 type ModalProps = {
   isOpen: boolean;
@@ -14,6 +15,7 @@ type AlertModalProps = {
   isOpen: boolean;
   onClose: () => void;
   initialStep: number;
+  isHome: boolean;
 };
 
 const Modal = ({ isOpen, onClose, children }: ModalProps) => {
@@ -44,13 +46,25 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   );
 };
 
-const AlertModal = ({ isOpen, onClose, initialStep }: AlertModalProps) => {
+const AlertModal = ({
+  isOpen,
+  onClose,
+  initialStep,
+  isHome = false,
+}: AlertModalProps) => {
   const [step, setStep] = React.useState(initialStep);
   const router = useRouter();
 
   React.useEffect(() => {
     setStep(initialStep);
   }, [initialStep]);
+
+  if (isHome)
+    return (
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <HomeModalWaitlistForm onSuccess={onClose} />
+      </Modal>
+    );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

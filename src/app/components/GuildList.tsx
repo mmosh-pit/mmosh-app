@@ -101,9 +101,8 @@ const GuildList = ({
     });
 
     fetching.current = true;
-    let url = `/api/get-user-guild?address=${profilenft}&skip=${
-      currentPage * 10
-    }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&connection=${connectionArr.join(",")}&gens=${gensArr.join(",")}`;
+    let url = `/api/get-user-guild?address=${profilenft}&skip=${currentPage * 10
+      }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&connection=${connectionArr.join(",")}&gens=${gensArr.join(",")}`;
     if (currentUser) {
       url = url + "&requester=" + currentUser.wallet;
     }
@@ -179,8 +178,6 @@ const GuildList = ({
               key={value.profile.username}
               isHome={false}
               currentuser={currentUser ? currentUser : undefined}
-              connection={connection.connection}
-              wallet={wallet}
             />
           ))}
         </div>

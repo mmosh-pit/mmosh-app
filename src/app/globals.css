@@ -1186,3 +1186,11 @@ a:hover {
 .login-btn-gradient {
   background: linear-gradient(136.31deg, #3c00ff 2.26%, #ff00ae 98.63%);
 }
+
+.enjoyer-indicator {
+  background: linear-gradient(90deg, #ec008c 0%, #f7941d 112.5%);
+}
+
+.creator-indicator {
+  background: linear-gradient(90deg, #beef00 0%, #03ccd9 112.5%);
+}

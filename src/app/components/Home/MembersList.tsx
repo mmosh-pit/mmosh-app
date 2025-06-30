@@ -1,14 +1,13 @@
 import * as React from "react";
-import axios from "axios";
 import { useAtom } from "jotai";
 
 import { User } from "@/app/models/user";
 import { selectedSearchFilter } from "@/app/store/home";
-import useConnection from "@/utils/connection";
 import { textSearch } from "@/app/store/membership";
 import UserCard from "../UserCard";
 import { data } from "@/app/store";
 import useWallet from "@/utils/wallet";
+import client from "@/app/lib/httpClient";
 
 const MembersList = () => {
   const [selectedFilters] = useAtom(selectedSearchFilter);
@@ -22,7 +21,6 @@ const MembersList = () => {
   const lastPageTriggered = React.useRef(false);
   const [users, setUsers] = React.useState<User[]>([]);
   const wallet = useWallet();
-  const connection = useConnection();
   const [currentUser] = useAtom(data);
 
   const getUsers = React.useCallback(async () => {
@@ -32,14 +30,11 @@ const MembersList = () => {
     ) {
       fetching.current = true;
       setIsLoading(true);
-      let url = `/api/get-all-users?skip=${currentPage * 15}&searchText=${searchText}`;
-      if (wallet) {
-        url = url + "&requester=" + wallet.publicKey.toBase58();
-      }
+      const url = `/members?page=${currentPage}&search=${searchText}`;
 
-      const result = await axios.get(url);
+      const result = await client.get(url);
 
-      if (result.data.users.length === 0) {
+      if (result.data.data.length === 0) {
         lastPageTriggered.current = true;
         setIsLoading(false);
         fetching.current = false;
@@ -47,12 +42,12 @@ const MembersList = () => {
       }
 
       if (currentPage === 0) {
-        setUsers(result.data.users);
+        setUsers(result.data.data);
       } else {
-        setUsers((prev) => [...prev, ...result.data.users]);
+        setUsers((prev) => [...prev, ...result.data.data]);
       }
 
-      allUsers.current = result.data.users;
+      allUsers.current = result.data.data;
       setIsLoading(false);
       fetching.current = false;
     } else {
@@ -64,7 +59,7 @@ const MembersList = () => {
     if (!containerRef.current) return;
     if (
       containerRef.current.scrollHeight - containerRef.current.scrollTop <=
-        containerRef.current.clientHeight + 50 &&
+      containerRef.current.clientHeight + 50 &&
       !lastPageTriggered.current
     ) {
       setCurrentPage(currentPage + 1);
@@ -83,17 +78,15 @@ const MembersList = () => {
   return (
     <div className="flex w-full flex-col" id="members">
       <div
-        className="px-4 py-2 grid grid-cols-auto xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 overflow-y-auto mt-8"
+        className="px-12 py-8 grid grid-cols-auto grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-4 overflow-y-auto mt-8 bg-[#181747] rounded-lg"
         ref={containerRef}
         onScroll={handleScroll}
       >
         {users.map((user) => (
           <UserCard
             user={user}
-            wallet={wallet}
             currentuser={currentUser || undefined}
             isHome={false}
-            connection={connection.connection}
           />
         ))}
       </div>

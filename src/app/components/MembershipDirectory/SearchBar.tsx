@@ -4,11 +4,10 @@ import { useAtom } from "jotai";
 import SearchIcon from "@/assets/icons/SearchIcon";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { textSearch } from "@/app/store/membership";
-import Button from "../common/Button";
-import { useRouter } from "next/navigation";
+import ArrowUp from "@/assets/icons/ArrowUp";
+import ArrowDown from "@/assets/icons/ArrowDown";
 
 const SearchBar = () => {
-  const router = useRouter();
   const isMobile = useCheckMobileScreen();
   const [localText, setLocalText] = React.useState("");
 
@@ -76,16 +75,15 @@ const SearchBar = () => {
           </div>
         )}
 
-        <div className="md:w-[20%] w-[40%]">
-          <Button
-            title="Join the Club"
-            isLoading={false}
-            size="large"
-            isPrimary
-            action={() => {
-              router.push("/create/profile");
-            }}
-          />
+        <div className="w-[33%] flex justify-end items-center">
+          <div className="rounded-full px-6 py-2 flex items-center bg-[#2F2D58] border-[1px] border-[#FFFFFF22]">
+            <p className="text-white text-base">Sort By</p>
+            <div className="flex flex-col items-center justify-center ml-1">
+              <ArrowUp width="0.3vmax" height="0.3vmax" />
+              <div className="my-[2px]" />
+              <ArrowDown width="0.3vmax" height="0.3vmax" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

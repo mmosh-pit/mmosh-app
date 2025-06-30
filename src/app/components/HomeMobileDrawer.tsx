@@ -110,6 +110,15 @@ const HomeMobileDrawer = ({
             >
               Safety
             </a>
+
+            <div className="my-6" />
+            <a
+              className="text-base text-white cursor-pointer"
+              href="https://docs.kinshipbots.com"
+              target="_blank"
+            >
+              Docs
+            </a>
           </div>
 
           <div className="h-[1px] w-[90%] bg-white mt-4" />

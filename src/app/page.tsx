@@ -181,6 +181,15 @@ export default function LandingPage() {
               >
                 Safety
               </a>
+
+              <div className="lg:mx-4 md:mx-2" />
+              <a
+                className="text-base text-white cursor-pointer"
+                href="https://docs.kinshipbots.com"
+                target="_blank"
+              >
+                Docs
+              </a>
             </div>
           )}
 

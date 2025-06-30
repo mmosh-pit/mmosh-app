@@ -4,15 +4,11 @@ import { useRouter } from "next/navigation";
 
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 import { data, isDrawerOpen } from "@/app/store";
-import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
-import SimpleArrowUp from "@/assets/icons/SimpleArrowUp";
 
 const MobileDrawer = () => {
   const router = useRouter();
   const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
   const [currentUser] = useAtom(data);
-
-  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
   return (
     <div className="drawer">
@@ -39,135 +35,92 @@ const MobileDrawer = () => {
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
-                router.push("/coins");
+                router.push("/bots");
               }}
+            >
+              Bots
+            </a>
+
+            <div className="lg:my-4 md:my-2" />
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => router.push("/coins")}
             >
               Coins
             </a>
 
-            <div className="my-2" />
+            <div className="lg:my-4 md:my-2" />
+
+            <a className="text-base text-white cursor-pointer">Offers</a>
+
+            <div className="lg:my-4 md:my-2" />
+
+            <a className="text-base text-white cursor-pointer">Launchpad</a>
+
+            <div className="lg:my-4 md:my-2" />
 
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => {
-                router.push("/members");
-              }}
+              onClick={() => router.push("/members")}
             >
               Members
             </a>
 
-            <div className="my-2" />
+            <div className="lg:my-4 md:my-2" />
 
+            <a
+              className="flex items-center cursor-pointer relative "
+              onClick={() => router.push("/studio")}
+            >
+              <p className="text-base text-white font-semibold">Studio</p>
+            </a>
+
+            <div className="lg:my-4 md:my-2" />
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => router.push("/projects")}
+              onClick={() => {
+                router.push("/wallet");
+              }}
             >
-              Projects
+              Wallet
             </a>
 
-            <div className="my-2" />
-
+            <div className="lg:my-4 md:my-2" />
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() => router.push("/communities")}
+              href="https://docs.kinshipbots.com"
+              target="_blank"
             >
-              Communities
-            </a>
-
-            <div className="my-2" />
-
-            <div
-              className="flex flex-col cursor-pointer"
-              onClick={() => setIsCreateOpen(!isCreateOpen)}
-            >
-              <div className="flex items-center">
-                <p className="text-base text-white font-semibold">Create</p>
-
-                <div className="ml-1">
-                  {isCreateOpen ? <SimpleArrowUp /> : <SimpleArrowDown />}
-                </div>
-              </div>
-
-              {isCreateOpen && (
-                <div className="flex flex-col p-2 my-4">
-                  <p
-                    className="text-sm text-white mb-2"
-                    onClick={() => router.push("/create/profile")}
-                  >
-                    Profile
-                  </p>
-                  <p
-                    className="text-sm text-white mb-2"
-                    onClick={() => router.push("/create/create_invitation")}
-                  >
-                    Invitations
-                  </p>
-                  <p
-                    className="text-sm text-white mb-2"
-                    onClick={() => router.push("/create/coins")}
-                  >
-                    Coins
-                  </p>
-                  <p
-                    className="text-sm text-white mb-2"
-                    onClick={() => router.push("/communities/create")}
-                  >
-                    Communities
-                  </p>
-                  <p
-                    className="text-sm text-white"
-                    onClick={() => router.push("/projects")}
-                  >
-                    Projects
-                    <span className="text-tiny ml-1">(Coming soon)</span>
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="my-2" />
-
-            {currentUser?.profile?.image && (
-              <>
-                <a
-                  className="text-sm text-white"
-                  onClick={() =>
-                    router.push(`/${currentUser?.profile?.username}`)
-                  }
-                >
-                  My Profile
-                </a>
-                <div className="my-2" />
-              </>
-            )}
-
-            <a
-              className="text-sm text-white"
-              onClick={() => router.push("/inform")}
-            >
-              OPOS
-            </a>
-
-            <a
-              className="text-sm text-white"
-              onClick={() => router.push("/settings")}
-            >
-              Settings
+              Docs
             </a>
           </div>
 
-          <div className="lg:mx-6 md:mx-3" />
-          <a
-            className="text-base text-white cursor-pointer"
-            onClick={() => {
-              router.push("/bags");
-            }}
-          >
-            Wallet
-          </a>
+          <div className="my-2" />
 
-          <div className="h-[1px] w-[90%] bg-white mt-4" />
+          {currentUser?.profile?.image && (
+            <>
+              <a
+                className="text-sm text-white"
+                onClick={() =>
+                  router.push(`/${currentUser?.profile?.username}`)
+                }
+              >
+                My Profile
+              </a>
+              <div className="my-2" />
+            </>
+          )}
+
+          <a
+            className="text-sm text-white"
+            onClick={() => router.push("/settings")}
+          >
+            Settings
+          </a>
         </div>
+
+        <div className="h-[1px] w-[90%] bg-white mt-4" />
       </div>
     </div>
   );

@@ -275,9 +275,9 @@ export default function LandingPage() {
 
           <p className="text-[0.75vmax] mt-4 text-center md:max-w-[30%] max-w-[60%] my-2 text-[#FFFFFF90]">
             You may feel powerless. Everywhere you turn Big Tech is enforcing
-            conformity, controlling behavior, endlessly distracting and
-            extracting as much value as possible while people suffer, societies
-            collapse and the world burns.
+            conformity, controlling behavior, endlessly distracting, exploiting,
+            and extracting as much value as possible while people suffer,
+            societies collapse and the world burns.
           </p>
 
           <img
@@ -302,9 +302,9 @@ export default function LandingPage() {
               <div className="transition duration-300 mx-auto sm:w-[888px] text-center text-xl sm:text-[23px] font-bold sm:font-medium sm:leading-normal tracking-[-0.46px] bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0)_109.53%)] bg-clip-text text-transparent stroke-text mb-[33px]">
                 Kinship Bots is for creators, consultants, coaches, experts,
                 gurus, professionals, visionaries, leaders, guides, mentors,
-                builders, architects, catalysts, stewards, builders, thought
-                leaders and luminaries who are ready to step off the Big Tech
-                hamster wheel of death.
+                builders, architects, catalysts, stewards, thought leaders and
+                luminaries who are ready to step off the Big Tech hamster wheel
+                of doom.
               </div>
 
               <img
@@ -342,7 +342,7 @@ export default function LandingPage() {
             </h1>
           </div>
           <div className="transition duration-300 max-w-[635px] p-3 sm:p-0 mx-auto mt-3 text-center text-[rgba(255,255,255,0.78)] font-normal text-[18px] leading-[19.8px] tracking-[-0.36px]">
-            We’re a swarm of autonomous AI agents informed, instructed and
+            We’re a fleet of autonomous AI agents informed, instructed and
             empowered by you. You create us, share us, experience us and enjoy
             us. You can mix and match pieces and parts, values and skills,
             traits and cultures, origins and purpose.
@@ -458,7 +458,7 @@ export default function LandingPage() {
                   Discover Powerful AI Agents to Help You Face Every Challenge
                 </div>
                 <div className=" transition duration-300 text-left text-[1.2vmax] md:text-[1vmax] leading-[110%] tracking-[0.34px] text-[rgba(218,218,218,0.78)] font-avenir sm:w-[510px] w-[345px]">
-                  Whether modest or grand your ambitions, humble or proud your
+                  However modest or grand your ambitions, humble or proud your
                   demeanor, fierce or gentle your countenance, you can find a
                   bot that gets what you need, fits your vibe and helps you
                   grow.
@@ -472,7 +472,7 @@ export default function LandingPage() {
                   Discover Powerful AI Agents to Help You Face Every Challenge
                 </div>
                 <div className=" transition duration-300 text-center sm:text-right text-base sm:text-[17px] font-medium leading-[110%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir sm:w-[502px] w-[345px]">
-                  Whether modest or grand your ambitions, humble or proud your
+                  However modest or grand your ambitions, humble or proud your
                   demeanor, fierce or gentle your countenance, you can find a
                   bot that gets what you need, fits your vibe and helps you
                   grow.
@@ -511,8 +511,7 @@ export default function LandingPage() {
               />
               <div className="mt-10 max-w-[326px] sm:max-w-[430px] mx-auto">
                 <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next">
-                  <strong>Launch Studio</strong> - Our Easy & Intuitive Agent
-                  Design Studio
+                  Easy & Intuitive Bot Design Studio
                   <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
                     Create powerful, purposeful agents that embody your values
                     and are always available to serve your community.
@@ -652,6 +651,7 @@ export default function LandingPage() {
             council of all beings, I've worked to share my gifts at every
             opportunity. Some of this has been one-on-one work with individual
             clients, some has been group programs.
+            <br />
             <br />
             Kinship Systems is designed to imbue AI bots with the same level of
             care, empathy, insight and precision I bring to my practice. In the

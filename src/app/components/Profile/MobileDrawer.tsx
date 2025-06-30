@@ -114,28 +114,11 @@ const MobileDrawer = () => {
 
           <a
             className="text-sm text-white"
-            onClick={() => router.push("/inform")}
-          >
-            OPOS
-          </a>
-
-          <a
-            className="text-sm text-white"
             onClick={() => router.push("/settings")}
           >
             Settings
           </a>
         </div>
-
-        <div className="lg:my-6 md:my-3" />
-        <a
-          className="text-base text-white cursor-pointer"
-          onClick={() => {
-            router.push("/bags");
-          }}
-        >
-          Wallet
-        </a>
 
         <div className="h-[1px] w-[90%] bg-white mt-4" />
       </div>

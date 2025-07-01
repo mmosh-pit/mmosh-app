@@ -78,7 +78,7 @@ const MembersList = () => {
   return (
     <div className="flex w-full flex-col" id="members">
       <div
-        className="px-12 py-8 grid grid-cols-auto grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-4 overflow-y-auto mt-8 bg-[#181747] rounded-lg"
+        className="px-12 py-8 grid grid-cols-auto grid-cols-1 md:grid-cols-2 gap-6 mt-4 overflow-y-auto mt-8 bg-[#181747] rounded-lg"
         ref={containerRef}
         onScroll={handleScroll}
       >

@@ -577,12 +577,12 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
     <main className="relative py-5 px-5 xl:px-32 lg:px-16 md:px-8 text-white bg-transparent">
       {/* Tabs */}
       <div className="flex justify-center mb-5">
-        <div className="flex w-[644px] h-[44px] rounded-[8px] border border-white/10 overflow-hidden">
-          {["minting", "vesting", "presale", "launch"].map((tab, index) => (
+        <div className="flex h-[44px] rounded-[8px] border border-white/10 overflow-hidden pr-10">
+          {["minting", "presale", "launch"].map((tab, index) => (
             <button
               key={index}
               onClick={() => setTabIndex(tab)}
-              className={`flex-1 text-sm font-bold leading-6 transition capitalize ${tabIndex === tab ? "text-white" : "text-white/70"
+              className={`flex-1 text-sm font-bold leading-6 transition capitalize pl-10 ${tabIndex === tab ? "text-white" : "text-white/70"
                 }`}
             >
               {tab}

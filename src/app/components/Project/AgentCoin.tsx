@@ -34,7 +34,7 @@ import { ExponentialCurve, ExponentialCurveConfig } from "@/anchor/curve/curves"
 import { useAtom } from "jotai";
 import { data } from "@/app/store";
 import baseCoins from "@/app/lib/baseCoins";
-import { Minting } from "./Minting";
+import Minting from "./Minting";
 import { Vesting } from "./Vesting";
 import { PreSale } from "./PreSale";
 import { Launch } from "./Launch";
@@ -572,6 +572,10 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
     }
   }
 
+    const onMenuChange = (nextStep:any) => {
+        setTabIndex(nextStep);
+    }
+
   return (
 
     <main className="relative py-5 px-5 xl:px-32 lg:px-16 md:px-8 text-white bg-transparent">
@@ -591,7 +595,7 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
         </div>
       </div>
 
-      {tabIndex === "minting" && <Minting callback={(data) => callback(data)} />}
+      {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} />}
       {tabIndex === "presale" && <PreSale callback={(data) => callback(data)} />}
       {tabIndex === "launch" && <Launch />}
     </main>

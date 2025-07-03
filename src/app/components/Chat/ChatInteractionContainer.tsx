@@ -155,6 +155,37 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
           chat.id === selectedChat.id ? finalSelectedChat : chat
         );
         setChats(finalChats);
+
+        // Save the chat conversation to the database
+        try {
+          const saveChatData = {
+            chatId: selectedChat.id,
+            agentID: selectedChat.chatAgent!.id,
+            namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
+            systemPrompt: selectedChat.chatAgent!.system_prompt,
+            userContent: content,
+            botContent: result.result,
+          };
+
+          console.log("Saving chat to database:", saveChatData);
+
+          const saveResponse = await fetch("https://chat-save-api-1094217356440.us-central1.run.app/save-chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(saveChatData),
+          });
+
+          if (!saveResponse.ok) {
+            console.warn(`Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`);
+          } else {
+            console.log("Chat saved successfully to database");
+          }
+        } catch (saveError) {
+          console.error("Error saving chat to database:", saveError);
+          // Note: We don't want to show this error to the user as the main functionality (chat) worked
+        }
         
       } catch (error) {
         console.error("Error sending message:", error);

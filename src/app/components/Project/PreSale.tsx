@@ -1,11 +1,12 @@
+import axios from "axios";
 import React from "react";
 
 interface MintingProps {
-    callback: (data: any) => void;
+
 }
 
 export const PreSale = (props: MintingProps) => {
-    const { callback } = props;
+    const { } = props;
 
     const [preSaleDiscount, setPreSaleDiscount] = React.useState(
         [
@@ -89,12 +90,12 @@ export const PreSale = (props: MintingProps) => {
     ]);
     const [errors, setErrors] = React.useState({});
 
-    const updatePreSaleDiscount = (event: React.ChangeEvent<HTMLInputElement>, index: number, type: string): void => {
+    const updatePreSaleDiscount = (value: string, index: number, type: string): void => {
         const discounts = [...preSaleDiscount];
         if (type === "amount") {
-            discounts[index].amount = event.target.value.trim();
+            discounts[index].amount = value.trim();
         } else {
-            discounts[index].discountPercentage = event.target.value.trim().replace('%', '').trim();
+            discounts[index].discountPercentage = value.trim();
         }
         setPreSaleDiscount(discounts);
     }
@@ -146,7 +147,7 @@ export const PreSale = (props: MintingProps) => {
         setPreSaleStart({ ...preSaleStart, time: value });
     };
 
-    const handleNextAction = () => {
+    const handleNextAction = async () => {
         const discount = [];
         for (let index = 0; index < preSaleDiscount.length; index++) {
             const element = preSaleDiscount[index];
@@ -162,8 +163,17 @@ export const PreSale = (props: MintingProps) => {
             preSaleStart: preSaleStart,
         }
         if (validate(values)) {
-            localStorage.setItem("preSaleData", JSON.stringify(values));
-            callback(values);
+            const mintingData = JSON.parse(localStorage.getItem("step1Data") || "{}");
+            console.log("===== MINTING DATA =====", mintingData);
+            if (mintingData.id) {
+                const result = await axios.put("/api/project/update-coins", {
+                    id: mintingData.id,
+                    presalediscount: discount,
+                });
+                console.log("===== CLIENT RESULT CHECK =====", result);
+            }
+            // localStorage.setItem("step3Data", JSON.stringify(values));
+            // callback([]);
         }
     }
 
@@ -233,8 +243,8 @@ export const PreSale = (props: MintingProps) => {
         // } else if (timePeriod !== "am" && timePeriod !== "pm") {
         //     newErrors.preSalePeriod = "Invalid time format";
         // }
-        // console.log("----- PRE SALE VALIDATION ERROR -----", newErrors);
         // setErrors(newErrors);
+        console.log("----- PRE SALE VALIDATION ERROR -----", newErrors);
 
         return Object.keys(newErrors).length === 0;
     };
@@ -262,16 +272,16 @@ export const PreSale = (props: MintingProps) => {
                                     placeholder="0"
                                     className="w-[120px] h-[40px] bg-[#100E47] border border-[#FFFFFF38] rounded-[8px] px-3 text-white text-sm outline-none" // Removed mr-[50px] from here
                                     value={discount.amount}
-                                    onChange={(event) => updatePreSaleDiscount(event, index, "amount")}
+                                    onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), index, "amount")}
                                 />
                                 {/* <div className="w-[55px] h-[40px] flex items-center justify-center bg-[#00000045] border border-[#FFFFFF38] rounded-[8px] text-sm font-bold ml-[50px]">
                                     {discount.percentage || 0} %
                                 </div> */}
                                 <input
                                     type="text"
-                                    value={discount.discountPercentage ? `${discount.discountPercentage}%` : ""}
+                                    value={discount.discountPercentage}
                                     placeholder="0 %"
-                                    onChange={(event) => updatePreSaleDiscount(event, index, "percentage")}
+                                    onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), index, "percentage")}
                                     className="w-[55px] h-[40px] flex items-center justify-center bg-[#00000045] border border-[#FFFFFF38] rounded-[8px] text-sm font-bold ml-[50px]"
                                 />
                             </React.Fragment>

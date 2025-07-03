@@ -1,12 +1,12 @@
 import axios from "axios";
 import React from "react";
 
-interface MintingProps {
-
+interface PresaleProps {
+    onMenuChange: (type: string) => void;
 }
 
-export const PreSale = (props: MintingProps) => {
-    const { } = props;
+export const PreSale = (props: PresaleProps) => {
+    const { onMenuChange } = props;
 
     const [preSaleDiscount, setPreSaleDiscount] = React.useState(
         [
@@ -148,32 +148,36 @@ export const PreSale = (props: MintingProps) => {
     };
 
     const handleNextAction = async () => {
-        const discount = [];
-        for (let index = 0; index < preSaleDiscount.length; index++) {
-            const element = preSaleDiscount[index];
-            discount.push({
-                amount: element.amount,
-                discountPercentage: element.discountPercentage
-            })
-        }
+        const discount = preSaleDiscount.map(({ amount, discountPercentage }) => ({
+            amount,
+            discountPercentage,
+        }));
         const values = {
             discounts: discount,
             presaleDetails: preSale,
-            preSalePeriod: preSalePeriod,
-            preSaleStart: preSaleStart,
-        }
+            preSalePeriod,
+            preSaleStart,
+        };
         if (validate(values)) {
             const mintingData = JSON.parse(localStorage.getItem("step1Data") || "{}");
-            console.log("===== MINTING DATA =====", mintingData);
             if (mintingData.id) {
-                const result = await axios.put("/api/project/update-coins", {
+                await axios.put("/api/project/update-coins", {
                     id: mintingData.id,
                     presalediscount: discount,
                 });
-                console.log("===== CLIENT RESULT CHECK =====", result);
             }
-            // localStorage.setItem("step3Data", JSON.stringify(values));
-            // callback([]);
+
+            const result = await axios.post("/api/project/save-presale-details", {
+                presaleminimum: preSale[0].value,
+                presalemaximum: preSale[1].value,
+                minimumpurchase: preSale[2].value,
+                maximumpurchase: preSale[3].value,
+                lookupperiod: preSalePeriod,
+                startdate: preSaleStart,
+            });
+            console.log("===== PRESALE DETAILS CLIENT RESULT CHECK =====", result);
+            localStorage.setItem("step3Data", JSON.stringify(values));
+            onMenuChange("presale")
         }
     }
 

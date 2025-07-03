@@ -532,7 +532,7 @@ export default function AgentCoin({ onPageChange, symbol, createMessage }: { onP
       </div>
 
       {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} createMessage={createMessage} />}
-      {tabIndex === "presale" && <PreSale />}
+      {tabIndex === "presale" && <PreSale onMenuChange={onMenuChange} />}
       {tabIndex === "launch" && <Launch />}
     </main>
   );

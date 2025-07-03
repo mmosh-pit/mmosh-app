@@ -146,7 +146,7 @@ export default function Minting({ onMenuChange, createMessage }: { onMenuChange:
                                         type="text"
                                         title="Name"
                                         required
-                                        helperText=""
+                                        helperText="Up to 50 characters, can have spaces."
                                         placeholder="Name"
                                         value={fields.name}
                                         onChange={(e) => setFields({ ...fields, name: e.target.value })}
@@ -157,7 +157,7 @@ export default function Minting({ onMenuChange, createMessage }: { onMenuChange:
                                         type="text"
                                         title="Symbol"
                                         required
-                                        helperText=""
+                                        helperText="Symbol can only be letters and numbers up to 10 characters"
                                         placeholder="Symbol"
                                         value={fields.symbol}
                                         onChange={(e) => setFields({ ...fields, symbol: e.target.value })}
@@ -168,7 +168,7 @@ export default function Minting({ onMenuChange, createMessage }: { onMenuChange:
                                         type="text"
                                         title="Maxium Token Supply"
                                         required
-                                        helperText=""
+                                        helperText="The maximum number of tokens that can be created"
                                         placeholder="Supply"
                                         value={(fields.supply > 0 ? fields.supply.toString() : "")}
                                         onChange={(e) => setFields({ ...fields, supply: prepareNumber(Number(e.target.value))})}

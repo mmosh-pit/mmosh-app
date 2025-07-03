@@ -28,6 +28,9 @@ export default function ProjectCreate() {
     { label: "Deploy New Personal Agent", value: "Tokenize Agent" },
   ]);
   const [selectedOption, setSelectedOption] = useState("Tokenize Agent");
+  const [showMsg, setShowMsg] = useState(false);
+  const [msgClass, setMsgClass] = useState("");
+  const [msgText, setMsgText] = useState("");
 
   const getProjectList = async (address: any) => {
     try {
@@ -129,8 +132,29 @@ export default function ProjectCreate() {
 
   const onPageChange = () => { };
 
+  const createMessage = (message: any, type: any) => {
+    window.scrollTo(0, 0);
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    // setLoading(false);
+    // setButtonStatus("Mint")
+    if (type == "success-container") {
+      setTimeout(() => {
+        setShowMsg(false);
+      }, 4000);
+    } else {
+      setTimeout(() => {
+        setShowMsg(false);
+      }, 4000);
+    }
+  };
+
   return (
     <>
+      {showMsg && (
+        <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
+      )}
       <div className="background-content">
         <div className="flex flex-col items-center justify-center w-full">
           <div className="relative w-full flex flex-col justify-center items-center pt-10">
@@ -224,7 +248,7 @@ export default function ProjectCreate() {
           <AgentTeam onPageChange={onPageChange} symbol={selectedProjectType} />
         )}
         {selectedOption === "Coins" && (
-          <AgentCoin onPageChange={onPageChange} symbol={selectedProjectType} />
+          <AgentCoin onPageChange={onPageChange} symbol={selectedProjectType} createMessage={createMessage}  />
         )}
         {selectedOption === "step4" && (
           <ProjectCreateStep4 onPageChange={onPageChange} />

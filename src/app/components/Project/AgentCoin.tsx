@@ -54,7 +54,7 @@ const customStyles = {
     },
   };
 
-export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any, symbol: any }) {
+export default function AgentCoin({ onPageChange, symbol, createMessage }: { onPageChange: any, symbol: any, createMessage: any }) {
   const wallet: any = useWallet();
   const [currentUser] = useAtom(data);
   const connection = useConnection();
@@ -95,10 +95,6 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
   const [loading, setLoading] = useState(false)
 
   const [image, setImage] = React.useState<File | null>(null);
-
-  const [showMsg, setShowMsg] = useState(false);
-  const [msgClass, setMsgClass] = useState("");
-  const [msgText, setMsgText] = useState("");
 
   const [isReady, setIsReady] = useState(false)
   const [projectDetail, setProjectDetail] = React.useState<any>(null)
@@ -191,25 +187,6 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
   React.useEffect(() => {
     setIsReady(validateFields(false))
   }, [fields])
-
-  const createMessage = (message: any, type: any) => {
-    window.scrollTo(0, 0);
-    setMsgText(message);
-    setMsgClass(type);
-    setShowMsg(true);
-    setLoading(false);
-    setButtonStatus("Mint")
-    if (type == "success-container") {
-      setTimeout(() => {
-        setShowMsg(false);
-      }, 4000);
-    } else {
-      setTimeout(() => {
-        setShowMsg(false);
-      }, 4000);
-    }
-
-  };
 
   const validateFields = (isMessage: boolean) => {
     if (fields.name.length == 0) {
@@ -531,47 +508,6 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
     );
   };
 
-  const callback = async (data: any) => {
-    if (tabIndex === "minting") {
-      const env = new anchor.AnchorProvider(connection.connection, wallet, {
-        preflightCommitment: "processed",
-      });
-      anchor.setProvider(env);
-      let curveConn = new CurveConn(
-        env,
-        web3Consts.programID,
-      );
-      console.log("----- MINTING DATA -----", data);
-      const targetMint = await curveConn.createTargetMint(data.name, data.symbol, data.image.preview);
-      console.log("----- TARGET MINT -----", targetMint);
-      const result = await axios.post("/api/project/save-coins", {
-        name: data.name,
-        symbol: data.symbol,
-        image: data.image.preview,
-        key: targetMint,
-        desc: data.description,
-        decimals: 9,
-        creator: wallet.publicKey.toBase58(),
-        projectkey: projectDetail.project.key,
-        supply: Number(data.tokenSupply)
-      });
-      console.log("===== CLIENT RESULT CHECK =====", result.data.id);
-      setCoinId(result.data.id);
-      setTabIndex("presale");
-    } else if (tabIndex === "vesting") {
-      setTabIndex("presale");
-    } else if (tabIndex === "presale") {
-      console.log("===== DATA =====", data.discounts);
-      const result = await axios.put("/api/project/update-coins", {
-        id: coinId,
-        presalediscount: data.discounts,
-      });
-      console.log("===== CLIENT RESULT CHECK =====", result);
-      setTabIndex("launch");
-    } else if (tabIndex === "launch") {
-    }
-  }
-
     const onMenuChange = (nextStep:any) => {
         setTabIndex(nextStep);
     }
@@ -595,8 +531,8 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
         </div>
       </div>
 
-      {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} />}
-      {tabIndex === "presale" && <PreSale callback={(data) => callback(data)} />}
+      {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} createMessage={createMessage} />}
+      {tabIndex === "presale" && <PreSale />}
       {tabIndex === "launch" && <Launch />}
     </main>
   );

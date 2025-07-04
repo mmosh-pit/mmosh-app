@@ -25,6 +25,7 @@ import { Connectivity as CurveConn } from "@/anchor/curve/bonding";
 import { web3Consts } from "@/anchor/web3Consts";
 import { ExponentialCurve, ExponentialCurveConfig } from "@/anchor/curve/curves";
 import { useRouter } from "next/navigation";
+import { Connectivity as Community } from "@/anchor/community";
 
 const customStyles = {
     content: {
@@ -43,20 +44,31 @@ const customStyles = {
 
 
 export default function Launch({ onMenuChange, symbol, createMessage }: { onMenuChange: any, symbol: any, createMessage: any }) {
-      const wallet: any = useWallet();
-      const [currentUser] = useAtom(data);
-      const connection = useConnection();
-      const [coinDetail, setCoinDetail] = useState({
-          image: {
-              preview: "",
-              type: ""
-          },
-          name: "", 
-          symbol: "",
-          desc: "",
-          supply: 0,
-      })
-      const [fields, setFields] = useState({
+    const wallet: any = useWallet();
+    const [currentUser] = useAtom(data);
+    const connection = useConnection();
+    
+    const [coinDetail, setCoinDetail] = useState({
+        image: {
+            preview: "",
+            type: ""
+        },
+        name: "", 
+        symbol: "",
+        desc: "",
+        supply: 0,
+    })
+    const [presaleDetail, setPresaleDetail] = useState({
+        presaleStartDate: "",
+        lockPeriod: "",
+        discount: [],
+        presaleMinimum: 0,
+        presaleMaximum: 10,
+        purchaseMinimum: 0,
+        purchaseMaximum: 0
+    })
+
+    const [fields, setFields] = useState({
         bonding: "exponential",
         curvesupply: 0,
         deadlineDate: "",
@@ -107,16 +119,19 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
         [datasets],
     );
 
+    const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
+
     useEffect(()=>{
       if(localStorage.getItem("coinstep1")) {
           let coinJson:any = localStorage.getItem("coinstep1");
           setCoinDetail(JSON.parse(coinJson));
-        }
-
-      if(localStorage.getItem("coinstep3")) {
-          let curveDetail:any = localStorage.getItem("coinstep3");
-          setFields(JSON.parse(curveDetail));
       }
+
+      if(localStorage.getItem("coinstep2")) {
+          let presaleData:any = localStorage.getItem("coinstep2");
+          setPresaleDetail(JSON.parse(presaleData));
+      }
+
       getProjectDetailFromAPI()
     },[])
 
@@ -135,7 +150,6 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
     React.useEffect(() => {
         const isLinear = fields.bonding === "linear";
         const isExponential = fields.bonding === "exponential";
-    
         if (
           (isLinear && fields.initialPrice === 0) ||
           (isExponential && fields.multiplier === 0)
@@ -143,27 +157,20 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           setDatasets([{ data: 0 }, { data: 0 }, { data: 0 }]);
           return;
         }
-    
-    
         const multiplier = isLinear ? 0 : fields.multiplier;
-    
         const initialPrice = isLinear ? fields.initialPrice : 0;
-    
         const res = getCoinPrice(
           1000,
           initialPrice.toString(),
           fields.bonding,
           multiplier,
         );
-    
         const datasetsValue = res.data.map((value) => ({
           data: value,
         }));
-    
         const datasetsResult = isLinear
           ? [{ data: 0 }, ...datasetsValue]
           : datasetsValue;
-    
         setDatasets(datasetsResult);
     }, [fields.multiplier, fields.initialPrice, fields.bonding]);
     
@@ -175,19 +182,19 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
 
     const getCompletedCoins = async () => {
         try {
-        setCoinLoader(true);
-        const result = await axios.get("/api/list-tokens?status=completed");
-        let newCoinList: any = baseCoins
-        for (let index = 0; index < result.data.length; index++) {
-            newCoinList.push(result.data[index]);
-        }
-        setCoinAllList(newCoinList);
-        setCoinList(newCoinList);
-        setCoinLoader(false);
+          setCoinLoader(true);
+          const result = await axios.get("/api/list-tokens?status=completed");
+          let newCoinList: any = baseCoins
+          for (let index = 0; index < result.data.length; index++) {
+              newCoinList.push(result.data[index]);
+          }
+          setCoinAllList(newCoinList);
+          setCoinList(newCoinList);
+          setCoinLoader(false);
         } catch (error) {
-        setCoinLoader(false);
-        setCoinList([]);
-        setCoinAllList([]);
+          setCoinLoader(false);
+          setCoinList([]);
+          setCoinAllList([]);
         }
     };
 
@@ -275,12 +282,14 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
             }
             return false;
         }
-       
-        if (fields.presalePrice > 0) {
-            if(isMessage) {
-                createMessage("Presale price should not be empty", "danger-container");
-            }
-            return false;
+
+        if(presaleDetail.presaleMaximum > 0) {
+          if (fields.presalePrice <= 0) {
+              if(isMessage) {
+                  createMessage("Presale price should not be empty", "danger-container");
+              }
+              return false;
+          }
         }
 
         if (fields.bonding === "linear") {
@@ -348,7 +357,28 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
         );
 
         setButtonStatus("Creating Coin...");
-        const targetMint = await curveConn.createTargetMint(coinDetail.name, coinDetail.symbol, coinDetail.image.preview);
+        const targetMint = await curveConn.createTargetMint(coinDetail.name, coinDetail.symbol, coinDetail.image.preview, presaleDetail.presaleMaximum * (10 ** 9));
+        await delay(15000)
+
+        if (presaleDetail.presaleMaximum > 0) {
+            setButtonStatus("Stake presale value...");
+            const projectKeyPair = anchor.web3.Keypair.generate();
+
+            const env = new anchor.AnchorProvider(connection.connection, wallet, {
+                preflightCommitment: "processed",
+              });
+            anchor.setProvider(env);
+            let communityConnection: Community = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
+            const stakeres = await communityConnection.stakeCoin({
+                mint: new anchor.web3.PublicKey(targetMint),
+                user: wallet.publicKey,
+                value: Math.ceil(presaleDetail.presaleMaximum * web3Consts.LAMPORTS_PER_OPOS),
+                duration: new Date(new Date(presaleDetail.presaleStartDate).toUTCString()).valueOf(),
+                type: "presale"
+            });
+            console.log("stake result ", stakeres);
+        }
+
 
         console.log("target mint", targetMint)
 
@@ -436,7 +466,6 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
 
         localStorage.removeItem("coinstep1")
         localStorage.removeItem("coinstep2")
-        localStorage.removeItem("coinstep3")
 
         navigate.push("/projects/" + symbol);
       }
@@ -680,7 +709,7 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
                     }
 
                     {loading &&
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">{buttonStatus}</button>
                     }
                 </div>
             </div>

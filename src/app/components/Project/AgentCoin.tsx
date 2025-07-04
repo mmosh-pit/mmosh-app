@@ -6,15 +6,11 @@ import { PreSale } from "./PreSale";
 import Launch from "./Launch";
 
 export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any, symbol: any }) {
-
   const [tabIndex, setTabIndex] = React.useState<string>("minting");
-
-    const onMenuChange = (nextStep:any) => {
+  const onMenuChange = (nextStep:any) => {
         setTabIndex(nextStep);
-    }
-
+  }
   return (
-
     <main className="relative py-5 px-5 xl:px-32 lg:px-16 md:px-8 text-white bg-transparent">
       {/* Tabs */}
       <div className="flex justify-center mb-5">
@@ -31,10 +27,10 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
           ))}
         </div>
       </div>
-
       {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} />}
-      {tabIndex === "presale" && <PreSale callback={(data) => onMenuChange(data)} />}
+      {tabIndex === "presale" && <PreSale onMenuChange={onMenuChange} />}
       {tabIndex === "launch" && <Launch onMenuChange={onMenuChange} symbol={symbol} />}
+
     </main>
   );
 }

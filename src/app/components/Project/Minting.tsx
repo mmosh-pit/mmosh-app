@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 
-export default function Minting({ onMenuChange }: { onMenuChange: any }) {
+export default function Minting({ onMenuChange, createMessage }: { onMenuChange: any, createMessage: any }) {
     
     const navigate = useRouter();
     const [fields, setFields] = useState({
@@ -24,10 +24,6 @@ export default function Minting({ onMenuChange }: { onMenuChange: any }) {
     })
     const [loading, setLoading] = useState(false)
     const [image, setImage] = React.useState<File | null>(null);
-
-    const [showMsg, setShowMsg] = useState(false);
-    const [msgClass, setMsgClass] = useState("");
-    const [msgText, setMsgText] = useState("");
 
     const [isReady, setIsReady] = useState(false)
 
@@ -52,24 +48,6 @@ export default function Minting({ onMenuChange }: { onMenuChange: any }) {
     React.useEffect(()=>{
        setIsReady(validateFields(false))
     },[fields])
-
-    const createMessage = (message: any, type: any) => {
-        window.scrollTo(0, 0);
-        setMsgText(message);
-        setMsgClass(type);
-        setShowMsg(true);
-        setLoading(false);
-        if(type == "success-container") {
-          setTimeout(() => {
-            setShowMsg(false);
-          }, 4000);
-        } else {
-          setTimeout(() => {
-            setShowMsg(false);
-          }, 4000);
-        }
-    
-    };
 
     const validateFields = (isMessage:boolean) => {
         if (fields.name.length == 0) {
@@ -156,9 +134,6 @@ export default function Minting({ onMenuChange }: { onMenuChange: any }) {
 
     return (
         <>
-            {showMsg && (
-                <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
-            )}
             <div className="relative background-content">
                 <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -171,7 +146,7 @@ export default function Minting({ onMenuChange }: { onMenuChange: any }) {
                                         type="text"
                                         title="Name"
                                         required
-                                        helperText=""
+                                        helperText="Up to 50 characters, can have spaces."
                                         placeholder="Name"
                                         value={fields.name}
                                         onChange={(e) => setFields({ ...fields, name: e.target.value })}
@@ -182,7 +157,7 @@ export default function Minting({ onMenuChange }: { onMenuChange: any }) {
                                         type="text"
                                         title="Symbol"
                                         required
-                                        helperText=""
+                                        helperText="Symbol can only be letters and numbers up to 10 characters"
                                         placeholder="Symbol"
                                         value={fields.symbol}
                                         onChange={(e) => setFields({ ...fields, symbol: e.target.value })}
@@ -193,7 +168,7 @@ export default function Minting({ onMenuChange }: { onMenuChange: any }) {
                                         type="text"
                                         title="Maxium Token Supply"
                                         required
-                                        helperText=""
+                                        helperText="The maximum number of tokens that can be created"
                                         placeholder="Supply"
                                         value={(fields.supply > 0 ? fields.supply.toString() : "")}
                                         onChange={(e) => setFields({ ...fields, supply: prepareNumber(Number(e.target.value))})}

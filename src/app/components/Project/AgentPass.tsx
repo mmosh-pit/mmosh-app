@@ -405,7 +405,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
         }
         console.log("send price result ", res5.Ok?.info);
 
-        await client.post("/agents/create", {
+        await client.post("/bots", {
           name: fields.name,
           symbol: fields.symbol.toUpperCase(),
           desc: fields.desc,

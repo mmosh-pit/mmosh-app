@@ -23,6 +23,8 @@ export const isDrawerOpen = atom(false);
 export const sortOption = atom("royalty");
 export const sortDirection = atom("desc");
 
+export const profileFilter = atom(0);
+
 export const lineage = atom([
   { label: "Promoted", value: "gen1", selected: true, subLabel: "Gen 1" },
   { label: "Scouted", value: "gen2", selected: true, subLabel: "Gen 2" },

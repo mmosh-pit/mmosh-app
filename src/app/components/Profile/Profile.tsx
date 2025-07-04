@@ -2,50 +2,34 @@
 import * as React from "react";
 import useConnection from "@/utils/connection";
 import axios from "axios";
-import Image from "next/image";
 import { useAtom } from "jotai";
+import Image from "next/image";
 
-import GuildList from "../GuildList";
-import CopyIcon from "@/assets/icons/CopyIcon";
-import TelegramAccount from "./TelegramAccount";
-import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
-import DesktopNavbar from "./DesktopNavbar";
 import { init } from "@/app/lib/firebase";
-import { UserStatus, data, isDrawerOpen, status } from "@/app/store";
+import { UserStatus, data, profileFilter, status } from "@/app/store";
 import { User } from "@/app/models/user";
-import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
-import { useRouter } from "next/navigation";
-import HeartSvg from "./HeartSvg";
-import LinkedHeartSvg from "./LinkedHeartSvg";
-import EmptyHeartSvg from "./EmptyHeartSvg";
 
 import { Connectivity as Community } from "@/anchor/community";
 import * as anchor from "@coral-xyz/anchor";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
-import InBoundHeart from "./InBoundHeart";
-import EditIcon from "@/assets/icons/EditIcon";
 import useWallet from "@/utils/wallet";
+import ProfileFilters from "./ProfileFilters";
+import GuildList from "../GuildList";
 
 const Profile = ({ username }: { username: any }) => {
-  const isMobile = useCheckMobileScreen();
-  const router = useRouter();
   const rendered = React.useRef(false);
   const wallet = useWallet();
-  const [isDrawerShown] = useAtom(isDrawerOpen);
-  const [isFirstTooltipShown, setIsFirstTooltipShown] = React.useState(false);
-  const [isSecTooltipShown, setIsSecTooltipShown] = React.useState(false);
-  const [userData, setUserData] = React.useState<User>();
-  const [lhcWallet, setLhcWallet] = React.useState("");
   const [_, setUserStatus] = useAtom(status);
+  const [selectedFilter] = useAtom(profileFilter);
 
   const connection = useConnection();
 
+  const [userData, setUserData] = React.useState<User>();
   const [loader, setLoader] = React.useState(false);
   const [statusMsg, setStatusMsg] = React.useState("");
   const [connectionStatus, setConnectionStatus] = React.useState(0);
-  const [hasRequest, setHasRequest] = React.useState(false);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [requestloader, setReqestLoader] = React.useState(false);
 
@@ -63,43 +47,11 @@ const Profile = ({ username }: { username: any }) => {
     setConnectionStatus(
       result.data?.profile.connection ? result.data.profile.connection : 0,
     );
-    setHasRequest(
-      result.data?.profile.request ? result.data.profile.request : false,
-    );
   }, [username, currentUser]);
-
-  const getLhcWallet = React.useCallback(async () => {
-    const result = await axios.get(
-      `/api/get-lhc-address?id=${userData?.telegram?.id}`,
-    );
-
-    setLhcWallet(result.data?.addressPublicKey);
-  }, [userData]);
 
   const isMyProfile = currentUser?.profilenft === userData?.profilenft;
 
-  const copyToClipboard = React.useCallback(
-    async (text: string, textNumber: number) => {
-      if (textNumber === 1) {
-        setIsFirstTooltipShown(true);
-      } else if (textNumber === 2) {
-        setIsSecTooltipShown(true);
-      }
-      await navigator.clipboard.writeText(text);
-
-      setTimeout(() => {
-        if (textNumber === 1) {
-          setIsFirstTooltipShown(false);
-        } else if (textNumber === 2) {
-          setIsSecTooltipShown(false);
-        }
-      }, 2000);
-    },
-    [],
-  );
-
   React.useEffect(() => {
-    console.log("username ", username);
     setUserStatus(UserStatus.fullAccount);
     if (!username) return;
     getUserData();
@@ -107,8 +59,6 @@ const Profile = ({ username }: { username: any }) => {
 
   React.useEffect(() => {
     if (!userData) return;
-
-    getLhcWallet();
   }, [userData]);
 
   React.useEffect(() => {
@@ -366,7 +316,6 @@ const Profile = ({ username }: { username: any }) => {
         });
         setConnectionStatus(0);
       }
-      setHasRequest(false);
       setReqestLoader(false);
     } catch (error) {
       setReqestLoader(false);
@@ -375,311 +324,123 @@ const Profile = ({ username }: { username: any }) => {
 
   if (!userData) return <></>;
 
+  const bannerImage =
+    userData.profile.banner !== ""
+      ? userData.profile.banner
+      : userData.guest_data.banner !== ""
+        ? userData.guest_data.banner
+        : "https://storage.googleapis.com/mmosh-assets/default_banner.png";
+
+  const profileImage =
+    userData.profile.image !== ""
+      ? userData.profile.image
+      : userData.guest_data.picture;
+
   return (
-    <div className="w-full h-screen flex flex-col">
-      <div
-        className={`w-full flex flex-col md:flex-row ${isMyProfile ? "lg:justify-between" : "lg:justify-around"} px-6 md:px-12 mt-16 gap-6`}
-      >
-        {!isMobile && isMyProfile && <DesktopNavbar user={userData} />}
+    <div className="background-content-full-bg flex flex-col">
+      <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl px-3 pt-3 pb-12">
+        <div className="h-[500px] m-4 mb-0 overflow-hidden relative">
+          <Image
+            src={bannerImage}
+            alt="banner"
+            className="w-full rounded-lg"
+            layout="fill"
+          />
+        </div>
 
-        <div className={`flex-1`}>
-          <p className="text-lg text-white font-bold font-goudy">
-            {isMyProfile
-              ? "My LHC Account"
-              : `${userData?.profile?.name}'s Hideout`}
-          </p>
-          <div
-            className="flex flex-col bg-[#6536BB] bg-opacity-20 rounded-tl-[3vmax] rounded-tr-md rounded-b-md p-4 mt-4"
-            id={userData?.profilenft && "member-container"}
-          >
-            <div className="w-full grid" id="profile-info-image">
-              <div
-                className={`relative w-[8vmax] h-[8vmax] ${isDrawerShown ? "z-[-1]" : ""}`}
-              >
-                {userData?.profile?.image && (
-                  <Image
-                    src={userData?.profile?.image || ""}
-                    alt="Profile Image"
-                    className="rounded-full"
-                    layout="fill"
-                    objectFit="contain"
-                  />
-                )}
-              </div>
+        <div className="relative mx-8 mb-4">
+          <div className="w-[220px] h-[220px] absolute top-[-80px]">
+            <Image
+              src={profileImage}
+              alt="Project"
+              className="rounded-lg"
+              layout="fill"
+            />
+          </div>
+          <div className="lg:pl-[250px] mt-20 lg:mt-0">
+            <div className="lg:flex justify-between items-end mb-4">
+              <div className="flex flex-col mt-4 max-w-[60%]">
+                <div className="flex items-center mb-4">
+                  <h5 className="font-bold text-white text-lg capitalize">
+                    {userData.profile.displayName !== ""
+                      ? userData.profile.displayName
+                      : userData.guest_data.displayName !== ""
+                        ? userData.guest_data.displayName
+                        : userData.name}
+                  </h5>
+                  <span className="font-bold text-lg text-white mx-2">•</span>
+                  <p className="text-base">
+                    {userData.profile.name !== ""
+                      ? `${userData.profile.name} ${userData.profile.lastName}`
+                      : `${userData.guest_data.name} ${userData.guest_data.lastName}`}
+                  </p>
 
-              <div className="flex flex-col ml-4">
-                <p className="flex text-lg text-white font-bold">
-                  {userData?.profile?.name}
-                  {currentUser && (
-                    <>
-                      {wallet &&
-                        !isMyProfile &&
-                        currentUser.profilenft &&
-                        !loader && (
-                          <>
-                            {(connectionStatus == 0 ||
-                              connectionStatus == 5) && (
-                                <span
-                                  className="cursor-pointer ml-2.5 mt-1"
-                                  onClick={sendConnectionRequest}
-                                >
-                                  <EmptyHeartSvg />
-                                </span>
-                              )}
+                  <p className="ml-4 text-base text-[#FF00AE]">
+                    @
+                    {userData.profile.username !== ""
+                      ? userData.profile.username
+                      : userData.guest_data.username}
+                  </p>
 
-                            {(connectionStatus == 1 ||
-                              connectionStatus == 2) && (
-                                <span
-                                  className="cursor-pointer ml-2.5"
-                                  onClick={sendConnectionRequest}
-                                >
-                                  <HeartSvg />
-                                </span>
-                              )}
-
-                            {connectionStatus == 4 && (
-                              <span
-                                className="cursor-pointer relative top-[-6px]"
-                                onClick={sendConnectionRequest}
-                              >
-                                <LinkedHeartSvg />
-                              </span>
-                            )}
-
-                            {connectionStatus == 3 && (
-                              <span
-                                className="cursor-pointer relative top-[-4px]"
-                                onClick={sendConnectionRequest}
-                              >
-                                <InBoundHeart />
-                              </span>
-                            )}
-                          </>
-                        )}
-                      {wallet &&
-                        isMyProfile &&
-                        currentUser.profilenft &&
-                        !loader && (
-                          <>
-                            <span
-                              className="cursor-pointer ml-1 mt-1"
-                              onClick={() => {
-                                router.push("/create/edit-profile");
-                              }}
-                            >
-                              <EditIcon />
-                            </span>
-                          </>
-                        )}
-                    </>
-                  )}
-                </p>
-                <p className="text-sm">{`@${userData?.profile?.username}`}</p>
-                {userData.profile?.request && (
-                  <div className="flex justify-start mt-2.5">
-                    {requestloader && (
-                      <button className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5">
-                        processing...
-                      </button>
-                    )}
-
-                    {!requestloader && hasRequest && (
-                      <>
-                        <p className="text-white text-sm">Request</p>
-                        <button
-                          className="btn btn-xs bg-[#372E4F] rounded-md text-white mx-2.5"
-                          onClick={() => {
-                            connectionAction("accept");
-                          }}
-                        >
-                          Accept
-                        </button>
-                        <button
-                          className="btn btn-xs bg-[#372E4F] rounded-md text-white"
-                          onClick={() => {
-                            connectionAction("reject");
-                          }}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-                <p className="text-base text-white mt-4 max-w-[60%] md:max-w-[80%]">
-                  {userData?.profile?.bio}
-                </p>
-
-                <div className="flex items-center mt-4">
-                  <a
-                    className="text-base font-white underline"
-                    href={`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/${userData?.profile?.username}`}
+                  <div
+                    className={`px-4 py-1 ${!!userData.profilenft ? "creator-btn" : "guest-btn"} rounded-md ml-6`}
                   >
-                    {`kinshipbots.com/${userData?.profile?.username}`}
-                  </a>
-
-                  {!isMobile && (
-                    <>
-                      {lhcWallet && (
-                        <div
-                          className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
-                        >
-                          <div className="flex flex-col justify-center items-center">
-                            <a
-                              className="text-base text-white underline"
-                              href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                              target="_blank"
-                            >
-                              Social Wallet
-                            </a>
-                            <a
-                              className="text-base text-white underline"
-                              href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                              target="_blank"
-                            >
-                              {walletAddressShortener(lhcWallet)}
-                            </a>
-                          </div>
-
-                          <sup
-                            className="absolute top-[-8px] right-[-8px] cursor-pointer"
-                            onClick={() => copyToClipboard(lhcWallet, 1)}
-                          >
-                            <CopyIcon />
-                            {isFirstTooltipShown && (
-                              <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                                Copied!
-                              </div>
-                            )}
-                          </sup>
-                        </div>
-                      )}
-
-                      <div
-                        className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
-                      >
-                        <div className="flex flex-col items-center justify-center">
-                          <a
-                            className="text-base text-white underline"
-                            href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
-                            target="_blank"
-                          >
-                            Linked Wallet
-                          </a>
-
-                          <a
-                            className="text-base text-white underline"
-                            href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
-                            target="_blank"
-                          >
-                            {walletAddressShortener(userData.wallet)}
-                          </a>
-                        </div>
-                        <sup
-                          className="absolute top-[-8px] right-[-8px] cursor-pointer"
-                          onClick={() => copyToClipboard(userData.wallet, 2)}
-                        >
-                          <CopyIcon />
-                          {isSecTooltipShown && (
-                            <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                              Copied!
-                            </div>
-                          )}
-                        </sup>
-                      </div>
-                    </>
-                  )}
+                    <p
+                      className={`${!!userData.profilenft ? "text-black" : "text-white"} text-base`}
+                    >
+                      {!!userData.profilenft ? "Creator" : "Guest"}
+                    </p>
+                  </div>
                 </div>
+
+                <p className="text-sm">
+                  {userData.profile.bio !== ""
+                    ? userData.profile.bio
+                    : userData.guest_data.bio}
+                </p>
               </div>
             </div>
 
-            {isMobile && (
-              <div className="flex justify-around mt-6">
-                {lhcWallet && (
-                  <div
-                    className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
-                  >
-                    <div className="flex flex-col justify-center items-center">
-                      <a
-                        className="text-base text-white underline"
-                        href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                        target="_blank"
-                      >
-                        Social Wallet
-                      </a>
-                      <a
-                        className="text-base text-white underline"
-                        href={`https://xray.helius.xyz/account/${lhcWallet}?network=mainnet`}
-                        target="_blank"
-                      >
-                        {walletAddressShortener(lhcWallet)}
-                      </a>
-                    </div>
+            <div className="flex flex-col">
+              <p className="text-base text-white font-bold">Earnings</p>
+              <div className="flex justify-start items-start mt-2">
+                <div className="flex flex-col justify-center items-center bg-[#3C39BE33] bg-opacity-50 p-2 rounded-lg">
+                  <p className="text-white text-xs font-bold">Creator</p>
+                  <p className="text-white text-xs">00.00USDC</p>
+                </div>
 
-                    <sup
-                      className="absolute top-[-0.5vmax] right-[-0.5vmax] cursor-pointer"
-                      onClick={() => copyToClipboard(lhcWallet, 1)}
-                    >
-                      <CopyIcon />
-                      {isFirstTooltipShown && (
-                        <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                          Copied!
-                        </div>
-                      )}
-                    </sup>
-                  </div>
-                )}
+                <div className="mx-1" />
 
-                <div
-                  className={`relative ml-4 px-4 rounded-[18px] bg-[#09073A] ${isDrawerShown ? "z-[-1]" : ""}`}
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <a
-                      className="text-base text-white underline"
-                      href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
-                      target="_blank"
-                    >
-                      Linked Wallet
-                    </a>
+                <div className="flex flex-col justify-center items-center bg-[#3C39BE33] bg-opacity-50 p-2 rounded-lg">
+                  <p className="text-white text-xs font-bold">Promoter</p>
+                  <p className="text-white text-xs">00.00USDC</p>
+                </div>
 
-                    <a
-                      className="text-base text-white underline"
-                      href={`https://xray.helius.xyz/account/${userData.wallet}?network=mainnet`}
-                      target="_blank"
-                    >
-                      {walletAddressShortener(userData.wallet)}
-                    </a>
-                  </div>
-                  <sup
-                    className="absolute top-[-0.5vmax] right-[-0.5vmax] cursor-pointer"
-                    onClick={() => copyToClipboard(userData.wallet, 2)}
-                  >
-                    <CopyIcon />
-                    {isSecTooltipShown && (
-                      <div className="absolute z-10 mb-20 inline-block rounded-lg bg-gray-900 px-3 py-4 text-sm font-medium text-white shadow-sm dark:bg-gray-700">
-                        Copied!
-                      </div>
-                    )}
-                  </sup>
+                <div className="mx-1" />
+
+                <div className="flex flex-col justify-center items-center bg-[#3C39BE33] bg-opacity-50 p-2 rounded-lg">
+                  <p className="text-white text-xs font-bold">Total</p>
+                  <p className="text-white text-xs">00.00USDC</p>
                 </div>
               </div>
-            )}
-
-            <div className="w-full flex justify-around mt-16">
-              <TelegramAccount
-                isMyProfile={isMyProfile}
-                userData={userData}
-                setUserData={setUserData}
-              />
             </div>
           </div>
         </div>
+
+        <ProfileFilters />
+
+        {selectedFilter === 1 && (
+          <GuildList
+            profilenft={userData.profilenft}
+            userName={
+              userData.profile.username !== ""
+                ? userData.profile.username
+                : userData.guest_data.username
+            }
+            isMyProfile={isMyProfile}
+          />
+        )}
       </div>
-      <GuildList
-        profilenft={userData?.profilenft}
-        isMyProfile={isMyProfile}
-        userName={userData?.profile?.name}
-      />
     </div>
   );
 };

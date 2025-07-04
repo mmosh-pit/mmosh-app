@@ -3,7 +3,6 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import { User } from "../models/user";
 import UserCard from "./UserCard";
-import UserSortTabs from "./UserSortTabs";
 import {
   connectionTypes,
   data,
@@ -11,11 +10,6 @@ import {
   sortDirection,
   sortOption,
 } from "../store";
-import LineageFilterOptions from "./Profile/LineageFilterOptions";
-import ConnectionFilterOptions from "./Profile/ConnectionFilterOptions";
-import useConnection from "@/utils/connection";
-import useCheckMobileScreen from "../lib/useCheckMobileScreen";
-import useWallet from "@/utils/wallet";
 
 const GuildList = ({
   profilenft,
@@ -26,10 +20,7 @@ const GuildList = ({
   isMyProfile: boolean;
   userName: string;
 }) => {
-  const wallet = useWallet();
-  const connection = useConnection();
   const [currentUser] = useAtom(data);
-  const isMobile = useCheckMobileScreen();
 
   const [currentPage, setCurrentPage] = React.useState(0);
   const [users, setUsers] = React.useState<User[]>([]);
@@ -146,23 +137,11 @@ const GuildList = ({
   if (!profilenft) return <></>;
 
   return (
-    <>
-      <div
-        className="flex flex-col items-start md:ml-20 mt-8"
-        ref={containerRef}
-        onScroll={handleScroll}
-      >
-        <p className="text-lg text-white font-bold font-goudy">
-          {isMyProfile ? "Your Lineage" : `${userName}'s Lineage`}
-        </p>
-        <div className="lg:flex">
-          <LineageFilterOptions />
-          <ConnectionFilterOptions />
-        </div>
-
-        <UserSortTabs />
-      </div>
-
+    <div
+      className="flex flex-col items-start md:ml-20 mt-8"
+      ref={containerRef}
+      onScroll={handleScroll}
+    >
       {users.length === 0 ? (
         <div className="w-full h-full flex justify-center items-center">
           <p className="text-base">
@@ -182,7 +161,7 @@ const GuildList = ({
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

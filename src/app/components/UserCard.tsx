@@ -13,35 +13,9 @@ type Props = {
 };
 
 const UserCard = ({ user, currentuser }: Props) => {
-  const rendered = React.useRef(false);
-  const [rank, setRank] = React.useState(0);
-
   const [connectionStatus, setConnectionStatus] = React.useState(0);
   const [hasRequest, setHasRequest] = React.useState(false);
   const [requestloader, setReqestLoader] = React.useState(false);
-
-  const getRankData = React.useCallback(async () => {
-    if (user.profilenft) {
-      const result = await axios.get(
-        `/api/get-member-rank?nft=${user.profilenft}`,
-      );
-
-      setRank(result.data.rank);
-    } else {
-      const result = await axios.get(
-        `/api/get-rank-data?user=${user.telegram?.id}`,
-      );
-
-      setRank(result.data.rank);
-    }
-  }, [user]);
-
-  React.useEffect(() => {
-    if (!rendered.current) {
-      getRankData();
-      rendered.current = true;
-    }
-  }, []);
 
   React.useEffect(() => {
     setConnectionStatus(user.profile.connection ? user.profile.connection : 0);

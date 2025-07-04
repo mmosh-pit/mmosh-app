@@ -148,10 +148,50 @@ export const PreSale = (props: PresaleProps) => {
         setPreSaleStart({ ...preSaleStart, time: value });
     };
 
+    const convertMonthsToMinutes = (monthsValue: number) => {
+        const daysInMonth = 30.44;
+        const hoursInDay = 24;
+        const minutesInHour = 60;
+        const calculatedMinutes = monthsValue * daysInMonth * hoursInDay * minutesInHour;
+        console.log("===== MONTHS calculatedMinutes =====", calculatedMinutes);
+        return calculatedMinutes;
+    };
+    const convertWeeksToMinutes = (weeksValue: number) => {
+        const daysInWeek = 7;
+        const hoursInDay = 24;
+        const minutesInHour = 60;
+
+        const calculatedMinutes = weeksValue * daysInWeek * hoursInDay * minutesInHour;
+        console.log("===== WEEKS calculatedMinutes =====", calculatedMinutes);
+        return calculatedMinutes;
+    };
+
+    const convertDaysToMinutes = (daysValue: number) => {
+        const hoursInDay = 24;
+        const minutesInHour = 60;
+        const calculatedMinutes = daysValue * hoursInDay * minutesInHour;
+        console.log("===== DAYS calculatedMinutes =====", calculatedMinutes);
+        return calculatedMinutes;
+    };
+    const convertHoursToMinutes = (hoursValue: number) => {
+        const calculatedMinutes = hoursValue * 60;
+        console.log("===== HOURS calculatedMinutes =====", calculatedMinutes);
+        return calculatedMinutes;
+    };
+    const convertMinutesToDate = (mins: number) => {
+        const milliseconds = mins * 60000;
+        const date = new Date(new Date().getTime() + milliseconds);
+        console.log("===== TIMESTAMP =====", new Date().getTime());
+        console.log("===== MILLI SECONDS =====", date.toUTCString());
+        return date.toUTCString();
+    };
+
+
+
     const handleNextAction = async () => {
         const discount = preSaleDiscount.map(({ amount, discountPercentage }) => ({
-            amount,
-            discountPercentage,
+            value: amount,
+            percentage: discountPercentage,
         }));
         const values = {
             discounts: discount,
@@ -159,25 +199,31 @@ export const PreSale = (props: PresaleProps) => {
             preSalePeriod,
             preSaleStart,
         };
-        if (validate(values)) {
-            const mintingData = JSON.parse(localStorage.getItem("step1Data") || "{}");
-            if (mintingData.id) {
-                await axios.put("/api/project/update-coins", {
-                    id: mintingData.id,
-                    presalediscount: discount,
-                });
-            }
+        console.log("===== PRE SALE START =====", preSale);
 
-            const result = await axios.post("/api/project/save-presale-details", {
-                presaleminimum: preSale[0].value,
-                presalemaximum: preSale[1].value,
-                minimumpurchase: preSale[2].value,
-                maximumpurchase: preSale[3].value,
-                lookupperiod: preSalePeriod,
-                startdate: preSaleStart,
-            });
-            console.log("===== PRESALE DETAILS CLIENT RESULT CHECK =====", result);
-            localStorage.setItem("step3Data", JSON.stringify(values));
+        if (validate(values)) {
+            // ----- lookup period -----
+            const months = convertMonthsToMinutes(Number(preSalePeriod[0].value));
+            const weeks = convertWeeksToMinutes(Number(preSalePeriod[1].value));
+            const days = convertDaysToMinutes(Number(preSalePeriod[2].value));
+            const hours = convertHoursToMinutes(Number(preSalePeriod[3].value));
+            const minutes = Number(preSalePeriod[4].value);
+            const totalInMinutes = months + weeks + days + hours + minutes;
+
+            // ----- presale start -----
+            const startDate = preSaleStart.date.split("/");
+            console.log("===== START DATE =====", startDate);
+            let fields = {
+                presaleStartDate: new Date(Number(startDate[2]), Number(startDate[1]) - 1, Number(startDate[0])).toUTCString(),
+                lockPeriod: convertMinutesToDate(totalInMinutes),
+                discount: discount,
+                presaleMinium: preSale[0].value,
+                presaleMaxium: preSale[1].value,
+                purchaseMinimum: preSale[2].value,
+                purchaseMaximum: preSale[3].value,
+                totalSold: 0,
+            }
+            localStorage.setItem("coinstep2", JSON.stringify(fields));
             onMenuChange("presale")
         }
     }
@@ -190,7 +236,6 @@ export const PreSale = (props: PresaleProps) => {
 
     const validate = (values: any): boolean => {
         const newErrors: Record<string, string> = {};
-
         // ---- Discounts Validation ----
         const discounts = values?.discounts || [];
         let totalDiscountPercentage = 0;
@@ -257,127 +302,150 @@ export const PreSale = (props: PresaleProps) => {
     return (
         <main className="relative py-5 px-5 xl:px-32 lg:px-16 md:px-8 bg-transparent">
             <div className="bg-[#09073A] p-6 max-w-6xl mx-auto text-white rounded-[12px] font-sans">
-                <h2 className="text-[14px] font-extrabold text-center mb-4">Pre-sale Discount</h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="grid grid-cols-[auto_120px_1fr] items-start gap-x-2">
-
-
-                        <span className="col-start-2 text-white/70 mb-[20px] text-xs leading-[18px]">Up to this amount in sales.</span>
-                        <span className="col-start-3 text-white/70 mb-[20px] text-xs leading-[18px] text-right">Receives this discount.</span>
-
-
-                        {preSaleDiscount.map((discount: any, index) => (
-                            <React.Fragment key={index}>
-                                <label className="text-xs text-white/90 py-2 text-right whitespace-nowrap">{discount.label} Tranche</label>
-
-                                <input
-                                    type="number"
-                                    placeholder="0"
-                                    className="w-[120px] h-[40px] bg-[#100E47] border border-[#FFFFFF38] rounded-[8px] px-3 text-white text-sm outline-none" // Removed mr-[50px] from here
-                                    value={discount.amount}
-                                    onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), index, "amount")}
-                                />
-                                {/* <div className="w-[55px] h-[40px] flex items-center justify-center bg-[#00000045] border border-[#FFFFFF38] rounded-[8px] text-sm font-bold ml-[50px]">
-                                    {discount.percentage || 0} %
-                                </div> */}
-                                <input
-                                    type="text"
-                                    value={discount.discountPercentage}
-                                    placeholder="0 %"
-                                    onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), index, "percentage")}
-                                    className="w-[55px] h-[40px] flex items-center justify-center bg-[#00000045] border border-[#FFFFFF38] rounded-[8px] text-sm font-bold ml-[50px]"
-                                />
-                            </React.Fragment>
-                        ))}
-
-                        <p className="col-start-2 col-span-2 text-[10px] text-white/40 mt-1 leading-tight">
-                            How much percentage less than the launch price you can buy into the presale
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col gap-4">
-                        {preSale.map((item, i) => (
-                            <div key={i}>
-                                <label className="block text-xs mb-1">{item.label}</label>
-                                <input
-                                    type="text"
-                                    value={item.value}
-                                    className="w-[157px] h-[40px] bg-[#100E47] border border-[#FFFFFF38] rounded-[8px] px-3 text-sm"
-                                    placeholder="$0"
-                                    onChange={(event) => updatePreSalePrice(event, item)}
-                                />
-                                <div className="text-[10px] text-white/40 leading-tight">{item.desc}</div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex flex-col gap-2 mt-4">
-                        <label className="text-xs mb-1">Pre-sale lock-up period</label>
-                        <div className="flex gap-2">
-                            {preSalePeriod.map((presaleDate, i) => (
-                                <div key={i} className="flex flex-col items-center gap-1">
+                <pre><h2 className="text-[13px] leading-[18px] font-extrabold tracking-tightest text-[#ECECEC] mb-4 font-avenirNext text-left ml-[196px]">Pre-sale Discount</h2></pre>
+                <div className="w-full flex justify-center"></div>
+                <div className="w-full flex justify-center">
+                    <div className="w-[865px] h-[331px] grid grid-cols-[2.2fr_2.3fr_2.5fr] gap-x-4">
+                        <div className="grid grid-cols-[auto_120px_1fr] items-start gap-x-2">
+                            <span className="col-start-2 text-[#ECECEC] text-[10px] leading-[18px] tracking-tightest-0.7px font-avenir font-medium">
+                                Up to this amount in sales.
+                            </span>
+                            <span className="col-start-3 text-[#ECECEC] text-[10px] leading-[18px] tracking-tightest-0.7px font-avenir font-medium text-right ">
+                                Receives this discount.
+                            </span>
+                            {preSaleDiscount.map((discount, idx) => (
+                                <React.Fragment key={idx}>
+                                    <label className="text-xs text-white/90 py-2 text-right whitespace-nowrap">{discount.label} Tranche</label>
                                     <input
                                         type="number"
-                                        min={0}
-                                        value={presaleDate.value}
-                                        onChange={(event) => updatePrelookUp(event, presaleDate.key)}
-                                        className="w-[53px] h-[40px] bg-[#100E47] border border-[#FFFFFF38] rounded-[8px] text-center text-sm"
+                                        placeholder="0"
+                                        className="w-[7.5rem] h-[2.5rem] rounded-[0.4375rem] border border-[#FFFFFF38] bg-black bg-opacity-[0.07] backdrop-blur-[1.21875rem] px-3 text-white text-opacity-50 text-[0.75rem] font-avenirNext focus:outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                        value={discount.amount}
+                                        onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), idx, "amount")}
                                     />
+                                    {/* <input type="date" className="grow text-base" placeholder="Start Date" onChange={(e) => console.log("check", new Date(e.target.value).toUTCString())} onFocus={()=>{setDexError("")}} /> */}
+                                    {/* <input type="date" className="grow text-base" placeholder="Start Date" onChange={(e) => console.log("===== DATA_VALUE_CHECK =====", new Date(e.target.value).toUTCString())} /> */}
+                                    <input
+                                        type="text"
+                                        value={discount.discountPercentage}
+                                        onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), idx, "percentage")}
+                                        className="w-[55px] h-[40px] flex items-center justify-center bg-[#00000045] px-3 border border-none rounded-[8px] text-sm font-bold ml-[50px]"
+                                    />
+
+                                </React.Fragment>
+                            ))}
+
+                            <p className="col-start-2 col-span-2 text-[10px] text-white/40 mt-1 leading-tight">
+                                How much percentage less than the launch price you can buy into the presale
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-4">
+                            {preSale.map((item, i) => (
+                                <div key={i} className="max-w-[157px]">
+                                    <label className="block text-xs mb-1">{item.label}</label>
+                                    <input
+                                        type="text"
+                                        value={item.value}
+                                        placeholder="$ 0"
+                                        className="w-[157px] h-[40px] rounded-[8px] border border-[#FFFFFF38] bg-black bg-opacity-[0.07] backdrop-blur-[19.5px] px-3 text-white text-opacity-50 text-sm font-avenirNext focus:outline-none"
+                                        onChange={(event) => updatePreSalePrice(event, item)}
+                                    />
+
+                                    <p className="text-[10px] text-white/40 leading-tight text-wrap mt-[3px]">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
-                        <div className="text-[10px] text-white/40 leading-tight mt-2">
-                            How long you have to wait after launch before you can sell. Maximum of 12 months, 4 weeks, 7 days, 24 hours and 60 minutes. For longer lockups, use the vesting feature
-                        </div>
+                        <div className="flex flex-col items-start gap-4">
+                            <div className="flex flex-col w-full">
+                                <label className="text-xs mb-1">Pre-sale lock-up period</label>
+                                <div className="grid grid-cols-5 gap-2 w-full">
+                                    {preSalePeriod.map((presaleDate, i) => (
+                                        <div key={i} className="flex flex-col items-center gap-1">
+                                            <span className="text-[10px] text-white/70 capitalize">{presaleDate.key}</span>
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                placeholder="0"
+                                                value={presaleDate.value}
+                                                onChange={(event) => updatePrelookUp(event, presaleDate.key)}
+                                                className="w-full h-[40px] bg-black bg-opacity-[0.07] border border-[#FFFFFF38] rounded-[8px] px-3 text-center text-sm appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            />
 
-                        <label className="text-xs mt-2 mb-1">Token pre-sale start date</label>
-                        <div className="flex gap-2 items-center mb-1">
-                            <input
-                                type="text"
-                                placeholder="dd/mm/yyyy"
-                                className="w-[120px] h-[40px] bg-[#100E47] border border-[#FFFFFF38] rounded-[8px] px-2 text-sm"
-                                value={preSaleStart.date}
-                                onChange={(event) => handleDateChange(event)}
-                                maxLength={10}
-                            />
-                            <input
-                                type="text"
-                                placeholder="hr:min"
-                                className="w-[120px] h-[40px] bg-[#100E47] border border-[#FFFFFF38] rounded-[8px] px-2 text-sm"
-                                value={preSaleStart.time}
-                                onChange={(event) => handleTimeChange(event)}
-                                maxLength={5}
-                            />
-                            <div className="flex items-center gap-2 ml-2">
-                                <label className="flex items-center gap-1 text-xs">
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="text-[10px] text-white/40 leading-tight mt-2">
+                                    How long you have to wait after launch before you can sell. Maximum of 12 months, 4 weeks, 7 days, 24 hours and 60 minutes. For longer lockups, use the vesting feature
+                                </div>
+                            </div>
+
+                            {/* bottom part = date/time */}
+                            <div className="flex flex-col w-full">
+                                <label className="text-xs mb-1 mt-2">Token pre-sale start date</label>
+                                <div className="flex gap-2 items-center mb-1">
                                     <input
-                                        type="radio"
-                                        className="accent-[#E7007A] w-[14px] h-[14px]"
-                                        checked={preSaleStart.timePeriod === "am"}
-                                        onChange={(event) => setPreSaleStart({ ...preSaleStart, timePeriod: event.target.value === "on" ? "am" : "pm" })}
+                                        type="text"
+                                        placeholder="dd/mm/yyyy"
+                                        value={preSaleStart.date}
+                                        onChange={(event) => handleDateChange(event)}
+                                        maxLength={10}
+                                        className="w-[120px] h-[40px]  bg-black bg-opacity-[0.07] border border-[#FFFFFF38] rounded-[8px] px-2 text-sm"
+                                        px-3
                                     />
-                                    am
-                                </label>
-                                <label className="flex items-center gap-1 text-xs">
                                     <input
-                                        type="radio"
-                                        className="accent-[#E7007A] w-[14px] h-[14px]"
-                                        checked={preSaleStart.timePeriod === "pm"}
-                                        onChange={(event) => setPreSaleStart({ ...preSaleStart, timePeriod: event.target.value === "on" ? "pm" : "am" })}
+                                        type="text"
+                                        placeholder="hr:min"
+                                        value={preSaleStart.time}
+                                        onChange={(event) => handleTimeChange(event)}
+                                        maxLength={5}
+                                        className="w-[120px] h-[40px]  bg-black bg-opacity-[0.07] border border-[#FFFFFF38] rounded-[8px] px-2 text-sm"
                                     />
-                                    pm
-                                </label>
+
+                                    <div className="flex items-center gap-2 ml-2">
+                                        <label className="flex items-center gap-1 text-xs">
+                                            <input
+                                                type="radio"
+                                                checked={preSaleStart.timePeriod === "am"}
+                                                onChange={(event) => setPreSaleStart({ ...preSaleStart, timePeriod: event.target.value === "on" ? "am" : "pm" })}
+                                                className="accent-[#E7007A] w-[14px] h-[14px]"
+                                            />
+                                            am
+                                        </label>
+                                        <label className="flex items-center gap-1 text-xs">
+                                            <input
+                                                type="radio"
+                                                checked={preSaleStart.timePeriod === "pm"}
+                                                onChange={(event) => setPreSaleStart({ ...preSaleStart, timePeriod: event.target.value === "on" ? "pm" : "am" })}
+                                                className="accent-[#E7007A] w-[14px] h-[14px]"
+                                            />
+                                            pm
+                                        </label>
+                                    </div>
+                                </div>
+                                <div className="text-[10px] text-white/40 leading-tight">
+                                    Has to be at least 24 hours before the launch date
+                                </div>
                             </div>
                         </div>
-                        <div className="text-[10px] text-white/40 leading-tight">
-                            Has to be at least 24 hours before the launch date
-                        </div>
                     </div>
+
                 </div>
-                <div className="flex justify-center mt-10">
-                    <button className="bg-[#FF00B8] hover:bg-[#e100a7] text-white w-[155px] h-[38px] rounded-[8px] transition text-base font-semibold" onClick={handleNextAction}>
-                        Next
+                <div className="flex justify-center mt-20">
+                    <button className="bg-[#FF00B8] hover:bg-[#e100a7] mt-[30px] ml-[-7px] text-white w-[155px] h-[38px] rounded-[8px] transition text-base font-semibold" onClick={handleNextAction}>
+                        Mint
+                    </button>
+                </div>
+                <div className="flex justify-end mt-10 mr-5">
+                    <button
+                        className="w-[150px] h-[36px] rounded-[30px] text-[9px] flex items-center justify-center gap-2 bg-pink-500/20 backdrop-blur-[3px] text-white hover:bg-pink-500/30 transition"
+                    >
+                        Talk to Kip, the Kinship Bot
+                        <img
+                            src="/images/hugeicons_chat-bot.png"
+                            alt="chat bot"
+                            className="w-[18px] h-[18px]"
+                        />
                     </button>
                 </div>
             </div>

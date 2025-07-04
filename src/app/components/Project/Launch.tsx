@@ -42,13 +42,10 @@ const customStyles = {
   };
 
 
-export default function Launch({ onMenuChange, symbol }: { onMenuChange: any, symbol: any }) {
+export default function Launch({ onMenuChange, symbol, createMessage }: { onMenuChange: any, symbol: any, createMessage: any }) {
       const wallet: any = useWallet();
       const [currentUser] = useAtom(data);
       const connection = useConnection();
-      const [showMsg, setShowMsg] = useState(false);
-      const [msgClass, setMsgClass] = useState("");
-      const [msgText, setMsgText] = useState("");
       const [coinDetail, setCoinDetail] = useState({
           image: {
               preview: "",
@@ -253,24 +250,6 @@ export default function Launch({ onMenuChange, symbol }: { onMenuChange: any, sy
     const goBack = () => {
       onMenuChange("presale")
     }
-
-    const createMessage = (message: any, type: any) => {
-        window.scrollTo(0, 0);
-        setMsgText(message);
-        setMsgClass(type);
-        setShowMsg(true);
-        setLoading(false);
-        if(type == "success-container") {
-          setTimeout(() => {
-            setShowMsg(false);
-          }, 4000);
-        } else {
-          setTimeout(() => {
-            setShowMsg(false);
-          }, 4000);
-        }
-    
-    };
 
     const validateFields = (isMessage: boolean) => {
         if (fields.curvesupply < 10000 || fields.curvesupply > 1000000) {

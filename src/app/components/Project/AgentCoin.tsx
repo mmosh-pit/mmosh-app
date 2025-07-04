@@ -5,7 +5,7 @@ import Minting from "./Minting";
 import { PreSale } from "./PreSale";
 import Launch from "./Launch";
 
-export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any, symbol: any }) {
+export default function AgentCoin({ onPageChange, symbol, createMessage }: { onPageChange: any, symbol: any, createMessage: any }) {
   const [tabIndex, setTabIndex] = React.useState<string>("minting");
   const onMenuChange = (nextStep:any) => {
         setTabIndex(nextStep);
@@ -27,9 +27,9 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
           ))}
         </div>
       </div>
-      {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} />}
-      {tabIndex === "presale" && <PreSale onMenuChange={onMenuChange} />}
-      {tabIndex === "launch" && <Launch onMenuChange={onMenuChange} symbol={symbol} />}
+      {tabIndex === "minting" && <Minting onMenuChange={onMenuChange} createMessage={createMessage} />}
+      {tabIndex === "presale" && <PreSale onMenuChange={onMenuChange} createMessage={createMessage} />}
+      {tabIndex === "launch" && <Launch onMenuChange={onMenuChange} symbol={symbol} createMessage={createMessage} />}
 
     </main>
   );

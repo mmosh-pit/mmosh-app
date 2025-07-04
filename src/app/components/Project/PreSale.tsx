@@ -3,10 +3,11 @@ import React from "react";
 
 interface PresaleProps {
     onMenuChange: (type: string) => void;
+    createMessage: (name: string, type: string) => void;
 }
 
 export const PreSale = (props: PresaleProps) => {
-    const { onMenuChange } = props;
+    const { onMenuChange, createMessage } = props;
 
     const [preSaleDiscount, setPreSaleDiscount] = React.useState(
         [
@@ -188,7 +189,6 @@ export const PreSale = (props: PresaleProps) => {
     };
 
     const validate = (values: any): boolean => {
-        console.log("----- VALUES -----", values);
         const newErrors: Record<string, string> = {};
 
         // ---- Discounts Validation ----

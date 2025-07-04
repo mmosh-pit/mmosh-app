@@ -1194,3 +1194,11 @@ a:hover {
 .creator-indicator {
   background: linear-gradient(90deg, #beef00 0%, #03ccd9 112.5%);
 }
+
+.creator-btn {
+  background: linear-gradient(90deg, #beef00 0%, #03ccd9 112.5%);
+}
+
+.guest-btn {
+  background: linear-gradient(107.33deg, #d858bc 8.67%, #3c00ff 100.22%);
+}

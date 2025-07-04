@@ -10,7 +10,15 @@ export async function GET(req: NextRequest) {
 
   const user = await collection.findOne(
     {
-      "profile.username": param,
+      $or: [
+        {
+          "profile.username": param,
+        },
+
+        {
+          "guest_data.username": param,
+        },
+      ],
     },
     {
       collation: {

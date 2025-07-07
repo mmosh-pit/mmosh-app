@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { data, userWeb3Info, web3InfoLoading } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
 import ImagePicker from "../ImagePicker";
-import { createProfile } from "@/app/lib/forge/createProfile";
+import { buyMembership, createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import Button from "../common/Button";
@@ -41,6 +41,7 @@ const CreateProfile = () => {
   const [preview, setPreview] = React.useState("");
   const [referer, setReferer] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const [membershipStatus, setMembershipStatus] = React.useState("na")
   const [form, setForm] = React.useState({
     name: "",
     lastName: "",
@@ -70,7 +71,19 @@ const CreateProfile = () => {
    } else {
        setReferer("")
    }
+  
   }, [])
+
+  React.useEffect(()=>{
+     if(wallet) {
+       checkMembershipStatus()
+     }
+  },[wallet])
+
+  const checkMembershipStatus = async()=> {
+    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    setMembershipStatus(membershipInfo.data)
+  }
 
   const lookupReferer = async (username: any) => {
       try {
@@ -126,6 +139,10 @@ const CreateProfile = () => {
   }, []);
 
   const validateFields = () => {
+    if(membershipStatus === "expired") {
+        return true
+    }
+
     if (!profileInfo) return;
 
     if (referer == "") {
@@ -186,7 +203,7 @@ const CreateProfile = () => {
     return true;
   };
 
-  const submitForm = React.useCallback(async () => {
+  const submitForm = React.useCallback(async (membership: any, membershipType:any, price: any) => {
     if (
       !validateFields() ||
       !profileInfo ||
@@ -194,6 +211,29 @@ const CreateProfile = () => {
     ) {
       return;
     }
+
+
+    if (membershipStatus == "active") {
+        createMessage("You already have membership", "error");
+        return
+    }
+
+    if (membershipStatus == "expired") {
+      await buyMembership({
+        wallet,
+        profileInfo,
+        image,
+        form,
+        preview,
+        parentProfile: new PublicKey(referer),
+        membership,
+        membershipType,
+        price
+      });
+      createMessage("Your membership is updated", "success");
+      return
+    }
+
 
     createMessage("", "");
 
@@ -219,7 +259,10 @@ const CreateProfile = () => {
       image,
       form,
       preview,
-      parentProfile: new PublicKey(referer)
+      parentProfile: new PublicKey(referer),
+      membership,
+      membershipType,
+      price
     });
 
     createMessage(result.message, result.type);
@@ -400,23 +443,56 @@ const CreateProfile = () => {
 
 
             <div className="mt-10">
+              <div className="membership-box flex grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                   <div className="membership-item border border-[#ffffff] border-opacity-20 rounded-md backdrop-container p-5">
+                       <h3 className="text-white font-goudy font-normal text-center">Creator</h3>
+                        <div className="flex justify-center item-centerv gap-6 mt-5">
+                            <Button
+                              isLoading={isLoading}
+                              isPrimary
+                              title="$24/Month"
+                              size="large"
+                              action={()=>{submitForm("creator", "monthly", 24)}}
+                              disabled={isLoading}
+                            />
+                            <Button
+                              isLoading={isLoading}
+                              isPrimary
+                              title="$180/Year"
+                              size="large"
+                              action={()=>{submitForm("creator", "yearly", 180)}}
+                              disabled={isLoading}
+                            />
+                        </div>
+                   </div>
+                   <div className="membership-item membership-item border border-[#ffffff] border-opacity-20 rounded-md backdrop-container p-5">
+                        <h3 className="text-white font-goudy font-normal text-center">Enjoyer</h3>
+                        <div className="flex justify-center item-centerv gap-6 mt-5">
+                            <Button
+                              isLoading={isLoading}
+                              isPrimary
+                              title="$15/Month"
+                              size="large"
+                              action={()=>{submitForm("enjoyer", "monthly", 15)}}
+                              disabled={isLoading}
+                            />
+                            <Button
+                              isLoading={isLoading}
+                              isPrimary
+                              title="$90/Year"
+                              size="large"
+                              action={()=>{submitForm("enjoyer", "yearly", 90)}}
+                              disabled={isLoading}
+                            />
+                        </div>
+                   </div>
+              </div>
               <div className="flex justify-center items-center space-x-4">
                <button className="btn btn-outline text-white border-white hover:bg-white hover:text-black" onClick={skipStep}>Skip</button>
-               <div>
-                <Button
-                  isLoading={isLoading}
-                  isPrimary
-                  title="Mint Your Profile"
-                  size="large"
-                  action={submitForm}
-                  disabled={isLoading}
-                />
-               </div>
-
               </div>
 
               <div className="flex flex-col justify-center items-center mt-5">
-                <p className="text-sm text-white">Price: 8 USDC</p>
+
                 <p className="text-tiny text-white">
                   plus a small amount of SOL for gas fees
                 </p>

@@ -91,6 +91,7 @@ const Header = () => {
   const [community] = useAtom(currentGroupCommunity);
 
   const param = searchParams.get("refer");
+   const [membershipStatus, setMembershipStatus] = React.useState("na")
 
   React.useEffect(() => {
     if (param) {
@@ -440,6 +441,7 @@ const Header = () => {
     )
       return;
     fetchAllBalances();
+    checkMembershipStatus()
   }, [wallet]);
 
   React.useEffect(() => {
@@ -530,6 +532,11 @@ const Header = () => {
     (pathname === "/" && !isUserAuthenticated)
   ) {
     return <></>;
+  }
+
+  const checkMembershipStatus = async()=> {
+    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    setMembershipStatus(membershipInfo.data)
   }
 
   return (
@@ -675,6 +682,16 @@ const Header = () => {
           message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
         />
       )}
+      {membershipStatus === "expired" &&
+        <div className="cursor-pointer" onClick={()=>{
+           router.push("/create/profile");
+        }}>
+          <MessageBanner
+            type="error"
+            message="Your membership is expired. pls upgrade"
+          />
+        </div>
+      }
     </header>
   );
 };

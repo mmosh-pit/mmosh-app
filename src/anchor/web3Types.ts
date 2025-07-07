@@ -58,6 +58,7 @@ export type _MintProfile= {
   parentProfile: string | web3.PublicKey;
   genesisProfile: string | web3.PublicKey;
   commonLut: web3.PublicKey;
+  price: number
 };
 
 

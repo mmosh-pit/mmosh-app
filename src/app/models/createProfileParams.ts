@@ -9,5 +9,8 @@ export type CreateProfileParams = {
   image: File | null;
   preview: string;
   wallet: FrostWallet;
-  parentProfile: PublicKey
+  parentProfile: PublicKey,
+  membership: string,
+  membershipType: string,
+  price: number
 };

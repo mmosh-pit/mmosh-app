@@ -287,7 +287,7 @@ const Step4 = () => {
       });
 
       setTimeout(() => {
-        router.replace(`/chat`);
+        router.replace(`/bots`);
       }, 5000);
     }
     setIsLoading(false);
@@ -343,7 +343,7 @@ const Step4 = () => {
       createMessage("Your guest data has been successfully saved!", "success");
 
       setTimeout(() => {
-        router.replace(`/chat`);
+        router.replace(`/bots`);
       }, 5000);
     } catch (err) {
       // TODO add logic to remove image

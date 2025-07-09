@@ -6,12 +6,57 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 
 const LaunchPad = () => {
-  const wallet: any = useWallet();
+    const wallet: any = useWallet();
 
   const [countDownDate, setCountDownDate] = useState(0);
   const [countDown, setCountDown] = useState(0);
-  const [projectDetail, setProjectDetail] = useState<any>(null);
-  const [projectLoading, setProjectLoading] = useState(true);
+  const [presaleDetail, setPresaleDetail] = useState<any>(
+    [
+      {
+        coinDetail: {
+          coingeckoid: "",
+          created_date: "2025-07-08T13:52:33.820Z",
+          creator: "8aJC2u7SHMyG454rBoFWtx6ereFVEZDtRTLSQs9D7eGu",
+          decimals: 9,
+          desc: "new desc",
+          image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/8a1c86d5-5be6-4968-b731-22cad558c423-Tue%20Jul%2008%202025%2016%3A54%3A54%20GMT%2B0530%20(India%20Standard%20Time).png",
+          key: "2mFeUAoGnFaKGuwZYvF6xqiApeEpjseaaGGRRGSELizX",
+          name: "new token",
+          presalediscount: [],
+          pricepercentage: 0,
+          prices: [],
+          projectkey: "45svpLnzo4s1YcPozGwd35KnCSeK37Ao6nnB7E85m25t",
+          supply: 100000,
+          symbol: "new token",
+          updated_date: "2025-07-08T13:52:33.820Z",
+          _id: "686d22a1833ddc0c7db45c0c",
+        },
+        presaleDetail: {
+          coinId: "686d22a1833ddc0c7db45c0c",
+          created_date: "2025-07-08T13:52:34.574Z",
+          launchMarketCap: 10000,
+          launchPrice: 1,
+          lockPeriod: "Sat, 16 Aug 2025 01:26:10 GMT",
+          presaleMaximum: "1000",
+          presaleMinimum: "100",
+          presaleStartDate: "Sun, 26 May 2002 18:30:00 GMT",
+          purchaseMaximum: "2000",
+          purchaseMinimum: "200",
+          totalSold: 0,
+          updated_date: "2025-07-08T13:52:34.574Z",
+          userId: "8aJC2u7SHMyG454rBoFWtx6ereFVEZDtRTLSQs9D7eGu",
+          _id: "686d22a2833ddc0c7db45c0d",
+          discount: [
+            { value: '100', percentage: '10' },
+            { value: '100', percentage: '10' },
+            { value: '100', percentage: '10' },
+            { value: '100', percentage: '10' },
+          ]
+        }
+      }
+    ]
+  )
+  const [projectLoading, setProjectLoading] = useState(false);
   const [creator, setCreator] = useState("");
 
   const timerData = [
@@ -31,19 +76,18 @@ const LaunchPad = () => {
 
     return () => clearInterval(interval);
   }, [countDownDate]);
-  useEffect(() => {
-    if (wallet) {
-      getProjectDetailFromAPI();
-    }
-  }, [wallet])
+    useEffect(() => {
+      if (wallet) {
+        getProjectDetailFromAPI();
+      }
+    }, [wallet])
 
   const getProjectDetailFromAPI = async () => {
     try {
       setProjectLoading(true)
       const presaleDetail = await axios.get(`/api/project/get-presale-details?userId=${wallet.publicKey}`);
       if (presaleDetail.data.status) {
-        setProjectDetail(presaleDetail.data.result);
-        console.log("===== PRESALE DETAILS API RESULT =====", presaleDetail.data.result);
+        setPresaleDetail(presaleDetail.data.result);
         const creatorName = await getUserName(presaleDetail.data.result[0].presaleDetail.userId);
         setCreator(creatorName == "" ? presaleDetail.data.result[0].presaleDetail.userId.substring(0, 5) + "..." + presaleDetail.data.result[0].presaleDetail.userId.substring(presaleDetail.data.result[0].presaleDetail.userId.length - 5) : creatorName);
         setCountDownDate(new Date(presaleDetail.data.result[0].presaleDetail.lockPeriod).getTime());
@@ -52,7 +96,7 @@ const LaunchPad = () => {
       setProjectLoading(false);
     } catch (error) {
       setProjectLoading(false);
-      setProjectDetail(null);
+      setPresaleDetail(null);
     }
   }
 
@@ -83,6 +127,56 @@ const LaunchPad = () => {
     return timeUnits[type];
   };
 
+  const getTrancheLabel = (index: number) => {
+    const labels = ["1st Tranche", "2nd Tranche", "3rd Tranche", "4th Tranche"];
+    return labels[index];
+  };
+
+  const renderTranche = (data: any) => {
+    let available: number = 0;
+    console.log("RENDER PRE SALE DETAILS", data);
+    for (let index = 0; index < data.presaleDetail.discount.length; index++) {
+      const element = data.presaleDetail.discount[index];
+      available = Number(element.value);
+      if (available - data.presaleDetail.totalSold > 0) {
+        return (
+          <div className="w-[55%] pl-2 pt-[2px]">
+            <p className="text-header-small-font-size font-[800] mb-2">{getTrancheLabel(index)}</p>
+
+            <div className="grid grid-cols-3 gap-[6px] mb-[6px]">
+              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
+                <p className="text-white font-[700] text-para-font-size">Available</p>
+                <p className="text-white font-normal text-para-font-size mt-[2px]">{available - data.presaleDetail.totalSold}</p>
+              </div>
+              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
+                <p className="text-white font-[700] text-para-font-size">Purchased</p>
+                <p className="text-white font-normal text-para-font-size mt-[2px]">{Number(element.value) - (available - data.presaleDetail.totalSold)}</p>
+              </div>
+              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
+                <p className="text-white font-[700] text-para-font-size">Discount</p>
+                <p className="text-white font-normal text-para-font-size mt-[2px]">{element.percentage}%</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-[6px]">
+              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
+                <p className="text-white font-[700] text-para-font-size leading-tight">Maximum Supply</p>
+                <p className="text-white font-normal text-para-font-size mt-[2px]">{data.coinDetail.supply} {data.coinDetail.symbol}</p>
+              </div>
+              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
+                <p className="text-white font-[700] text-para-font-size leading-tight">Launch Price <span className="text-small-font-size font-[400]">(per coin)</span></p>
+                <p className="text-white font-normal text-para-font-size mt-[2px]">{data.presaleDetail.launchPrice} USDC</p>
+              </div>
+              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
+                <p className="text-white font-[700] text-para-font-size leading-tight">Launch Market Cap</p>
+                <p className="text-white font-normal text-para-font-size mt-[2px]">{data.presaleDetail.launchMarketCap} USDC</p>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#010117] flex flex-col items-center pt-10 pb-12">
       <div className="w-full max-w-[1280px] px-4">
@@ -106,106 +200,76 @@ const LaunchPad = () => {
           ))}
         </div>
 
-        <div className="relative w-[392px] mx-auto mt-8 bg-[#181747] border border-[#3F3D84] rounded-[14px] text-white shadow-md overflow-hidden backdrop-blur-sm">
-          <div className="absolute -left-5 top-[-32px] z-10">
-            <div className="w-[64px] h-[64px] rounded-full border-2 border-[#0A34C4] bg-white shadow-md overflow-hidden">
-              <img
-                src="https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149622021.jpg"
-                alt="Frankie"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="h-[40px] w-full bg-[#0A34C4] rounded-t-[14px] pl-[80px] pr-3 flex items-center justify-between">
-            <div className="flex flex-col font-poppins">
-              <div className="text-sub-title-font-size font-[500] underline">
-                Frank <span className="text-[#C2C2C2]">• FRAKIE</span>
-              </div>
-              <div className="text-para-font-size text-[#3C99FF] underline cursor-pointer">
-                Bot Frank
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              {timerData.map((item, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-base font-bold">{item.value}</div>
-                  <div className="text-para-font-size text-white/70">{item.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex w-full px-3 pt-3 pb-4">
-            <div className="w-[45%] flex flex-col items-center pt-1">
-              <div className="w-[180px] mt-[6px] bg-[#1A184D] rounded-[6px] p-[5px]">
-                <label className="text-header-small-font-size font-[800] font-poppins">Amount</label>
-                <div className="flex items-center bg-[#0E0C2C] border border-[#FF00E4] px-[8px] py-[3px] rounded-[4px] mb-[4px]">
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    className="bg-transparent text-white text-para-font-size w-full outline-none placeholder-gray-500 font-poppins"
-                  />
-                  <span className="ml-1 text-para-font-size font-poppins">USDC</span>
-                </div>
-                <div className="text-header-small-font-size text-right font-poppins mb-[4px]">
-                  0.00 <span>FRANKIE</span>
-                </div>
-                <div className="text-small-font-size text-[#CFCFCF] font-poppins mt-[6px] leading-snug">
-                  Minimum purchase: 1.000 USDC<br />
-                  Maximum purchase: 12.000 USDC
-                </div>
-              </div>
-
-              <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 mt-[8px] rounded-[3px] text-white text-small-font-size font-[800] font-poppins leading-[21px]">
-                Buy
-              </button>
-
-              <div className="text-[#CFCFCF] text-[4.4px] font-poppins font-[500] tracking-[-0.05em] leading-[100%] text-center mt-[2px]">
-                Plus a small amount of SOL for gas fees
-              </div>
-            </div>
-
-            <div className="w-[55%] pl-2 pt-[2px]">
-              <p className="text-header-small-font-size font-[800] mb-2">1st Tranche</p>
-
-              <div className="grid grid-cols-3 gap-[6px] mb-[6px]">
-                {[
-                  { label: "Available", value: "247" },
-                  { label: "Purchased", value: "419.71" },
-                  { label: "Discount", value: "13 %" },
-                ].map((item, idx) => (
-                  <div key={idx} className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                    <p className="text-white font-[700] text-para-font-size">{item.label}</p>
-                    <p className="text-white font-normal text-para-font-size mt-[2px]">{item.value}</p>
+        {presaleDetail && (
+          <>
+            {presaleDetail.map((presale: any, index: number) => (
+              <div key={index} className="relative w-[392px] mx-auto mt-8 bg-[#181747] border border-[#3F3D84] rounded-[14px] text-white shadow-md overflow-hidden backdrop-blur-sm">
+                <div className="absolute -left-0 top-[2px] z-10">
+                  <div className="w-[64px] h-[64px] rounded-full border-2 border-[#040432] bg-white shadow-md overflow-hidden">
+                    <img
+                      src="https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149622021.jpg"
+                      alt="Frankie"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                ))}
-              </div>
+                </div>
 
-              <div className="grid grid-cols-3 gap-[6px]">
-                {[
-                  { label: "Maximum Supply", value: "23.56 FRAKIE" },
-                  {
-                    label: (
-                      <>
-                        Launch Price <span className="text-small-font-size font-[400]">(per coin)</span>
-                      </>
-                    ),
-                    value: "23.56 USDC",
-                  },
-                  { label: "Launch Market Cap", value: "7,823.56 USDC" },
-                ].map((item, idx) => (
-                  <div key={idx} className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                    <p className="text-white font-[700] text-para-font-size leading-tight">{item.label}</p>
-                    <p className="text-white font-normal text-para-font-size mt-[2px]">{item.value}</p>
+                <div className="h-[40px] w-full bg-[#0A34C4] rounded-t-[14px] pl-[80px] pr-3 flex items-center justify-between">
+                  <div className="flex flex-col font-poppins">
+                    <div className="text-sub-title-font-size font-[500] underline">
+                      {presale.coinDetail.name} <span className="text-[#C2C2C2]">• {presale.coinDetail.symbol}</span>
+                    </div>
+                    <div className="text-para-font-size text-[#3C99FF] underline cursor-pointer">
+                      {creator}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
 
+                  <div className="flex gap-3">
+                    {timerData.map((item, i) => (
+                      <div key={i} className="text-center">
+                        <div className="text-base font-bold">{item.value}</div>
+                        <div className="text-para-font-size text-white/70">{item.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex w-full px-3 pt-3 pb-4">
+                  <div className="w-[45%] flex flex-col items-center pt-1">
+                    <div className="w-[79px] h-[60px] mt-[6px] bg-[#1A184D] rounded-[6px] p-[5px]">
+
+                      <label className=" absolute top-[78px] left-[10px] text-[9px] leading-[100%] tracking-[-0.04em] text-white font-poppins font-extrabold">Amount</label>
+                      <div className="flex items-center w-[49px] h-[17px] px-[4px] rounded-[3px] border-[0.4px] border-[#FF8FE714] overflow-hidden">
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          className="bg-transparent text-white text-[8px] leading-[11px] tracking-[0em] font-poppins font-normal w-[26px] outline-none pr-[1px] pt-[5px]"
+                        />
+                        <span className="ml-1 text-para-font-size font-poppins">USDC</span>
+                      </div>
+                      <div className="text-header-small-font-size text-right font-poppins mb-[4px]">
+                        0.00 <span>FRANKIE</span>
+                      </div>
+                      <div className="text-small-font-size text-[#CFCFCF] font-poppins mt-[6px] leading-snug">
+                        Minimum purchase: {presale.presaleDetail.purchaseMinimum} USDC<br />
+                        Maximum purchase: {presale.presaleDetail.purchaseMaximum} USDC
+                      </div>
+                    </div>
+
+                    <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 mt-[8px] rounded-[3px] text-white text-small-font-size font-[800] font-poppins leading-[21px]">
+                      Buy
+                    </button>
+
+                    <div className="text-[#CFCFCF] text-[4.4px] font-poppins font-[500] tracking-[-0.05em] leading-[100%] text-center mt-[2px]">
+                      Plus a small amount of SOL for gas fees
+                    </div>
+                  </div>
+                  {renderTranche(presale)}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

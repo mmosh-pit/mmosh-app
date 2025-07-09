@@ -373,3 +373,38 @@ export const buyMembership = async ({
     };
   }
 };
+
+export const trasferUsdCoin = async (wallet: any, receiver: string, amount: number) => {
+  try {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet, {
+      preflightCommitment: "processed",
+    });
+    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+    const res = await userConn.trasferUsdCoin({
+      recipient: { receiver, amount },
+      sender: wallet.publicKey
+    });
+    console.log("===== RES =====", res);
+    if (res.Ok) {
+      return {
+        type: "success",
+        message: "Congrats! The amount has been transferred successfully.",
+        data: res.Ok,
+      };
+    } else {
+      return {
+        type: "error",
+        message: "We’re sorry, there was an error while trying to transfer USDC. Check your wallet and try again.",
+      };
+    }
+  } catch (error) {
+    console.log("===== TRASFER USDC ERROR =====", error);
+    return {
+      type: "error",
+      message: "Something wrong happened, please contact support",
+    };
+  }
+};

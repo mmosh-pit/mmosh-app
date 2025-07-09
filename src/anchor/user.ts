@@ -18,7 +18,7 @@ import Config from "./web3Config.json";
 import { BaseMpl } from "./base/baseMpl";
 import { web3Consts } from "./web3Consts";
 import { getAssociatedTokenAddressSync, unpackAccount } from "forge-spl-token";
-import { Metaplex } from "@metaplex-foundation/js";
+import { Metaplex, PublicKey } from "@metaplex-foundation/js";
 import { BaseSpl, UpdateToken } from "./base/baseSpl";
 import axios from "axios";
 import { getAccount } from "forge-spl-token";
@@ -989,6 +989,56 @@ export class Connectivity {
       return { Err: error };
     }
   }
+  async trasferUsdCoin(
+    input: {
+        recipient: { receiver: string; amount: number },
+        sender: PublicKey
+    }
+): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
+    try {
+        this.reinit();
+        this.baseSpl.__reinit();
+        const user = this.provider.publicKey;
+        if (!user) throw "Wallet not found";
+
+        const { recipient, sender } = input;
+        this.txis = [];
+        
+        const createTransfer = await this.baseSpl.transfer_token_modified({
+          mint: usdcToken,
+          sender: new anchor.web3.PublicKey(sender),
+          receiver: new anchor.web3.PublicKey(recipient.receiver),
+          init_if_needed: true,
+          amount: Math.ceil(recipient.amount * (10**6)),
+        });
+
+        for (let i = 0; i < createTransfer.length; i++) {
+          this.txis.push(createTransfer[i]);
+        }
+
+        const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+        const message = new web3.TransactionMessage({
+            payerKey: this.provider.publicKey,
+            recentBlockhash: blockhash,
+            instructions: [...this.txis],
+        }).compileToV0Message();
+
+        const tx = new web3.VersionedTransaction(message);
+        const signature = await this.provider.sendAndConfirm(tx as any);
+        console.log("===== SIGNATURE =====", signature);
+
+        return {
+            Ok: {
+                signature,
+                info: { txSignature: signature },
+            },
+        };
+    } catch (error) {
+      console.log("===== ERROR =====", error);
+        // console.error({ error });
+        return { Err: error };
+    }
+}
 
   async registerCommonLut() {
     const collection = web3Consts.profileCollection;

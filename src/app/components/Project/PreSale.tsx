@@ -201,7 +201,7 @@ export const PreSale = (props: PresaleProps) => {
         };
         console.log("===== PRE SALE START =====", preSale);
 
-        if (validate(values)) {
+        if (validate(values, true)) {
             // ----- lookup period -----
             const months = convertMonthsToMinutes(Number(preSalePeriod[0].value));
             const weeks = convertWeeksToMinutes(Number(preSalePeriod[1].value));
@@ -217,14 +217,14 @@ export const PreSale = (props: PresaleProps) => {
                 presaleStartDate: new Date(Number(startDate[2]), Number(startDate[1]) - 1, Number(startDate[0])).toUTCString(),
                 lockPeriod: convertMinutesToDate(totalInMinutes),
                 discount: discount,
-                presaleMinium: preSale[0].value,
-                presaleMaxium: preSale[1].value,
+                presaleMinimum: preSale[0].value,
+                presaleMaximum: preSale[1].value,
                 purchaseMinimum: preSale[2].value,
                 purchaseMaximum: preSale[3].value,
                 totalSold: 0,
             }
             localStorage.setItem("coinstep2", JSON.stringify(fields));
-            onMenuChange("presale")
+            onMenuChange("launch")
         }
     }
 
@@ -234,32 +234,30 @@ export const PreSale = (props: PresaleProps) => {
         return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
     };
 
-    const validate = (values: any): boolean => {
+    const validate = (values: any, isMessage: boolean): boolean => {
         const newErrors: Record<string, string> = {};
         // ---- Discounts Validation ----
         const discounts = values?.discounts || [];
         let totalDiscountPercentage = 0;
-        let previousPercentage = Number(discounts[0]?.discountPercentage || 0);
+        let previousPercentage = Number(discounts[0]?.percentage || 0);
 
         for (let i = 0; i < discounts.length; i++) {
-            const current = Number(discounts[i].discountPercentage);
+            const current = Number(discounts[i].percentage);
             totalDiscountPercentage += current;
 
             if (i > 0 && previousPercentage < current) {
-                newErrors.discount = "Discount percentage order should be higher to lower.";
-                break;
+                if (isMessage) {
+                    createMessage("Discount percentage order should be higher to lower.", "danger-container");
+                }
+                return false;
             }
             previousPercentage = current;
-        }
-
-        if (totalDiscountPercentage > 100) {
-            newErrors.discount = "Discount percentage should be less than or equal to 100%.";
         }
 
         // ---- Presale Details Validation ----
         for (const { key, value, label } of values.presaleDetails || []) {
             if (!/^\d+$/.test(value)) {
-                newErrors[key] = `Enter a valid ${label} value.`;
+                createMessage(`Enter a valid ${label} value.`, "danger-container");
             }
         }
 
@@ -267,15 +265,20 @@ export const PreSale = (props: PresaleProps) => {
         const [month, week, day, hour, minute] = values.preSalePeriod || [];
 
         if (Number(month?.value) > 12) {
-            newErrors.preSalePeriod = "Invalid month";
+            createMessage("Invalid month", "danger-container");
+            return false;
         } else if (Number(week?.value) > 4) {
-            newErrors.preSalePeriod = "Invalid week";
+            createMessage("Invalid week", "danger-container");
+            return false;
         } else if (Number(day?.value) > getDaysInCurrentMonth(new Date().getFullYear(), new Date().getMonth(), new Date())) {
-            newErrors.preSalePeriod = "Invalid days";
+            createMessage("Invalid days", "danger-container");
+            return false;
         } else if (Number(hour?.value) > 12) {
-            newErrors.preSalePeriod = "Invalid hour";
+            createMessage("Invalid hour", "danger-container");
+            return false;
         } else if (Number(minute?.value) > 59) {
-            newErrors.preSalePeriod = "Invalid minutes";
+            createMessage("Invalid minutes", "danger-container");
+            return false;
         }
 
         // ---- Pre-sale start time Validation ----
@@ -283,18 +286,20 @@ export const PreSale = (props: PresaleProps) => {
 
         // const startTime = time.split(":");
         // const startDate = date.split("/");
-        // if (Number(startDate[2]) < new Date().getFullYear() || Number(startDate[2]) > new Date().getMonth() || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date())) {
-        //     newErrors.preSalePeriod = "Invalid date";
+        // if (Number(startDate[2]) < new Date().getFullYear() || Number(startDate[1]) > new Date().getMonth() || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date())) {
+        //     createMessage("Invalid date", "danger-container");
+        //     return false;
         // } else if (Number(startTime[0]) > 12) {
-        //     newErrors.preSalePeriod = "Invalid hour";
+        //     createMessage("Invalid hour", "danger-container");
+        //     return false;
         // } else if (Number(startTime[1]) > 59) {
-        //     newErrors.preSalePeriod = "Invalid minutes";
+        //     createMessage("Invalid minutes", "danger-container");
+        //     return false;
         // } else if (timePeriod !== "am" && timePeriod !== "pm") {
-        //     newErrors.preSalePeriod = "Invalid time format";
+        //     createMessage("Invalid time format", "danger-container");
+        //     return false;
         // }
-        // setErrors(newErrors);
         console.log("----- PRE SALE VALIDATION ERROR -----", newErrors);
-
         return Object.keys(newErrors).length === 0;
     };
 
@@ -442,7 +447,7 @@ export const PreSale = (props: PresaleProps) => {
                     >
                         Talk to Kip, the Kinship Bot
                         <img
-                            src="/images/hugeicons_chat-bot.png"
+                            src="/images/chat-bot.png"
                             alt="chat bot"
                             className="w-[18px] h-[18px]"
                         />

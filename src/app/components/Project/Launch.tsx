@@ -377,6 +377,34 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
                 type: "presale"
             });
             console.log("stake result ", stakeres);
+            // coinDetail
+            let mintingParams = {
+                name: coinDetail.name,
+                symbol: coinDetail.symbol,
+                image: coinDetail.image.preview,
+                key: targetMint,
+                desc: coinDetail.desc,
+                decimals: 9,
+                creator: wallet.publicKey.toBase58(),
+                projectkey: projectKeyPair.publicKey,
+                supply: coinDetail.supply
+            }
+            const result_ = await axios.post("/api/project/save-coins", mintingParams);
+            let presaleParams = {
+                presaleStartDate: presaleDetail.presaleStartDate,
+                lockPeriod: presaleDetail.lockPeriod,
+                discount: presaleDetail.discount,
+                presaleMinimum: presaleDetail.presaleMinimum,
+                presaleMaximum: presaleDetail.presaleMaximum,
+                purchaseMinimum: presaleDetail.purchaseMinimum,
+                purchaseMaximum: presaleDetail.purchaseMaximum,
+                totalSold: 0,
+                launchPrice: fields.presalePrice,
+                launchMarketCap: fields.curvesupply,
+                userId: wallet.publicKey,
+                coinId: result_.data.id
+            }
+            const result = await axios.post("/api/project/save-presale-details", presaleParams);
         }
 
 

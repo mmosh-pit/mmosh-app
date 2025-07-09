@@ -427,18 +427,22 @@ const Profile = ({ username }: { username: any }) => {
           </div>
         </div>
 
-        <ProfileFilters />
+        <ProfileFilters isGuest={!userData.profilenft} />
 
-        {selectedFilter === 1 && (
-          <GuildList
-            profilenft={userData.profilenft}
-            userName={
-              userData.profile.username !== ""
-                ? userData.profile.username
-                : userData.guest_data.username
-            }
-            isMyProfile={isMyProfile}
-          />
+        {!!userData.profilenft && (
+          <>
+            {selectedFilter === 1 && (
+              <GuildList
+                profilenft={userData.profilenft}
+                userName={
+                  userData.profile.username !== ""
+                    ? userData.profile.username
+                    : userData.guest_data.username
+                }
+                isMyProfile={isMyProfile}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

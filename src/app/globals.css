@@ -1202,3 +1202,23 @@ a:hover {
 .guest-btn {
   background: linear-gradient(107.33deg, #d858bc 8.67%, #3c00ff 100.22%);
 }
+
+.members-filter-bar {
+  padding: 0.125rem;
+  border-radius: 0.5rem;
+
+  background: linear-gradient(
+    96.69deg,
+    rgba(255, 41, 195, 0.5) 0%,
+    rgba(7, 101, 255, 0.5) 100%
+  );
+}
+
+.members-selected-filter {
+  padding: 0.125rem;
+  border-radius: 0.5rem;
+
+  background: linear-gradient(96.69deg, #ff29c3 0%, #0765ff 100%);
+
+  backdrop-filter: blur(6px);
+}

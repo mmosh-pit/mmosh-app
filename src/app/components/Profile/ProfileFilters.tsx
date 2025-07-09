@@ -3,7 +3,11 @@ import Radio from "../common/Radio";
 import { useAtom } from "jotai";
 import { lineage, profileFilter } from "@/app/store";
 
-const ProfileFilters = () => {
+type Props = {
+  isGuest: boolean;
+};
+
+const ProfileFilters = ({ isGuest }: Props) => {
   const [selectedFilter, setSelectedFilter] = useAtom(profileFilter);
   const [lineageOptions, setLineageOptions] = useAtom(lineage);
 
@@ -121,29 +125,33 @@ const ProfileFilters = () => {
 
   return (
     <div className="w-full flex flex-col bg-[#141343] rounded-lg px-12 py-6">
-      <div className="flex items-center">
-        <button onClick={() => setSelectedFilter(0)}>
-          <p
-            className={`text-lg text-white ${selectedFilter === 0 && "underline font-bold"}`}
-          >
-            Bots
-          </p>
-        </button>
+      {!isGuest && (
+        <>
+          <div className="flex items-center">
+            <button onClick={() => setSelectedFilter(0)}>
+              <p
+                className={`text-lg text-white ${selectedFilter === 0 && "underline font-bold"}`}
+              >
+                Bots
+              </p>
+            </button>
 
-        <div className="mx-8" />
+            <div className="mx-8" />
 
-        <button onClick={() => setSelectedFilter(1)}>
-          <p
-            className={`text-lg text-white ${selectedFilter === 1 && "underline font-bold"}`}
-          >
-            Connections
-          </p>
-        </button>
-      </div>
+            <button onClick={() => setSelectedFilter(1)}>
+              <p
+                className={`text-lg text-white ${selectedFilter === 1 && "underline font-bold"}`}
+              >
+                Connections
+              </p>
+            </button>
+          </div>
 
-      <div className="my-4" />
+          <div className="my-4" />
 
-      {getFilters()}
+          {getFilters()}
+        </>
+      )}
     </div>
   );
 };

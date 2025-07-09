@@ -75,8 +75,24 @@ const ProfileForm = () => {
         host: "",
       });
 
-      setPreview(profileData?.image ?? guestData?.picture ?? "");
-      setImagePreview(profileData?.banner ?? guestData?.banner ?? "");
+      let previewPictureImage = preview;
+
+      if (!!profileData?.image) {
+        previewPictureImage = profileData!.image;
+      } else if (!!guestData?.picture) {
+        previewPictureImage = guestData!.picture;
+      }
+
+      let previewBannerImage = "";
+
+      if (!!profileData?.banner) {
+        previewBannerImage = profileData!.banner;
+      } else if (!!guestData?.banner) {
+        previewBannerImage = guestData!.banner;
+      }
+
+      setPreview(previewPictureImage);
+      setImagePreview(previewBannerImage);
       setHasProfile(currentUser!.profilenft !== "");
       setHasReferer(!!currentUser!.referred_by);
     }

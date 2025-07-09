@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         created_date: new Date(),
         updated_date: new Date()
     });
-    console.log("===== API RESULT CHECK =====", result.insertedId.toString());
+
     return NextResponse.json({
       id: result.insertedId.toString()
     }, { status: 200 });

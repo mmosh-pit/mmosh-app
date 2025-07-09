@@ -4,9 +4,10 @@ import useWallet from "@/utils/wallet";
 import axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { trasferUsdCoin } from "../lib/forge/createProfile";
 
 const LaunchPad = () => {
-    const wallet: any = useWallet();
+  const wallet: any = useWallet();
 
   const [countDownDate, setCountDownDate] = useState(0);
   const [countDown, setCountDown] = useState(0);
@@ -58,6 +59,8 @@ const LaunchPad = () => {
   )
   const [projectLoading, setProjectLoading] = useState(false);
   const [creator, setCreator] = useState("");
+  const [amount, setAmount] = useState("");
+  const [token, setToken] = useState(0);
 
   const timerData = [
     { value: "13", label: "Days" },
@@ -76,11 +79,11 @@ const LaunchPad = () => {
 
     return () => clearInterval(interval);
   }, [countDownDate]);
-    useEffect(() => {
-      if (wallet) {
-        getProjectDetailFromAPI();
-      }
-    }, [wallet])
+  useEffect(() => {
+    if (wallet) {
+      getProjectDetailFromAPI();
+    }
+  }, [wallet])
 
   const getProjectDetailFromAPI = async () => {
     try {
@@ -98,6 +101,15 @@ const LaunchPad = () => {
       setProjectLoading(false);
       setPresaleDetail(null);
     }
+  }
+  const buyToken = async (tokenInfo: any) => {
+    const result = await trasferUsdCoin(wallet, tokenInfo.presaleDetail.userId, Number(amount));
+    console.log("==== TRANSFER USD COIN RESULT =====", result);
+  }
+
+  const handleAmount = (event: React.ChangeEvent<HTMLInputElement>, tokenInfo: any) => {
+    setAmount(event.target.value);
+    setToken(Number(event.target.value) / tokenInfo.presaleDetail.launchPrice);
   }
 
   const getUserName = async (pubKey: any) => {
@@ -203,9 +215,9 @@ const LaunchPad = () => {
         {presaleDetail && (
           <>
             {presaleDetail.map((presale: any, index: number) => (
-              <div key={index} className="relative w-[392px] mx-auto mt-8 bg-[#181747] border border-[#3F3D84] rounded-[14px] text-white shadow-md overflow-hidden backdrop-blur-sm">
-                <div className="absolute -left-0 top-[2px] z-10">
-                  <div className="w-[64px] h-[64px] rounded-full border-2 border-[#040432] bg-white shadow-md overflow-hidden">
+              <div key={index} className="relative w-[392px] mx-auto mt-[50px] bg-[#181747] border border-[#1C1A584D] rounded-[14px] text-white shadow-md overflow-hidden backdrop-blur-sm font-poppins">
+                <div className="absolute left-[8.29px] -top-[38px] z-20">
+                  <div className="w-[85.6px] h-[78px] rounded-[72px] border-[2px] border-[#040432] overflow-hidden bg-white shadow-md">
                     <img
                       src="https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149622021.jpg"
                       alt="Frankie"
@@ -215,57 +227,76 @@ const LaunchPad = () => {
                 </div>
 
                 <div className="h-[40px] w-full bg-[#0A34C4] rounded-t-[14px] pl-[80px] pr-3 flex items-center justify-between">
-                  <div className="flex flex-col font-poppins">
-                    <div className="text-sub-title-font-size font-[500] underline">
-                      {presale.coinDetail.name} <span className="text-[#C2C2C2]">• {presale.coinDetail.symbol}</span>
-                    </div>
-                    <div className="text-para-font-size text-[#3C99FF] underline cursor-pointer">
-                      {creator}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    {timerData.map((item, i) => (
-                      <div key={i} className="text-center">
-                        <div className="text-base font-bold">{item.value}</div>
-                        <div className="text-para-font-size text-white/70">{item.label}</div>
+                  <div className="flex flex-col">
+                    <div className="flex flex-col font-poppins">
+                      <div className="text-sub-title-font-size font-[500] underline">
+                        {presale.coinDetail.name} <span className="text-[#C2C2C2]">• {presale.coinDetail.symbol}</span>
                       </div>
-                    ))}
+                      <div className="text-para-font-size text-[#3C99FF] underline cursor-pointer">
+                        {creator}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      {timerData.map((item, i) => (
+                        <div key={i} className="text-center">
+                          <div className="text-base font-bold">{item.value}</div>
+                          <div className="text-para-font-size text-white/70">{item.label}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex w-full px-3 pt-3 pb-4">
-                  <div className="w-[45%] flex flex-col items-center pt-1">
-                    <div className="w-[79px] h-[60px] mt-[6px] bg-[#1A184D] rounded-[6px] p-[5px]">
+                  <div className="w-[392px] h-[173px] rounded-b-[14px] bg-[#1A184D] border border-[#5a84ff] flex px-3 pt-3 pb-3 text-white font-poppins overflow-hidden">
+                    {/* Left: Amount Column */}
+                    <div className="w-[160px] flex flex-col pr-3">
+                      {/* Label */}
+                      <label className="text-[10px] font-extrabold mb-[2px] leading-none tracking-tight">
+                        Amount
+                      </label>
 
-                      <label className=" absolute top-[78px] left-[10px] text-[9px] leading-[100%] tracking-[-0.04em] text-white font-poppins font-extrabold">Amount</label>
-                      <div className="flex items-center w-[49px] h-[17px] px-[4px] rounded-[3px] border-[0.4px] border-[#FF8FE714] overflow-hidden">
+                      {/* Input */}
+                      <div className="flex items-center mb-[5px]">
                         <input
                           type="number"
                           placeholder="0.00"
-                          className="bg-transparent text-white text-[8px] leading-[11px] tracking-[0em] font-poppins font-normal w-[26px] outline-none pr-[1px] pt-[5px]"
+                          value={amount}
+                          onChange={(event) => handleAmount(event, presale)}
+                          className="w-[70px] h-[24px] px-2 rounded-[4px] border border-[#FF8FE7] bg-[#1A184D] text-white text-[10px] font-normal outline-none pr-1 placeholder-white"
                         />
-                        <span className="ml-1 text-para-font-size font-poppins">USDC</span>
+                        <span className="ml-[4px] text-[7px] text-white">USDC</span>
                       </div>
-                      <div className="text-header-small-font-size text-right font-poppins mb-[4px]">
-                        0.00 <span>FRANKIE</span>
+
+                      {/* Converted token */}
+                      <div className="text-white font-semibold text-[7px] mb-[3px]">
+                        {token} <span className="text-[#CFCFCF]">{presale.coinDetail.symbol}</span>
                       </div>
-                      <div className="text-small-font-size text-[#CFCFCF] font-poppins mt-[6px] leading-snug">
-                        Minimum purchase: {presale.presaleDetail.purchaseMinimum} USDC<br />
-                        Maximum purchase: {presale.presaleDetail.purchaseMaximum} USDC
+
+                      {/* Min/Max Purchase */}
+                      <div className="text-[#CFCFCF] text-[5.4px] leading-[110%] mb-[6px]">
+                        Minimum purchase: 1.000 USDC <br />
+                        Maximum purchase: 12.000 USDC
                       </div>
+
+                      {/* Buy Button */}
+                      <button className="w-[90px] h-[28px] bg-[#FF00AE]/70 rounded-[4px] text-white text-[10px] font-extrabold leading-[28px] mb-[4px]" onClick={() => buyToken(presale)}>
+                        Buy
+                      </button>
+
+                      {/* Gas Fee Note */}
+                      <p className="text-[#CFCFCF] text-[4.4px] leading-[100%] text-center mt-[1px]">
+                        Plus a small amount of SOL for gas fees
+                      </p>
                     </div>
 
-                    <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 mt-[8px] rounded-[3px] text-white text-small-font-size font-[800] font-poppins leading-[21px]">
-                      Buy
-                    </button>
-
-                    <div className="text-[#CFCFCF] text-[4.4px] font-poppins font-[500] tracking-[-0.05em] leading-[100%] text-center mt-[2px]">
-                      Plus a small amount of SOL for gas fees
+                    {/* Right Side - Tranche */}
+                    <div className="flex-1">
+                      {renderTranche(presale)}
                     </div>
                   </div>
-                  {renderTranche(presale)}
                 </div>
+
+
               </div>
             ))}
           </>

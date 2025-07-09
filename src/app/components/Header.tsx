@@ -567,8 +567,11 @@ const Header = () => {
                 className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
                   } cursor-pointer`}
                 onClick={() => {
-                  if (!!currentUser?.guest_data.username) {
-                    router.push(`/${currentUser?.profile.username}`);
+                  if (
+                    !!currentUser?.guest_data.username &&
+                    currentUser?.guest_data.username !== ""
+                  ) {
+                    router.push(`/${currentUser?.guest_data.username}`);
                   }
                 }}
               >

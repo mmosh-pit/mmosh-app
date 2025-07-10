@@ -8,8 +8,9 @@ import { trasferUsdCoin } from "../lib/forge/createProfile";
 import { Connection, Transaction } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Bars } from "react-loader-spinner";
+import { LaunchPad } from "../components/LaunchPad/LaunchPad";
 
-const LaunchPad = () => {
+const LaunchPadVC = () => {
   const wallet: any = useWallet();
 
   const [showMsg, setShowMsg] = useState(false);
@@ -251,120 +252,121 @@ const LaunchPad = () => {
         </div>
       }
       {!projectLoading &&
-        <div className="min-h-screen bg-[#010117] flex flex-col items-center pt-10 pb-12">
-          <div className="w-full max-w-[1280px] px-4">
-            <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
-              Next launch
-            </h2>
+      <LaunchPad presaleDetails={presaleDetail} getCountDownValues={getCountDownValues} creator={creator} buyToken={(presale: any) => buyToken(presale)}  />
+        // <div className="min-h-screen bg-[#010117] flex flex-col items-center pt-10 pb-12">
+        //   <div className="w-full max-w-[1280px] px-4">
+        //     <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
+        //       Next launch
+        //     </h2>
 
-            <div className="flex justify-center items-center gap-5 mt-3">
-              {timerData.map((item, index) => (
-                <div key={index} className="relative flex flex-col items-center w-[71px] h-[64px]">
-                  <span className="text-[54px] leading-[50px] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
-                    {getCountDownValues(countDown, item.label)}
-                  </span>
-                  <span className="text-base text-[#FFFFFFC7] font-avenir font-medium mt-[2px]">
-                    {item.label}
-                  </span>
-                  {index !== timerData.length - 1 && (
-                    <span className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-px h-[60px] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
-                  )}
-                </div>
-              ))}
-            </div>
+        //     <div className="flex justify-center items-center gap-5 mt-3">
+        //       {timerData.map((item, index) => (
+        //         <div key={index} className="relative flex flex-col items-center w-[71px] h-[64px]">
+        //           <span className="text-[54px] leading-[50px] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
+        //             {getCountDownValues(countDown, item.label)}
+        //           </span>
+        //           <span className="text-base text-[#FFFFFFC7] font-avenir font-medium mt-[2px]">
+        //             {item.label}
+        //           </span>
+        //           {index !== timerData.length - 1 && (
+        //             <span className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-px h-[60px] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
+        //           )}
+        //         </div>
+        //       ))}
+        //     </div>
 
-            {presaleDetail && (
-              <>
-                {presaleDetail.map((presale: any, index: number) => (
-                  <div key={index} className="relative w-[392px] h-[173px] mx-auto mt-[50px] bg-[#181747] border border-[#1C1A584D] rounded-[14px] text-white shadow-md overflow-hidden backdrop-blur-sm">
-                    <div className="absolute left-[8.29px] top-[1.5px] z-10">
-                      <div className="w-[85.6px] h-[78px] rounded-[72px] border-[2px] border-[#040432] overflow-hidden bg-white shadow-md">
-                        <img
-                          src="https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149622021.jpg"
-                          alt="Frankie"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
+        //     {presaleDetail && (
+        //       <>
+        //         {presaleDetail.map((presale: any, index: number) => (
+        //           <div key={index} className="relative w-[392px] h-[173px] mx-auto mt-[50px] bg-[#181747] border border-[#1C1A584D] rounded-[14px] text-white shadow-md overflow-hidden backdrop-blur-sm">
+        //             <div className="absolute left-[8.29px] top-[1.5px] z-10">
+        //               <div className="w-[85.6px] h-[78px] rounded-[72px] border-[2px] border-[#040432] overflow-hidden bg-white shadow-md">
+        //                 <img
+        //                   src="https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149622021.jpg"
+        //                   alt="Frankie"
+        //                   className="w-full h-full object-cover"
+        //                 />
+        //               </div>
+        //             </div>
 
-                    <div className="h-[40px] w-full bg-[#0A34C4] rounded-t-[14px] pl-[80px] pr-3 flex items-center justify-between">
-                      <div className="flex flex-col font-poppins">
-                        <div className="text-sub-title-font-size font-[500] underline">
-                          {presale.coinDetail.name} <span className="text-[#C2C2C2]">• {presale.coinDetail.symbol}</span>
-                        </div>
-                        <div className="text-para-font-size text-[#3C99FF] underline cursor-pointer">
-                          {creator}
-                        </div>
-                      </div>
+        //             <div className="h-[40px] w-full bg-[#0A34C4] rounded-t-[14px] pl-[80px] pr-3 flex items-center justify-between">
+        //               <div className="flex flex-col font-poppins">
+        //                 <div className="text-sub-title-font-size font-[500] underline">
+        //                   {presale.coinDetail.name} <span className="text-[#C2C2C2]">• {presale.coinDetail.symbol}</span>
+        //                 </div>
+        //                 <div className="text-para-font-size text-[#3C99FF] underline cursor-pointer">
+        //                   {creator}
+        //                 </div>
+        //               </div>
 
-                      <div className="flex gap-3">
-                        {timerData.map((item, i) => (
-                          <div key={i} className="text-center">
-                            <div className="text-base font-bold">{getCountDownValues(new Date(presale.presaleDetail.lockPeriod).getTime() - new Date().getTime(), item.label)}</div>
-                            <div className="text-para-font-size text-white/70">{item.label}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+        //               <div className="flex gap-3">
+        //                 {timerData.map((item, i) => (
+        //                   <div key={i} className="text-center">
+        //                     <div className="text-base font-bold">{getCountDownValues(new Date(presale.presaleDetail.lockPeriod).getTime() - new Date().getTime(), item.label)}</div>
+        //                     <div className="text-para-font-size text-white/70">{item.label}</div>
+        //                   </div>
+        //                 ))}
+        //               </div>
+        //             </div>
 
-                    <div className="w-[392px] h-[173px] rounded-b-[14px] bg-[#1A184D] border border-[#5a84ff] flex px-3 pt-3 pb-3 text-white font-poppins overflow-hidden">
-                      {/* Left: Amount Column */}
-                      <div className="w-[160px] flex flex-col pr-3 pt-[25px]">
-                        {/* Label */}
-                        <label className="text-[10px] font-extrabold mb-[2px] leading-none tracking-tight">
-                          Amount
-                        </label>
+        //             <div className="w-[392px] h-[173px] rounded-b-[14px] bg-[#1A184D] border border-[#5a84ff] flex px-3 pt-3 pb-3 text-white font-poppins overflow-hidden">
+        //               {/* Left: Amount Column */}
+        //               <div className="w-[160px] flex flex-col pr-3 pt-[25px]">
+        //                 {/* Label */}
+        //                 <label className="text-[10px] font-extrabold mb-[2px] leading-none tracking-tight">
+        //                   Amount
+        //                 </label>
 
-                        {/* Input */}
-                        <div className="flex items-center mb-[5px]">
-                          <input
-                            type="number"
-                            placeholder="0.00"
-                            value={amount}
-                            onChange={(event) => handleAmount(event, presale)}
-                            className="w-[70px] h-[24px] px-2 rounded-[4px] border border-[#FF8FE7] bg-[#1A184D] text-white text-[10px] font-normal outline-none pr-1 placeholder-white"
-                          />
-                          <span className="ml-[4px] text-[7px] text-white">USDC</span>
-                        </div>
+        //                 {/* Input */}
+        //                 <div className="flex items-center mb-[5px]">
+        //                   <input
+        //                     type="number"
+        //                     placeholder="0.00"
+        //                     value={amount}
+        //                     onChange={(event) => handleAmount(event, presale)}
+        //                     className="w-[70px] h-[24px] px-2 rounded-[4px] border border-[#FF8FE7] bg-[#1A184D] text-white text-[10px] font-normal outline-none pr-1 placeholder-white"
+        //                   />
+        //                   <span className="ml-[4px] text-[7px] text-white">USDC</span>
+        //                 </div>
 
-                        {/* Converted token */}
-                        <div className="text-white font-semibold text-[7px] mb-[3px]">
-                          {token} <span className="text-[#CFCFCF]">{presale.coinDetail.symbol}</span>
-                        </div>
+        //                 {/* Converted token */}
+        //                 <div className="text-white font-semibold text-[7px] mb-[3px]">
+        //                   {token} <span className="text-[#CFCFCF]">{presale.coinDetail.symbol}</span>
+        //                 </div>
 
-                        {/* Min/Max Purchase */}
-                        <div className="text-[#CFCFCF] text-[5.4px] leading-[110%] mb-[6px]">
-                          Minimum purchase: 1.000 USDC <br />
-                          Maximum purchase: 12.000 USDC
-                        </div>
+        //                 {/* Min/Max Purchase */}
+        //                 <div className="text-[#CFCFCF] text-[5.4px] leading-[110%] mb-[6px]">
+        //                   Minimum purchase: 1.000 USDC <br />
+        //                   Maximum purchase: 12.000 USDC
+        //                 </div>
 
-                        {/* Buy Button */}
-                        <button className="w-[90px] h-[28px] bg-[#FF00AE]/70 rounded-[4px] text-white text-[10px] font-extrabold leading-[28px] mb-[4px]" onClick={() => buyToken(presale)}>
-                          Buy
-                        </button>
+        //                 {/* Buy Button */}
+        //                 <button className="w-[90px] h-[28px] bg-[#FF00AE]/70 rounded-[4px] text-white text-[10px] font-extrabold leading-[28px] mb-[4px]" onClick={() => buyToken(presale)}>
+        //                   Buy
+        //                 </button>
 
-                        {/* Gas Fee Note */}
-                        <p className="text-[#CFCFCF] text-[4.4px] leading-[100%] text-center mt-[1px]">
-                          Plus a small amount of SOL for gas fees
-                        </p>
-                      </div>
+        //                 {/* Gas Fee Note */}
+        //                 <p className="text-[#CFCFCF] text-[4.4px] leading-[100%] text-center mt-[1px]">
+        //                   Plus a small amount of SOL for gas fees
+        //                 </p>
+        //               </div>
 
-                      {/* Right Side - Tranche */}
-                      <div className="flex-1">
-                        {renderTranche(presale)}
-                      </div>
-                    </div>
+        //               {/* Right Side - Tranche */}
+        //               <div className="flex-1">
+        //                 {renderTranche(presale)}
+        //               </div>
+        //             </div>
 
 
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
+        //           </div>
+        //         ))}
+        //       </>
+        //     )}
+        //   </div>
+        // </div>
       }
     </>
   );
 };
 
-export default LaunchPad;
+export default LaunchPadVC;

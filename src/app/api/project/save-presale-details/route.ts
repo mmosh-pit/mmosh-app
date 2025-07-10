@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-presale-details");
-  const { presaleStartDate, lockPeriod, discount, presaleMinimum, presaleMaximum, purchaseMinimum, purchaseMaximum, totalSold, launchPrice, launchMarketCap, userId, coinId } = await req.json();
+  const { presaleStartDate, lockPeriod, discount, presaleMinimum, presaleMaximum, purchaseMinimum, purchaseMaximum, totalSold, launchPrice, launchMarketCap, key, wallet } = await req.json();
   const result = await collection.insertOne({
     presaleStartDate,
     lockPeriod,
@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
     totalSold,
     launchPrice,
     launchMarketCap,
-    userId,
-    coinId,
+    key,
+    wallet,
     created_date: new Date(),
     updated_date: new Date()
   });

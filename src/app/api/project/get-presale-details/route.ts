@@ -12,14 +12,14 @@ export async function GET(req: NextRequest) {
   if (!userId) {
     return NextResponse.json({ status: false, message: "Missing userId" }, { status: 400 });
   }
-  const allPresales = await presaleCollection.find({ userId }).toArray();
+  const allPresales = await presaleCollection.find({}).toArray();
   const futurePresales = allPresales
     .filter(p => new Date(p.lockPeriod).getTime() > Date.now())
     .sort((a, b) => new Date(a.lockPeriod).getTime() - new Date(b.lockPeriod).getTime());
 
   const presaleResult = await Promise.all(
     futurePresales.map(async (presale) => {
-      const coin = await coinsCollection.findOne({ _id: new ObjectId(presale.coinId) });
+      const coin = await coinsCollection.findOne({ key: presale.key });
       return {
         presaleDetail: presale,
         coinDetail: coin || {}

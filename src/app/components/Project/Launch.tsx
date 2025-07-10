@@ -373,7 +373,8 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
                 mint: new anchor.web3.PublicKey(targetMint),
                 user: wallet.publicKey,
                 value: Math.ceil(presaleDetail.presaleMaximum * web3Consts.LAMPORTS_PER_OPOS),
-                duration: new Date(new Date(presaleDetail.presaleStartDate).toUTCString()).valueOf(),
+                // duration: new Date(new Date(presaleDetail.presaleStartDate).toUTCString()).valueOf(),
+                duration: 0,
                 type: "presale"
             });
             console.log("stake result ", stakeres);
@@ -401,8 +402,8 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
                 totalSold: 0,
                 launchPrice: fields.presalePrice,
                 launchMarketCap: fields.curvesupply,
-                userId: wallet.publicKey,
-                coinId: result_.data.id
+                key: targetMint,
+                wallet: wallet.publicKey,
             }
             const result = await axios.post("/api/project/save-presale-details", presaleParams);
         }

@@ -3762,11 +3762,18 @@ export class Connectivity {
       this.programId,
     )[0]
 
-    const receiverAtaResult = await this.getAtaAccount(mint, stakeKey);
+    const receiverAtaResult = await this.getAtaAccount(mint, this.provider.publicKey);
     const receiverAta = receiverAtaResult.ata;
-    if (receiverAtaResult.initAtaIx) {
-      instructions.push(receiverAtaResult.initAtaIx);
-    } else {
+    if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
+
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      mint,
+      vaultState,
+      true
+    );
+
+    const receiverAccount = await this.getAtaAccount(mint, stakeKey);
+    if (!receiverAccount) {
       const targetMintKeypair = web3.Keypair.generate();
       const tokenATA = await getAssociatedTokenAddress(
         targetMintKeypair.publicKey,
@@ -3784,15 +3791,9 @@ export class Connectivity {
       );
     }
 
-    const nftTokenAccount = await getAssociatedTokenAddress(
-      mint,
-      vaultState,
-      true
-    );
-
 
     const ix = await this.program.methods.unstakeVault(new BN(amount)).accounts({
-      receiver: stakeKey,
+      receiver: this.provider.publicKey,
       receiverAta,
       mint,
       stakeKey,
@@ -3806,6 +3807,18 @@ export class Connectivity {
     }).instruction();
 
     instructions.push(ix);
+
+    const createTransfer = await this.baseSpl.transfer_token_modified({
+      mint,
+      sender: this.provider.publicKey,
+      receiver: stakeKey,
+      init_if_needed: true,
+      amount: amount,
+    });
+
+    for (let i = 0; i < createTransfer.length; i++) {
+      instructions.push(createTransfer[i]);
+    }
 
     const tx = new web3.Transaction().add(...instructions);
 

@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
             status: 200,
         });
     } catch (error) {
+        console.log("token trasfer failes", error);
         return NextResponse.json({ status: false, message: "Something went wrong" }, {
             status: 200,
         });

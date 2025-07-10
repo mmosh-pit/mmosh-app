@@ -95,19 +95,19 @@ const LaunchPad = () => {
 
   const buyToken = async (tokenInfo: any) => {
     if (validate(tokenInfo)) {
-      try {
-        setIsBuying(true);
-        const result = await trasferUsdCoin(wallet, tokenInfo.presaleDetail.wallet, Number(amount));
-        console.log("transfer usd coin result", result.message);
-        if (result.data) {
-          const trasferTokenResult = await axios.post("/api/project/buy-token", {
-            receiver: wallet.publicKey.toString(),
-            supply: token,
-            key: tokenInfo.presaleDetail.key,
-            amount: Number(amount),
-          });
-          console.log("transfer token result", trasferTokenResult);
-          if (trasferTokenResult.data.status) {
+      setIsBuying(true);
+      const result = await trasferUsdCoin(wallet, tokenInfo.presaleDetail.wallet, Number(amount));
+      console.log("transfer usd coin result", result.message);
+      if (result.data) {
+        const trasferTokenResult = await axios.post("/api/project/buy-token", {
+          receiver: wallet.publicKey.toString(),
+          supply: token,
+          key: tokenInfo.presaleDetail.key,
+          amount: Number(amount),
+        });
+        console.log("transfer token result", trasferTokenResult);
+        if (trasferTokenResult.data.status) {
+          try {
             const connection = new Connection(
               process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
               { confirmTransactionInitialTimeout: 120000 }
@@ -119,19 +119,22 @@ const LaunchPad = () => {
             const hex = trasferTokenResult.data.transaction;
             const buffer = Buffer.from(hex, "hex");
             const tx = Transaction.from(buffer);
-            const txid = await connection.sendRawTransaction(tx.serialize(), {
+            const signedTx = await wallet.signTransaction(tx);
+            const txid = await connection.sendRawTransaction(signedTx.serialize(), {
               skipPreflight: false,
             });
             console.log("Transaction ID:", txid);
-          } else {
-            createMessage(trasferTokenResult.data.message, "danger-container");
+          } catch (error) {
+            console.log("tx error", error);
             setIsBuying(false);
+            createMessage("Something went wrong", "danger-container");
           }
         } else {
-          createMessage(result.message, "danger-container");
+          createMessage(trasferTokenResult.data.message, "danger-container");
           setIsBuying(false);
         }
-      } catch (error) {
+      } else {
+        createMessage(result.message, "danger-container");
         setIsBuying(false);
       }
     }

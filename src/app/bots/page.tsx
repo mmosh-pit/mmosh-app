@@ -71,7 +71,7 @@ export default function OPOS() {
 
           const objDiv = document.getElementById("message-container");
           if (objDiv) {
-            setTimeout(function () {
+            setTimeout(function() {
               objDiv.scrollTo({
                 top: -objDiv.offsetTop,
               });
@@ -86,7 +86,7 @@ export default function OPOS() {
     <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
       <ChatAgentSelector />
 
-      <ChatInteractionContainer socket={socket} />
+      <ChatInteractionContainer />
     </div>
   );
 }

@@ -1,17 +1,22 @@
 import * as React from "react";
 import { useAtom } from "jotai";
-import Image from "next/image";
 
 import { data } from "@/app/store";
 import Markdown from "react-markdown";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
-import { selectedChatStore, chatsStore, chatsLoadingStore } from "@/app/store/chat";
+import {
+  selectedChatStore,
+  chatsStore,
+  chatsLoadingStore,
+} from "@/app/store/chat";
 import { Message } from "@/app/models/chat";
 import { Bars } from "react-loader-spinner";
 import Avatar from "../common/Avatar";
+import { useRouter } from "next/navigation";
 
-const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
+const ChatInteractionContainer = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   const [currentUser] = useAtom(data);
   const [chats, setChats] = useAtom(chatsStore);
@@ -66,7 +71,7 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
   const sendMessage = React.useCallback(
     async (content: string) => {
       if (!selectedChat?.messages) return;
-      
+
       // Add user message to the chat immediately
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -94,15 +99,15 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
         ...selectedChat,
         messages: [...selectedChat.messages, userMessage, loadingBotMessage],
       };
-      
+
       setSelectedChat(updatedSelectedChat);
-      
+
       // Update the chats array
-      const updatedChats = chats.map(chat => 
-        chat.id === selectedChat.id ? updatedSelectedChat : chat
+      const updatedChats = chats.map((chat) =>
+        chat.id === selectedChat.id ? updatedSelectedChat : chat,
       );
       setChats(updatedChats);
-      
+
       setText("");
 
       try {
@@ -111,23 +116,26 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
           query: content,
           instructions: selectedChat!.chatAgent!.system_prompt,
         };
-        
+
         console.log("Message data being sent:", queryData);
-        
-        const response = await fetch("https://rewoo-api-1094217356440.us-central1.run.app/query", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+
+        const response = await fetch(
+          "https://rewoo-api-1094217356440.us-central1.run.app/query",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(queryData),
           },
-          body: JSON.stringify(queryData),
-        });
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
-        
+
         // Create the final bot message
         const botMessage: Message = {
           id: (Date.now() + 2).toString(),
@@ -142,17 +150,17 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
         // Replace the loading message with the actual response
         const finalMessages = [...updatedSelectedChat.messages];
         finalMessages[finalMessages.length - 1] = botMessage;
-        
+
         const finalSelectedChat = {
           ...updatedSelectedChat,
           messages: finalMessages,
         };
-        
+
         setSelectedChat(finalSelectedChat);
-        
+
         // Update the chats array
-        const finalChats = chats.map(chat => 
-          chat.id === selectedChat.id ? finalSelectedChat : chat
+        const finalChats = chats.map((chat) =>
+          chat.id === selectedChat.id ? finalSelectedChat : chat,
         );
         setChats(finalChats);
 
@@ -169,16 +177,21 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
 
           console.log("Saving chat to database:", saveChatData);
 
-          const saveResponse = await fetch("https://chat-save-api-1094217356440.us-central1.run.app/save-chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+          const saveResponse = await fetch(
+            "https://chat-save-api-1094217356440.us-central1.run.app/save-chat",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(saveChatData),
             },
-            body: JSON.stringify(saveChatData),
-          });
+          );
 
           if (!saveResponse.ok) {
-            console.warn(`Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`);
+            console.warn(
+              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+            );
           } else {
             console.log("Chat saved successfully to database");
           }
@@ -186,35 +199,35 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
           console.error("Error saving chat to database:", saveError);
           // Note: We don't want to show this error to the user as the main functionality (chat) worked
         }
-        
       } catch (error) {
         console.error("Error sending message:", error);
-        
+
         // Create error message
         const errorMessage: Message = {
           id: (Date.now() + 2).toString(),
-          content: "Sorry, I encountered an error while processing your message. Please try again.",
+          content:
+            "Sorry, I encountered an error while processing your message. Please try again.",
           sender_id: selectedChat.chatAgent!.id,
           type: "bot",
           created_at: new Date().toISOString(),
           sender: selectedChat.chatAgent!.name,
           is_loading: false,
         };
-        
+
         // Replace the loading message with error message
         const finalMessages = [...updatedSelectedChat.messages];
         finalMessages[finalMessages.length - 1] = errorMessage;
-        
+
         const finalSelectedChat = {
           ...updatedSelectedChat,
           messages: finalMessages,
         };
-        
+
         setSelectedChat(finalSelectedChat);
-        
+
         // Update the chats array
-        const finalChats = chats.map(chat => 
-          chat.id === selectedChat.id ? finalSelectedChat : chat
+        const finalChats = chats.map((chat) =>
+          chat.id === selectedChat.id ? finalSelectedChat : chat,
         );
         setChats(finalChats);
       }
@@ -270,31 +283,48 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
               wrapperClass="bars-loading"
               visible={true}
             />
-            <h3 className="text-xl text-white font-semibold">Loading chats...</h3>
-            <p className="text-gray-400">Please wait while we load your conversations</p>
+            <h3 className="text-xl text-white font-semibold">
+              Loading chats...
+            </h3>
+            <p className="text-gray-400">
+              Please wait while we load your conversations
+            </p>
           </div>
         </div>
       ) : !selectedChat ? (
         <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">💬</div>
-            <h3 className="text-xl text-white font-semibold">No chat selected</h3>
-            <p className="text-gray-400">Choose a chat agent from the sidebar to start a conversation</p>
+            <h3 className="text-xl text-white font-semibold">
+              No chat selected
+            </h3>
+            <p className="text-gray-400">
+              Choose a chat agent from the sidebar to start a conversation
+            </p>
           </div>
         </div>
       ) : (
         <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
           {/* Chat Header */}
-          <div className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A]">
-            <Avatar 
-              src={selectedChat.chatAgent?.image} 
-              alt={selectedChat.chatAgent?.name} 
+          <div
+            className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
+            onClick={() =>
+              router.push(`/projects/${selectedChat.chatAgent?.symbol}`)
+            }
+          >
+            <Avatar
+              src={selectedChat.chatAgent?.image}
+              alt={selectedChat.chatAgent?.name}
               size={48}
               className="mr-3"
             />
             <div>
-              <h3 className="text-lg font-semibold text-white">{selectedChat.chatAgent?.name}</h3>
-              <p className="text-sm text-gray-400">@{selectedChat.chatAgent?.symbol}</p>
+              <h3 className="text-lg font-semibold text-white underline">
+                {selectedChat.chatAgent?.name}
+              </h3>
+              <p className="text-sm text-gray-400">
+                @{selectedChat.chatAgent?.symbol}
+              </p>
             </div>
           </div>
 
@@ -302,13 +332,15 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
           <div
             className="flex-1 flex flex-col overflow-y-auto px-6 py-4 space-y-4"
             id="message-container"
-            style={{ scrollBehavior: 'smooth' }}
+            style={{ scrollBehavior: "smooth" }}
           >
             {messages?.length === 0 ? (
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center space-y-3">
                   <div className="text-4xl mb-2">👋</div>
-                  <p className="text-gray-400">Start a conversation with {selectedChat.chatAgent?.name}!</p>
+                  <p className="text-gray-400">
+                    Start a conversation with {selectedChat.chatAgent?.name}!
+                  </p>
                 </div>
               </div>
             ) : (
@@ -317,28 +349,33 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
                   className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
                   key={`${message.type}-${index}`}
                 >
-                  <Avatar 
-                    src={getMessageImage(message)} 
-                    alt={getMessageUsername(message)} 
+                  <Avatar
+                    src={getMessageImage(message)}
+                    alt={getMessageUsername(message)}
                     size={40}
                     className="flex-shrink-0"
                   />
 
-                  <div className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}>
+                  <div
+                    className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}
+                  >
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-400 font-medium">
                         {getMessageUsername(message)}
                       </span>
                       <span className="text-xs text-gray-500">
-                        {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(message.created_at).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
                     </div>
-                    
-                    <div 
+
+                    <div
                       className={`
                         px-4 py-3 rounded-2xl 
-                        ${message.type === "user" 
-                          ? "bg-[#25235a] text-white rounded-tr-md" 
+                        ${message.type === "user"
+                          ? "bg-[#25235a] text-white rounded-tr-md"
                           : "bg-[#00073a] text-white rounded-tl-md"
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
@@ -355,7 +392,9 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
                             wrapperClass="bars-loading"
                             visible={true}
                           />
-                          <span className="text-sm text-gray-400">Thinking...</span>
+                          <span className="text-sm text-gray-400">
+                            Thinking...
+                          </span>
                         </div>
                       ) : (
                         <div className="text-base leading-relaxed">
@@ -401,8 +440,8 @@ const ChatInteractionContainer = ({ socket }: { socket: WebSocket | null }) => {
               <button
                 className={`
                   flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200 
-                  ${!text.trim() || isLoading 
-                    ? "bg-[#565656] cursor-not-allowed" 
+                  ${!text.trim() || isLoading
+                    ? "bg-[#565656] cursor-not-allowed"
                     : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}

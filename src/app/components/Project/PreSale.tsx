@@ -89,7 +89,66 @@ export const PreSale = (props: PresaleProps) => {
             value: ""
         },
     ]);
-    const [errors, setErrors] = React.useState({});
+    React.useEffect(() => {
+        const cachedData = localStorage.getItem("coinstep2");
+        if (!cachedData) return;
+
+        const parseData = JSON.parse(cachedData);
+        console.log(parseData);
+
+        // Update discounts
+        const updatedDiscounts = preSaleDiscount.map((item, i) => ({
+            ...item,
+            amount: parseData.discount[i]?.value ?? item.amount,
+            discountPercentage: parseData.discount[i]?.percentage ?? item.discountPercentage,
+        }));
+
+        // Update presale limits
+        const updatedPresale = [...preSale];
+        if (updatedPresale.length >= 4) {
+            updatedPresale[0].value = parseData.presaleMinimum;
+            updatedPresale[1].value = parseData.presaleMaximum;
+            updatedPresale[2].value = parseData.purchaseMinimum;
+            updatedPresale[3].value = parseData.purchaseMaximum;
+        }
+
+        // Format presale start date
+        const startDate = new Date(parseData.presaleStartDate);
+        const startYear = startDate.getFullYear();
+        const startMonth = String(startDate.getMonth() + 1).padStart(2, "0");
+        const startDay = String(startDate.getDate()).padStart(2, "0");
+        const startHour24 = startDate.getHours();
+        const startMinute = String(startDate.getMinutes()).padStart(2, "0");
+
+        const timePeriod = startHour24 >= 12 ? "pm" : "am";
+        const startHour12 = startHour24 % 12 || 12;
+        const time = `${String(startHour12).padStart(2, "0")}:${startMinute}`;
+
+        setPreSaleStart({
+            date: `${startYear}/${startMonth}/${startDay}`,
+            time,
+            timePeriod,
+        });
+
+        // Format lock period
+        const lockDate = new Date(parseData.lockPeriod);
+        const lockMonth = String(lockDate.getMonth() + 1).padStart(2, "0");
+        const lockDay = String(lockDate.getDate()).padStart(2, "0");
+        const lockHour = String(lockDate.getHours()).padStart(2, "0");
+        const lockMinute = String(lockDate.getMinutes()).padStart(2, "0");
+
+        setPreSalePeriod([
+            { key: "month", value: lockMonth },
+            { key: "week", value: "" },
+            { key: "day", value: lockDay },
+            { key: "hour", value: lockHour },
+            { key: "minute", value: lockMinute },
+        ]);
+
+        setPreSale(updatedPresale);
+        setPreSaleDiscount(updatedDiscounts);
+    }, []);
+
 
     const updatePreSaleDiscount = (value: string, index: number, type: string): void => {
         const discounts = [...preSaleDiscount];
@@ -284,21 +343,21 @@ export const PreSale = (props: PresaleProps) => {
         // ---- Pre-sale start time Validation ----
         const { date, time, timePeriod } = values.preSaleStart;
 
-        // const startTime = time.split(":");
-        // const startDate = date.split("/");
-        // if (Number(startDate[2]) < new Date().getFullYear() || Number(startDate[1]) > new Date().getMonth() || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date())) {
-        //     createMessage("Invalid date", "danger-container");
-        //     return false;
-        // } else if (Number(startTime[0]) > 12) {
-        //     createMessage("Invalid hour", "danger-container");
-        //     return false;
-        // } else if (Number(startTime[1]) > 59) {
-        //     createMessage("Invalid minutes", "danger-container");
-        //     return false;
-        // } else if (timePeriod !== "am" && timePeriod !== "pm") {
-        //     createMessage("Invalid time format", "danger-container");
-        //     return false;
-        // }
+        const startTime = time.split(":");
+        const startDate = date.split("/");
+        if (Number(startDate[2]) < new Date().getFullYear() || Number(startDate[1]) > new Date().getMonth() || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date())) {
+            createMessage("Invalid date", "danger-container");
+            return false;
+        } else if (Number(startTime[0]) > 12) {
+            createMessage("Invalid hour", "danger-container");
+            return false;
+        } else if (Number(startTime[1]) > 59) {
+            createMessage("Invalid minutes", "danger-container");
+            return false;
+        } else if (timePeriod !== "am" && timePeriod !== "pm") {
+            createMessage("Invalid time format", "danger-container");
+            return false;
+        }
         console.log("----- PRE SALE VALIDATION ERROR -----", newErrors);
         return Object.keys(newErrors).length === 0;
     };

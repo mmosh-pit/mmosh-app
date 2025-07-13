@@ -18,6 +18,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import { Connection, PublicKey } from "@solana/web3.js";
 import useWallet from "@/utils/wallet";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
+import internalClient from "@/app/lib/internalHttpClient";
 
 export default function AgentTeam({
   onPageChange,
@@ -327,7 +328,7 @@ export default function AgentTeam({
       console.log("res1", res1);
 
       if (res.Ok) {
-        await axios.post("/api/project/save-profile", {
+        await internalClient.post("/api/project/save-profile", {
           sender: wallet.publicKey.toBase58(),
           name: currentProfile.profile.name,
           profilekey: currentProfile.wallet,
@@ -380,7 +381,7 @@ export default function AgentTeam({
     setSelectedRole(null);
     setSelectedProfileRole(null);
 
-    await axios.post("/api/project/delete-profile", {
+    await internalClient.post("/api/project/delete-profile", {
       profilekey: selectedProfileRole.wallet,
       projectkey: projectDetail.project.key,
     });

@@ -9,6 +9,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/components/common/MessageBanner";
 import useWallet from "@/utils/wallet";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const ClaimPage = ({ params }: { params: { coin: string } }) => {
   const navigate = useRouter();
@@ -87,7 +88,10 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
       });
 
       let data = await axios(
-        "/api/ptv/rewards?coin="+params.coin+"&&wallet=" + wallet.publicKey.toBase58(),
+        "/api/ptv/rewards?coin=" +
+        params.coin +
+        "&&wallet=" +
+        wallet.publicKey.toBase58(),
       );
 
       setDetails({
@@ -105,7 +109,6 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
           total: data.data.total,
         },
       });
-
     } catch (error) {
       console.log("tokendata error ", error);
     }
@@ -124,21 +127,21 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
   };
 
   useEffect(() => {
-    getCoinDetail()
- 
+    getCoinDetail();
   }, []);
 
   const getCoinDetail = async () => {
-    let result:any = await axios.get("/api/project/coin-detail?coin="+params.coin)
-    if(result.data.info) {
+    let result: any = await axios.get(
+      "/api/project/coin-detail?coin=" + params.coin,
+    );
+    if (result.data.info) {
       setCountDownDate(new Date(result.data.info.unlockDate).getTime());
     }
 
-    if(result.data.coin) {
-      setCoinDetail(result.data.coin)
+    if (result.data.coin) {
+      setCoinDetail(result.data.coin);
     }
-
-  }
+  };
 
   const unstakeAction = async (type: any, value: any) => {
     if (!wallet) {
@@ -154,7 +157,7 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
         type,
         active: true,
       });
-      const result: any = await axios.post("/api/ptv/claim", {
+      const result: any = await internalClient.post("/api/ptv/claim", {
         address: wallet.publicKey.toBase58(),
         coin: params.coin,
       });
@@ -173,12 +176,10 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
         anchor.setProvider(env);
 
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
-        const data:any = Buffer.from(result.data.transaction, "base64");
-        const tx = anchor.web3.VersionedTransaction.deserialize(
-          data,
-        );
+        const data: any = Buffer.from(result.data.transaction, "base64");
+        const tx = anchor.web3.VersionedTransaction.deserialize(data);
         const signature = await userConn.provider.sendAndConfirm(tx);
-        await axios.post("/api/ptv/update-rewards", {
+        await internalClient.post("/api/ptv/update-rewards", {
           type,
           wallet: wallet.publicKey.toBase58(),
           method: "unstake",
@@ -215,189 +216,186 @@ const ClaimPage = ({ params }: { params: { coin: string } }) => {
       <div className="mt-10">
         <div className="container mx-auto">
           <div className="grid grid-cols-2 gap-4">
-              <div>
-                <h2 className="text-center text-white font-goudy font-normal text-xl">
-                  Claim Token
-                </h2>
+            <div>
+              <h2 className="text-center text-white font-goudy font-normal text-xl">
+                Claim Token
+              </h2>
 
-                <div className="border-container p-px rounded-xl">
-                  <div className="background-content-claim p-3.5 rounded-xl">
-                    {coinDetail &&
-                      <div className="grid grid-cols-1">
-                        <div>
-                          <h3 className="text-left text-sub-title-font-size border-b border-white border-opacity-20 pb-3.5 mb-3.5 pl-3.5">
-                            {coinDetail.name}
-                          </h3>
-                          <div className="pl-3.5">
-                            <div className="flex mt-1.5">
-                              <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
-                                Total Supply:
-                              </label>
-                              <span className="text-header-small-font-size text-white font-poppins leading-6">
-                                {details.total}
-                              </span>
-                            </div>
-                            <div className="flex mt-1.5">
-                              <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
-                                Staked:
-                              </label>
-                              <span className="text-header-small-font-size text-white font-poppins leading-6">
-                                {details.staked}
-                              </span>
-                            </div>
-                            <div className="flex mt-1.5">
-                              <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
-                                Claimed:
-                              </label>
-                              <span className="text-header-small-font-size text-white font-poppins leading-6">
-                                {details.claimed}
-                              </span>
-                            </div>
-                            <div className="flex mt-1.5">
-                              <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
-                                UnClaimed:
-                              </label>
-                              <span className="text-header-small-font-size text-white font-poppins leading-6">
-                                {details.unclaimed}
-                              </span>
-                            </div>
-                            <div className="flex mt-1.5">
-                              <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
-                                Available:
-                              </label>
-                              <span className="text-header-small-font-size text-white font-poppins leading-6">
-                                {details.available}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                </div>
-                {coinDetail &&
-                  <div className="grid grid-cols-1">
-                    <div>
-                      <div className="text-center">
-                        <div className="bg-black bg-opacity-[0.2] text-header-small-font-size text-white font-poppins py-2.5 px-10 inline-block font-semibold mb-2.5">
-                          {details.claimable} {coinDetail.symbol}
-                        </div>
-                        <div>
-                          <button
-                            className="btn-sm bg-primary text-white border-none hover:bg-primary hover:text-white w-32 rounded-md"
-                            onClick={() => {
-                              navigate.push(`/swap`);
-                            }}
-                          >
-                            Claim {coinDetail.symbol}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-              <div>
-                <h2 className="text-center text-white font-goudy font-normal text-xl">
-                  Unstake your Token
-                </h2>
-
-                <div className="border-container p-px rounded-xl">
-                  <div className="background-content-claim p-3.5 rounded-xl">
-                    {coinDetail &&
-                      <div className="grid grid-cols-1">
-                          <h3 className="text-left text-sub-title-font-size border-b border-white border-opacity-20 pb-3.5 mb-3.5 pl-3.5">
-                            {coinDetail.name}
-                          </h3>
-                          <div className="pl-3.5">
+              <div className="border-container p-px rounded-xl">
+                <div className="background-content-claim p-3.5 rounded-xl">
+                  {coinDetail && (
+                    <div className="grid grid-cols-1">
+                      <div>
+                        <h3 className="text-left text-sub-title-font-size border-b border-white border-opacity-20 pb-3.5 mb-3.5 pl-3.5">
+                          {coinDetail.name}
+                        </h3>
+                        <div className="pl-3.5">
                           <div className="flex mt-1.5">
-                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
-                              Hold in Wallet:
+                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
+                              Total Supply:
                             </label>
                             <span className="text-header-small-font-size text-white font-poppins leading-6">
-                              {details.user.total}
+                              {details.total}
                             </span>
                           </div>
                           <div className="flex mt-1.5">
-                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
+                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
                               Staked:
                             </label>
                             <span className="text-header-small-font-size text-white font-poppins leading-6">
-                              {details.unstakeable}
+                              {details.staked}
                             </span>
                           </div>
                           <div className="flex mt-1.5">
-                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
-                              UnStaked:
+                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
+                              Claimed:
                             </label>
                             <span className="text-header-small-font-size text-white font-poppins leading-6">
-                              {details.user.unstaked}
+                              {details.claimed}
                             </span>
                           </div>
                           <div className="flex mt-1.5">
-                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
-                              Seasoned:
+                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
+                              UnClaimed:
                             </label>
                             <span className="text-header-small-font-size text-white font-poppins leading-6">
-                              {details.claimable}
+                              {details.unclaimed}
                             </span>
                           </div>
                           <div className="flex mt-1.5">
-                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
-                              Swapped:
+                            <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-20">
+                              Available:
                             </label>
                             <span className="text-header-small-font-size text-white font-poppins leading-6">
-                              {details.user.swapped}
+                              {details.available}
                             </span>
                           </div>
-                          </div>
+                        </div>
                       </div>
-                    }
-
-                  </div>
-                </div>
-                {coinDetail &&
-                  <div className="grid grid-cols-1">
-              <div>
-              <div className="text-center">
-                <div className="bg-black bg-opacity-[0.2] text-header-small-font-size text-white font-poppins py-2.5 px-10 inline-block font-semibold mb-2.5">
-                  {details.unstakeable} {coinDetail.symbol}
-                </div>
-                <div>
-                  {loader.active && loader.type === "Blue" && (
-                    <button className="btn-sm bg-claim-color text-white border-none hover:bg-claim-color hover:text-white w-32 rounded-md">
-                      Unstaking...
-                    </button>
-                  )}
-                  {!loader.active && (
-                    <button
-                      className="btn-sm bg-claim-color text-white border-none hover:bg-claim-color hover:text-white w-32 rounded-md"
-                      onClick={() => {
-                        unstakeAction("Blue", details.unstakeable);
-                      }}
-                    >
-                      Unstake {coinDetail.symbol}
-                    </button>
+                    </div>
                   )}
                 </div>
               </div>
+              {coinDetail && (
+                <div className="grid grid-cols-1">
+                  <div>
+                    <div className="text-center">
+                      <div className="bg-black bg-opacity-[0.2] text-header-small-font-size text-white font-poppins py-2.5 px-10 inline-block font-semibold mb-2.5">
+                        {details.claimable} {coinDetail.symbol}
+                      </div>
+                      <div>
+                        <button
+                          className="btn-sm bg-primary text-white border-none hover:bg-primary hover:text-white w-32 rounded-md"
+                          onClick={() => {
+                            navigate.push(`/swap`);
+                          }}
+                        >
+                          Claim {coinDetail.symbol}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-                  </div>
-                }
+            <div>
+              <h2 className="text-center text-white font-goudy font-normal text-xl">
+                Unstake your Token
+              </h2>
+
+              <div className="border-container p-px rounded-xl">
+                <div className="background-content-claim p-3.5 rounded-xl">
+                  {coinDetail && (
+                    <div className="grid grid-cols-1">
+                      <h3 className="text-left text-sub-title-font-size border-b border-white border-opacity-20 pb-3.5 mb-3.5 pl-3.5">
+                        {coinDetail.name}
+                      </h3>
+                      <div className="pl-3.5">
+                        <div className="flex mt-1.5">
+                          <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
+                            Hold in Wallet:
+                          </label>
+                          <span className="text-header-small-font-size text-white font-poppins leading-6">
+                            {details.user.total}
+                          </span>
+                        </div>
+                        <div className="flex mt-1.5">
+                          <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
+                            Staked:
+                          </label>
+                          <span className="text-header-small-font-size text-white font-poppins leading-6">
+                            {details.unstakeable}
+                          </span>
+                        </div>
+                        <div className="flex mt-1.5">
+                          <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
+                            UnStaked:
+                          </label>
+                          <span className="text-header-small-font-size text-white font-poppins leading-6">
+                            {details.user.unstaked}
+                          </span>
+                        </div>
+                        <div className="flex mt-1.5">
+                          <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
+                            Seasoned:
+                          </label>
+                          <span className="text-header-small-font-size text-white font-poppins leading-6">
+                            {details.claimable}
+                          </span>
+                        </div>
+                        <div className="flex mt-1.5">
+                          <label className="text-header-small-font-size text-white font-poppins font-semibold leading-6 w-24">
+                            Swapped:
+                          </label>
+                          <span className="text-header-small-font-size text-white font-poppins leading-6">
+                            {details.user.swapped}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+              {coinDetail && (
+                <div className="grid grid-cols-1">
+                  <div>
+                    <div className="text-center">
+                      <div className="bg-black bg-opacity-[0.2] text-header-small-font-size text-white font-poppins py-2.5 px-10 inline-block font-semibold mb-2.5">
+                        {details.unstakeable} {coinDetail.symbol}
+                      </div>
+                      <div>
+                        {loader.active && loader.type === "Blue" && (
+                          <button className="btn-sm bg-claim-color text-white border-none hover:bg-claim-color hover:text-white w-32 rounded-md">
+                            Unstaking...
+                          </button>
+                        )}
+                        {!loader.active && (
+                          <button
+                            className="btn-sm bg-claim-color text-white border-none hover:bg-claim-color hover:text-white w-32 rounded-md"
+                            onClick={() => {
+                              unstakeAction("Blue", details.unstakeable);
+                            }}
+                          >
+                            Unstake {coinDetail.symbol}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-
- 
         <p className="text-para-font-size light-gray-color text-center para-line-height mb-5 mt-1 text-light-gray leading-4">
           Congratulations! You've earned the Tokens. Claim them here:
         </p>
 
         <p className="max-w-3xl mx-auto text-para-font-size light-gray-color text-center para-line-height mb-1.5 mt-1 text-light-gray leading-4 px-10">
           {" "}
-          Return here to unstake your tokens and trade them freely. Staked tokens must be
-          traded with memecoins at least once before they are
+          Return here to unstake your tokens and trade them freely. Staked
+          tokens must be traded with memecoins at least once before they are
           unstaked Countdown to all polls chlosed and results are in
         </p>
         <div className="leader-container max-w-sm mx-auto p-2.5 mb-5">

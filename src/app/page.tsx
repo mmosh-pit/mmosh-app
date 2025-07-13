@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import AlertModal from "./components/Modal";
 import { testimonials } from "@/constants/testimonials";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import { useAtom } from "jotai";
@@ -12,6 +11,7 @@ import useCheckDeviceScreenSize from "./lib/useCheckDeviceScreenSize";
 import HomeMobileDrawer from "./components/HomeMobileDrawer";
 import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
 import { alreadyWaiting } from "./store/home";
+import { signInModalInitialStep, signInModal } from "./store";
 
 export default function LandingPage() {
   const screenSize = useCheckDeviceScreenSize();
@@ -21,8 +21,8 @@ export default function LandingPage() {
 
   const [isWaiting] = useAtom(alreadyWaiting);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [initialModalStep, setInitialModalStep] = useState(0);
+  const [_, setIsModalOpen] = useAtom(signInModal);
+  const [__, setInitialModalStep] = useAtom(signInModalInitialStep);
 
   const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
@@ -69,11 +69,6 @@ export default function LandingPage() {
 
   const openSignUpModal = () => {
     setInitialModalStep(0);
-    setIsModalOpen(true);
-  };
-
-  const openSignInModal = () => {
-    setInitialModalStep(2);
     setIsModalOpen(true);
   };
 
@@ -204,13 +199,6 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
-
-      <AlertModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        initialStep={initialModalStep}
-        isHome
-      />
       <div
         className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"
         ref={mainSection}

@@ -36,6 +36,7 @@ import moment from "moment";
 import { incomingReferAddress } from "@/app/store/signup";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import useWallet from "@/utils/wallet";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const defaultBaseToken = {
   name: "",
@@ -442,7 +443,7 @@ const Page = () => {
         return;
       }
 
-      const result = await axios.post("/api/donation/save", {
+      const result = await internalClient.post("/api/donation/save", {
         wallet: wallet?.publicKey.toBase58(),
         firstname: form.firstName,
         middlename: form.middleName,
@@ -754,7 +755,7 @@ const Page = () => {
       });
 
       console.log("guest pass implementation");
-      const apiResult = await axios.post("/api/ptv/free", {
+      const apiResult = await internalClient.post("/api/ptv/free", {
         name: body.name,
         symbol: body.symbol,
         url: passMetaURI,
@@ -860,8 +861,8 @@ const Page = () => {
                                   onClick={() => {
                                     copyToClipboard(
                                       process.env.NEXT_PUBLIC_APP_MAIN_URL +
-                                        "?refer=" +
-                                        projectInfo.profiles[0].address,
+                                      "?refer=" +
+                                      projectInfo.profiles[0].address,
                                     );
                                   }}
                                 >
@@ -875,7 +876,7 @@ const Page = () => {
                                       "..." +
                                       projectInfo.profiles[0].address.substring(
                                         projectInfo.profiles[0].address.length -
-                                          5,
+                                        5,
                                       )}
                                   </p>
                                   <CopyIcon />
@@ -890,7 +891,7 @@ const Page = () => {
                                   onClick={() => {
                                     copyToClipboard(
                                       "https://t.me/liquidheartsbot?start=" +
-                                        projectInfo.profiles[0].address,
+                                      projectInfo.profiles[0].address,
                                     );
                                   }}
                                 >
@@ -903,7 +904,7 @@ const Page = () => {
                                       "..." +
                                       projectInfo.profiles[0].address.substring(
                                         projectInfo.profiles[0].address.length -
-                                          5,
+                                        5,
                                       )}
                                   </p>
                                   <CopyIcon />
@@ -1076,7 +1077,7 @@ const Page = () => {
                                           (projectInfo.activationTokens.length >
                                             0 ||
                                             projectInfo.invitationPrice ===
-                                              0) && (
+                                            0) && (
                                             <>
                                               {!passBlueSubmit && (
                                                 <p>
@@ -1139,7 +1140,7 @@ const Page = () => {
                                           (projectInfo.activationTokens.length >
                                             0 ||
                                             projectInfo.invitationPrice ===
-                                              0) && (
+                                            0) && (
                                             <>
                                               {!passRedSubmit && (
                                                 <p>

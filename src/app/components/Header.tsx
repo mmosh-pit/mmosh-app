@@ -7,13 +7,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import {
-  appPrivateKey,
-  appPublicKey,
   data,
   isAuth,
   isAuthModalOpen,
   isAuthOverlayOpen,
   isDrawerOpen,
+  signInModalInitialStep,
+  signInModal,
   userWeb3Info,
   web3InfoLoading,
 } from "../store";
@@ -39,8 +39,9 @@ import {
 import { getPriceForPTV } from "../lib/forge/jupiter";
 import { AssetsHeliusResponse } from "../models/assetsHeliusResponse";
 import client from "../lib/httpClient";
-import MessageBanner from "./common/MessageBanner";
 import KinshipBots from "@/assets/icons/KinshipBots";
+import internalClient from "../lib/internalHttpClient";
+import AlertModal from "./Modal";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
@@ -71,8 +72,6 @@ const Header = () => {
   const [___, setIsLoadingProfile] = useAtom(web3InfoLoading);
   const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
   const [_____, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
-  const [______, setPrivateKey] = useAtom(appPrivateKey);
-  const [_______, setPublicKey] = useAtom(appPublicKey);
   const [________, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -80,6 +79,11 @@ const Header = () => {
   const [__________, setBagsNFTs] = useAtom(bagsNfts);
   const [___________, setTotalBalance] = useAtom(bagsBalance);
   const [____________, setHasGenesisProfile] = useAtom(genesisProfileUser);
+
+  const [isModalOpen, setIsModalOpen] = useAtom(signInModal);
+  const [initialModalStep, setInitialModalStep] = useAtom(
+    signInModalInitialStep,
+  );
 
   const [community] = useAtom(currentGroupCommunity);
 
@@ -124,7 +128,7 @@ const Header = () => {
   }, []);
 
   const getAllTokenAddreses = React.useCallback(async () => {
-    const response = await axios.get("/api/get-all-coins-address");
+    const response = await internalClient.get("/api/get-all-coins-address");
 
     const data: any = response.data;
 
@@ -332,80 +336,88 @@ const Header = () => {
   }, [wallet]);
 
   const getProfileInfo = async () => {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-
-    setIsLoadingProfile(true);
-
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
-
-    const profileInfo = await userConn.getUserInfo();
-
-    const genesis = profileInfo.activationTokens[0]?.genesis;
-    const activation = profileInfo.activationTokens[0]?.activation;
-
-    const totalMints = profileInfo.totalChild;
-
-    let firstTime = true;
-
-    if (profileInfo.activationTokens.length > 0) {
-      if (profileInfo.activationTokens[0].activation != "") {
-        firstTime = false;
-      }
-    }
-    const totalChilds = totalMints;
-
-    let quota = 0;
-
-    if (totalChilds < 3) {
-      quota = 10;
-    } else if (totalChilds >= 3 && totalChilds < 7) {
-      quota = 25;
-    } else if (totalChilds >= 7 && totalChilds < 15) {
-      quota = 50;
-    } else if (totalChilds >= 15 && totalChilds < 35) {
-      quota = 250;
-    } else if (totalChilds >= 35 && totalChilds < 75) {
-      quota = 500;
-    } else {
-      quota = 1000;
-    }
-
-    const profileNft = profileInfo.profiles[0];
-    let username = "";
-    if (profileNft?.address) {
-      username = profileNft.userinfo.username;
-
-      const notificationResult = await axios.get(
-        "/api/notifications?wallet=" + wallet?.publicKey.toBase58(),
+    try {
+      const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        {
+          confirmTransactionInitialTimeout: 120000,
+        },
       );
-      setBadge(notificationResult.data.unread);
-      setNotifications(notificationResult.data.data);
+      const env = new anchor.AnchorProvider(connection, wallet!, {
+        preflightCommitment: "processed",
+      });
+
+      setIsLoadingProfile(true);
+
+      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+      const profileInfo = await userConn.getUserInfo();
+
+      const genesis = profileInfo.activationTokens[0]?.genesis;
+      const activation = profileInfo.activationTokens[0]?.activation;
+
+      const totalMints = profileInfo.totalChild;
+
+      let firstTime = true;
+
+      if (profileInfo.activationTokens.length > 0) {
+        if (profileInfo.activationTokens[0].activation != "") {
+          firstTime = false;
+        }
+      }
+      const totalChilds = totalMints;
+
+      let quota = 0;
+
+      if (totalChilds < 3) {
+        quota = 10;
+      } else if (totalChilds >= 3 && totalChilds < 7) {
+        quota = 25;
+      } else if (totalChilds >= 7 && totalChilds < 15) {
+        quota = 50;
+      } else if (totalChilds >= 15 && totalChilds < 35) {
+        quota = 250;
+      } else if (totalChilds >= 35 && totalChilds < 75) {
+        quota = 500;
+      } else {
+        quota = 1000;
+      }
+
+      const profileNft = profileInfo.profiles[0];
+      let username = "";
+      if (profileNft?.address) {
+        username = profileNft.userinfo.username;
+
+        const notificationResult = await axios.get(
+          "/api/notifications?wallet=" + wallet?.publicKey.toBase58(),
+        );
+        setBadge(notificationResult.data.unread);
+        setNotifications(notificationResult.data.data);
+      }
+
+      setProfileInfo({
+        generation: profileInfo.generation,
+        genesisToken: genesis,
+        profileLineage: profileInfo.profilelineage,
+        activationToken: activation,
+        solBalance: profileInfo.solBalance,
+        mmoshBalance: profileInfo.oposTokenBalance,
+        usdcBalance: profileInfo.usdcTokenBalance,
+        firstTimeInvitation: firstTime,
+        quota,
+        activationTokenBalance:
+          parseInt(profileInfo.activationTokenBalance) +
+          profileInfo.totalChild || 0,
+        profile: {
+          name: username,
+          address: profileNft?.address,
+          image: profileNft?.userinfo.image,
+        },
+      });
+    } catch (err) {
+      console.error("Header error: ", err);
     }
 
-    setProfileInfo({
-      generation: profileInfo.generation,
-      genesisToken: genesis,
-      profileLineage: profileInfo.profilelineage,
-      activationToken: activation,
-      solBalance: profileInfo.solBalance,
-      mmoshBalance: profileInfo.oposTokenBalance,
-      usdcBalance: profileInfo.usdcTokenBalance,
-      firstTimeInvitation: firstTime,
-      quota,
-      activationTokenBalance:
-        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild ||
-        0,
-      profile: {
-        name: username,
-        address: profileNft?.address,
-        image: profileNft?.userinfo.image,
-      },
-    });
     setIsLoadingProfile(false);
   };
 
@@ -481,173 +493,187 @@ const Header = () => {
   }
 
   return (
-    <header className="flex flex-col bg-transparent">
-      <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
-        <div className="flex w-full justify-between items-center mx-8">
-          {isMobileScreen ? (
-            <MobileDrawer />
-          ) : (
-            <div
-              className="flex justify-end w-[20%] mr-12 cursor-pointer"
-              onClick={() => {
-                if (pathname === "/" && isUserAuthenticated) {
-                  setIsUserAuthenticated(false);
-                  return;
-                }
-                router.push("/");
-              }}
-            >
-              <KinshipBots />
-            </div>
-          )}
-
-          {!isMobileScreen && <Tabs />}
-
-          <div className="flex items-center justify-end max-w-[45%] md:w-[35%] lg:w-[20%]">
-            {currentUser?.profilenft && (
-              <div className="dropdown pr-6 ml-4">
-                <a
-                  className="text-base text-white cursor-pointer relative"
-                  tabIndex={0}
-                  href="javascript:void(0)"
-                  onClick={resetNotification}
-                >
-                  <img
-                    src="/images/alert.png"
-                    alt="notification"
-                    className="max-w-4 w-4"
-                  />
-                  {badge > 0 && (
-                    <span className="bg-[#FF0000] text-white w-6 h-6 rounded-full absolute text-center leading-6  right-[-11px] top-[-13px]">
-                      {badge}
-                    </span>
-                  )}
-                </a>
-                {notifications && (
-                  <div
-                    className="dropdown-content z-[999999999] top-[72px]"
-                    tabIndex={0}
-                  >
-                    <div className="w-64 bg-black bg-opacity-[0.56] backdrop-blur-[2px] p-5 max-h-96 overflow-y-auto">
-                      {notifications.length > 0 && (
-                        <div>
-                          {notifications.map((value: any) => (
-                            <Notification data={value} key={value._id} />
-                          ))}
-                        </div>
-                      )}
-                      {notifications.length == 0 && (
-                        <p className="text-base">
-                          You don't have any notification
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {!!currentUser?.profile?.image ? (
-              <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
-                  } cursor-pointer`}
-                onClick={() => {
-                  router.push(`/${currentUser?.profile.username}`);
-                }}
-              >
-                <Image
-                  src={currentUser.profile.image}
-                  alt="Profile Image"
-                  className="rounded-md"
-                  layout="fill"
-                />
-              </div>
+    <>
+      <AlertModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialStep={initialModalStep}
+        isHome={pathname === "/"}
+      />
+      <header className="flex flex-col bg-transparent">
+        <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
+          <div className="flex w-full justify-between items-center mx-8">
+            {isMobileScreen ? (
+              <MobileDrawer />
             ) : (
               <div
-                className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
-                  } cursor-pointer`}
+                className="flex justify-end w-[20%] mr-12 cursor-pointer"
                 onClick={() => {
-                  if (
-                    !!currentUser?.guest_data.username &&
-                    currentUser?.guest_data.username !== ""
-                  ) {
-                    router.push(`/${currentUser?.guest_data.username}`);
+                  if (pathname === "/" && isUserAuthenticated) {
+                    setIsUserAuthenticated(false);
+                    return;
                   }
+                  router.push("/");
                 }}
               >
-                <Image
-                  src={
-                    !!currentUser?.guest_data?.picture
-                      ? currentUser!.guest_data.picture
-                      : "https://storage.googleapis.com/mmosh-assets/default.png"
-                  }
-                  alt="Profile Image"
-                  className="rounded-md"
-                  layout="fill"
-                />
+                <KinshipBots />
               </div>
             )}
 
-            {!isMobileScreen && isUserAuthenticated && (
-              <button
-                className="relative bg-[#3A34888A] px-2 py-3 rounded-xl ml-2"
-                onClick={() => router.push("/settings")}
-              >
-                <p className="md:text-base text-sm text-white settings-btn">
-                  Settings
-                </p>
-              </button>
-            )}
+            {!isMobileScreen && <Tabs />}
 
-            {!isMobileScreen && (
-              <button
-                className="relative bg-[#3A34888A] px-4 py-3 rounded-xl ml-4"
-                disabled={isLoadingLogout}
-                onClick={() => {
-                  if (isUserAuthenticated) {
-                    logout();
-                    return;
-                  }
+            <div className="flex items-center justify-end max-w-[45%] md:w-[35%] lg:w-[20%]">
+              {currentUser?.profilenft && (
+                <div className="dropdown pr-6 ml-4">
+                  <a
+                    className="text-base text-white cursor-pointer relative"
+                    tabIndex={0}
+                    href="javascript:void(0)"
+                    onClick={resetNotification}
+                  >
+                    <img
+                      src="/images/alert.png"
+                      alt="notification"
+                      className="max-w-4 w-4"
+                    />
+                    {badge > 0 && (
+                      <span className="bg-[#FF0000] text-white w-6 h-6 rounded-full absolute text-center leading-6  right-[-11px] top-[-13px]">
+                        {badge}
+                      </span>
+                    )}
+                  </a>
+                  {notifications && (
+                    <div
+                      className="dropdown-content z-[999999999] top-[72px]"
+                      tabIndex={0}
+                    >
+                      <div className="w-64 bg-black bg-opacity-[0.56] backdrop-blur-[2px] p-5 max-h-96 overflow-y-auto">
+                        {notifications.length > 0 && (
+                          <div>
+                            {notifications.map((value: any) => (
+                              <Notification data={value} key={value._id} />
+                            ))}
+                          </div>
+                        )}
+                        {notifications.length == 0 && (
+                          <p className="text-base">
+                            You don't have any notification
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
-                  router.push("/login");
-                }}
-              >
-                {isLoadingLogout ? (
-                  <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
-                ) : (
+              {!!currentUser?.profile?.image && (
+                <div
+                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                    } cursor-pointer`}
+                  onClick={() => {
+                    router.push(`/${currentUser?.profile.username}`);
+                  }}
+                >
+                  <Image
+                    src={currentUser.profile.image}
+                    alt="Profile Image"
+                    className="rounded-md"
+                    layout="fill"
+                  />
+                </div>
+              )}
+
+              {!!currentUser && !currentUser?.profile?.image && (
+                <div
+                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                    } cursor-pointer`}
+                  onClick={() => {
+                    if (
+                      !!currentUser?.guest_data.username &&
+                      currentUser?.guest_data.username !== ""
+                    ) {
+                      router.push(`/${currentUser?.guest_data.username}`);
+                    }
+                  }}
+                >
+                  <Image
+                    src={
+                      !!currentUser?.guest_data?.picture
+                        ? currentUser!.guest_data.picture
+                        : "https://storage.googleapis.com/mmosh-assets/default.png"
+                    }
+                    alt="Profile Image"
+                    className="rounded-md"
+                    layout="fill"
+                  />
+                </div>
+              )}
+
+              {!isMobileScreen && isUserAuthenticated && (
+                <button
+                  className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
+                  onClick={() => router.push("/settings")}
+                >
                   <p className="md:text-base text-sm text-white settings-btn">
-                    {isUserAuthenticated ? "Logout" : "Log In"}
+                    Settings
                   </p>
-                )}
-              </button>
-            )}
+                </button>
+              )}
+
+              {!isUserAuthenticated && (
+                <button
+                  className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <p className="text-white text-base text-center">Sign Up</p>
+                </button>
+              )}
+
+              {!isMobileScreen && (
+                <button
+                  className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
+                  disabled={isLoadingLogout}
+                  onClick={() => {
+                    if (isUserAuthenticated) {
+                      logout();
+                      return;
+                    }
+
+                    setIsModalOpen(true);
+                  }}
+                >
+                  {isLoadingLogout ? (
+                    <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
+                  ) : (
+                    <p className="md:text-base text-sm text-white settings-btn">
+                      {isUserAuthenticated ? "Logout" : "Log In"}
+                    </p>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {pathname.includes("/communities/") && community !== null && (
-        <div
-          className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"
-            }`}
-        >
+        {pathname.includes("/communities/") && community !== null && (
           <div
-            className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"
-              } py-20`}
+            className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"
+              }`}
           >
-            <h2 className="text-center">{community.name}</h2>
+            <div
+              className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"
+                } py-20`}
+            >
+              <h2 className="text-center">{community.name}</h2>
 
-            <p className="text-base my-4">{community.description}</p>
+              <p className="text-base my-4">{community.description}</p>
+            </div>
           </div>
-        </div>
-      )}
-
-      {pathname !== "/" && (
-        <MessageBanner
-          type="info"
-          message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
-        />
-      )}
-    </header>
+        )}
+      </header>
+    </>
   );
 };
 

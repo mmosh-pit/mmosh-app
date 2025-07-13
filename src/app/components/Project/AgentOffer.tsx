@@ -21,6 +21,7 @@ import AgentOfferItem from "./AgentOfferItem";
 import { Bars } from "react-loader-spinner";
 import useWallet from "@/utils/wallet";
 import useConnection from "@/utils/connection";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const AgentOffer = ({ symbol }: { symbol?: string }) => {
   const connection = useConnection();
@@ -570,7 +571,7 @@ const AgentOffer = ({ symbol }: { symbol?: string }) => {
         const res4: any = await communityConnection.registerCommonLut();
         console.log("register lookup result ", res4);
 
-        await axios.post("/api/offer/save", {
+        await internalClient.post("/api/offer/save", {
           name: fields.name,
           symbol: fields.symbol.toUpperCase(),
           desc: fields.desc,

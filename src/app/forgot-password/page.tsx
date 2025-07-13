@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import client from "../lib/httpClient";
 import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
+import internalClient from "../lib/internalHttpClient";
 
 const ForgotPassword = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const ForgotPassword = () => {
       e.preventDefault();
       setIsLoading(true);
       try {
-        await axios.post("/api/forgot-password-verification", {
+        await internalClient.post("/api/forgot-password-verification", {
           email,
         });
         setSuccess(true);

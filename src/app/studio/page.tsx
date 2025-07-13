@@ -31,7 +31,7 @@ export default function ProjectCreate() {
 
   const getProjectList = async (address: any) => {
     try {
-      const result = await axios.get(`/api/project/mylist`);
+      const result = await axios.get(`/api/project/mylist?creator=${address}`);
       let newTypes = [
         { label: "New Personal Agent", value: "personal" },
         { label: "New Kinship Agent", value: "kinship" },

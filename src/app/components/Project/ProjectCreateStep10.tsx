@@ -19,6 +19,7 @@ import { fetchImage } from "@/app/lib/forge/fetchImage";
 import { generateCommunityInvitationImage } from "@/app/lib/forge/generateCommunityInvitationImage";
 import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
 import useWallet from "@/utils/wallet";
+import internalClient from "@/app/lib/internalHttpClient";
 
 export default function ProjectCreateStep10({
   onPageChange,
@@ -339,8 +340,8 @@ export default function ProjectCreateStep10({
             prepareNumber(
               Math.ceil(
                 passItem.price /
-                  (coins.listingPrice -
-                    coins.listingPrice * (passItem.discount / 100)),
+                (coins.listingPrice -
+                  coins.listingPrice * (passItem.discount / 100)),
               ),
             ) * web3Consts.LAMPORTS_PER_OPOS,
           cost: passItem.price * 1000_000,
@@ -407,8 +408,8 @@ export default function ProjectCreateStep10({
             user: wallet.publicKey,
             value: Math.ceil(
               coins.supply *
-                (presale.maxPresale / 100) *
-                web3Consts.LAMPORTS_PER_OPOS,
+              (presale.maxPresale / 100) *
+              web3Consts.LAMPORTS_PER_OPOS,
             ),
             duration: new Date(
               new Date(
@@ -457,8 +458,8 @@ export default function ProjectCreateStep10({
                 user: new anchor.web3.PublicKey(element1.wallet),
                 value: Math.ceil(
                   coins.supply *
-                    (element.cliff.percentage / 100) *
-                    web3Consts.LAMPORTS_PER_OPOS,
+                  (element.cliff.percentage / 100) *
+                  web3Consts.LAMPORTS_PER_OPOS,
                 ),
                 duration: new Date(
                   date.setMonth(date.getMonth() + element.cliff.months),
@@ -471,8 +472,8 @@ export default function ProjectCreateStep10({
                 user: new anchor.web3.PublicKey(element1.wallet),
                 value: Math.ceil(
                   coins.supply *
-                    (element.vesting.percentage / 100) *
-                    web3Consts.LAMPORTS_PER_OPOS,
+                  (element.vesting.percentage / 100) *
+                  web3Consts.LAMPORTS_PER_OPOS,
                 ),
                 duration: new Date(
                   date.setMonth(date.getMonth() + element.vesting.months),
@@ -697,61 +698,13 @@ export default function ProjectCreateStep10({
       const res4: any = await communityConnection.registerCommonLut();
       console.log("register lookup result ", res4);
 
-      // setButtonText("Buying new Project...")
-      // const res5 = await communityConnection.sendProjectPrice(profileInfo?.profile.address,100000);
-      // if(res5.Err) {
-      //     createMessage("error creating new project","danger-container")
-      //     return
-      // }
-      // console.log("send price result ", res5.Ok?.info)
-
-      // pump the vote changes
-      // await axios.post("/api/project/save-coins", {
-      //     name: "Pump The Vote Blue",
-      //     symbol: "PTVB",
-      //     image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVB.png",
-      //     key: process.env.NEXT_PUBLIC_PTVB_TOKEN,
-      //     desc: "Pump The Vote Blue is a MMOSH Community Coin for progressives who are deeply committed to the principles of social justice, equality, and the protection of individual rights. We believe in a government that plays an active role in ensuring that all citizens have access to essential services like healthcare, education, and economic opportunities, and that it should work to reduce disparities and promote fairness in society. We are united by a vision of an inclusive America where government acts as a force for good, ensuring that every person has the opportunity to succeed and live a life of dignity, respect and personal freedom.",
-      //     supply: 1000000000,
-      //     decimals: 9,
-      //     creator: "FBxcKW6maxysrYSHNLYPDg3qVga9g9DysSVEYoSmfN2A",
-      //     listingprice: 1,
-      //     projectkey: projectKeyPair.publicKey.toBase58()
-      // });
-
-      // await axios.post("/api/project/save-coins", {
-      //     name: "Pump The Vote Red",
-      //     symbol: "PTVR",
-      //     image: "https://shdw-drive.genesysgo.net/Ejpot7jAYngByq5EgjvgEMgqJjD8dnjN4kSkiz6QJMsH/PTVR.png",
-      //     key: process.env.NEXT_PUBLIC_PTVR_TOKEN,
-      //     desc: "Pump The Vote Red is a MMOSH Community Coin for conservatives who are we are united by a desire to protect and strengthen the principles that we believe have made America a great and prosperous nation, such as the principles of limited government, personal responsibility, and the preservation of traditional values. We are proponents of fiscal responsibility, advocating for lower taxes, reduced government spending, and balanced budgets to promote economic growth and ensure long-term sustainability.",
-      //     supply: 1000000000,
-      //     decimals: 9,
-      //     creator: "FBxcKW6maxysrYSHNLYPDg3qVga9g9DysSVEYoSmfN2A",
-      //     listingprice: 1,
-      //     projectkey: projectKeyPair.publicKey.toBase58()
-      // });
-
-      // await axios.post("/api/project/save-coins", {
-      //     name: coins.name,
-      //     symbol: coins.symbol,
-      //     image: coins.image.preview,
-      //     key: mintKey,
-      //     desc: coins.desc,
-      //     supply: coins.supply,
-      //     decimals: project.isExternalCoin ? project.externalCoin.decimals : 9,
-      //     creator: wallet.publicKey.toBase58(),
-      //     listingprice: coins.listingPrice,
-      //     projectkey: projectKeyPair.publicKey.toBase58()
-      // });
-
       // save pass
       for (let index = 0; index < passes.length; index++) {
         const passItem: any = passes[index];
         let redemptionDate = new Date(
           passItem.redemptionDate + " " + passItem.redemptionTime,
         ).toUTCString();
-        await axios.post("/api/project/save-pass", {
+        await internalClient.post("/api/project/save-pass", {
           name: passItem.name,
           symbol: passItem.symbol,
           image: passItem.image.preview,
@@ -770,7 +723,7 @@ export default function ProjectCreateStep10({
 
       if (!project.isExternalCoin) {
         // save liquidity
-        await axios.post("/api/project/save-liquidity", {
+        await internalClient.post("/api/project/save-liquidity", {
           sol: liquidity.sol,
           usdc: liquidity.usd,
           mmosh: liquidity.mmosh,
@@ -781,7 +734,7 @@ export default function ProjectCreateStep10({
       // save community
       for (let index = 0; index < communities.communities.length; index++) {
         const element: any = communities.communities[index];
-        await axios.post("/api/project/save-community", {
+        await internalClient.post("/api/project/save-community", {
           name: element.title,
           communitykey: element.community,
           projectkey: projectKeyPair.publicKey.toBase58(),
@@ -791,7 +744,7 @@ export default function ProjectCreateStep10({
       // save profile
       for (let index = 0; index < communities.profiles.length; index++) {
         const element: any = communities.profiles[index];
-        await axios.post("/api/project/save-profile", {
+        await internalClient.post("/api/project/save-profile", {
           name: element.name,
           profilekey: element.profilenft,
           role: element.role,
@@ -803,7 +756,7 @@ export default function ProjectCreateStep10({
         // save tokenomics
         for (let index = 0; index < tokenomics.length; index++) {
           const element: any = tokenomics[index];
-          await axios.post("/api/project/save-tokenomics", {
+          await internalClient.post("/api/project/save-tokenomics", {
             type: element.type,
             value: element.value,
             cliff: element.cliff,
@@ -823,7 +776,7 @@ export default function ProjectCreateStep10({
       let dexDate = new Date(
         presale.dexListingDate + " " + presale.dexListingTime,
       ).toUTCString();
-      await axios.post("/api/project/save-project", {
+      await internalClient.post("/api/project/save-project", {
         name: project.name,
         symbol: project.symbol,
         desc: project.desc,
@@ -1005,7 +958,7 @@ export default function ProjectCreateStep10({
     try {
       const result = await axios(
         "/api/project/external-coin-detail?coin=" +
-          projectData.externalCoin.address,
+        projectData.externalCoin.address,
       );
       if (result.data.token) {
         const coinDetaildata: any = result.data.token.data.attributes;
@@ -1299,9 +1252,9 @@ export default function ProjectCreateStep10({
                           {prepareNumber(
                             Math.ceil(
                               passItem.price /
-                                (coins.listingPrice -
-                                  coins.listingPrice *
-                                    (passItem.discount / 100)),
+                              (coins.listingPrice -
+                                coins.listingPrice *
+                                (passItem.discount / 100)),
                             ),
                           )}
                         </p>
@@ -1311,7 +1264,7 @@ export default function ProjectCreateStep10({
                         <p className="text-para-font-size bg-black bg-opacity-[0.2] px-3.5 py-2.5 rounded-md">
                           {prepareNumber(
                             coins.listingPrice -
-                              coins.listingPrice * (passItem.discount / 100),
+                            coins.listingPrice * (passItem.discount / 100),
                           ).toString()}
                         </p>
                       </div>

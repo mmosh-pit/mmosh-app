@@ -17,6 +17,7 @@ import { calcNonDecimalValue } from "@/anchor/curve/utils";
 import useWallet from "@/utils/wallet";
 import ProfileFilters from "./ProfileFilters";
 import GuildList from "../GuildList";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const Profile = ({ username }: { username: any }) => {
   const rendered = React.useRef(false);
@@ -275,7 +276,7 @@ const Profile = ({ username }: { username: any }) => {
         }
         nextStatus = 2;
       }
-      await axios.post("/api/connections/send", {
+      await internalClient.post("/api/connections/send", {
         sender: currentUser.wallet,
         receiver: userData.wallet,
         badge: connectionbadge,
@@ -296,7 +297,7 @@ const Profile = ({ username }: { username: any }) => {
     try {
       setReqestLoader(true);
       if (type === "accept") {
-        await axios.post("/api/connections/send", {
+        await internalClient.post("/api/connections/send", {
           sender: userData.wallet,
           receiver: currentUser.wallet,
           badge: "",
@@ -308,7 +309,7 @@ const Profile = ({ username }: { username: any }) => {
           setConnectionStatus(3);
         }
       } else {
-        await axios.post("/api/connections/send", {
+        await internalClient.post("/api/connections/send", {
           sender: userData.wallet,
           receiver: currentUser.wallet,
           badge: "",

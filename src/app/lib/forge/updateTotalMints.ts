@@ -1,7 +1,7 @@
-import axios from "axios";
+import internalClient from "../internalHttpClient";
 
 export const updateTotalMints = async (totalMints: any) => {
-  await axios.post("/api/set-option", {
+  await internalClient.post("/api/set-option", {
     name: "totalmints",
     value: totalMints,
   });

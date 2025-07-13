@@ -6,6 +6,7 @@ import axios from "axios";
 import InformDocument from "./InformDocument";
 import { AIDocument } from "@/app/models/AIDocument";
 import { uploadFile } from "@/app/lib/firebase";
+import internalClient from "@/app/lib/internalHttpClient";
 
 type Props = {
   asset: BagsNFT | BagsCoin;
@@ -65,7 +66,7 @@ const AssetCard = ({
         formData,
       );
 
-      const res = await axios.post("/api/inform-document", {
+      const res = await internalClient.post("/api/inform-document", {
         name: event.target.files.item(0)!.name,
         url: url,
         isPrivate: true,

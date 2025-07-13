@@ -1,9 +1,8 @@
 import * as React from "react";
 import { useAtom } from "jotai";
-import Image from "next/image";
 import { Bars } from "react-loader-spinner";
 
-import { chatsStore, selectedChatStore, chatsLoadingStore } from "@/app/store/chat";
+import { chatsStore, selectedChatStore, chatsLoading } from "@/app/store/chat";
 import { data } from "@/app/store";
 import KinshipIcon from "@/assets/icons/KinshipIcon";
 import client from "@/app/lib/httpClient";
@@ -15,7 +14,7 @@ const ChatAgentSelector = () => {
   const [currentUser] = useAtom(data);
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
-  const [areChatsLoading, setAreChatsLoading] = useAtom(chatsLoadingStore);
+  const [areChatsLoading, setAreChatsLoading] = useAtom(chatsLoading);
 
   const getChats = async (keyword: any) => {
     try {
@@ -29,7 +28,7 @@ const ChatAgentSelector = () => {
       const listResult = await client.get(url);
 
       //console.log("Chats from /chats/active endpoint:", listResult.data.data);
-      
+
       let defaultChat;
 
       const otherChats = [];
@@ -37,7 +36,7 @@ const ChatAgentSelector = () => {
       for (const chat of listResult.data.data) {
         //console.log("Processing chat:", chat);
         //console.log("Chat agent system_prompt:", chat?.chatAgent?.system_prompt);
-        
+
         if (chat?.chatAgent.symbol === "KIN") {
           defaultChat = chat;
           continue;
@@ -118,17 +117,17 @@ const ChatAgentSelector = () => {
             <div
               className={`
                 flex items-center p-4 cursor-pointer transition-all duration-200 border-b border-[#FFFFFF05] last:border-b-0
-                ${selectedChat?.id === chat.id 
-                  ? "bg-[#25235a] border-r-4 border-r-[#4A4B6C] shadow-lg" 
+                ${selectedChat?.id === chat.id
+                  ? "bg-[#25235a] border-r-4 border-r-[#4A4B6C] shadow-lg"
                   : "hover:bg-[#00073a] hover:shadow-md"
                 }
               `}
               onClick={() => setSelectedChat(chat)}
               key={chat.id}
             >
-              <Avatar 
-                src={chat.chatAgent?.image} 
-                alt={chat.chatAgent?.name} 
+              <Avatar
+                src={chat.chatAgent?.image}
+                alt={chat.chatAgent?.name}
                 size={48}
                 className="mr-3 flex-shrink-0"
               />
@@ -151,10 +150,9 @@ const ChatAgentSelector = () => {
 
                 {chat.lastMessage?.id && (
                   <p className="text-xs text-gray-500 truncate leading-relaxed">
-                    {chat.lastMessage.content.length > 50 
-                      ? `${chat.lastMessage.content.substring(0, 50)}...` 
-                      : chat.lastMessage.content
-                    }
+                    {chat.lastMessage.content.length > 50
+                      ? `${chat.lastMessage.content.substring(0, 50)}...`
+                      : chat.lastMessage.content}
                   </p>
                 )}
               </div>

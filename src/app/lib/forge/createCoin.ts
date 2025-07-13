@@ -15,6 +15,7 @@ import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
 import { calculatePrice } from "./setupCoinPrice";
 import { deleteShdwDriveFile } from "../deleteShdwDriveFile";
 import { Connectivity as UserConn } from "@/anchor/user";
+import internalClient from "../internalHttpClient";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -36,7 +37,7 @@ export const createCoin = async ({
   let shdwHash = "";
 
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-    confirmTransactionInitialTimeout: 120000
+    confirmTransactionInitialTimeout: 120000,
   });
   const env = new anchor.AnchorProvider(connection, wallet, {
     preflightCommitment: "processed",
@@ -120,7 +121,7 @@ export const createCoin = async ({
 
     setMintingStatus("Creating Bonding Curve...");
 
-    console.log("basetoken ", baseToken)
+    console.log("basetoken ", baseToken);
 
     const res = await curveConn.createTokenBonding({
       name,
@@ -149,24 +150,22 @@ export const createCoin = async ({
         slippage: 0.5,
       });
     } else {
-      const buytx = await axios.post("/api/ptv/swap", {
+      const buytx = await internalClient.post("/api/ptv/swap", {
         coin: baseToken.token,
         bonding: res.tokenBonding,
         supply: Number(supply),
         address: wallet.publicKey.toBase58(),
       });
       if (buytx.data.status) {
-        const data:any =  Buffer.from(buytx.data.transaction, "base64");
-        const tx = anchor.web3.VersionedTransaction.deserialize(
-          data,
-        );
+        const data: any = Buffer.from(buytx.data.transaction, "base64");
+        const tx = anchor.web3.VersionedTransaction.deserialize(data);
         buyres = await curveConn.provider.sendAndConfirm(tx);
         if (buyres) {
           let tokenType = "Blue";
           if (baseToken.token === process.env.NEXT_PUBLIC_PTVR_TOKEN) {
             tokenType = "Red";
           }
-          await axios.post("/api/ptv/update-rewards", {
+          await internalClient.post("/api/ptv/update-rewards", {
             coin: baseToken.token,
             wallet: wallet.publicKey.toBase58(),
             method: "buy",
@@ -213,7 +212,7 @@ export const createCoin = async ({
         price: curveConfig.current(),
         type: "buy",
         wallet: wallet.publicKey.toBase58(),
-        tx: buyres
+        tx: buyres,
       };
 
       const tokenParams = {
@@ -227,11 +226,11 @@ export const createCoin = async ({
         creatorUsername: username,
       };
 
-      await axios.post("/api/save-directory", directoryParams);
+      await internalClient.post("/api/save-directory", directoryParams);
 
       setMintingStatus("Saving Token...");
 
-      await axios.post("/api/save-token", tokenParams);
+      await internalClient.post("/api/save-token", tokenParams);
 
       return {
         message:

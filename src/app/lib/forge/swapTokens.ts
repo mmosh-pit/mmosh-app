@@ -12,6 +12,7 @@ import { list } from "firebase/storage";
 import { getPriceForPTV } from "./jupiter";
 import { CoinDetail } from "@/app/models/coin";
 import { FrostWallet } from "@/utils/frostWallet";
+import internalClient from "../internalHttpClient";
 
 export const swapTokens = async (
   baseToken: SwapCoin,
@@ -355,11 +356,11 @@ export const swapTokens = async (
 };
 
 const saveDirectory = async (params: CoinDirectoryItem) => {
-  await axios.post("/api/save-directory", params);
+  await internalClient.post("/api/save-directory", params);
 };
 
 const tryCurveUpgrade = async (detail: CoinDetail) => {
-  await axios.get("/api/curve-upgrade?bonding=" + detail.bonding);
+  await internalClient.get("/api/curve-upgrade?bonding=" + detail.bonding);
 };
 
 const sendTelegramNotification = async (

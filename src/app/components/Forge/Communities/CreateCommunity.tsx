@@ -17,6 +17,7 @@ import { generateGroupCommunityPass } from "@/app/lib/forge/generateGroupCommuni
 import { uploadImageFromBlob } from "@/app/lib/uploadImageFromBlob";
 import { deleteShdwDriveFile } from "@/app/lib/deleteShdwDriveFile";
 import { data } from "@/app/store";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const CreateCommunity = () => {
   const router = useRouter();
@@ -67,7 +68,7 @@ const CreateCommunity = () => {
     try {
       const profile = currentUser!.profile;
 
-      await axios.post("/api/create-group-community", {
+      await internalClient.post("/api/create-group-community", {
         ...form,
         passImage: imageUri,
         coinSymbol: selectedCoin!.symbol,

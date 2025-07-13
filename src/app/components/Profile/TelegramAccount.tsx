@@ -13,76 +13,6 @@ type Props = {
 
 const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {
   const wallet = useWallet();
-  // const [isDisconnecting, setIsDisconnecting] = React.useState(false);
-  // const [isConnecting, setIsConnecting] = React.useState(false);
-
-  // const getButtonLabel = React.useCallback(() => {
-  //   if (isDisconnecting) {
-  //     return "Disconnect";
-  //   }
-  //
-  //   if (isConnecting) {
-  //     return "Connect";
-  //   }
-  //
-  //   return "Switch Account";
-  // }, [isDisconnecting, isConnecting]);
-  //
-  // const toggleButtonState = React.useCallback(() => {
-  //   if (!isDisconnecting && !isConnecting) {
-  //     setIsDisconnecting(true);
-  //     return;
-  //   }
-  //
-  //   if (isDisconnecting && !isConnecting) {
-  //     setIsConnecting(true);
-  //     return;
-  //   }
-  //
-  //   if (isDisconnecting && isConnecting) {
-  //     window.Telegram.Login.auth(
-  //       {
-  //         bot_id: process.env.NEXT_PUBLIC_BOT_TOKEN,
-  //         request_access: true,
-  //       },
-  //       async (data: any) => {
-  //         if (!data.id) return;
-  //         const telegramData = {
-  //           id: data.id,
-  //           firstName: data.first_name,
-  //           username: data.username,
-  //         };
-  //
-  //         await axios.put("/api/update-wallet-data", {
-  //           wallet: wallet!.publicKey,
-  //           field: "telegram",
-  //           value: telegramData,
-  //         });
-  //
-  //         setUserData((prev: any) => ({
-  //           ...prev,
-  //           telegram: telegramData,
-  //         }));
-  //       },
-  //     );
-  //
-  //     setIsDisconnecting(false);
-  //     setIsConnecting(false);
-  //     return;
-  //   }
-  // }, [isDisconnecting, isConnecting]);
-
-  // const getButtonHelperText = React.useCallback(() => {
-  //   if (isDisconnecting && !isConnecting) {
-  //     return "*First, disconnect from Telegram";
-  //   }
-  //
-  //   if (isConnecting) {
-  //     return "*Now, connect the Telegram account you would like to use.";
-  //   }
-  //
-  //   return "";
-  // }, [isDisconnecting, isConnecting]);
 
   const executeLogin = () => {
     window.Telegram.Login.auth(
@@ -91,9 +21,6 @@ const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {
         request_access: true,
       },
       async (data: any) => {
-        // await axios.post("/api/log-data", {
-        //   data,
-        // });
         if (!data.id) return;
 
         const user = await axios.get(`/api/get-bot-user?id=${data.id}`);

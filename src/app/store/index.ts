@@ -55,3 +55,7 @@ export const isAuthModalOpen = atom(false);
 
 export const appPrivateKey = atom("");
 export const appPublicKey = atom("");
+
+export const signInModal = atom(false);
+export const signInModalInitialStep = atom(0);
+export const signInCurrentBot = atom("");

@@ -23,6 +23,7 @@ import { BaseSpl, UpdateToken } from "./base/baseSpl";
 import axios from "axios";
 import { getAccount } from "forge-spl-token";
 import { createBurnInstruction } from "forge-spl-token";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const {
   systemProgram,
@@ -534,14 +535,8 @@ export class Connectivity {
       this.baseSpl.__reinit();
       const user = this.provider.publicKey;
       if (!user) throw "Wallet not found";
-      let {
-        name,
-        symbol,
-        uriHash,
-        parentProfile,
-        genesisProfile,
-        commonLut,
-      } = input;
+      let { name, symbol, uriHash, parentProfile, genesisProfile, commonLut } =
+        input;
 
       if (typeof parentProfile == "string")
         parentProfile = new web3.PublicKey(parentProfile);
@@ -656,7 +651,7 @@ export class Connectivity {
       const mainStateInfo = await this.program.account.mainState.fetch(
         this.mainState,
       );
-      let cost = 8 * (10**6);
+      let cost = 8 * 10 ** 6;
 
       let holdersfullInfo = [];
 
@@ -756,19 +751,19 @@ export class Connectivity {
         [
           {
             receiver: currentGenesisProfileHolder.toBase58(),
-            amount: 8 * .6,
+            amount: 8 * 0.6,
           },
           {
             receiver: currentParentProfileHolder.toBase58(),
-            amount: 8 * .2,
+            amount: 8 * 0.2,
           },
           {
             receiver: currentGrandParentProfileHolder.toBase58(),
-            amount: 8 * .1,
+            amount: 8 * 0.1,
           },
           {
             receiver: currentGgreatGrandParentProfileHolder.toBase58(),
-            amount: 6 * .03,
+            amount: 6 * 0.03,
           },
         ],
         web3Consts.oposToken,
@@ -817,7 +812,7 @@ export class Connectivity {
   }
 
   async storeRoyalty(sender: string, receivers: any, coin: any) {
-    await axios.post("/api/update-royalty", {
+    await internalClient.post("/api/update-royalty", {
       sender,
       receivers,
       coin,
@@ -890,7 +885,7 @@ export class Connectivity {
   }
 
   async storeLineage(wallet: string, lineage: any, profile: string) {
-    await axios.post("/api/save-lineage", {
+    await internalClient.post("/api/save-lineage", {
       wallet,
       lineage,
       profile,
@@ -1426,7 +1421,6 @@ export class Connectivity {
         //   if (i) {
         //     if (i.symbol) {
         //       const collectionInfo = i?.collection;
-
         //       if (
         //         collectionInfo?.address.toBase58() ==
         //         web3Consts.badgeCollection.toBase58() &&
@@ -1442,7 +1436,6 @@ export class Connectivity {
         //         if (isCreator) {
         //           continue;
         //         }
-
         //         const metadata = await this.getInvitationMetdata(i?.uri);
         //         if (metadata) {
         //           if (metadata.project != "") {
@@ -1451,7 +1444,6 @@ export class Connectivity {
         //         } else {
         //           continue;
         //         }
-
         //         try {
         //           const nftInfo: any = i;
         //           const activationTokenState =
@@ -1461,13 +1453,11 @@ export class Connectivity {
         //               activationTokenState,
         //             );
         //           const parentProfile = activationTokenStateInfo.parentProfile;
-
         //           activationTokens.push({
         //             name: i.name,
         //             genesis: parentProfile.toBase58(),
         //             activation: nftInfo.mintAddress.toBase58(),
         //           });
-
         //           const generationData =
         //             await this.getProfileChilds(parentProfile);
         //           totalChild = generationData.totalChild;
@@ -1909,7 +1899,7 @@ export class Connectivity {
   }
 
   async burnToken(
-    token: anchor.web3.PublicKey
+    token: anchor.web3.PublicKey,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
@@ -1922,15 +1912,15 @@ export class Connectivity {
         );
 
       const burnIx = createBurnInstruction(
-        minterProfileAta,           // source token account
-        token,          // token mint
+        minterProfileAta, // source token account
+        token, // token mint
         this.provider.publicKey, // authority
-        1,     // amount to burn (based on decimals)
-        [],            // multisig signers (empty for single-signer)
-        TOKEN_PROGRAM_ID
+        1, // amount to burn (based on decimals)
+        [], // multisig signers (empty for single-signer)
+        TOKEN_PROGRAM_ID,
       );
 
-       this.txis.push(burnIx);
+      this.txis.push(burnIx);
 
       const tx = new web3.Transaction().add(...this.txis);
       tx.recentBlockhash = (

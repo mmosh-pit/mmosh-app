@@ -18,6 +18,7 @@ import InBoundHeart from "../Profile/InBoundHeart";
 import { data } from "@/app/store";
 import { useAtom } from "jotai";
 import { FrostWallet } from "@/utils/frostWallet";
+import internalClient from "@/app/lib/internalHttpClient";
 
 type Props = {
   user: User;
@@ -259,7 +260,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
         }
         nextStatus = 2;
       }
-      await axios.post("/api/connections/send", {
+      await internalClient.post("/api/connections/send", {
         sender: currentuser.wallet,
         receiver: user.wallet,
         badge: connectionbadge,
@@ -280,7 +281,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
     try {
       setReqestLoader(true);
       if (type === "accept") {
-        await axios.post("/api/connections/send", {
+        await internalClient.post("/api/connections/send", {
           sender: user.wallet,
           receiver: currentuser.wallet,
           badge: "",
@@ -292,7 +293,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
           setConnectionStatus(3);
         }
       } else {
-        await axios.post("/api/connections/send", {
+        await internalClient.post("/api/connections/send", {
           sender: user.wallet,
           receiver: currentuser.wallet,
           badge: "",

@@ -19,24 +19,13 @@ const AgentPageInfo = ({
 
   const [members, setMembers] = React.useState<User[]>([]);
   const [offers, setOffers] = React.useState<any[]>([]);
-  const [projectDetail, setProjectDetail] =  React.useState<any>(null)
+  const [projectDetail, setProjectDetail] = React.useState<any>(null);
   const [stats, setStats] = React.useState<AgentStats>({
     offers: 0,
     subscribers: 0,
     teams: 0,
   });
   const [selectedTab, setSelectedTab] = React.useState(0);
-
-  const getTabStyles = React.useCallback(
-    (tab: number) => {
-      if (tab === selectedTab) {
-        return "text-base text-white font-bold underline";
-      }
-
-      return "text-base text-white font-bold";
-    },
-    [selectedTab],
-  );
 
   const getAgentStats = React.useCallback(async () => {
     const result = await axios.get(
@@ -69,50 +58,46 @@ const AgentPageInfo = ({
     getAgentMembers();
     getAgentOffers();
     getAgentTeams();
-    getProjectDetailFromAPI()
+    getProjectDetailFromAPI();
   }, [agentKey]);
 
-  const getProjectDetailFromAPI = async() => {
-      try {
-          let listResult = await axios.get(`/api/project/detail?address=${agentKey}`);
-          setProjectDetail(listResult.data)
-      } catch (error) {
-          setProjectDetail(null)
-      }
-  }
+  const getProjectDetailFromAPI = async () => {
+    try {
+      let listResult = await axios.get(
+        `/api/project/detail?address=${agentKey}`,
+      );
+      setProjectDetail(listResult.data);
+    } catch (error) {
+      setProjectDetail(null);
+    }
+  };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex bg-[#03002563] rounded-lg p-4">
+    <div className="w-full items-center flex flex-col">
+      <div className="flex bg-[#FFFFFF08] border-[1px] border-[#FFFFFF28] rounded-full p-2">
         <div
-          className="flex items-center cursor-pointer"
+          className={`flex items-center cursor-pointer ${selectedTab === 0 && "border-[1px] border-[#FFFFFF28] bg-[#FFFFFF20]"} rounded-full p-2`}
           onClick={() => setSelectedTab(0)}
         >
-          <p className={getTabStyles(0)}>Subscribers</p>
-          <div className="mx-1" />
-          <p className="text-base text-white">({stats.subscribers})</p>
+          <p className="text-base text-white">Subscribers</p>
         </div>
 
         <div className="mx-4" />
 
         <div
-          className="flex items-center cursor-pointer"
+          className={`flex items-center cursor-pointer ${selectedTab === 1 && "border-[1px] border-[#FFFFFF28] bg-[#FFFFFF20]"} rounded-full p-2`}
           onClick={() => setSelectedTab(1)}
         >
-          <p className={getTabStyles(1)}>Offers</p>
-          <div className="mx-1" />
-          <p className="text-base text-white">({stats.offers})</p>
+          <p className="text-base text-white">Offers</p>
         </div>
 
         <div className="mx-4" />
 
         <div
-          className="flex items-center cursor-pointer"
+          className={`flex items-center cursor-pointer ${selectedTab === 2 && "border-[1px] border-[#FFFFFF28] bg-[#FFFFFF20]"} rounded-full p-2`}
           onClick={() => setSelectedTab(2)}
         >
-          <p className={getTabStyles(2)}>Team Members</p>
-          <div className="mx-1" />
-          <p className="text-base text-white">({stats.teams})</p>
+          <p className="text-base text-white">Team Members</p>
         </div>
       </div>
 

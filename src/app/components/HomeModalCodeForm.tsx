@@ -5,7 +5,7 @@ import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import Button from "./common/Button";
 import client from "../lib/httpClient";
-import { isAuth, isAuthOverlayOpen } from "../store";
+import { isAuth, isAuthOverlayOpen, signInCurrentBot } from "../store";
 
 type HomeModalCodeFormProps = {
   onSuccess: () => void;
@@ -26,6 +26,7 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
   ];
 
   const [form, setForm] = useAtom(storeFormAtom);
+  const [currentBot] = useAtom(signInCurrentBot);
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -54,6 +55,7 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
         ...data,
         referredBy: referAddress,
         code: Number(formCodes.join("")),
+        from_bot: currentBot.toUpperCase(),
       });
 
       const token = response.data.data.token;
@@ -91,7 +93,7 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
     <div className="w-full min-h-full flex flex-col items-center pt-4 px-6 relative">
       <div className="flex flex-col items-center my-6">
         <div className="flex justify-center mb-2">
-          <h1 className="text-[1.5vmax] font-bold font-goudy">
+          <h1 className="text-[1.5vmax] font-bold font-goudy text-white">
             You're almost there!
           </h1>
         </div>

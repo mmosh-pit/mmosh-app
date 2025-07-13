@@ -4,15 +4,12 @@ import { useAtom } from "jotai";
 import { data } from "@/app/store";
 import Markdown from "react-markdown";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
-import {
-  selectedChatStore,
-  chatsStore,
-  chatsLoadingStore,
-} from "@/app/store/chat";
+import { selectedChatStore, chatsStore, chatsLoading } from "@/app/store/chat";
 import { Message } from "@/app/models/chat";
 import { Bars } from "react-loader-spinner";
 import Avatar from "../common/Avatar";
 import { useRouter } from "next/navigation";
+import VoiceIcon from "@/assets/icons/VoiceIcon";
 
 const ChatInteractionContainer = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -21,7 +18,7 @@ const ChatInteractionContainer = () => {
   const [currentUser] = useAtom(data);
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
-  const [areChatsLoading] = useAtom(chatsLoadingStore);
+  const [areChatsLoading] = useAtom(chatsLoading);
 
   const [text, setText] = React.useState("");
 
@@ -309,7 +306,7 @@ const ChatInteractionContainer = () => {
           <div
             className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
             onClick={() =>
-              router.push(`/projects/${selectedChat.chatAgent?.symbol}`)
+              router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
             }
           >
             <Avatar
@@ -436,6 +433,10 @@ const ChatInteractionContainer = () => {
                   {text.length}/1000
                 </div>
               </div>
+
+              <button className="bg-[#FFFFFF14] border-[1px] border-[#FFFFFF28] rounded-md ">
+                <VoiceIcon />
+              </button>
 
               <button
                 className={`

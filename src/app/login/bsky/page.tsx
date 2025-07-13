@@ -7,6 +7,7 @@ import axios from "axios";
 import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import KinshipCodesLogin from "@/assets/icons/KinshipCodesLogin";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const Bsky = () => {
   const router = useRouter();
@@ -26,7 +27,7 @@ const Bsky = () => {
       setError("");
       setIsLoading(true);
       try {
-        await axios.post("/api/login/bsky", {
+        await internalClient.post("/api/login/bsky", {
           handle,
           password,
         });
@@ -34,7 +35,7 @@ const Bsky = () => {
       } catch (err: any) {
         setError(
           err?.response?.data ||
-            "Failed to login with Bluesky, please check support",
+          "Failed to login with Bluesky, please check support",
         );
       }
 
@@ -96,7 +97,7 @@ const Bsky = () => {
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
           title="Log In"
-          action={() => {}}
+          action={() => { }}
           size="large"
           isPrimary
           type="submit"

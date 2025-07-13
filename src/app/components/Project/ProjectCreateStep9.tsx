@@ -7,6 +7,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import AssetItem from "./AssetItem";
+import internalClient from "@/app/lib/internalHttpClient";
 
 export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
   const [loading, setLoading] = useState(false);
@@ -194,7 +195,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     }
 
     if (fileList.length > 0) {
-      await axios.post("/api/project/save-media", {
+      await internalClient.post("/api/project/save-media", {
         files: fileList,
         projectkey: projectDetail.project.key,
       });
@@ -237,7 +238,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       id,
     };
 
-    await axios.post("/api/project/save-media", {
+    await internalClient.post("/api/project/save-media", {
       files: [data],
       projectkey: projectDetail.project.key,
     });

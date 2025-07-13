@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { isDrawerOpen } from "@/app/store";
+import { isDrawerOpen, signInCurrentBot } from "@/app/store";
 import { useAtom } from "jotai";
 import axios from "axios";
+import Image from "next/image";
 
-import Button from "@/app/components/common/Button";
 import { userWeb3Info } from "@/app/store";
 import * as anchor from "@coral-xyz/anchor";
 import useConnection from "@/utils/connection";
@@ -70,6 +70,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const connection = useConnection();
   const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
+  const [_, setCurrentBot] = useAtom(signInCurrentBot);
   const [profile, setProfile] = React.useState("");
   const [projectLoading, setProjectLoading] = React.useState(true);
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
@@ -105,6 +106,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
 
   React.useEffect(() => {
     getProjectDetailFromAPI();
+    setCurrentBot(params.symbol);
   }, [params.symbol]);
 
   React.useEffect(() => {
@@ -447,82 +449,86 @@ const Project = ({ params }: { params: { symbol: string } }) => {
       <div
         className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
       >
-        {projectDetail && (
-          <h4 className="text-white self-center text-xl py-7 capitalize">
-            {projectDetail.project.name}
-          </h4>
-        )}
-        <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl mb-16 p-3">
-          <div className="h-64 m-4 mb-0 overflow-hidden">
+        <div className="flex flex-col backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl mb-16 p-3">
+          <div className="h-80 overflow-hidden">
             {projectDetail && (
               <img
-                src={projectDetail.project.image}
+                src="https://storage.googleapis.com/mmosh-assets/home/fd_banner.png"
                 alt="Project"
                 className="w-full rounded-lg"
               />
             )}
           </div>
 
-          <div className="relative mx-8 mb-0">
-            <div className="absolute top-[-60px]">
+          <div className="relative m-auto">
+            <div className="bot-image">
               {projectDetail && (
-                <img
+                <Image
                   src={projectDetail.project.image}
                   alt="Project"
-                  className="w-[120px] h-[120px] object-cover rounded-lg"
+                  className="object-cover rounded-full"
+                  layout="fill"
                 />
               )}
             </div>
-            <div className="lg:pl-[140px] mt-20 lg:mt-0">
-              <div className="lg:flex justify-between items-end mb-4">
-                {projectDetail && (
-                  <div className="flex flex-col mt-4 max-w-[60%]">
-                    <div className="flex items-center">
-                      <h5 className="font-bold text-white text-lg capitalize">
-                        {projectDetail.project.name}
-                      </h5>
-                      <span className="font-bold text-lg text-white mx-2">
-                        •
-                      </span>
-                      <p className="text-base">
-                        {projectDetail.project.symbol.toUpperCase()}
-                      </p>
+          </div>
 
-                      {creatorInfo && (
-                        <div className="ml-4 bg-[#21005EB2] border-lg px-3 py-1 rounded-lg">
-                          {creatorInfo.username}
-                        </div>
-                      )}
-                    </div>
-
-                    <p className="text-sm">{projectDetail.project.desc}</p>
-                  </div>
-                )}
-                <div className="flex items-center">
-                  <Button
-                    isLoading={false}
-                    size="small"
-                    title={"Mute"}
-                    action={() => {
-                      // passAction();
-                    }}
-                    isPrimary={false}
+          <div className="w-full flex justify-between items-center mb-4 mt-16">
+            <div className="flex flex-col mt-4 w-[33%]">
+              <div className="flex items-center">
+                <div className="relative w-[80px] h-[80px]">
+                  <Image
+                    src="https://storage.googleapis.com/mmosh-assets/home/fd_creator.png"
+                    alt="Creator"
+                    layout="fill"
                   />
+                </div>
 
-                  <div className="mx-4" />
+                <div className="flex flex-col ml-8">
+                  <h5 className="font-bold text-white text-lg capitalize">
+                    Brian Tseng, the Solar Bee
+                  </h5>
 
-                  <Button
-                    isLoading={false}
-                    size="small"
-                    title={"Activate"}
-                    action={() => {
-                      // passAction();
-                    }}
-                    isPrimary
-                  />
+                  <div className="my-2" />
+
+                  <p className="text-base">Creator, Full Disclosure Bot</p>
                 </div>
               </div>
             </div>
+
+            <div className="flex flex-col items-center w-[33%]">
+              <h3 className="text-white text-2xl">FULL Disclosure NOW</h3>
+
+              <p className="text-white text-base mt-4">
+                FDN
+                <span className="text-white text-base mx-2">•</span>
+                MOTO
+              </p>
+            </div>
+
+            <div className="w-[33%] flex justify-end">
+              <button className="rounded-full px-6 py-2 bg-[#FF00AE]">
+                <p className="text-base text-white">Join the movement</p>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-[#FFFFFF08] border-[1px] border-[#FFFFFF28] rounded-lg py-4 w-full flex flex-col items-center mt-12 mb-8">
+            <h4 className="text-lg text-white font-bold text-center">
+              What if the future you always dreamed of was already here?
+            </h4>
+
+            <div className="my-2" />
+
+            <p className="text-base leading-[40px] text-white text-center lg:max-w-[65%] md:max-w-[75%] max-w-[80%]">
+              Join the movement to reveal suppressed tech, hidden programs, and
+              the roadmap to humanity’s next evolution. Access cutting-edge
+              information, tools, intel, and transformative content from a
+              global network of Starseeds, visionaries, and truth-seekers. Stay
+              connected to the latest breakthroughs in healing, consciousness,
+              and disclosure as we awaken a new era of truth and liberation
+              across the universe.
+            </p>
           </div>
 
           {projectDetail?.project && (

@@ -34,6 +34,7 @@ import { ExponentialCurve, ExponentialCurveConfig } from "@/anchor/curve/curves"
 import { useAtom } from "jotai";
 import { data } from "@/app/store";
 import baseCoins from "@/app/lib/baseCoins";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const customStyles = {
     content: {
@@ -399,7 +400,7 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
                 setButtonStatus("Save token details...");
         
                 // creating community coins
-                await axios.post("/api/project/save-coins", {
+                await internalClient.post("/api/project/save-coins", {
                     name: fields.name,
                     symbol: fields.symbol,
                     image: fields.image.preview,
@@ -426,7 +427,7 @@ export default function AgentCoin({ onPageChange, symbol }: { onPageChange: any,
                     creatorUsername: currentUser ? currentUser!.profile.username : "",
                     expiredDate: deadlineDate
                 }
-                await axios.post("/api/save-token", coinDetail);
+                await internalClient.post("/api/save-token", coinDetail);
     
                 navigate.push("/projects/" + symbol);
             }

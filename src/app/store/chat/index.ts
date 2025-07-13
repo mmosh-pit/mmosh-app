@@ -5,4 +5,4 @@ export const chatsStore = atom<Chat[]>([]);
 
 export const selectedChatStore = atom<Chat | null>(null);
 
-export const chatsLoadingStore = atom<boolean>(true);
+export const chatsLoading = atom<boolean>(true);

@@ -1222,3 +1222,10 @@ a:hover {
 
   backdrop-filter: blur(6px);
 }
+
+.bot-image {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  transform: translate(-50%, -60%);
+}

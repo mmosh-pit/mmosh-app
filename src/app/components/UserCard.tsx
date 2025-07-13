@@ -1,10 +1,10 @@
 import Image from "next/image";
 import * as React from "react";
-import axios from "axios";
 
 import { User } from "../models/user";
 import TwitterDarkIcon from "@/assets/icons/TwitterDarkIcon";
 import TelegramDarkIcon from "@/assets/icons/TelegramDarkIcon";
+import internalClient from "../lib/internalHttpClient";
 
 type Props = {
   user: User;
@@ -29,7 +29,7 @@ const UserCard = ({ user, currentuser }: Props) => {
     try {
       setReqestLoader(true);
       if (type === "accept") {
-        await axios.post("/api/connections/send", {
+        await internalClient.post("/api/connections/send", {
           sender: user.wallet,
           receiver: currentuser.wallet,
           badge: "",
@@ -41,7 +41,7 @@ const UserCard = ({ user, currentuser }: Props) => {
           setConnectionStatus(3);
         }
       } else {
-        await axios.post("/api/connections/send", {
+        await internalClient.post("/api/connections/send", {
           sender: user.wallet,
           receiver: currentuser.wallet,
           badge: "",

@@ -24,7 +24,7 @@ export async function PUT(req: NextRequest) {
     },
     {
       $set: {
-        system_prompt: data.systemPrompt,
+        "chatAgent.system_prompt": data.systemPrompt,
       },
     },
   );

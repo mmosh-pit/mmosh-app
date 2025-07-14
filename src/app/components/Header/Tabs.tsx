@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 
 const Tabs = () => {
   const router = useRouter();
+
   return (
     <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
       <a

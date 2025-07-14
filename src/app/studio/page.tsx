@@ -14,6 +14,7 @@ import axios from "axios";
 import AgentStudioToolsCreate from "@/app/components/Project/AgentStudioToolsCreate";
 import InstructAgent from "@/app/components/Project/InstructAgent";
 import AgentOffer from "@/app/components/Project/AgentOffer";
+import internalClient from "../lib/internalHttpClient";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();
@@ -31,7 +32,9 @@ export default function ProjectCreate() {
 
   const getProjectList = async (address: any) => {
     try {
-      const result = await axios.get(`/api/project/mylist?creator=${address}`);
+      const result = await internalClient.get(
+        `/api/project/mylist?creator=${address}`,
+      );
       let newTypes = [
         { label: "New Personal Agent", value: "personal" },
         { label: "New Kinship Agent", value: "kinship" },

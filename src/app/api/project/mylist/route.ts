@@ -1,6 +1,15 @@
 import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
+const adminUsers = [
+  "eliasalejo01@gmail.com",
+  "andres.lara@kinship.systems",
+  "support@kinship.systems",
+  "motodave@gmail.com",
+  "alirehman41f@gmail.com",
+  "elias.ramirez@kinship.systems",
+];
+
 export async function GET(req: NextRequest) {
   if (req.method !== "GET") {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
@@ -9,11 +18,30 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const creator = searchParams.get("creator");
 
-  if (!creator) {
+  const authorization = req.headers.get("authorization");
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/is-auth`,
+    {
+      headers: {
+        Authorization: authorization ?? "",
+      },
+    },
+  );
+
+  const data = await response.json();
+
+  if (!data.isAuth) {
+    return NextResponse.json("", { status: 401 });
+  }
+
+  const isAdmin = adminUsers.includes(data.user.email);
+
+  if (!creator && !isAdmin) {
     return NextResponse.json({ error: "Invalid Payload" }, { status: 400 });
   }
 
-  let match = { $match: { creator: creator } };
+  let match = isAdmin ? { $match: {} } : { $match: { creator: creator } };
 
   const result = await db
     .collection("mmosh-app-project")

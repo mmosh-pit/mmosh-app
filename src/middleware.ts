@@ -11,14 +11,12 @@ export default async function middleware(req: NextRequest) {
   ) {
     const authorization = req.headers.get("authorization");
 
-    console.log("DO I HAVE AUTHORIZATION? ", authorization);
-
     if (!authorization) {
       return NextResponse.json("", { status: 401 });
     }
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/is-auth`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`,
       {
         headers: {
           Authorization: authorization ?? "",
@@ -28,7 +26,7 @@ export default async function middleware(req: NextRequest) {
 
     const data = await response.json();
 
-    if (!data.isAuth) {
+    if (!data?.data?.is_auth) {
       return NextResponse.json("", { status: 401 });
     }
   }

@@ -11,12 +11,12 @@ const MobileDrawer = () => {
   const [currentUser] = useAtom(data);
 
   return (
-    <div className="drawer">
+    <div className="drawer w-[15%]">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
+      <div className="drawer-content block">
         <label
           htmlFor="my-drawer"
-          className="btn drawer-button"
+          className="padding-0 transparent"
           onClick={() => setIsDrawerOpen(true)}
         >
           <HamburgerIcon />
@@ -41,7 +41,7 @@ const MobileDrawer = () => {
               Bots
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -50,15 +50,15 @@ const MobileDrawer = () => {
               Coins
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
 
             <a className="text-base text-white cursor-pointer">Offers</a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
 
             <a className="text-base text-white cursor-pointer">Launchpad</a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -67,7 +67,7 @@ const MobileDrawer = () => {
               Members
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
 
             <a
               className="flex items-center cursor-pointer relative "
@@ -76,7 +76,7 @@ const MobileDrawer = () => {
               <p className="text-base text-white font-semibold">Studio</p>
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => {
@@ -86,7 +86,8 @@ const MobileDrawer = () => {
               Wallet
             </a>
 
-            <div className="lg:my-4 md:my-2" />
+            <div className="lg:my-4 my-2" />
+
             <a
               className="text-base text-white cursor-pointer"
               href="https://docs.kinshipbots.com"
@@ -96,10 +97,9 @@ const MobileDrawer = () => {
             </a>
           </div>
 
-          <div className="my-2" />
-
           {currentUser?.profile?.image && (
             <>
+              <div className="mt-2" />
               <a
                 className="text-sm text-white"
                 onClick={() =>
@@ -112,6 +112,8 @@ const MobileDrawer = () => {
             </>
           )}
 
+          <div className="h-[1px] w-[90%] bg-white my-4" />
+
           <a
             className="text-sm text-white"
             onClick={() => router.push("/settings")}
@@ -119,8 +121,6 @@ const MobileDrawer = () => {
             Settings
           </a>
         </div>
-
-        <div className="h-[1px] w-[90%] bg-white mt-4" />
       </div>
     </div>
   );

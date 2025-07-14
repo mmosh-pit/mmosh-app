@@ -464,16 +464,17 @@ const Project = ({ params }: { params: { symbol: string } }) => {
                 layout="fill"
               />
 
-              {isAuthenticated && (
-                <div className="absolute left-0 top-0 h-12 bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px] h-[50px]">
-                  <Image
-                    src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
-                    alt="FDN"
-                    layout="fill"
-                    className="object-contain p-4"
-                  />
-                </div>
-              )}
+              {isAuthenticated ||
+                (isMobileScreen && (
+                  <div className="absolute left-0 top-0 h-12 bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px] h-[50px]">
+                    <Image
+                      src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
+                      alt="FDN"
+                      layout="fill"
+                      className="object-contain p-4"
+                    />
+                  </div>
+                ))}
             </div>
           )}
 

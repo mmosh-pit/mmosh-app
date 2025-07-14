@@ -505,7 +505,13 @@ const Header = () => {
         <div className="w-full flex flex-col justify-center items-center py-6 md:px-20 px-8 relative">
           <div className="flex w-full justify-between items-center mx-8">
             {isMobileScreen ? (
-              <MobileDrawer />
+              <div className="w-[100%] flex items-center">
+                <MobileDrawer />
+
+                <div className="mx-2" />
+
+                <KinshipBots width={150} />
+              </div>
             ) : (
               <div
                 className="flex justify-start w-[100%] mr-12 cursor-pointer"
@@ -523,16 +529,18 @@ const Header = () => {
 
             {!isMobileScreen && isUserAuthenticated && <Tabs />}
 
-            {!isUserAuthenticated && pathname.includes("/bots/") && (
-              <div className={`relative w-[100%] h-[80px]`}>
-                <Image
-                  src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
-                  alt="logo"
-                  className="object-contain"
-                  layout="fill"
-                />
-              </div>
-            )}
+            {!isUserAuthenticated &&
+              pathname.includes("/bots/") &&
+              !isMobileScreen && (
+                <div className={`relative w-[100%] h-[80px]`}>
+                  <Image
+                    src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
+                    alt="logo"
+                    className="object-contain"
+                    layout="fill"
+                  />
+                </div>
+              )}
 
             <div className={`flex items-center justify-end w-[100%]`}>
               {/*currentUser?.profilenft && (
@@ -599,7 +607,7 @@ const Header = () => {
                 !currentUser?.profile?.image &&
                 isUserAuthenticated && (
                   <div
-                    className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
                       } cursor-pointer`}
                     onClick={() => {
                       if (
@@ -628,9 +636,7 @@ const Header = () => {
                   className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
                   onClick={() => router.push("/settings")}
                 >
-                  <p className="md:text-base text-sm text-white settings-btn">
-                    Settings
-                  </p>
+                  <p className="lg:text-base text-xs text-white">Settings</p>
                 </button>
               )}
 
@@ -647,7 +653,9 @@ const Header = () => {
                     router.push("/sign-up");
                   }}
                 >
-                  <p className="text-white text-base text-center">Sign Up</p>
+                  <p className="text-white lg:text-base text-xs text-center">
+                    Sign Up
+                  </p>
                 </button>
               )}
 
@@ -672,7 +680,7 @@ const Header = () => {
                 {isLoadingLogout ? (
                   <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
                 ) : (
-                  <p className="md:text-base text-sm text-white settings-btn">
+                  <p className="lg:text-base text-xs text-white">
                     {isUserAuthenticated ? "Logout" : "Log In"}
                   </p>
                 )}

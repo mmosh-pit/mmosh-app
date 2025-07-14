@@ -4,6 +4,7 @@ import BlueskyIcon from "@/assets/icons/BlueskyIcon";
 import axios, { AxiosError } from "axios";
 import Input from "../common/Input";
 import Button from "../common/Button";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const BlueskyAgentOption = ({ project }: { project: string }) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -97,7 +98,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
 
   const removeBskyAcc = React.useCallback(
     async (handle: string) => {
-      await axios.delete(
+      await internalClient.delete(
         `/api/project/disconnect-bsky?project=${project}&handle=${handle}`,
       );
 

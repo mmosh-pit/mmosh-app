@@ -4,6 +4,7 @@ import Input from "../common/Input";
 import axios, { AxiosError } from "axios";
 import RemoveIcon from "@/assets/icons/RemoveIcon";
 import Button from "../common/Button";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const TelegramAgentOption = ({ project }: { project: string }) => {
   const [handle, setHandle] = React.useState("");
@@ -103,7 +104,7 @@ const TelegramAgentOption = ({ project }: { project: string }) => {
 
   const removeGroup = React.useCallback(async (handle: string) => {
     setIsLoading(true);
-    await axios.delete(
+    await internalClient.delete(
       `/api/project/remove-telegram-tool?project=${project}&handle=${handle}`,
     );
 

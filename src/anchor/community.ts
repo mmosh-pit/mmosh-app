@@ -3564,7 +3564,7 @@ export class Connectivity {
     }
     tx.add(feeIns);
     const signature = await this.provider.sendAndConfirm(tx, []);
-    await axios.put("/api/project/buy-pass", {
+    await internalClient.put("/api/project/buy-pass", {
       key: mint.toBase58(),
     });
     return signature;

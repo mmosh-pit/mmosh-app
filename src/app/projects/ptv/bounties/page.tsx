@@ -774,7 +774,7 @@ const Page = () => {
         }
 
         await delay(15000);
-        await axios.put("/api/project/update-seniority", {
+        await internalClient.put("/api/project/update-seniority", {
           key: projectDetail.project.key,
         });
         createMessage(

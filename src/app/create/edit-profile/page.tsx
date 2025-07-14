@@ -18,6 +18,7 @@ import { Connection } from "@solana/web3.js";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import useWallet from "@/utils/wallet";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const PronounsSelectOptions = [
   {
@@ -251,7 +252,7 @@ const EditProfile = () => {
     updateProfile.descriptor = form.descriptor;
     updateProfile.pronouns = form.pronouns;
 
-    await axios.put("/api/connections/update-profile", {
+    await internalClient.put("/api/connections/update-profile", {
       value: updateProfile,
       wallet: currentUser.wallet,
     });

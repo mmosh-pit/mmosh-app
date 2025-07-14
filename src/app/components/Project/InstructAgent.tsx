@@ -4,6 +4,7 @@ import EditIcon from "@/assets/icons/EditIcon";
 import axios from "axios";
 import Input from "../common/Input";
 import Button from "../common/Button";
+import internalClient from "@/app/lib/internalHttpClient";
 
 const InstructAgent = ({ symbol }: { symbol: string }) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -43,7 +44,7 @@ const InstructAgent = ({ symbol }: { symbol: string }) => {
   const toggleAction = React.useCallback(async () => {
     setIsLoading(true);
 
-    await axios.put("/api/project/update-system-prompt", {
+    await internalClient.put("/api/project/update-system-prompt", {
       project: projectDetail.project.key,
       systemPrompt,
     });

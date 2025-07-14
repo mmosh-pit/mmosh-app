@@ -452,7 +452,7 @@ const Header = () => {
   }, [wallet]);
 
   const resetNotification = async () => {
-    await axios.put("/api/notifications/update", {
+    await internalClient.put("/api/notifications/update", {
       wallet: wallet?.publicKey.toBase58(),
     });
     setBadge(0);

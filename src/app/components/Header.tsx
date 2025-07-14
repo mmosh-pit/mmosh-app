@@ -522,7 +522,7 @@ const Header = () => {
 
             {!isMobileScreen && isUserAuthenticated && <Tabs />}
 
-            {!isUserAuthenticated && pathname.includes("/bots") && (
+            {!isUserAuthenticated && pathname.includes("/bots/") && (
               <div className={`relative w-[100%] h-[80px]`}>
                 <Image
                   src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
@@ -577,7 +577,7 @@ const Header = () => {
                 </div>
               )*/}
 
-              {!!currentUser?.profile?.image && (
+              {!!currentUser?.profile?.image && isUserAuthenticated && (
                 <div
                   className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
                     } cursor-pointer`}
@@ -594,31 +594,33 @@ const Header = () => {
                 </div>
               )}
 
-              {!!currentUser && !currentUser?.profile?.image && (
-                <div
-                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
-                    } cursor-pointer`}
-                  onClick={() => {
-                    if (
-                      !!currentUser?.guest_data.username &&
-                      currentUser?.guest_data.username !== ""
-                    ) {
-                      router.push(`/${currentUser?.guest_data.username}`);
-                    }
-                  }}
-                >
-                  <Image
-                    src={
-                      !!currentUser?.guest_data?.picture
-                        ? currentUser!.guest_data.picture
-                        : "https://storage.googleapis.com/mmosh-assets/default.png"
-                    }
-                    alt="Profile Image"
-                    className="rounded-md"
-                    layout="fill"
-                  />
-                </div>
-              )}
+              {!!currentUser &&
+                !currentUser?.profile?.image &&
+                isUserAuthenticated && (
+                  <div
+                    className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                      } cursor-pointer`}
+                    onClick={() => {
+                      if (
+                        !!currentUser?.guest_data.username &&
+                        currentUser?.guest_data.username !== ""
+                      ) {
+                        router.push(`/${currentUser?.guest_data.username}`);
+                      }
+                    }}
+                  >
+                    <Image
+                      src={
+                        !!currentUser?.guest_data?.picture
+                          ? currentUser!.guest_data.picture
+                          : "https://storage.googleapis.com/mmosh-assets/default.png"
+                      }
+                      alt="Profile Image"
+                      className="rounded-md"
+                      layout="fill"
+                    />
+                  </div>
+                )}
 
               {!isMobileScreen && isUserAuthenticated && (
                 <button

@@ -65,6 +65,22 @@ const ChatInteractionContainer = () => {
     },
     [currentUser, selectedChat],
   );
+
+  const formatChatHistory = (messages: Message[]) => {
+    // Get the last N messages (excluding the current loading message)
+    const historyLimit = 20; // Adjust this number based on your needs
+    const relevantMessages = messages
+      .filter(msg => !msg.is_loading) // Exclude loading messages
+      .slice(-historyLimit) // Get last N messages
+      .map(msg => ({
+        role: msg.type === "user" ? "user" : "assistant",
+        content: msg.content,
+        timestamp: msg.created_at
+      }));
+    return relevantMessages;
+  };
+
+
   const sendMessage = React.useCallback(
     async (content: string) => {
       if (!selectedChat?.messages) return;
@@ -106,18 +122,22 @@ const ChatInteractionContainer = () => {
       setChats(updatedChats);
 
       setText("");
+      const chatHistory = formatChatHistory(selectedChat.messages);
+
+      //console.log(chatHistory)
 
       try {
         const queryData = {
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
           instructions: selectedChat!.chatAgent!.system_prompt,
+          chatHistory: chatHistory
         };
 
         console.log("Message data being sent:", queryData);
 
         const response = await fetch(
-          "https://rewoo-api-1094217356440.us-central1.run.app/query",
+          "https://react-api-1094217356440.us-central1.run.app/query/stream",
           {
             method: "POST",
             headers: {
@@ -131,12 +151,18 @@ const ChatInteractionContainer = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const result = await response.json();
+        if (!response.body) {
+          throw new Error("No response body");
+        }
 
-        // Create the final bot message
-        const botMessage: Message = {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = "";
+
+        // Create the streaming bot message that will be updated
+        let streamingBotMessage: Message = {
           id: (Date.now() + 2).toString(),
-          content: result.result,
+          content: "",
           sender_id: selectedChat.chatAgent!.id,
           type: "bot",
           created_at: new Date().toISOString(),
@@ -144,57 +170,117 @@ const ChatInteractionContainer = () => {
           is_loading: false,
         };
 
-        // Replace the loading message with the actual response
-        const finalMessages = [...updatedSelectedChat.messages];
-        finalMessages[finalMessages.length - 1] = botMessage;
-
-        const finalSelectedChat = {
-          ...updatedSelectedChat,
-          messages: finalMessages,
-        };
-
-        setSelectedChat(finalSelectedChat);
-
-        // Update the chats array
-        const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat,
-        );
-        setChats(finalChats);
-
-        // Save the chat conversation to the database
         try {
-          const saveChatData = {
-            chatId: selectedChat.id,
-            agentID: selectedChat.chatAgent!.id,
-            namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
-            systemPrompt: selectedChat.chatAgent!.system_prompt,
-            userContent: content,
-            botContent: result.result,
-          };
+          while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) break;
+            
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  
+                  if (data.type === "content") {
+                    accumulatedContent += data.content;
+                    
+                    // Update the streaming message with accumulated content
+                    streamingBotMessage = {
+                      ...streamingBotMessage,
+                      content: accumulatedContent,
+                    };
+                    
+                    // Replace the loading message with streaming content
+                    const currentMessages = [...updatedSelectedChat.messages];
+                    currentMessages[currentMessages.length - 1] = streamingBotMessage;
+                    
+                    const streamingSelectedChat = {
+                      ...updatedSelectedChat,
+                      messages: currentMessages,
+                    };
+                    
+                    setSelectedChat(streamingSelectedChat);
+                    
+                    // Update the chats array
+                    const streamingChats = chats.map((chat) =>
+                      chat.id === selectedChat.id ? streamingSelectedChat : chat,
+                    );
+                    setChats(streamingChats);
+                    
+                  } else if (data.type === "complete") {
+                    // Streaming is complete, finalize the message
+                    const finalBotMessage: Message = {
+                      ...streamingBotMessage,
+                      content: accumulatedContent,
+                    };
+                    
+                    // Replace the loading message with the final response
+                    const finalMessages = [...updatedSelectedChat.messages];
+                    finalMessages[finalMessages.length - 1] = finalBotMessage;
+                    
+                    const finalSelectedChat = {
+                      ...updatedSelectedChat,
+                      messages: finalMessages,
+                    };
+                    
+                    setSelectedChat(finalSelectedChat);
+                    
+                    // Update the chats array
+                    const finalChats = chats.map((chat) =>
+                      chat.id === selectedChat.id ? finalSelectedChat : chat,
+                    );
+                    setChats(finalChats);
 
-          console.log("Saving chat to database:", saveChatData);
+                    // Save the chat conversation to the database
+                    try {
+                      const saveChatData = {
+                        chatId: selectedChat.id,
+                        agentID: selectedChat.chatAgent!.id,
+                        namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
+                        systemPrompt: selectedChat.chatAgent!.system_prompt,
+                        userContent: content,
+                        botContent: accumulatedContent,
+                      };
 
-          const saveResponse = await fetch(
-            "https://chat-save-api-1094217356440.us-central1.run.app/save-chat",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(saveChatData),
-            },
-          );
+                      console.log("Saving chat to database:", saveChatData);
 
-          if (!saveResponse.ok) {
-            console.warn(
-              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
-            );
-          } else {
-            console.log("Chat saved successfully to database");
+                      const saveResponse = await fetch(
+                        "https://chat-save-api-1094217356440.us-central1.run.app/save-chat",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify(saveChatData),
+                        },
+                      );
+
+                      if (!saveResponse.ok) {
+                        console.warn(
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+                        );
+                      } else {
+                        console.log("Chat saved successfully to database");
+                      }
+                    } catch (saveError) {
+                      console.error("Error saving chat to database:", saveError);
+                      // Note: We don't want to show this error to the user as the main functionality (chat) worked
+                    }
+                    
+                    break;
+                  }
+                } catch (parseError) {
+                  console.error("Error parsing SSE data:", parseError);
+                  // Continue processing other lines
+                }
+              }
+            }
           }
-        } catch (saveError) {
-          console.error("Error saving chat to database:", saveError);
-          // Note: We don't want to show this error to the user as the main functionality (chat) worked
+        } finally {
+          reader.releaseLock();
         }
       } catch (error) {
         console.error("Error sending message:", error);

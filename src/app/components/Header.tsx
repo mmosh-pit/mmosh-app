@@ -637,8 +637,13 @@ const Header = () => {
                 <button
                   className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
                   onClick={() => {
-                    setIsModalOpen(true);
-                    setInitialModalStep(0);
+                    if (pathname.includes("/bots/")) {
+                      setIsModalOpen(true);
+                      setInitialModalStep(0);
+                      return;
+                    }
+
+                    router.push("/sign-up");
                   }}
                 >
                   <p className="text-white text-base text-center">Sign Up</p>
@@ -654,8 +659,13 @@ const Header = () => {
                     return;
                   }
 
-                  setIsModalOpen(true);
-                  setInitialModalStep(2);
+                  if (pathname.includes("/bots/")) {
+                    setIsModalOpen(true);
+                    setInitialModalStep(2);
+                    return;
+                  }
+
+                  router.push("/login");
                 }}
               >
                 {isLoadingLogout ? (

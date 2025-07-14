@@ -114,7 +114,7 @@ const AssetCard = ({
       return newDocs;
     });
 
-    await axios.delete(`/api/delete-document?id=${id}`);
+    await internalClient.delete(`/api/delete-document?id=${id}`);
   }, []);
 
   React.useEffect(() => {

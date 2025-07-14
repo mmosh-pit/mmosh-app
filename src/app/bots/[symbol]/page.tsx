@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { isDrawerOpen, signInCurrentBot } from "@/app/store";
+import { isAuth, isDrawerOpen, signInCurrentBot } from "@/app/store";
 import { useAtom } from "jotai";
 import axios from "axios";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { Connectivity as ProjectConn } from "@/anchor/community";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import AgentPageInfo from "@/app/components/Project/AgentPageInfo";
+import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
 
 const defaultRoleData: any = [
   {
@@ -68,9 +69,11 @@ const defaultRoleData: any = [
 
 const Project = ({ params }: { params: { symbol: string } }) => {
   const connection = useConnection();
+  const screenSize = useCheckDeviceScreenSize();
   const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [_, setCurrentBot] = useAtom(signInCurrentBot);
+  const [isAuthenticated] = useAtom(isAuth);
   const [profile, setProfile] = React.useState("");
   const [projectLoading, setProjectLoading] = React.useState(true);
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
@@ -434,6 +437,8 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     }
   };
 
+  const isMobileScreen = screenSize < 1200;
+
   return (
     <>
       {showMsg && (
@@ -450,13 +455,24 @@ const Project = ({ params }: { params: { symbol: string } }) => {
         className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
       >
         <div className="flex flex-col backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl mb-16 p-3">
-          <div className="h-80 overflow-hidden">
+          <div className="h-80 overflow-hidden relative">
             {projectDetail && (
-              <img
+              <Image
                 src="https://storage.googleapis.com/mmosh-assets/home/fd_banner.png"
                 alt="Project"
                 className="w-full rounded-lg"
+                layout="fill"
               />
+            )}
+
+            {isAuthenticated && (
+              <div className="absolute left-0 top-0 h-12 bg-[#00000080] border-tl-[13px] border-br-[50px] p-4">
+                <Image
+                  src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
+                  alt="FDN"
+                  layout="fill"
+                />
+              </div>
             )}
           </div>
 
@@ -499,11 +515,13 @@ const Project = ({ params }: { params: { symbol: string } }) => {
             <div className="flex flex-col items-center w-[33%]">
               <h3 className="text-white text-2xl">FULL Disclosure NOW</h3>
 
-              <p className="text-white text-base mt-4">
-                FDN
-                <span className="text-white text-base mx-2">•</span>
-                MOTO
-              </p>
+              {isAuthenticated && (
+                <p className="text-white text-base mt-4">
+                  FDN
+                  <span className="text-white text-base mx-2">•</span>
+                  BRIAN
+                </p>
+              )}
             </div>
 
             <div className="w-[33%] flex justify-end">
@@ -520,7 +538,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
 
             <div className="my-2" />
 
-            <p className="text-base leading-[40px] text-white text-center lg:max-w-[65%] md:max-w-[75%] max-w-[80%]">
+            <p className="text-base leading-[40px] text-white text-center lg:max-w-[65%] max-w-[90%]">
               Join the movement to reveal suppressed tech, hidden programs, and
               the roadmap to humanity’s next evolution. Access cutting-edge
               information, tools, intel, and transformative content from a
@@ -531,7 +549,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
             </p>
           </div>
 
-          {projectDetail?.project && (
+          {projectDetail?.project && isAuthenticated && (
             <AgentPageInfo agentKey={projectDetail.project.key} roles={roles} />
           )}
         </div>

@@ -81,9 +81,7 @@ const Header = () => {
   const [____________, setHasGenesisProfile] = useAtom(genesisProfileUser);
 
   const [isModalOpen, setIsModalOpen] = useAtom(signInModal);
-  const [initialModalStep, setInitialModalStep] = useAtom(
-    signInModalInitialStep,
-  );
+  const [initialModalStep] = useAtom(signInModalInitialStep);
 
   const [community] = useAtom(currentGroupCommunity);
 
@@ -501,13 +499,13 @@ const Header = () => {
         isHome={pathname === "/"}
       />
       <header className="flex flex-col bg-transparent">
-        <div className="w-full flex flex-col justify-center items-center py-6 px-8 relative z-10">
+        <div className="w-full flex flex-col justify-center items-center py-6 px-20 relative z-10">
           <div className="flex w-full justify-between items-center mx-8">
             {isMobileScreen ? (
               <MobileDrawer />
             ) : (
               <div
-                className="flex justify-end w-[20%] mr-12 cursor-pointer"
+                className="flex justify-start w-[20%] mr-12 cursor-pointer"
                 onClick={() => {
                   if (pathname === "/" && isUserAuthenticated) {
                     setIsUserAuthenticated(false);
@@ -520,9 +518,24 @@ const Header = () => {
               </div>
             )}
 
-            {!isMobileScreen && <Tabs />}
+            {!isMobileScreen && isUserAuthenticated && <Tabs />}
 
-            <div className="flex items-center justify-end max-w-[45%] md:w-[35%] lg:w-[20%]">
+            {!isUserAuthenticated && pathname.includes("/bots") && (
+              <div
+                className={`relative ${isMobileScreen ? "w-[100%]" : "w-[25%]"} h-[80px]`}
+              >
+                <Image
+                  src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
+                  alt="logo"
+                  className="object-contain"
+                  layout="fill"
+                />
+              </div>
+            )}
+
+            <div
+              className={`flex items-center justify-end ${isMobileScreen ? "w-[100%]" : "md:w-[35%] lg:w-[20%]"}`}
+            >
               {currentUser?.profilenft && (
                 <div className="dropdown pr-6 ml-4">
                   <a
@@ -631,28 +644,26 @@ const Header = () => {
                 </button>
               )}
 
-              {!isMobileScreen && (
-                <button
-                  className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
-                  disabled={isLoadingLogout}
-                  onClick={() => {
-                    if (isUserAuthenticated) {
-                      logout();
-                      return;
-                    }
+              <button
+                className="relative bg-[#CD068E] px-4 py-2 rounded-full ml-4"
+                disabled={isLoadingLogout}
+                onClick={() => {
+                  if (isUserAuthenticated) {
+                    logout();
+                    return;
+                  }
 
-                    setIsModalOpen(true);
-                  }}
-                >
-                  {isLoadingLogout ? (
-                    <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
-                  ) : (
-                    <p className="md:text-base text-sm text-white settings-btn">
-                      {isUserAuthenticated ? "Logout" : "Log In"}
-                    </p>
-                  )}
-                </button>
-              )}
+                  setIsModalOpen(true);
+                }}
+              >
+                {isLoadingLogout ? (
+                  <span className="loading loading-spinner loading-lg bg-[#CD068E]"></span>
+                ) : (
+                  <p className="md:text-base text-sm text-white settings-btn">
+                    {isUserAuthenticated ? "Logout" : "Log In"}
+                  </p>
+                )}
+              </button>
             </div>
           </div>
         </div>

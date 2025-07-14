@@ -455,27 +455,27 @@ const Project = ({ params }: { params: { symbol: string } }) => {
         className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
       >
         <div className="flex flex-col backdrop-blur-[6px] rounded-md relative md:mx-16 mx-4 rounded-xl mb-16 p-3">
-          <div className="h-80 overflow-hidden relative">
-            {projectDetail && (
+          {projectDetail && (
+            <div className="h-80 overflow-hidden relative">
               <Image
                 src="https://storage.googleapis.com/mmosh-assets/home/fd_banner.png"
                 alt="Project"
                 className="w-full rounded-lg"
                 layout="fill"
               />
-            )}
 
-            {isAuthenticated && (
-              <div className="absolute left-0 top-0 h-12 bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px] h-[50px]">
-                <Image
-                  src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
-                  alt="FDN"
-                  layout="fill"
-                  className="object-contain p-4"
-                />
-              </div>
-            )}
-          </div>
+              {isAuthenticated && (
+                <div className="absolute left-0 top-0 h-12 bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px] h-[50px]">
+                  <Image
+                    src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
+                    alt="FDN"
+                    layout="fill"
+                    className="object-contain p-4"
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="relative m-auto">
             <div className="bot-image">
@@ -490,49 +490,97 @@ const Project = ({ params }: { params: { symbol: string } }) => {
             </div>
           </div>
 
-          <div className="w-full flex justify-between items-center mb-4 mt-16">
-            <div className="flex flex-col mt-4 w-[33%]">
-              <div className="flex items-center">
-                <div className="relative w-[80px] h-[80px]">
-                  <Image
-                    src="https://storage.googleapis.com/mmosh-assets/home/fd_creator.png"
-                    alt="Creator"
-                    layout="fill"
-                  />
+          {!isMobileScreen && (
+            <div className="w-full flex justify-between items-center mb-4 mt-16">
+              <div className="flex flex-col mt-4 w-[33%]">
+                <div className="flex items-center">
+                  <div className="relative w-[80px] h-[80px]">
+                    <Image
+                      src="https://storage.googleapis.com/mmosh-assets/home/fd_creator.png"
+                      alt="Creator"
+                      layout="fill"
+                    />
+                  </div>
+
+                  <div className="flex flex-col ml-8">
+                    <h5 className="font-bold text-white text-lg capitalize">
+                      Brian Tseng, the Solar Bee
+                    </h5>
+
+                    <div className="my-2" />
+
+                    <p className="text-base">Creator, Full Disclosure Bot</p>
+                  </div>
                 </div>
+              </div>
 
-                <div className="flex flex-col ml-8">
-                  <h5 className="font-bold text-white text-lg capitalize">
-                    Brian Tseng, the Solar Bee
-                  </h5>
+              <div className="flex flex-col items-center w-[33%]">
+                <h3 className="text-white text-2xl">FULL Disclosure NOW</h3>
 
-                  <div className="my-2" />
+                {isAuthenticated && (
+                  <p className="text-white text-base mt-4">
+                    FDN
+                    <span className="text-white text-base mx-2">•</span>
+                    BRIAN
+                  </p>
+                )}
+              </div>
 
-                  <p className="text-base">Creator, Full Disclosure Bot</p>
+              <div className="w-[33%] flex justify-end">
+                <button className="rounded-full px-6 py-2 bg-[#FF00AE]">
+                  <p className="text-base text-white">Join the movement</p>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isMobileScreen && (
+            <div className="w-full flex flex-col items-center mb-4 mt-16">
+              <div className="flex flex-col items-center w-full">
+                <h3 className="text-white text-2xl">FULL Disclosure NOW</h3>
+
+                {isAuthenticated && (
+                  <p className="text-white text-base mt-4">
+                    FDN
+                    <span className="text-white text-base mx-2">•</span>
+                    BRIAN
+                  </p>
+                )}
+              </div>
+
+              <div className="flex justify-center mb-4 mt-6">
+                <button className="w-full rounded-full px-6 py-2 bg-[#FF00AE]">
+                  <p className="text-base text-white">Join the movement</p>
+                </button>
+              </div>
+
+              <div className="flex flex-col mt-2 w-full bg-[#FFFFFF08] border-[1px] border-[#FFFFFF28] rounded-lg py-4 px-4">
+                <div className="flex items-center">
+                  <div className="relative w-[80px] h-[80px]">
+                    <Image
+                      src="https://storage.googleapis.com/mmosh-assets/home/fd_creator.png"
+                      alt="Creator"
+                      layout="fill"
+                    />
+                  </div>
+
+                  <div className="flex flex-col ml-4">
+                    <h5 className="font-bold text-white text-lg capitalize">
+                      Brian Tseng, the Solar Bee
+                    </h5>
+
+                    <div className="my-1" />
+
+                    <p className="text-base">Creator, Full Disclosure Bot</p>
+                  </div>
                 </div>
               </div>
             </div>
+          )}
 
-            <div className="flex flex-col items-center w-[33%]">
-              <h3 className="text-white text-2xl">FULL Disclosure NOW</h3>
-
-              {isAuthenticated && (
-                <p className="text-white text-base mt-4">
-                  FDN
-                  <span className="text-white text-base mx-2">•</span>
-                  BRIAN
-                </p>
-              )}
-            </div>
-
-            <div className="w-[33%] flex justify-end">
-              <button className="rounded-full px-6 py-2 bg-[#FF00AE]">
-                <p className="text-base text-white">Join the movement</p>
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-[#FFFFFF08] border-[1px] border-[#FFFFFF28] rounded-lg py-4 w-full flex flex-col items-center mt-12 mb-8">
+          <div
+            className={`bg-[#FFFFFF08] border-[1px] border-[#FFFFFF28] rounded-lg py-4 w-full flex flex-col items-center ${isMobileScreen ? "mt-6" : "mt-12"} mb-8`}
+          >
             <h4 className="text-lg text-white font-bold text-center">
               What if the future you always dreamed of was already here?
             </h4>

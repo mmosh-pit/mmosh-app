@@ -1,5 +1,3 @@
-import Markdown from "react-markdown";
-
 type Props = {
   message: string;
   type: string;
@@ -26,9 +24,9 @@ const MessageBanner = ({ message, type }: Props) => {
 
   return (
     <div
-      className={`w-full flex justify-center items-center ${getBackgroundColor()} py-4`}
+      className={`w-full flex justify-center items-center ${getBackgroundColor()} p-4`}
     >
-      <Markdown>{message}</Markdown>
+      <p className="text-base text-white text-center">{message}</p>
     </div>
   );
 };

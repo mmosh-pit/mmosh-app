@@ -42,6 +42,7 @@ import client from "../lib/httpClient";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import internalClient from "../lib/internalHttpClient";
 import AlertModal from "./Modal";
+import MessageBanner from "./common/MessageBanner";
 
 const SOL_ADDR = "So11111111111111111111111111111111111111112";
 
@@ -679,6 +680,13 @@ const Header = () => {
             </div>
           </div>
         </div>
+
+        {pathname.includes("/bots/") && (
+          <MessageBanner
+            type="info"
+            message="Welcome to Full Disclosure NOW! You are cordially invited to participate in the beta test of our AI Bot. This is a pre-release system for test purposes only, so please excuse any issues you may encounter."
+          />
+        )}
 
         {pathname.includes("/communities/") && community !== null && (
           <div

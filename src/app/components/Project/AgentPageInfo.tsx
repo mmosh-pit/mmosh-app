@@ -90,15 +90,6 @@ const AgentPageInfo = ({
         >
           <p className="text-base text-white">Offers</p>
         </div>
-
-        <div className="mx-4" />
-
-        <div
-          className={`flex items-center cursor-pointer ${selectedTab === 2 && "border-[1px] border-[#FFFFFF28] bg-[#FFFFFF20]"} rounded-full p-2`}
-          onClick={() => setSelectedTab(2)}
-        >
-          <p className="text-base text-white">Team Members</p>
-        </div>
       </div>
 
       {selectedTab === 0 && (

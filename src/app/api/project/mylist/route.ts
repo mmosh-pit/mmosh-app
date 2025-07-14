@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const authorization = req.headers.get("authorization");
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/is-auth`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`,
     {
       headers: {
         Authorization: authorization ?? "",
@@ -31,11 +31,11 @@ export async function GET(req: NextRequest) {
 
   const data = await response.json();
 
-  if (!data.isAuth) {
+  if (!data?.data?.is_auth) {
     return NextResponse.json("", { status: 401 });
   }
 
-  const isAdmin = adminUsers.includes(data.user.email);
+  const isAdmin = adminUsers.includes(data.data.user.email);
 
   if (!creator && !isAdmin) {
     return NextResponse.json({ error: "Invalid Payload" }, { status: 400 });

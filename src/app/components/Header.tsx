@@ -534,7 +534,7 @@ const Header = () => {
             )}
 
             <div className={`flex items-center justify-end w-[100%]`}>
-              {currentUser?.profilenft && (
+              {/*currentUser?.profilenft && (
                 <div className="dropdown pr-6 ml-4">
                   <a
                     className="text-base text-white cursor-pointer relative"
@@ -575,7 +575,7 @@ const Header = () => {
                     </div>
                   )}
                 </div>
-              )}
+              )*/}
 
               {!!currentUser?.profile?.image && (
                 <div

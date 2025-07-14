@@ -1,7 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { isAuth, isDrawerOpen, signInCurrentBot } from "@/app/store";
+import {
+  isAuth,
+  isDrawerOpen,
+  signInCurrentBot,
+  signInModal,
+  signInModalInitialStep,
+} from "@/app/store";
 import { useAtom } from "jotai";
 import axios from "axios";
 import Image from "next/image";
@@ -80,6 +86,9 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const [creatorInfo, setCreatorInfo] = React.useState<any>(null);
   const [isOwner, setOwner] = React.useState(false);
   const [roles, setRoles] = React.useState<any>([...defaultRoleData]);
+
+  const [__, setIsModalOpen] = useAtom(signInModal);
+  const [___, setInitialModalStep] = useAtom(signInModalInitialStep);
 
   const [projectInfo, setProjectInfo] = React.useState<any>({
     profiles: [],
@@ -528,7 +537,13 @@ const Project = ({ params }: { params: { symbol: string } }) => {
               </div>
 
               <div className="w-[33%] flex justify-end">
-                <button className="rounded-full px-6 py-2 bg-[#FF00AE]">
+                <button
+                  className="rounded-full px-6 py-2 bg-[#FF00AE]"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setInitialModalStep(0);
+                  }}
+                >
                   <p className="text-base text-white">Join the movement</p>
                 </button>
               </div>
@@ -550,7 +565,13 @@ const Project = ({ params }: { params: { symbol: string } }) => {
               </div>
 
               <div className="flex justify-center mb-4 mt-6">
-                <button className="w-full rounded-full px-6 py-2 bg-[#FF00AE]">
+                <button
+                  className="w-full rounded-full px-6 py-2 bg-[#FF00AE]"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                    setInitialModalStep(0);
+                  }}
+                >
                   <p className="text-base text-white">Join the movement</p>
                 </button>
               </div>

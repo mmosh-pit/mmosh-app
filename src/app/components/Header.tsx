@@ -81,7 +81,9 @@ const Header = () => {
   const [____________, setHasGenesisProfile] = useAtom(genesisProfileUser);
 
   const [isModalOpen, setIsModalOpen] = useAtom(signInModal);
-  const [initialModalStep] = useAtom(signInModalInitialStep);
+  const [initialModalStep, setInitialModalStep] = useAtom(
+    signInModalInitialStep,
+  );
 
   const [community] = useAtom(currentGroupCommunity);
 
@@ -499,13 +501,13 @@ const Header = () => {
         isHome={pathname === "/"}
       />
       <header className="flex flex-col bg-transparent">
-        <div className="w-full flex flex-col justify-center items-center py-6 px-20 relative z-10">
+        <div className="w-full flex flex-col justify-center items-center py-6 md:px-20 px-8 relative">
           <div className="flex w-full justify-between items-center mx-8">
             {isMobileScreen ? (
               <MobileDrawer />
             ) : (
               <div
-                className="flex justify-start w-[20%] mr-12 cursor-pointer"
+                className="flex justify-start w-[100%] mr-12 cursor-pointer"
                 onClick={() => {
                   if (pathname === "/" && isUserAuthenticated) {
                     setIsUserAuthenticated(false);
@@ -521,9 +523,7 @@ const Header = () => {
             {!isMobileScreen && isUserAuthenticated && <Tabs />}
 
             {!isUserAuthenticated && pathname.includes("/bots") && (
-              <div
-                className={`relative ${isMobileScreen ? "w-[100%]" : "w-[25%]"} h-[80px]`}
-              >
+              <div className={`relative w-[100%] h-[80px]`}>
                 <Image
                   src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
                   alt="logo"
@@ -533,9 +533,7 @@ const Header = () => {
               </div>
             )}
 
-            <div
-              className={`flex items-center justify-end ${isMobileScreen ? "w-[100%]" : "md:w-[35%] lg:w-[20%]"}`}
-            >
+            <div className={`flex items-center justify-end w-[100%]`}>
               {currentUser?.profilenft && (
                 <div className="dropdown pr-6 ml-4">
                   <a
@@ -638,6 +636,7 @@ const Header = () => {
                   className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2 rounded-full ml-4"
                   onClick={() => {
                     setIsModalOpen(true);
+                    setInitialModalStep(0);
                   }}
                 >
                   <p className="text-white text-base text-center">Sign Up</p>
@@ -654,6 +653,7 @@ const Header = () => {
                   }
 
                   setIsModalOpen(true);
+                  setInitialModalStep(2);
                 }}
               >
                 {isLoadingLogout ? (

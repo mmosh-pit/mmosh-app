@@ -454,7 +454,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
       <div
         className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
       >
-        <div className="flex flex-col backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl mb-16 p-3">
+        <div className="flex flex-col backdrop-blur-[6px] rounded-md relative md:mx-16 mx-4 rounded-xl mb-16 p-3">
           <div className="h-80 overflow-hidden relative">
             {projectDetail && (
               <Image
@@ -466,11 +466,12 @@ const Project = ({ params }: { params: { symbol: string } }) => {
             )}
 
             {isAuthenticated && (
-              <div className="absolute left-0 top-0 h-12 bg-[#00000080] border-tl-[13px] border-br-[50px] p-4">
+              <div className="absolute left-0 top-0 h-12 bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px] h-[50px]">
                 <Image
                   src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
                   alt="FDN"
                   layout="fill"
+                  className="object-contain p-4"
                 />
               </div>
             )}

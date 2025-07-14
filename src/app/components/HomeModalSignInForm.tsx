@@ -4,7 +4,7 @@ import EyeLineIcon from "@/assets/icons/EyeLineIcon";
 import EyeIcon from "@/assets/icons/EyeIcon";
 import client from "../lib/httpClient";
 import Button from "./common/Button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { data, isAuth, isAuthOverlayOpen } from "../store";
 
@@ -18,6 +18,7 @@ const HomeModalSignInForm = ({
   onSignUpTapped,
 }: HomeModalSignUpFormProps) => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [__, setIsUserAuthenticated] = useAtom(isAuth);
@@ -66,7 +67,9 @@ const HomeModalSignInForm = ({
       setShowAuthOverlay(false);
       setUser(res.data.data.user);
 
-      router.replace("/bots");
+      if (pathname === "/" || pathname === "/preview") {
+        router.replace("/bots");
+      }
       onSuccess();
     } catch (err: any) {
       console.error(err);

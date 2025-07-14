@@ -372,8 +372,8 @@ const Profile = ({ username }: { username: any }) => {
                   <span className="font-bold text-lg text-white mx-2">•</span>
                   <p className="text-base">
                     {userData.profile.name !== ""
-                      ? `${userData.profile.name} ${userData.profile.lastName}`
-                      : `${userData.guest_data.name} ${userData.guest_data.lastName}`}
+                      ? `${userData.profile.name} ${userData.profile.lastName ?? ""}`
+                      : `${userData.guest_data.name} ${userData.guest_data.lastName ?? ""}`}
                   </p>
 
                   <p className="ml-4 text-base text-[#FF00AE]">

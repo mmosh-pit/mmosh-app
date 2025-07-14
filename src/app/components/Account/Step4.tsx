@@ -88,7 +88,7 @@ const Step4 = () => {
       if (!onboarding.name) {
         setForm({
           ...form,
-          name,
+          name: guestData.name,
           username: guestData.username,
           link: guestData.website,
           description: guestData.bio,

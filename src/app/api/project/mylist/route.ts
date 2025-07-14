@@ -8,13 +8,17 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const creator = searchParams.get("creator");
-  let match = creator ? { $match: { creator: creator } } : { $match: { } }
 
+  if (!creator) {
+    return NextResponse.json({ error: "Invalid Payload" }, { status: 400 });
+  }
+
+  let match = { $match: { creator: creator } };
 
   const result = await db
     .collection("mmosh-app-project")
     .aggregate([
-     match,
+      match,
       {
         $lookup: {
           from: "mmosh-app-project-coins",
@@ -75,7 +79,7 @@ export async function GET(req: NextRequest) {
           pass: "$pass",
         },
       },
-      {$sort: {created_date: -1}},
+      { $sort: { created_date: -1 } },
     ])
     .limit(100)
     .toArray();

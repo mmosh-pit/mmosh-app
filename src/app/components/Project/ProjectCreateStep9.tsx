@@ -86,7 +86,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       }
 
       setFiles(newFiles);
-      await axios.delete(
+      await internalClient.delete(
         `/api/project/delete-media?project=${projectDetail.project.key}&id=${id}`,
       );
       await removeFileByMetadata(id);
@@ -100,7 +100,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
 
       const metadata = `${projectKey}-${id}`;
 
-      await axios.delete(
+      await internalClient.delete(
         `https://mmoshapi-uodcouqmia-uc.a.run.app/delete_by_metadata?metadata=${encodeURIComponent(metadata)}`,
       );
     },
@@ -140,7 +140,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
           formData,
         );
 
-        await axios.put("/api/project/update-media-privacy", {
+        await internalClient.put("/api/project/update-media-privacy", {
           projectkey: projectKey,
           file: {
             id,

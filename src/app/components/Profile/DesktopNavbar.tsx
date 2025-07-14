@@ -1,3 +1,4 @@
+import internalClient from "@/app/lib/internalHttpClient";
 import { User } from "@/app/models/user";
 import { data } from "@/app/store";
 import axios from "axios";
@@ -28,7 +29,7 @@ const DesktopNavbar = (props: any) => {
       console.log("current user updated ", newUSer);
       setCurrentUser(newUSer);
       setPrivate(newUSer.profile.isprivate);
-      await axios.put("/api/connections/update-profile-settings", {
+      await internalClient.put("/api/connections/update-profile-settings", {
         isprivate: newUSer.profile.isprivate,
         wallet: currentUser.wallet,
       });

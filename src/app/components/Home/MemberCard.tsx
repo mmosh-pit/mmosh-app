@@ -183,7 +183,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
               connectionnft,
               connectionbadge,
             };
-            await axios.put("/api/connections/update-wallet-data", {
+            await internalClient.put("/api/connections/update-wallet-data", {
               value: params,
               wallet: currentuser.wallet,
             });

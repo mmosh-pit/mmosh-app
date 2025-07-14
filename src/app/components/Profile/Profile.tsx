@@ -199,7 +199,7 @@ const Profile = ({ username }: { username: any }) => {
               connectionnft,
               connectionbadge,
             };
-            await axios.put("/api/connections/update-wallet-data", {
+            await internalClient.put("/api/connections/update-wallet-data", {
               value: params,
               wallet: currentUser.wallet,
             });

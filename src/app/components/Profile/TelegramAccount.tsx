@@ -4,6 +4,7 @@ import axios from "axios";
 import { User } from "@/app/models/user";
 import TelegramMagentaIcon from "@/assets/icons/TelegramMagentaIcon";
 import useWallet from "@/utils/wallet";
+import internalClient from "@/app/lib/internalHttpClient";
 
 type Props = {
   isMyProfile: boolean;
@@ -32,7 +33,7 @@ const TelegramAccount = ({ userData, setUserData, isMyProfile }: Props) => {
           points: user.data?.points || 0,
         };
 
-        await axios.put("/api/update-wallet-data", {
+        await internalClient.put("/api/update-wallet-data", {
           wallet: wallet!.publicKey,
           field: "telegram",
           value: telegramData,

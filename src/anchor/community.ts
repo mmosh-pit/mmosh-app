@@ -46,13 +46,12 @@ import {
   createCreateMetadataAccountV3Instruction,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { createMintInstructions } from "@strata-foundation/spl-utils";
-import {
-  SystemProgram,
-  Transaction,
-  VersionedTransaction,
-} from "@solana/web3.js";
-import { NATIVE_MINT } from "@solana/spl-token";
 import internalClient from "@/app/lib/internalHttpClient";
+
+import { SystemProgram, Transaction, VersionedTransaction } from "@solana/web3.js";
+import { NATIVE_MINT, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { Token } from "./curve/spl-token-curve/index";
+
 
 const {
   systemProgram,
@@ -3961,6 +3960,111 @@ export class Connectivity {
     tx.add(feeIns);
     const signature = await this.provider.sendAndConfirm(tx, []);
     return signature;
+  }
+
+
+  async unStakeToken(input: {
+    amount: number,
+    mint: anchor.web3.PublicKey,
+    stakeKey: anchor.web3.PublicKey,
+  }): Promise<string> {
+    let {
+      mint,
+      stakeKey,
+      amount
+    } = input;
+
+    const instructions: anchor.web3.TransactionInstruction[] = [];
+
+    const vaultState = web3.PublicKey.findProgramAddressSync(
+      [web3Consts.Seeds.vault, stakeKey.toBuffer(), mint.toBuffer()],
+      this.programId,
+    )[0]
+
+    const receiverAtaResult = await this.getAtaAccount(mint, this.provider.publicKey);
+    const receiverAta = receiverAtaResult.ata;
+    if (receiverAtaResult.initAtaIx) instructions.push(receiverAtaResult.initAtaIx);
+
+    const nftTokenAccount = await getAssociatedTokenAddress(
+      mint,
+      vaultState,
+      true
+    );
+
+    const receiverAccount = await this.getAtaAccount(mint, stakeKey);
+    if (!receiverAccount) {
+      const targetMintKeypair = web3.Keypair.generate();
+      const tokenATA = await getAssociatedTokenAddress(
+        targetMintKeypair.publicKey,
+        stakeKey,
+      );
+      instructions.push(
+        Token.createAssociatedTokenAccountInstruction(
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+          TOKEN_PROGRAM_ID,
+          targetMintKeypair.publicKey,
+          tokenATA,
+          stakeKey,
+          stakeKey,
+        )
+      );
+    }
+
+
+    const ix = await this.program.methods.unstakeVault(new BN(amount)).accounts({
+      receiver: this.provider.publicKey,
+      receiverAta,
+      mint,
+      stakeKey,
+      vault: vaultState,
+      tokenAccount: nftTokenAccount,
+      associatedTokenProgram,
+      systemProgram,
+      tokenProgram,
+      rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+      clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+    }).instruction();
+
+    instructions.push(ix);
+
+    const createTransfer = await this.baseSpl.transfer_token_modified({
+      mint,
+      sender: this.provider.publicKey,
+      receiver: stakeKey,
+      init_if_needed: true,
+      amount: amount,
+    });
+
+    for (let i = 0; i < createTransfer.length; i++) {
+      instructions.push(createTransfer[i]);
+    }
+
+    const tx = new web3.Transaction().add(...instructions);
+
+    tx.recentBlockhash = (
+      await this.connection.getLatestBlockhash()
+    ).blockhash;
+    tx.feePayer = stakeKey;
+
+
+    const feeEstimate = await this.getPriorityFeeEstimate(tx);
+    let feeIns;
+    if (feeEstimate > 0) {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: feeEstimate,
+      });
+    } else {
+      feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1_400_000,
+      });
+    }
+    tx.add(feeIns);
+    const signedTx = await this.provider.wallet.signTransaction(tx);
+    const serializedTx = signedTx.serialize({
+      requireAllSignatures: false,
+      verifySignatures: false,
+    }) as Buffer;
+    return serializedTx.toString('hex');
   }
 
   async hasStakeAccount(stakeKey: String) {

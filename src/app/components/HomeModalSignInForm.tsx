@@ -83,15 +83,15 @@ const HomeModalSignInForm = ({
       className="flex flex-col justify-between items-center w-full"
       onSubmit={submit}
     >
-      <h1 className="text-[1.5vmax] font-bold font-goudy text-white">
+      <h1 className="text-[2vmax] font-bold font-goudy text-white">
         Welcome Home
       </h1>
-      <p className="text-base font-bold">
+      <p className="text-sm font-bold text-white mt-2 text-center">
         Enter your email address and password to log in.
       </p>
       <div className="my-4" />
 
-      <div className="flex flex-col mb-4 w-[60%]">
+      <div className="flex flex-col mb-4 md:w-[60%] w-[95%]">
         <Input
           placeholder="Email address"
           value={form.email}

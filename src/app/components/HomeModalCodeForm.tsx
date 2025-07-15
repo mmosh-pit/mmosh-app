@@ -93,18 +93,18 @@ const HomeModalCodeForm = ({ onSuccess }: HomeModalCodeFormProps) => {
     <div className="w-full min-h-full flex flex-col items-center pt-4 px-6 relative">
       <div className="flex flex-col items-center my-6">
         <div className="flex justify-center mb-2">
-          <h1 className="text-[1.5vmax] font-bold font-goudy text-white">
+          <h1 className="text-[2vmax] font-bold font-goudy text-white">
             You're almost there!
           </h1>
         </div>
-        <p className="text-base mt-4">
+        <p className="text-sm font-bold text-center text-white">
           Thank you for joining! Please check your inbox for the six-digit
           verification code we just sent and enter it below to activate your
           account.
         </p>
       </div>
 
-      <div className="w-[75%] md:w-[40%] lg:w-[25%] flex justify-center my-4">
+      <div className="w-[95%] md:w-[40%] lg:w-[25%] flex justify-center my-4">
         {formCodes.map((val, index) => (
           <div className="flex justify-center items-center" key={index}>
             <div className={`max-w-[4vmax] mx-1 ${getBorderByValue(val)}`}>

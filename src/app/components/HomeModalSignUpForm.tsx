@@ -67,15 +67,15 @@ const HomeModalSignUpForm = ({
       className="flex flex-col justify-between items-center w-full"
       onSubmit={submit}
     >
-      <h1 className="text-[1.5vmax] font-bold font-goudy text-white">
+      <h1 className="text-[2vmax] font-bold font-goudy text-white">
         Create an Account
       </h1>
-      <h2 className="text-[1vmax] font-bold font-goudy">
+      <p className="text-sm font-bold text-center text-white">
         Your Life will never be the same again...
-      </h2>
+      </p>
       <div className="my-4" />
 
-      <div className="flex flex-col mb-4 w-[60%]">
+      <div className="flex flex-col mb-4 md:w-[60%] w-[95%]">
         <Input
           placeholder="First name or Alias"
           value={form.name}
@@ -145,7 +145,7 @@ const HomeModalSignUpForm = ({
           }
         />
 
-        <p className="text-xs text-[#A49E9E] mt-2">
+        <p className="text-[0.8vmax] md:text-xs text-[#A49E9E] mt-2">
           By creating an account, you agree to emails about new features and
           community updates. We respect your privacy and will protect your
           personal information. You may unsubscribe at any time.

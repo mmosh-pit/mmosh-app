@@ -11,6 +11,7 @@ import { getUsername } from "../forge/getUsername";
 import { updateUserData } from "../forge/updateUserData";
 import { updateTotalMints } from "../forge/updateTotalMints";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
+import axios from "axios";
 
 export const createProfile = async ({
   wallet,
@@ -19,6 +20,9 @@ export const createProfile = async ({
   preview,
   parentProfile,
   banner,
+  membership,
+  membershipType,
+  price
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
     const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
@@ -88,6 +92,22 @@ export const createProfile = async ({
           trait_type: "Noun",
           value: form.noun,
         },
+        {
+          trait_type: "Membership",
+          value: membership
+        },
+        {
+          trait_type: "Renewal frequency",
+          value: membershipType
+        },
+        {
+          trait_type: "Membership status",
+          value: "Active"
+        },
+        {
+          trait_type: "Price",
+          value: price + " USD"
+        }
       ],
     };
 
@@ -210,6 +230,7 @@ export const createProfile = async ({
       parentProfile,
       genesisProfile,
       commonLut: web3Consts.commonLut,
+      price
     });
 
     if (res.Ok) {
@@ -228,7 +249,26 @@ export const createProfile = async ({
         banner,
       };
 
+
       await updateUserData(params);
+
+        let date = new Date(); // Now
+        if(membershipType === "monthly") {
+          date.setDate(date.getDate() + 30);
+        } else if (membershipType === "yearly") {
+          date.setDate(date.getDate() + 365);
+        }
+
+      const membershipparams = {
+        membership,
+        membershiptype: membershipType,
+        price,
+        expirydate: date,
+        wallet: wallet.publicKey.toString()
+      };
+
+      await axios.post("/api/membership/add", membershipparams);
+
       await updateTotalMints(seniority);
 
       return {
@@ -247,6 +287,121 @@ export const createProfile = async ({
     }
   } catch (err) {
     console.error("Got error: ", err);
+    return {
+      type: "error",
+      message: "Something wrong happened, please contact support",
+    };
+  }
+};
+
+export const buyMembership = async ({
+  wallet,
+  image,
+  form,
+  preview,
+  parentProfile,
+  membership,
+  membershipType,
+  price
+}: CreateProfileParams): Promise<MintResultMessage> => {
+  try {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet, {
+      preflightCommitment: "processed",
+    });
+    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+    const profileLineage = await userConn.getProfileLineage(parentProfile);
+    if(profileLineage.promoter === "") {
+      return {
+        type: "error",
+        message:
+          "We’re sorry, there was an error while trying to find parent profile.",
+      };
+    }
+    const genesisProfile = web3Consts.genesisProfile;
+
+    const res = await userConn.buyMembership({
+      name: form.username.substring(0, 15),
+      symbol: form.username.substring(0, 10).toUpperCase(),
+      uriHash: "",
+      parentProfile,
+      genesisProfile,
+      commonLut: web3Consts.commonLut,
+      price
+    });
+
+    if (res.Ok) {
+        let date = new Date(); // Now
+        if(membershipType === "monthly") {
+          date.setDate(date.getDate() + 30);
+        } else if (membershipType === "yearly") {
+          date.setDate(date.getDate() + 365);
+        }
+
+      const membershipparams = {
+        membership,
+        membershiptype: membershipType,
+        price,
+        expirydate: date,
+        wallet: wallet.publicKey.toString()
+      };
+
+      await axios.post("/api/membership/update", membershipparams);
+
+
+      return {
+        type: "success",
+        message:
+          "Congrats! Your profile has been minted, granting you full membership in MMOSH DAO.",
+        data: {},
+      };
+    } else {
+      console.log("Response: ", res);
+      return {
+        type: "error",
+        message:
+          "We’re sorry, there was an error while trying to mint your profile. Check your wallet and try again.",
+      };
+    }
+  } catch (err) {
+    console.error("Got error: ", err);
+    return {
+      type: "error",
+      message: "Something wrong happened, please contact support",
+    };
+  }
+};
+
+export const trasferUsdCoin = async (wallet: any, receiver: string, amount: number) => {
+  try {
+    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
+      confirmTransactionInitialTimeout: 120000,
+    });
+    const env = new anchor.AnchorProvider(connection, wallet, {
+      preflightCommitment: "processed",
+    });
+    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+    const res = await userConn.trasferUsdCoin({
+      recipient: { receiver, amount },
+      sender: wallet.publicKey
+    });
+    console.log("===== RES =====", res);
+    if (res.Ok) {
+      return {
+        type: "success",
+        message: "Congrats! The amount has been transferred successfully.",
+        data: res.Ok,
+      };
+    } else {
+      return {
+        type: "error",
+        message: "We’re sorry, there was an error while trying to transfer USDC. Check your wallet and try again.",
+      };
+    }
+  } catch (error) {
+    console.log("===== TRASFER USDC ERROR =====", error);
     return {
       type: "error",
       message: "Something wrong happened, please contact support",

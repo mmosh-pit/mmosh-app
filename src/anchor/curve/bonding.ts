@@ -295,7 +295,7 @@ export class Connectivity {
     }
   }
 
-  async createTargetMint(name: any, symbol: any, url: any): Promise<string> {
+  async createTargetMint(name: any, symbol: any, url: any, supply:any): Promise<string> {
     const lamports = await getMinimumBalanceForRentExemptAccount(
       this.connection,
     );
@@ -356,6 +356,30 @@ export class Connectivity {
         TOKEN_PROGRAM_ID,
       ),
     );
+
+
+    if(supply > 0) {
+      if (!(await this.accountExists(tokenATA))) {
+          console.log("created token account...")
+          instructions.push(
+            Token.createAssociatedTokenAccountInstruction(
+              ASSOCIATED_TOKEN_PROGRAM_ID,
+              TOKEN_PROGRAM_ID,
+              targetMintKeypair.publicKey,
+              tokenATA,
+              this.provider.publicKey,
+              this.provider.publicKey,
+            )
+          );
+      }
+      console.log("created token supply...")
+      instructions.push(createMintToInstruction(
+        targetMintKeypair.publicKey,
+        tokenATA,
+        this.provider.publicKey,
+        supply // or 1000000 for fungible
+      ))
+    }
 
     const createMetadataInstruction = createCreateMetadataAccountV3Instruction(
       {

@@ -267,7 +267,7 @@ const Step3 = () => {
   }, []);
 
   return (
-    <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[70%] mt-4">
+    <div className="bg-[#18174750] border-[1px] border-[#FFFFFF80] rounded-lg py-8 md:px-8 px-6 flex flex-col md:w-[55%] w-[95%] mt-4">
       <div className="w-full flex justify-between">
         <button onClick={() => setSelectedStep(1)}>
           <ArrowBack />
@@ -281,14 +281,14 @@ const Step3 = () => {
 
         <div className="my-2" />
 
-        <p className="text-sm text-center md:max-w-[50%] max-w-[75%]">
+        <p className="text-sm text-center md:max-w-[50%] max-w-[85%]">
           Swap some of your SOL for USDC, a stablecoin pegged to the US Dollar,
           or purchase Bot Coins you can use for a range of goods and services.
           Make sure you keep at least a few dollars of SOL for network fees!
         </p>
       </div>
 
-      <div className="mt-8 max-h-[550px] w-[80%] md:w-[70%] lg:w-[55%] self-center md:p-4 lg:p-6 rounded-xl">
+      <div className="mt-8 max-h-[550px] w-[95%] md:w-[70%] lg:w-[55%] self-center md:p-4 lg:p-6 rounded-xl">
         <div className="swap-container-inner p-8">
           <div className="flex w-full flex-col justify-between">
             <div className="w-full flex justify-between">

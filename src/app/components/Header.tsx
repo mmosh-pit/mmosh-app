@@ -430,6 +430,13 @@ const Header = () => {
     }
   }, []);
 
+  const checkMembershipStatus = async () => {
+    let membershipInfo = await axios.get(
+      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
+    );
+    setMembershipStatus(membershipInfo.data);
+  };
+
   React.useEffect(() => {
     if (
       (!wallet || bags !== null) &&
@@ -494,13 +501,6 @@ const Header = () => {
   ) {
     return <></>;
   }
-
-  const checkMembershipStatus = async () => {
-    let membershipInfo = await axios.get(
-      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
-    );
-    setMembershipStatus(membershipInfo.data);
-  };
 
   return (
     <>

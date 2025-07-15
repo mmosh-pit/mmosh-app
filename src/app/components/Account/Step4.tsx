@@ -80,14 +80,14 @@ const Step4 = () => {
     if (user) {
       const guestData = user!.guest_data;
 
-      let name = guestData.name;
+      let name = guestData?.name;
 
       if (name === "" || !name) {
-        name = user.name;
+        name = user?.name;
       }
 
       if (!name || name === "") {
-        name = signUpFormData.name;
+        name = signUpFormData?.name;
       }
 
       setPreview(guestData.picture ?? "");

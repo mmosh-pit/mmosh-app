@@ -6,13 +6,45 @@ import ChatAgentSelector from "../components/Chat/ChatAgentSelector";
 import ChatInteractionContainer from "../components/Chat/ChatInteractionContainer";
 import { chatsStore } from "../store/chat";
 import useWsConnection from "../lib/useWsConnection";
-import { isAuth } from "../store";
+import { data, isAuth } from "../store";
+import { useRouter } from "next/navigation";
+import client from "../lib/httpClient";
 
 export default function OPOS() {
+  const router = useRouter();
   const [_, setChats] = useAtom(chatsStore);
-  const [isUserAuth] = useAtom(isAuth);
+  const [isUserAuth, setIsUserAuthenticated] = useAtom(isAuth);
+  const [__, setCurrentUser] = useAtom(data);
 
   const socket = useWsConnection({ isAuth: isUserAuth });
+
+  const checkIfIsAuthenticated = React.useCallback(async () => {
+    const url = `/is-auth`;
+
+    try {
+      const result = await client.get(url);
+
+      const user = result.data?.data?.user;
+
+      if (user) {
+        setIsUserAuthenticated(true);
+        setCurrentUser(user);
+        if (user.onboarding_step < 4) {
+          router.replace("/account");
+        }
+      } else {
+        router.replace("/login");
+      }
+    } catch (err) {
+      router.replace("/login");
+    }
+  }, [router, setIsUserAuthenticated, setCurrentUser]);
+
+  React.useEffect(() => {
+    if (!isUserAuth) {
+      checkIfIsAuthenticated();
+    }
+  }, [isUserAuth, checkIfIsAuthenticated]);
 
   React.useEffect(() => {
     if (socket) {

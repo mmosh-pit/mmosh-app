@@ -276,6 +276,9 @@ const ProfileForm = () => {
       preview: finalPreview,
       parentProfile: new PublicKey(referer),
       banner: resultingBanner,
+      membership: "enjoyer",
+      membershipType: "monthly",
+      price: 15,
     });
 
     createMessage(result.message, result.type);

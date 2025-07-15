@@ -18,7 +18,7 @@ import Config from "./web3Config.json";
 import { BaseMpl } from "./base/baseMpl";
 import { web3Consts } from "./web3Consts";
 import { getAssociatedTokenAddressSync, unpackAccount } from "forge-spl-token";
-import { Metaplex } from "@metaplex-foundation/js";
+import { Metaplex, PublicKey } from "@metaplex-foundation/js";
 import { BaseSpl, UpdateToken } from "./base/baseSpl";
 import axios from "axios";
 import { getAccount } from "forge-spl-token";
@@ -535,8 +535,17 @@ export class Connectivity {
       this.baseSpl.__reinit();
       const user = this.provider.publicKey;
       if (!user) throw "Wallet not found";
-      let { name, symbol, uriHash, parentProfile, genesisProfile, commonLut } =
-        input;
+
+      let {
+        name,
+        symbol,
+        uriHash,
+        parentProfile,
+        genesisProfile,
+        commonLut,
+        price
+      } = input;
+
 
       if (typeof parentProfile == "string")
         parentProfile = new web3.PublicKey(parentProfile);
@@ -651,7 +660,8 @@ export class Connectivity {
       const mainStateInfo = await this.program.account.mainState.fetch(
         this.mainState,
       );
-      let cost = 8 * 10 ** 6;
+
+      let cost = price * (10**6);
 
       let holdersfullInfo = [];
 
@@ -792,6 +802,247 @@ export class Connectivity {
       return { Err: error };
     }
   }
+
+    async buyMembership(
+    input: _MintProfile,
+  ): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    try {
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      if (!user) throw "Wallet not found";
+      let {
+        name,
+        symbol,
+        uriHash,
+        parentProfile,
+        genesisProfile,
+        commonLut,
+        price
+      } = input;
+
+      if (typeof parentProfile == "string")
+        parentProfile = new web3.PublicKey(parentProfile);
+
+      if (typeof genesisProfile == "string")
+        genesisProfile = new web3.PublicKey(genesisProfile);
+
+      symbol = symbol ?? "";
+      uriHash = uriHash ?? "";
+
+      const parentProfileStateInfo =
+        await this.program.account.profileState.fetch(
+          this.__getProfileStateAccount(parentProfile),
+        );
+      // const lut = parentProfileStateInfo.lut;
+      const parentProfileNftInfo = await this.metaplex
+        .nfts()
+        .findByMint({ mintAddress: parentProfile, loadJsonMetadata: false });
+      const collection = parentProfileNftInfo?.collection?.address;
+      if (!collection) return { Err: "Collection info not found" };
+      const collectionMetadata = BaseMpl.getMetadataAccount(collection);
+      const collectionEdition = BaseMpl.getEditionAccount(collection);
+      const mintKp = web3.Keypair.generate();
+      const profile = mintKp.publicKey;
+
+      const { ixs: mintIxs } = await this.baseSpl.__getCreateTokenInstructions({
+        mintAuthority: user,
+        mintKeypair: mintKp,
+        mintingInfo: {
+          tokenAmount: 1,
+          tokenReceiver: user,
+        },
+      });
+
+
+      this.txis = [];
+
+
+      const userProfileAta = getAssociatedTokenAddressSync(profile, user);
+
+      const profileMetadata = BaseMpl.getMetadataAccount(profile);
+      const profileEdition = BaseMpl.getEditionAccount(profile);
+      const profileState = this.__getProfileStateAccount(profile);
+      const parentProfileState = this.__getProfileStateAccount(parentProfile);
+
+      const {
+        //profiles
+        grandParentProfile,
+        greatGrandParentProfile,
+        ggreateGrandParentProfile,
+        //
+        currentGreatGrandParentProfileHolder,
+        currentGgreatGrandParentProfileHolder,
+        currentGrandParentProfileHolder,
+        currentGenesisProfileHolder,
+        currentParentProfileHolder,
+      } = await this.__getProfileHoldersInfo(
+        parentProfileStateInfo.lineage,
+        parentProfile,
+        genesisProfile,
+      );
+      // const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
+
+      const mainStateInfo = await this.program.account.mainState.fetch(
+        this.mainState,
+      );
+      let cost = price * (10**6);
+
+      let holdersfullInfo = [];
+
+      holdersfullInfo.push({
+        receiver: currentGenesisProfileHolder.toBase58(),
+        vallue:
+          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentParentProfileHolder.toBase58(),
+        vallue:
+          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentGrandParentProfileHolder.toBase58(),
+        vallue:
+          cost *
+          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentGreatGrandParentProfileHolder.toBase58(),
+        vallue:
+          cost *
+          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+      });
+
+      holdersfullInfo.push({
+        receiver: currentGgreatGrandParentProfileHolder.toBase58(),
+        vallue:
+          cost *
+          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+      });
+
+      const holdermap: any = [];
+      holdersfullInfo.reduce(function(res: any, value) {
+        if (!res[value.receiver]) {
+          res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+          holdermap.push(res[value.receiver]);
+        }
+        res[value.receiver].vallue += value.vallue;
+        return res;
+      }, {});
+
+      for (let index = 0; index < holdermap.length; index++) {
+        const element = holdermap[index];
+        let createShare: any = await this.baseSpl.transfer_token_modified({
+          mint: usdcToken,
+          sender: user,
+          receiver: new anchor.web3.PublicKey(element.receiver),
+          init_if_needed: true,
+          amount: Math.ceil(element.vallue),
+        });
+        for (let index = 0; index < createShare.length; index++) {
+          this.txis.push(createShare[index]);
+        }
+      }
+
+      const commonLutInfo = (
+        await this.connection.getAddressLookupTable(commonLut)
+      ).value;
+
+      const lutsInfo = [commonLutInfo!];
+
+      const freezeInstructions = await this.calculatePriorityFee(
+        this.txis,
+        lutsInfo,
+        mintKp,
+      );
+
+      for (let index = 0; index < freezeInstructions.length; index++) {
+        const element = freezeInstructions[index];
+        this.txis.push(element);
+      }
+
+      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+      const message = new web3.TransactionMessage({
+        payerKey: this.provider.publicKey,
+        recentBlockhash: blockhash,
+        instructions: [...this.txis],
+      }).compileToV0Message(lutsInfo);
+
+      const tx = new web3.VersionedTransaction(message);
+      tx.sign([mintKp]);
+      this.txis = [];
+
+      // const signedTx = await this.provider.wallet.signTransaction(tx as any);
+      // const txLen = signedTx.serialize().length;
+      // log({ txLen, luts: lutsInfo.length });
+
+      const signature = await this.provider.sendAndConfirm(tx as any);
+
+
+      return {
+        Ok: {
+          signature,
+          info: { profile: ""},
+        },
+      };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+  }
+  async trasferUsdCoin(
+    input: {
+        recipient: { receiver: string; amount: number },
+        sender: PublicKey
+    }
+): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
+    try {
+        this.reinit();
+        this.baseSpl.__reinit();
+        const user = this.provider.publicKey;
+        if (!user) throw "Wallet not found";
+
+        const { recipient, sender } = input;
+        this.txis = [];
+        
+        const createTransfer = await this.baseSpl.transfer_token_modified({
+          mint: usdcToken,
+          sender: new anchor.web3.PublicKey(sender),
+          receiver: new anchor.web3.PublicKey(recipient.receiver),
+          init_if_needed: true,
+          amount: Math.ceil(recipient.amount * (10**6)),
+        });
+
+        for (let i = 0; i < createTransfer.length; i++) {
+          this.txis.push(createTransfer[i]);
+        }
+
+        const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+        const message = new web3.TransactionMessage({
+            payerKey: this.provider.publicKey,
+            recentBlockhash: blockhash,
+            instructions: [...this.txis],
+        }).compileToV0Message();
+
+        const tx = new web3.VersionedTransaction(message);
+        const signature = await this.provider.sendAndConfirm(tx as any);
+        console.log("===== SIGNATURE =====", signature);
+
+        return {
+            Ok: {
+                signature,
+                info: { txSignature: signature },
+            },
+        };
+    } catch (error) {
+      console.log("===== ERROR =====", error);
+        // console.error({ error });
+        return { Err: error };
+    }
+}
 
   async registerCommonLut() {
     const collection = web3Consts.profileCollection;

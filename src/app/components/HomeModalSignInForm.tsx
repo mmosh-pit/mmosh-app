@@ -50,6 +50,7 @@ const HomeModalSignInForm = ({
 
     if (!validateEmail(form.email)) {
       setEmailError(true);
+      setIsLoading(false);
     }
 
     setEmailError(false);
@@ -73,7 +74,9 @@ const HomeModalSignInForm = ({
       onSuccess();
     } catch (err: any) {
       console.error(err);
-      setError(err?.response?.data || "Failed to Login, please check support");
+      setError(
+        err?.response?.data?.error || "Failed to Login, please check support",
+      );
     }
     setIsLoading(false);
   };

@@ -443,50 +443,57 @@ const CreateProfile = () => {
 
 
             <div className="mt-10">
-              <div className="membership-box flex grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                   <div className="membership-item border border-[#ffffff] border-opacity-20 rounded-md backdrop-container p-5">
-                       <h3 className="text-white font-goudy font-normal text-center">Creator</h3>
-                        <div className="flex justify-center item-centerv gap-6 mt-5">
-                            <Button
-                              isLoading={isLoading}
-                              isPrimary
-                              title="$24/Month"
-                              size="large"
-                              action={()=>{submitForm("creator", "monthly", 24)}}
-                              disabled={isLoading}
-                            />
-                            <Button
-                              isLoading={isLoading}
-                              isPrimary
-                              title="$180/Year"
-                              size="large"
-                              action={()=>{submitForm("creator", "yearly", 180)}}
-                              disabled={isLoading}
-                            />
-                        </div>
-                   </div>
-                   <div className="membership-item membership-item border border-[#ffffff] border-opacity-20 rounded-md backdrop-container p-5">
-                        <h3 className="text-white font-goudy font-normal text-center">Enjoyer</h3>
-                        <div className="flex justify-center item-centerv gap-6 mt-5">
-                            <Button
-                              isLoading={isLoading}
-                              isPrimary
-                              title="$15/Month"
-                              size="large"
-                              action={()=>{submitForm("enjoyer", "monthly", 15)}}
-                              disabled={isLoading}
-                            />
-                            <Button
-                              isLoading={isLoading}
-                              isPrimary
-                              title="$90/Year"
-                              size="large"
-                              action={()=>{submitForm("enjoyer", "yearly", 90)}}
-                              disabled={isLoading}
-                            />
-                        </div>
-                   </div>
-              </div>
+              {isLoading &&
+                <div className="flex justify-center mb-10">
+                  <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">Loading...</button>
+                </div>
+              }
+              {!isLoading &&
+                <div className="membership-box flex grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div className="membership-item border border-[#ffffff] border-opacity-20 rounded-md backdrop-container p-5">
+                        <h3 className="text-white font-goudy font-normal text-center">Creator</h3>
+                          <div className="flex justify-center item-centerv gap-6 mt-5">
+                              <Button
+                                isLoading={isLoading}
+                                isPrimary
+                                title="$24/Month"
+                                size="large"
+                                action={()=>{submitForm("creator", "monthly", 24)}}
+                                disabled={isLoading}
+                              />
+                              <Button
+                                isLoading={isLoading}
+                                isPrimary
+                                title="$180/Year"
+                                size="large"
+                                action={()=>{submitForm("creator", "yearly", 180)}}
+                                disabled={isLoading}
+                              />
+                          </div>
+                    </div>
+                    <div className="membership-item membership-item border border-[#ffffff] border-opacity-20 rounded-md backdrop-container p-5">
+                          <h3 className="text-white font-goudy font-normal text-center">Enjoyer</h3>
+                          <div className="flex justify-center item-centerv gap-6 mt-5">
+                              <Button
+                                isLoading={isLoading}
+                                isPrimary
+                                title="$15/Month"
+                                size="large"
+                                action={()=>{submitForm("enjoyer", "monthly", 15)}}
+                                disabled={isLoading}
+                              />
+                              <Button
+                                isLoading={isLoading}
+                                isPrimary
+                                title="$90/Year"
+                                size="large"
+                                action={()=>{submitForm("enjoyer", "yearly", 90)}}
+                                disabled={isLoading}
+                              />
+                          </div>
+                    </div>
+                </div>
+              }
               <div className="flex justify-center items-center space-x-4">
                <button className="btn btn-outline text-white border-white hover:bg-white hover:text-black" onClick={skipStep}>Skip</button>
               </div>

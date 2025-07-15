@@ -21,12 +21,14 @@ import ImageAccountPicker from "./ImageAccountPicker";
 import { uploadFile } from "@/app/lib/firebase";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
+import { storeFormAtom } from "@/app/store/signup";
 
 const Step4 = () => {
   const router = useRouter();
   const isMobileScreen = useCheckMobileScreen();
 
   const [onboarding] = useAtom(onboardingForm);
+  const [signUpFormData] = useAtom(storeFormAtom);
   const wallet = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
   const [user, setCurrentUser] = useAtom(data);
@@ -84,18 +86,20 @@ const Step4 = () => {
         name = user.name;
       }
 
-      setPreview(guestData.picture ?? "");
-      if (!onboarding.name) {
-        setForm({
-          ...form,
-          name: guestData.name,
-          username: guestData.username,
-          link: guestData.website,
-          description: guestData.bio,
-          lastName: guestData.lastName,
-          displayName: guestData.displayName,
-        });
+      if (!name || name === "") {
+        name = signUpFormData.name;
       }
+
+      setPreview(guestData.picture ?? "");
+      setForm({
+        ...form,
+        name,
+        username: guestData.username,
+        link: guestData.website,
+        description: guestData.bio,
+        lastName: guestData.lastName,
+        displayName: guestData.displayName,
+      });
     }
 
     if (!form.host) {
@@ -277,6 +281,9 @@ const Step4 = () => {
       preview: finalPreview,
       parentProfile: new PublicKey(referer),
       banner: resultingBanner,
+      membership: "enjoyer",
+      membershipType: "monthly",
+      price: 15,
     });
 
     createMessage(result.message, result.type);

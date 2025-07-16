@@ -28,67 +28,67 @@ import { useRouter } from "next/navigation";
 import { Connectivity as Community } from "@/anchor/community";
 
 const customStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      backgroundColor: "#180E4F",
-      minWidth: "300px",
-      maxWidth: "500px",
-      width: "100%",
-    },
-  };
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#180E4F",
+    minWidth: "300px",
+    maxWidth: "500px",
+    width: "100%",
+  },
+};
 
 
 export default function Launch({ onMenuChange, symbol, createMessage }: { onMenuChange: any, symbol: any, createMessage: any }) {
-    const wallet: any = useWallet();
-    const [currentUser] = useAtom(data);
-    const connection = useConnection();
-    
-    const [coinDetail, setCoinDetail] = useState({
-        image: {
-            preview: "",
-            type: ""
-        },
-        name: "", 
-        symbol: "",
-        desc: "",
-        supply: 0,
-    })
-    const [presaleDetail, setPresaleDetail] = useState({
-        presaleStartDate: "",
-        lockPeriod: "",
-        discount: [],
-        presaleMinimum: 0,
-        presaleMaximum: 10,
-        purchaseMinimum: 0,
-        purchaseMaximum: 0
-    })
+  const wallet: any = useWallet();
+  const [currentUser] = useAtom(data);
+  const connection = useConnection();
 
-    const [fields, setFields] = useState({
-        bonding: "exponential",
-        curvesupply: 0,
-        deadlineDate: "",
-        deadlineTime: "",
-        multiplier: 0,
-        initialPrice: 0,
-        presalePrice: 0
-    })
-    const [modalIsOpen, setIsOpen] = React.useState(false);
-    const [keyword, setKeyword] = React.useState("");
-    const [coinLoader, setCoinLoader] = React.useState(false);
-    const [coinAllList, setCoinAllList] = React.useState([]);
-    const [coinList, setCoinList] = React.useState([]);
-    const [buttonStatus, setButtonStatus] = React.useState("Button");
-    const [dexError, setDexError] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [isReady, setIsReady] = useState(false)
-    const [projectDetail, setProjectDetail] = React.useState<any>(null)
-    const navigate = useRouter();
-    const bondingSelectOptions = [
+  const [coinDetail, setCoinDetail] = useState({
+    image: {
+      preview: "",
+      type: ""
+    },
+    name: "",
+    symbol: "",
+    desc: "",
+    supply: 0,
+  })
+  const [presaleDetail, setPresaleDetail] = useState({
+    presaleStartDate: "",
+    lockPeriod: "",
+    discount: [],
+    presaleMinimum: 0,
+    presaleMaximum: 10,
+    purchaseMinimum: 0,
+    purchaseMaximum: 0
+  })
+
+  const [fields, setFields] = useState({
+    bonding: "exponential",
+    curvesupply: 0,
+    deadlineDate: "",
+    deadlineTime: "",
+    multiplier: 0,
+    initialPrice: 0,
+    presalePrice: 0
+  })
+  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [keyword, setKeyword] = React.useState("");
+  const [coinLoader, setCoinLoader] = React.useState(false);
+  const [coinAllList, setCoinAllList] = React.useState([]);
+  const [coinList, setCoinList] = React.useState([]);
+  const [buttonStatus, setButtonStatus] = React.useState("Button");
+  const [dexError, setDexError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [isReady, setIsReady] = useState(false)
+  const [projectDetail, setProjectDetail] = React.useState<any>(null)
+  const navigate = useRouter();
+  const bondingSelectOptions = [
     {
       label: "Exponential",
       value: "exponential",
@@ -99,221 +99,221 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
     },
   ];
 
-    const [selectedCoin, setSelectedCoin] = React.useState<Coin>({
-        name: "MMOSH: The Stoked Token",
-        desc: "",
-        image:
-            "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
-        token: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
-        symbol: "MMOSH",
-        decimals: 9
-    });
-    const [datasets, setDatasets] = React.useState<{ data: number }[]>([]);
+  const [selectedCoin, setSelectedCoin] = React.useState<Coin>({
+    name: "MMOSH: The Stoked Token",
+    desc: "",
+    image:
+      "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
+    token: process.env.NEXT_PUBLIC_OPOS_TOKEN!,
+    symbol: "MMOSH",
+    decimals: 9
+  });
+  const [datasets, setDatasets] = React.useState<{ data: number }[]>([]);
 
-    const tickXFormat = React.useCallback(
-        (value: number) => {
-            if (value === datasets.length - 1) return "Supply = x";
+  const tickXFormat = React.useCallback(
+    (value: number) => {
+      if (value === datasets.length - 1) return "Supply = x";
 
-            return "";
-        },
-        [datasets],
+      return "";
+    },
+    [datasets],
+  );
+
+  const delay = (ms: any) => new Promise(res => setTimeout(res, ms));
+
+  useEffect(() => {
+    if (localStorage.getItem("coinstep1")) {
+      let coinJson: any = localStorage.getItem("coinstep1");
+      setCoinDetail(JSON.parse(coinJson));
+    }
+
+    if (localStorage.getItem("coinstep2")) {
+      let presaleData: any = localStorage.getItem("coinstep2");
+      setPresaleDetail(JSON.parse(presaleData));
+    }
+
+    getProjectDetailFromAPI()
+  }, [])
+
+  const getProjectDetailFromAPI = async () => {
+    try {
+      setLoading(true)
+      let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
+      setProjectDetail(listResult.data)
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      setProjectDetail(null)
+    }
+  }
+
+  React.useEffect(() => {
+    const isLinear = fields.bonding === "linear";
+    const isExponential = fields.bonding === "exponential";
+    if (
+      (isLinear && fields.initialPrice === 0) ||
+      (isExponential && fields.multiplier === 0)
+    ) {
+      setDatasets([{ data: 0 }, { data: 0 }, { data: 0 }]);
+      return;
+    }
+    const multiplier = isLinear ? 0 : fields.multiplier;
+    const initialPrice = isLinear ? fields.initialPrice : 0;
+    const res = getCoinPrice(
+      1000,
+      initialPrice.toString(),
+      fields.bonding,
+      multiplier,
     );
+    const datasetsValue = res.data.map((value) => ({
+      data: value,
+    }));
+    const datasetsResult = isLinear
+      ? [{ data: 0 }, ...datasetsValue]
+      : datasetsValue;
+    setDatasets(datasetsResult);
+  }, [fields.multiplier, fields.initialPrice, fields.bonding]);
 
-    const delay = (ms:any) => new Promise(res => setTimeout(res, ms));
 
-    useEffect(()=>{
-      if(localStorage.getItem("coinstep1")) {
-          let coinJson:any = localStorage.getItem("coinstep1");
-          setCoinDetail(JSON.parse(coinJson));
+  const openJupiterCoins = () => {
+    setIsOpen(true);
+    getCompletedCoins();
+  };
+
+  const getCompletedCoins = async () => {
+    try {
+      setCoinLoader(true);
+      const result = await axios.get("/api/list-tokens?status=completed");
+      let newCoinList: any = baseCoins
+      for (let index = 0; index < result.data.length; index++) {
+        newCoinList.push(result.data[index]);
       }
+      setCoinAllList(newCoinList);
+      setCoinList(newCoinList);
+      setCoinLoader(false);
+    } catch (error) {
+      setCoinLoader(false);
+      setCoinList([]);
+      setCoinAllList([]);
+    }
+  };
 
-      if(localStorage.getItem("coinstep2")) {
-          let presaleData:any = localStorage.getItem("coinstep2");
-          setPresaleDetail(JSON.parse(presaleData));
+  const openLink = () => {
+    window.open(
+      "https://solscan.io/account/" + selectedCoin.token + "?cluster=mainnet",
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setKeyword("");
+    setCoinList([]);
+    setCoinAllList([]);
+  };
+
+  const onCoinSearch = (event: any) => {
+    setKeyword(event.target.value);
+    console.log(event.target.value);
+    if (event.target.value.trim().length == 0) {
+      setCoinList(coinAllList);
+    } else {
+      let newCoinList = coinAllList.filter(
+        (item: any) =>
+          item.name
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()) ||
+          item.symbol
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()) ||
+          item.symbol
+            .toLowerCase()
+            .includes(event.target.value.trim().toLowerCase()),
+      );
+      setCoinList(newCoinList);
+    }
+  };
+
+  const onTokenSelect = (token: any) => {
+    setSelectedCoin({
+      name: token.name,
+      desc: "",
+      image: token.image,
+      token: token.token,
+      symbol: token.symbol,
+      decimals: token.decimals,
+    })
+    closeModal();
+  };
+
+  const prepareNumber = (inputValue: any) => {
+    if (isNaN(inputValue)) {
+      return 0
+    }
+    return inputValue;
+  }
+
+  const goBack = () => {
+    onMenuChange("presale")
+  }
+
+  const validateFields = (isMessage: boolean) => {
+    if (fields.curvesupply < 10000 || fields.curvesupply > 1000000) {
+      if (isMessage) {
+        createMessage("Bonding curve market cap should be between $10k to $1M", "danger-container");
       }
+      return false;
+    }
 
-      getProjectDetailFromAPI()
-    },[])
+    if (fields.deadlineDate === "" || fields.deadlineTime === "") {
+      if (isMessage) {
+        createMessage("Deadline date should be selected in future dates", "danger-container");
+      }
+      return false;
+    }
 
-    const getProjectDetailFromAPI = async () => {
-      try {
-        setLoading(true)
-        let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
-        setProjectDetail(listResult.data)
-        setLoading(false)
-      } catch (error) {
-        setLoading(false)
-        setProjectDetail(null)
+    let currentDate = new Date();
+    let deadlineStart = new Date(fields.deadlineDate + " " + fields.deadlineTime)
+
+    if (deadlineStart < currentDate) {
+      if (isMessage) {
+        createMessage("Deadline date should be selected in future dates", "danger-container");
+      }
+      return false;
+    }
+
+    if (presaleDetail.presaleMaximum > 0) {
+      if (fields.presalePrice <= 0) {
+        if (isMessage) {
+          createMessage("Presale price should not be empty", "danger-container");
+        }
+        return false;
       }
     }
 
-    React.useEffect(() => {
-        const isLinear = fields.bonding === "linear";
-        const isExponential = fields.bonding === "exponential";
-        if (
-          (isLinear && fields.initialPrice === 0) ||
-          (isExponential && fields.multiplier === 0)
-        ) {
-          setDatasets([{ data: 0 }, { data: 0 }, { data: 0 }]);
-          return;
+    if (fields.bonding === "linear") {
+      if (fields.initialPrice > 5 || fields.initialPrice < 1) {
+        if (isMessage) {
+          createMessage("Mulitpler should be between 1 to 5", "danger-container");
         }
-        const multiplier = isLinear ? 0 : fields.multiplier;
-        const initialPrice = isLinear ? fields.initialPrice : 0;
-        const res = getCoinPrice(
-          1000,
-          initialPrice.toString(),
-          fields.bonding,
-          multiplier,
-        );
-        const datasetsValue = res.data.map((value) => ({
-          data: value,
-        }));
-        const datasetsResult = isLinear
-          ? [{ data: 0 }, ...datasetsValue]
-          : datasetsValue;
-        setDatasets(datasetsResult);
-    }, [fields.multiplier, fields.initialPrice, fields.bonding]);
-    
-
-    const openJupiterCoins = () => {
-        setIsOpen(true);
-        getCompletedCoins();
-    };
-
-    const getCompletedCoins = async () => {
-        try {
-          setCoinLoader(true);
-          const result = await axios.get("/api/list-tokens?status=completed");
-          let newCoinList: any = baseCoins
-          for (let index = 0; index < result.data.length; index++) {
-              newCoinList.push(result.data[index]);
-          }
-          setCoinAllList(newCoinList);
-          setCoinList(newCoinList);
-          setCoinLoader(false);
-        } catch (error) {
-          setCoinLoader(false);
-          setCoinList([]);
-          setCoinAllList([]);
+        return false;
+      }
+    } else {
+      if (fields.multiplier > 2 || fields.multiplier < 1) {
+        if (isMessage) {
+          createMessage("Mulitpler should be 1 or 2", "danger-container");
         }
-    };
-
-    const openLink = () => {
-        window.open(
-            "https://solscan.io/account/" + selectedCoin.token + "?cluster=mainnet",
-            "_blank",
-            "noopener,noreferrer",
-        );
-    };
-
-    const closeModal = () => {
-        setIsOpen(false);
-        setKeyword("");
-        setCoinList([]);
-        setCoinAllList([]);
-    };
-
-    const onCoinSearch = (event: any) => {
-        setKeyword(event.target.value);
-        console.log(event.target.value);
-        if (event.target.value.trim().length == 0) {
-        setCoinList(coinAllList);
-        } else {
-        let newCoinList = coinAllList.filter(
-            (item: any) =>
-            item.name
-                .toLowerCase()
-                .includes(event.target.value.trim().toLowerCase()) ||
-            item.symbol
-                .toLowerCase()
-                .includes(event.target.value.trim().toLowerCase()) ||
-            item.symbol
-                .toLowerCase()
-                .includes(event.target.value.trim().toLowerCase()),
-        );
-        setCoinList(newCoinList);
-        }
-    };
-
-    const onTokenSelect = (token: any) => {
-        setSelectedCoin({
-        name: token.name,
-        desc: "",
-        image: token.image,
-        token: token.token,
-        symbol: token.symbol,
-        decimals: token.decimals,
-        })
-        closeModal();
-    };
-
-    const prepareNumber = (inputValue:any) => {
-        if(isNaN(inputValue)) {
-            return 0
-        }
-        return inputValue;
+        return false;
+      }
     }
-
-    const goBack = () => {
-      onMenuChange("presale")
-    }
-
-    const validateFields = (isMessage: boolean) => {
-        if (fields.curvesupply < 10000 || fields.curvesupply > 1000000) {
-            if(isMessage) {
-                createMessage("Bonding curve market cap should be between $10k to $1M", "danger-container");
-            }
-          return false;
-        }
-
-        if(fields.deadlineDate === "" || fields.deadlineTime === "") {
-          if(isMessage) {
-              createMessage("Deadline date should be selected in future dates", "danger-container");
-          }
-          return false;
-        } 
-
-        let currentDate = new Date();
-        let deadlineStart = new Date(fields.deadlineDate + " "+fields.deadlineTime)
-
-        if(deadlineStart < currentDate) {
-            if(isMessage) {
-                createMessage("Deadline date should be selected in future dates", "danger-container");
-            }
-            return false;
-        }
-
-        if(presaleDetail.presaleMaximum > 0) {
-          if (fields.presalePrice <= 0) {
-              if(isMessage) {
-                  createMessage("Presale price should not be empty", "danger-container");
-              }
-              return false;
-          }
-        }
-
-        if (fields.bonding === "linear") {
-          if (fields.initialPrice > 5 || fields.initialPrice < 1) {
-            if (isMessage) {
-              createMessage("Mulitpler should be between 1 to 5", "danger-container");
-            }
-            return false;
-          }
-        } else {
-          if (fields.multiplier > 2 || fields.multiplier < 1) {
-            if (isMessage) {
-              createMessage("Mulitpler should be 1 or 2", "danger-container");
-            }
-            return false;
-          }
-        }
-        return true;
-    };
+    return true;
+  };
 
 
-    React.useEffect(()=>{
-        setIsReady(validateFields(false))
-     },[fields])
+  React.useEffect(() => {
+    setIsReady(validateFields(false))
+  }, [fields])
 
 
   const actionSubmit = async () => {
@@ -327,11 +327,11 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
       createMessage("Project already have coin", "danger-container");
       return;
     }
-    
+
     if (coinDetail.name === "") {
       createMessage("Coin Detail is missing", "danger-container");
       return;
-    } 
+    }
 
 
     try {
@@ -361,51 +361,61 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
         await delay(15000)
 
         if (presaleDetail.presaleMaximum > 0) {
-            setButtonStatus("Stake presale value...");
-            const projectKeyPair = anchor.web3.Keypair.generate();
+          setButtonStatus("Stake presale value...");
+          const projectKeyPair = anchor.web3.Keypair.generate();
 
-            const env = new anchor.AnchorProvider(connection.connection, wallet, {
-                preflightCommitment: "processed",
-              });
-            anchor.setProvider(env);
-            let communityConnection: Community = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
-            const stakeres = await communityConnection.stakeCoin({
-                mint: new anchor.web3.PublicKey(targetMint),
-                user: wallet.publicKey,
-                value: Math.ceil(presaleDetail.presaleMaximum * web3Consts.LAMPORTS_PER_OPOS),
-                // duration: new Date(new Date(presaleDetail.presaleStartDate).toUTCString()).valueOf(),
-                duration: 0,
-                type: "presale"
-            });
-            console.log("stake result ", stakeres);
-            // coinDetail
-            let mintingParams = {
-                name: coinDetail.name,
-                symbol: coinDetail.symbol,
-                image: coinDetail.image.preview,
-                key: targetMint,
-                desc: coinDetail.desc,
-                decimals: 9,
-                creator: wallet.publicKey.toBase58(),
-                projectkey: projectKeyPair.publicKey,
-                supply: coinDetail.supply
-            }
-            const result_ = await axios.post("/api/project/save-coins", mintingParams);
-            let presaleParams = {
-                presaleStartDate: presaleDetail.presaleStartDate,
-                lockPeriod: presaleDetail.lockPeriod,
-                discount: presaleDetail.discount,
-                presaleMinimum: presaleDetail.presaleMinimum,
-                presaleMaximum: presaleDetail.presaleMaximum,
-                purchaseMinimum: presaleDetail.purchaseMinimum,
-                purchaseMaximum: presaleDetail.purchaseMaximum,
-                totalSold: 0,
-                launchPrice: fields.presalePrice,
-                launchMarketCap: fields.curvesupply,
-                key: targetMint,
-                wallet: wallet.publicKey,
-            }
-            const result = await axios.post("/api/project/save-presale-details", presaleParams);
+          const env = new anchor.AnchorProvider(connection.connection, wallet, {
+            preflightCommitment: "processed",
+          });
+          anchor.setProvider(env);
+          let communityConnection: Community = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
+          const stakeres = await communityConnection.stakeCoin({
+            mint: new anchor.web3.PublicKey(targetMint),
+            user: wallet.publicKey,
+            value: Math.ceil(presaleDetail.presaleMaximum * web3Consts.LAMPORTS_PER_OPOS),
+            // duration: new Date(new Date(presaleDetail.presaleStartDate).toUTCString()).valueOf(),
+            duration: 0,
+            type: "presale"
+          });
+          console.log("stake result ", stakeres);
+          // coinDetail
+          let mintingParams = {
+            name: coinDetail.name,
+            symbol: coinDetail.symbol,
+            image: coinDetail.image.preview,
+            key: targetMint,
+            desc: coinDetail.desc,
+            decimals: 9,
+            creator: wallet.publicKey.toBase58(),
+            projectkey: projectKeyPair.publicKey,
+            supply: coinDetail.supply
+          }
+          const result_ = await axios.post("/api/project/save-coins", mintingParams, {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          let presaleParams = {
+            presaleStartDate: presaleDetail.presaleStartDate,
+            lockPeriod: presaleDetail.lockPeriod,
+            discount: presaleDetail.discount,
+            presaleMinimum: presaleDetail.presaleMinimum,
+            presaleMaximum: presaleDetail.presaleMaximum,
+            purchaseMinimum: presaleDetail.purchaseMinimum,
+            purchaseMaximum: presaleDetail.purchaseMaximum,
+            totalSold: 0,
+            launchPrice: fields.presalePrice,
+            launchMarketCap: fields.curvesupply,
+            key: targetMint,
+            wallet: wallet.publicKey,
+          }
+          const result = await axios.post("/api/project/save-presale-details", presaleParams, {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+              'Content-Type': 'application/json',
+            },
+          });
         }
 
 
@@ -473,6 +483,11 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           decimals: 9,
           creator: wallet.publicKey.toBase58(),
           projectkey: projectDetail.project.key
+        }, {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+            'Content-Type': 'application/json',
+          }
         });
 
         let deadlineDate = new Date(
@@ -488,10 +503,15 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           status: "active",
           pool: "",
           maxsupplyusd: fields.curvesupply,
-          creatorUsername: currentUser ? currentUser!.profile.username : "",
+          creatorUsername: currentUser ? currentUser!.name : "",
           expiredDate: deadlineDate
         }
-        await axios.post("/api/save-token", params);
+        await axios.post("/api/save-token", params, {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+            'Content-Type': 'application/json',
+          }
+        });
 
         localStorage.removeItem("coinstep1")
         localStorage.removeItem("coinstep2")
@@ -503,123 +523,123 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
       setLoading(false);
     }
   }
-    
+
   return (
-        <>
-            <div className="bg-profile">
-            <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                          <div className="form-element pt-2.5">
-                             <div className="grid grid-cols-12 gap-4">
-                                <div className="form-element col-span-8">
-                                    <Input
-                                        type="text"
-                                        title="Set Market Cap for when it goes to DEXs"
-                                        required
-                                        helperText="Minimum is $10k, Maximum of $1M"
-                                        placeholder="Market Cap"
-                                        value={(fields.curvesupply > 0) ? fields.curvesupply.toString() : ""}
-                                        onChange={(e) => setFields({ ...fields, curvesupply: prepareNumber(Number(e.target.value))})}
-                                    />
-                                </div>
-                                <div className="col-span-2 mt-8 text-white text-header-small-font-size">USD</div>
-                             </div>
-                          </div>
-                          <div className="pt-2.5">
-                              <p className="text-xs text-whilte">Deadline to reach Market Cap</p>
-                              <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                      <label className={"input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2" + (dexError!=="" ? " border-red-600" :"")}>
-                                          <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2">
-                                              <Calender />
-                                          </div>
-                              
-                                          <input type="date" className="grow text-base" placeholder="Start Date" value={fields.deadlineDate} onChange={(e) => setFields({ ...fields, deadlineDate: e.target.value })} onFocus={()=>{setDexError("")}} />
-                                      </label>
-                                      {dexError != "" &&
-                                          <p className="text-header-small-font-size text-red-600">{dexError}</p>
-                                      }
-                                  </div>
-                                  <div>
-                                      <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
-                                      <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2.5">
-                                          <TimeIcon />
-                                      </div>
-                              
-                                      <input type="time" className="grow text-base" placeholder="Time" value={fields.deadlineTime} onChange={(e) => setFields({ ...fields, deadlineTime: e.target.value })} />
-                                      </label>
-                                  </div>
-                              </div>
-                              <p className="text-tiny">if it doesn't reach the market cap by the deadline, funds are distributed by the bonding curve(all Agents Coins are burned all trading pari is sent to buyer)
-</p>
-                          </div>
-
-                          <div className="form-element pt-2.5">
-                             <div className="grid grid-cols-12 gap-4">
-                                <div className="form-element col-span-8">
-                                    <Input
-                                        type="text"
-                                        title="Launch Price"
-                                        required
-                                        helperText="The Price where the bonding will start"
-                                        placeholder="Launch Price"
-                                        value={(fields.presalePrice > 0) ? fields.presalePrice.toString() : ""}
-                                        onChange={(e) => setFields({ ...fields, presalePrice: prepareNumber(Number(e.target.value))})}
-                                    />
-                                </div>
-                             </div>
-                          </div>
+    <>
+      <div className="bg-profile">
+        <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="form-element pt-2.5">
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="form-element col-span-8">
+                    <Input
+                      type="text"
+                      title="Set Market Cap for when it goes to DEXs"
+                      required
+                      helperText="Minimum is $10k, Maximum of $1M"
+                      placeholder="Market Cap"
+                      value={(fields.curvesupply > 0) ? fields.curvesupply.toString() : ""}
+                      onChange={(e) => setFields({ ...fields, curvesupply: prepareNumber(Number(e.target.value)) })}
+                    />
+                  </div>
+                  <div className="col-span-2 mt-8 text-white text-header-small-font-size">USD</div>
+                </div>
+              </div>
+              <div className="pt-2.5">
+                <p className="text-xs text-whilte">Deadline to reach Market Cap</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={"input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2" + (dexError !== "" ? " border-red-600" : "")}>
+                      <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2">
+                        <Calender />
                       </div>
-                      <div>
-                         <div className="form-element pt-2.5">
-                              <p className="text-xs text-white">
-                                  Select a Free Agent Coin to pair with your Bonded Agent Coin on the bonding curve
-                              </p>
-                              <div
-                                  className="w-full flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-[#9D9D9D12] cursor-pointer border-[1px] border-[#FFFFFF30] rounded-lg p-2 mt-1"
-                                  onClick={openJupiterCoins}
-                              >
-                                  <div className="flex items-center">
-                                  <div className="relative w-[2vmax] h-[2vmax] mt-2 mr-1">
-                                      <img
-                                      src={selectedCoin.image}
-                                      alt="coin"
-                                      className="rounded-full object-cover"
-                                      />
-                                  </div>
-                                  <div className="flex flex-col">
-                                      <p className="text-sm text-white">{selectedCoin.symbol}</p>
-                                      <p className="text-tiny">{selectedCoin.name}</p>
-                                  </div>
 
-                                  <div
-                                      className="flex self-start mb-4 rounded-md px-1 bg-[#030139]"
-                                      onClick={openLink}
-                                  >
-                                      <p className="text-tiny">
-                                      {walletAddressShortener(selectedCoin.token)}
-                                      </p>
-                                      <OpenInNew />
-                                  </div>
-                                  </div>
-                              </div>
+                      <input type="date" className="grow text-base" placeholder="Start Date" value={fields.deadlineDate} onChange={(e) => setFields({ ...fields, deadlineDate: e.target.value })} onFocus={() => { setDexError("") }} />
+                    </label>
+                    {dexError != "" &&
+                      <p className="text-header-small-font-size text-red-600">{dexError}</p>
+                    }
+                  </div>
+                  <div>
+                    <label className="input input-bordered h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2">
+                      <div className="border-r border-white border-opacity-20 pr-2 h-full pt-2.5">
+                        <TimeIcon />
+                      </div>
 
-                          </div>
-                          <div className="form-element pt-2.5">
-                              <p className="text-xs text-white">
-                                 Choose a Bonding Curve for your Coin.
-                              </p>
-                              <Select
-                                  value={fields.bonding}
-                                  onChange={(e) => {
-                                     setFields({ ...fields, bonding: e.target.value, initialPrice: 0, multiplier: 0 });
-                                  }}
-                                  options={bondingSelectOptions}
-                              />
-                          </div>
+                      <input type="time" className="grow text-base" placeholder="Time" value={fields.deadlineTime} onChange={(e) => setFields({ ...fields, deadlineTime: e.target.value })} />
+                    </label>
+                  </div>
+                </div>
+                <p className="text-tiny">if it doesn't reach the market cap by the deadline, funds are distributed by the bonding curve(all Agents Coins are burned all trading pari is sent to buyer)
+                </p>
+              </div>
 
-            <div className="flex w-full h-full mt-4">
+              <div className="form-element pt-2.5">
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="form-element col-span-8">
+                    <Input
+                      type="text"
+                      title="Launch Price"
+                      required
+                      helperText="The Price where the bonding will start"
+                      placeholder="Launch Price"
+                      value={(fields.presalePrice > 0) ? fields.presalePrice.toString() : ""}
+                      onChange={(e) => setFields({ ...fields, presalePrice: prepareNumber(Number(e.target.value)) })}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="form-element pt-2.5">
+                <p className="text-xs text-white">
+                  Select a Free Agent Coin to pair with your Bonded Agent Coin on the bonding curve
+                </p>
+                <div
+                  className="w-full flex items-center min-w-[2.5vmax] min-h-[2vmax] bg-[#9D9D9D12] cursor-pointer border-[1px] border-[#FFFFFF30] rounded-lg p-2 mt-1"
+                  onClick={openJupiterCoins}
+                >
+                  <div className="flex items-center">
+                    <div className="relative w-[2vmax] h-[2vmax] mt-2 mr-1">
+                      <img
+                        src={selectedCoin.image}
+                        alt="coin"
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="text-sm text-white">{selectedCoin.symbol}</p>
+                      <p className="text-tiny">{selectedCoin.name}</p>
+                    </div>
+
+                    <div
+                      className="flex self-start mb-4 rounded-md px-1 bg-[#030139]"
+                      onClick={openLink}
+                    >
+                      <p className="text-tiny">
+                        {walletAddressShortener(selectedCoin.token)}
+                      </p>
+                      <OpenInNew />
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div className="form-element pt-2.5">
+                <p className="text-xs text-white">
+                  Choose a Bonding Curve for your Coin.
+                </p>
+                <Select
+                  value={fields.bonding}
+                  onChange={(e) => {
+                    setFields({ ...fields, bonding: e.target.value, initialPrice: 0, multiplier: 0 });
+                  }}
+                  options={bondingSelectOptions}
+                />
+              </div>
+
+              <div className="flex w-full h-full mt-4">
                 <div className="flex w-full h-full flex-col">
                   <ResponsiveContainer
                     width="100%"
@@ -729,75 +749,75 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
                 )}
               </div>
 
-                      </div>
-                </div>
-                <div className="flex justify-center mt-10">
-                    <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
-                    {!loading &&
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={actionSubmit} disabled={!isReady}>Next</button>
-                    }
+            </div>
+          </div>
+          <div className="flex justify-center mt-10">
+            <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
+            {!loading &&
+              <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={actionSubmit} disabled={!isReady}>Next</button>
+            }
 
-                    {loading &&
-                        <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">{buttonStatus}</button>
-                    }
-                </div>
-            </div>
-            </div>
-            <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          style={customStyles}
+            {loading &&
+              <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white">{buttonStatus}</button>
+            }
+          </div>
+        </div>
+      </div>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
       >
-          <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">
+        <h2 className="pb-2.5 mb-2.5 text-sub-title-font-size font-goudy border-b border-white border-opacity-20">
           Coin List{" "}
-          </h2>
-          <div>
+        </h2>
+        <div>
           {!coinLoader && (
-              <>
+            <>
               <div className="search-container">
-                  <label
+                <label
                   className={
-                      "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
+                    "h-10 text-base bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] backdrop-container flex items-center gap-2 px-2"
                   }
-                  >
+                >
                   <div className="p-2">
-                      <SearchIcon />
+                    <SearchIcon />
                   </div>
                   <input
-                      type="text"
-                      className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
-                      placeholder="Search by Coin Name"
-                      value={keyword}
-                      onChange={onCoinSearch}
+                    type="text"
+                    className="grow text-base bg-transparent focus:outline-0 outline-0 hover:outline-0 active:outline-0"
+                    placeholder="Search by Coin Name"
+                    value={keyword}
+                    onChange={onCoinSearch}
                   />
-                  </label>
+                </label>
               </div>
               <div
-                  className="overflow-y-auto"
-                  style={{ maxHeight: window.innerHeight * 0.7 + "px" }}
+                className="overflow-y-auto"
+                style={{ maxHeight: window.innerHeight * 0.7 + "px" }}
               >
-                  {coinList.map((coinItem: any) => (
+                {coinList.map((coinItem: any) => (
                   <TokenCard data={coinItem} onChoose={onTokenSelect} />
-                  ))}
+                ))}
               </div>
-              </>
+            </>
           )}
 
           {coinLoader && (
-              <div className="flex justify-center">
+            <div className="flex justify-center">
               <Bars
-                  height="80"
-                  width="80"
-                  color="rgba(255, 0, 199, 1)"
-                  ariaLabel="bars-loading"
-                  wrapperStyle={{}}
-                  wrapperClass="bars-loading"
-                  visible={true}
+                height="80"
+                width="80"
+                color="rgba(255, 0, 199, 1)"
+                ariaLabel="bars-loading"
+                wrapperStyle={{}}
+                wrapperClass="bars-loading"
+                visible={true}
               />
-              </div>
+            </div>
           )}
-          </div>
-            </Modal>
-        </>
-    );
+        </div>
+      </Modal>
+    </>
+  );
 }

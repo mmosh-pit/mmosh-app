@@ -95,8 +95,8 @@ const LaunchPadVC = () => {
     return timeUnits[type];
   };
 
-  const buyToken = async (tokenInfo: any) => {
-    if (validate(tokenInfo)) {
+  const buyToken = async (tokenInfo: any, amount: string, token: number) => {
+    if (validate(tokenInfo, amount, token)) {
       setIsBuying(true);
       const result = await trasferUsdCoin(wallet, tokenInfo.presaleDetail.wallet, Number(amount));
       console.log("transfer usd coin result", result.message);
@@ -106,6 +106,10 @@ const LaunchPadVC = () => {
           supply: token,
           key: tokenInfo.presaleDetail.key,
           amount: Number(amount),
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          }
         });
         console.log("transfer token result", trasferTokenResult);
         if (trasferTokenResult.data.status) {
@@ -126,6 +130,17 @@ const LaunchPadVC = () => {
               skipPreflight: false,
             });
             console.log("Transaction ID:", txid);
+            createMessage(`Success! Your token purchase was completed ${txid}`, "success-container");
+            await axios.put("/api/project/update-presale-details", {
+              key: tokenInfo.presaleDetail.key,
+              token: token,
+            }, {
+              headers: {
+                authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+              },
+            });
+            getProjectDetailFromAPI();
+            setIsBuying(false);
           } catch (error) {
             console.log("tx error", error);
             setIsBuying(false);
@@ -158,7 +173,7 @@ const LaunchPadVC = () => {
     }
   };
 
-  const validate = (tokenInfo: any): boolean => {
+  const validate = (tokenInfo: any, amount: string, token: number): boolean => {
     if (token < Number(tokenInfo.presaleDetail.presaleMinimum)) {
       createMessage(`Token should be greater than or equal to the ${tokenInfo.presaleDetail.presaleMinimum}.`, "danger-container");
       return false;
@@ -178,59 +193,7 @@ const LaunchPadVC = () => {
     return true;
   }
 
-  const handleAmount = (event: React.ChangeEvent<HTMLInputElement>, tokenInfo: any) => {
-    setAmount(event.target.value);
-    setToken(Number(event.target.value) / tokenInfo.presaleDetail.launchPrice);
-  }
 
-  const getTrancheLabel = (index: number) => {
-    const labels = ["1st Tranche", "2nd Tranche", "3rd Tranche", "4th Tranche"];
-    return labels[index];
-  };
-
-  const renderTranche = (data: any) => {
-    let available: number = 0;
-    for (let index = 0; index < data.presaleDetail.discount.length; index++) {
-      const element = data.presaleDetail.discount[index];
-      available = Number(element.value);
-      if (available - data.presaleDetail.totalSold > 0) {
-        return (
-          <div className="w-[55%] pl-2 pt-[2px]">
-            <p className="text-header-small-font-size font-[800] mb-2">{getTrancheLabel(index)}</p>
-
-            <div className="grid grid-cols-3 gap-[6px] mb-[6px]">
-              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                <p className="text-white font-[700] text-para-font-size">Available</p>
-                <p className="text-white font-normal text-para-font-size mt-[2px]">{available - data.presaleDetail.totalSold}</p>
-              </div>
-              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                <p className="text-white font-[700] text-para-font-size">Purchased</p>
-                <p className="text-white font-normal text-para-font-size mt-[2px]">{Number(element.value) - (available - data.presaleDetail.totalSold)}</p>
-              </div>
-              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                <p className="text-white font-[700] text-para-font-size">Discount</p>
-                <p className="text-white font-normal text-para-font-size mt-[2px]">{element.percentage}%</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-[6px]">
-              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                <p className="text-white font-[700] text-para-font-size leading-tight">Maximum Supply</p>
-                <p className="text-white font-normal text-para-font-size mt-[2px]">{data.coinDetail.supply} {data.coinDetail.symbol}</p>
-              </div>
-              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                <p className="text-white font-[700] text-para-font-size leading-tight">Launch Price <span className="text-small-font-size font-[400]">(per coin)</span></p>
-                <p className="text-white font-normal text-para-font-size mt-[2px]">{data.presaleDetail.launchPrice} USDC</p>
-              </div>
-              <div className="bg-[#211F5A] rounded-[6px] px-2 py-1 text-center">
-                <p className="text-white font-[700] text-para-font-size leading-tight">Launch Market Cap</p>
-                <p className="text-white font-normal text-para-font-size mt-[2px]">{data.presaleDetail.launchMarketCap} USDC</p>
-              </div>
-            </div>
-          </div>
-        )
-      }
-    }
-  }
   React.useEffect(() => {
     const data = [];
     let i = 0;
@@ -267,16 +230,39 @@ const LaunchPadVC = () => {
         </div>
       }
       {!projectLoading &&
-        <div className="min-h-screen bg-[#010117] py-10 px-4">
+        <div className="min-h-screen bg-[#010117] flex flex-col items-center pt-10 pb-12">
           <div className="min-h-screen bg-[#010117] py-10 px-4">
-            {groupedCards.map((group, groupIdx) => (
-              <div
-                key={groupIdx}
-                className={`flex flex-wrap justify-center gap-6 mb-8`}
-              >
-                <LaunchPad getCountDownValues={getCountDownValues} creator={creator} buyToken={(presale: any) => buyToken(presale)} group={group} />
-              </div>
-            ))}
+            <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
+              Next launch
+            </h2>
+
+            <div className="flex justify-center items-center gap-5 mt-3">
+              {timerData.map((item, index) => (
+                <div key={index} className="relative flex flex-col items-center w-[71px] h-[64px]">
+                  <span className="text-[54px] leading-[50px] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
+                    {getCountDownValues(countDown, item.label)}
+                  </span>
+                  <span className="text-base text-[#FFFFFFC7] font-avenir font-medium mt-[2px]">
+                    {item.label}
+                  </span>
+                  {index !== timerData.length - 1 && (
+                    <span className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-px h-[60px] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="min-h-screen bg-[#010117] py-10 px-4">
+              {groupedCards.map((group, groupIdx) => (
+                <div
+                  key={groupIdx}
+                  className={`flex flex-wrap justify-center gap-6 mb-8`}
+                >
+                  {group.map((presale: any, index: number) => (
+                    <LaunchPad getCountDownValues={getCountDownValues} creator={creator} buyToken={(amount: string, token: number) => buyToken(presale, amount, token)} presale={presale} isBuying={isBuying} />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       }

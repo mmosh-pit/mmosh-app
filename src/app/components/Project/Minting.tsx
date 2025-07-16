@@ -50,7 +50,7 @@ export default function Minting({ onMenuChange, createMessage }: { onMenuChange:
     },[fields])
 
     const validateFields = (isMessage:boolean) => {
-        if (fields.name.length == 0) {
+        if (fields.name.trim().length == 0) {
           if(isMessage) {
             createMessage("Name is required", "danger-container");
           }  
@@ -58,42 +58,42 @@ export default function Minting({ onMenuChange, createMessage }: { onMenuChange:
           return false;
         }
 
-        if (fields.name.length > 50) {
+        if (fields.name.trim().length > 50) {
             if(isMessage) {
                createMessage("Name should have less than 50 characters", "danger-container");
             }
             return false;
         }
     
-        if (fields.symbol.length == 0) {
+        if (fields.symbol.trim().length == 0) {
             if(isMessage) {
                createMessage("Symbol is required", "danger-container");
             }
           return false;
         }
 
-        if (fields.symbol.length > 10) {
+        if (fields.symbol.trim().length > 10) {
             if(isMessage) {
                 createMessage("Symbol should have less than 10 characters", "danger-container");
             }
             return false;
         }
     
-        if (fields.desc.length == 0) {
+        if (fields.desc.trim().length == 0) {
             if(isMessage) {
               createMessage("Description is required", "danger-container");
             }
           return false;
         }
 
-        if (fields.desc.length > 160) {
+        if (fields.desc.trim().length > 160) {
             if(isMessage) {
                 createMessage("Description should have less than 160 characters", "danger-container");
             }
             return false;
         }
     
-        if(fields.image.preview.length == 0) {
+        if(fields.image.preview.trim().length == 0) {
             if(isMessage) {
                 createMessage("Community coin image is required", "danger-container");
             }

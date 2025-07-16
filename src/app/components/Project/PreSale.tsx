@@ -1,3 +1,4 @@
+import ChatBotIcon from "@/assets/icons/ChatBotIcon";
 import axios from "axios";
 import React from "react";
 
@@ -112,37 +113,13 @@ export const PreSale = (props: PresaleProps) => {
             updatedPresale[3].value = parseData.purchaseMaximum;
         }
 
-        // Format presale start date
-        const startDate = new Date(parseData.presaleStartDate);
-        const startYear = startDate.getFullYear();
-        const startMonth = String(startDate.getMonth() + 1).padStart(2, "0");
-        const startDay = String(startDate.getDate()).padStart(2, "0");
-        const startHour24 = startDate.getHours();
-        const startMinute = String(startDate.getMinutes()).padStart(2, "0");
-
-        const timePeriod = startHour24 >= 12 ? "pm" : "am";
-        const startHour12 = startHour24 % 12 || 12;
-        const time = `${String(startHour12).padStart(2, "0")}:${startMinute}`;
-
-        setPreSaleStart({
-            date: `${startYear}/${startMonth}/${startDay}`,
-            time,
-            timePeriod,
-        });
-
-        // Format lock period
-        const lockDate = new Date(parseData.lockPeriod);
-        const lockMonth = String(lockDate.getMonth() + 1).padStart(2, "0");
-        const lockDay = String(lockDate.getDate()).padStart(2, "0");
-        const lockHour = String(lockDate.getHours()).padStart(2, "0");
-        const lockMinute = String(lockDate.getMinutes()).padStart(2, "0");
-
+        setPreSaleStart(parseData.preSaleStart);
         setPreSalePeriod([
-            { key: "month", value: lockMonth },
-            { key: "week", value: "" },
-            { key: "day", value: lockDay },
-            { key: "hour", value: lockHour },
-            { key: "minute", value: lockMinute },
+            { key: "month", value: parseData.preSalePeriod[0].value },
+            { key: "week", value: parseData.preSalePeriod[1].value },
+            { key: "day", value: parseData.preSalePeriod[2].value },
+            { key: "hour", value: parseData.preSalePeriod[3].value },
+            { key: "minute", value: parseData.preSalePeriod[4].value },
         ]);
 
         setPreSale(updatedPresale);
@@ -180,7 +157,7 @@ export const PreSale = (props: PresaleProps) => {
     const updatePrelookUp = (event: React.ChangeEvent<HTMLInputElement>, key: string): void => {
         const updatedValue = preSalePeriod.map((element) =>
             element.key === key
-                ? { ...element, value: event.target.value }
+                ? { ...element, value: event.target.value.trim() }
                 : element
         );
         setPreSalePeriod(updatedValue);
@@ -271,7 +248,6 @@ export const PreSale = (props: PresaleProps) => {
 
             // ----- presale start -----
             const startDate = preSaleStart.date.split("/");
-            console.log("===== START DATE =====", startDate);
             let fields = {
                 presaleStartDate: new Date(Number(startDate[2]), Number(startDate[1]) - 1, Number(startDate[0])).toUTCString(),
                 lockPeriod: convertMinutesToDate(totalInMinutes),
@@ -281,6 +257,8 @@ export const PreSale = (props: PresaleProps) => {
                 purchaseMinimum: preSale[2].value,
                 purchaseMaximum: preSale[3].value,
                 totalSold: 0,
+                preSaleStart: preSaleStart,
+                preSalePeriod: preSalePeriod,
             }
             localStorage.setItem("coinstep2", JSON.stringify(fields));
             onMenuChange("launch")
@@ -315,27 +293,28 @@ export const PreSale = (props: PresaleProps) => {
 
         // ---- Presale Details Validation ----
         for (const { key, value, label } of values.presaleDetails || []) {
-            if (!/^\d+$/.test(value)) {
+            if (!/^\d*\.?\d+$/.test(value)) {
                 createMessage(`Enter a valid ${label} value.`, "danger-container");
+                return false;
             }
         }
 
         // ---- Pre-sale Period Validation ----
         const [month, week, day, hour, minute] = values.preSalePeriod || [];
 
-        if (Number(month?.value) > 12) {
+        if (!month?.value || Number(month?.value) > 12) {
             createMessage("Invalid month", "danger-container");
             return false;
-        } else if (Number(week?.value) > 4) {
+        } else if (!week?.value || Number(week?.value) > 4) {
             createMessage("Invalid week", "danger-container");
             return false;
-        } else if (Number(day?.value) > getDaysInCurrentMonth(new Date().getFullYear(), new Date().getMonth(), new Date())) {
+        } else if (!day?.value || Number(day?.value) > getDaysInCurrentMonth(new Date().getFullYear(), new Date().getMonth(), new Date())) {
             createMessage("Invalid days", "danger-container");
             return false;
-        } else if (Number(hour?.value) > 12) {
+        } else if (!hour?.value || Number(hour?.value) > 12) {
             createMessage("Invalid hour", "danger-container");
             return false;
-        } else if (Number(minute?.value) > 59) {
+        } else if (!minute?.value || Number(minute?.value) > 59) {
             createMessage("Invalid minutes", "danger-container");
             return false;
         }
@@ -345,13 +324,13 @@ export const PreSale = (props: PresaleProps) => {
 
         const startTime = time.split(":");
         const startDate = date.split("/");
-        if (Number(startDate[2]) < new Date().getFullYear() || Number(startDate[1]) > new Date().getMonth() || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date())) {
+        if ((!startDate[2] || Number(startDate[2]) < new Date().getFullYear()) || (!startDate[1] || Number(startDate[1]) > new Date().getMonth()) || (!startDate[0] || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date()))) {
             createMessage("Invalid date", "danger-container");
             return false;
-        } else if (Number(startTime[0]) > 12) {
+        } else if (!time || Number(startTime[0]) > 12) {
             createMessage("Invalid hour", "danger-container");
             return false;
-        } else if (Number(startTime[1]) > 59) {
+        } else if (!startTime[1] || Number(startTime[1]) > 59) {
             createMessage("Invalid minutes", "danger-container");
             return false;
         } else if (timePeriod !== "am" && timePeriod !== "pm") {
@@ -361,6 +340,9 @@ export const PreSale = (props: PresaleProps) => {
         console.log("----- PRE SALE VALIDATION ERROR -----", newErrors);
         return Object.keys(newErrors).length === 0;
     };
+    const goBack = () => {
+      onMenuChange("minting")
+    }
 
 
     return (
@@ -383,12 +365,10 @@ export const PreSale = (props: PresaleProps) => {
                                     <input
                                         type="number"
                                         placeholder="0"
-                                        className="w-[7.5rem] h-[2.5rem] rounded-[0.4375rem] border border-[#FFFFFF38] bg-black bg-opacity-[0.07] backdrop-blur-[1.21875rem] px-3 text-white text-opacity-50 text-[0.75rem] font-avenirNext focus:outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                        className="w-[7.5rem] h-[2.5rem] rounded-[0.4375rem] border border-[#FFFFFF38] bg-black bg-opacity-[0.07] backdrop-blur-[1.21875rem] px-3 text-white text-[0.75rem] font-avenirNext focus:outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                         value={discount.amount}
                                         onChange={(event) => updatePreSaleDiscount(event.target.value.trim(), idx, "amount")}
                                     />
-                                    {/* <input type="date" className="grow text-base" placeholder="Start Date" onChange={(e) => console.log("check", new Date(e.target.value).toUTCString())} onFocus={()=>{setDexError("")}} /> */}
-                                    {/* <input type="date" className="grow text-base" placeholder="Start Date" onChange={(e) => console.log("===== DATA_VALUE_CHECK =====", new Date(e.target.value).toUTCString())} /> */}
                                     <input
                                         type="text"
                                         value={discount.discountPercentage}
@@ -412,7 +392,7 @@ export const PreSale = (props: PresaleProps) => {
                                         type="text"
                                         value={item.value}
                                         placeholder="$ 0"
-                                        className="w-[157px] h-[40px] rounded-[8px] border border-[#FFFFFF38] bg-black bg-opacity-[0.07] backdrop-blur-[19.5px] px-3 text-white text-opacity-50 text-sm font-avenirNext focus:outline-none"
+                                        className="w-[157px] h-[40px] rounded-[8px] border border-[#FFFFFF38] bg-black bg-opacity-[0.07] backdrop-blur-[19.5px] px-3 text-white text-sm font-avenirNext focus:outline-none"
                                         onChange={(event) => updatePreSalePrice(event, item)}
                                     />
 
@@ -496,8 +476,9 @@ export const PreSale = (props: PresaleProps) => {
 
                 </div>
                 <div className="flex justify-center mt-20">
-                    <button className="bg-[#FF00B8] hover:bg-[#e100a7] mt-[30px] ml-[-7px] text-white w-[155px] h-[38px] rounded-[8px] transition text-base font-semibold" onClick={handleNextAction}>
-                        Mint
+                    <button className="btn btn-link text-white no-underline" onClick={goBack}>Back</button>
+                    <button className="btn btn-primary ml-10 bg-primary text-white border-none hover:bg-primary hover:text-white" onClick={handleNextAction}>
+                        Next
                     </button>
                 </div>
                 <div className="flex justify-end mt-10 mr-5">
@@ -505,11 +486,7 @@ export const PreSale = (props: PresaleProps) => {
                         className="w-[150px] h-[36px] rounded-[30px] text-[9px] flex items-center justify-center gap-2 bg-pink-500/20 backdrop-blur-[3px] text-white hover:bg-pink-500/30 transition"
                     >
                         Talk to Kip, the Kinship Bot
-                        <img
-                            src="/images/chat-bot.png"
-                            alt="chat bot"
-                            className="w-[18px] h-[18px]"
-                        />
+                        <ChatBotIcon />
                     </button>
                 </div>
             </div>

@@ -429,6 +429,10 @@ const Header = () => {
       rendered.current = true;
     }
   }, []);
+  const checkMembershipStatus = async()=> {
+    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    setMembershipStatus(membershipInfo.data)
+  }
 
   React.useEffect(() => {
     if (
@@ -493,11 +497,6 @@ const Header = () => {
     (pathname === "/preview" && !isUserAuthenticated)
   ) {
     return <></>;
-  }
-
-  const checkMembershipStatus = async()=> {
-    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
-    setMembershipStatus(membershipInfo.data)
   }
 
   return (

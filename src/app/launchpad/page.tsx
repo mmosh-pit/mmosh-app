@@ -85,6 +85,7 @@ const LaunchPadVC = () => {
   };
 
   const getCountDownValues = (countDown: number, type: string) => {
+    if (countDown < 0 && !projectLoading) getProjectDetailFromAPI();
     const timeUnits: any = {
       Days: Math.floor(countDown / (1000 * 60 * 60 * 24)),
       Hours: Math.floor((countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
@@ -230,8 +231,8 @@ const LaunchPadVC = () => {
         </div>
       }
       {!projectLoading &&
-        <div className="min-h-screen bg-[#010117] flex flex-col items-center pt-10 pb-12">
-          <div className="min-h-screen bg-[#010117] py-10 px-4">
+        <div className="min-h-screen flex flex-col items-center pt-10 pb-12">
+          <div className="min-h-screen py-10 px-4">
             <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
               Next launch
             </h2>
@@ -251,7 +252,7 @@ const LaunchPadVC = () => {
                 </div>
               ))}
             </div>
-            <div className="min-h-screen bg-[#010117] py-10 px-4">
+            <div className="min-h-screen py-10 px-4">
               {groupedCards.map((group, groupIdx) => (
                 <div
                   key={groupIdx}

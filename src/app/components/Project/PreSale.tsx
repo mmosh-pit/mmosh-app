@@ -302,19 +302,19 @@ export const PreSale = (props: PresaleProps) => {
         // ---- Pre-sale Period Validation ----
         const [month, week, day, hour, minute] = values.preSalePeriod || [];
 
-        if (!month?.value || Number(month?.value) > 12) {
+        if (Number(month?.value) > 12) {
             createMessage("Invalid month", "danger-container");
             return false;
-        } else if (!week?.value || Number(week?.value) > 4) {
+        } else if (Number(week?.value) > 4) {
             createMessage("Invalid week", "danger-container");
             return false;
-        } else if (!day?.value || Number(day?.value) > getDaysInCurrentMonth(new Date().getFullYear(), new Date().getMonth(), new Date())) {
+        } else if (Number(day?.value) > getDaysInCurrentMonth(new Date().getFullYear(), new Date().getMonth(), new Date())) {
             createMessage("Invalid days", "danger-container");
             return false;
-        } else if (!hour?.value || Number(hour?.value) > 12) {
+        } else if (Number(hour?.value) > 12) {
             createMessage("Invalid hour", "danger-container");
             return false;
-        } else if (!minute?.value || Number(minute?.value) > 59) {
+        } else if (Number(minute?.value) > 59) {
             createMessage("Invalid minutes", "danger-container");
             return false;
         }

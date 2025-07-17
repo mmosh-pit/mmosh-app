@@ -31,7 +31,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
     let available: number = 0;
     for (let index = 0; index < data.presaleDetail.discount.length; index++) {
       const element = data.presaleDetail.discount[index];
-      available = Number(element.value);
+      available += Number(element.value);
       if (available - data.presaleDetail.totalSold > 0) {
         return (
           <div className="w-[269px] flex flex-col items-start justify-center ml-[10px] text-white font-['Avenir LT Std',sans-serif]">

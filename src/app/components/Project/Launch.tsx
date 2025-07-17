@@ -379,23 +379,6 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           });
           console.log("stake result ", stakeres);
           // coinDetail
-          let mintingParams = {
-            name: coinDetail.name,
-            symbol: coinDetail.symbol,
-            image: coinDetail.image.preview,
-            key: targetMint,
-            desc: coinDetail.desc,
-            decimals: 9,
-            creator: wallet.publicKey.toBase58(),
-            projectkey: projectKeyPair.publicKey,
-            supply: coinDetail.supply
-          }
-          const result_ = await axios.post("/api/project/save-coins", mintingParams, {
-            headers: {
-              authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-              'Content-Type': 'application/json',
-            },
-          });
           let presaleParams = {
             presaleStartDate: presaleDetail.presaleStartDate,
             lockPeriod: presaleDetail.lockPeriod,
@@ -482,7 +465,8 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           desc: coinDetail.desc,
           decimals: 9,
           creator: wallet.publicKey.toBase58(),
-          projectkey: projectDetail.project.key
+          projectkey: projectDetail.project.key,
+          supply: coinDetail.supply
         }, {
           headers: {
             authorization: `Bearer ${localStorage.getItem("token") || ""}`,

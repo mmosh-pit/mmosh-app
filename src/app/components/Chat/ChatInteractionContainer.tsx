@@ -366,7 +366,7 @@ const ChatInteractionContainer = () => {
     }
   }, [selectedChat?.id]);
 
-  if (!isSessionActive || !isLoadingSession)
+  if (isSessionActive || isLoadingSession)
     return (
       <AudioInteraction
         isSpeaking={isSpeaking}

@@ -1229,3 +1229,146 @@ a:hover {
   position: absolute;
   transform: translate(-50%, -80%);
 }
+
+.voice-inner-mic {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    218.54deg,
+    rgba(36, 27, 82, 0.9) 14.55%,
+    rgba(37, 50, 98, 0.9) 82%
+  );
+
+  z-index: 10;
+  top: 0;
+}
+
+.voice-inner-mic.animated {
+  top: 0;
+  position: absolute;
+
+  animation: leaves 5s ease-in-out infinite alternate;
+}
+
+@keyframe leaves {
+  0% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+  100% {
+    transform: scale(1.5);
+    -webkit-transform: scale(1.5);
+  }
+}
+
+.mic-container {
+  position: relative;
+
+  width: 150px;
+  height: 150px;
+}
+
+.mic-container.active {
+  border: 18px solid rgba(24, 19, 77, 0.8);
+  border-radius: 100%;
+  background-color: #18134d;
+
+  background-clip: padding-box;
+}
+
+.mic-container.inactive {
+  border: 6px solid #203f6e40;
+  border-radius: 100%;
+  background-color: #18134d;
+
+  padding: 1.25rem;
+}
+
+.mic-container-1 {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+
+  width: 170px;
+  height: 150px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    #f66bdd 84.38%,
+    rgba(165, 67, 165, 0) 100%
+  );
+  opacity: 0.9;
+
+  top: -20px;
+  left: -40px;
+}
+
+.mic-container-2 {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+
+  width: 170px;
+  height: 150px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    #3746c9 70.83%,
+    rgba(63, 63, 212, 0) 100%
+  );
+
+  opacity: 0.9;
+
+  top: -35px;
+  right: -35px;
+}
+
+.mic-container-3 {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+
+  width: 170px;
+  height: 150px;
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    #b793e2 83.33%,
+    rgba(223, 147, 226, 0) 100%
+  );
+  opacity: 0.9;
+
+  bottom: -35px;
+  left: -25px;
+}
+
+.mic-colors-wrapper {
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  position: relative;
+  /* transform: translate(-50%, -50%); */
+
+  -webkit-animation: spin 4s linear infinite;
+  -moz-animation: spin 4s linear infinite;
+  animation: spin 4s linear infinite;
+}
+
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}

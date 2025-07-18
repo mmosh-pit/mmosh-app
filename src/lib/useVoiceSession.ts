@@ -4,10 +4,13 @@ export default function useVoiceSession() {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoadingSession, setIsLoadingSession] = useState(false);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const audioElement = useRef<HTMLAudioElement | null>(null);
 
   async function startSession() {
+    setIsLoadingSession(true);
     try {
       // Get a session token for OpenAI Realtime API
       const tokenResponse = await fetch("/api/realtime-token");
@@ -59,15 +62,23 @@ export default function useVoiceSession() {
 
       peerConnection.current = pc;
     } catch (error) {
+      setIsLoadingSession(false);
       console.error("Failed to start session:", error);
     }
   }
 
   // Stop current session, clean up peer connection and data channel
   function stopSession() {
+    console.log("Going to stop session...");
     if (dataChannel) {
       dataChannel.close();
     }
+
+    if (isLoadingSession) {
+      setIsLoadingSession(false);
+    }
+
+    console.log("1 ", peerConnection.current);
 
     if (peerConnection.current) {
       peerConnection.current.getSenders().forEach((sender) => {
@@ -75,18 +86,22 @@ export default function useVoiceSession() {
           sender.track.stop();
         }
       });
+      console.log("Closing peer connection...");
       peerConnection.current.close();
     }
+
+    console.log("2");
 
     setIsSessionActive(false);
     setDataChannel(null);
     peerConnection.current = null;
     setEvents([]); // Clear events when stopping session
+    console.log("3");
   }
 
   // Send a message to the model
   function sendClientEvent(message: any) {
-    if (dataChannel && dataChannel.readyState === 'open') {
+    if (dataChannel && dataChannel.readyState === "open") {
       try {
         const timestamp = new Date().toLocaleTimeString();
         // Ensure unique event ID for each message
@@ -108,7 +123,7 @@ export default function useVoiceSession() {
     } else {
       console.error(
         "Failed to send message - data channel not available or not open. State:",
-        dataChannel?.readyState
+        dataChannel?.readyState,
       );
     }
   }
@@ -143,6 +158,16 @@ export default function useVoiceSession() {
           event.timestamp = new Date().toLocaleTimeString();
         }
 
+        if (event.type === "output_audio_buffer.stopped") {
+          console.log("Changing is speaking value to false");
+          setIsSpeaking(false);
+        }
+
+        if (event.type === "response.output_item.added") {
+          console.log("Changing is speaking value to true");
+          setIsSpeaking(true);
+        }
+
         setEvents((prev) => [event, ...prev]);
       });
 
@@ -150,16 +175,19 @@ export default function useVoiceSession() {
       dataChannel.addEventListener("open", () => {
         console.log("Data channel opened, setting session active");
         setIsSessionActive(true);
+        setIsLoadingSession(false);
         setEvents([]);
       });
 
       // Handle data channel errors and state changes
       dataChannel.addEventListener("error", (error) => {
+        setIsLoadingSession(false);
         console.error("Data channel error:", error);
       });
 
       dataChannel.addEventListener("close", () => {
         console.log("Data channel closed");
+        setIsLoadingSession(false);
         setIsSessionActive(false);
       });
     }
@@ -172,5 +200,7 @@ export default function useVoiceSession() {
     stopSession,
     sendClientEvent,
     sendTextMessage,
+    isSpeaking,
+    isLoadingSession,
   };
-} 
+}

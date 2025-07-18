@@ -10,10 +10,20 @@ import { Bars } from "react-loader-spinner";
 import Avatar from "../common/Avatar";
 import { useRouter } from "next/navigation";
 import VoiceIcon from "@/assets/icons/VoiceIcon";
+import useVoiceSession from "@/lib/useVoiceSession";
+import AudioInteraction from "./AudioInteraction";
 
 const ChatInteractionContainer = () => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const {
+    isSessionActive,
+    startSession,
+    isSpeaking,
+    stopSession,
+    isLoadingSession,
+  } = useVoiceSession();
 
   const [currentUser] = useAtom(data);
   const [chats, setChats] = useAtom(chatsStore);
@@ -70,16 +80,15 @@ const ChatInteractionContainer = () => {
     // Get the last N messages (excluding the current loading message)
     const historyLimit = 20; // Adjust this number based on your needs
     const relevantMessages = messages
-      .filter(msg => !msg.is_loading) // Exclude loading messages
+      .filter((msg) => !msg.is_loading) // Exclude loading messages
       .slice(-historyLimit) // Get last N messages
-      .map(msg => ({
+      .map((msg) => ({
         role: msg.type === "user" ? "user" : "assistant",
         content: msg.content,
-        timestamp: msg.created_at
+        timestamp: msg.created_at,
       }));
     return relevantMessages;
   };
-
 
   const sendMessage = React.useCallback(
     async (content: string) => {
@@ -131,7 +140,7 @@ const ChatInteractionContainer = () => {
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
           instructions: selectedChat!.chatAgent!.system_prompt,
-          chatHistory: chatHistory
+          chatHistory: chatHistory,
         };
 
         console.log("Message data being sent:", queryData);
@@ -173,61 +182,63 @@ const ChatInteractionContainer = () => {
         try {
           while (true) {
             const { done, value } = await reader.read();
-            
+
             if (done) break;
-            
+
             const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
-            
+            const lines = chunk.split("\n");
+
             for (const line of lines) {
-              if (line.startsWith('data: ')) {
+              if (line.startsWith("data: ")) {
                 try {
                   const data = JSON.parse(line.slice(6));
-                  
+
                   if (data.type === "content") {
                     accumulatedContent += data.content;
-                    
+
                     // Update the streaming message with accumulated content
                     streamingBotMessage = {
                       ...streamingBotMessage,
                       content: accumulatedContent,
                     };
-                    
+
                     // Replace the loading message with streaming content
                     const currentMessages = [...updatedSelectedChat.messages];
-                    currentMessages[currentMessages.length - 1] = streamingBotMessage;
-                    
+                    currentMessages[currentMessages.length - 1] =
+                      streamingBotMessage;
+
                     const streamingSelectedChat = {
                       ...updatedSelectedChat,
                       messages: currentMessages,
                     };
-                    
+
                     setSelectedChat(streamingSelectedChat);
-                    
+
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? streamingSelectedChat : chat,
+                      chat.id === selectedChat.id
+                        ? streamingSelectedChat
+                        : chat,
                     );
                     setChats(streamingChats);
-                    
                   } else if (data.type === "complete") {
                     // Streaming is complete, finalize the message
                     const finalBotMessage: Message = {
                       ...streamingBotMessage,
                       content: accumulatedContent,
                     };
-                    
+
                     // Replace the loading message with the final response
                     const finalMessages = [...updatedSelectedChat.messages];
                     finalMessages[finalMessages.length - 1] = finalBotMessage;
-                    
+
                     const finalSelectedChat = {
                       ...updatedSelectedChat,
                       messages: finalMessages,
                     };
-                    
+
                     setSelectedChat(finalSelectedChat);
-                    
+
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
                       chat.id === selectedChat.id ? finalSelectedChat : chat,
@@ -266,10 +277,13 @@ const ChatInteractionContainer = () => {
                         console.log("Chat saved successfully to database");
                       }
                     } catch (saveError) {
-                      console.error("Error saving chat to database:", saveError);
+                      console.error(
+                        "Error saving chat to database:",
+                        saveError,
+                      );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
-                    
+
                     break;
                   }
                 } catch (parseError) {
@@ -351,6 +365,15 @@ const ChatInteractionContainer = () => {
       objDiv.scrollTop = objDiv.scrollHeight;
     }
   }, [selectedChat?.id]);
+
+  if (!isSessionActive || !isLoadingSession)
+    return (
+      <AudioInteraction
+        isSpeaking={isSpeaking}
+        stopSession={stopSession}
+        isLoading={isLoadingSession}
+      />
+    );
 
   return (
     <div className="w-[75%] flex justify-center">
@@ -520,13 +543,20 @@ const ChatInteractionContainer = () => {
                 </div>
               </div>
 
-              <button className="bg-[#FFFFFF14] border-[1px] border-[#FFFFFF28] rounded-md ">
+              <button
+                className="flex items-center justify-center bg-[#FFFFFF14] border-[1px] border-[#FFFFFF28] rounded-lg w-8 h-8"
+                onClick={() => {
+                  if (!isSessionActive) {
+                    startSession();
+                  }
+                }}
+              >
                 <VoiceIcon />
               </button>
 
               <button
                 className={`
-                  flex items-center justify-center w-12 h-12 rounded-full transition-all duration-200 
+                  flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 
                   ${!text.trim() || isLoading
                     ? "bg-[#565656] cursor-not-allowed"
                     : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"

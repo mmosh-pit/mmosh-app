@@ -30,7 +30,12 @@ const Tabs = () => {
 
       <div className="lg:mx-4 md:mx-2" />
 
-      <a className="text-base text-white cursor-pointer">Launchpad</a>
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => router.push("/launchpad")}
+      >
+        Launchpad
+      </a>
 
       <div className="lg:mx-4 md:mx-2" />
 

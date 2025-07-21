@@ -13,8 +13,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ status: false, message: "Missing userId" }, { status: 400 });
   }
   const allPresales = await presaleCollection.find({}).toArray();
+  const now = Date.now();
   const futurePresales = allPresales
-    .filter(p => new Date(p.lockPeriod).getTime() > Date.now())
+    .filter(p => {
+      // const presaleStartTime = new Date(p.presaleStartDate).getTime();
+      // const lockPeriodTime = new Date(p.lockPeriod).getTime();
+
+      const isFutureLock = p.lockPeriod > now;
+      const hasPresaleStarted = p.presaleStartDate <= now;
+
+      return isFutureLock && hasPresaleStarted;
+    })
     .sort((a, b) => new Date(a.lockPeriod).getTime() - new Date(b.lockPeriod).getTime());
 
   const presaleResult = await Promise.all(

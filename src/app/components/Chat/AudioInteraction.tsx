@@ -49,7 +49,7 @@ const AudioInteraction = ({
           </div>
 
           <button
-            className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] p-4 rounded-full"
+            className="relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] p-4 rounded-full mt-8"
             onClick={stopSession}
           >
             <CloseIcon width="0.8vmax" height="0.8vmax" />

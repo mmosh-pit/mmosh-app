@@ -1,13 +1,15 @@
 import * as React from "react";
+import BigNumber from 'bignumber.js';
 
 interface LaunchPadProps {
   getCountDownValues: any;
-  creator: string
-  buyToken: any
-  group: any;
+  creator: string;
+  buyToken: any;
+  presale: any;
+  isBuying: boolean;
 }
 export const LaunchPad = (props: LaunchPadProps) => {
-  const { getCountDownValues, creator, buyToken, group } = props;
+  const { getCountDownValues, creator, buyToken, presale, isBuying } = props;
   const [timerData] = React.useState<any[]>([
     { label: "Days" },
     { label: "Hours" },
@@ -29,7 +31,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
     let available: number = 0;
     for (let index = 0; index < data.presaleDetail.discount.length; index++) {
       const element = data.presaleDetail.discount[index];
-      available = Number(element.value);
+      available += Number(element.value);
       if (available - data.presaleDetail.totalSold > 0) {
         return (
           <div className="w-[269px] flex flex-col items-start justify-center ml-[10px] text-white font-['Avenir LT Std',sans-serif]">
@@ -43,7 +45,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
               </div>
               <div key={index} className="w-[50px] h-[27px] rounded-[4px] bg-[#3C39BE33] border-b border-[#fff3] flex flex-col items-center justify-center">
                 <div className="text-[9px] font-bold">Purchased</div>
-                <div className="text-[8px] font-light">{Number(element.value) - (available - data.presaleDetail.totalSold)}</div>
+                <div className="text-[8px] font-light">{new BigNumber(Number(element.value)).minus(new BigNumber(available - data.presaleDetail.totalSold)).toString()}</div>
               </div>
               <div key={index} className="w-[50px] h-[27px] rounded-[4px] bg-[#3C39BE33] border-b border-[#fff3] flex flex-col items-center justify-center">
                 <div className="text-[9px] font-bold">Discount</div>
@@ -71,15 +73,14 @@ export const LaunchPad = (props: LaunchPadProps) => {
   }
   return (
     <>
-      {group.map((presale: any, index: number) => (
-        <div key={index} className="relative">
+        <div className="relative">
           {/* Header */}
           <div className="h-[40px] w-[392px] bg-[#0A34C4] rounded-t-[14px] pl-[80px] pr-3 flex items-center justify-between relative">
-            <div className="flex flex-col font-poppins">
-              <div className="text-[10px] font-medium underline whitespace-nowrap text-ellipsis overflow-hidden">
+            <div className="flex flex-col font-poppins min-w-0">
+              <div className="text-[10px] font-medium underline whitespace-nowrap truncate">
                 {presale.coinDetail.name} <span className="text-[#C2C2C2]">• {presale.coinDetail.symbol}</span>
               </div>
-              <div className="text-[9px] text-[#3C99FF] underline cursor-pointer whitespace-nowrap text-ellipsis overflow-hidden">
+              <div className="text-[9px] text-[#3C99FF] underline cursor-pointer whitespace-nowrap truncate">
                 {creator}
               </div>
             </div>
@@ -130,8 +131,8 @@ export const LaunchPad = (props: LaunchPadProps) => {
                 Minimum: {presale.presaleDetail.purchaseMinimum} USDC<br />
                 Maximum: {presale.presaleDetail.purchaseMaximum} USDC
               </div>
-              <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 hover:bg-[#FF00AE] text-white rounded-[3px] text-[10px] font-bold0" onClick={() => buyToken(presale)}>
-                Buy
+              <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 hover:bg-[#FF00AE] text-white rounded-[3px] text-[10px] font-bold0" onClick={() => buyToken(amount, token)}>
+                {isBuying ? "Buying" : "Buy"}
               </button>
 
               <p className="text-[6px] text-white mt-1 leading-[1.2]">
@@ -143,7 +144,6 @@ export const LaunchPad = (props: LaunchPadProps) => {
             {renderTranche(presale)}
           </div>
         </div>
-      ))}
     </>
   )
 }

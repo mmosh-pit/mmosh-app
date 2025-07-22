@@ -674,7 +674,7 @@ const ProfileForm = () => {
           <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem]">
             <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
               <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
-                <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white shadow cursor-pointer`}>
+                <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`}>
                   Guest
                 </li>
                 <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`}>

@@ -707,7 +707,7 @@ const ProfileForm = () => {
                   <span className="text-[#b59be4] text-lg">•</span>
                   <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
                     <span className="relative z-10">✔ Current plan</span>
-                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
                   </span>
                 </div>
               </>
@@ -741,7 +741,7 @@ const ProfileForm = () => {
                 <div className="flex items-center mb-0 space-x-4">
                   <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
                     <span className="relative z-10">✔ Current plan</span>
-                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
                   </span>
                 </div>
               </>
@@ -779,7 +779,7 @@ const ProfileForm = () => {
                 <div className="flex items-center mb-0 space-x-4">
                   <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
                     <span className="relative z-10">✔ Current plan</span>
-                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
                   </span>
                 </div>
               </>

@@ -718,16 +718,48 @@ const ProfileForm = () => {
                     <div className="text-[#b59be4] font-extrabold mr-2">•</div>
                     <div>Up to 3 Personal Bots</div>
                   </div>
+                  <div className="flex flex-row items-center">
+                    <Radio
+                      title="Monthly USDC 15/mo"
+                      checked={hasMonthly}
+                      onChoose={() => setHasMonthly(!hasMonthly)}
+                      name="device_verification"
+                    />
+                    <Radio
+                      title="Annual USDC 90/yr"
+                      checked={!hasMonthly}
+                      onChoose={() => setHasMonthly(!hasMonthly)}
+                      name="device_verification"
+                    />
+                  </div>
+                </div>
+              </>
+            }
+            {tab === "creator" &&
+              <>
+                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Revenue Distribution</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Up to 3 Personal Bots</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Up to 3 Community Bots</div>
+                  </div>
                 </div>
                 <div className="flex flex-row items-center">
                   <Radio
-                    title="Monthly USDC 15/mo"
+                    title="Monthly USDC 24/mo"
                     checked={hasMonthly}
                     onChoose={() => setHasMonthly(!hasMonthly)}
                     name="device_verification"
                   />
                   <Radio
-                    title="Annual USDC 90/yr"
+                    title="Annual USDC 180/yr"
                     checked={!hasMonthly}
                     onChoose={() => setHasMonthly(!hasMonthly)}
                     name="device_verification"

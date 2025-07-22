@@ -56,7 +56,7 @@ const Bots = (botData: any) => {
                 <div
                   className="relative w-[100px] h-[100px] cursor-pointer"
                   onClick={() => {
-                    router.push("/projects/" + item.symbol.toLowerCase());
+                    router.push("/bots/" + item.symbol.toLowerCase());
                   }}
                 >
                   <Image
@@ -72,7 +72,7 @@ const Bots = (botData: any) => {
                   <p
                     className="text-white text-base underline cursor-pointer"
                     onClick={() => {
-                      router.push("/projects/" + item.symbol.toLowerCase());
+                      router.push("/bots/" + item.symbol.toLowerCase());
                     }}
                   >
                     {" "}

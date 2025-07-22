@@ -670,40 +670,63 @@ const ProfileForm = () => {
           )}
         </div>
         <div className="bg-[#03000754] rounded-2xl px-24 py-4 md:min-w-[85%] min-w-[90%]">
-          <div className="w-full flex flex-col items-center gap-4 text-white my-6">
-            <div className="w-[308px] h-[44px] relative rounded-full backdrop-blur-[19.5px] bg-white/10 flex items-center justify-between px-2 text-white border border-white/20">
-              <a
-                className="w-[98px] h-[38px] flex items-center justify-center rounded-[28px] text-sm font-medium
-                 bg-gradient-to-r from-[rgba(74,8,249,0.62)] to-[rgba(216,88,188,0.62)]
-                 border border-white/20 backdrop-blur-[39px]"
-              >
-                Guest
-              </a>
-              <a className="px-6 text-sm font-medium opacity-70 hover:opacity-100">Enjoyer</a>
-              <a className="px-6 text-sm font-medium opacity-70 hover:opacity-100">Explorer</a>
-            </div>
-            <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4">
-              <ul className="list-disc list-inside text-sm">
-                <li>Can only interact with Public Bots</li>
-                <li>No access to Bot Studio, Offers or Bot Subscriptions</li>
+          <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem]">
+            <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
+              <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
+                <li className="px-7 py-2 rounded-full text-sm font-extrabold bg-gradient-to-r from-[#d660a1] to-[#6356d5] text-white shadow cursor-pointer">
+                  Guest
+                </li>
+                <li className="px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer">
+                  Enjoyer
+                </li>
+                <li className="px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer">
+                  Creator
+                </li>
               </ul>
-              <div className="text-sm font-semibold flex items-center gap-2">
-                Free
-                <span className="badge badge-success badge-outline">Current plan</span>
+            </div>
+            <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+              <div className="flex items-start">
+                <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                <div>Can only interact with Public Bots</div>
               </div>
+              <div className="flex items-start">
+                <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
+              </div>
+            </div>
+           <div className="flex items-center mb-0 space-x-4">
+              <span className="font-bold text-2xl">Free</span>
+              <span className="text-[#b59be4] text-lg">•</span>
+              <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                <span className="relative z-10">✔ Current plan</span>
+                <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+              </span>
             </div>
           </div>
           <div className="w-full h-full flex flex-col p-5">
             <div className="mb-4">
-              <p className="text-lg text-white font-bold">About You</p>
+              <p className="text-lg text-white text-center font-bold">About You</p>
             </div>
             <div className="flex flex-col mb-4">
-              <p className="text-sm">Banner Image</p>
-              <div className="h-[200px]">
-                <ImageAccountPicker
-                  changeImage={setBannerImage}
-                  image={imagePreview}
-                />
+              <p className="text-sm mb-2">Banner Image</p>
+              <div className="relative h-[200px] w-full rounded-xl overflow-hidden">
+                <div className="absolute inset-0 bg-cover bg-center z-0" />
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Uploaded Banner"
+                    className="absolute inset-0 w-full h-full object-cover z-10"
+                  />
+                )}{!imagePreview && (
+                  <img
+                    src={"/images/profile-settings-bg.png"}
+                    alt="Uploaded Banner"
+                    className="absolute inset-0 w-full h-full object-cover z-10"
+                  />
+                )}
+                <div className="relative z-20 h-full">
+                  <ImageAccountPicker changeImage={setBannerImage} image={imagePreview} />
+                </div>
               </div>
             </div>
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 mt-4">

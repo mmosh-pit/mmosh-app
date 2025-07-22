@@ -59,6 +59,9 @@ const ProfileForm = () => {
 
   const [tokenInfo, setTokenInfo] = React.useState<any>(null);
   const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
+  const [membershipStatus, setMembershipStatus] = React.useState("na");
+  const [membershipInfo, setMembershipInfo] = React.useState<any>({});
+  const [tab, setTab] = React.useState("guest");
 
   React.useEffect(() => {
     if (currentUser) {
@@ -562,9 +565,6 @@ const ProfileForm = () => {
     }
   }, [wallet])
 
-  const [membershipStatus, setMembershipStatus] = React.useState("na");
-  const [membershipInfo, setMembershipInfo] = React.useState<any>({});
-
   const checkMembershipStatus = async () => {
     let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
     setMembershipStatus(membershipInfo.data);
@@ -657,7 +657,6 @@ const ProfileForm = () => {
     }
     setIsLoading(false);
   }, [wallet, profileInfo, image, form]);
-  const [tab, setTab] = React.useState("enjoyer")
 
   return (
     <div className="w-full flex justify-center">

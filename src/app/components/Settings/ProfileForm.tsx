@@ -719,6 +719,20 @@ const ProfileForm = () => {
                     <div>Up to 3 Personal Bots</div>
                   </div>
                 </div>
+                <div className="flex flex-row items-center">
+                  <Radio
+                    title="Monthly USDC 15/mo"
+                    checked={hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                  <Radio
+                    title="Annual USDC 90/yr"
+                    checked={!hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                </div>
               </>
             }
           </div>

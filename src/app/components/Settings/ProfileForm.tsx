@@ -571,13 +571,34 @@ const ProfileForm = () => {
             </h2>
           )}
         </div>
-
         <div className="bg-[#03000754] rounded-2xl px-24 py-4 md:min-w-[85%] min-w-[90%]">
+          <div className="w-full flex flex-col items-center gap-4 text-white my-6">
+            <div className="w-[308px] h-[44px] relative rounded-full backdrop-blur-[19.5px] bg-white/10 flex items-center justify-between px-2 text-white border border-white/20">
+              <a
+                className="w-[98px] h-[38px] flex items-center justify-center rounded-[28px] text-sm font-medium
+                 bg-gradient-to-r from-[rgba(74,8,249,0.62)] to-[rgba(216,88,188,0.62)]
+                 border border-white/20 backdrop-blur-[39px]"
+              >
+                Guest
+              </a>
+              <a className="px-6 text-sm font-medium opacity-70 hover:opacity-100">Enjoyer</a>
+              <a className="px-6 text-sm font-medium opacity-70 hover:opacity-100">Explorer</a>
+            </div>
+            <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-4">
+              <ul className="list-disc list-inside text-sm">
+                <li>Can only interact with Public Bots</li>
+                <li>No access to Bot Studio, Offers or Bot Subscriptions</li>
+              </ul>
+              <div className="text-sm font-semibold flex items-center gap-2">
+                Free
+                <span className="badge badge-success badge-outline">Current plan</span>
+              </div>
+            </div>
+          </div>
           <div className="w-full h-full flex flex-col p-5">
             <div className="mb-4">
               <p className="text-lg text-white font-bold">About You</p>
             </div>
-
             <div className="flex flex-col mb-4">
               <p className="text-sm">Banner Image</p>
               <div className="h-[200px]">
@@ -587,7 +608,6 @@ const ProfileForm = () => {
                 />
               </div>
             </div>
-
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 mt-4">
               <div>
                 <p className="text-sm">

@@ -345,7 +345,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
             twitter: fields.twitter,
             website: fields.website,
           });
-          navigate.push("/projects/" + fields.symbol);
+          navigate.push("/bots/" + fields.symbol);
           setLoading(false);
           return;
         }
@@ -435,7 +435,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
         });
         setButtonText(symbol ? "Modify" : "Mint");
         localStorage.removeItem("projectstep1");
-        navigate.push("/projects/" + fields.symbol);
+        navigate.push("/bots/" + fields.symbol);
       } catch (error) {
         console.log("error ", error);
         setButtonText(symbol ? "Modify" : "Mint");

@@ -267,7 +267,12 @@ export const createProfile = async ({
         wallet: wallet.publicKey.toString()
       };
 
-      await axios.post("/api/membership/add", membershipparams);
+      await axios.post("/api/membership/add", membershipparams, {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+            'Content-Type': 'application/json',
+          }
+        });
 
       await updateTotalMints(seniority);
 

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { data, userWeb3Info } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
 import ImagePicker from "../ImagePicker";
-import { createProfile } from "@/app/lib/forge/createProfile";
+import { buyMembership, createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import useWallet from "@/utils/wallet";
@@ -21,6 +21,7 @@ import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import * as anchor from "@coral-xyz/anchor";
 import { updateUserData } from "@/app/lib/forge/updateUserData";
+import Radio from "../common/Radio";
 
 const ProfileForm = () => {
   const wallet = useWallet();
@@ -57,6 +58,7 @@ const ProfileForm = () => {
   });
 
   const [tokenInfo, setTokenInfo] = React.useState<any>(null);
+  const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     if (currentUser) {
@@ -552,6 +554,102 @@ const ProfileForm = () => {
       getTokenInfo();
     }
   }, [profileInfo]);
+
+
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet])
+
+  const [membershipStatus, setMembershipStatus] = React.useState("na");
+
+  const checkMembershipStatus = async () => {
+    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    setMembershipStatus(membershipInfo.data)
+  }
+
+  const mintEnjoyerMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
+    // if (
+    //   !validateFields() ||
+    //   !profileInfo ||
+    //   !wallet
+    // ) {
+    //   return;
+    // }
+    if (!wallet || !profileInfo) {
+      return;
+    }
+
+
+    console.log("----- membershipStatus -----", membershipStatus);
+    if (membershipStatus == "active") {
+      createMessage("You already have membership", "error");
+      return
+    }
+
+    if (membershipStatus == "expired") {
+      await buyMembership({
+        wallet,
+        profileInfo,
+        image,
+        form,
+        preview,
+        parentProfile: new PublicKey(referer),
+        membership,
+        membershipType,
+        price,
+        banner: ""
+      });
+      createMessage("Your membership is updated", "success");
+      return
+    }
+
+
+    createMessage("", "");
+    setIsLoading(true);
+
+    let parentProfile;
+    if (referer == "") {
+      const res = await axios.get(`/api/get-user-data?username=${form.host}`);
+      console.log("lookupHost ", res.data);
+      if (res.data) {
+        parentProfile = res.data.profilenft;
+      } else {
+        createMessage("Host is invalid", "error");
+        return;
+      }
+    } else {
+      parentProfile = referer;
+    }
+
+    const result = await createProfile({
+      wallet,
+      profileInfo,
+      image,
+      form,
+      preview,
+      parentProfile: new PublicKey(parentProfile),
+      banner: "",
+      membership,
+      membershipType,
+      price
+    });
+    console.log("----- BUY MEMBERSHIP RESULT -----", result);
+
+    createMessage(result.message, result.type);
+
+    if (result.type === "success") {
+      setCurrentUser((prev) => {
+        return { ...prev!, profile: result.data };
+      });
+
+      setTimeout(() => {
+        navigate.replace(`/create`);
+      }, 5000);
+    }
+    setIsLoading(false);
+  }, [wallet, profileInfo, image, form]);
 
   return (
     <div className="w-full flex justify-center">

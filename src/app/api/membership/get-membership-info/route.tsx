@@ -17,7 +17,6 @@ export async function GET(req: NextRequest) {
   }
 
   let membershipData = membershipInfo[0]
-  console.log("membershipData", membershipData);
   const now = new Date();
   const expiry = new Date(membershipData.expirydate);
 

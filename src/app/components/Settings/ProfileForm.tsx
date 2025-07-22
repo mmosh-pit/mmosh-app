@@ -563,6 +563,7 @@ const ProfileForm = () => {
   }, [wallet])
 
   const [membershipStatus, setMembershipStatus] = React.useState("na");
+  const [membershipInfo, setMembershipInfo] = React.useState<any>({});
 
   const checkMembershipStatus = async () => {
     let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
@@ -570,11 +571,12 @@ const ProfileForm = () => {
     let result = await axios.get("/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58());
     if (membershipInfo.data === "active") {
       setTab(result.data.membership);
+      setMembershipInfo(result.data);
       setHasMonthly(result.data.membershiptype === "monthly");
     }
   }
 
-  const mintEnjoyerMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
+  const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
     // if (
     //   !validateFields() ||
     //   !profileInfo ||
@@ -704,11 +706,15 @@ const ProfileForm = () => {
                 </div>
                 <div className="flex items-center mb-0 space-x-4">
                   <span className="font-bold text-2xl">Free</span>
-                  <span className="text-[#b59be4] text-lg">•</span>
-                  <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                    <span className="relative z-10">✔ Current plan</span>
-                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                  </span>
+                  {membershipStatus === "na" &&
+                    <>
+                      <span className="text-[#b59be4] text-lg">•</span>
+                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                        <span className="relative z-10">✔ Current plan</span>
+                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                      </span>
+                    </>
+                  }
                 </div>
               </>
             }
@@ -738,12 +744,14 @@ const ProfileForm = () => {
                     name="device_verification"
                   />
                 </div>
-                <div className="flex items-center mb-0 space-x-4">
-                  <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                    <span className="relative z-10">✔ Current plan</span>
-                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                  </span>
-                </div>
+                {membershipInfo.membership === "enjoyer" &&
+                  <div className="flex items-center mb-0 space-x-4">
+                    <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                      <span className="relative z-10">✔ Current plan</span>
+                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                    </span>
+                  </div>
+                }
               </>
             }
             {tab === "creator" &&
@@ -776,12 +784,14 @@ const ProfileForm = () => {
                     name="device_verification"
                   />
                 </div>
-                <div className="flex items-center mb-0 space-x-4">
-                  <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                    <span className="relative z-10">✔ Current plan</span>
-                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                  </span>
-                </div>
+                {membershipInfo.membership === "creator" &&
+                  <div className="flex items-center mb-0 space-x-4">
+                    <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                      <span className="relative z-10">✔ Current plan</span>
+                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                    </span>
+                  </div>
+                }
               </>
             }
           </div>
@@ -984,46 +994,72 @@ const ProfileForm = () => {
 
             {hasProfile && (
               <div className="w-[50%] self-center pt-[30px]">
-                <Button
-                  isLoading={isLoading}
-                  isPrimary
-                  title={tab === "guest" ? "Save your changes" : `Mint Your ${tab === "enjoyer" ? 'Enjoyer'.charAt(0).toUpperCase() + 'Enjoyer'.slice(1) : 'Creator'.charAt(0).toUpperCase() + 'Creator'.slice(1)} Membership`}
-                  size="large"
-                  disabled={isLoading}
-                  action={updateProfile}
-                />
-                <div className="flex flex-col justify-center items-center mt-3">
-                  {hasMonthly &&
-                    <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
-                  }
-                  {!hasMonthly &&
-                    <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
-                  }
-                  <p className="text-tiny text-white">
-                    plus a small amount of SOL for gas fees
-                  </p>
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-center">
-                    <p className="text-sm text-white">Current balance</p>
-                    <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                      <p className="text-sm text-white text-center">
-                        {balance.usdc || 0}
+                {tab === "guest" &&
+                  <Button
+                    isLoading={isLoading}
+                    isPrimary
+                    title={"Save your changes"}
+                    size="large"
+                    disabled={isLoading}
+                    action={updateProfile}
+                  />
+                }
+                {tab === "enjoyer" &&
+                  <Button
+                    isLoading={isLoading}
+                    isPrimary
+                    title={`Mint Your Enjoyer Membership`}
+                    size="large"
+                    disabled={isLoading}
+                    action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
+                  />
+                }
+                {tab === "creator" &&
+                  <Button
+                    isLoading={isLoading}
+                    isPrimary
+                    title={`Mint Your Creator Membership`}
+                    size="large"
+                    disabled={isLoading}
+                    action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
+                  />
+                }
+                {tab !== "guest" &&
+                  <>
+                    <div className="flex flex-col justify-center items-center mt-3">
+                      {hasMonthly &&
+                        <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
+                      }
+                      {!hasMonthly &&
+                        <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
+                      }
+                      <p className="text-tiny text-white">
+                        plus a small amount of SOL for gas fees
                       </p>
                     </div>
-                    <p className="text-sm text-white">USDC</p>
-                  </div>
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-center">
+                        <p className="text-sm text-white">Current balance</p>
+                        <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                          <p className="text-sm text-white text-center">
+                            {balance.usdc || 0}
+                          </p>
+                        </div>
+                        <p className="text-sm text-white">USDC</p>
+                      </div>
 
-                  <div className="flex items-center mt-2 justify-center">
-                    <p className="text-sm text-white">Current balance</p>
-                    <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                      <p className="text-sm text-white text-center">
-                        {balance.sol || 0}
-                      </p>
+                      <div className="flex items-center mt-2 justify-center">
+                        <p className="text-sm text-white">Current balance</p>
+                        <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                          <p className="text-sm text-white text-center">
+                            {balance.sol || 0}
+                          </p>
+                        </div>
+                        <p className="text-sm text-white">SOL</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-white">SOL</p>
-                  </div>
-                </div>
+                  </>
+                }
               </div>
             )}
           </div>

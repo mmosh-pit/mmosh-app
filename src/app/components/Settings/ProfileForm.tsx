@@ -993,7 +993,12 @@ const ProfileForm = () => {
                   action={updateProfile}
                 />
                 <div className="flex flex-col justify-center items-center mt-3">
-                  <p className="text-sm text-white">Price: 8 USDC</p>
+                  {hasMonthly &&
+                    <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
+                  }
+                  {!hasMonthly &&
+                    <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
+                  }
                   <p className="text-tiny text-white">
                     plus a small amount of SOL for gas fees
                   </p>

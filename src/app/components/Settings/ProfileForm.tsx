@@ -881,7 +881,7 @@ const ProfileForm = () => {
               <div className="flex flex-col">
                 <Input
                   type="text"
-                  title="Bio"
+                  title="Description"
                   required={false}
                   placeholder="Tell us about yourself in one paragraph or less"
                   value={form.description}
@@ -983,7 +983,7 @@ const ProfileForm = () => {
             )}
 
             {hasProfile && (
-              <div className="w-[50%] self-center">
+              <div className="w-[50%] self-center pt-[30px]">
                 <Button
                   isLoading={isLoading}
                   isPrimary

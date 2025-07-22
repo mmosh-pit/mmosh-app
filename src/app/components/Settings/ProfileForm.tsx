@@ -553,6 +553,8 @@ const ProfileForm = () => {
     }
   }, [profileInfo]);
 
+  const [tab, setTab] = React.useState("enjoyer")
+
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col items-center justify-center w-full">
@@ -575,35 +577,53 @@ const ProfileForm = () => {
           <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem]">
             <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
               <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
-                <li className="px-7 py-2 rounded-full text-sm font-extrabold bg-gradient-to-r from-[#d660a1] to-[#6356d5] text-white shadow cursor-pointer">
+                <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white shadow cursor-pointer`}>
                   Guest
                 </li>
-                <li className="px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer">
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`}>
                   Enjoyer
                 </li>
-                <li className="px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer">
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`}>
                   Creator
                 </li>
               </ul>
             </div>
-            <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
-              <div className="flex items-start">
-                <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                <div>Can only interact with Public Bots</div>
-              </div>
-              <div className="flex items-start">
-                <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
-              </div>
-            </div>
-           <div className="flex items-center mb-0 space-x-4">
-              <span className="font-bold text-2xl">Free</span>
-              <span className="text-[#b59be4] text-lg">•</span>
-              <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                <span className="relative z-10">✔ Current plan</span>
-                <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
-              </span>
-            </div>
+            {tab === "guest" &&
+              <>
+                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Can only interact with Public Bots</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
+                  </div>
+                </div>
+                <div className="flex items-center mb-0 space-x-4">
+                  <span className="font-bold text-2xl">Free</span>
+                  <span className="text-[#b59be4] text-lg">•</span>
+                  <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                    <span className="relative z-10">✔ Current plan</span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+                  </span>
+                </div>
+              </>
+            }
+            {tab === "enjoyer" &&
+              <>
+                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Revenue Distribution</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Up to 3 Personal Bots</div>
+                  </div>
+                </div>
+              </>
+            }
           </div>
           <div className="w-full h-full flex flex-col p-5">
             <div className="mb-4">

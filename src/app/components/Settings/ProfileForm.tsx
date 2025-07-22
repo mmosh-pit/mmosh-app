@@ -941,7 +941,7 @@ const ProfileForm = () => {
                   <p className="text-base text-white mt-4">Free</p>
                 </div>
 
-                <div className="flex flex-col w-[25%]">
+                {/* <div className="flex flex-col w-[25%]">
                   <Button
                     isLoading={isLoading}
                     isPrimary
@@ -978,20 +978,47 @@ const ProfileForm = () => {
                       <p className="text-sm text-white">SOL</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
 
             {hasProfile && (
-              <div className="w-[25%] self-center">
+              <div className="w-[50%] self-center">
                 <Button
                   isLoading={isLoading}
                   isPrimary
-                  title="Save your changes"
+                  title={tab === "guest" ? "Save your changes" : `Mint Your ${tab === "enjoyer" ? 'Enjoyer'.charAt(0).toUpperCase() + 'Enjoyer'.slice(1) : 'Creator'.charAt(0).toUpperCase() + 'Creator'.slice(1)} Membership`}
                   size="large"
                   disabled={isLoading}
                   action={updateProfile}
                 />
+                <div className="flex flex-col justify-center items-center mt-3">
+                  <p className="text-sm text-white">Price: 8 USDC</p>
+                  <p className="text-tiny text-white">
+                    plus a small amount of SOL for gas fees
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-center">
+                    <p className="text-sm text-white">Current balance</p>
+                    <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                      <p className="text-sm text-white text-center">
+                        {balance.usdc || 0}
+                      </p>
+                    </div>
+                    <p className="text-sm text-white">USDC</p>
+                  </div>
+
+                  <div className="flex items-center mt-2 justify-center">
+                    <p className="text-sm text-white">Current balance</p>
+                    <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                      <p className="text-sm text-white text-center">
+                        {balance.sol || 0}
+                      </p>
+                    </div>
+                    <p className="text-sm text-white">SOL</p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

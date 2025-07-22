@@ -566,7 +566,12 @@ const ProfileForm = () => {
 
   const checkMembershipStatus = async () => {
     let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
-    setMembershipStatus(membershipInfo.data)
+    setMembershipStatus(membershipInfo.data);
+    let result = await axios.get("/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58());
+    if (membershipInfo.data === "active") {
+      setTab(result.data.membership);
+      setHasMonthly(result.data.membershiptype === "monthly");
+    }
   }
 
   const mintEnjoyerMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {

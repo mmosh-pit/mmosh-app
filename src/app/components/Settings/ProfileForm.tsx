@@ -718,20 +718,26 @@ const ProfileForm = () => {
                     <div className="text-[#b59be4] font-extrabold mr-2">•</div>
                     <div>Up to 3 Personal Bots</div>
                   </div>
-                  <div className="flex flex-row items-center">
-                    <Radio
-                      title="Monthly USDC 15/mo"
-                      checked={hasMonthly}
-                      onChoose={() => setHasMonthly(!hasMonthly)}
-                      name="device_verification"
-                    />
-                    <Radio
-                      title="Annual USDC 90/yr"
-                      checked={!hasMonthly}
-                      onChoose={() => setHasMonthly(!hasMonthly)}
-                      name="device_verification"
-                    />
-                  </div>
+                </div>
+                <div className="flex flex-row items-center">
+                  <Radio
+                    title="Monthly USDC 15/mo"
+                    checked={hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                  <Radio
+                    title="Annual USDC 90/yr"
+                    checked={!hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                </div>
+                <div className="flex items-center mb-0 space-x-4">
+                  <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                    <span className="relative z-10">✔ Current plan</span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+                  </span>
                 </div>
               </>
             }
@@ -764,6 +770,12 @@ const ProfileForm = () => {
                     onChoose={() => setHasMonthly(!hasMonthly)}
                     name="device_verification"
                   />
+                </div>
+                <div className="flex items-center mb-0 space-x-4">
+                  <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                    <span className="relative z-10">✔ Current plan</span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[4px]"></span>
+                  </span>
                 </div>
               </>
             }

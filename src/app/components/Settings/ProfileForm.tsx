@@ -213,6 +213,10 @@ const ProfileForm = () => {
       );
       return false;
     }
+    if (!image) {
+      createMessage("Image is required", "error");
+      return false;
+    }
 
     if (form.name.length == 0) {
       createMessage("First name is required", "error");
@@ -577,14 +581,7 @@ const ProfileForm = () => {
   }
 
   const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
-    // if (
-    //   !validateFields() ||
-    //   !profileInfo ||
-    //   !wallet
-    // ) {
-    //   return;
-    // }
-    if (!wallet || !profileInfo) {
+    if (!wallet || !profileInfo || !validateFields()) {
       return;
     }
 

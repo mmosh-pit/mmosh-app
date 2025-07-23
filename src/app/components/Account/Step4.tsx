@@ -1,5 +1,5 @@
 import * as React from "react";
-import { buyMembership, createProfile } from "@/app/lib/forge/createProfile";
+import { createProfile } from "@/app/lib/forge/createProfile";
 import axios from "axios";
 import { data, userWeb3Info } from "@/app/store";
 import { useAtom } from "jotai";
@@ -166,7 +166,7 @@ const Step4 = () => {
     setMessage({ message: text, type });
   }, []);
 
-  const validateFields = (isUpdate: boolean) => {
+  const validateFields = () => {
     if (!profileInfo) return;
 
     if (referer === "") {
@@ -174,7 +174,7 @@ const Step4 = () => {
       return false;
     }
 
-    if (profileInfo.profile.address !== undefined && !isUpdate) {
+    if (profileInfo.profile.address !== undefined) {
       createMessage("User already have profile address", "error");
       return false;
     }
@@ -226,7 +226,7 @@ const Step4 = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (!validateFields(false) || !wallet || !profileInfo) {
+    if (!validateFields() || !wallet || !profileInfo) {
       return;
     }
 
@@ -432,40 +432,12 @@ const Step4 = () => {
   }, [bannerImage]);
 
   const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
-  const [membershipStatus, setMembershipStatus] = React.useState("na");
-  const [membershipInfo, setMembershipInfo] = React.useState<any>({});
   const [tab, setTab] = React.useState("guest");
 
   const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
-    if (!wallet || !profileInfo || !validateFields(membershipStatus == "expired")) {
+    if (!wallet || !profileInfo || !validateFields()) {
       return;
     }
-
-
-    console.log("----- membershipStatus -----", membershipStatus);
-    if (membershipStatus == "active") {
-      createMessage("You already have membership", "error");
-      return
-    }
-
-    if (membershipStatus == "expired") {
-      await buyMembership({
-        wallet,
-        profileInfo,
-        image,
-        form,
-        preview,
-        parentProfile: new PublicKey(referer),
-        membership,
-        membershipType,
-        price,
-        banner: ""
-      });
-      createMessage("Your membership is updated", "success");
-      return
-    }
-
-
     createMessage("", "");
     setIsLoading(true);
 
@@ -510,22 +482,6 @@ const Step4 = () => {
     }
     setIsLoading(false);
   }, [wallet, profileInfo, image, form]);
-  const checkMembershipStatus = async () => {
-    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
-    setMembershipStatus(membershipInfo.data);
-    let result = await axios.get("/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58());
-    if (membershipInfo.data === "active") {
-      setTab(result.data.membership);
-      setMembershipInfo(result.data);
-      setHasMonthly(result.data.membershiptype === "monthly");
-    }
-  }
-
-  React.useEffect(() => {
-    if (wallet) {
-      checkMembershipStatus();
-    }
-  }, [wallet])
 
   return (
     <div className="w-full flex justify-center">
@@ -584,15 +540,6 @@ const Step4 = () => {
                   </div>
                   <div className="flex items-center mb-0 space-x-4">
                     <span className="font-bold text-2xl">Free</span>
-                    {membershipStatus === "na" &&
-                      <>
-                        <span className="text-[#b59be4] text-lg">•</span>
-                        <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                          <span className="relative z-10">✔ Current plan</span>
-                          <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                        </span>
-                      </>
-                    }
                   </div>
                 </>
               }
@@ -622,14 +569,6 @@ const Step4 = () => {
                       name="device_verification"
                     />
                   </div>
-                  {membershipInfo.membership === "enjoyer" &&
-                    <div className="flex items-center mb-0 space-x-4">
-                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                        <span className="relative z-10">✔ Current plan</span>
-                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                      </span>
-                    </div>
-                  }
                 </>
               }
               {tab === "creator" &&
@@ -662,14 +601,6 @@ const Step4 = () => {
                       name="device_verification"
                     />
                   </div>
-                  {membershipInfo.membership === "creator" &&
-                    <div className="flex items-center mb-0 space-x-4">
-                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                        <span className="relative z-10">✔ Current plan</span>
-                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                      </span>
-                    </div>
-                  }
                 </>
               }
             </div>

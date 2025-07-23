@@ -181,6 +181,9 @@ const ProfileForm = () => {
   }, []);
 
   const validateFields = (isUpdate: boolean) => {
+    if(membershipStatus === "expired") {
+        return true
+    }
     if (!profileInfo) return;
 
     if (referer === "") {
@@ -580,7 +583,7 @@ const ProfileForm = () => {
   }
 
   const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
-    if (!wallet || !profileInfo || !validateFields(membershipStatus == "expired")) {
+    if (!wallet || !profileInfo || !validateFields(false)) {
       return;
     }
 

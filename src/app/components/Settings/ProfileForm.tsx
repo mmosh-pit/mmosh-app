@@ -180,7 +180,7 @@ const ProfileForm = () => {
     setMessage({ message: text, type });
   }, []);
 
-  const validateFields = () => {
+  const validateFields = (isUpdate: boolean) => {
     if (!profileInfo) return;
 
     if (referer === "") {
@@ -188,7 +188,7 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (profileInfo.profile.address !== undefined) {
+    if (profileInfo.profile.address !== undefined && !isUpdate) {
       createMessage("User already have profile address", "error");
       return false;
     }
@@ -239,7 +239,7 @@ const ProfileForm = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (!validateFields() || !profileInfo || !wallet) {
+    if (!validateFields(false) || !profileInfo || !wallet) {
       return;
     }
 
@@ -418,7 +418,7 @@ const ProfileForm = () => {
 
   const updateProfile = React.useCallback(async () => {
     if (
-      !validateFields() ||
+      !validateFields(true) ||
       !profileInfo ||
       !wallet ||
       !currentUser ||
@@ -580,7 +580,7 @@ const ProfileForm = () => {
   }
 
   const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
-    if (!wallet || !profileInfo || !validateFields()) {
+    if (!wallet || !profileInfo || !validateFields(membershipStatus == "expired")) {
       return;
     }
 
@@ -945,45 +945,6 @@ const ProfileForm = () => {
 
                   <p className="text-base text-white mt-4">Free</p>
                 </div>
-
-                {/* <div className="flex flex-col w-[25%]">
-                  <Button
-                    isLoading={isLoading}
-                    isPrimary
-                    title="Mint a Membership"
-                    size="large"
-                    action={submitForm}
-                    disabled={isLoading}
-                  />
-
-                  <div className="flex flex-col justify-center items-center mt-3">
-                    <p className="text-sm text-white">Price: 8 USDC</p>
-                    <p className="text-tiny text-white">
-                      plus a small amount of SOL for gas fees
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center justify-center">
-                      <p className="text-sm text-white">Current balance</p>
-                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                        <p className="text-sm text-white text-center">
-                          {balance.usdc || 0}
-                        </p>
-                      </div>
-                      <p className="text-sm text-white">USDC</p>
-                    </div>
-
-                    <div className="flex items-center mt-2 justify-center">
-                      <p className="text-sm text-white">Current balance</p>
-                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                        <p className="text-sm text-white text-center">
-                          {balance.sol || 0}
-                        </p>
-                      </div>
-                      <p className="text-sm text-white">SOL</p>
-                    </div>
-                  </div>
-                </div> */}
               </div>
             )}
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createProfile } from "@/app/lib/forge/createProfile";
+import { buyMembership, createProfile } from "@/app/lib/forge/createProfile";
 import axios from "axios";
 import { data, userWeb3Info } from "@/app/store";
 import { useAtom } from "jotai";
@@ -22,6 +22,7 @@ import { uploadFile } from "@/app/lib/firebase";
 import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
 import { storeFormAtom } from "@/app/store/signup";
+import Radio from "../common/Radio";
 
 const Step4 = () => {
   const router = useRouter();
@@ -165,7 +166,7 @@ const Step4 = () => {
     setMessage({ message: text, type });
   }, []);
 
-  const validateFields = () => {
+  const validateFields = (isUpdate: boolean) => {
     if (!profileInfo) return;
 
     if (referer === "") {
@@ -173,7 +174,7 @@ const Step4 = () => {
       return false;
     }
 
-    if (profileInfo.profile.address !== undefined) {
+    if (profileInfo.profile.address !== undefined && !isUpdate) {
       createMessage("User already have profile address", "error");
       return false;
     }
@@ -225,7 +226,7 @@ const Step4 = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (!validateFields() || !wallet || !profileInfo) {
+    if (!validateFields(false) || !wallet || !profileInfo) {
       return;
     }
 
@@ -430,6 +431,102 @@ const Step4 = () => {
     setImagePreview(objectUrl);
   }, [bannerImage]);
 
+  const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
+  const [membershipStatus, setMembershipStatus] = React.useState("na");
+  const [membershipInfo, setMembershipInfo] = React.useState<any>({});
+  const [tab, setTab] = React.useState("guest");
+
+  const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
+    if (!wallet || !profileInfo || !validateFields(membershipStatus == "expired")) {
+      return;
+    }
+
+
+    console.log("----- membershipStatus -----", membershipStatus);
+    if (membershipStatus == "active") {
+      createMessage("You already have membership", "error");
+      return
+    }
+
+    if (membershipStatus == "expired") {
+      await buyMembership({
+        wallet,
+        profileInfo,
+        image,
+        form,
+        preview,
+        parentProfile: new PublicKey(referer),
+        membership,
+        membershipType,
+        price,
+        banner: ""
+      });
+      createMessage("Your membership is updated", "success");
+      return
+    }
+
+
+    createMessage("", "");
+    setIsLoading(true);
+
+    let parentProfile;
+    if (referer == "") {
+      const res = await axios.get(`/api/get-user-data?username=${form.host}`);
+      console.log("lookupHost ", res.data);
+      if (res.data) {
+        parentProfile = res.data.profilenft;
+      } else {
+        createMessage("Host is invalid", "error");
+        return;
+      }
+    } else {
+      parentProfile = referer;
+    }
+
+    const result = await createProfile({
+      wallet,
+      profileInfo,
+      image,
+      form,
+      preview,
+      parentProfile: new PublicKey(parentProfile),
+      banner: "",
+      membership,
+      membershipType,
+      price
+    });
+    console.log("----- BUY MEMBERSHIP RESULT -----", result);
+
+    createMessage(result.message, result.type);
+
+    if (result.type === "success") {
+      setCurrentUser((prev) => {
+        return { ...prev!, profile: result.data };
+      });
+
+      setTimeout(() => {
+        router.replace(`/bots`);
+      }, 5000);
+    }
+    setIsLoading(false);
+  }, [wallet, profileInfo, image, form]);
+  const checkMembershipStatus = async () => {
+    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    setMembershipStatus(membershipInfo.data);
+    let result = await axios.get("/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58());
+    if (membershipInfo.data === "active") {
+      setTab(result.data.membership);
+      setMembershipInfo(result.data);
+      setHasMonthly(result.data.membershiptype === "monthly");
+    }
+  }
+
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet])
+
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col items-center justify-center w-full">
@@ -438,18 +535,15 @@ const Step4 = () => {
           <div className="p-5">
             <div className="text-center relative">
               <h4 className="text-white font-goudy font-normal mb-8">
-                Mint Your Free <br />
-                Membership Profile!
+                Create your Profile <br />
               </h4>
-              <p className="text-base max-w-2xl mx-auto light-gray-color">
-                Membership has it's privileges! With a lifetime Membership
-                Profile, you can create own personal and community bots, connect
-                with other members, earn royalties, referral rewards and income
-                from the goods and services you offer to other members
+              <p className="text-base max-w-5xl mx-auto light-gray-color">
+                You can mint a Membership Profile, which allows you to create your own Personal and Community Bots, connect with other members,
+                earn royalties and receive referral rewards. You can also generate income from the goods and services you offer to other members.
               </p>
-              <p className="text-base max-w-2xl mx-auto light-gray-color mt-2.5">
-                you'll only be paying 8 USDC and about 21 cents in network fees
-                for Lifetime membership
+              <p className="text-base max-w-3xl mx-auto light-gray-color mt-2.5">
+                For a limited time only, receive a lifetime membership for 8 USDC and about 21 cents in SOL
+                network fees. If you’re not ready to join, you can save a Guest Profile and mint your membership later.
               </p>
               <div
                 className="absolute left-0 top-0 cursor-pointer"
@@ -461,6 +555,123 @@ const Step4 = () => {
               <p className="text-base light-gray-color absolute right-0 top-0">
                 Step 4 of 4
               </p>
+            </div>
+            <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem] pt-6">
+              <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
+                <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
+                  <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`} onClick={() => setTab("guest")}>
+                    Guest
+                  </li>
+                  <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("enjoyer")}>
+                    Enjoyer
+                  </li>
+                  <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("creator")}>
+                    Creator
+                  </li>
+                </ul>
+              </div>
+              {tab === "guest" &&
+                <>
+                  <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>Can only interact with Public Bots</div>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center mb-0 space-x-4">
+                    <span className="font-bold text-2xl">Free</span>
+                    {membershipStatus === "na" &&
+                      <>
+                        <span className="text-[#b59be4] text-lg">•</span>
+                        <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                          <span className="relative z-10">✔ Current plan</span>
+                          <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                        </span>
+                      </>
+                    }
+                  </div>
+                </>
+              }
+              {tab === "enjoyer" &&
+                <>
+                  <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>Revenue Distribution</div>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>Up to 3 Personal Bots</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-row items-center">
+                    <Radio
+                      title="Monthly USDC 15/mo"
+                      checked={hasMonthly}
+                      onChoose={() => setHasMonthly(!hasMonthly)}
+                      name="device_verification"
+                    />
+                    <Radio
+                      title="Annual USDC 90/yr"
+                      checked={!hasMonthly}
+                      onChoose={() => setHasMonthly(!hasMonthly)}
+                      name="device_verification"
+                    />
+                  </div>
+                  {membershipInfo.membership === "enjoyer" &&
+                    <div className="flex items-center mb-0 space-x-4">
+                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                        <span className="relative z-10">✔ Current plan</span>
+                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                      </span>
+                    </div>
+                  }
+                </>
+              }
+              {tab === "creator" &&
+                <>
+                  <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>Revenue Distribution</div>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>Up to 3 Personal Bots</div>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div>Up to 3 Community Bots</div>
+                    </div>
+                  </div>
+                  <div className="flex flex-row items-center">
+                    <Radio
+                      title="Monthly USDC 24/mo"
+                      checked={hasMonthly}
+                      onChoose={() => setHasMonthly(!hasMonthly)}
+                      name="device_verification"
+                    />
+                    <Radio
+                      title="Annual USDC 180/yr"
+                      checked={!hasMonthly}
+                      onChoose={() => setHasMonthly(!hasMonthly)}
+                      name="device_verification"
+                    />
+                  </div>
+                  {membershipInfo.membership === "creator" &&
+                    <div className="flex items-center mb-0 space-x-4">
+                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                        <span className="relative z-10">✔ Current plan</span>
+                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                      </span>
+                    </div>
+                  }
+                </>
+              }
             </div>
             <div className="w-full h-full flex flex-col p-5">
               <div className="mb-4">
@@ -598,11 +809,11 @@ const Step4 = () => {
             )}
 
             <div className="mt-10 flex flex-col">
-              <div className="flex justify-evenly items-start space-x-4">
+              <div className="flex justify-center items-start space-x-4">
                 {!isMobileScreen && (
                   <div className="w-[25%]">
                     <button
-                      className="btn btn-outline text-white border-white hover:bg-white hover:text-black w-full"
+                      className="btn btn-outline text-white border-white hover:bg-white hover:text-black w-full h-[52px]"
                       onClick={skipStep}
                     >
                       Skip
@@ -611,47 +822,72 @@ const Step4 = () => {
                 )}
 
                 <div className="flex flex-col justify-center items-center w-[25%]">
-                  <Button
-                    isLoading={isLoading}
-                    isPrimary
-                    title="Mint Your Profile"
-                    size="large"
-                    action={submitForm}
-                    disabled={isLoading}
-                  />
-
-                  <div className="flex flex-col justify-center items-center mt-5">
-                    <p className="text-sm text-white">Price: 8 USDC</p>
-                    <p className="text-tiny text-white">
-                      plus a small amount of SOL for gas fees
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center justify-center">
-                      <p className="text-sm text-white">Current balance</p>
-                      <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                        {balance.usdc || 0}
+                  {tab === "guest" &&
+                    <Button
+                      isLoading={isLoading}
+                      isPrimary
+                      title={"Save your changes"}
+                      size="large"
+                      disabled={isLoading}
+                      action={saveUserData}
+                    />
+                  }
+                  {tab === "enjoyer" &&
+                    <Button
+                      isLoading={isLoading}
+                      isPrimary
+                      title={`Mint Your Enjoyer Membership`}
+                      size="large"
+                      disabled={isLoading}
+                      action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
+                    />
+                  }
+                  {tab === "creator" &&
+                    <Button
+                      isLoading={isLoading}
+                      isPrimary
+                      title={`Mint Your Creator Membership`}
+                      size="large"
+                      disabled={isLoading}
+                      action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
+                    />
+                  }
+                  {tab !== "guest" &&
+                    <>
+                      <div className="flex flex-col justify-center items-center mt-3">
+                        {hasMonthly &&
+                          <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
+                        }
+                        {!hasMonthly &&
+                          <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
+                        }
+                        <p className="text-tiny text-white">
+                          plus a small amount of SOL for gas fees
+                        </p>
                       </div>
-                      <p className="text-sm text-white">USDC</p>
-                    </div>
+                      <div className="flex flex-col">
+                        <div className="flex items-center justify-center">
+                          <p className="text-sm text-white">Current balance</p>
+                          <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                            <p className="text-sm text-white text-center">
+                              {balance.usdc || 0}
+                            </p>
+                          </div>
+                          <p className="text-sm text-white">USDC</p>
+                        </div>
 
-                    <div className="flex items-center mt-2 justify-center">
-                      <p className="text-sm text-white">Current balance</p>
-                      <div className="bg-black bg-opacity-[0.2] px-1 py-2 min-w-[3vmax] mx-2 rounded-md">
-                        {balance.sol || 0}
+                        <div className="flex items-center mt-2 justify-center">
+                          <p className="text-sm text-white">Current balance</p>
+                          <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                            <p className="text-sm text-white text-center">
+                              {balance.sol || 0}
+                            </p>
+                          </div>
+                          <p className="text-sm text-white">SOL</p>
+                        </div>
                       </div>
-                      <p className="text-sm text-white">SOL</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-[25%]">
-                  <button
-                    className="btn btn-outline text-white border-white hover:bg-white hover:text-black w-full"
-                    onClick={saveUserData}
-                  >
-                    Save as Guest
-                  </button>
+                    </>
+                  }
                 </div>
               </div>
 

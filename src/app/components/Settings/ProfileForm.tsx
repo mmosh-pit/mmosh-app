@@ -329,7 +329,6 @@ const ProfileForm = () => {
       const usdcDecimals = 6; //new
       usdcBalance = Number(usdcDetails.amount) / Math.pow(10, usdcDecimals); //new
     } catch (_) { }
-
     setBalance({
       sol: solBalance / LAMPORTS_PER_SOL,
       usdc: usdcBalance,
@@ -932,7 +931,7 @@ const ProfileForm = () => {
               </div>
             )}
 
-            {!hasProfile && (
+            {!hasProfile && tab === "guest" && (
               <div className="flex mt-6 items-start justify-evenly">
                 <div className="w-[25%] flex flex-col justify-center items-center">
                   <Button
@@ -1000,64 +999,66 @@ const ProfileForm = () => {
                     action={updateProfile}
                   />
                 }
-                {tab === "enjoyer" &&
-                  <Button
-                    isLoading={isLoading}
-                    isPrimary
-                    title={`Mint Your Enjoyer Membership`}
-                    size="large"
-                    disabled={isLoading}
-                    action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
-                  />
-                }
-                {tab === "creator" &&
-                  <Button
-                    isLoading={isLoading}
-                    isPrimary
-                    title={`Mint Your Creator Membership`}
-                    size="large"
-                    disabled={isLoading}
-                    action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
-                  />
-                }
-                {tab !== "guest" &&
-                  <>
-                    <div className="flex flex-col justify-center items-center mt-3">
-                      {hasMonthly &&
-                        <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
-                      }
-                      {!hasMonthly &&
-                        <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
-                      }
-                      <p className="text-tiny text-white">
-                        plus a small amount of SOL for gas fees
-                      </p>
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center justify-center">
-                        <p className="text-sm text-white">Current balance</p>
-                        <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                          <p className="text-sm text-white text-center">
-                            {balance.usdc || 0}
-                          </p>
-                        </div>
-                        <p className="text-sm text-white">USDC</p>
-                      </div>
-
-                      <div className="flex items-center mt-2 justify-center">
-                        <p className="text-sm text-white">Current balance</p>
-                        <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                          <p className="text-sm text-white text-center">
-                            {balance.sol || 0}
-                          </p>
-                        </div>
-                        <p className="text-sm text-white">SOL</p>
-                      </div>
-                    </div>
-                  </>
-                }
               </div>
             )}
+            <div className="w-[50%] self-center pt-[30px]">
+              {tab === "enjoyer" &&
+                <Button
+                  isLoading={isLoading}
+                  isPrimary
+                  title={`Mint Your Enjoyer Membership`}
+                  size="large"
+                  disabled={isLoading}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
+                />
+              }
+              {tab === "creator" &&
+                <Button
+                  isLoading={isLoading}
+                  isPrimary
+                  title={`Mint Your Creator Membership`}
+                  size="large"
+                  disabled={isLoading}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
+                />
+              }
+              {tab !== "guest" &&
+                <>
+                  <div className="flex flex-col justify-center items-center mt-3">
+                    {hasMonthly &&
+                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
+                    }
+                    {!hasMonthly &&
+                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
+                    }
+                    <p className="text-tiny text-white">
+                      plus a small amount of SOL for gas fees
+                    </p>
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-center">
+                      <p className="text-sm text-white">Current balance</p>
+                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                        <p className="text-sm text-white text-center">
+                          {balance.usdc || 0}
+                        </p>
+                      </div>
+                      <p className="text-sm text-white">USDC</p>
+                    </div>
+
+                    <div className="flex items-center mt-2 justify-center">
+                      <p className="text-sm text-white">Current balance</p>
+                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                        <p className="text-sm text-white text-center">
+                          {balance.sol || 0}
+                        </p>
+                      </div>
+                      <p className="text-sm text-white">SOL</p>
+                    </div>
+                  </div>
+                </>
+              }
+            </div>
           </div>
         </div>
       </div>

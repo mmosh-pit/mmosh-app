@@ -311,7 +311,7 @@ const ProfileForm = () => {
       "confirmed",
     );
     const address = new PublicKey(
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      wallet!.publicKey,
     );
     const solBalance = await connection.getBalance(address);
 

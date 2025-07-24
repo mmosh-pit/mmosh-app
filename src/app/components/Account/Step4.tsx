@@ -372,7 +372,7 @@ const Step4 = () => {
       "confirmed",
     );
     const address = new PublicKey(
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      wallet!.publicKey,
     );
     const solBalance = await connection.getBalance(address);
 
@@ -461,7 +461,7 @@ const Step4 = () => {
       image,
       form,
       preview,
-      parentProfile: new PublicKey(parentProfile),
+      parentProfile: new PublicKey(referer),
       banner: "",
       membership,
       membershipType,

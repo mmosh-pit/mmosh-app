@@ -803,7 +803,7 @@ export class Connectivity {
     }
   }
 
-    async buyMembership(
+async buyMembership(
     input: _MintProfile,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
@@ -886,7 +886,7 @@ export class Connectivity {
       const mainStateInfo = await this.program.account.mainState.fetch(
         this.mainState,
       );
-      let cost = price * (10**6);
+      let cost = price * (10 ** 6);
 
       let holdersfullInfo = [];
 
@@ -924,7 +924,7 @@ export class Connectivity {
       });
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value) {
+      holdersfullInfo.reduce(function (res: any, value) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
           holdermap.push(res[value.receiver]);
@@ -953,41 +953,57 @@ export class Connectivity {
 
       const lutsInfo = [commonLutInfo!];
 
-      const freezeInstructions = await this.calculatePriorityFee(
-        this.txis,
-        lutsInfo,
-        mintKp,
-      );
-
-      for (let index = 0; index < freezeInstructions.length; index++) {
-        const element = freezeInstructions[index];
-        this.txis.push(element);
+      const transaction = new web3.Transaction().add(...this.txis);
+      transaction.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
+      transaction.feePayer = this.provider.publicKey;
+      const feeEstimate = await this.getPriorityFeeEstimate(transaction);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
       }
+      transaction.add(feeIns);
+      const signature = await this.provider.sendAndConfirm(transaction, []);
+      console.log("===== SIGNATURE =====", signature);
+      return {
+        Ok: {
+          signature: signature,
+          info: { profile: "" },
+        },
+      };
 
-      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
-      const message = new web3.TransactionMessage({
-        payerKey: this.provider.publicKey,
-        recentBlockhash: blockhash,
-        instructions: [...this.txis],
-      }).compileToV0Message(lutsInfo);
+      // const freezeInstructions = await this.calculatePriorityFee(
+      //   this.txis,
+      //   lutsInfo,
+      //   mintKp,
+      // );
 
-      const tx = new web3.VersionedTransaction(message);
-      tx.sign([mintKp]);
-      this.txis = [];
+      // for (let index = 0; index < freezeInstructions.length; index++) {
+      //   const element = freezeInstructions[index];
+      //   this.txis.push(element);
+      // }
+
+      // const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+      // const message = new web3.TransactionMessage({
+      //   payerKey: this.provider.publicKey,
+      //   recentBlockhash: blockhash,
+      //   instructions: [...this.txis],
+      // }).compileToV0Message(lutsInfo);
+
+      // const tx = new web3.VersionedTransaction(message);
+      // tx.sign([mintKp]);
+      // this.txis = [];
 
       // const signedTx = await this.provider.wallet.signTransaction(tx as any);
       // const txLen = signedTx.serialize().length;
       // log({ txLen, luts: lutsInfo.length });
 
-      const signature = await this.provider.sendAndConfirm(tx as any);
-
-
-      return {
-        Ok: {
-          signature,
-          info: { profile: ""},
-        },
-      };
+      // const signature = await this.provider.sendAndConfirm(tx as any);
     } catch (error) {
       log({ error });
       return { Err: error };

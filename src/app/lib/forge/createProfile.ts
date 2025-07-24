@@ -267,7 +267,12 @@ export const createProfile = async ({
         wallet: wallet.publicKey.toString()
       };
 
-      await axios.post("/api/membership/add", membershipparams);
+      await axios.post("/api/membership/add", membershipparams, {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+            'Content-Type': 'application/json',
+          }
+        });
 
       await updateTotalMints(seniority);
 
@@ -348,7 +353,12 @@ export const buyMembership = async ({
         wallet: wallet.publicKey.toString()
       };
 
-      await axios.post("/api/membership/update", membershipparams);
+      await axios.post("/api/membership/update", membershipparams, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          'Content-Type': 'application/json',
+        }
+      });
 
 
       return {

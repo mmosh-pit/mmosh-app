@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { data, userWeb3Info } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
 import ImagePicker from "../ImagePicker";
-import { createProfile } from "@/app/lib/forge/createProfile";
+import { buyMembership, createProfile } from "@/app/lib/forge/createProfile";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import useWallet from "@/utils/wallet";
@@ -21,6 +21,7 @@ import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
 import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import * as anchor from "@coral-xyz/anchor";
 import { updateUserData } from "@/app/lib/forge/updateUserData";
+import Radio from "../common/Radio";
 
 const ProfileForm = () => {
   const wallet = useWallet();
@@ -57,6 +58,10 @@ const ProfileForm = () => {
   });
 
   const [tokenInfo, setTokenInfo] = React.useState<any>(null);
+  const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
+  const [membershipStatus, setMembershipStatus] = React.useState("na");
+  const [membershipInfo, setMembershipInfo] = React.useState<any>({});
+  const [tab, setTab] = React.useState("guest");
 
   React.useEffect(() => {
     if (currentUser) {
@@ -90,13 +95,24 @@ const ProfileForm = () => {
       } else if (!!guestData?.banner) {
         previewBannerImage = guestData!.banner;
       }
-
+      getFileFromObjectURL(previewPictureImage);
       setPreview(previewPictureImage);
       setImagePreview(previewBannerImage);
       setHasProfile(currentUser!.profilenft !== "");
       setHasReferer(!!currentUser!.referred_by);
     }
   }, [currentUser]);
+  const getFileFromObjectURL = async (objectURL: any, filename = "downloaded-file") => {
+    try {
+      const response = await fetch(objectURL);
+      const blob = await response.blob();
+      const imageFile = new File([blob], filename, { type: blob.type });
+      console.log("imageFile", imageFile);
+      setImage(imageFile);
+    } catch (error) {
+      setImage(null);
+    }
+  }
 
   React.useEffect(() => {
     if (profileInfo) {
@@ -175,7 +191,10 @@ const ProfileForm = () => {
     setMessage({ message: text, type });
   }, []);
 
-  const validateFields = () => {
+  const validateFields = (isUpdate: boolean) => {
+    if (membershipStatus === "expired" || membershipStatus == "active") {
+      return true
+    }
     if (!profileInfo) return;
 
     if (referer === "") {
@@ -183,7 +202,7 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (profileInfo.profile.address !== undefined) {
+    if (profileInfo.profile.address !== undefined && !isUpdate) {
       createMessage("User already have profile address", "error");
       return false;
     }
@@ -209,6 +228,11 @@ const ProfileForm = () => {
       return false;
     }
 
+    if (!image) {
+      createMessage("Image is required", "error");
+      return false;
+    }
+
     if (form.name.length == 0) {
       createMessage("First name is required", "error");
       return false;
@@ -230,7 +254,7 @@ const ProfileForm = () => {
   };
 
   const submitForm = React.useCallback(async () => {
-    if (!validateFields() || !profileInfo || !wallet) {
+    if (!validateFields(false) || !profileInfo || !wallet) {
       return;
     }
 
@@ -303,7 +327,7 @@ const ProfileForm = () => {
       "confirmed",
     );
     const address = new PublicKey(
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+      wallet!.publicKey,
     );
     const solBalance = await connection.getBalance(address);
 
@@ -320,7 +344,6 @@ const ProfileForm = () => {
       const usdcDecimals = 6; //new
       usdcBalance = Number(usdcDetails.amount) / Math.pow(10, usdcDecimals); //new
     } catch (_) { }
-
     setBalance({
       sol: solBalance / LAMPORTS_PER_SOL,
       usdc: usdcBalance,
@@ -410,7 +433,7 @@ const ProfileForm = () => {
 
   const updateProfile = React.useCallback(async () => {
     if (
-      !validateFields() ||
+      !validateFields(true) ||
       !profileInfo ||
       !wallet ||
       !currentUser ||
@@ -553,6 +576,102 @@ const ProfileForm = () => {
     }
   }, [profileInfo]);
 
+
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet])
+
+  const checkMembershipStatus = async () => {
+    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    setMembershipStatus(membershipInfo.data);
+    let result = await axios.get("/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58());
+    if (membershipInfo.data === "active") {
+      setTab(result.data.membership);
+      setMembershipInfo(result.data);
+      setHasMonthly(result.data.membershiptype === "monthly");
+    }
+  }
+
+  const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
+    if (!wallet || !profileInfo || !validateFields(false)) {
+      return;
+    }
+    if (membershipStatus === "active" && membershipInfo.membership === membership && membershipInfo.membershiptype === membershipType) {
+      createMessage("You already have this membership", "error");
+      return;
+    }
+
+    setIsLoading(true);
+    if (membershipStatus == "expired" || membershipStatus == "active") {
+      const result = await buyMembership({
+        wallet,
+        profileInfo,
+        image,
+        form,
+        preview,
+        parentProfile: new PublicKey(referer),
+        membership,
+        membershipType,
+        price,
+        banner: ""
+      });
+      console.log("----- UPGRADE PROFILE RESULT -----", result);
+      setIsLoading(false);
+      if (result.type === "error") {
+        createMessage(result.message, "error");
+        return;
+      }
+      checkMembershipStatus();
+      createMessage("Your membership is updated", "success");
+      return
+    }
+    createMessage("", "");
+
+    let parentProfile;
+    if (referer == "") {
+      const res = await axios.get(`/api/get-user-data?username=${form.host}`);
+      console.log("lookupHost ", res.data);
+      if (res.data) {
+        parentProfile = res.data.profilenft;
+      } else {
+        createMessage("Host is invalid", "error");
+        return;
+      }
+    } else {
+      parentProfile = referer;
+    }
+
+    const result = await createProfile({
+      wallet,
+      profileInfo,
+      image,
+      form,
+      preview,
+      parentProfile: new PublicKey(referer),
+      banner: "",
+      membership,
+      membershipType,
+      price
+    });
+    console.log("----- BUY MEMBERSHIP RESULT -----", result);
+
+    checkMembershipStatus();
+    createMessage(result.message, result.type);
+
+    if (result.type === "success") {
+      setCurrentUser((prev) => {
+        return { ...prev!, profile: result.data };
+      });
+
+      setTimeout(() => {
+        navigate.replace(`/create`);
+      }, 5000);
+    }
+    setIsLoading(false);
+  }, [wallet, profileInfo, image, form]);
+
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col items-center justify-center w-full">
@@ -571,23 +690,150 @@ const ProfileForm = () => {
             </h2>
           )}
         </div>
-
         <div className="bg-[#03000754] rounded-2xl px-24 py-4 md:min-w-[85%] min-w-[90%]">
+          <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem]">
+            <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
+              <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
+                <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`} onClick={() => setTab("guest")}>
+                  Guest
+                </li>
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("enjoyer")}>
+                  Enjoyer
+                </li>
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("creator")}>
+                  Creator
+                </li>
+              </ul>
+            </div>
+            {tab === "guest" &&
+              <>
+                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Can only interact with Public Bots</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
+                  </div>
+                </div>
+                <div className="flex items-center mb-0 space-x-4">
+                  <span className="font-bold text-2xl">Free</span>
+                  {membershipStatus === "na" &&
+                    <>
+                      <span className="text-[#b59be4] text-lg">•</span>
+                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                        <span className="relative z-10">✔ Current plan</span>
+                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                      </span>
+                    </>
+                  }
+                </div>
+              </>
+            }
+            {tab === "enjoyer" &&
+              <>
+                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Revenue Distribution</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Up to 3 Personal Bots</div>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center">
+                  <Radio
+                    title="Monthly USDC 15/mo"
+                    checked={hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                  <Radio
+                    title="Annual USDC 90/yr"
+                    checked={!hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                </div>
+                {membershipInfo.membership === "enjoyer" &&
+                  <div className="flex items-center mb-0 space-x-4">
+                    <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                      <span className="relative z-10">✔ Current plan</span>
+                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                    </span>
+                  </div>
+                }
+              </>
+            }
+            {tab === "creator" &&
+              <>
+                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Revenue Distribution</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Up to 3 Personal Bots</div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                    <div>Up to 3 Community Bots</div>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center">
+                  <Radio
+                    title="Monthly USDC 24/mo"
+                    checked={hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                  <Radio
+                    title="Annual USDC 180/yr"
+                    checked={!hasMonthly}
+                    onChoose={() => setHasMonthly(!hasMonthly)}
+                    name="device_verification"
+                  />
+                </div>
+                {membershipInfo.membership === "creator" &&
+                  <div className="flex items-center mb-0 space-x-4">
+                    <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                      <span className="relative z-10">✔ Current plan</span>
+                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
+                    </span>
+                  </div>
+                }
+              </>
+            }
+          </div>
           <div className="w-full h-full flex flex-col p-5">
             <div className="mb-4">
-              <p className="text-lg text-white font-bold">About You</p>
+              <p className="text-lg text-white text-center font-bold">About You</p>
             </div>
-
             <div className="flex flex-col mb-4">
-              <p className="text-sm">Banner Image</p>
-              <div className="h-[200px]">
-                <ImageAccountPicker
-                  changeImage={setBannerImage}
-                  image={imagePreview}
-                />
+              <p className="text-sm mb-2">Banner Image</p>
+              <div className="relative h-[200px] w-full rounded-xl overflow-hidden">
+                <div className="absolute inset-0 bg-cover bg-center z-0" />
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Uploaded Banner"
+                    className="absolute inset-0 w-full h-full object-cover z-10"
+                  />
+                )}{!imagePreview && (
+                  <img
+                    src={"/images/profile-settings-bg.png"}
+                    alt="Uploaded Banner"
+                    className="absolute inset-0 w-full h-full object-cover z-10"
+                  />
+                )}
+                <div className="relative z-20 h-full">
+                  <ImageAccountPicker changeImage={setBannerImage} image={imagePreview} />
+                </div>
               </div>
             </div>
-
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 mt-4">
               <div>
                 <p className="text-sm">
@@ -658,7 +904,7 @@ const ProfileForm = () => {
               <div className="flex flex-col">
                 <Input
                   type="text"
-                  title="Bio"
+                  title="Description"
                   required={false}
                   placeholder="Tell us about yourself in one paragraph or less"
                   value={form.description}
@@ -703,7 +949,7 @@ const ProfileForm = () => {
               </div>
             )}
 
-            {!hasProfile && (
+            {!hasProfile && tab === "guest" && (
               <div className="flex mt-6 items-start justify-evenly">
                 <div className="w-[25%] flex flex-col justify-center items-center">
                   <Button
@@ -717,19 +963,53 @@ const ProfileForm = () => {
 
                   <p className="text-base text-white mt-4">Free</p>
                 </div>
+              </div>
+            )}
 
-                <div className="flex flex-col w-[25%]">
+            {hasProfile && (
+              <div className="w-[50%] self-center pt-[30px]">
+                {tab === "guest" &&
                   <Button
                     isLoading={isLoading}
                     isPrimary
-                    title="Mint a Membership"
+                    title={"Save your changes"}
                     size="large"
-                    action={submitForm}
                     disabled={isLoading}
+                    action={updateProfile}
                   />
-
+                }
+              </div>
+            )}
+            <div className="w-[50%] self-center pt-[30px]">
+              {tab === "enjoyer" &&
+                <Button
+                  isLoading={isLoading}
+                  isPrimary
+                  title={`Mint Your Enjoyer Membership`}
+                  size="large"
+                  disabled={isLoading}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
+                />
+              }
+              {tab === "creator" &&
+                <Button
+                  isLoading={isLoading}
+                  isPrimary
+                  title={`Mint Your Creator Membership`}
+                  size="large"
+                  disabled={isLoading}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
+                />
+              }
+              {tab !== "guest" &&
+                <>
                   <div className="flex flex-col justify-center items-center mt-3">
-                    <p className="text-sm text-white">Price: 8 USDC</p>
+                    {hasMonthly &&
+                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
+                    }
+                    {!hasMonthly &&
+                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
+                    }
                     <p className="text-tiny text-white">
                       plus a small amount of SOL for gas fees
                     </p>
@@ -755,22 +1035,9 @@ const ProfileForm = () => {
                       <p className="text-sm text-white">SOL</p>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {hasProfile && (
-              <div className="w-[25%] self-center">
-                <Button
-                  isLoading={isLoading}
-                  isPrimary
-                  title="Save your changes"
-                  size="large"
-                  disabled={isLoading}
-                  action={updateProfile}
-                />
-              </div>
-            )}
+                </>
+              }
+            </div>
           </div>
         </div>
       </div>

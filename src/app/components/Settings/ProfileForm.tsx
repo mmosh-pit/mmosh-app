@@ -95,13 +95,24 @@ const ProfileForm = () => {
       } else if (!!guestData?.banner) {
         previewBannerImage = guestData!.banner;
       }
-
+      getFileFromObjectURL(previewPictureImage);
       setPreview(previewPictureImage);
       setImagePreview(previewBannerImage);
       setHasProfile(currentUser!.profilenft !== "");
       setHasReferer(!!currentUser!.referred_by);
     }
   }, [currentUser]);
+  const getFileFromObjectURL = async (objectURL: any, filename = "downloaded-file") => {
+    try {
+      const response = await fetch(objectURL);
+      const blob = await response.blob();
+      const imageFile = new File([blob], filename, { type: blob.type });
+      console.log("imageFile", imageFile);
+      setImage(imageFile);
+    } catch (error) {
+      setImage(null);
+    }
+  }
 
   React.useEffect(() => {
     if (profileInfo) {
@@ -181,8 +192,8 @@ const ProfileForm = () => {
   }, []);
 
   const validateFields = (isUpdate: boolean) => {
-    if(membershipStatus === "expired" || membershipStatus == "active") {
-        return true
+    if (membershipStatus === "expired" || membershipStatus == "active") {
+      return true
     }
     if (!profileInfo) return;
 
@@ -214,6 +225,11 @@ const ProfileForm = () => {
         "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
         "warn",
       );
+      return false;
+    }
+
+    if (!image) {
+      createMessage("Image is required", "error");
       return false;
     }
 

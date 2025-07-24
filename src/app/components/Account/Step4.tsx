@@ -92,6 +92,7 @@ const Step4 = () => {
       }
 
       setPreview(guestData.picture ?? "");
+      getFileFromObjectURL(guestData.picture || "");
       setForm({
         ...form,
         name,
@@ -110,6 +111,18 @@ const Step4 = () => {
       });
     }
   }, [onboarding, user]);
+
+  const getFileFromObjectURL = async (objectURL: any, filename = "downloaded-file") => {
+    try {
+      const response = await fetch(objectURL);
+      const blob = await response.blob();
+      const imageFile = new File([blob], filename, { type: blob.type });
+      console.log("imageFile", imageFile);
+      setImage(imageFile);
+    } catch (error) {
+      setImage(null);
+    }
+  }
 
   const lookupReferer = async (username: string) => {
     if (!username) return;
@@ -197,6 +210,10 @@ const Step4 = () => {
         "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
         "warn",
       );
+      return false;
+    }
+    if (!image) {
+      createMessage("Image is required", "error");
       return false;
     }
 

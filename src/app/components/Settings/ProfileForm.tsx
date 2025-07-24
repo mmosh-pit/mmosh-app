@@ -181,7 +181,7 @@ const ProfileForm = () => {
   }, []);
 
   const validateFields = (isUpdate: boolean) => {
-    if(membershipStatus === "expired") {
+    if(membershipStatus === "expired" || membershipStatus == "active") {
         return true
     }
     if (!profileInfo) return;
@@ -214,10 +214,6 @@ const ProfileForm = () => {
         "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
         "warn",
       );
-      return false;
-    }
-    if (!image) {
-      createMessage("Image is required", "error");
       return false;
     }
 
@@ -586,16 +582,14 @@ const ProfileForm = () => {
     if (!wallet || !profileInfo || !validateFields(false)) {
       return;
     }
-
-
-    console.log("----- membershipStatus -----", membershipStatus);
-    if (membershipStatus == "active") {
-      createMessage("You already have membership", "error");
-      return
+    if (membershipStatus === "active" && membershipInfo.membership === membership && membershipInfo.membershiptype === membershipType) {
+      createMessage("You already have this membership", "error");
+      return;
     }
 
-    if (membershipStatus == "expired") {
-      await buyMembership({
+    setIsLoading(true);
+    if (membershipStatus == "expired" || membershipStatus == "active") {
+      const result = await buyMembership({
         wallet,
         profileInfo,
         image,
@@ -607,13 +601,17 @@ const ProfileForm = () => {
         price,
         banner: ""
       });
+      console.log("----- UPGRADE PROFILE RESULT -----", result);
+      setIsLoading(false);
+      if (result.type === "error") {
+        createMessage(result.message, "error");
+        return;
+      }
+      checkMembershipStatus();
       createMessage("Your membership is updated", "success");
       return
     }
-
-
     createMessage("", "");
-    setIsLoading(true);
 
     let parentProfile;
     if (referer == "") {
@@ -635,7 +633,7 @@ const ProfileForm = () => {
       image,
       form,
       preview,
-      parentProfile: new PublicKey(parentProfile),
+      parentProfile: new PublicKey(referer),
       banner: "",
       membership,
       membershipType,
@@ -643,6 +641,7 @@ const ProfileForm = () => {
     });
     console.log("----- BUY MEMBERSHIP RESULT -----", result);
 
+    checkMembershipStatus();
     createMessage(result.message, result.type);
 
     if (result.type === "success") {

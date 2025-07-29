@@ -668,34 +668,42 @@ export class Connectivity {
       holdersfullInfo.push({
         receiver: currentGenesisProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          cost * (20 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          cost * (10 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentGrandParentProfileHolder.toBase58(),
         vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
           cost *
-          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          (5 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentGreatGrandParentProfileHolder.toBase58(),
         vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
           cost *
-          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          (3 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentGgreatGrandParentProfileHolder.toBase58(),
         vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
           cost *
-          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          (2 / 100),
       });
 
       const holdermap: any = [];
@@ -893,34 +901,42 @@ async buyMembership(
       holdersfullInfo.push({
         receiver: currentGenesisProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          cost * (20 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          cost * (10 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentGrandParentProfileHolder.toBase58(),
         vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
           cost *
-          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          (5 / 100 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentGreatGrandParentProfileHolder.toBase58(),
         vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
           cost *
-          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          (3 / 100 / 100),
       });
 
       holdersfullInfo.push({
         receiver: currentGgreatGrandParentProfileHolder.toBase58(),
         vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
           cost *
-          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          (2 / 100 / 100),
       });
 
       const holdermap: any = [];

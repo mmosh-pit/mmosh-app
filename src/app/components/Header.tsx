@@ -726,7 +726,7 @@ const Header = () => {
       )}
       {membershipStatus === "expired" &&
         <div className="cursor-pointer" onClick={()=>{
-           router.push("/create/profile");
+           router.push("/settings");
         }}>
           <MessageBanner
             type="error"

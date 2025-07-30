@@ -146,11 +146,12 @@ const ChatInteractionContainer = () => {
         console.log("Message data being sent:", queryData);
 
         const response = await fetch(
-          "https://react-api-1094217356440.us-central1.run.app/query/stream",
+          "https://ai.kinshipbots.com/react/stream",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
             },
             body: JSON.stringify(queryData),
           },
@@ -259,11 +260,12 @@ const ChatInteractionContainer = () => {
                       console.log("Saving chat to database:", saveChatData);
 
                       const saveResponse = await fetch(
-                        "https://chat-save-api-1094217356440.us-central1.run.app/save-chat",
+                        "https://ai.kinshipbots.com/save-chat",
                         {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
                         },

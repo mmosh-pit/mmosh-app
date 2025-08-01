@@ -705,6 +705,14 @@ export class Connectivity {
           cost *
           (2 / 100),
       });
+      holdersfullInfo.push({
+        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          cost *
+          (60 / 100),
+      });
 
       const holdermap: any = [];
       holdersfullInfo.reduce(function(res: any, value) {
@@ -917,8 +925,7 @@ async buyMembership(
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
-          cost *
-          (5 / 100 / 100),
+          cost * (5 / 100),
       });
 
       holdersfullInfo.push({
@@ -926,8 +933,7 @@ async buyMembership(
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
-          cost *
-          (3 / 100 / 100),
+          cost * (3 / 100),
       });
 
       holdersfullInfo.push({
@@ -935,8 +941,14 @@ async buyMembership(
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-          cost *
-          (2 / 100 / 100),
+          cost * (2 / 100),
+      });
+      holdersfullInfo.push({
+        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          cost * (60 / 100),
       });
 
       const holdermap: any = [];

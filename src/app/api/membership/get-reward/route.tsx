@@ -11,12 +11,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       status: false,
       message: "No usage data found.",
-      result: 0
+      result: {
+        reward: 0,
+        withdrawal: 0
+      }
     }, { status: 200 });
   }
   return NextResponse.json({
     status: false,
     message: "usage data retrieved successfully.",
-    result: usageInfo[0].value
+    result: {
+      usage: usageInfo[0].value,
+      withdrawal: usageInfo[0].withdrawal
+    }
   }, { status: 200 });
 }

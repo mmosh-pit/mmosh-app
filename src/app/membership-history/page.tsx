@@ -2,25 +2,35 @@
 import useWallet from "@/utils/wallet";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import internalClient from "../lib/internalHttpClient";
+import { Connection } from "@solana/web3.js";
+import * as anchor from "@coral-xyz/anchor";
+import { Connectivity as UserConn } from "@/anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
+import { Bars } from "react-loader-spinner";
 
 const ClaimPage = () => {
     const wallet = useWallet();
     const [history, setHistory] = useState({
         history: [],
         inPool: 0,
-        tokenUsage: 0,
         rewards: 0
     });
-
-    const [filter, setFilter] = useState("all");
     const [projectId, setProjectId] = useState("");
     const [projects, setProjects] = useState([]);
-    const [reward, setReward] = useState(0);
+    const [usage, setUsage] = useState(0);
+    const [claimed, setClaimed] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showMsg, setShowMsg] = useState(false);
+    const [msgClass, setMsgClass] = useState("");
+    const [msgText, setMsgText] = useState("");
+    const [showLoader, setShowLoader] = useState(true);
+    const [page, setPage] = useState(1);
+    const [limit] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         if (wallet) {
-            console.log("ClaimPage mounted");
-            getMembershipHistory();
             getAgentInfo();
         }
     }, [wallet]);
@@ -29,6 +39,25 @@ const ClaimPage = () => {
             getRewardInfo();
         }
     }, [projectId]);
+    useEffect(() => {
+        getMembershipHistory();
+    }, [page]);
+
+    const createMessage = (message: any, type: any) => {
+        window.scrollTo(0, 0);
+        setMsgText(message);
+        setMsgClass(type);
+        setShowMsg(true);
+        if (type == "success-container") {
+            setTimeout(() => {
+                setShowMsg(false);
+            }, 4000);
+        } else {
+            setTimeout(() => {
+                setShowMsg(false);
+            }, 4000);
+        }
+    };
 
     const getRewardInfo = async () => {
         const token = localStorage.getItem("token") || "";
@@ -37,8 +66,9 @@ const ClaimPage = () => {
                 'authorization': `Bearer ${token}`,
             }
         });
-        console.log("Reward Info:", response.data);
-        setReward(response.data.result);
+        setUsage(response.data.result.usage);
+        setClaimed(response.data.result.withdrawal);
+        setShowLoader(false);
     }
 
     const getAgentInfo = async () => {
@@ -48,9 +78,8 @@ const ClaimPage = () => {
                 'authorization': `Bearer ${token}`,
             }
         });
-        console.log("Agent History:", response.data);
         setProjects(response.data.result);
-        if (response.data.result[0]) {
+        if (response.data.result[0] && projectId === "") {
             setProjectId(response.data.result[0].key);
         }
     }
@@ -58,19 +87,20 @@ const ClaimPage = () => {
     const getMembershipHistory = async () => {
         try {
             const token = localStorage.getItem("token") || "";
-            const response = await axios.get('/api/membership/get-history', {
+            const response = await axios.get(`/api/membership/get-history?page=${page}&limit=${limit}`, {
                 headers: {
                     'authorization': `Bearer ${token}`,
                 }
             });
-            console.log("Membership History:", response.data);
             setHistory(response.data.result);
+            const total = response.data.result.total || 0;
+            setTotalPages(Math.ceil(total / limit));
+
         } catch (error) {
             console.error("Error fetching history", error);
             setHistory({
                 history: [],
                 inPool: 0,
-                tokenUsage: 0,
                 rewards: 0
             });
         }
@@ -92,81 +122,172 @@ const ClaimPage = () => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
-            maximumFractionDigits: 2,
+            maximumFractionDigits: 6,
         }).format(amount);
     };
 
+    const claimAmount = async () => {
+        try {
+            if (wallet) {
+                setIsLoading(true);
+                const txAmount = (usage / history.inPool * 100) - claimed;
+                const result: any = await internalClient.post("/api/membership/claim", {
+                    amount: txAmount,
+                    address: wallet.publicKey.toString(),
+                    parentAddress: "FfAUUpraQjfrQkh9kvQnxSqzxVNhLpSh8HuDeaKyNvoB"
+                });
+                if (result.data.status) {
+                    const connection = new Connection(
+                        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+                        {
+                            confirmTransactionInitialTimeout: 120000,
+                        },
+                    );
+                    const env = new anchor.AnchorProvider(connection, wallet, {
+                        preflightCommitment: "processed",
+                    });
+                    anchor.setProvider(env);
+
+                    const userConn: UserConn = new UserConn(env, web3Consts.programID);
+                    const data: any = Buffer.from(result.data.transaction, "base64");
+                    const tx = anchor.web3.VersionedTransaction.deserialize(data);
+                    const signature = await userConn.provider.sendAndConfirm(tx);
+                    const updateRsult: any = await internalClient.post("/api/membership/update-claim", {
+                        agentId: projectId,
+                        value: 0,
+                        withdrawal: txAmount,
+                    });
+                    getMembershipHistory();
+                    getAgentInfo();
+                    getRewardInfo();
+                    setIsLoading(false);
+                    createMessage(`Reward claimed successfully! ${signature}`, "success-container");
+                } else {
+                    createMessage(`An unexpected error occurred. Kindly try again later`, "danger-container");
+                    setIsLoading(false);
+                }
+            }
+        } catch (error) {
+            createMessage(`An unexpected error occurred. Kindly try again later`, "danger-container");
+            setIsLoading(false);
+        }
+    }
+
     return (
         <div className="p-4">
-            {/* Dropdown Filter */}
-            <div className="flex justify-center mb-4">
-                <select
-                    className="text-white border border-white rounded-lg px-4 py-2 focus:outline-none bg-transparent"
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                >
-                    {projects.map((project: any, index) => (
-                        <option key={index} value={project.key} className="text-black">{project.name}</option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Stat Boxes */}
-            <div className="flex flex-wrap justify-center gap-6 mb-6">
-                {/* Box 1 - In Pool */}
-                <div className="rounded-xl border border-white p-4 w-60 text-center">
-                    <h2 className="text-xl font-bold text-white">In Pool</h2>
-                    <p className="text-2xl font-semibold text-white mt-1">{history.inPool}</p>
+            {showMsg && (
+                <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
+            )}
+            {showLoader &&
+                <div className="backdrop-container rounded-xl border border-white border-opacity-20 my-10 p-5">
+                    <div className="p-10 text-center items-center">
+                        <Bars
+                            height="80"
+                            width="80"
+                            color="rgba(255, 0, 199, 1)"
+                            ariaLabel="bars-loading"
+                            wrapperStyle={{}}
+                            wrapperClass="bars-loading"
+                            visible={true}
+                        />
+                    </div>
                 </div>
-
-                {/* Box 2 - Token Usage */}
-                <div className="rounded-xl border border-white p-4 w-60 text-center">
-                    <h2 className="text-xl font-bold text-white">Token Usage</h2>
-                    <p className="text-2xl font-semibold text-white mt-1">{history.tokenUsage}</p>
-                </div>
-
-                {/* Box 3 - Rewards */}
-                <div className="rounded-xl border border-white p-4 w-60 text-center">
-                    <h2 className="text-xl font-bold text-white">Rewards</h2>
-                    <p className="text-2xl font-semibold text-white mt-1">{reward}</p>
-                </div>
-                {/* Box 3 - Rewards */}
-                <div className="rounded-xl border border-white p-4 w-60 text-center">
-                    <h2 className="text-xl font-bold text-white">Withdrawal</h2>
-                    <p className="text-2xl font-semibold text-white mt-1">{reward}</p>
-                </div>
-            </div>
-
-            {/* History Table */}
-            <h3 className="text-left pl-[20px] text-white text-lg mb-2">History</h3>
-            <div className="overflow-x-auto">
-                <table className="table text-white">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Wallet</th>
-                            <th>Membership</th>
-                            <th>Membership Type</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {history.history
-                            .filter((item: any) => filter === "all" || item.membership === filter)
-                            .map((item: any, index: number) => (
-                                <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <td>{item.wallet}</td>
-                                    <td>{item.membership}</td>
-                                    <td>{item.membershiptype}</td>
-                                    <td>{formatAmount(item.price)}</td>
-                                    <td>{getDate(item.created_date)}</td>
-                                </tr>
+            }
+            {!showLoader &&
+                <>
+                    {/* Dropdown Filter */}
+                    <div className="flex justify-center mb-4">
+                        <select
+                            className="text-white border border-white rounded-lg px-4 py-2 focus:outline-none bg-transparent"
+                            value={projectId}
+                            onChange={(e) => setProjectId(e.target.value)}
+                        >
+                            {projects.map((project: any, index) => (
+                                <option key={index} value={project.key} className="text-black">{project.name}</option>
                             ))}
-                    </tbody>
-                </table>
-            </div>
+                        </select>
+                    </div>
+
+                    {/* Stat Boxes */}
+                    <div className="flex flex-wrap justify-center gap-6 mb-6">
+                        {/* Box 1 - In Pool */}
+                        <div className="rounded-xl border border-white p-4 w-60 text-center">
+                            <h2 className="text-xl font-bold text-white">In Pool</h2>
+                            <p className="text-2xl font-semibold text-white mt-1">{history.inPool}</p>
+                        </div>
+
+                        {/* Box 2 - Token Usage */}
+                        <div className="rounded-xl border border-white p-4 w-60 text-center">
+                            <h2 className="text-xl font-bold text-white">Token Usage</h2>
+                            {/* <p className="text-2xl font-semibold text-white mt-1">{formatAmount(usage).replace(/[$,]/g, '').replace(/\.00$/, '')}</p> */}
+                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount(usage).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
+                        </div>
+
+                        {/* Box 3 - Rewards */}
+                        <div className="rounded-xl border border-white p-4 w-60 text-center">
+                            <h2 className="text-xl font-bold text-white">Rewards</h2>
+                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount((usage / 180 * 100) - claimed).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
+                            {(usage / 180 * 100) - claimed > 0 &&
+                                <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 hover:bg-[#FF00AE] text-white rounded-[3px] text-[10px] font-bold0" onClick={claimAmount}>
+                                    {isLoading ? "claiming..." : "Claim"}
+                                </button>
+                            }
+                        </div>
+                        {/* Box 3 - Rewards */}
+                        <div className="rounded-xl border border-white p-4 w-60 text-center">
+                            <h2 className="text-xl font-bold text-white">claimed</h2>
+                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount(claimed).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
+                        </div>
+                    </div>
+
+                    {/* History Table */}
+                    <h3 className="text-left pl-[20px] text-white text-lg mb-2">History</h3>
+                    <div className="overflow-x-auto">
+                        <table className="table text-white">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Wallet</th>
+                                    <th>Membership</th>
+                                    <th>Membership Type</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {history.history
+                                    .map((item: any, index: number) => (
+                                        <tr key={index}>
+                                            <th>{index + 1}</th>
+                                            <td>{item.wallet}</td>
+                                            <td>{item.membership}</td>
+                                            <td>{item.membershiptype}</td>
+                                            <td>{formatAmount(item.price).replace(/[$,]/g, '').replace(/\.00$/, '')}</td>
+                                            <td>{getDate(item.created_date)}</td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                        <div className="flex justify-center mt-4 gap-4">
+                            <button
+                                className="px-4 py-2 border rounded text-white disabled:opacity-50"
+                                onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                                disabled={page === 1}
+                            >
+                                Previous
+                            </button>
+                            <span className="text-white px-2">Page {page} of {totalPages}</span>
+                            <button
+                                className="px-4 py-2 border rounded text-white disabled:opacity-50"
+                                onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={page === totalPages}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </>
+            }
         </div>
     );
 };

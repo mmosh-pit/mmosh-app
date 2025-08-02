@@ -8,9 +8,12 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Bars } from "react-loader-spinner";
+import { useAtom } from "jotai";
+import { data } from "../store";
 
 const ClaimPage = () => {
     const wallet = useWallet();
+    const [currentUser, setCurrentUser] = useAtom(data);
     const [history, setHistory] = useState({
         history: [],
         inPool: 0,
@@ -28,6 +31,26 @@ const ClaimPage = () => {
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [referer, setReferer] = React.useState("");
+
+    useEffect(() => {
+        if (currentUser) {
+            lookupReferer(currentUser!.referred_by);
+        }
+    }, [currentUser]);
+
+    const lookupReferer = async (username: any) => {
+        try {
+            const res = await axios.get(`/api/get-user-data?username=${username}`);
+            if (res.data) {
+                setReferer(res.data.profilenft);
+            } else {
+                setReferer("");
+            }
+        } catch (error) {
+            setReferer("");
+        }
+    };
 
     useEffect(() => {
         if (wallet) {
@@ -128,13 +151,14 @@ const ClaimPage = () => {
 
     const claimAmount = async () => {
         try {
-            if (wallet) {
+            if (wallet && referer !== "") {
                 setIsLoading(true);
                 const txAmount = (usage / history.inPool * 100) - claimed;
+                console.log("----- REFERER -----", referer);
                 const result: any = await internalClient.post("/api/membership/claim", {
                     amount: txAmount,
                     address: wallet.publicKey.toString(),
-                    parentAddress: "FfAUUpraQjfrQkh9kvQnxSqzxVNhLpSh8HuDeaKyNvoB"
+                    parentAddress: referer
                 });
                 if (result.data.status) {
                     const connection = new Connection(

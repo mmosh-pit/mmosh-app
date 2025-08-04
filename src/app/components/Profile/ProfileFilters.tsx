@@ -30,7 +30,7 @@ const ProfileFilters = ({ isGuest }: Props) => {
           <div className="flex flex-col">
             <p className="text-base text-white font-bold">Clan</p>
 
-            <div className="flex">
+            <div className="flex flex-wrap">
               <Radio
                 name="gen1"
                 title="Gen 1"
@@ -73,12 +73,12 @@ const ProfileFilters = ({ isGuest }: Props) => {
             </div>
           </div>
 
-          <div className="mx-8" />
+          <div className="md:mx-8 mx-3" />
 
           <div className="flex flex-col">
             <p className="text-base text-white font-bold">Guild</p>
 
-            <div className="flex">
+            <div className="flex flex-wrap wrap">
               <Radio
                 name="disconnected"
                 title="Disconnected"
@@ -124,7 +124,7 @@ const ProfileFilters = ({ isGuest }: Props) => {
   };
 
   return (
-    <div className="w-full flex flex-col bg-[#141343] rounded-lg px-12 py-6">
+    <div className="w-full flex flex-col bg-[#141343] rounded-lg md:px-12 px-4 py-6">
       {!isGuest && (
         <>
           <div className="flex items-center">

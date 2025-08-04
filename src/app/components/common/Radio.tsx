@@ -18,7 +18,7 @@ const Radio = ({ checked, onChoose, title, name }: Props) => (
           onChoose();
         }}
       />
-      <span className="label-text text-para-font-size pl-1 pr-2.5 text-white">
+      <span className="label-text pl-1 md:pr-2.5 text-white md:text-xs text-[0.5rem]">
         {title}
       </span>
     </label>

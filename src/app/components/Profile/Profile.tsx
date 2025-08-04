@@ -18,8 +18,10 @@ import useWallet from "@/utils/wallet";
 import ProfileFilters from "./ProfileFilters";
 import GuildList from "../GuildList";
 import internalClient from "@/app/lib/internalHttpClient";
+import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
 
 const Profile = ({ username }: { username: any }) => {
+  const screenSize = useCheckDeviceScreenSize();
   const rendered = React.useRef(false);
   const wallet = useWallet();
   const [_, setUserStatus] = useAtom(status);
@@ -33,6 +35,8 @@ const Profile = ({ username }: { username: any }) => {
   const [connectionStatus, setConnectionStatus] = React.useState(0);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [requestloader, setReqestLoader] = React.useState(false);
+
+  const isMobileScreen = screenSize < 1200;
 
   const getUserData = React.useCallback(async () => {
     let url = `/api/get-user-data?username=${username}`;
@@ -339,18 +343,30 @@ const Profile = ({ username }: { username: any }) => {
 
   return (
     <div className="background-content-full-bg flex flex-col">
-      <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative mx-16 rounded-xl px-3 pt-3 pb-12">
-        <div className="h-[500px] m-4 mb-0 overflow-hidden relative">
+      <div className="flex flex-col bg-[#181747] backdrop-blur-[6px] rounded-md relative md:mx-16 mx-2 rounded-xl px-3 pt-3 pb-12">
+        <div className="md:h-[500px] h-[250px] md:m-4 m-2 mb-0 overflow-hidden relative">
           <Image
             src={bannerImage}
             alt="banner"
-            className="w-full rounded-lg"
+            className={`w-full rounded-lg ${isMobileScreen ? "object-cover" : ""}`}
             layout="fill"
           />
+
+          {isMobileScreen && (
+            <div
+              className={`absolute right-[5px] bottom-[5px] px-4 py-1 ${!!userData.profilenft ? "creator-btn" : "guest-btn"} rounded-md ml-6`}
+            >
+              <p
+                className={`${!!userData.profilenft ? "text-black" : "text-white"} text-base`}
+              >
+                {!!userData.profilenft ? "Creator" : "Guest"}
+              </p>
+            </div>
+          )}
         </div>
 
-        <div className="relative mx-8 mb-4">
-          <div className="w-[220px] h-[220px] absolute top-[-80px]">
+        <div className="relative md:mx-8 mx-2 mb-4">
+          <div className="md:w-[220px] md:h-[220px] w-[120px] h-[120px] absolute top-[-80px]">
             <Image
               src={profileImage}
               alt="Project"
@@ -358,9 +374,9 @@ const Profile = ({ username }: { username: any }) => {
               layout="fill"
             />
           </div>
-          <div className="lg:pl-[250px] mt-20 lg:mt-0">
+          <div className="lg:pl-[250px] mt-8 md:mt-20 lg:mt-0">
             <div className="lg:flex justify-between items-end mb-4">
-              <div className="flex flex-col mt-4 max-w-[60%]">
+              <div className="flex flex-col md:mt-4 mt-12 md:max-w-[60%] w-full">
                 <div className="flex items-center mb-4">
                   <h5 className="font-bold text-white text-lg capitalize">
                     {userData.profile.displayName !== ""
@@ -383,15 +399,17 @@ const Profile = ({ username }: { username: any }) => {
                       : userData.guest_data.username}
                   </p>
 
-                  <div
-                    className={`px-4 py-1 ${!!userData.profilenft ? "creator-btn" : "guest-btn"} rounded-md ml-6`}
-                  >
-                    <p
-                      className={`${!!userData.profilenft ? "text-black" : "text-white"} text-base`}
+                  {!isMobileScreen && (
+                    <div
+                      className={`px-4 py-1 ${!!userData.profilenft ? "creator-btn" : "guest-btn"} rounded-md ml-6`}
                     >
-                      {!!userData.profilenft ? "Creator" : "Guest"}
-                    </p>
-                  </div>
+                      <p
+                        className={`${!!userData.profilenft ? "text-black" : "text-white"} text-base`}
+                      >
+                        {!!userData.profilenft ? "Creator" : "Guest"}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <p className="text-sm">
@@ -402,6 +420,34 @@ const Profile = ({ username }: { username: any }) => {
               </div>
             </div>
 
+            {!isMobileScreen && (
+              <div className="flex flex-col">
+                <p className="text-base text-white font-bold">Earnings</p>
+                <div className="flex justify-start items-start mt-2">
+                  <div className="flex flex-col justify-center items-center bg-[#3C39BE33] bg-opacity-50 p-2 rounded-lg">
+                    <p className="text-white text-xs font-bold">Creator</p>
+                    <p className="text-white text-xs">00.00USDC</p>
+                  </div>
+
+                  <div className="mx-1" />
+
+                  <div className="flex flex-col justify-center items-center bg-[#3C39BE33] bg-opacity-50 p-2 rounded-lg">
+                    <p className="text-white text-xs font-bold">Promoter</p>
+                    <p className="text-white text-xs">00.00USDC</p>
+                  </div>
+
+                  <div className="mx-1" />
+
+                  <div className="flex flex-col justify-center items-center bg-[#3C39BE33] bg-opacity-50 p-2 rounded-lg">
+                    <p className="text-white text-xs font-bold">Total</p>
+                    <p className="text-white text-xs">00.00USDC</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {isMobileScreen && (
             <div className="flex flex-col">
               <p className="text-base text-white font-bold">Earnings</p>
               <div className="flex justify-start items-start mt-2">
@@ -425,7 +471,7 @@ const Profile = ({ username }: { username: any }) => {
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <ProfileFilters isGuest={!userData.profilenft} />

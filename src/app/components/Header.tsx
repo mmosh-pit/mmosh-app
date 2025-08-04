@@ -89,7 +89,7 @@ const Header = () => {
   const [community] = useAtom(currentGroupCommunity);
 
   const param = searchParams.get("refer");
-   const [membershipStatus, setMembershipStatus] = React.useState("na")
+  const [membershipStatus, setMembershipStatus] = React.useState("na")
 
   React.useEffect(() => {
     if (param) {
@@ -429,7 +429,7 @@ const Header = () => {
       rendered.current = true;
     }
   }, []);
-  const checkMembershipStatus = async()=> {
+  const checkMembershipStatus = async () => {
     let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
     setMembershipStatus(membershipInfo.data)
   }
@@ -441,8 +441,12 @@ const Header = () => {
     )
       return;
     fetchAllBalances();
-    checkMembershipStatus()
   }, [wallet]);
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus()
+    }
+  }, [pathname, wallet])
 
   React.useEffect(() => {
     if (
@@ -718,22 +722,22 @@ const Header = () => {
           </div>
 
         )}
-      {pathname !== "/" && (
-        <MessageBanner
-          type="info"
-          message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
-        />
-      )}
-      {membershipStatus === "expired" &&
-        <div className="cursor-pointer" onClick={()=>{
-           router.push("/settings");
-        }}>
+        {pathname !== "/" && (
           <MessageBanner
-            type="error"
-            message="Your membership is expired. pls upgrade"
+            type="info"
+            message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
           />
-        </div>
-      }
+        )}
+        {membershipStatus === "expired" &&
+          <div className="cursor-pointer" onClick={() => {
+            router.push("/settings");
+          }}>
+            <MessageBanner
+              type="error"
+              message="Your membership is expired. pls upgrade"
+            />
+          </div>
+        }
       </header>
     </>
 

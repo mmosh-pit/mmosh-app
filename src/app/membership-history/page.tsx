@@ -39,19 +39,6 @@ const ClaimPage = () => {
         }
     }, [currentUser]);
 
-    const lookupReferer = async (username: any) => {
-        try {
-            const res = await axios.get(`/api/get-user-data?username=${username}`);
-            if (res.data) {
-                setReferer(res.data.profilenft);
-            } else {
-                setReferer("");
-            }
-        } catch (error) {
-            setReferer("");
-        }
-    };
-
     useEffect(() => {
         if (wallet) {
             getAgentInfo();
@@ -65,6 +52,19 @@ const ClaimPage = () => {
     useEffect(() => {
         getMembershipHistory();
     }, [page]);
+
+    const lookupReferer = async (username: any) => {
+        try {
+            const res = await axios.get(`/api/get-user-data?username=${username}`);
+            if (res.data) {
+                setReferer(res.data.profilenft);
+            } else {
+                setReferer("");
+            }
+        } catch (error) {
+            setReferer("");
+        }
+    };
 
     const createMessage = (message: any, type: any) => {
         window.scrollTo(0, 0);

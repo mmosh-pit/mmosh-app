@@ -576,13 +576,6 @@ const ProfileForm = () => {
     }
   }, [profileInfo]);
 
-
-  React.useEffect(() => {
-    if (wallet) {
-      checkMembershipStatus();
-    }
-  }, [wallet])
-
   const checkMembershipStatus = async () => {
     let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
     setMembershipStatus(membershipInfo.data);
@@ -625,6 +618,9 @@ const ProfileForm = () => {
       }
       checkMembershipStatus();
       createMessage("Your membership is updated", "success");
+      setTimeout(() => {
+        navigate.replace(`/create`);
+      }, 5000);
       return
     }
     createMessage("", "");

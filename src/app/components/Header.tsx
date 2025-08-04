@@ -430,7 +430,15 @@ const Header = () => {
     }
   }, []);
   const checkMembershipStatus = async () => {
-    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    const token = localStorage.getItem("token") || "";
+    const membershipInfo = await axios.get(
+      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
     setMembershipStatus(membershipInfo.data)
   }
 

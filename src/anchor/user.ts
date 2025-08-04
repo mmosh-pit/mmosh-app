@@ -669,14 +669,14 @@ export class Connectivity {
         receiver: currentGenesisProfileHolder.toBase58(),
         vallue:
           // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
-          cost * (20 / 100),
+          Math.ceil(cost * (20 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
         vallue:
           // cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
-          cost * (10 / 100),
+          Math.ceil(cost * (10 / 100)),
       });
 
       holdersfullInfo.push({
@@ -684,8 +684,7 @@ export class Connectivity {
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
-          cost *
-          (5 / 100),
+          Math.ceil(cost * (5 / 100)),
       });
 
       holdersfullInfo.push({
@@ -693,8 +692,7 @@ export class Connectivity {
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
-          cost *
-          (3 / 100),
+          Math.ceil(cost * (3 / 100)),
       });
 
       holdersfullInfo.push({
@@ -702,16 +700,14 @@ export class Connectivity {
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-          cost *
-          (2 / 100),
+          Math.ceil(cost * (2 / 100)),
       });
       holdersfullInfo.push({
         receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-          cost *
-          (60 / 100),
+          Math.ceil(cost * (60 / 100)),
       });
 
       const holdermap: any = [];
@@ -910,14 +906,14 @@ async buyMembership(
         receiver: currentGenesisProfileHolder.toBase58(),
         vallue:
           // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
-          cost * (20 / 100),
+          Math.ceil(cost * (20 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
         vallue:
           // cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
-          cost * (10 / 100),
+          Math.ceil(cost * (10 / 100)),
       });
 
       holdersfullInfo.push({
@@ -925,7 +921,7 @@ async buyMembership(
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
-          cost * (5 / 100),
+          Math.ceil(cost * (5 / 100)),
       });
 
       holdersfullInfo.push({
@@ -933,7 +929,7 @@ async buyMembership(
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
-          cost * (3 / 100),
+          Math.ceil(cost * (3 / 100)),
       });
 
       holdersfullInfo.push({
@@ -941,14 +937,14 @@ async buyMembership(
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-          cost * (2 / 100),
+          Math.ceil(cost * (2 / 100)),
       });
       holdersfullInfo.push({
         receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
-          cost * (60 / 100),
+          Math.ceil(cost * (60 / 100)),
       });
 
       const holdermap: any = [];

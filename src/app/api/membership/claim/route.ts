@@ -1,7 +1,7 @@
 import { db } from "../../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 import * as anchor from "@coral-xyz/anchor";
-import { Connection, Keypair } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import bs58 from "bs58";
 import { Connectivity as UserConn } from "@/anchor/user";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
@@ -31,8 +31,20 @@ export async function POST(req: NextRequest) {
         let balance: any = await userConn.getUserBalance({
             address: wallet.publicKey,
             token: web3Consts.usdcToken.toBase58(),
-            decimals: 1000000
+            decimals: 6
         })
+        try {
+            new PublicKey(address);
+            new PublicKey(parentAddress);
+        } catch {
+            return NextResponse.json(
+                {
+                    status: false,
+                    message: "Invalid Solana address",
+                },
+                { status: 400 }
+            );
+        }
         if (balance * 10 ** 6 < amount * 10 ** 6) {
             return NextResponse.json(
                 {
@@ -41,7 +53,6 @@ export async function POST(req: NextRequest) {
                 },
                 { status: 200 });
         }
-        console.log("----- CHECK 12 -----");
 
         let txis = []
         let clamInstructions: any = await userConn.baseSpl.transfer_token_modified({ mint: new anchor.web3.PublicKey(web3Consts.usdcToken), sender: wallet.publicKey, receiver: new anchor.web3.PublicKey(address), init_if_needed: true, amount: Math.ceil((amount * 10 ** 6) * 90 / 100) });

@@ -17,12 +17,22 @@ export async function GET(req: NextRequest) {
       }
     }, { status: 200 });
   }
+
+  const totalUsage = await usageCollection.find({}).toArray();
+
+  let totalInPool = 0;
+  for (let i = 0; i < totalUsage.length; i++) {
+    totalInPool += totalUsage[i].value - totalUsage[i].withdrawal;
+  }
+  console.log("totalInPool", totalInPool);
   return NextResponse.json({
     status: false,
     message: "usage data retrieved successfully.",
     result: {
       usage: usageInfo[0].value,
-      withdrawal: usageInfo[0].withdrawal
+      withdrawal: usageInfo[0].withdrawal,
+      tolalUsage: totalInPool,
+      withdrawalAmount: usageInfo[0].withdrawalAmount,
     }
   }, { status: 200 });
 }

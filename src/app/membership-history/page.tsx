@@ -9,11 +9,11 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Bars } from "react-loader-spinner";
 import { useAtom } from "jotai";
-import { data } from "../store";
+import { userWeb3Info } from "../store";
 
 const ClaimPage = () => {
     const wallet = useWallet();
-    const [currentUser, setCurrentUser] = useAtom(data);
+    const [profileInfo] = useAtom(userWeb3Info);
     const [history, setHistory] = useState({
         history: [],
         inPool: 0,
@@ -22,8 +22,11 @@ const ClaimPage = () => {
     const [projectId, setProjectId] = useState("");
     const [projects, setProjects] = useState([]);
     const [usage, setUsage] = useState(0);
+    const [totalUsage, setTotalUsage] = useState(0);
     const [claimed, setClaimed] = useState(0);
+    const [withdrawalAmount, setWithdrawalAmount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+
     const [showMsg, setShowMsg] = useState(false);
     const [msgClass, setMsgClass] = useState("");
     const [msgText, setMsgText] = useState("");
@@ -31,13 +34,6 @@ const ClaimPage = () => {
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
-    const [referer, setReferer] = React.useState("");
-
-    useEffect(() => {
-        if (currentUser) {
-            lookupReferer(currentUser!.referred_by);
-        }
-    }, [currentUser]);
 
     useEffect(() => {
         if (wallet) {
@@ -52,19 +48,6 @@ const ClaimPage = () => {
     useEffect(() => {
         getMembershipHistory();
     }, [page]);
-
-    const lookupReferer = async (username: any) => {
-        try {
-            const res = await axios.get(`/api/get-user-data?username=${username}`);
-            if (res.data) {
-                setReferer(res.data.profilenft);
-            } else {
-                setReferer("");
-            }
-        } catch (error) {
-            setReferer("");
-        }
-    };
 
     const createMessage = (message: any, type: any) => {
         window.scrollTo(0, 0);
@@ -91,19 +74,28 @@ const ClaimPage = () => {
         });
         setUsage(response.data.result.usage);
         setClaimed(response.data.result.withdrawal);
+        setTotalUsage(response.data.result.tolalUsage);
+        setWithdrawalAmount(response.data.result.withdrawalAmount);
         setShowLoader(false);
     }
 
     const getAgentInfo = async () => {
-        const token = localStorage.getItem("token") || "";
-        const response = await axios.get(`/api/membership/get-agent-by-user?creator=${wallet?.publicKey.toString()}`, {
-            headers: {
-                'authorization': `Bearer ${token}`,
+        try {
+            const token = localStorage.getItem("token") || "";
+            const response = await axios.get(`/api/membership/get-agent-by-user?creator=${wallet?.publicKey.toString()}`, {
+                headers: {
+                    'authorization': `Bearer ${token}`,
+                }
+            });
+            setProjects(response.data.result);
+            if (response.data.result[0] && projectId === "") {
+                setProjectId(response.data.result[0].key);
             }
-        });
-        setProjects(response.data.result);
-        if (response.data.result[0] && projectId === "") {
-            setProjectId(response.data.result[0].key);
+            if (response.data.result.length === 0) {
+                setShowLoader(false);
+            }
+        } catch (error) {
+            setShowLoader(false);
         }
     }
 
@@ -151,14 +143,14 @@ const ClaimPage = () => {
 
     const claimAmount = async () => {
         try {
-            if (wallet && referer !== "") {
+            if (wallet && profileInfo?.profileLineage.recruiter) {
                 setIsLoading(true);
-                const txAmount = (usage / history.inPool * 100) - claimed;
-                console.log("----- REFERER -----", referer);
+                // const txAmount = (usage / history.inPool * 100) - claimed;
+                const txAmount = (usage - claimed / totalUsage) * history.inPool;
                 const result: any = await internalClient.post("/api/membership/claim", {
                     amount: txAmount,
                     address: wallet.publicKey.toString(),
-                    parentAddress: referer
+                    parentAddress: profileInfo?.profileLineage.recruiter
                 });
                 if (result.data.status) {
                     const connection = new Connection(
@@ -179,7 +171,8 @@ const ClaimPage = () => {
                     const updateRsult: any = await internalClient.post("/api/membership/update-claim", {
                         agentId: projectId,
                         value: 0,
-                        withdrawal: txAmount,
+                        withdrawal: usage - claimed,
+                        withdrawalAmount: txAmount,
                     });
                     getMembershipHistory();
                     getAgentInfo();
@@ -250,7 +243,7 @@ const ClaimPage = () => {
                         {/* Box 3 - Rewards */}
                         <div className="rounded-xl border border-white p-4 w-60 text-center">
                             <h2 className="text-xl font-bold text-white">Rewards</h2>
-                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount((usage / 180 * 100) - claimed).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
+                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount((usage - claimed / totalUsage) * history.inPool).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
                             {(usage / 180 * 100) - claimed > 0 &&
                                 <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 hover:bg-[#FF00AE] text-white rounded-[3px] text-[10px] font-bold0" onClick={claimAmount}>
                                     {isLoading ? "claiming..." : "Claim"}
@@ -260,7 +253,7 @@ const ClaimPage = () => {
                         {/* Box 3 - Rewards */}
                         <div className="rounded-xl border border-white p-4 w-60 text-center">
                             <h2 className="text-xl font-bold text-white">claimed</h2>
-                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount(claimed).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
+                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount(withdrawalAmount).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
                         </div>
                     </div>
 

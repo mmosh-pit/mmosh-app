@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { data, userWeb3Info } from "@/app/store";
 import MessageBanner from "../common/MessageBanner";
@@ -26,6 +26,7 @@ import Radio from "../common/Radio";
 const ProfileForm = () => {
   const wallet = useWallet();
   const navigate = useRouter();
+  const searchParams = useSearchParams();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
@@ -59,7 +60,7 @@ const ProfileForm = () => {
 
   const [tokenInfo, setTokenInfo] = React.useState<any>(null);
   const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
-  const [membershipStatus, setMembershipStatus] = React.useState("na");
+  const [membershipStatus, setMembershipStatus] = React.useState(searchParams.get("membershipStatus") || "na");
   const [membershipInfo, setMembershipInfo] = React.useState<any>({});
   const [tab, setTab] = React.useState("guest");
 
@@ -576,8 +577,23 @@ const ProfileForm = () => {
     }
   }, [profileInfo]);
 
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet])
+
   const checkMembershipStatus = async () => {
-    let membershipInfo = await axios.get("/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58());
+    const token = localStorage.getItem("token") || "";
+    const membershipInfo = await axios.get(
+      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
     setMembershipStatus(membershipInfo.data);
     let result = await axios.get("/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58());
     if (membershipInfo.data === "active") {
@@ -715,7 +731,7 @@ const ProfileForm = () => {
                 </div>
                 <div className="flex items-center mb-0 space-x-4">
                   <span className="font-bold text-2xl">Free</span>
-                  {membershipStatus === "na" &&
+                  {membershipStatus === "na" || membershipStatus === "expired" &&
                     <>
                       <span className="text-[#b59be4] text-lg">•</span>
                       <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">

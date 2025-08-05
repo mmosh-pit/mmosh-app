@@ -668,34 +668,52 @@ export class Connectivity {
       holdersfullInfo.push({
         receiver: currentGenesisProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          Math.ceil(cost * (20 / 100)),
       });
+      console.log("----- currentGenesisProfileHolder -----", currentGenesisProfileHolder.toString());
+      console.log("----- currentParentProfileHolder -----", currentParentProfileHolder.toString());
+      console.log("----- currentGrandParentProfileHolder -----", currentGrandParentProfileHolder.toString());
+      console.log("----- currentGreatGrandParentProfileHolder -----", currentGreatGrandParentProfileHolder.toString());
+      console.log("----- currentGgreatGrandParentProfileHolder -----", currentGgreatGrandParentProfileHolder.toString());
+      console.log("----- process.env.NEXT_PUBLIC_PTV_WALLET_KEY -----", process.env.NEXT_PUBLIC_PTV_WALLET_KEY?.toString());
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          Math.ceil(cost * (10 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentGrandParentProfileHolder.toBase58(),
         vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          Math.ceil(cost * (5 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentGreatGrandParentProfileHolder.toBase58(),
         vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          Math.ceil(cost * (3 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentGgreatGrandParentProfileHolder.toBase58(),
         vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          Math.ceil(cost * (2 / 100)),
+      });
+      holdersfullInfo.push({
+        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          Math.ceil(cost * (60 / 100)),
       });
 
       const holdermap: any = [];
@@ -755,6 +773,7 @@ export class Connectivity {
       // log({ txLen, luts: lutsInfo.length });
 
       const signature = await this.provider.sendAndConfirm(tx as any);
+      console.log("----- PROFILE MINT SIGNATURE -----", signature);
 
       await this.storeRoyalty(
         user.toBase58(),
@@ -893,34 +912,46 @@ async buyMembership(
       holdersfullInfo.push({
         receiver: currentGenesisProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+          Math.ceil(cost * (20 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
         vallue:
-          cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          // cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
+          Math.ceil(cost * (10 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentGrandParentProfileHolder.toBase58(),
         vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+          Math.ceil(cost * (5 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentGreatGrandParentProfileHolder.toBase58(),
         vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.greatGrandParent / 100 / 100),
+          Math.ceil(cost * (3 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: currentGgreatGrandParentProfileHolder.toBase58(),
         vallue:
-          cost *
-          (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          Math.ceil(cost * (2 / 100)),
+      });
+      holdersfullInfo.push({
+        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        vallue:
+          // cost *
+          // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
+          Math.ceil(cost * (60 / 100)),
       });
 
       const holdermap: any = [];

@@ -230,7 +230,7 @@ const LaunchPadVC = () => {
           </div>
         </div>
       }
-      {!projectLoading &&
+      {!projectLoading && groupedCards.length > 0 &&
         <div className="min-h-screen flex flex-col items-center pt-10 pb-12">
           <div className="min-h-screen py-10 px-4">
             <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
@@ -265,6 +265,13 @@ const LaunchPadVC = () => {
               ))}
             </div>
           </div>
+        </div>
+      }
+      {!projectLoading && groupedCards.length === 0 &&
+        <div className="flex flex-col mt-12">
+          <p className="text-base text-center">
+            No data found
+          </p>
         </div>
       }
     </>

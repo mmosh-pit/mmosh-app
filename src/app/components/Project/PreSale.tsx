@@ -324,7 +324,7 @@ export const PreSale = (props: PresaleProps) => {
 
         const startTime = time.split(":");
         const startDate = date.split("/");
-        if ((!startDate[2] || Number(startDate[2]) < new Date().getFullYear()) || (!startDate[1] || Number(startDate[1]) > new Date().getMonth()) || (!startDate[0] || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date()))) {
+        if ((!startDate[2] || Number(startDate[2]) < new Date().getFullYear()) || (!startDate[1] || Number(startDate[1]) > new Date().getMonth() + 1) || (!startDate[0] || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date()))) {
             createMessage("Invalid date", "danger-container");
             return false;
         } else if (!time || Number(startTime[0]) > 12) {
@@ -341,7 +341,7 @@ export const PreSale = (props: PresaleProps) => {
         return Object.keys(newErrors).length === 0;
     };
     const goBack = () => {
-      onMenuChange("minting")
+        onMenuChange("minting")
     }
 
 

@@ -213,17 +213,19 @@ const ClaimPage = () => {
             {!showLoader &&
                 <>
                     {/* Dropdown Filter */}
-                    <div className="flex justify-center mb-4">
-                        <select
-                            className="text-white border border-white rounded-lg px-4 py-2 focus:outline-none bg-transparent"
-                            value={projectId}
-                            onChange={(e) => setProjectId(e.target.value)}
-                        >
-                            {projects.map((project: any, index) => (
-                                <option key={index} value={project.key} className="text-black">{project.name}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {projectId !== "" &&
+                        <div className="flex justify-center mb-4">
+                            <select
+                                className="text-white border border-white rounded-lg px-4 py-2 focus:outline-none bg-transparent"
+                                value={projectId}
+                                onChange={(e) => setProjectId(e.target.value)}
+                            >
+                                {projects.map((project: any, index) => (
+                                    <option key={index} value={project.key} className="text-black">{project.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    }
 
                     {/* Stat Boxes */}
                     <div className="flex flex-wrap justify-center gap-6 mb-6">

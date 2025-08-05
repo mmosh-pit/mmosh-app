@@ -429,13 +429,18 @@ const Header = () => {
       rendered.current = true;
     }
   }, []);
-
   const checkMembershipStatus = async () => {
-    let membershipInfo = await axios.get(
+    const token = localStorage.getItem("token") || "";
+    const membershipInfo = await axios.get(
       "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
     );
-    setMembershipStatus(membershipInfo.data);
-  };
+    setMembershipStatus(membershipInfo.data)
+  }
 
   React.useEffect(() => {
     if (
@@ -444,8 +449,12 @@ const Header = () => {
     )
       return;
     fetchAllBalances();
-    checkMembershipStatus();
   }, [wallet]);
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus()
+    }
+  }, [pathname, wallet])
 
   React.useEffect(() => {
     if (
@@ -720,19 +729,16 @@ const Header = () => {
             </div>
           </div>
         )}
-        {membershipStatus === "expired" && (
-          <div
-            className="cursor-pointer"
-            onClick={() => {
-              router.push("/create/profile");
-            }}
-          >
+        {membershipStatus === "expired" &&
+          <div className="cursor-pointer" onClick={() => {
+            router.push(`/settings?membershipStatus=${membershipStatus}`);
+          }}>
             <MessageBanner
               type="error"
               message="Your membership is expired. pls upgrade"
             />
           </div>
-        )}
+        }
       </header>
     </>
   );

@@ -89,7 +89,7 @@ const Header = () => {
   const [community] = useAtom(currentGroupCommunity);
 
   const param = searchParams.get("refer");
-  const [membershipStatus, setMembershipStatus] = React.useState("na")
+  const [membershipStatus, setMembershipStatus] = React.useState("na");
 
   React.useEffect(() => {
     if (param) {
@@ -728,13 +728,6 @@ const Header = () => {
               <p className="text-base my-4">{community.description}</p>
             </div>
           </div>
-
-        )}
-        {pathname !== "/" && (
-          <MessageBanner
-            type="info"
-            message="This is a pre-release system for test purposes only. Do not rely on any information you see here. If you use crypto, you might lose all your money."
-          />
         )}
         {membershipStatus === "expired" &&
           <div className="cursor-pointer" onClick={() => {
@@ -748,8 +741,6 @@ const Header = () => {
         }
       </header>
     </>
-
-
   );
 };
 

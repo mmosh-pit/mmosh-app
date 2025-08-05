@@ -57,9 +57,9 @@ const Login = () => {
         setUser(res.data.data.user);
         router.replace("/bots");
       } catch (err: any) {
-        const error = err?.response?.data?.errors;
+        const error = err?.response?.data?.error;
 
-        setError(error[0] || "Failed to Login, please check support");
+        setError(error || "Failed to Login, please check support");
       }
 
       setIsLoading(false);

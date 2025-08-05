@@ -185,7 +185,7 @@ export const PreSale = (props: PresaleProps) => {
     };
 
     const convertMonthsToMinutes = (monthsValue: number) => {
-        const daysInMonth = 30.44;
+        const daysInMonth = 31;
         const hoursInDay = 24;
         const minutesInHour = 60;
         const calculatedMinutes = monthsValue * daysInMonth * hoursInDay * minutesInHour;
@@ -221,6 +221,28 @@ export const PreSale = (props: PresaleProps) => {
         console.log("===== MILLI SECONDS =====", date.toUTCString());
         return date.toUTCString();
     };
+    const convertMinutesToTimestamp = (minutes: number, startTime: number) => {
+        const milliseconds = minutes * 60 * 1000;
+        const futureTime = startTime + milliseconds;
+        return futureTime;
+    };
+    const getPresaleStartTimestamp = (startDate: any, startTime: any) => {
+        const day = Number(startDate[0]);
+        const month = Number(startDate[1]) - 1;
+        const year = Number(startDate[2]);
+
+        let hour = Number(startTime[0]);
+        const minute = Number(startTime[1]);
+
+        if (preSaleStart.timePeriod.toLowerCase() === "pm" && hour < 12) {
+            hour += 12;
+        } else if (preSaleStart.timePeriod.toLowerCase() === "am" && hour === 12) {
+            hour = 0;
+        }
+
+        return new Date(year, month, day, hour, minute).getTime();
+    }
+
 
 
 
@@ -244,13 +266,15 @@ export const PreSale = (props: PresaleProps) => {
             const days = convertDaysToMinutes(Number(preSalePeriod[2].value));
             const hours = convertHoursToMinutes(Number(preSalePeriod[3].value));
             const minutes = Number(preSalePeriod[4].value);
-            const totalInMinutes = months + weeks + days + hours + minutes;
+            // const totalInMinutes = months + weeks + days + hours + minutes;
 
             // ----- presale start -----
             const startDate = preSaleStart.date.split("/");
+            const startTime = preSaleStart.time.split(":");
+            const totalInMinutes = convertMinutesToTimestamp(months + weeks + days + hours + minutes, getPresaleStartTimestamp(startDate, startTime));
             let fields = {
-                presaleStartDate: new Date(Number(startDate[2]), Number(startDate[1]) - 1, Number(startDate[0])).toUTCString(),
-                lockPeriod: convertMinutesToDate(totalInMinutes),
+                presaleStartDate: getPresaleStartTimestamp(startDate, startTime),
+                lockPeriod: totalInMinutes,
                 discount: discount,
                 presaleMinimum: preSale[0].value,
                 presaleMaximum: preSale[1].value,
@@ -321,20 +345,21 @@ export const PreSale = (props: PresaleProps) => {
 
         // ---- Pre-sale start time Validation ----
         const { date, time, timePeriod } = values.preSaleStart;
+        console.log("----- PRE SALE START -----", values.preSaleStart);
 
         const startTime = time.split(":");
         const startDate = date.split("/");
-        if ((!startDate[2] || Number(startDate[2]) < new Date().getFullYear()) || (!startDate[1] || Number(startDate[1]) > new Date().getMonth() + 1) || (!startDate[0] || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date()))) {
-            createMessage("Invalid date", "danger-container");
+        if ((!startDate[2] || Number(startDate[2]) < new Date().getFullYear()) || (!startDate[1] || Number(startDate[1]) < new Date().getMonth() + 1) || (!startDate[0] || startDate[0] > getDaysInCurrentMonth(Number(startDate[2]), Number(startDate[1]), new Date()))) {
+            createMessage("Invalid date.", "danger-container");
             return false;
         } else if (!time || Number(startTime[0]) > 12) {
-            createMessage("Invalid hour", "danger-container");
+            createMessage("Invalid hour.", "danger-container");
             return false;
         } else if (!startTime[1] || Number(startTime[1]) > 59) {
-            createMessage("Invalid minutes", "danger-container");
+            createMessage("Invalid minutes.", "danger-container");
             return false;
         } else if (timePeriod !== "am" && timePeriod !== "pm") {
-            createMessage("Invalid time format", "danger-container");
+            createMessage("Invalid time format.", "danger-container");
             return false;
         }
         console.log("----- PRE SALE VALIDATION ERROR -----", newErrors);

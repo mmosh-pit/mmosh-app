@@ -75,7 +75,7 @@ const ClaimPage = () => {
         setUsage(response.data.result.usage);
         setClaimed(response.data.result.withdrawal);
         setTotalUsage(response.data.result.tolalUsage);
-        setWithdrawalAmount(response.data.result.withdrawalAmount);
+        setWithdrawalAmount(response.data.result.withdrawalAmount || 0);
         setShowLoader(false);
     }
 
@@ -243,8 +243,8 @@ const ClaimPage = () => {
                         {/* Box 3 - Rewards */}
                         <div className="rounded-xl border border-white p-4 w-60 text-center">
                             <h2 className="text-xl font-bold text-white">Rewards</h2>
-                            <p className="text-2xl font-semibold text-white mt-1">{formatAmount((usage - claimed / totalUsage) * history.inPool).replace(/[$,]/g, '').replace(/\.00$/, '')}</p>
-                            {(usage / 180 * 100) - claimed > 0 &&
+                            <p className="text-2xl font-semibold text-white mt-1">{(usage - claimed / totalUsage) * history.inPool > 0 ? formatAmount((usage - claimed / totalUsage) * history.inPool).replace(/[$,]/g, '').replace(/\.00$/, '') : 0}</p>
+                            {(usage - claimed / totalUsage) * history.inPool > 0 &&
                                 <button className="w-[70px] h-[21px] bg-[#FF00AE]/70 hover:bg-[#FF00AE] text-white rounded-[3px] text-[10px] font-bold0" onClick={claimAmount}>
                                     {isLoading ? "claiming..." : "Claim"}
                                 </button>

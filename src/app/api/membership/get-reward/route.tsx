@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       usage: usageInfo[0].value,
       withdrawal: usageInfo[0].withdrawal,
       tolalUsage: totalInPool,
-      withdrawalAmount: usageInfo[0].withdrawalAmount,
+      withdrawalAmount: usageInfo[0].withdrawalAmount || 0,
     }
   }, { status: 200 });
 }

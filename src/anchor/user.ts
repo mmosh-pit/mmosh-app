@@ -671,6 +671,12 @@ export class Connectivity {
           // cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
           Math.ceil(cost * (20 / 100)),
       });
+      console.log("----- currentGenesisProfileHolder -----", currentGenesisProfileHolder.toString());
+      console.log("----- currentParentProfileHolder -----", currentParentProfileHolder.toString());
+      console.log("----- currentGrandParentProfileHolder -----", currentGrandParentProfileHolder.toString());
+      console.log("----- currentGreatGrandParentProfileHolder -----", currentGreatGrandParentProfileHolder.toString());
+      console.log("----- currentGgreatGrandParentProfileHolder -----", currentGgreatGrandParentProfileHolder.toString());
+      console.log("----- process.env.NEXT_PUBLIC_PTV_WALLET_KEY -----", process.env.NEXT_PUBLIC_PTV_WALLET_KEY?.toString());
 
       holdersfullInfo.push({
         receiver: currentParentProfileHolder.toBase58(),
@@ -767,6 +773,7 @@ export class Connectivity {
       // log({ txLen, luts: lutsInfo.length });
 
       const signature = await this.provider.sendAndConfirm(tx as any);
+      console.log("----- PROFILE MINT SIGNATURE -----", signature);
 
       await this.storeRoyalty(
         user.toBase58(),

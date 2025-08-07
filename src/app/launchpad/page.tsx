@@ -97,7 +97,7 @@ const LaunchPadVC = () => {
   };
 
   const buyToken = async (tokenInfo: any, amount: string, token: number) => {
-    if (validate(tokenInfo, amount, token)) {
+    if (validate(tokenInfo, amount)) {
       setIsBuying(true);
       const result = await trasferUsdCoin(wallet, tokenInfo.presaleDetail.wallet, Number(amount));
       console.log("transfer usd coin result", result.message);
@@ -174,15 +174,7 @@ const LaunchPadVC = () => {
     }
   };
 
-  const validate = (tokenInfo: any, amount: string, token: number): boolean => {
-    if (token < Number(tokenInfo.presaleDetail.presaleMinimum)) {
-      createMessage(`Token should be greater than or equal to the ${tokenInfo.presaleDetail.presaleMinimum}.`, "danger-container");
-      return false;
-    }
-    if (token > Number(tokenInfo.presaleDetail.presaleMaximum)) {
-      createMessage(`Token should be less than or equal to ${tokenInfo.presaleDetail.presaleMaximum}.`, "danger-container");
-      return false;
-    }
+  const validate = (tokenInfo: any, amount: string): boolean => {
     if (Number(amount) < Number(tokenInfo.presaleDetail.purchaseMinimum)) {
       createMessage(`Amount should be greater than or equal to the ${tokenInfo.presaleDetail.purchaseMinimum}.`, "danger-container");
       return false;

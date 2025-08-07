@@ -18,13 +18,18 @@ export const LaunchPad = (props: LaunchPadProps) => {
   ])
   const [amount, setAmount] = React.useState("");
   const [token, setToken] = React.useState(0);
+  const [currentTranche, setCurrentTranche] = React.useState(0);
 
   const handleAmount = (event: React.ChangeEvent<HTMLInputElement>, tokenInfo: any) => {
     setAmount(event.target.value);
-    setToken(Number(event.target.value) / tokenInfo.presaleDetail.launchPrice);
+    const calculatedToken = ((Number(event.target.value) / tokenInfo.presaleDetail.launchPrice) + Number(event.target.value) * Number(tokenInfo.presaleDetail.discount[currentTranche].percentage) / 100).toFixed(9)
+    setToken(Number(calculatedToken));
   }
   const getTrancheLabel = (index: number) => {
     const labels = ["1st Tranche", "2nd Tranche", "3rd Tranche", "4th Tranche"];
+    if (currentTranche !== index) {
+      setCurrentTranche(index);
+    }
     return labels[index];
   };
   const renderTranche = (data: any) => {
@@ -71,6 +76,13 @@ export const LaunchPad = (props: LaunchPadProps) => {
       }
     }
   }
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 9,
+    }).format(amount);
+  };
   return (
     <>
         <div className="relative">
@@ -123,7 +135,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
               </div>
 
               <div className="flex items-right text-white text-[10px] font-normal mb-[3px]">
-                <span className="text-grey">{token}</span>
+                <span className="text-grey">{formatAmount(token).replace(/[$,]/g, '').replace(/\.00$/, '')}</span>
                 <span className="ml-[34px] text-[#CFCFCF] text-[8px]">{presale.coinDetail.symbol}</span>
               </div>
 

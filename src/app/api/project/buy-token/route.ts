@@ -13,12 +13,6 @@ export async function POST(req: NextRequest) {
     try {
         const presaleData = await presaleCollection.find({ key: key }).toArray();
         let error: string | null = null;
-        if (supply < Number(presaleData[0].presaleMinimum)) {
-            error = `Token should be greater than or equal to the ${presaleData[0].presaleMinimum}.`;
-        }
-        if (supply > Number(presaleData[0].presaleMaximum)) {
-            error = `Token should be less than or equal to ${presaleData[0].presaleMaximum}.`;
-        }
         if (amount < Number(presaleData[0].purchaseMinimum)) {
             error = `Amount should be greater than or equal to the ${presaleData[0].purchaseMinimum}.`;
         }

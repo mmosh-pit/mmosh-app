@@ -9,7 +9,7 @@ const Tabs = () => {
       <a
         className="text-base text-white cursor-pointer"
         onClick={() => {
-          router.push("/bots");
+          router.push("/chat");
         }}
       >
         Bots

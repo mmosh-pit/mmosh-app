@@ -1,4 +1,5 @@
 import { db } from "@/app/lib/mongoClient";
+import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -6,10 +7,53 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
   }
 
+  const userId = req.headers.get("user");
+
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") as string;
   const search = searchParams.get("searchText") as string;
-  let match = { $match: {} };
+
+  const user =
+    userId != null
+      ? await db.collection("mmosh-users").findOne({
+        _id: new ObjectId(userId),
+      })
+      : null;
+
+  const username = user?.profile.username;
+
+  const privacyMatchFilter = {
+    $or: [
+      {
+        privacy: "public",
+      },
+      {
+        privacy: {
+          $exists: false,
+        },
+      },
+      {
+        $and: [
+          {
+            creatorUsername: username,
+          },
+          {
+            privacy: {
+              $exists: true,
+            },
+          },
+          {
+            privacy: {
+              $ne: "secret",
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  let match: any = { $match: { ...privacyMatchFilter } };
+
   if (search && type === "directory") {
     match = {
       $match: {
@@ -17,6 +61,16 @@ export async function GET(req: NextRequest) {
           { name: { $regex: new RegExp(search, "ig") } },
           { symbol: { $regex: new RegExp(search, "ig") } },
           { desc: { $regex: new RegExp(search, "ig") } },
+          {
+            $and: [
+              {
+                privacy: "secret",
+              },
+              {
+                code: search,
+              },
+            ],
+          },
         ],
       },
     };
@@ -31,6 +85,19 @@ export async function GET(req: NextRequest) {
             { dexlistingdate: { $gt: dexExpiry } },
             {
               $or: [
+                {
+                  privacy: "public",
+                },
+                {
+                  privacy: {
+                    $exists: false,
+                  },
+                },
+                privacyMatchFilter,
+              ],
+            },
+            {
+              $or: [
                 { name: { $regex: new RegExp(search, "ig") } },
                 { symbol: { $regex: new RegExp(search, "ig") } },
                 { desc: { $regex: new RegExp(search, "ig") } },
@@ -40,7 +107,9 @@ export async function GET(req: NextRequest) {
         },
       };
     } else {
-      match = { $match: { dexlistingdate: { $gt: dexExpiry } } };
+      match = {
+        $match: { dexlistingdate: { $gt: dexExpiry } },
+      };
     }
   }
 

@@ -15,18 +15,13 @@ import useWallet from "@/utils/wallet";
 import { useAtom } from "jotai";
 import { data, isAuth, userWeb3Info } from "@/app/store";
 import { Connectivity as Community } from "@/anchor/community";
-import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { pinFileToShadowDriveUrl } from "@/app/lib/uploadFileToShdwDrive";
 import { calcNonDecimalValue } from "@/anchor/curve/utils";
-import {
-  LAMPORTS_PER_SOL,
-  SystemProgram,
-  TransactionMessage,
-  VersionedTransaction,
-} from "@solana/web3.js";
 import client from "@/app/lib/httpClient";
 import internalClient from "@/app/lib/internalHttpClient";
+import { randomStr } from "@metaplex-foundation/js";
+import WarningModal from "../common/WarningModal";
 
 const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
   const connection = useConnection();
@@ -36,6 +31,8 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
   const [isAuthenticated] = useAtom(isAuth);
 
   const navigate = useRouter();
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [hasPrivacyError, setHasPrivacyError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
@@ -54,6 +51,8 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
     website: "",
     telegram: "",
     twitter: "",
+    privacy: "private",
+    code: randomStr(19),
     priceDistribution: {
       echosystem: 3,
       curator: 7,
@@ -112,6 +111,8 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
         website: listResult.data.project.website,
         telegram: listResult.data.project.telegram,
         twitter: listResult.data.project.twitter,
+        code: listResult.data.project.code,
+        privacy: listResult.data.project.privacy,
       });
       setProjectDetail(listResult.data);
       setLoading(false);
@@ -344,6 +345,8 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
             telegram: fields.telegram,
             twitter: fields.twitter,
             website: fields.website,
+            privacy: fields.privacy,
+            code: fields.code,
           });
           navigate.push("/bots/" + fields.symbol);
           setLoading(false);
@@ -432,6 +435,8 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
           creator: wallet.publicKey.toBase58(),
           creatorUsername: currentUser?.profile?.username,
           type,
+          privacy: fields.privacy,
+          code: fields.code,
         });
         setButtonText(symbol ? "Modify" : "Mint");
         localStorage.removeItem("projectstep1");
@@ -446,6 +451,16 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
 
   return (
     <>
+      <WarningModal
+        isOpen={!!selectedOption}
+        onDeny={() => setSelectedOption(null)}
+        onAccept={() => {
+          setFields({ ...fields, privacy: selectedOption! });
+          setSelectedOption(null);
+        }}
+        message="Changing the visibility away from “Public” will make the Bot invisible to all users."
+      />
+
       {showMsg && (
         <div
           className={
@@ -554,6 +569,113 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
                 helperText=""
                 placeholder=""
                 value={`${fields.symbol}@kinship.codes`}
+                onChange={() => { }}
+              />
+            </div>
+
+            <div className="flex flex-col pt-2.5">
+              <p className="text-xs text-white">Privacy</p>
+
+              <div className="flex">
+                <button
+                  className={`${fields.privacy === "private" ? "border-white" : "border-[#FFFFFF28]"} bg-[#FFFFFF08] border-[1px] py-2 px-6 rounded-lg`}
+                  onClick={() => {
+                    if (fields.privacy === "public") {
+                      setSelectedOption("private");
+
+                      return;
+                    }
+                    setFields({ ...fields, privacy: "private" });
+                  }}
+                >
+                  <p
+                    className={`${fields.privacy === "private" ? "text-white" : "text-[#FFFFFF28]"} text-sm`}
+                  >
+                    Private
+                  </p>
+                </button>
+
+                <div className="mx-4" />
+
+                <button
+                  className={`${fields.privacy === "secret" ? "border-white" : "border-[#FFFFFF28]"} bg-[#FFFFFF08] border-[1px] py-2 px-6 rounded-lg`}
+                  onClick={() => {
+                    if (fields.privacy === "public") {
+                      setSelectedOption("secret");
+
+                      return;
+                    }
+
+                    setFields({ ...fields, privacy: "secret" });
+                  }}
+                >
+                  <p
+                    className={`${fields.privacy === "secret" ? "text-white" : "text-[#FFFFFF28]"} text-sm`}
+                  >
+                    Secret
+                  </p>
+                </button>
+
+                <div className="mx-4" />
+
+                <button
+                  className={`${fields.privacy === "hidden" ? "border-white" : "border-[#FFFFFF28]"} bg-[#FFFFFF08] border-[1px] py-2 px-6 rounded-lg`}
+                  onClick={() => {
+                    if (fields.privacy === "public") {
+                      setSelectedOption("hidden");
+
+                      return;
+                    }
+
+                    setFields({ ...fields, privacy: "hidden" });
+                  }}
+                >
+                  <p
+                    className={`${fields.privacy === "hidden" ? "text-white" : "text-[#FFFFFF28]"} text-sm`}
+                  >
+                    Hidden
+                  </p>
+                </button>
+
+                <div className="mx-4" />
+
+                <button
+                  className={`${hasPrivacyError ? "border-[#FF0000]" : fields.privacy === "public" ? "border-white" : "border-[#FFFFFF28]"} bg-[#FFFFFF08] border-[1px] py-2 px-6 rounded-lg`}
+                  onClick={() => {
+                    if (currentUser?.role !== "wizard") {
+                      if (fields.privacy === "public") return;
+
+                      setHasPrivacyError(true);
+
+                      setTimeout(() => {
+                        setHasPrivacyError(false);
+                      }, 4000);
+                      return;
+                    }
+                    setFields({ ...fields, privacy: "public" });
+                  }}
+                >
+                  <p
+                    className={`${hasPrivacyError ? "text-[#FF0000]" : fields.privacy === "public" ? "text-white" : "text-[#FFFFFF28]"} text-sm`}
+                  >
+                    Public
+                  </p>
+                </button>
+              </div>
+              {hasPrivacyError && (
+                <p className="text-[#FF0000] text-sm">
+                  this option is exclusively available to Wizards.
+                </p>
+              )}
+
+              <div className="my-2.5" />
+              <Input
+                type="text"
+                title="Bot Code"
+                required
+                helperText="The code must consist of 4 to 19 alphanumeric characters."
+                placeholder=""
+                value={fields.code}
                 onChange={() => { }}
               />
             </div>

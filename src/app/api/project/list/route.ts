@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       })
       : null;
 
-  const username = user?.profile.username;
+  const username = user?.profile?.username;
 
   const privacyMatchFilter = {
     $or: [

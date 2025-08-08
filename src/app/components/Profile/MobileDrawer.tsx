@@ -38,6 +38,17 @@ const MobileDrawer = () => {
                 router.push("/chat");
               }}
             >
+              Chat
+            </a>
+
+            <div className="lg:my-4 md:my-2" />
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => {
+                router.push("/bots");
+              }}
+            >
               Bots
             </a>
 

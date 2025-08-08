@@ -12,6 +12,17 @@ const Tabs = () => {
           router.push("/chat");
         }}
       >
+        Chat
+      </a>
+
+      <div className="lg:mx-4 md:mx-2" />
+
+      <a
+        className="text-base text-white cursor-pointer"
+        onClick={() => {
+          router.push("/bots");
+        }}
+      >
         Bots
       </a>
 

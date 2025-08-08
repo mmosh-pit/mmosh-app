@@ -11,6 +11,7 @@ export type User = {
   onboarding_step: number;
   referred_by: string;
   bluesky: Bluesky | null;
+  role: string;
 };
 
 type Bluesky = {

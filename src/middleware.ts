@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(req: NextRequest) {
+  const authorization = req.headers.get("authorization");
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`,
+    {
+      headers: {
+        Authorization: authorization ?? "",
+      },
+    },
+  );
+
+  const data = await response.json();
+
   if (
     req.method !== "GET" &&
     !req.url.includes("onramp-session") &&
@@ -9,29 +22,20 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("inform") &&
     !req.url.includes("document")
   ) {
-    const authorization = req.headers.get("authorization");
-
     if (!authorization) {
       return NextResponse.json("", { status: 401 });
     }
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-auth`,
-      {
-        headers: {
-          Authorization: authorization ?? "",
-        },
-      },
-    );
-
-    const data = await response.json();
 
     if (!data?.data?.is_auth) {
       return NextResponse.json("", { status: 401 });
     }
   }
 
-  return NextResponse.next();
+  return NextResponse.next({
+    headers: {
+      user: data?.data?.user?.ID,
+    },
+  });
 }
 
 // Routes Middleware should not run on

@@ -23,6 +23,16 @@ import internalClient from "@/app/lib/internalHttpClient";
 import { randomStr } from "@metaplex-foundation/js";
 import WarningModal from "../common/WarningModal";
 
+const explanations: any = {
+  private: "Only the Creator can view and interact with it.",
+  hidden:
+    "To access a Hidden bot, users must navigate to a specific URL that prompts them to enter a code.",
+  secret:
+    "Not listed anywhere. Appears only when code is entered in the search box.",
+  public:
+    "The Bot is visible to everyone and only a Wizard can set it to Public.",
+};
+
 const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
   const connection = useConnection();
   const wallet: any = useWallet();
@@ -662,10 +672,12 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
                   </p>
                 </button>
               </div>
-              {hasPrivacyError && (
+              {hasPrivacyError ? (
                 <p className="text-[#FF0000] text-sm">
                   this option is exclusively available to Wizards.
                 </p>
+              ) : (
+                <p className="text-sm">{explanations[fields.privacy as any]}</p>
               )}
 
               <div className="my-2.5" />

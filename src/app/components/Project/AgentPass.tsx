@@ -28,7 +28,7 @@ import {
 import client from "@/app/lib/httpClient";
 import internalClient from "@/app/lib/internalHttpClient";
 
-const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
+const AgentPass = ({ symbol, type, hasAllowed }: { symbol?: string; type: string, hasAllowed: any }) => {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
@@ -225,6 +225,10 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
 
   const mintGensisPass = async () => {
     if (!isAuthenticated) return;
+    if (!hasAllowed.status) {
+      createMessage(hasAllowed.message, "danger-container");
+      return;
+    }
 
     setLoading(true);
     if (validateFields(true)) {

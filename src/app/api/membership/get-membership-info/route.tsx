@@ -20,6 +20,8 @@ export async function GET(req: NextRequest) {
   const now = new Date();
   const expiry = new Date(membershipData.expirydate);
 
+  membershipInfo[0].status = expiry < now ? "expired" : "active"
+
   if (expiry < now) {
     return NextResponse.json({}, { status: 200 });
   } else {

@@ -6,8 +6,18 @@ export async function PUT(req: NextRequest) {
 
   const chatsCollection = db.collection("chats");
 
-  const { key, name, symbol, desc, price, website, telegram, twitter } =
-    await req.json();
+  const {
+    key,
+    name,
+    symbol,
+    desc,
+    price,
+    website,
+    telegram,
+    twitter,
+    code,
+    privacy,
+  } = await req.json();
 
   const project = await collection.findOne({
     key,
@@ -40,6 +50,8 @@ export async function PUT(req: NextRequest) {
           website,
           telegram,
           twitter,
+          code,
+          privacy,
         },
       },
     );

@@ -63,6 +63,7 @@ const ProfileForm = () => {
   const [membershipStatus, setMembershipStatus] = React.useState(searchParams.get("membershipStatus") || "na");
   const [membershipInfo, setMembershipInfo] = React.useState<any>({});
   const [tab, setTab] = React.useState("guest");
+  const [showMsg, setShowMsg] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (currentUser) {
@@ -190,6 +191,9 @@ const ProfileForm = () => {
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });
+    setTimeout(() => {
+      setShowMsg(false);
+    }, 4000);
   }, []);
 
   const validateFields = (isUpdate: boolean) => {
@@ -635,7 +639,7 @@ const ProfileForm = () => {
       checkMembershipStatus();
       createMessage("Your membership is updated", "success");
       setTimeout(() => {
-        navigate.replace(`/create`);
+        checkMembershipStatus();
       }, 5000);
       return
     }
@@ -678,7 +682,7 @@ const ProfileForm = () => {
       });
 
       setTimeout(() => {
-        navigate.replace(`/create`);
+        checkMembershipStatus();
       }, 5000);
     }
     setIsLoading(false);
@@ -687,7 +691,9 @@ const ProfileForm = () => {
   return (
     <div className="w-full flex justify-center">
       <div className="flex flex-col items-center justify-center w-full">
-        <MessageBanner type={message.type} message={message.message} />
+        {showMsg &&
+          <MessageBanner type={message.type} message={message.message} />
+        }
 
         <div className="w-full flex justify-center my-6">
           {!hasProfile && (
@@ -709,10 +715,10 @@ const ProfileForm = () => {
                 <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`} onClick={() => setTab("guest")}>
                   Guest
                 </li>
-                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("enjoyer")}>
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#ED048A] hover:to-[#F5812B] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[rgba(237,4,138,1)] to-[rgba(245,129,43,1)]'}`} onClick={() => setTab("enjoyer")}>
                   Enjoyer
                 </li>
-                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("creator")}>
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[rgba(28, 208, 188, 1)] to-[rgba(187, 239, 4, 1)]'}`} onClick={() => setTab("creator")}>
                   Creator
                 </li>
               </ul>
@@ -731,7 +737,7 @@ const ProfileForm = () => {
                 </div>
                 <div className="flex items-center mb-0 space-x-4">
                   <span className="font-bold text-2xl">Free</span>
-                  {membershipStatus === "na" || membershipStatus === "expired" &&
+                  {(membershipStatus === "na" || membershipStatus === "expired") &&
                     <>
                       <span className="text-[#b59be4] text-lg">•</span>
                       <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
@@ -1017,10 +1023,10 @@ const ProfileForm = () => {
                 <>
                   <div className="flex flex-col justify-center items-center mt-3">
                     {hasMonthly &&
-                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
+                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC/mo</p>
                     }
                     {!hasMonthly &&
-                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
+                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC/yr</p>
                     }
                     <p className="text-tiny text-white">
                       plus a small amount of SOL for gas fees

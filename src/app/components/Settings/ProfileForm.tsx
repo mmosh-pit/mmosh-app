@@ -689,287 +689,289 @@ const ProfileForm = () => {
   }, [wallet, profileInfo, image, form]);
 
   return (
-    <div className="w-full flex justify-center">
-      <div className="flex flex-col items-center justify-center w-full">
-        {showMsg &&
-          <MessageBanner type={message.type} message={message.message} />
-        }
+    <div className="flex flex-col items-center justify-center w-full md:px-8 lg:px-12">
 
-        <div className="w-full flex justify-center my-6">
-          {!hasProfile && (
-            <h2 className="font-bold text-white">
-              Update your Guest Profile or Mint your Membership Profile
-            </h2>
-          )}
+      {showMsg &&
+        <MessageBanner type={message.type} message={message.message} />
+      }
 
-          {hasProfile && (
-            <h2 className="font-bold text-white">
-              Update your Membership Profile
-            </h2>
-          )}
-        </div>
-        <div className="bg-[#03000754] rounded-2xl px-24 py-4 md:min-w-[85%] min-w-[90%]">
-          <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem]">
-            <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
-              <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
-                <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`} onClick={() => setTab("guest")}>
-                  Guest
-                </li>
-                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#ED048A] hover:to-[#F5812B] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[rgba(237,4,138,1)] to-[rgba(245,129,43,1)]'}`} onClick={() => setTab("enjoyer")}>
-                  Enjoyer
-                </li>
-                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[rgba(28, 208, 188, 1)] to-[rgba(187, 239, 4, 1)]'}`} onClick={() => setTab("creator")}>
-                  Creator
-                </li>
-              </ul>
-            </div>
-            {tab === "guest" &&
-              <>
-                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>Can only interact with Public Bots</div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
-                  </div>
-                </div>
-                <div className="flex items-center mb-0 space-x-4">
-                  <span className="font-bold text-2xl">Free</span>
-                  {(membershipStatus === "na" || membershipStatus === "expired") &&
-                    <>
-                      <span className="text-[#b59be4] text-lg">•</span>
-                      <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                        <span className="relative z-10">✔ Current plan</span>
-                        <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                      </span>
-                    </>
-                  }
-                </div>
-              </>
-            }
-            {tab === "enjoyer" &&
-              <>
-                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>Revenue Distribution</div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>Up to 3 Personal Bots</div>
-                  </div>
-                </div>
-                <div className="flex flex-row items-center">
-                  <Radio
-                    title="Monthly USDC 15/mo"
-                    checked={hasMonthly}
-                    onChoose={() => setHasMonthly(!hasMonthly)}
-                    name="device_verification"
-                  />
-                  <Radio
-                    title="Annual USDC 90/yr"
-                    checked={!hasMonthly}
-                    onChoose={() => setHasMonthly(!hasMonthly)}
-                    name="device_verification"
-                  />
-                </div>
-                {membershipInfo.membership === "enjoyer" &&
-                  <div className="flex items-center mb-0 space-x-4">
-                    <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                      <span className="relative z-10">✔ Current plan</span>
-                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                    </span>
-                  </div>
-                }
-              </>
-            }
-            {tab === "creator" &&
-              <>
-                <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>Revenue Distribution</div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>Up to 3 Personal Bots</div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                    <div>Up to 3 Community Bots</div>
-                  </div>
-                </div>
-                <div className="flex flex-row items-center">
-                  <Radio
-                    title="Monthly USDC 24/mo"
-                    checked={hasMonthly}
-                    onChoose={() => setHasMonthly(!hasMonthly)}
-                    name="device_verification"
-                  />
-                  <Radio
-                    title="Annual USDC 180/yr"
-                    checked={!hasMonthly}
-                    onChoose={() => setHasMonthly(!hasMonthly)}
-                    name="device_verification"
-                  />
-                </div>
-                {membershipInfo.membership === "creator" &&
-                  <div className="flex items-center mb-0 space-x-4">
-                    <span className="relative rounded-full px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
-                      <span className="relative z-10">✔ Current plan</span>
-                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]"></span>
-                    </span>
-                  </div>
-                }
-              </>
-            }
+      <div className="w-full flex justify-center my-6">
+        {!hasProfile && (
+          <h2 className="font-bold text-white text-center">
+            Update your Guest Profile or Mint your Membership Profile
+          </h2>
+        )}
+
+        {hasProfile && (
+          <h2 className="font-bold text-white text-center">
+            Update your Membership Profile
+          </h2>
+        )}
+      </div>
+      <div className="bg-[#03000754] rounded-2xl px-14 py-4 md:min-w-[85%] ">
+        <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem]">
+          <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
+            <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 gap-2 w-30 overflow-x-auto no-scrollbar justify-center">
+              <li className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`} onClick={() => setTab("guest")}>
+                Guest
+              </li>
+              <li className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#ED048A] hover:to-[#F5812B] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[rgba(237,4,138,1)] to-[rgba(245,129,43,1)]'}`} onClick={() => setTab("enjoyer")}>
+                Enjoyer
+              </li>
+              <li className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[rgba(28, 208, 188, 1)] to-[rgba(187, 239, 4, 1)]'}`} onClick={() => setTab("creator")}>
+                Creator
+              </li>
+            </ul>
           </div>
-          <div className="w-full h-full flex flex-col p-5">
-            <div className="mb-4">
-              <p className="text-lg text-white text-center font-bold">About You</p>
-            </div>
-            <div className="flex flex-col mb-4">
-              <p className="text-sm mb-2">Banner Image</p>
-              <div className="relative h-[200px] w-full rounded-xl overflow-hidden">
-                <div className="absolute inset-0 bg-cover bg-center z-0" />
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Uploaded Banner"
-                    className="absolute inset-0 w-full h-full object-cover z-10"
-                  />
-                )}{!imagePreview && (
-                  <img
-                    src={"/images/profile-settings-bg.png"}
-                    alt="Uploaded Banner"
-                    className="absolute inset-0 w-full h-full object-cover z-10"
-                  />
-                )}
-                <div className="relative z-20 h-full">
-                  <ImageAccountPicker changeImage={setBannerImage} image={imagePreview} />
+          {tab === "guest" &&
+            <>
+              <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1 text-center sm:text-left">
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>Can only interact with Public Bots</div>
+                </div>
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
                 </div>
               </div>
-            </div>
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 mt-4">
-              <div>
-                <p className="text-sm">
-                  Avatar<sup>*</sup>
-                  <ImagePicker changeImage={setImage} image={preview} />
-                </p>
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 mb-2">
+                <span className="font-bold text-2xl">Free</span>
+                {(membershipStatus === "na" || membershipStatus === "expired") &&
+                  <>
+                    <span className="text-[#b59be4] text-lg">•</span>
+                    <span className="relative rounded-full px-4 sm:px-6 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                      <span className="relative z-10">✔ Current plan</span>
+                      <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]" />
+                    </span>
+                  </>
+                }
               </div>
-
-              <div>
-                <Input
-                  type="text"
-                  title="Display Name"
-                  required
-                  helperText="Up to 50 characters, can have spaces."
-                  placeholder="Display Name"
-                  value={form.displayName}
-                  onChange={(e) =>
-                    setForm({ ...form, displayName: e.target.value })
-                  }
+            </>
+          }
+          {tab === "enjoyer" &&
+            <>
+              <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1 text-center sm:text-left">
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>Revenue Distribution</div>
+                </div>
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>Up to 3 Personal Bots</div>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <Radio
+                  title="Monthly USDC 15/mo"
+                  checked={hasMonthly}
+                  onChoose={() => setHasMonthly(!hasMonthly)}
+                  name="device_verification"
                 />
-
-                <div className="my-2" />
-
-                <Input
-                  type="text"
-                  title="First Name or Alias"
-                  required
-                  helperText="Up to 50 characters, can have spaces."
-                  placeholder="Name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                <Radio
+                  title="Annual USDC 90/yr"
+                  checked={!hasMonthly}
+                  onChoose={() => setHasMonthly(!hasMonthly)}
+                  name="device_verification"
                 />
-
-                <div className="my-2" />
-
-                <Input
-                  type="text"
-                  title="Last Name"
-                  required={false}
-                  helperText="Up to 15 characters"
-                  placeholder="Last Name"
-                  value={form.lastName}
-                  onChange={(e) =>
-                    setForm({ ...form, lastName: e.target.value })
-                  }
+              </div>
+              {membershipInfo.membership === "enjoyer" &&
+                <div className="flex items-center mb-0 space-x-4 mt-3">
+                  <span className="relative rounded-full px-4 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                    <span className="relative z-10">✔ Current plan</span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]" />
+                  </span>
+                </div>
+              }
+            </>
+          }
+          {tab === "creator" &&
+            <>
+              <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1 text-center sm:text-left">
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>Revenue Distribution</div>
+                </div>
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>Up to 3 Personal Bots</div>
+                </div>
+                <div className="flex items-start justify-center sm:justify-start">
+                  <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                  <div>Up to 3 Community Bots</div>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <Radio
+                  title="Monthly USDC 24/mo"
+                  checked={hasMonthly}
+                  onChoose={() => setHasMonthly(!hasMonthly)}
+                  name="device_verification"
                 />
+                <Radio
+                  title="Annual USDC 180/yr"
+                  checked={!hasMonthly}
+                  onChoose={() => setHasMonthly(!hasMonthly)}
+                  name="device_verification"
+                />
+              </div>
+              {membershipInfo.membership === "creator" &&
+                <div className="flex items-center mb-0 space-x-4 mt-3">
+                  <span className="relative rounded-full px-4 py-2 text-lg font-semibold text-white border border-transparent bg-gradient-to-r from-[#e93d87] to-[#6356d5]">
+                    <span className="relative z-10">✔ Current plan</span>
+                    <span className="absolute inset-0 rounded-full bg-[#1b1937] z-0 m-[1px]" />
+                  </span>
+                </div>
+              }
+            </>
+          }
+        </div>
+        <div className="w-full h-full flex flex-col sm:p-6 md:p-8">
+          <div className="mb-4">
+            <p className="text-lg text-white text-center font-bold">About You</p>
+          </div>
+          <div className="flex flex-col mb-4">
+            <p className="text-sm mb-2">Banner Image</p>
+            <div className="relative w-full h-[200px] rounded-xl overflow-hidden">
+              <div className="absolute inset-0 bg-cover bg-center z-0" />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Uploaded Banner"
+                  className="absolute inset-0 w-full h-full object-cover z-10"
 
-                <div className="my-2" />
+                />
+              )}{!imagePreview && (
+                <img
+                  src={"/images/profile-settings-bg.png"}
+                  alt="Uploaded Banner"
+                  className="absolute inset-0 w-full h-full object-cover z-10"
+                />
+              )}
+              <div className="relative z-20 h-full flex items-end">
+                <ImageAccountPicker changeImage={setBannerImage} image={imagePreview} />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            <div>
+              <p className="text-sm mb-2">
+                Avatar<sup>*</sup>
+                <ImagePicker changeImage={setImage} image={preview} />
+              </p>
+            </div>
 
+            <div>
+              <Input
+                type="text"
+                title="Display Name"
+                required
+                helperText="Up to 50 characters, can have spaces."
+                placeholder="Display Name"
+                value={form.displayName}
+                onChange={(e) =>
+                  setForm({ ...form, displayName: e.target.value })
+                }
+              />
+
+              <div className="my-2" />
+
+              <Input
+                type="text"
+                title="First Name or Alias"
+                required
+                helperText="Up to 50 characters, can have spaces."
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+
+              <div className="my-2" />
+
+              <Input
+                type="text"
+                title="Last Name"
+                required={false}
+                helperText="Up to 15 characters"
+                placeholder="Last Name"
+                value={form.lastName}
+                onChange={(e) =>
+                  setForm({ ...form, lastName: e.target.value })
+                }
+              />
+
+              <div className="my-2" />
+
+              <Input
+                type="text"
+                title="Username"
+                required
+                helperText={error.error ? error.message : "15 characters"}
+                error={error.error}
+                value={form.username}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    username: e.target.value.replace(/\s/g, ""),
+                  })
+                }
+                onBlur={checkForUsername}
+                placeholder="Username"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <Input
+                type="text"
+                title="Description"
+                required={false}
+                placeholder="Tell us about yourself in one paragraph or less"
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                textarea
+              />
+
+              <div className="my-2" />
+
+              <Input
+                type="text"
+                title="Web Link"
+                required={false}
+                placeholder="https://your.domain"
+                value={form.link}
+                onChange={(e) => setForm({ ...form, link: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {!hasReferer && (
+            <div className="w-full self-start mt-4">
+              <p className="text-lg text-white">Your Host</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Input
                   type="text"
                   title="Username"
                   required
-                  helperText={error.error ? error.message : "15 characters"}
                   error={error.error}
-                  value={form.username}
+                  value={form.host}
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      username: e.target.value.replace(/\s/g, ""),
+                      host: e.target.value.replace(/\s/g, ""),
                     })
                   }
-                  onBlur={checkForUsername}
-                  placeholder="Username"
-                />
-              </div>
-
-              <div className="flex flex-col">
-                <Input
-                  type="text"
-                  title="Description"
-                  required={false}
-                  placeholder="Tell us about yourself in one paragraph or less"
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  textarea
-                />
-
-                <div className="my-2" />
-
-                <Input
-                  type="text"
-                  title="Web Link"
-                  required={false}
-                  placeholder="https://your.domain"
-                  value={form.link}
-                  onChange={(e) => setForm({ ...form, link: e.target.value })}
+                  placeholder="Host Username"
                 />
               </div>
             </div>
-
-            {!hasReferer && (
-              <div className="w-full self-start mt-4">
-                <p className="text-lg text-white">Your Host</p>
-                <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
-                  <Input
-                    type="text"
-                    title="Username"
-                    required
-                    error={error.error}
-                    value={form.host}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        host: e.target.value.replace(/\s/g, ""),
-                      })
-                    }
-                    placeholder="Host Username"
-                  />
-                </div>
-              </div>
-            )}
+          )}
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
 
             {!hasProfile && tab === "guest" && (
-              <div className="flex mt-6 items-start justify-evenly">
-                <div className="w-[25%] flex flex-col justify-center items-center">
+              <div className="flex flex-row mt-6 items-start justify-evenly">
+                <div className="w-full sm:w-1/2 md:w-1/3 flex flex-col items-center">
                   <Button
                     isLoading={isLoading}
                     isPrimary={false}
@@ -985,7 +987,7 @@ const ProfileForm = () => {
             )}
 
             {hasProfile && (
-              <div className="w-[50%] self-center pt-[30px]">
+              <div className="w-full sm:w-1/2 md:w-1/3">
                 {tab === "guest" &&
                   <Button
                     isLoading={isLoading}
@@ -998,7 +1000,7 @@ const ProfileForm = () => {
                 }
               </div>
             )}
-            <div className="w-[50%] self-center pt-[30px]">
+            <div className="w-full sm:w-1/2 md:w-1/3">
               {tab === "enjoyer" &&
                 <Button
                   isLoading={isLoading}
@@ -1019,9 +1021,11 @@ const ProfileForm = () => {
                   action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
                 />
               }
-              {tab !== "guest" &&
-                <>
-                  <div className="flex flex-col justify-center items-center mt-3">
+            </div>
+            {tab !== "guest" &&
+              <>
+                <div className="mt-4 flex flex-col items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
                     {hasMonthly &&
                       <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC/mo</p>
                     }
@@ -1032,20 +1036,20 @@ const ProfileForm = () => {
                       plus a small amount of SOL for gas fees
                     </p>
                   </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center justify-center">
-                      <p className="text-sm text-white">Current balance</p>
-                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
-                        <p className="text-sm text-white text-center">
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    <div className="flex items-center">
+                      <p className="text-sm text-white mr-2">Current balance</p>
+                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[3rem] mx-2 rounded-md text-center">
+                        <p className="text-sm text-white">
                           {balance.usdc || 0}
                         </p>
                       </div>
                       <p className="text-sm text-white">USDC</p>
                     </div>
 
-                    <div className="flex items-center mt-2 justify-center">
-                      <p className="text-sm text-white">Current balance</p>
-                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[2vmax] mx-2 rounded-md">
+                    <div className="flex items-center">
+                      <p className="text-sm text-white mr-2">Current balance</p>
+                      <div className="bg-black bg-opacity-[0.2] p-1 min-w-[3rem] mx-2 rounded-md text-center">
                         <p className="text-sm text-white text-center">
                           {balance.sol || 0}
                         </p>
@@ -1053,14 +1057,13 @@ const ProfileForm = () => {
                       <p className="text-sm text-white">SOL</p>
                     </div>
                   </div>
-                </>
-              }
-            </div>
+                </div>
+              </>
+            }
           </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default ProfileForm;

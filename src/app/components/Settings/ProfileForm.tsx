@@ -718,7 +718,7 @@ const ProfileForm = () => {
                 <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#ED048A] hover:to-[#F5812B] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[rgba(237,4,138,1)] to-[rgba(245,129,43,1)]'}`} onClick={() => setTab("enjoyer")}>
                   Enjoyer
                 </li>
-                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[rgba(28, 208, 188, 1)] to-[rgba(187, 239, 4, 1)]'}`} onClick={() => setTab("creator")}>
+                <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && '!bg-gradient-to-r !from-[rgba(28,208,188,1)] !to-[rgba(187,239,4,1)]'}`} onClick={() => setTab("creator")}>
                   Creator
                 </li>
               </ul>

@@ -46,7 +46,7 @@ const Bots = () => {
   };
 
   const onProjectSelect = (projectItem: any) => {
-    navigate.push(`/projects/${projectItem.data.symbol.toLowerCase()}`);
+    navigate.push(`/bots/${projectItem.data.symbol.toLowerCase()}`);
   };
 
   return (

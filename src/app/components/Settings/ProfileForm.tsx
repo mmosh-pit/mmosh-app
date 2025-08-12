@@ -718,7 +718,7 @@ const ProfileForm = () => {
               <li className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#ED048A] hover:to-[#F5812B] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[rgba(237,4,138,1)] to-[rgba(245,129,43,1)]'}`} onClick={() => setTab("enjoyer")}>
                 Enjoyer
               </li>
-              <li className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[rgba(28, 208, 188, 1)] to-[rgba(187, 239, 4, 1)]'}`} onClick={() => setTab("creator")}>
+              <li className={`flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#BBEF04] hover:to-[#1CD0BC] transition cursor-pointer  ${tab === "creator" && '!bg-gradient-to-r !from-[rgba(28,208,188,1)] !to-[rgba(187,239,4,1)]'}`} onClick={() => setTab("creator")}>
                 Creator
               </li>
             </ul>
@@ -967,7 +967,7 @@ const ProfileForm = () => {
               </div>
             </div>
           )}
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-6 flex flex-col items-center justify-center gap-4">
 
             {!hasProfile && tab === "guest" && (
               <div className="flex flex-row mt-6 items-start justify-evenly">
@@ -1025,18 +1025,22 @@ const ProfileForm = () => {
             {tab !== "guest" &&
               <>
                 <div className="mt-4 flex flex-col items-center gap-4">
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
-                    {hasMonthly &&
-                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC/mo</p>
-                    }
-                    {!hasMonthly &&
-                      <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC/yr</p>
-                    }
+                  <div className="flex flex-col items-center gap-2">
+                    {hasMonthly ? (
+                      <p className="text-sm text-white">
+                        Price: {tab === "enjoyer" ? 15 : 24} USDC/mo
+                      </p>
+                    ) : (
+                      <p className="text-sm text-white">
+                        Price: {tab === "enjoyer" ? 90 : 180} USDC/yr
+                      </p>
+                    )}
                     <p className="text-tiny text-white">
                       plus a small amount of SOL for gas fees
                     </p>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-6">
+
+                  <div className="flex flex-col items-center gap-4">
                     <div className="flex items-center">
                       <p className="text-sm text-white mr-2">Current balance</p>
                       <div className="bg-black bg-opacity-[0.2] p-1 min-w-[3rem] mx-2 rounded-md text-center">
@@ -1050,7 +1054,7 @@ const ProfileForm = () => {
                     <div className="flex items-center">
                       <p className="text-sm text-white mr-2">Current balance</p>
                       <div className="bg-black bg-opacity-[0.2] p-1 min-w-[3rem] mx-2 rounded-md text-center">
-                        <p className="text-sm text-white text-center">
+                        <p className="text-sm text-white">
                           {balance.sol || 0}
                         </p>
                       </div>

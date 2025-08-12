@@ -689,7 +689,7 @@ const ProfileForm = () => {
   }, [wallet, profileInfo, image, form]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full md:px-8 lg:px-12">
+    <div className="flex flex-col items-center justify-center w-full">
 
       {showMsg &&
         <MessageBanner type={message.type} message={message.message} />
@@ -853,7 +853,7 @@ const ProfileForm = () => {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-4">
             <div>
               <p className="text-sm mb-2">
                 Avatar<sup>*</sup>
@@ -949,7 +949,7 @@ const ProfileForm = () => {
           {!hasReferer && (
             <div className="w-full self-start mt-4">
               <p className="text-lg text-white">Your Host</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3  gap-6 mt-4">
                 <Input
                   type="text"
                   title="Username"
@@ -971,7 +971,7 @@ const ProfileForm = () => {
 
             {!hasProfile && tab === "guest" && (
               <div className="flex flex-row mt-6 items-start justify-evenly">
-                <div className="w-full sm:w-1/2 md:w-1/3 flex flex-col items-center">
+                <div className="w-full flex flex-col items-center">
                   <Button
                     isLoading={isLoading}
                     isPrimary={false}

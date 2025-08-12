@@ -94,7 +94,13 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
   React.useEffect(() => {
     if (localStorage.getItem("projectstep1")) {
       let savedData: any = localStorage.getItem("projectstep1");
-      setFields(JSON.parse(savedData));
+      const data = JSON.parse(savedData);
+
+      if (!data.code) {
+        data.code = randomStr(19);
+      }
+
+      setFields(data);
     }
     getMmoshPrice();
     if (symbol) {
@@ -121,7 +127,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
         website: listResult.data.project.website,
         telegram: listResult.data.project.telegram,
         twitter: listResult.data.project.twitter,
-        code: listResult.data.project.code,
+        code: listResult.data.project.code ?? randomStr(19),
         privacy: listResult.data.project.privacy,
       });
       setProjectDetail(listResult.data);
@@ -222,7 +228,6 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
 
     return true;
   };
-
   const isValidHttpUrl = (url: any) => {
     try {
       const newUrl = new URL(url);
@@ -346,7 +351,7 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
           });
           console.log("update result", res);
 
-          setButtonText("Updating pass...");
+          setButtonText("Updating pass... ");
           await internalClient.put("/api/project/update-project", {
             key: projectDetail.project.key,
             name: fields.name,
@@ -688,7 +693,9 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
                 helperText="The code must consist of 4 to 19 alphanumeric characters."
                 placeholder=""
                 value={fields.code}
-                onChange={() => { }}
+                onChange={(e) => {
+                  setFields({ ...fields, code: e.target.value });
+                }}
               />
             </div>
           </div>

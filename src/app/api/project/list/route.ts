@@ -175,6 +175,7 @@ export async function GET(req: NextRequest) {
           minpresalesupply: 1,
           creatorUsername: 1,
           creator: 1,
+          privacy: 1,
           coins: "$coins",
           community: "$community",
           profiles: "$profiles",

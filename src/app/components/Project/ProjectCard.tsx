@@ -3,8 +3,6 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import BotIcon from "@/assets/icons/BotIcon";
-import PersonIcon from "@/assets/icons/PersonIcon";
-import CoinIcon from "@/assets/icons/CoinIcon";
 
 function capitalizeFirstLetter(val: string) {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);

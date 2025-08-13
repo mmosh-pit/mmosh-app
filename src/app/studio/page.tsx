@@ -181,11 +181,26 @@ export default function ProjectCreate() {
 
     const personalAgentCount = projects.filter((p: any) => p.type === "personal").length;
     console.log("----- personalAgentCount -----", personalAgentCount);
+    const kinshipAgentCount = projects.filter((p: any) => p.type === "kinship").length;
+    console.log("----- kinshipAgentCount -----", kinshipAgentCount);
 
     if (selectedProjectType === "personal" && personalAgentCount >= 3) {
       return {
         status: false,
         message: `You’ve reached your limit — as an ${membership}, you can create up to 3 personal agents.`
+      };
+    }
+
+    if (selectedProjectType === "kinship" && membership !== "creator") {
+      return {
+        status: false,
+        message: `You are not allowed to create a kinship agent. Please upgrade your membership to the creator level and try again.`
+      };
+    }
+    if (selectedProjectType === "kinship" && kinshipAgentCount >= 3) {
+      return {
+        status: false,
+        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 kinship agents.`
       };
     }
 
@@ -279,7 +294,7 @@ export default function ProjectCreate() {
           <AgentPass type={selectedProjectType} hasAllowed={hasAllowedToCreateBot()} />
         )}
         {selectedOption === "Update" && (
-          <AgentPass symbol={selectedProjectType} type={selectedProjectType} hasAllowed={true}/>
+          <AgentPass symbol={selectedProjectType} type={selectedProjectType} hasAllowed={true} />
         )}
 
         {selectedOption === "Tools" && (

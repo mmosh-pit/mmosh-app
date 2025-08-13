@@ -56,6 +56,30 @@ const UserCard = ({ user, currentuser }: Props) => {
     }
   };
 
+  let image = user.profile.image;
+  let name = user.profile.name;
+  let username = user.profile.username;
+  let bio = user.profile.bio;
+
+  if (!image) {
+    image = user.guest_data.picture;
+  }
+
+  if (!name) {
+    name = user.guest_data.name;
+    if (!name) {
+      name = user.name;
+    }
+  }
+
+  if (!username) {
+    username = user.guest_data.username;
+  }
+
+  if (!bio) {
+    bio = user.guest_data.bio;
+  }
+
   return (
     <div
       className="flex bg-[#09073A] px-4 py-4 rounded-2xl"
@@ -64,7 +88,7 @@ const UserCard = ({ user, currentuser }: Props) => {
       <div className="self-center max-w-[30%] mr-8">
         <div className="relative w-[6vmax] h-[6vmax]">
           <Image
-            src={user.profile.image}
+            src={image}
             alt="Profile Image"
             className="rounded-full"
             layout="fill"
@@ -75,10 +99,8 @@ const UserCard = ({ user, currentuser }: Props) => {
       <div className="w-full flex flex-col">
         <div className="w-full flex justify-between items-center">
           <p className="text-white text-lg">
-            {user.profile.name} •{" "}
-            <p className="text-base text-blue underline">
-              @{user.profile.username}
-            </p>
+            {name} •{" "}
+            <p className="text-base text-blue underline">@{username}</p>
           </p>
 
           <div className="rounded-lg enjoyer-indicator p-2">
@@ -87,9 +109,7 @@ const UserCard = ({ user, currentuser }: Props) => {
         </div>
 
         <div className="my-4">
-          <p className="text-white text-base text-with-ellipsis">
-            {user.profile.bio}
-          </p>
+          <p className="text-white text-base text-with-ellipsis">{bio}</p>
         </div>
 
         <div>

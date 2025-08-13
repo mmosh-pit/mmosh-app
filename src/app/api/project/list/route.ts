@@ -22,35 +22,38 @@ export async function GET(req: NextRequest) {
 
   const username = user?.profile?.username;
 
-  const privacyMatchFilter = {
-    $or: [
-      {
-        privacy: "public",
-      },
-      {
-        privacy: {
-          $exists: false,
-        },
-      },
-      {
-        $and: [
+  const privacyMatchFilter =
+    user?.role === "wizard"
+      ? {}
+      : {
+        $or: [
           {
-            creatorUsername: username,
+            privacy: "public",
           },
           {
             privacy: {
-              $exists: true,
+              $exists: false,
             },
           },
           {
-            privacy: {
-              $ne: "secret",
-            },
+            $and: [
+              {
+                creatorUsername: username,
+              },
+              {
+                privacy: {
+                  $exists: true,
+                },
+              },
+              {
+                privacy: {
+                  $ne: "secret",
+                },
+              },
+            ],
           },
         ],
-      },
-    ],
-  };
+      };
 
   let match: any = { $match: { ...privacyMatchFilter } };
 

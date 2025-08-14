@@ -17,7 +17,7 @@ const Settings = () => {
 
   return (
     <div className="flex w-full h-full py-4 px-12">
-      <div className="flex flex-col py-4 px-8 w-[20%] rounded-lg bg-[#07024563] border-[1px] border-[#FFFFFF11] max-h-[60%]">
+      <div className="hidden lg:flex flex-col py-4 px-8 w-[20%] rounded-lg bg-[#07024563] border border-[#FFFFFF11] max-h-[60%]">
         <p className="text-lg font-bold text-center text-white mb-16">
           Settings
         </p>

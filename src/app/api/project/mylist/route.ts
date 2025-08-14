@@ -100,6 +100,7 @@ export async function GET(req: NextRequest) {
           dexlistingdate: 1,
           presalesupply: 1,
           minpresalesupply: 1,
+          type: 1,
           coins: "$coins",
           community: "$community",
           profiles: "$profiles",

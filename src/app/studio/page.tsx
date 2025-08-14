@@ -32,6 +32,8 @@ export default function ProjectCreate() {
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
   const [msgText, setMsgText] = useState("");
+  const [projects, setProjects] = useState([]);
+  const [membershipInfo, setMembershipInfo] = useState<any>({});
 
   const getProjectList = async (address: any) => {
     try {
@@ -47,6 +49,7 @@ export default function ProjectCreate() {
         newTypes.push({ label: element.name, value: element.symbol });
       }
       setProjectType(newTypes);
+      setProjects(result.data);
     } catch (error) {
       console.log("getProjectList error ", error);
     }
@@ -57,6 +60,7 @@ export default function ProjectCreate() {
       return;
     }
     getProjectList(wallet.publicKey.toBase58());
+    checkMembershipStatus();
   }, [wallet]);
 
   useEffect(() => {
@@ -153,6 +157,56 @@ export default function ProjectCreate() {
     }
   };
 
+  const checkMembershipStatus = async () => {
+    const membershipInfo = await axios.get(
+      "/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58(),
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token") || ""}`
+        }
+      }
+    );
+    setMembershipInfo(membershipInfo.data);
+  }
+  const hasAllowedToCreateBot = () => {
+    const { status, membership } = membershipInfo || {};
+
+    if (!status || !membership || status === "expired") {
+      return {
+        status: false,
+        message:
+          "You are not allowed to create an agent. Please upgrade your membership and try again."
+      };
+    }
+
+    const personalAgentCount = projects.filter((p: any) => p.type === "personal").length;
+    console.log("----- personalAgentCount -----", personalAgentCount);
+    const kinshipAgentCount = projects.filter((p: any) => p.type === "kinship").length;
+    console.log("----- kinshipAgentCount -----", kinshipAgentCount);
+
+    if (selectedProjectType === "personal" && personalAgentCount >= 3) {
+      return {
+        status: false,
+        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 personal agents.`
+      };
+    }
+
+    if (selectedProjectType === "kinship" && membership !== "creator") {
+      return {
+        status: false,
+        message: `You are not allowed to create a kinship agent. Please upgrade your membership to the creator level and try again.`
+      };
+    }
+    if (selectedProjectType === "kinship" && kinshipAgentCount >= 3) {
+      return {
+        status: false,
+        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 kinship agents.`
+      };
+    }
+
+    return { status: true, message: "" };
+  };
+
   return (
     <>
       {showMsg && (
@@ -237,10 +291,10 @@ export default function ProjectCreate() {
         </div>
 
         {selectedOption === "Tokenize Agent" && (
-          <AgentPass type={selectedProjectType} />
+          <AgentPass type={selectedProjectType} hasAllowed={hasAllowedToCreateBot()} />
         )}
         {selectedOption === "Update" && (
-          <AgentPass symbol={selectedProjectType} type={selectedProjectType} />
+          <AgentPass symbol={selectedProjectType} type={selectedProjectType} hasAllowed={true} />
         )}
 
         {selectedOption === "Tools" && (

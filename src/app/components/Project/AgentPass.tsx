@@ -33,7 +33,7 @@ const explanations: any = {
     "The Bot is visible to everyone and only a Wizard can set it to Public.",
 };
 
-const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
+const AgentPass = ({ symbol, type, hasAllowed }: { symbol?: string; type: string, hasAllowed: any }) => {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);
@@ -241,6 +241,10 @@ const AgentPass = ({ symbol, type }: { symbol?: string; type: string }) => {
 
   const mintGensisPass = async () => {
     if (!isAuthenticated) return;
+    if (!hasAllowed.status) {
+      createMessage(hasAllowed.message, "danger-container");
+      return;
+    }
 
     setLoading(true);
     if (validateFields(true)) {

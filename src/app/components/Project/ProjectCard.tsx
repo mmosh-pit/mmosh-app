@@ -17,7 +17,7 @@ const ProjectCard = (projectData: any) => {
       className="flex bg-[#1E1D56] bg-opacity-40 px-6 py-4 rounded-3xl cursor-pointer"
       onClick={() => {
         router.push(
-          `${process.env.NEXT_PUBLIC_APP_MAIN_URL}/projects/${projectData.data.symbol.toLowerCase()}`,
+          `${process.env.NEXT_PUBLIC_APP_MAIN_URL}/bots/${projectData.data.symbol.toLowerCase()}`,
         );
       }}
     >

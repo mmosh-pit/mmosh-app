@@ -141,6 +141,7 @@ const ChatInteractionContainer = () => {
           query: content,
           instructions: selectedChat!.chatAgent!.system_prompt,
           chatHistory: chatHistory,
+          agentId: selectedChat.chatAgent!.id
         };
 
         console.log("Message data being sent:", queryData);

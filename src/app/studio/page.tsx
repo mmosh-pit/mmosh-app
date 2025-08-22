@@ -34,6 +34,7 @@ export default function ProjectCreate() {
   const [msgText, setMsgText] = useState("");
   const [projects, setProjects] = useState([]);
   const [membershipInfo, setMembershipInfo] = useState<any>({});
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const getProjectList = async (address: any) => {
     try {
@@ -61,6 +62,7 @@ export default function ProjectCreate() {
     }
     getProjectList(wallet.publicKey.toBase58());
     checkMembershipStatus();
+    checkAccountType();
   }, [wallet]);
 
   useEffect(() => {
@@ -70,6 +72,16 @@ export default function ProjectCreate() {
       getProjectDetailFromAPI(selectedProjectType);
     }
   }, [selectedProjectType]);
+
+  const checkAccountType = async () => {
+    const token = localStorage.getItem("token") || "";
+    let response = await axios.get(`/api/is-admin?wallet=${wallet.publicKey.toBase58()}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    setIsAdmin(response.data.result);
+  }
 
   const getProjectDetailFromAPI = async (symbol: any) => {
     try {
@@ -169,6 +181,7 @@ export default function ProjectCreate() {
     setMembershipInfo(membershipInfo.data);
   }
   const hasAllowedToCreateBot = () => {
+    if (isAdmin) return { status: true, message: "" };
     const { status, membership } = membershipInfo || {};
 
     if (!status || !membership || status === "expired") {
@@ -305,7 +318,7 @@ export default function ProjectCreate() {
           <AgentTeam onPageChange={onPageChange} symbol={selectedProjectType} />
         )}
         {selectedOption === "Coins" && (
-          <AgentCoin onPageChange={onPageChange} symbol={selectedProjectType} createMessage={createMessage}  />
+          <AgentCoin onPageChange={onPageChange} symbol={selectedProjectType} createMessage={createMessage} />
         )}
         {selectedOption === "step4" && (
           <ProjectCreateStep4 onPageChange={onPageChange} />

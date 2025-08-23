@@ -223,7 +223,7 @@ const LaunchPadVC = () => {
         </div>
       }
       {!projectLoading && groupedCards.length > 0 &&
-        <div className="min-h-screen flex flex-col items-center pt-10 pb-12">
+        <div className="min-h-screen flex flex-col items-center  pb-12">
           <div className="min-h-screen py-10 px-4">
             <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
               Next launch
@@ -231,7 +231,7 @@ const LaunchPadVC = () => {
 
             <div className="flex justify-center items-center gap-5 mt-3">
               {timerData.map((item, index) => (
-                <div key={index} className="relative flex flex-col items-center w-[71px] h-[64px]">
+                <div key={index} className="relative flex flex-col items-center">
                   <span className="text-[54px] leading-[50px] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
                     {getCountDownValues(countDown, item.label)}
                   </span>

@@ -12,11 +12,25 @@ export async function GET(req: NextRequest) {
 
   const projectCollection = db.collection("mmosh-app-project");
 
-  let projectData:any;
-  if(symbol) {
-    projectData = await projectCollection.findOne({ symbol: symbol?.toUpperCase() });
-    if(!projectData) {
-      projectData = await projectCollection.findOne({ symbol: symbol });
+  let projectData: any;
+  if (symbol) {
+    projectData = await projectCollection.findOne(
+      { symbol: symbol?.toUpperCase() },
+      {
+        projection: {
+          code: 0,
+        },
+      },
+    );
+    if (!projectData) {
+      projectData = await projectCollection.findOne(
+        { symbol: symbol },
+        {
+          projection: {
+            code: 0,
+          },
+        },
+      );
       if (!projectData) {
         return NextResponse.json(null, {
           status: 200,
@@ -29,13 +43,19 @@ export async function GET(req: NextRequest) {
 
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
   const projectOfferCollection = db.collection("mmosh-app-project-offer");
-  const coins = await projectCoinCollection.find({ projectkey: projectData.key }).toArray();
-  const offers = await projectOfferCollection.find({ project: projectData.key }).sort({created_date: -1}).limit(1).toArray();
+  const coins = await projectCoinCollection
+    .find({ projectkey: projectData.key })
+    .toArray();
+  const offers = await projectOfferCollection
+    .find({ project: projectData.key })
+    .sort({ created_date: -1 })
+    .limit(1)
+    .toArray();
 
   const updated_date = new Date();
   const communityCoinAccount = await projectCoinCollection.findOne({
     projectkey: projectData.key,
-    updated_date: {$lt: updated_date},
+    updated_date: { $lt: updated_date },
   });
 
   const projectCommunityCollection = db.collection(
@@ -46,35 +66,35 @@ export async function GET(req: NextRequest) {
     .toArray();
 
   const projectProfileCollection = db.collection("mmosh-app-project-profiles");
-  const profiles = await projectProfileCollection.aggregate(
-    [
+  const profiles = await projectProfileCollection
+    .aggregate([
       { $match: { projectkey: projectData.key } },
-       {
-         $lookup: {
-           from: "mmosh-users",
-           localField: "profilekey",
-           foreignField: "wallet",
-           as: "profiles",
-         },
-       },
-       {
-         $lookup: {
-           from: "mmosh-users",
-           localField: "coin",
-           foreignField: "key",
-           as: "coins",
-         },
-       },
-       {
-         $project: {
-           projectkey: 1,
-           role: 1,
-           key: 1,
-           profiles: "$profiles",
-         },
-       },
-     ]
-  ).toArray();;
+      {
+        $lookup: {
+          from: "mmosh-users",
+          localField: "profilekey",
+          foreignField: "wallet",
+          as: "profiles",
+        },
+      },
+      {
+        $lookup: {
+          from: "mmosh-users",
+          localField: "coin",
+          foreignField: "key",
+          as: "coins",
+        },
+      },
+      {
+        $project: {
+          projectkey: 1,
+          role: 1,
+          key: 1,
+          profiles: "$profiles",
+        },
+      },
+    ])
+    .toArray();
 
   const projectTokenomicsCollection = db.collection(
     "mmosh-app-project-tokenomics",
@@ -84,7 +104,9 @@ export async function GET(req: NextRequest) {
     .toArray();
 
   const passCollection = db.collection("mmosh-app-project-pass");
-  const passes = await passCollection.find({ projectkey: projectData.key }).toArray();
+  const passes = await passCollection
+    .find({ projectkey: projectData.key })
+    .toArray();
 
   const result = {
     coins,

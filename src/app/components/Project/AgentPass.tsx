@@ -33,7 +33,15 @@ const explanations: any = {
     "The Bot is visible to everyone and only a Wizard can set it to Public.",
 };
 
-const AgentPass = ({ symbol, type, hasAllowed }: { symbol?: string; type: string, hasAllowed: any }) => {
+const AgentPass = ({
+  symbol,
+  type,
+  hasAllowed,
+}: {
+  symbol?: string;
+  type: string;
+  hasAllowed: any;
+}) => {
   const connection = useConnection();
   const wallet: any = useWallet();
   const [profileInfo] = useAtom(userWeb3Info);

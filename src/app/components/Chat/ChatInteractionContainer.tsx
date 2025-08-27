@@ -152,6 +152,7 @@ const ChatInteractionContainer = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Accept": "text/event-stream",
               "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
             },
             body: JSON.stringify(queryData),

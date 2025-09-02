@@ -11,6 +11,8 @@ import {
 import { useAtom } from "jotai";
 import axios from "axios";
 import Image from "next/image";
+import Extension from "@/app/models/Extension";
+import internalClient from "@/app/lib/internalHttpClient";
 
 import { userWeb3Info } from "@/app/store";
 import * as anchor from "@coral-xyz/anchor";
@@ -116,9 +118,22 @@ const Project = ({ params }: { params: { symbol: string } }) => {
 
   const [isDrawerShown] = useAtom(isDrawerOpen);
 
+  // Extension form state
+  const [selectedPlatform, setSelectedPlatform] = React.useState<'linkedin' | 'bluesky' | 'x'>('linkedin');
+  const [extensionForm, setExtensionForm] = React.useState({
+    email: '',
+    password: '',
+    instructions: ''
+  });
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitMessage, setSubmitMessage] = React.useState('');
+  const [connectedAccounts, setConnectedAccounts] = React.useState<any[]>([]);
+  const [selectedAccountType, setSelectedAccountType] = React.useState<'all' | 'linkedin' | 'bluesky' | 'x'>('all');
+
   React.useEffect(() => {
     getProjectDetailFromAPI();
     setCurrentBot(params.symbol);
+    fetchConnectedAccounts();
   }, [params.symbol]);
 
   React.useEffect(() => {
@@ -446,7 +461,64 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     }
   };
 
+  const fetchConnectedAccounts = async () => {
+    try {
+      const response = await internalClient.get(`/api/extension?botId=${params.symbol}&userId=${profile}`);
+      if (response.status === 200) {
+        setConnectedAccounts(response.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching connected accounts:', error);
+      setConnectedAccounts([]);
+    }
+  };
+
   const isMobileScreen = screenSize < 1200;
+
+  // Handle extension form submission
+  const handleExtensionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!extensionForm.email || !extensionForm.password || !extensionForm.instructions) {
+      setSubmitMessage('Please fill in all fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitMessage('');
+
+    try {
+      const extensionData: Extension = {
+        type: selectedPlatform,
+        email: extensionForm.email,
+        password: extensionForm.password,
+        instructions: extensionForm.instructions,
+        userId: profile || undefined,
+        botId: params.symbol
+      };
+
+      const response = await internalClient.post('/api/extension', extensionData);
+      
+      if (response.status === 200) {
+        setSubmitMessage('Extension connected successfully!');
+        setExtensionForm({ email: '', password: '', instructions: '' });
+        await fetchConnectedAccounts(); // Refresh the connected accounts list
+      }
+    } catch (error) {
+      console.error('Error saving extension:', error);
+      setSubmitMessage('Error connecting extension. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle form input changes
+  const handleInputChange = (field: string, value: string) => {
+    setExtensionForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   return (
     <>
@@ -463,7 +535,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
       <div
         className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
       >
-        <div className="flex flex-col backdrop-blur-[6px] rounded-md relative md:mx-16 mx-4 rounded-xl mb-16 p-3">
+        <div className="flex flex-col backdrop-blur-[6px] rounded-xl relative md:mx-16 mx-4 mb-16 p-3">
           {projectDetail && (
             <div className="h-80 overflow-hidden relative">
               <Image
@@ -475,7 +547,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
 
               {isAuthenticated ||
                 (isMobileScreen && (
-                  <div className="absolute left-0 top-0 h-12 bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px] h-[50px]">
+                  <div className="absolute left-0 top-0 h-[50px] bg-[#00000080] rounded-tl-lg rounded-br-[50px] p-4 lg:w-[280px] md:w-[200px] w-[150px] lg:h-[80px]">
                     <Image
                       src="https://storage.googleapis.com/mmosh-assets/home/fd_logo.png"
                       alt="FDN"
@@ -623,8 +695,294 @@ const Project = ({ params }: { params: { symbol: string } }) => {
           {projectDetail?.project && isAuthenticated && (
             <AgentPageInfo agentKey={projectDetail.project.key} roles={roles} />
           )}
-        </div>
+
+          {/* Social Media Connection Section */}
+          <div className="flex space-x-3 justify-around">
+            <div className="flex space-x-2">
+                  <button 
+                    type="button"
+                    onClick={() => setSelectedPlatform('x')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      selectedPlatform === 'x' 
+                        ? 'border-white text-white bg-white/10' 
+                        : 'border-gray-600 text-gray-400 hover:text-white hover:border-white'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                      <span>X</span>
+                    </div>
+                  </button>
+                  
+                  <button 
+                    type="button"
+                    onClick={() => setSelectedPlatform('bluesky')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      selectedPlatform === 'bluesky' 
+                        ? 'border-white text-white bg-white/10' 
+                        : 'border-gray-600 text-gray-400 hover:text-white hover:border-white'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                      <span>Bluesky</span>
+                    </div>
+                  </button>
+                  
+                  <button 
+                    type="button"
+                    onClick={() => setSelectedPlatform('linkedin')}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      selectedPlatform === 'linkedin' 
+                        ? 'border-white text-white bg-white/10' 
+                        : 'border-gray-600 text-gray-400 hover:text-white hover:border-white'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-white rounded-sm flex items-center justify-center">
+                        <span className="text-[#2d1b69] font-bold text-xs">in</span>
+                      </div>
+                      <span>LinkedIn</span>
+                    </div>
+                  </button>
+                  </div>
+                </div>
+              </div>
+              
+              
+            <div className="rounded-xl p-8">
+              {/* Platform Selection Tabs */}
+              <div className="items-center mb-8 ">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                    {selectedPlatform === 'linkedin' && (
+                      <span className="text-[#2d1b69] font-bold text-sm">in</span>
+                    )}
+                    {selectedPlatform === 'bluesky' && (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                    )}
+                    {selectedPlatform === 'x' && (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-white font-semibold">
+                    {selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)}
+                  </span>
+                </div>
+                
+ 
+
+              {/* Connection Form */}
+              <div className="bg-[#070529] rounded-xl p-8 mt-2">
+                <h3 className="text-white text-xl font-semibold text-center mb-8">
+                  What {selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)} accounts do you want to share with your agent?
+                </h3>
+                
+                <form onSubmit={handleExtensionSubmit}>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Left Column - Credentials */}
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-white text-sm font-medium mb-2">
+                          Email or phone
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Email or phone"
+                          value={extensionForm.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#1a0b2e] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#FF00AE] transition-colors"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-white text-sm font-medium mb-2">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          placeholder="Password"
+                          value={extensionForm.password}
+                          onChange={(e) => handleInputChange('password', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#1a0b2e] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#FF00AE] transition-colors"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Right Column - Instructions */}
+                    <div>
+                      <label className="block text-white text-sm font-medium mb-2">
+                        Instructions
+                      </label>
+                      <textarea
+                        placeholder="Enter instructions for the Agent to follow when interacting through this account."
+                        rows={6}
+                        value={extensionForm.instructions}
+                        onChange={(e) => handleInputChange('instructions', e.target.value)}
+                        className="w-full px-4 py-3 bg-[#1a0b2e] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#FF00AE] transition-colors resize-none"
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Submit Message */}
+                  {submitMessage && (
+                    <div className={`text-center mt-4 ${
+                      submitMessage.includes('successfully') ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      {submitMessage}
+                    </div>
+                  )}
+                  
+                  {/* Connect Button */}
+                  <div className="flex justify-center mt-8">
+                    <button 
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-[#FF00AE] hover:bg-[#e6009a] disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+                    >
+                      {isSubmitting ? 'Connecting...' : 'Connect'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            {/* Connected Accounts Display Section */}
+            {connectedAccounts.length > 0 && (
+              <div className="mt-8">
+                <div className="bg-[#070529] rounded-xl p-8">
+                  <h3 className="text-white text-xl font-semibold text-center mb-6">
+                    Connected Accounts
+                  </h3>
+                  
+                  {/* Account Type Filter */}
+                  <div className="flex justify-center mb-6">
+                    <div className="flex space-x-2 bg-[#1a0b2e] rounded-lg p-1">
+                      <button
+                        onClick={() => setSelectedAccountType('all')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedAccountType === 'all'
+                            ? 'bg-[#FF00AE] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        All ({connectedAccounts.length})
+                      </button>
+                      <button
+                        onClick={() => setSelectedAccountType('linkedin')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedAccountType === 'linkedin'
+                            ? 'bg-[#FF00AE] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        LinkedIn ({connectedAccounts.filter(acc => acc.type === 'linkedin').length})
+                      </button>
+                      <button
+                        onClick={() => setSelectedAccountType('x')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedAccountType === 'x'
+                            ? 'bg-[#FF00AE] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        X ({connectedAccounts.filter(acc => acc.type === 'x').length})
+                      </button>
+                      <button
+                        onClick={() => setSelectedAccountType('bluesky')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedAccountType === 'bluesky'
+                            ? 'bg-[#FF00AE] text-white'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        Bluesky ({connectedAccounts.filter(acc => acc.type === 'bluesky').length})
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Accounts List */}
+                  <div className="space-y-4">
+                    {connectedAccounts
+                      .filter(account => selectedAccountType === 'all' || account.type === selectedAccountType)
+                      .map((account, index) => (
+                        <div key={index} className="bg-[#1a0b2e] border border-gray-600 rounded-lg p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                                {account.type === 'linkedin' && (
+                                  <span className="text-[#2d1b69] font-bold text-sm">in</span>
+                                )}
+                                {account.type === 'x' && (
+                                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                  </svg>
+                                )}
+                                {account.type === 'bluesky' && (
+                                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                  </svg>
+                                )}
+                              </div>
+                              <div>
+                                <h4 className="text-white font-medium capitalize">
+                                  {account.type} Account
+                                </h4>
+                                <p className="text-gray-400 text-sm">
+                                  {account.email}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-green-400 text-sm font-medium">
+                                Connected
+                              </span>
+                              <button
+                                onClick={() => {
+                                  // Add delete functionality here
+                                  console.log('Delete account:', account.id);
+                                }}
+                                className="text-red-400 hover:text-red-300 text-sm"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                          {account.instructions && (
+                            <div className="mt-3 pt-3 border-t border-gray-600">
+                              <p className="text-gray-300 text-sm">
+                                <span className="font-medium">Instructions:</span> {account.instructions}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+
+                  {connectedAccounts.filter(account => selectedAccountType === 'all' || account.type === selectedAccountType).length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-gray-400">
+                        No {selectedAccountType === 'all' ? '' : selectedAccountType} accounts connected yet.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+        </div>        
       </div>
+      
     </>
   );
 };

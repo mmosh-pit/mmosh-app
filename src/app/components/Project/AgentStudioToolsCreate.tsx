@@ -2,8 +2,10 @@ import * as React from "react";
 import axios from "axios";
 import TelegramIcon from "@/assets/icons/TelegramIcon";
 import BlueskyIcon from "@/assets/icons/BlueskyIcon";
+import LinkedinIcon from "@/assets/icons/LinkedinIcon";
 import BlueskyAgentOption from "./BlueskyAgentOption";
 import TelegramAgentOption from "./TelegramAgentOption";
+import LinkedInAgentOption from "./LinkedInAgentOption";
 
 const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
   const [selectedOption, setSelectedOption] = React.useState(0);
@@ -61,12 +63,25 @@ const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
             <BlueskyIcon />{" "}
             <p className="text-base text-white ml-1"> Bluesky</p>
           </div>
+
+          <div className="px-6" />
+
+          <div
+            className={getClassNameForItem(3)}
+            onClick={() => setSelectedOption(3)}
+          >
+            <LinkedinIcon />{" "}
+            <p className="text-base text-white ml-1"> LinkedIn</p>
+          </div>
         </div>
         {selectedOption === 1 && (
           <TelegramAgentOption project={projectDetail?.project.key} />
         )}
         {selectedOption === 2 && (
           <BlueskyAgentOption project={projectDetail?.project.key} />
+        )}
+        {selectedOption === 3 && (
+          <LinkedInAgentOption project={projectDetail?.project.key} />
         )}
       </div>
     </div>

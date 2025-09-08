@@ -22,6 +22,9 @@ module.exports = {
   webpack: (config, _context) => {
     config.resolve.fallback = { fs: false };
     config.resolve.alias['jotai'] = path.resolve(__dirname, 'node_modules/jotai')
+    
+    // Alias for problematic anchor imports
+    config.resolve.alias['@coral-xyz/anchor/dist/cjs/utils/bytes'] = path.resolve(__dirname, 'node_modules/@coral-xyz/anchor/dist/esm/utils/bytes')
 
     // Exclude undici from webpack processing to avoid build errors
     config.externals = config.externals || [];

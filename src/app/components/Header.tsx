@@ -53,6 +53,7 @@ const MMOSH_COIN = process.env.NEXT_PUBLIC_OPOS_TOKEN;
 const PASS_COLLECTION = "PASSES";
 const BADGE_COLLECTION = "BADGES";
 const PROFILE_COLLECTION = "PROFILES";
+import { nanoid } from 'nanoid';
 
 const Header = () => {
   const router = useRouter();
@@ -90,6 +91,154 @@ const Header = () => {
 
   const param = searchParams.get("refer");
   const [membershipStatus, setMembershipStatus] = React.useState("na");
+
+  const [pageViewCount, setPageViewCount] = React.useState(0);
+  const [sessionId, setSessionId] = React.useState(localStorage.getItem('analytics_session') || nanoid());
+  const [isInitialized, setIsInitialized] = React.useState<boolean>(false);
+  const [geo, setGeo] = React.useState({
+    country: 'Unknown',
+    region: 'Unknown',
+    city: 'Unknown',
+    ip: "0.0.0.0"
+  });
+
+  React.useEffect(() => {
+    if (!wallet) return;
+    getGeolocation().then((result) => {
+      setGeo(result);
+    })
+
+    trackPageView();
+
+  }, [wallet])
+
+  const getTrafficSource = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log("----- urlParams -----", urlParams);
+    const referrer = document.referrer;
+    console.log("----- referrer -----", referrer);
+    const utmSource = urlParams.get('utm_source');
+    console.log("----- utmSource -----", utmSource);
+    const utmMedium = urlParams.get('utm_medium');
+    console.log("----- utmMedium -----", utmMedium);
+    const utmCampaign = urlParams.get('utm_campaign');
+    console.log("----- utmCampaign -----", utmCampaign);
+
+    // UTM parameters take precedence
+    if (utmSource) {
+      return {
+        source: utmSource,
+        medium: utmMedium || 'unknown',
+        campaign: utmCampaign || undefined
+      };
+    }
+
+    // Bot referral tracking
+    if (urlParams.get('bot_ref')) {
+      return {
+        source: 'bot_external',
+        medium: 'bot',
+        campaign: urlParams.get('bot_campaign') || undefined
+      };
+    }
+
+    // Referrer-based classification
+    console.log("-=-----------referrer", referrer);
+    if (!referrer) {
+      return { source: 'direct', medium: 'none' };
+    }
+
+    const referrerDomain = new URL(referrer).hostname.toLowerCase();
+    console.log("----- referrerDomain -----", referrerDomain);
+    const currentDomain = window.location.hostname.toLowerCase();
+    console.log("----- currentDomain -----", currentDomain);
+
+    if (referrerDomain === currentDomain) {
+      return { source: 'internal', medium: 'referral' };
+    }
+
+    // Social media detection
+    const socialPlatforms = ['facebook.com', 'twitter.com', 'x.com', 'linkedin.com', 'instagram.com', 'youtube.com', 'tiktok.com'];
+    if (socialPlatforms.some(platform => referrerDomain.includes(platform))) {
+      return { source: referrerDomain, medium: 'social' };
+    }
+
+    // Search engine detection
+    const searchEngines = ['google.', 'bing.', 'yahoo.', 'duckduckgo.', 'baidu.'];
+    if (searchEngines.some(engine => referrerDomain.includes(engine))) {
+      return { source: referrerDomain, medium: 'organic' };
+    }
+    console.log("----- End Of The FIle -----");
+
+    return { source: referrerDomain, medium: 'referral' };
+  };
+
+  const getGeolocation = async (): Promise<any> => {
+    try {
+      const response = await axios.get("/api/get-geo-location", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token") || ""}`
+        }
+      });
+      return await response.data;
+    } catch (error) {
+      return { country: 'Unknown', region: 'Unknown', city: 'Unknown', ip: "0.0.0.0" };
+    }
+  };
+
+  const trackPageView = async () => {
+    setIsInitialized(true);
+    if (typeof window === 'undefined') return;
+
+    setPageViewCount(pageViewCount + 1);
+    const trafficSource = getTrafficSource();
+    console.log("trafficSource", trafficSource);
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log("----- PAGE VIEW COUNT -----", pageViewCount);
+    console.log("----- urlParams.get('bot_ref') -----", urlParams.get('bot_ref'));
+    console.log("----- new URL(urlParams.get('bot_ref')!).hostname -----", new URL(urlParams.get('bot_ref')!).hostname);
+
+    const eventData = {
+      event_id: nanoid(),
+      timestamp: new Date().toISOString(),
+      session_id: sessionId,
+      user_id: wallet?.publicKey.toBase58(),
+      page_url: window.location.href,
+      page_title: document.title,
+      referrer: document.referrer || null,
+      domain: window.location.hostname,
+      traffic_source: trafficSource.source,
+      traffic_medium: trafficSource.medium,
+      traffic_campaign: trafficSource.campaign,
+      bot_referrer_url: urlParams.get('bot_ref'),
+      bot_referring_domain: urlParams.get('bot_ref') ? new URL(urlParams.get('bot_ref')!).hostname : null,
+      user_agent: navigator.userAgent,
+      device_type: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      browser: navigator.userAgent.match(/(Firefox|Chrome|Safari|Edge)/)?.[0] || 'Unknown',
+      os: navigator.platform,
+      country: geo.country,
+      region: geo.region,
+      city: geo.city,
+      ip: geo.ip,
+      is_new_session: pageViewCount === 1 ? 1 : 0,
+      pageViewCount: pageViewCount,
+      event_type: 'page_view'
+    };
+    console.log("===== TRACK PAGE VIEW CALLED 3 =====", eventData);
+
+    await trackEvent(eventData);
+  };
+
+  const trackEvent = async (eventData: any) => {
+    if (!sessionId) return;
+    try {
+      await axios.post("/api/analytics/track", eventData, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token") || ""}`
+        }
+      });
+    } catch (error) { }
+  };
 
   React.useEffect(() => {
     if (param) {
@@ -339,6 +488,7 @@ const Header = () => {
 
   const getProfileInfo = async () => {
     try {
+      console.log("===============================");
       const connection = new Connection(
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
         {
@@ -385,6 +535,7 @@ const Header = () => {
         quota = 1000;
       }
 
+      console.log("===============================2");
       const profileNft = profileInfo.profiles[0];
       let username = "";
       if (profileNft?.address) {
@@ -396,7 +547,9 @@ const Header = () => {
         setBadge(notificationResult.data.unread);
         setNotifications(notificationResult.data.data);
       }
+      console.log("===============================3");
 
+      console.log("profileInfo", profileInfo);
       setProfileInfo({
         generation: profileInfo.generation,
         genesisToken: genesis,
@@ -453,6 +606,9 @@ const Header = () => {
   React.useEffect(() => {
     if (wallet) {
       checkMembershipStatus()
+      if (isInitialized) {
+        trackPageView();
+      }
     }
   }, [pathname, wallet])
 
@@ -468,7 +624,18 @@ const Header = () => {
       setIsLoadingProfile(false);
     }
     checkIfIsAuthenticated();
+    updateUserActivity();
   }, [wallet]);
+
+  const updateUserActivity = async () => {
+    await axios.put("/api/update-user-activity", {
+      wallet: wallet?.publicKey.toBase58(),
+    }, {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+    });
+  }
 
   const resetNotification = async () => {
     await internalClient.put("/api/notifications/update", {

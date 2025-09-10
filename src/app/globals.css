@@ -1372,3 +1372,18 @@ a:hover {
     transform: rotate(360deg);
   }
 }
+
+.preview-footer-card {
+  background: linear-gradient(
+    120.98deg,
+    rgba(255, 255, 255, 0.8) -34.03%,
+    rgba(255, 0, 174, 0.8) 99.64%
+  );
+
+  padding: 2rem;
+
+  display: flex;
+  flex-flow: column;
+  justify-content: start;
+  align-items: flex-start;
+}

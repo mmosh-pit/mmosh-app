@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Select from "../components/common/Select";
 // import { Shield, CreditCard, Clock, DollarSign, Search } from "lucide-react";
 
 export default function Iap() {
@@ -58,8 +59,19 @@ export default function Iap() {
     },
   ];
 
+  const options = [
+    "All Categories",
+    "Various Coins",
+    "Airdrop",
+    "Royalties",
+    "Referrals",
+  ];
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [selected, setSelected] = useState("All Categories");
+
   return (
-    <div >
+    <div>
       <p className="text-2xl font-bold text-center mt-10 mb-10">My Wallet</p>
       <div className="bg-[#0A044C63] border-2 border-[#FFFFFF38] lg:w-[52rem] w-full m-auto rounded-xl p-4">
         <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13rem] m-auto p-1 rounded-lg">
@@ -178,15 +190,54 @@ export default function Iap() {
           </div>
         </div>
         <div className="lg:flex justify-center mt-6">
-          <select
-            defaultValue="Pick a color"
-            className="select lg:w-[15.375rem] w-full rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] text-white"
-          >
-            <option disabled={true}>All Categories</option>
-            <option>Crimson</option>
-            <option>Amber</option>
-            <option>Velvet</option>
-          </select>
+          <div className="relative w-full lg:w-[15.375rem]">
+            {/* Dropdown Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex w-full items-center justify-between rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2 text-white"
+            >
+              <span>{selected}</span>
+              {/* <ChevronDown
+                className={`h-4 w-4 transition-transform ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              /> */}
+            </button>
+
+            {/* Dropdown Menu */}
+            {isOpen && (
+              <div className="absolute mt-2 w-full rounded-xl bg-[#1B1E37] shadow-lg border border-[#FFFFFF20] z-10">
+                <ul className="py-2">
+                  {options.map((option) => (
+                    <li key={option}>
+                      <button
+                        onClick={() => {
+                          setSelected(option);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left text-white hover:bg-[#2A2D4A] ${
+                          selected === option ? "font-semibold" : "font-normal"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* <select
+              defaultValue="Pick a browser"
+              className="select lg:w-[15.375rem] w-full rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] "
+            >
+              <option  className=" bg-black" disabled={true}>Pick a browser</option>
+              <option className="backdrop-blur-md">Chrome</option>
+              <option>FireFox</option>
+              <option>Safari</option>
+            </select> */}
+
           <label className="input flex items-center rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] lg:w-[30.375rem] w-full lg:ml-6 my-2 lg:my-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -209,20 +260,26 @@ export default function Iap() {
         </div>
         <div className=" mt-6">
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 p-3 rounded-lg flex justify-center lg:justify-start">
-           <p className="text-[#FFFFFFBF] mr-10 text-sm">Category</p>
-           <p className="text-[#FFFFFFBF] mr-10 text-sm">Staked</p>
-           <p className="text-[#FFFFFFBF] text-sm">Unstaked</p>
+            <p className="text-[#FFFFFFBF] mr-10 text-sm">Category</p>
+            <p className="text-[#FFFFFFBF] mr-10 text-sm">Staked</p>
+            <p className="text-[#FFFFFFBF] text-sm">Unstaked</p>
           </div>
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
             <p className="text-sm">Airdrop</p>
             <p className="text-sm">$1095</p>
             <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
+              <p className="text-xs text-[#FFFFFFBF] ml-5">
+                Unlocks in 65 days, 12 hours 43 minutes
+              </p>
             </div>
             <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
+                Trade
+              </button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
+                Redeem
+              </button>
             </div>
           </div>
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
@@ -230,37 +287,54 @@ export default function Iap() {
             <p className="text-sm">$1095</p>
             <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
+              <p className="text-xs text-[#FFFFFFBF] ml-5">
+                Unlocks in 65 days, 12 hours 43 minutes
+              </p>
             </div>
-             <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
+            <div className="lg:flex ">
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
+                Trade
+              </button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
+                Redeem
+              </button>
             </div>
           </div>
-         
+
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
             <p className="text-sm">Royalties</p>
             <p className="text-sm">-</p>
             <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
-            </div>
-             <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
-            </div>
-            
-          </div>
-           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
-            <p className="text-sm">Coins</p>
-            <p className="text-sm">$1095</p>
-          <div className="lg:flex text-center">
-              <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
+              <p className="text-xs text-[#FFFFFFBF] ml-5">
+                Unlocks in 65 days, 12 hours 43 minutes
+              </p>
             </div>
             <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
+                Trade
+              </button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
+                Redeem
+              </button>
+            </div>
+          </div>
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
+            <p className="text-sm">Coins</p>
+            <p className="text-sm">$1095</p>
+            <div className="lg:flex text-center">
+              <p className="text-sm">$559</p>
+              <p className="text-xs text-[#FFFFFFBF] ml-5">
+                Unlocks in 65 days, 12 hours 43 minutes
+              </p>
+            </div>
+            <div className="lg:flex ">
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
+                Trade
+              </button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
+                Redeem
+              </button>
             </div>
           </div>
         </div>

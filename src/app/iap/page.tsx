@@ -194,7 +194,7 @@ export default function Iap() {
             {/* Dropdown Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex w-full items-center justify-between rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2 text-white"
+              className="flex w-full items-center justify-between rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
             >
               <span>{selected}</span>
               {/* <ChevronDown
@@ -202,11 +202,26 @@ export default function Iap() {
                   isOpen ? "rotate-180" : ""
                 }`}
               /> */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="none"
+                  stroke="#fff"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="m7 10l5 5l5-5"
+                />
+              </svg>
             </button>
 
             {/* Dropdown Menu */}
             {isOpen && (
-              <div className="absolute mt-2 w-full rounded-xl bg-[#1B1E37] shadow-lg border border-[#FFFFFF20] z-10">
+              <div className="absolute mt-2 w-full rounded-xl bg-[#FFFFFF14] shadow-lg border border-[#FFFFFF47] z-10 backdrop-blur-xl">
                 <ul className="py-2">
                   {options.map((option) => (
                     <li key={option}>

@@ -216,51 +216,51 @@ export default function Iap() {
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
             <p className="text-sm">Airdrop</p>
             <p className="text-sm">$1095</p>
-            <div className="flex">
+            <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
               <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
             </div>
-            <div className="lg:flex">
-              <button className="btn mr-2 bg-transparent border-2 border-[#FFFFFF47]">Trade</button>
-              <button className="btn bg-[#FF00AE] text-white">Redeem</button>
+            <div className="lg:flex ">
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
             </div>
           </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
             <p className="text-sm">Referrals</p>
             <p className="text-sm">$1095</p>
-            <div className="flex">
+            <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
               <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
             </div>
-            <div className="flex">
-              <button className="btn mr-2 bg-transparent border-2 border-[#FFFFFF47]">Trade</button>
-              <button className="btn bg-[#FF00AE] text-white">Redeem</button>
+             <div className="lg:flex ">
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
             </div>
           </div>
          
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between text-center">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
             <p className="text-sm">Royalties</p>
             <p className="text-sm">-</p>
-            <div className="flex">
+            <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
               <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
             </div>
-            <div className="lg:flex">
-              <button className="btn mr-2 bg-transparent border-2 border-[#FFFFFF47]">Trade</button>
-              <button className="btn bg-[#FF00AE] text-white">Redeem</button>
+             <div className="lg:flex ">
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
             </div>
             
           </div>
-           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] mx-5 my-2 p-2 rounded-lg flex items-center justify-between">
+           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
             <p className="text-sm">Coins</p>
             <p className="text-sm">$1095</p>
-            <div className="flex">
+          <div className="lg:flex text-center">
               <p className="text-sm">$559</p>
               <p className="text-xs text-[#FFFFFFBF] ml-5">Unlocks in 65 days, 12 hours 43 minutes</p>
             </div>
-            <div className="flex">
-              <button className="btn mr-2 bg-transparent border-2 border-[#FFFFFF47]">Trade</button>
-              <button className="btn bg-[#FF00AE] text-white">Redeem</button>
+            <div className="lg:flex ">
+              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">Trade</button>
+              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">Redeem</button>
             </div>
           </div>
         </div>

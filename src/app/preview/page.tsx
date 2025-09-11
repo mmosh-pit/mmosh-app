@@ -3,9 +3,6 @@
 import { useRef, useState } from "react";
 import AlertModal from "../components/Modal";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
-import { useAtom } from "jotai";
-import { isAuth } from "../store";
-import HomeLoggedInPage from "../components/HomeLoggedInPage";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import Button from "../components/common/Button";
 import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
@@ -21,8 +18,6 @@ import XIcon from "@/assets/icons/XIcon";
 
 export default function LandingPage() {
   const screenSize = useCheckDeviceScreenSize();
-
-  const [isUserAuthenticated] = useAtom(isAuth);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [initialModalStep, setInitialModalStep] = useState(0);
@@ -47,8 +42,6 @@ export default function LandingPage() {
     setInitialModalStep(2);
     setIsModalOpen(true);
   };
-
-  if (isUserAuthenticated) return <HomeLoggedInPage />;
 
   return (
     <div className="relative h-full">

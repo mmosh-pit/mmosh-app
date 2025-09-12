@@ -229,18 +229,22 @@ const LaunchPadVC = () => {
               Next launch
             </h2>
 
-            <div className="flex justify-center items-center gap-5 mt-3">
+            <div className="flex justify-center  mt-6">
               {timerData.map((item, index) => (
-                <div key={index} className="relative flex flex-col items-center w-[71px] h-[64px]">
-                  <span className="text-[54px] leading-[50px] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
+                <div key={index} className="flex  justify-between items-center">
+                  <div className="mx-5">
+                  <div className="text-[4rem] leading-[3rem] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
                     {getCountDownValues(countDown, item.label)}
-                  </span>
-                  <span className="text-base text-[#FFFFFFC7] font-avenir font-medium mt-[2px]">
+                  </div>
+                  <div className="text-base text-[#FFFFFFC7] text-center font-avenir font-medium mt-1">
                     {item.label}
-                  </span>
+                  </div>
+                  </div>
+                  
                   {index !== timerData.length - 1 && (
-                    <span className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-px h-[60px] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
+                    <span className="h-[4rem] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
                   )}
+                  
                 </div>
               ))}
             </div>

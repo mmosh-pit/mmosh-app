@@ -230,7 +230,7 @@ export default function Iap() {
                           setSelected(option);
                           setIsOpen(false);
                         }}
-                        className={`w-full px-4 py-2 text-left text-white hover:bg-[#2A2D4A] ${
+                        className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
                           selected === option ? "font-semibold" : "font-normal"
                         }`}
                       >

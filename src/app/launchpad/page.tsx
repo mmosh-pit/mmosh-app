@@ -223,9 +223,9 @@ const LaunchPadVC = () => {
         </div>
       }
       {!projectLoading && groupedCards.length > 0 &&
-        <div className="min-h-screen flex flex-col items-center pt-10 pb-12">
-          <div className="min-h-screen py-10 px-4">
-            <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
+        <div className=" flex flex-col items-center pt-10 pb-12">
+          <div className=" py-10 px-4">
+            <h2 className="text-center text-[4.75rem] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
               Next launch
             </h2>
 
@@ -248,11 +248,11 @@ const LaunchPadVC = () => {
                 </div>
               ))}
             </div>
-            <div className="min-h-screen py-10 px-4">
+            <div className=" py-10 px-2">
               {groupedCards.map((group, groupIdx) => (
                 <div
                   key={groupIdx}
-                  className={`flex flex-wrap justify-center gap-6 mb-8`}
+                  className={`flex flex-wrap justify-center`}
                 >
                   {group.map((presale: any, index: number) => (
                     <LaunchPad getCountDownValues={getCountDownValues} creator={creator} buyToken={(amount: string, token: number) => buyToken(presale, amount, token)} presale={presale} isBuying={isBuying} />

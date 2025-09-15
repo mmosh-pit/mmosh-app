@@ -4,23 +4,7 @@ import { useAtom } from "jotai";
 import HamburgerIcon from "@/assets/icons/HamburgerIcon";
 import { isDrawerOpen } from "@/app/store";
 
-type Props = {
-  belowHeroRef: React.RefObject<HTMLDivElement>;
-  howItWorksSection: React.RefObject<HTMLDivElement>;
-  whySection: React.RefObject<HTMLDivElement>;
-  founderSection: React.RefObject<HTMLDivElement>;
-  testimonialsSection: React.RefObject<HTMLDivElement>;
-  safeSection: React.RefObject<HTMLDivElement>;
-};
-
-const HomeMobileDrawer = ({
-  belowHeroRef,
-  howItWorksSection,
-  whySection,
-  founderSection,
-  testimonialsSection,
-  safeSection,
-}: Props) => {
+const HomeMobileDrawer = () => {
   const [_, setIsDrawerOpen] = useAtom(isDrawerOpen);
 
   return (
@@ -47,77 +31,36 @@ const HomeMobileDrawer = ({
           <div className="flex flex-col">
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() =>
-                belowHeroRef.current?.scrollIntoView({ behavior: "smooth" })
-              }
+              onClick={() => { }}
             >
-              Overview
+              Training
             </a>
 
             <div className=" my-6" />
 
             <a
               className="text-base text-white cursor-pointer"
-              onClick={() =>
-                howItWorksSection.current?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              How it Works
-            </a>
-
-            <div className=" my-6" />
-
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                whySection.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Why Join?
-            </a>
-
-            <div className=" my-6" />
-
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                founderSection.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              From our Founder
-            </a>
-
-            <div className=" my-6" />
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                testimonialsSection.current?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              Testimonials
-            </a>
-
-            <div className=" my-6" />
-            <a
-              className="text-base text-white cursor-pointer"
-              onClick={() =>
-                safeSection.current?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              Safety
-            </a>
-
-            <div className="my-6" />
-            <a
-              className="text-base text-white cursor-pointer"
-              href="https://docs.kinshipbots.com"
-              target="_blank"
+              onClick={() => { }}
             >
               Docs
+            </a>
+
+            <div className=" my-6" />
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => { }}
+            >
+              Pricing
+            </a>
+
+            <div className=" my-6" />
+
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => { }}
+            >
+              About
             </a>
           </div>
 

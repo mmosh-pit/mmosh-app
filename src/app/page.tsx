@@ -101,12 +101,12 @@ export default function LandingPage() {
               <div className="mb-2" />
 
               <HomeMobileDrawer
-                belowHeroRef={belowHeroRef}
-                safeSection={safeSection}
-                testimonialsSection={testimonialsSection}
-                founderSection={founderSection}
-                whySection={whySection}
-                howItWorksSection={howItWorksSection}
+              // belowHeroRef={belowHeroRef}
+              // safeSection={safeSection}
+              // testimonialsSection={testimonialsSection}
+              // founderSection={founderSection}
+              // whySection={whySection}
+              // howItWorksSection={howItWorksSection}
               />
             </div>
           ) : (

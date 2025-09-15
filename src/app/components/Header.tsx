@@ -332,11 +332,16 @@ const Header = () => {
       },
     });
 
-    const mmoshUsdcPrice = await axios.get(
-      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`
-    );
-
-    const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
+    let USDCPrice = 0;
+    try {
+      const mmoshUsdcPrice = await axios.get(
+        `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
+      );
+      USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
+    } catch (error) {
+      console.error('Error fetching MMOSH price:', error);
+      USDCPrice = 0;
+    }
 
     const res: AssetsHeliusResponse = await response.json();
 

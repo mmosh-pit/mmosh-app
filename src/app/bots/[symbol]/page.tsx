@@ -12,7 +12,6 @@ import { useAtom } from "jotai";
 import axios from "axios";
 import Image from "next/image";
 
-import { userWeb3Info } from "@/app/store";
 import * as anchor from "@coral-xyz/anchor";
 import useConnection from "@/utils/connection";
 import useWallet from "@/utils/wallet";
@@ -21,6 +20,10 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import AgentPageInfo from "@/app/components/Project/AgentPageInfo";
 import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
+import internalClient from "@/app/lib/internalHttpClient";
+import Input from "@/app/components/common/Input";
+import Button from "@/app/components/common/Button";
+import { Bars } from "react-loader-spinner";
 
 const defaultRoleData: any = [
   {
@@ -77,7 +80,6 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const connection = useConnection();
   const screenSize = useCheckDeviceScreenSize();
   const wallet = useWallet();
-  const [profileInfo] = useAtom(userWeb3Info);
   const [_, setCurrentBot] = useAtom(signInCurrentBot);
   const [isAuthenticated] = useAtom(isAuth);
   const [profile, setProfile] = React.useState("");
@@ -86,6 +88,11 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const [creatorInfo, setCreatorInfo] = React.useState<any>(null);
   const [isOwner, setOwner] = React.useState(false);
   const [roles, setRoles] = React.useState<any>([...defaultRoleData]);
+
+  const [isUnlocked, setIsUnlocked] = React.useState(false);
+  const [inputCode, setInputCode] = React.useState("");
+  const [hasValidateCodeError, setHasValidateCodeError] = React.useState(false);
+  const [isLoadingVerify, setIsLoadingVerify] = React.useState(false);
 
   const [__, setIsModalOpen] = useAtom(signInModal);
   const [___, setInitialModalStep] = useAtom(signInModalInitialStep);
@@ -150,6 +157,7 @@ const Project = ({ params }: { params: { symbol: string } }) => {
       setRoles(newRole);
 
       setProjectDetail(listResult.data);
+      setProjectLoading(false);
     } catch (error) {
       setProjectLoading(false);
       setProjectDetail(null);
@@ -172,36 +180,39 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     if (!wallet) {
       return;
     }
-    setProjectLoading(true);
-    const env = new anchor.AnchorProvider(connection.connection, wallet, {
-      preflightCommitment: "processed",
-    });
 
-    anchor.setProvider(env);
-    let projectConn: ProjectConn = new ProjectConn(
-      env,
-      web3Consts.programID,
-      new anchor.web3.PublicKey(projectDetail.project.key),
-    );
-    let projectInfo = await projectConn.getProjectUserInfo(
-      projectDetail.project.key,
-    );
-    let tokenInfo = await projectConn.metaplex.nfts().findByMint({
-      mintAddress: new anchor.web3.PublicKey(projectDetail.project.key),
-    });
-    let creator = tokenInfo.creators[0].address.toBase58();
-    let userInfo = await getUserData(creator);
-    setCreatorInfo(userInfo);
+    try {
+      const env = new anchor.AnchorProvider(connection.connection, wallet, {
+        preflightCommitment: "processed",
+      });
 
-    if (projectInfo.profiles.length > 0) {
-      if (projectInfo.profiles[0].address == projectDetail.project.key) {
-        setOwner(true);
-      } else {
-        setOwner(false);
+      anchor.setProvider(env);
+      let projectConn: ProjectConn = new ProjectConn(
+        env,
+        web3Consts.programID,
+        new anchor.web3.PublicKey(projectDetail.project.key),
+      );
+      let projectInfo = await projectConn.getProjectUserInfo(
+        projectDetail.project.key,
+      );
+      let tokenInfo = await projectConn.metaplex.nfts().findByMint({
+        mintAddress: new anchor.web3.PublicKey(projectDetail.project.key),
+      });
+      let creator = tokenInfo.creators[0].address.toBase58();
+      let userInfo = await getUserData(creator);
+      setCreatorInfo(userInfo);
+
+      if (projectInfo.profiles.length > 0) {
+        if (projectInfo.profiles[0].address == projectDetail.project.key) {
+          setOwner(true);
+        } else {
+          setOwner(false);
+        }
       }
-    }
 
-    setProjectInfo(projectInfo);
+      setProjectInfo(projectInfo);
+    } catch (_) { }
+
     await getProfileInfo();
   };
 
@@ -209,13 +220,15 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     if (!wallet) {
       return;
     }
-    const env = new anchor.AnchorProvider(connection.connection, wallet, {
-      preflightCommitment: "processed",
-    });
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
-    const profileInfo = await userConn.getUserInfo();
-    setProfile(profileInfo.profiles[0].address);
-    setProjectLoading(false);
+
+    try {
+      const env = new anchor.AnchorProvider(connection.connection, wallet, {
+        preflightCommitment: "processed",
+      });
+      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+      const profileInfo = await userConn.getUserInfo();
+      setProfile(profileInfo.profiles[0].address);
+    } catch (_) { }
   };
 
   // const createMessage = (message: any, type: any) => {
@@ -446,7 +459,97 @@ const Project = ({ params }: { params: { symbol: string } }) => {
     }
   };
 
+  const verifyBotCode = async () => {
+    if (!projectDetail) return;
+    if (!projectDetail.project) return;
+    if (!inputCode) return;
+
+    setIsLoadingVerify(true);
+    setHasValidateCodeError(false);
+
+    try {
+      const res = await internalClient.get(
+        `/api/project/validate-code?symbol=${projectDetail.project.symbol}&code=${inputCode}`,
+      );
+
+      const isValid = res.data;
+
+      setHasValidateCodeError(!isValid);
+      setIsUnlocked(isValid);
+    } catch (err) {
+      setHasValidateCodeError(true);
+      console.error(err);
+    }
+
+    setIsLoadingVerify(false);
+  };
+
   const isMobileScreen = screenSize < 1200;
+
+  if (projectLoading) {
+    return (
+      <div
+        className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
+      >
+        <div className="w-full h-full flex justify-center items-center mt-20">
+          <Bars
+            height="120"
+            width="120"
+            color="rgba(255, 0, 199, 1)"
+            ariaLabel="bars-loading"
+            wrapperStyle={{}}
+            wrapperClass="bars-loading"
+            visible={projectLoading}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (projectDetail?.project?.privacy === "hidden" && !isUnlocked) {
+    return (
+      <div
+        className={`background-content-full-bg flex flex-col ${isDrawerShown ? "z-[-1]" : ""}`}
+      >
+        <div className="w-full flex flex-col items-center">
+          <div className="my-6">
+            <h1 className="text-white font-bold text-2xl">Kinship Bots</h1>
+          </div>
+
+          <div className="my-4 flex flex-col">
+            <p className="text-base">
+              To access this bot please enter the required code
+            </p>
+
+            <div className="my-2" />
+
+            <Input
+              type="text"
+              title=""
+              value={inputCode}
+              onChange={(e) => setInputCode(e.target.value)}
+              required={false}
+              placeholder=""
+            />
+          </div>
+
+          {hasValidateCodeError && (
+            <p className="text-base text-red-500 my-2 text-center">
+              You have entered an invalid code
+            </p>
+          )}
+
+          <Button
+            title="Continue"
+            size="small"
+            action={verifyBotCode}
+            isPrimary
+            isLoading={isLoadingVerify}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

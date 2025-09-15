@@ -75,13 +75,16 @@ export default function ProjectCreate() {
 
   const checkAccountType = async () => {
     const token = localStorage.getItem("token") || "";
-    let response = await axios.get(`/api/is-admin?wallet=${wallet.publicKey.toBase58()}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    let response = await axios.get(
+      `/api/is-admin?wallet=${wallet.publicKey.toBase58()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
     setIsAdmin(response.data.result);
-  }
+  };
 
   const getProjectDetailFromAPI = async (symbol: any) => {
     try {
@@ -171,15 +174,16 @@ export default function ProjectCreate() {
 
   const checkMembershipStatus = async () => {
     const membershipInfo = await axios.get(
-      "/api/membership/get-membership-info?wallet=" + wallet!.publicKey.toBase58(),
+      "/api/membership/get-membership-info?wallet=" +
+      wallet!.publicKey.toBase58(),
       {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token") || ""}`
-        }
-      }
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      },
     );
     setMembershipInfo(membershipInfo.data);
-  }
+  };
   const hasAllowedToCreateBot = () => {
     if (isAdmin) return { status: true, message: "" };
     const { status, membership } = membershipInfo || {};
@@ -188,32 +192,36 @@ export default function ProjectCreate() {
       return {
         status: false,
         message:
-          "You are not allowed to create an agent. Please upgrade your membership and try again."
+          "You are not allowed to create an agent. Please upgrade your membership and try again.",
       };
     }
 
-    const personalAgentCount = projects.filter((p: any) => p.type === "personal").length;
+    const personalAgentCount = projects.filter(
+      (p: any) => p.type === "personal",
+    ).length;
     console.log("----- personalAgentCount -----", personalAgentCount);
-    const kinshipAgentCount = projects.filter((p: any) => p.type === "kinship").length;
+    const kinshipAgentCount = projects.filter(
+      (p: any) => p.type === "kinship",
+    ).length;
     console.log("----- kinshipAgentCount -----", kinshipAgentCount);
 
     if (selectedProjectType === "personal" && personalAgentCount >= 3) {
       return {
         status: false,
-        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 personal agents.`
+        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 personal agents.`,
       };
     }
 
     if (selectedProjectType === "kinship" && membership !== "creator") {
       return {
         status: false,
-        message: `You are not allowed to create a kinship agent. Please upgrade your membership to the creator level and try again.`
+        message: `You are not allowed to create a kinship agent. Please upgrade your membership to the creator level and try again.`,
       };
     }
     if (selectedProjectType === "kinship" && kinshipAgentCount >= 3) {
       return {
         status: false,
-        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 kinship agents.`
+        message: `You’ve reached your limit — as an ${membership}, you can create up to 3 kinship agents.`,
       };
     }
 
@@ -223,7 +231,14 @@ export default function ProjectCreate() {
   return (
     <>
       {showMsg && (
-        <div className={"message-container text-white text-center text-header-small-font-size py-5 px-3.5 " + msgClass}>{msgText}</div>
+        <div
+          className={
+            "message-container text-white text-center text-header-small-font-size py-5 px-3.5 " +
+            msgClass
+          }
+        >
+          {msgText}
+        </div>
       )}
       <div className="background-content">
         <div className="flex flex-col items-center justify-center w-full">
@@ -304,10 +319,17 @@ export default function ProjectCreate() {
         </div>
 
         {selectedOption === "Tokenize Agent" && (
-          <AgentPass type={selectedProjectType} hasAllowed={hasAllowedToCreateBot()} />
+          <AgentPass
+            type={selectedProjectType}
+            hasAllowed={hasAllowedToCreateBot()}
+          />
         )}
         {selectedOption === "Update" && (
-          <AgentPass symbol={selectedProjectType} type={selectedProjectType} hasAllowed={true} />
+          <AgentPass
+            symbol={selectedProjectType}
+            type={selectedProjectType}
+            hasAllowed={hasAllowedToCreateBot()}
+          />
         )}
 
         {selectedOption === "Tools" && (
@@ -318,7 +340,11 @@ export default function ProjectCreate() {
           <AgentTeam onPageChange={onPageChange} symbol={selectedProjectType} />
         )}
         {selectedOption === "Coins" && (
-          <AgentCoin onPageChange={onPageChange} symbol={selectedProjectType} createMessage={createMessage} />
+          <AgentCoin
+            onPageChange={onPageChange}
+            symbol={selectedProjectType}
+            createMessage={createMessage}
+          />
         )}
         {selectedOption === "step4" && (
           <ProjectCreateStep4 onPageChange={onPageChange} />

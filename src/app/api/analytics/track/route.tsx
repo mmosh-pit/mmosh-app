@@ -29,10 +29,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
             bot_referring_domain
         } = await req.json();
         // await dropTable("traffic_events");
-        console.log("----- is_new_session -----", is_new_session);
         await createTable();
         if (is_new_session) {
-            console.log("***** INSIDE INSERT QUERY *****");
             const nextId = await getNextId("traffic_events");
             const result = await clickhouse.insert({
                 table: 'traffic_events',
@@ -67,7 +65,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 format: 'JSONEachRow',
             });
         } else {
-            console.log("***** INSIDE UPDATE QUERY *****");
             const result = await clickhouse.command({
                 query: `
                     ALTER TABLE traffic_events 
@@ -78,18 +75,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
         }
         return NextResponse.json("", { status: 200 });
     } catch (error) {
-        console.log("-----error-----", error);
         return NextResponse.json("", { status: 500 });
     }
 }
 
 const createTable = async () => {
-    const tabless = await clickhouse.query({
-        query: `SHOW TABLES FROM default`
-    });
-
-    const tables = await tabless.json();
-    console.log("========== TABLE DATA ============", tables.data);
     const result = await clickhouse.command({
         query: `
         CREATE TABLE IF NOT EXISTS traffic_events (

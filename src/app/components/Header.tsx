@@ -53,7 +53,7 @@ const MMOSH_COIN = process.env.NEXT_PUBLIC_OPOS_TOKEN;
 const PASS_COLLECTION = "PASSES";
 const BADGE_COLLECTION = "BADGES";
 const PROFILE_COLLECTION = "PROFILES";
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 const Header = () => {
   const router = useRouter();
@@ -84,7 +84,7 @@ const Header = () => {
 
   const [isModalOpen, setIsModalOpen] = useAtom(signInModal);
   const [initialModalStep, setInitialModalStep] = useAtom(
-    signInModalInitialStep,
+    signInModalInitialStep
   );
 
   const [community] = useAtom(currentGroupCommunity);
@@ -93,110 +93,117 @@ const Header = () => {
   const [membershipStatus, setMembershipStatus] = React.useState("na");
 
   const [pageViewCount, setPageViewCount] = React.useState(0);
-  const [sessionId, setSessionId] = React.useState(localStorage.getItem('analytics_session') || nanoid());
+  const [sessionId, setSessionId] = React.useState(
+    localStorage.getItem("analytics_session") || nanoid()
+  );
   const [isInitialized, setIsInitialized] = React.useState<boolean>(false);
   const [geo, setGeo] = React.useState({
-    country: 'Unknown',
-    region: 'Unknown',
-    city: 'Unknown',
-    ip: "0.0.0.0"
+    country: "Unknown",
+    region: "Unknown",
+    city: "Unknown",
+    ip: "0.0.0.0",
   });
 
   React.useEffect(() => {
     if (!wallet) return;
     getGeolocation().then((result) => {
       setGeo(result);
-    })
+    });
 
     trackPageView();
-
-  }, [wallet])
+  }, [wallet]);
 
   const getTrafficSource = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    console.log("----- urlParams -----", urlParams);
     const referrer = document.referrer;
-    console.log("----- referrer -----", referrer);
-    const utmSource = urlParams.get('utm_source');
-    console.log("----- utmSource -----", utmSource);
-    const utmMedium = urlParams.get('utm_medium');
-    console.log("----- utmMedium -----", utmMedium);
-    const utmCampaign = urlParams.get('utm_campaign');
-    console.log("----- utmCampaign -----", utmCampaign);
+    const utmSource = urlParams.get("utm_source");
+    const utmMedium = urlParams.get("utm_medium");
+    const utmCampaign = urlParams.get("utm_campaign");
 
     // UTM parameters take precedence
     if (utmSource) {
       return {
         source: utmSource,
-        medium: utmMedium || 'unknown',
-        campaign: utmCampaign || undefined
+        medium: utmMedium || "unknown",
+        campaign: utmCampaign || undefined,
       };
     }
 
     // Bot referral tracking
-    if (urlParams.get('bot_ref')) {
+    if (urlParams.get("bot_ref")) {
       return {
-        source: 'bot_external',
-        medium: 'bot',
-        campaign: urlParams.get('bot_campaign') || undefined
+        source: "bot_external",
+        medium: "bot",
+        campaign: urlParams.get("bot_campaign") || undefined,
       };
     }
 
     // Referrer-based classification
-    console.log("-=-----------referrer", referrer);
     if (!referrer) {
-      return { source: 'direct', medium: 'none' };
+      return { source: "direct", medium: "none" };
     }
 
     const referrerDomain = new URL(referrer).hostname.toLowerCase();
-    console.log("----- referrerDomain -----", referrerDomain);
     const currentDomain = window.location.hostname.toLowerCase();
-    console.log("----- currentDomain -----", currentDomain);
 
     if (referrerDomain === currentDomain) {
-      return { source: 'internal', medium: 'referral' };
+      return { source: "internal", medium: "referral" };
     }
 
     // Social media detection
-    const socialPlatforms = ['facebook.com', 'twitter.com', 'x.com', 'linkedin.com', 'instagram.com', 'youtube.com', 'tiktok.com'];
-    if (socialPlatforms.some(platform => referrerDomain.includes(platform))) {
-      return { source: referrerDomain, medium: 'social' };
+    const socialPlatforms = [
+      "facebook.com",
+      "twitter.com",
+      "x.com",
+      "linkedin.com",
+      "instagram.com",
+      "youtube.com",
+      "tiktok.com",
+    ];
+    if (socialPlatforms.some((platform) => referrerDomain.includes(platform))) {
+      return { source: referrerDomain, medium: "social" };
     }
 
     // Search engine detection
-    const searchEngines = ['google.', 'bing.', 'yahoo.', 'duckduckgo.', 'baidu.'];
-    if (searchEngines.some(engine => referrerDomain.includes(engine))) {
-      return { source: referrerDomain, medium: 'organic' };
+    const searchEngines = [
+      "google.",
+      "bing.",
+      "yahoo.",
+      "duckduckgo.",
+      "baidu.",
+    ];
+    if (searchEngines.some((engine) => referrerDomain.includes(engine))) {
+      return { source: referrerDomain, medium: "organic" };
     }
-    console.log("----- End Of The FIle -----");
 
-    return { source: referrerDomain, medium: 'referral' };
+    return { source: referrerDomain, medium: "referral" };
   };
 
   const getGeolocation = async (): Promise<any> => {
     try {
       const response = await axios.get("/api/get-geo-location", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token") || ""}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
       });
       return await response.data;
     } catch (error) {
-      return { country: 'Unknown', region: 'Unknown', city: 'Unknown', ip: "0.0.0.0" };
+      return {
+        country: "Unknown",
+        region: "Unknown",
+        city: "Unknown",
+        ip: "0.0.0.0",
+      };
     }
   };
 
   const trackPageView = async () => {
     setIsInitialized(true);
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
-    setPageViewCount(pageViewCount + 1);
     const trafficSource = getTrafficSource();
     console.log("trafficSource", trafficSource);
     const urlParams = new URLSearchParams(window.location.search);
-    console.log("----- PAGE VIEW COUNT -----", pageViewCount);
-    console.log("----- urlParams.get('bot_ref') -----", urlParams.get('bot_ref'));
-    console.log("----- new URL(urlParams.get('bot_ref')!).hostname -----", new URL(urlParams.get('bot_ref')!).hostname);
 
     const eventData = {
       event_id: nanoid(),
@@ -210,20 +217,27 @@ const Header = () => {
       traffic_source: trafficSource.source,
       traffic_medium: trafficSource.medium,
       traffic_campaign: trafficSource.campaign,
-      bot_referrer_url: urlParams.get('bot_ref'),
-      bot_referring_domain: urlParams.get('bot_ref') ? new URL(urlParams.get('bot_ref')!).hostname : null,
+      bot_referrer_url: urlParams.get("bot_ref"),
+      bot_referring_domain: urlParams.get("bot_ref")
+        ? new URL(urlParams.get("bot_ref")!).hostname
+        : null,
       user_agent: navigator.userAgent,
-      device_type: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop',
-      browser: navigator.userAgent.match(/(Firefox|Chrome|Safari|Edge)/)?.[0] || 'Unknown',
+      device_type: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent)
+        ? "mobile"
+        : "desktop",
+      browser:
+        navigator.userAgent.match(/(Firefox|Chrome|Safari|Edge)/)?.[0] ||
+        "Unknown",
       os: navigator.platform,
       country: geo.country,
       region: geo.region,
       city: geo.city,
       ip: geo.ip,
-      is_new_session: pageViewCount === 1 ? 1 : 0,
+      is_new_session: pageViewCount + 1 === 1,
       pageViewCount: pageViewCount,
-      event_type: 'page_view'
+      event_type: "page_view",
     };
+    setPageViewCount(pageViewCount + 1);
     console.log("===== TRACK PAGE VIEW CALLED 3 =====", eventData);
 
     await trackEvent(eventData);
@@ -234,10 +248,10 @@ const Header = () => {
     try {
       await axios.post("/api/analytics/track", eventData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token") || ""}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
       });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   React.useEffect(() => {
@@ -319,7 +333,7 @@ const Header = () => {
     });
 
     const mmoshUsdcPrice = await axios.get(
-      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
+      `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`
     );
 
     const USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
@@ -414,7 +428,7 @@ const Header = () => {
           };
           if (value.group_definition && value.group_definition?.length > 0) {
             const collectionDefinition = value.grouping.find(
-              (e) => e.group_key === "collection",
+              (e) => e.group_key === "collection"
             );
 
             if (
@@ -444,7 +458,7 @@ const Header = () => {
       }
 
       const collectionDefinition = value.grouping.find(
-        (e) => e.group_key === "collection",
+        (e) => e.group_key === "collection"
       );
 
       if (
@@ -459,7 +473,7 @@ const Header = () => {
       ) {
         nft.parentKey = value.content.metadata.attributes?.find(
           (attr) =>
-            attr.trait_type === "Community" || attr.trait_type === "Project",
+            attr.trait_type === "Community" || attr.trait_type === "Project"
         )?.value;
 
         passes.push(nft);
@@ -493,7 +507,7 @@ const Header = () => {
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
         {
           confirmTransactionInitialTimeout: 120000,
-        },
+        }
       );
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",
@@ -542,7 +556,7 @@ const Header = () => {
         username = profileNft.userinfo.username;
 
         const notificationResult = await axios.get(
-          "/api/notifications?wallet=" + wallet?.publicKey.toBase58(),
+          "/api/notifications?wallet=" + wallet?.publicKey.toBase58()
         );
         setBadge(notificationResult.data.unread);
         setNotifications(notificationResult.data.data);
@@ -562,7 +576,7 @@ const Header = () => {
         quota,
         activationTokenBalance:
           parseInt(profileInfo.activationTokenBalance) +
-          profileInfo.totalChild || 0,
+            profileInfo.totalChild || 0,
         profile: {
           name: username,
           address: profileNft?.address,
@@ -588,12 +602,12 @@ const Header = () => {
       "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
       {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
-    setMembershipStatus(membershipInfo.data)
-  }
+    setMembershipStatus(membershipInfo.data);
+  };
 
   React.useEffect(() => {
     if (
@@ -605,12 +619,12 @@ const Header = () => {
   }, [wallet]);
   React.useEffect(() => {
     if (wallet) {
-      checkMembershipStatus()
+      checkMembershipStatus();
       if (isInitialized) {
         trackPageView();
       }
     }
-  }, [pathname, wallet])
+  }, [pathname, wallet]);
 
   React.useEffect(() => {
     if (
@@ -628,14 +642,18 @@ const Header = () => {
   }, [wallet]);
 
   const updateUserActivity = async () => {
-    await axios.put("/api/update-user-activity", {
-      wallet: wallet?.publicKey.toBase58(),
-    }, {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+    await axios.put(
+      "/api/update-user-activity",
+      {
+        wallet: wallet?.publicKey.toBase58(),
       },
-    });
-  }
+      {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      }
+    );
+  };
 
   const resetNotification = async () => {
     await internalClient.put("/api/notifications/update", {
@@ -773,8 +791,9 @@ const Header = () => {
 
               {!!currentUser?.profile?.image && isUserAuthenticated && (
                 <div
-                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
-                    } cursor-pointer`}
+                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${
+                    isDrawerShown ? "z-[-1]" : ""
+                  } cursor-pointer`}
                   onClick={() => {
                     router.push(`/${currentUser?.profile.username}`);
                   }}
@@ -792,8 +811,9 @@ const Header = () => {
                 !currentUser?.profile?.image &&
                 isUserAuthenticated && (
                   <div
-                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
-                      } cursor-pointer`}
+                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${
+                      isDrawerShown ? "z-[-1]" : ""
+                    } cursor-pointer`}
                     onClick={() => {
                       if (
                         !!currentUser?.guest_data.username &&
@@ -883,12 +903,14 @@ const Header = () => {
 
         {pathname.includes("/communities/") && community !== null && (
           <div
-            className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"
-              }`}
+            className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${
+              isDrawerShown ? "z-[-1]" : "z-0"
+            }`}
           >
             <div
-              className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"
-                } py-20`}
+              className={`flex flex-col justify-center items-center ${
+                isDrawerShown && "z-[-1]"
+              } py-20`}
             >
               <h2 className="text-center">{community.name}</h2>
 
@@ -896,16 +918,19 @@ const Header = () => {
             </div>
           </div>
         )}
-        {membershipStatus === "expired" &&
-          <div className="cursor-pointer" onClick={() => {
-            router.push(`/settings?membershipStatus=${membershipStatus}`);
-          }}>
+        {membershipStatus === "expired" && (
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              router.push(`/settings?membershipStatus=${membershipStatus}`);
+            }}
+          >
             <MessageBanner
               type="error"
               message="Your membership is expired. pls upgrade"
             />
           </div>
-        }
+        )}
       </header>
     </>
   );

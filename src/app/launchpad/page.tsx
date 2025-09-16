@@ -223,16 +223,16 @@ const LaunchPadVC = () => {
         </div>
       }
       {!projectLoading && groupedCards.length > 0 &&
-        <div className=" flex flex-col items-center pt-10 pb-12">
+        <div className=" flex flex-col items-center pt-10 m-auto">
           <div className=" py-10 px-4">
             <h2 className="text-center text-[4.75rem] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
               Next launch
             </h2>
 
-            <div className="flex justify-center  mt-6">
+            <div className=" lg:flex justify-center">
               {timerData.map((item, index) => (
-                <div key={index} className="flex  justify-between items-center">
-                  <div className="mx-5">
+                <div key={index} className="flex  lg:justify-between justify-center items-center">
+                  <div className="lg:mx-5 mb-2 lg:mb-0">
                   <div className="text-[4rem] leading-[3rem] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
                     {getCountDownValues(countDown, item.label)}
                   </div>
@@ -242,7 +242,7 @@ const LaunchPadVC = () => {
                   </div>
                   
                   {index !== timerData.length - 1 && (
-                    <span className="h-[4rem] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
+                    <span className="h-[4rem] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px] lg:block hidden" />
                   )}
                   
                 </div>
@@ -252,7 +252,7 @@ const LaunchPadVC = () => {
               {groupedCards.map((group, groupIdx) => (
                 <div
                   key={groupIdx}
-                  className={`flex flex-wrap justify-center`}
+                  className={`lg:flex lg:flex-wrap justify-center w-full`}
                 >
                   {group.map((presale: any, index: number) => (
                     <LaunchPad getCountDownValues={getCountDownValues} creator={creator} buyToken={(amount: string, token: number) => buyToken(presale, amount, token)} presale={presale} isBuying={isBuying} />

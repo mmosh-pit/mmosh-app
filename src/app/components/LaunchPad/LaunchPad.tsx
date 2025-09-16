@@ -136,29 +136,35 @@ export const LaunchPad = (props: LaunchPadProps) => {
       <div className="relative">
         {/* Header */}
         <div
-          className="rounded-t-[14px] w-[24.8rem] py-2 flex items-center justify-between relative px-1
-                bg-gradient-to-r from-[#05195E] to-[#0A34C4]"
+          className="flex flex-col lg:flex-row rounded-t-[14px] py-2 px-1 
+    lg:justify-between bg-gradient-to-r from-[#05195E] to-[#0A34C4]"
         >
-          <div className="font-poppins ml-20">
+          {/* Left section */}
+          <div className="w-[75px] h-[75px] rounded-full border-[2px] border-[#040432] overflow-hidden bg-white shadow-md self-center lg:hidden">
+            <img
+              src={presale.coinDetail.image}
+              alt="Token"
+              className="w-full h-full object-cover "
+            />
+          </div>
+          <div className="lg:ml-20 self-center">
             <div className="flex items-center">
-            <div className="text-lg text-white font-medium underline whitespace-nowrap truncate">
-              {presale.coinDetail.name}{" "}
-              
-            </div>
-            <span className="text-[#C2C2C2] ml-1">
+              <div className="text-md text-white font-medium underline">
+                {presale.coinDetail.name}{" "}
+              </div>
+              <span className="text-[#C2C2C2] ml-1">
                 • {presale.coinDetail.symbol}
               </span>
-              </div>
-             <div className="text-[9px] text-[#3C99FF] underline   ">
-              {creator}
             </div>
+            <div className="text-[9px] text-[#3C99FF] underline">{creator}</div>
           </div>
-         
-          <div className="flex px-1.5 py-1 rounded-xl bg-gradient-to-r from-[#1C1A584D] to-[#3C39BE4D] ">
+
+          {/* Right section */}
+          <div className="flex justify-center lg:justify-start mt-2 lg:mt-0 px-1.5 py-1 rounded-xl bg-gradient-to-r from-[#1C1A584D] to-[#3C39BE4D]">
             {timerData.map((item, i) => (
               <React.Fragment key={i}>
                 <div className="text-center px-2">
-                  <div className="text-base  text-white font-goudy">
+                  <div className="text-base text-white font-goudy">
                     {getCountDownValues(
                       new Date(presale.presaleDetail.lockPeriod).getTime() -
                         new Date().getTime(),
@@ -168,7 +174,6 @@ export const LaunchPad = (props: LaunchPadProps) => {
                   <div className="text-[9px] text-white/70">{item.label}</div>
                 </div>
 
-               
                 {i !== timerData.length - 1 && (
                   <div className="w-[1px] h-6 bg-white/30 self-center"></div>
                 )}
@@ -178,10 +183,10 @@ export const LaunchPad = (props: LaunchPadProps) => {
         </div>
 
         {/* Body */}
-        <div className=" w-[24.8rem] bg-[#1A184D] rounded-b-xl flex justify-between px-2 py-1 font-poppins shadow-sm shadow-blue-900 ">
+        <div className="  bg-[#1A184D] rounded-b-xl lg:flex lg:justify-between px-2 py-1 font-poppins shadow-sm shadow-blue-900 ">
           {/* Left Side */}
           <div className="  pt-5  relative">
-            <div className="absolute top-[-60px]  z-10">
+            <div className="absolute top-[-60px] lg:block hidden z-10">
               <div className="w-[75px] h-[75px] rounded-full border-[2px] border-[#040432] overflow-hidden bg-white shadow-md">
                 <img
                   src={presale.coinDetail.image}
@@ -194,24 +199,24 @@ export const LaunchPad = (props: LaunchPadProps) => {
             <label className="text-[9px] font-extrabold mb-[2px] leading-none tracking-tight text-white">
               Amount
             </label>
-            <div className="flex items-center mb-[5px]">
+            <div className="flex justify-between items-center mb-[5px]">
               <input
                 type="number"
                 placeholder="0.00"
-                className="w-[70px] h-[24px] px-2 rounded-[4px] border border-[#FF8FE7] bg-[rgba(255,143,231,0.08)] text-white text-[10px] font-normal outline-none pr-1 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="lg:w-[70px] h-[24px] max-w-100 px-2 rounded-[4px] border border-[#FF8FE7] bg-[rgba(255,143,231,0.08)] text-white text-[10px] font-normal outline-none pr-1 appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 value={amount}
                 onChange={(event) => handleAmount(event, presale)}
               />
               <span className="ml-[4px] text-[7px] text-white">USDC</span>
             </div>
 
-            <div className="flex  justify-between  items-center ">
-              <span className="text-white">
+            <div className="flex justify-between items-center">
+              <div className="text-white w-[80px] max-w-[380px] overflow-hidden whitespace-nowrap truncate">
                 {formatAmount(token).replace(/[$,]/g, "").replace(/\.00$/, "")}
-              </span>
-              <span className=" text-white text-[8px]">
+              </div>
+              <div className="text-white text-[8px]">
                 {presale.coinDetail.symbol}
-              </span>
+              </div>
             </div>
 
             <div className="text-[#CFCFCF] text-[5.4px] mb-[2px]">
@@ -219,7 +224,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
               <br />
               Maximum: {presale.presaleDetail.purchaseMaximum} USDC
             </div>
-       
+
             <div
               className="px-2 py-1 bg-[#FF00AE] text-white rounded-[3px] text-[10px] font-bold m-auto text-center mx-3"
               onClick={() => buyToken(amount, token)}
@@ -230,7 +235,6 @@ export const LaunchPad = (props: LaunchPadProps) => {
             <p className="text-[0.281rem] text-white mt-1 text-center">
               Plus a small amount of SOL for gas fees
             </p>
-           
           </div>
 
           {/* Right Side */}

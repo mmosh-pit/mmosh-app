@@ -312,7 +312,7 @@ import { pinFileToShadowDrive, pinFileToShadowDriveBackend } from "@/app/lib/upl
         uriHash: passMetaURI,
         genesisProfile: projectInfo.data.project.key,
         commonLut: projectInfo.data.project.lut
-      },body.account, body.account, projectInfo.data.project.key);
+      },body.account, body.account);
 
       console.log("test8")
 
@@ -368,18 +368,11 @@ import { pinFileToShadowDrive, pinFileToShadowDriveBackend } from "@/app/lib/upl
           tokenInfo: tokenInfo
         }
       }
-      // let userInFo:any = await axios.get(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/get-wallet-data?wallet="+creator)
-      // console.log("userinfor ", userInFo.data)
-      // if(userInFo.data.profilenft) {
+
         return {
           isValid: true,
           tokenInfo: tokenInfo
         }
-      // }
-      return {
-        isValid: false,
-        tokenInfo: null
-      }
     } catch (err) {
       console.log("test", err)
       return {

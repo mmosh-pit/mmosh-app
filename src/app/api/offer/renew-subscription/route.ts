@@ -285,7 +285,6 @@ export async function GET(req: NextRequest) {
       },
       data.receiver,
       wallet.publicKey.toBase58(),
-      userData.profilenft,
       price * 10 ** coinData.target.decimals * 1,
       1,
     );

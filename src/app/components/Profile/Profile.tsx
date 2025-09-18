@@ -54,7 +54,7 @@ const Profile = ({ username }: { username: any }) => {
     );
   }, [username, currentUser]);
 
-  const isMyProfile = currentUser?.profilenft === userData?.profilenft;
+  const isMyProfile = currentUser?.wallet === userData?.wallet;
 
   React.useEffect(() => {
     setUserStatus(UserStatus.fullAccount);
@@ -354,12 +354,12 @@ const Profile = ({ username }: { username: any }) => {
 
           {isMobileScreen && (
             <div
-              className={`absolute right-[5px] bottom-[5px] px-4 py-1 ${!!userData.profilenft ? "creator-btn" : "guest-btn"} rounded-md ml-6`}
+              className={`absolute right-[5px] bottom-[5px] px-4 py-1 creator-btn rounded-md ml-6`}
             >
               <p
-                className={`${!!userData.profilenft ? "text-black" : "text-white"} text-base`}
+                className={`text-black text-base`}
               >
-                {!!userData.profilenft ? "Creator" : "Guest"}
+                {"Creator"}
               </p>
             </div>
           )}
@@ -401,12 +401,12 @@ const Profile = ({ username }: { username: any }) => {
 
                   {!isMobileScreen && (
                     <div
-                      className={`px-4 py-1 ${!!userData.profilenft ? "creator-btn" : "guest-btn"} rounded-md ml-6`}
+                      className={`px-4 py-1 creator-btn rounded-md ml-6`}
                     >
                       <p
-                        className={`${!!userData.profilenft ? "text-black" : "text-white"} text-base`}
+                        className={`text-black text-base`}
                       >
-                        {!!userData.profilenft ? "Creator" : "Guest"}
+                        Creator
                       </p>
                     </div>
                   )}
@@ -474,13 +474,13 @@ const Profile = ({ username }: { username: any }) => {
           )}
         </div>
 
-        <ProfileFilters isGuest={!userData.profilenft} />
+        <ProfileFilters isGuest={!userData.wallet} />
 
-        {!!userData.profilenft && (
+        {!!userData.wallet && (
           <>
             {selectedFilter === 1 && (
               <GuildList
-                profilenft={userData.profilenft}
+                wallet={userData.wallet}
                 userName={
                   userData.profile.username !== ""
                     ? userData.profile.username

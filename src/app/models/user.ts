@@ -5,7 +5,6 @@ export type User = {
   profile: Profile;
   telegram: Telegram | null;
   twitter: Twitter;
-  profilenft: string;
   royalty: number;
   guest_data: GuestData;
   onboarding_step: number;

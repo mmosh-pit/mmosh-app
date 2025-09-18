@@ -136,18 +136,17 @@ export async function GET(req: NextRequest) {
         } else {
           user = connectionObj.receiver
         }
-        if(user.profilenft) {
-           if(!profileArray.includes(user.profilenft)) {
-              profileArray.push(user.profilenft)
-           }
-        }
+          if(!profileArray.includes(user.wallet)) {
+            profileArray.push(user.wallet)
+          }
+        
       }
     }
   }
     
 
   const profilesFilter = {
-    profilenft: { $in: profileArray },
+    wallet: { $in: profileArray },
   };
 
   const sortDirectionValue = sortDirection === "desc" ? -1 : 1;
@@ -157,7 +156,7 @@ export async function GET(req: NextRequest) {
     .find(profilesFilter, {
       projection: {
         _id: 0,
-        profilenft: 1,
+        wallet: 1,
         profile: 1,
         royalty: 1,
         "telegram.username": 1,
@@ -171,7 +170,7 @@ export async function GET(req: NextRequest) {
     .toArray();
 
   for (const value of profiles) {
-    value.lineageValue = lineagesMap[value.profilenft];
+    value.lineageValue = lineagesMap[value.wallet];
   }
 
   if(requester) {
@@ -181,7 +180,7 @@ export async function GET(req: NextRequest) {
       }
     );
     if(user) {
-      if (user.profilenft) {
+      if (user.wallet) {
         for (let index = 0; index < profiles.length; index++) {
           profiles[index].profile.connection = await getConnectionStatus(user, profiles[index])
           profiles[index].profile.request = await getHasRequest(user, profiles[index])

@@ -12,11 +12,11 @@ import {
 } from "../store";
 
 const GuildList = ({
-  profilenft,
+  wallet,
   isMyProfile,
   userName,
 }: {
-  profilenft: string;
+  wallet: string;
   isMyProfile: boolean;
   userName: string;
 }) => {
@@ -36,7 +36,6 @@ const GuildList = ({
   const [connectionOptions] = useAtom(connectionTypes);
 
   const filterGuild = React.useCallback(async () => {
-    if (!profilenft) return;
     const gensArr: string[] = [];
 
     lineageOptions.forEach((val) => {
@@ -53,12 +52,12 @@ const GuildList = ({
     });
 
     fetching.current = true;
-    let url = `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`;
+    let url = `/api/get-user-guild?address=${wallet}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`;
     if (currentUser) {
       url = url + "&requester=" + currentUser.wallet;
     }
     const result = await axios.get(
-      `/api/get-user-guild?address=${profilenft}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`,
+      `/api/get-user-guild?address=${wallet}&skip=${0}&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&gens=${gensArr.join(",")}&connection=${connectionArr.join(",")}`,
     );
     fetching.current = false;
     lastPageTriggered.current = false;
@@ -75,7 +74,6 @@ const GuildList = ({
   ]);
 
   const paginateGuild = React.useCallback(async () => {
-    if (!profilenft) return;
     const gensArr: string[] = [];
 
     lineageOptions.forEach((val) => {
@@ -92,7 +90,7 @@ const GuildList = ({
     });
 
     fetching.current = true;
-    let url = `/api/get-user-guild?address=${profilenft}&skip=${currentPage * 10
+    let url = `/api/get-user-guild?address=${wallet}&skip=${currentPage * 10
       }&sort=${selectedSortOption}&sortDir=${selectedSortDirection}&connection=${connectionArr.join(",")}&gens=${gensArr.join(",")}`;
     if (currentUser) {
       url = url + "&requester=" + currentUser.wallet;
@@ -133,8 +131,6 @@ const GuildList = ({
   React.useEffect(() => {
     filterGuild();
   }, [selectedSortOption, selectedSortDirection, lineageOptions]);
-
-  if (!profilenft) return <></>;
 
   return (
     <div

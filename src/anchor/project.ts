@@ -22,6 +22,7 @@ import { Metaplex } from "@metaplex-foundation/js";
 import { BaseSpl } from "./base/baseSpl";
 import axios from "axios";
 import internalClient from "@/app/lib/internalHttpClient";
+import { getLineage } from "@/app/lib/forge/createProfile";
 
 const {
   systemProgram,
@@ -248,51 +249,9 @@ export class Connectivity {
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       const user = this.provider.publicKey;
-      let myProfile = new anchor.web3.PublicKey(profile);
-      const myProfileState = this.__getProfileStateAccount(myProfile);
-      let myProfileStateInfo =
-        await this.program.account.profileState.fetch(myProfileState);
+      const lineage = await getLineage(this.provider.publicKey.toBase58())
 
-      console.log("myProfileStateInfo ", myProfileStateInfo);
 
-      const parentProfile = myProfileStateInfo.lineage.parent;
-
-      console.log("parentProfile ", parentProfile.toBase58());
-
-      let parentProfileStateInfo =
-        await this.program.account.profileState.fetch(
-          this.__getProfileStateAccount(parentProfile),
-        );
-
-      console.log("parentProfileStateInfo ", parentProfileStateInfo);
-
-      const profileCollection = web3Consts.profileCollection;
-      const profileCollectionState =
-        await this.program.account.collectionState.fetch(
-          this.__getCollectionStateAccount(profileCollection),
-        );
-      const genesisProfile = profileCollectionState.genesisProfile;
-
-      const {
-        //profiles
-        // genesisProfile,
-        // parentProfile,
-        //
-        currentGreatGrandParentProfileHolder,
-        currentGgreatGrandParentProfileHolder,
-        currentGrandParentProfileHolder,
-        currentGenesisProfileHolder,
-        currentParentProfileHolder,
-        //
-        //
-      } = await this.__getProfileHoldersInfo(
-        parentProfileStateInfo.lineage,
-        parentProfile,
-        genesisProfile,
-        web3Consts.oposToken,
-      );
-
-      const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
 
       const rootMainState = web3.PublicKey.findProgramAddressSync(
         [Seeds.mainState],
@@ -306,27 +265,27 @@ export class Connectivity {
       let holdersfullInfo = [];
 
       holdersfullInfo.push({
-        receiver: currentGenesisProfileHolder.toBase58(),
+        receiver: lineage.gensis,
         vallue:
           cost *
           (rootMainStateInfo.mintingCostDistribution.genesis / 100 / 100),
       });
 
       holdersfullInfo.push({
-        receiver: currentParentProfileHolder.toBase58(),
+        receiver: lineage.parent,
         vallue:
           cost * (rootMainStateInfo.mintingCostDistribution.parent / 100 / 100),
       });
 
       holdersfullInfo.push({
-        receiver: currentGrandParentProfileHolder.toBase58(),
+        receiver: lineage.gparent,
         vallue:
           cost *
           (rootMainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
       });
 
       holdersfullInfo.push({
-        receiver: currentGreatGrandParentProfileHolder.toBase58(),
+        receiver: lineage.ggparent,
         vallue:
           cost *
           (rootMainStateInfo.mintingCostDistribution.greatGrandParent /
@@ -335,7 +294,7 @@ export class Connectivity {
       });
 
       holdersfullInfo.push({
-        receiver: currentGgreatGrandParentProfileHolder.toBase58(),
+        receiver: lineage.gggparent,
         vallue:
           cost *
           (rootMainStateInfo.mintingCostDistribution.ggreatGrandParent /
@@ -394,19 +353,19 @@ export class Connectivity {
         user.toBase58(),
         [
           {
-            receiver: currentGenesisProfileHolder.toBase58(),
+            receiver: lineage.gensis,
             amount: 27000,
           },
           {
-            receiver: currentParentProfileHolder.toBase58(),
+            receiver: lineage.parent,
             amount: 9000,
           },
           {
-            receiver: currentGrandParentProfileHolder.toBase58(),
+            receiver: lineage.gparent,
             amount: 4500,
           },
           {
-            receiver: currentGgreatGrandParentProfileHolder.toBase58(),
+            receiver: lineage.ggparent,
             amount: 1350,
           },
         ],

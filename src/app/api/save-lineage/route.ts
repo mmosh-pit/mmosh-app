@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       },
       {
         $set: {
-          profilenft: profile,
+          profilenft: "",
         },
       },
     );
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   } else {
     await collection.insertOne({
       wallet: wallet,
-      profilenft: profile,
+      profilenft: "",
     });
     return NextResponse.json("", { status: 200 });
   }

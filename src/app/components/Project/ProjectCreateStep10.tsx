@@ -393,7 +393,7 @@ export default function ProjectCreateStep10({
         stakeData.push({
           mint: new anchor.web3.PublicKey(mintKey),
           user: new anchor.web3.PublicKey(
-            myProfileInfo.profilelineage.promoter,
+            myProfileInfo.profilelineage.parent,
           ),
           value: Math.ceil(
             coins.supply * (1 / 100) * web3Consts.LAMPORTS_PER_OPOS,
@@ -746,7 +746,7 @@ export default function ProjectCreateStep10({
         const element: any = communities.profiles[index];
         await internalClient.post("/api/project/save-profile", {
           name: element.name,
-          profilekey: element.profilenft,
+          profilekey: element.wallet,
           role: element.role,
           projectkey: projectKeyPair.publicKey.toBase58(),
         });

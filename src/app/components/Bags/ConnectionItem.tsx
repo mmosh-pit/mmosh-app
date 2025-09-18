@@ -233,7 +233,7 @@ const ConnectionItem = ({
             <p
               className="text-white text-xs underline cursor-pointer"
               onClick={() => {
-                openExplorer(user.sender[0].profilenft);
+                openExplorer(user.sender[0].wallet);
               }}
             >
               View on Solscan

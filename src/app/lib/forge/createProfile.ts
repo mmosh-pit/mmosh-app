@@ -11,6 +11,7 @@ import { getUsername } from "../forge/getUsername";
 import { updateUserData } from "../forge/updateUserData";
 import { updateTotalMints } from "../forge/updateTotalMints";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
+import { uploadFile } from "@/app/lib/firebase";
 import axios from "axios";
 
 export const createProfile = async ({
@@ -41,7 +42,9 @@ export const createProfile = async ({
     };
 
     if (image) {
-      const imageUri = await pinImageToShadowDrive(image);
+      // const imageUri = await pinImageToShadowDrive(image);
+      const date = new Date().getMilliseconds();
+           const imageUri = await uploadFile(image, `${form.username}-banner-${date}`, "user-images");
       body.image = imageUri;
       if (imageUri === "") {
         return {

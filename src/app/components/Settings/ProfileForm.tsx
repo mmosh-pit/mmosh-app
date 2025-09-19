@@ -445,7 +445,9 @@ const ProfileForm = () => {
 
 
     if (image) {
-      const imageUri = await pinImageToShadowDrive(image);
+      // const imageUri = await pinImageToShadowDrive(image);
+     const date = new Date().getMilliseconds();
+     const imageUri = await uploadFile(image, `${form.username}-banner-${date}`, "user-images");
       body.image = imageUri;
       if (imageUri === "") {
         createMessage(

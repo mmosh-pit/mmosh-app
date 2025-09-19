@@ -33,10 +33,8 @@ export async function GET(req: NextRequest) {
       wallet: requester,
     });
     if (sender && user) {
-      if (sender.profilenft) {
         user.profile.connection = await getConnectionStatus(sender, user);
         user.profile.request = await getHasRequest(sender, user);
-      }
     }
   }
 

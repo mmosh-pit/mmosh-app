@@ -82,7 +82,6 @@ const Project = ({ params }: { params: { symbol: string } }) => {
   const wallet = useWallet();
   const [_, setCurrentBot] = useAtom(signInCurrentBot);
   const [isAuthenticated] = useAtom(isAuth);
-  const [profile, setProfile] = React.useState("");
   const [projectLoading, setProjectLoading] = React.useState(true);
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
   const [creatorInfo, setCreatorInfo] = React.useState<any>(null);
@@ -213,22 +212,6 @@ const Project = ({ params }: { params: { symbol: string } }) => {
       setProjectInfo(projectInfo);
     } catch (_) { }
 
-    await getProfileInfo();
-  };
-
-  const getProfileInfo = async () => {
-    if (!wallet) {
-      return;
-    }
-
-    try {
-      const env = new anchor.AnchorProvider(connection.connection, wallet, {
-        preflightCommitment: "processed",
-      });
-      let userConn: UserConn = new UserConn(env, web3Consts.programID);
-      const profileInfo = await userConn.getUserInfo();
-      setProfile(profileInfo.profiles[0].address);
-    } catch (_) { }
   };
 
   // const createMessage = (message: any, type: any) => {

@@ -58,7 +58,6 @@ const ProfileForm = () => {
     usdc: 0,
   });
 
-  const [tokenInfo, setTokenInfo] = React.useState<any>(null);
   const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
   const [membershipStatus, setMembershipStatus] = React.useState(searchParams.get("membershipStatus") || "na");
   const [membershipInfo, setMembershipInfo] = React.useState<any>({});
@@ -100,7 +99,7 @@ const ProfileForm = () => {
       getFileFromObjectURL(previewPictureImage);
       setPreview(previewPictureImage);
       setImagePreview(previewBannerImage);
-      setHasProfile(currentUser!.profilenft !== "");
+      setHasProfile(currentUser!.wallet !== "");
       setHasReferer(!!currentUser!.referred_by);
     }
   }, [currentUser]);
@@ -143,7 +142,7 @@ const ProfileForm = () => {
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       console.log("lookupReferer ", res.data);
       if (res.data) {
-        setReferer(res.data.profilenft);
+        setReferer(res.data.wallet);
       } else {
         setError({
           error: true,
@@ -207,16 +206,6 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (profileInfo.profile.address !== undefined && !isUpdate) {
-      createMessage("User already have profile address", "error");
-      return false;
-    }
-
-    if (profileInfo.genesisToken == "") {
-      createMessage("Invalid gensis token", "error");
-      return false;
-    }
-
     if (profileInfo.solBalance < 0.04) {
       createMessage(
         "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
@@ -272,7 +261,7 @@ const ProfileForm = () => {
       const res = await axios.get(`/api/get-user-data?username=${form.host}`);
       console.log("lookupHost ", res.data);
       if (res.data) {
-        parentProfile = res.data.profilenft;
+        parentProfile = res.data.wallet;
       } else {
         createMessage("Host is invalid", "error");
         return;
@@ -441,8 +430,7 @@ const ProfileForm = () => {
       !validateFields(true) ||
       !profileInfo ||
       !wallet ||
-      !currentUser ||
-      !tokenInfo
+      !currentUser
     ) {
       return;
     }
@@ -450,38 +438,16 @@ const ProfileForm = () => {
     createMessage("", "");
     setIsLoading(true);
     const profile = currentUser.profile;
-    const json = tokenInfo.json;
 
     const body = {
-      name: json.image,
-      symbol: json.symbol,
-      description: json.description,
-      image: json.image,
-      enternal_url: json.enternal_url,
-      family: "MMOSH",
-      collection: "MMOSH Profile Collection",
-      attributes: json.attributes,
+      image: profile.image,
     };
 
-    body.enternal_url =
-      process.env.NEXT_PUBLIC_APP_MAIN_URL + "/" + form.username;
-    body.name = form.name + " " + form.lastName;
-    body.description = form.description;
-    for (let index = 0; index < body.attributes.length; index++) {
-      const element = body.attributes[index];
-      if (element.trait_type == "Full Name") {
-        body.attributes[index].value = form.name + " " + form.lastName;
-      } else if (element.trait_type == "Username") {
-        body.attributes[index].value = form.username;
-      } else if (element.trait_type == "Adjective") {
-        body.attributes[index].value = form.descriptor;
-      } else if (element.trait_type == "Noun") {
-        body.attributes[index].value = form.noun;
-      }
-    }
 
     if (image) {
-      const imageUri = await pinImageToShadowDrive(image);
+      // const imageUri = await pinImageToShadowDrive(image);
+     const date = new Date().getMilliseconds();
+     const imageUri = await uploadFile(image, `${form.username}-banner-${date}`, "user-images");
       body.image = imageUri;
       if (imageUri === "") {
         createMessage(
@@ -493,46 +459,12 @@ const ProfileForm = () => {
       }
     }
 
-    const filenameArray = tokenInfo.uri.split("/");
-    const filename =
-      filenameArray.length > 0 ? filenameArray[filenameArray.length - 1] : "";
-    if (filename) {
-      createMessage("Metadata filename is missing", "error");
-      setIsLoading(false);
-    }
-
-    const shadowHash: any = await pinFileToShadowDrive(body);
-
     profile.bio = form.description;
     profile.nouns = form.noun;
     profile.name = form.name + " " + form.lastName;
     profile.username = form.username;
     profile.descriptor = form.descriptor;
     currentUser.profile = profile;
-
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-
-    const userConn: UserConn = new UserConn(env, web3Consts.programID);
-
-    const res = await userConn.updateToken({
-      mint: new anchor.web3.PublicKey(profileInfo.profile.address),
-      authority: wallet.publicKey,
-      payer: wallet.publicKey,
-      name: form.username.substring(0, 15),
-      symbol: form.username.substring(0, 10).toUpperCase(),
-      uri: shadowHash,
-    });
-
-    if (res.Err) {
-      createMessage("Error on Blockchain call", "error");
-      setIsLoading(false);
-      return;
-    }
 
     const updateProfile = currentUser.profile;
     updateProfile.symbol = form.username.substring(0, 10);
@@ -554,7 +486,7 @@ const ProfileForm = () => {
     setCurrentUser(currentUser);
     navigate.replace(`/` + form.username);
     setIsLoading(false);
-  }, [wallet, profileInfo, image, form, tokenInfo]);
+  }, [wallet, profileInfo, image, form]);
 
   const getTokenInfo = React.useCallback(async () => {
     if (profileInfo!.profile.address == undefined) return;
@@ -568,11 +500,6 @@ const ProfileForm = () => {
 
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-    const nftInfo = await userConn.metaplex.nfts().findByMint({
-      mintAddress: new anchor.web3.PublicKey(profileInfo!.profile.address),
-    });
-
-    setTokenInfo(nftInfo);
   }, [profileInfo]);
 
   React.useEffect(() => {
@@ -650,7 +577,7 @@ const ProfileForm = () => {
       const res = await axios.get(`/api/get-user-data?username=${form.host}`);
       console.log("lookupHost ", res.data);
       if (res.data) {
-        parentProfile = res.data.profilenft;
+        parentProfile = res.data.wallet;
       } else {
         createMessage("Host is invalid", "error");
         return;

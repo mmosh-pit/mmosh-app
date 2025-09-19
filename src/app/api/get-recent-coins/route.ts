@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (!param || param === "undefined")
     return NextResponse.json([], { status: 200 });
 
-  const result = await collection.find({ profilenft: param }).toArray();
+  const result = await collection.find({ wallet: param }).toArray();
 
   return NextResponse.json(result, { status: 200 });
 }

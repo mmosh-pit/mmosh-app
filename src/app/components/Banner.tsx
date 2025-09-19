@@ -13,7 +13,6 @@ const Banner = () => {
   const wallet = useWallet();
 
   const hasProfile = !!profileInfo?.profile.address;
-  const hasInvitation = !!profileInfo?.activationToken;
 
   const renderComponent = React.useCallback(() => {
     if (!currentUser?.telegram?.id) {
@@ -149,7 +148,7 @@ const Banner = () => {
         </div>
       </div>
     );
-  }, [currentUser, userStatus, wallet?.publicKey, hasProfile, hasInvitation]);
+  }, [currentUser, userStatus, wallet?.publicKey, hasProfile]);
 
   if (isLoading) return <></>;
 

@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
 
   const data = await collection
     .find(
-      { profilenft: { $exists: true } },
+      { wallet: { $exists: true } },
       {
         projection: {
           royalty: 1,

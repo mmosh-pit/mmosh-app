@@ -40,7 +40,7 @@ const Inform = () => {
 
     for (const data of profilesRes.data) {
       parsedProfiles.push({
-        tokenAddress: data.profilenft,
+        tokenAddress: data.wallet,
         name: data.profile.name,
         image: data.profile.image,
         symbol: data.profile.username,

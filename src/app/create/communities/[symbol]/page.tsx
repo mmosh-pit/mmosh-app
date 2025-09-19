@@ -8,7 +8,6 @@ import { useAtom } from "jotai";
 import { Community } from "@/app/models/community";
 import { User } from "@/app/models/user";
 import Swap from "@/app/components/Forge/Community/Swap";
-import InvitationBadgeMint from "@/app/components/Forge/Community/InvitationBadgeMint";
 import CommunityPassMint from "@/app/components/Forge/Community/CommunityPassMint";
 import { pageCommunity } from "@/app/store/community";
 import TelegramBox from "@/app/components/Forge/Community/TelegramBox";
@@ -161,17 +160,6 @@ const Page = ({ params }: { params: { symbol: string } }) => {
           <Swap coin={community.coin} />
         </div>
 
-        {community.invitation !== "none" && (
-          <div className="mt-16">
-            <InvitationBadgeMint
-              image={community.inviteImg}
-              price={Number(community.invitationPrice)}
-              coin={community.coin}
-              projectInfo={communityWeb3Info}
-              solBalance={userInfo?.solBalance || 0}
-            />
-          </div>
-        )}
 
         <div className="mt-16">
           <CommunityPassMint

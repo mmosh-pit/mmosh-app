@@ -38,7 +38,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
 
   const getGuildSize = React.useCallback(async () => {
     const result = await axios.get(
-      `/api/get-guild-count?address=${user.profilenft}`,
+      `/api/get-guild-count?address=${user.wallet}`,
     );
 
     const { promotors, scouts, recruitors, originators } = result.data;
@@ -46,14 +46,14 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
     const size = promotors + scouts + recruitors + originators;
 
     setGuildSize(size);
-  }, [user.profilenft]);
+  }, [user.wallet]);
 
   React.useEffect(() => {
     getGuildSize();
     console.log(" user.profile.connection", user.profile.connection);
     setConnectionStatus(user.profile.connection ? user.profile.connection : 0);
     setHasRequest(user.profile.request ? user.profile.request : false);
-  }, [user.profilenft]);
+  }, [user.wallet]);
 
   const sendConnectionRequest = async () => {
     // 0 - no connection
@@ -339,7 +339,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
               <>
                 {wallet &&
                   wallet.publicKey.toBase58() != user.wallet &&
-                  currentuser.profilenft &&
+                  currentuser.wallet &&
                   !loader && (
                     <>
                       {(connectionStatus == 0 || connectionStatus == 5) && (

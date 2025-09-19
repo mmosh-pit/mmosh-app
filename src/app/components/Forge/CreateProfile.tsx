@@ -98,7 +98,7 @@ const CreateProfile = () => {
       const res = await axios.get(`/api/get-user-data?username=${username}`);
       console.log("lookupReferer ", res.data);
       if (res.data) {
-        setReferer(res.data.profilenft);
+        setReferer(res.data.wallet);
       } else {
         setError({
           error: true,
@@ -185,15 +185,6 @@ const CreateProfile = () => {
 
     console.log("profileInfo.profile ", profileInfo.profile);
 
-    if (profileInfo.profile.address !== undefined) {
-      createMessage("User already have profile address", "error");
-      return false;
-    }
-
-    if (profileInfo.genesisToken == "") {
-      createMessage("Invalid gensis token", "error");
-      return false;
-    }
 
     if (profileInfo.solBalance < 0.04) {
       createMessage(
@@ -278,7 +269,7 @@ const CreateProfile = () => {
       const res = await axios.get(`/api/get-user-data?username=${form.host}`);
       console.log("lookupHost ", res.data);
       if (res.data) {
-        parentProfile = res.data.profilenft;
+        parentProfile = res.data.wallet;
       } else {
         createMessage("Host is invalid", "error");
         return;

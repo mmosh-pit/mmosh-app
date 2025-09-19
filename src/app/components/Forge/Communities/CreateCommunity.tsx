@@ -80,7 +80,7 @@ const CreateCommunity = () => {
           pronouns: profile.pronouns,
           descriptor: profile.descriptor,
           nouns: profile.nouns,
-          profile: currentUser!.profilenft,
+          profile: currentUser!.wallet,
         },
       });
       router.push(`/communities/${form.symbol}`);

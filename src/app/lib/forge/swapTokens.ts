@@ -53,7 +53,7 @@ export const swapTokens = async (
   console.log("creatorInfo ", creatorInfo);
   let hasProfile = false;
   if (creatorInfo.data) {
-    if (creatorInfo.data.profilenft) {
+    if (creatorInfo.data.wallet) {
       hasProfile = true;
     }
   }

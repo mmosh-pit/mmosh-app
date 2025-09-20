@@ -15,7 +15,7 @@ const SimpleMemberCard = ({ user }: Props) => {
 
   const getGuildSize = React.useCallback(async () => {
     const result = await axios.get(
-      `/api/get-guild-count?address=${user.profilenft}`,
+      `/api/get-guild-count?address=${user.wallet}`,
     );
 
     const { promotors, scouts, recruitors, originators } = result.data;
@@ -23,12 +23,12 @@ const SimpleMemberCard = ({ user }: Props) => {
     const size = promotors + scouts + recruitors + originators;
 
     setGuildSize(size);
-  }, [user.profilenft]);
+  }, [user.wallet]);
 
   React.useEffect(() => {
-    if (!user.profilenft) return;
+    if (!user.wallet) return;
     getGuildSize();
-  }, [user.profilenft]);
+  }, [user.wallet]);
 
   return (
     <div

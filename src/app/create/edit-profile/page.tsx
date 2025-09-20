@@ -11,7 +11,7 @@ import Input from "@/app/components/common/Input";
 import Button from "@/app/components/common/Button";
 import Select from "@/app/components/common/Select";
 import axios from "axios";
-import { ProfileInfo } from "@/app/models/profileInfo";
+import { ProfileInfo, ProfileLineage } from "@/app/models/profileInfo";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import { Connection } from "@solana/web3.js";
@@ -41,7 +41,6 @@ const EditProfile = () => {
   const [profileInfo, setProfileInfo] = React.useState<ProfileInfo | null>(
     null,
   );
-  const [tokenInfo, setTokenInfo] = React.useState<any>(null);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState("");
@@ -101,14 +100,6 @@ const EditProfile = () => {
     console.log("validateFields 1", profileInfo);
     if (!profileInfo) return;
 
-    if (!profileInfo.profile.address) {
-      createMessage(
-        "Hey! We checked your wallet and you don’t have profile nft",
-        "warn",
-      );
-      return false;
-    }
-
     console.log("validateFields 2");
     if (profileInfo.solBalance < 0.04) {
       createMessage(
@@ -138,8 +129,7 @@ const EditProfile = () => {
       !validateFields() ||
       !profileInfo ||
       !wallet ||
-      !currentUser ||
-      !tokenInfo
+      !currentUser
     ) {
       return;
     }
@@ -149,37 +139,10 @@ const EditProfile = () => {
     console.log("submitForm 3");
     setIsLoading(true);
     let profile = currentUser.profile;
-    let json = tokenInfo.json;
 
     let body = {
-      name: json.image,
-      symbol: json.symbol,
-      description: json.description,
-      image: json.image,
-      enternal_url: json.enternal_url,
-      family: "MMOSH",
-      collection: "MMOSH Profile Collection",
-      attributes: json.attributes,
+      image: profile.image,
     };
-
-    body.enternal_url =
-      process.env.NEXT_PUBLIC_APP_MAIN_URL + "/" + form.username;
-    body.name = form.name + " " + form.lastName;
-    body.description = form.description;
-    for (let index = 0; index < body.attributes.length; index++) {
-      const element = body.attributes[index];
-      if (element.trait_type == "Full Name") {
-        body.attributes[index].value = form.name + " " + form.lastName;
-      } else if (element.trait_type == "Username") {
-        body.attributes[index].value = form.username;
-      } else if (element.trait_type == "Adjective") {
-        body.attributes[index].value = form.descriptor;
-      } else if (element.trait_type == "Noun") {
-        body.attributes[index].value = form.noun;
-      } else if (element.trait_type == "Pronoun") {
-        body.attributes[index].value = form.pronouns;
-      }
-    }
 
     if (image) {
       const imageUri = await pinImageToShadowDrive(image);
@@ -194,21 +157,6 @@ const EditProfile = () => {
       }
     }
 
-    console.log("updated uri", tokenInfo.uri);
-
-    let filenameArray = tokenInfo.uri.split("/");
-    let filename =
-      filenameArray.length > 0 ? filenameArray[filenameArray.length - 1] : "";
-    if (filename) {
-      createMessage("Metadata filename is missing", "error");
-      setIsLoading(false);
-    }
-
-    console.log("updated name", filename);
-    console.log("updated body", body);
-    const shadowHash: any = await pinFileToShadowDrive(body);
-    console.log("updated result", shadowHash);
-
     profile.bio = form.description;
     profile.nouns = form.noun;
     profile.name = form.name + " " + form.lastName;
@@ -218,31 +166,6 @@ const EditProfile = () => {
     console.log("submitForm 4");
     currentUser.profile = profile;
 
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
-
-    let res = await userConn.updateToken({
-      mint: new anchor.web3.PublicKey(profileInfo.profile.address),
-      authority: wallet.publicKey,
-      payer: wallet.publicKey,
-      name: form.username.substring(0, 15),
-      symbol: form.username.substring(0, 10).toUpperCase(),
-      uri: shadowHash,
-    });
-
-    console.log("update result", res);
-
-    if (res.Err) {
-      createMessage("Error on Blockchain call", "error");
-      setIsLoading(false);
-      return;
-    }
 
     let updateProfile = currentUser.profile;
     updateProfile.bio = form.description;
@@ -263,7 +186,7 @@ const EditProfile = () => {
     navigate.replace(`/` + form.username);
     console.log("submitForm 6");
     setIsLoading(false);
-  }, [wallet, profileInfo, image, form, tokenInfo]);
+  }, [wallet, profileInfo, image, form]);
 
   React.useEffect(() => {
     if (!image) return;
@@ -304,75 +227,26 @@ const EditProfile = () => {
     let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const profileInfo = await userConn.getUserInfo();
+    let profileLineage = profileInfo.profilelineage as ProfileLineage;
+      const user = await axios.get(
+        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
+      );
 
-    console.log("edit profile info: ", profileInfo);
+      const username = user.data?.profile?.username;
 
-    const genesis = profileInfo.activationTokens[0]?.genesis;
-    const activation = profileInfo.activationTokens[0]?.activation;
+      setProfileInfo({
+        profileLineage,
+        solBalance: profileInfo.solBalance,
+        mmoshBalance: profileInfo.oposTokenBalance,
+        usdcBalance: profileInfo.usdcTokenBalance,
+        profile: {
+          name: username,
+          address: wallet?.publicKey.toBase58()!,
+          image: user.data?.profile?.image,
+        },
+      });
 
-    const totalMints = profileInfo.totalChild;
-
-    let firstTime = true;
-
-    if (profileInfo.activationTokens.length > 0) {
-      if (profileInfo.activationTokens[0].activation != "") {
-        firstTime = false;
-      }
-    }
-    const totalChilds = totalMints;
-
-    let quota = 0;
-
-    if (totalChilds < 3) {
-      quota = 10;
-    } else if (totalChilds >= 3 && totalChilds < 7) {
-      quota = 25;
-    } else if (totalChilds >= 7 && totalChilds < 15) {
-      quota = 50;
-    } else if (totalChilds >= 15 && totalChilds < 35) {
-      quota = 250;
-    } else if (totalChilds >= 35 && totalChilds < 75) {
-      quota = 500;
-    } else {
-      quota = 1000;
-    }
-
-    const profileNft = profileInfo.profiles[0];
-    let username = "";
-    if (profileNft?.address) {
-      username = profileNft.userinfo.username;
-    }
-
-    setProfileInfo({
-      generation: profileInfo.generation,
-      genesisToken: genesis,
-      profileLineage: profileInfo.profilelineage,
-      activationToken: activation,
-      solBalance: profileInfo.solBalance,
-      mmoshBalance: profileInfo.oposTokenBalance,
-      usdcBalance: profileInfo.usdcTokenBalance,
-      firstTimeInvitation: firstTime,
-      quota,
-      activationTokenBalance:
-        parseInt(profileInfo.activationTokenBalance) + profileInfo.totalChild ||
-        0,
-      profile: {
-        name: username,
-        address: profileNft?.address,
-        image: profileNft?.userinfo.image,
-      },
-    });
-
-    let nftInfo = await userConn.metaplex.nfts().findByMint({
-      mintAddress: new anchor.web3.PublicKey(profileNft?.address),
-    });
-
-    setTokenInfo(nftInfo);
   };
-
-  React.useEffect(() => {
-    console.log("tokenInfo ", tokenInfo);
-  }, [tokenInfo]);
 
   return (
     <div className="background-content">

@@ -379,11 +379,6 @@ const Offer = ({
       return;
     }
 
-    if (!profileInfo.profile.address) {
-      createMessage("profile is not created", "danger-container");
-      return;
-    }
-
     if (offerDetail.invitationype === "required" && !hasInivtation) {
       createMessage("Invitation required to mint offer", "danger-container");
       return;

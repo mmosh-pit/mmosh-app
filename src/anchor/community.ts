@@ -51,6 +51,7 @@ import internalClient from "@/app/lib/internalHttpClient";
 import { SystemProgram, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { NATIVE_MINT, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { Token } from "./curve/spl-token-curve/index";
+import { getLineage } from "@/app/lib/forge/createProfile";
 
 
 const {
@@ -1679,7 +1680,6 @@ export class Connectivity {
     input: _MintGuestPass,
     userProfile: string,
     payerProfile: string,
-    profileNft: string,
     cost?: number,
     supply?: number,
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
@@ -1776,7 +1776,6 @@ export class Connectivity {
         this.mainState,
       );
 
-      let profileHolderInfo;
       console.log("cost ", cost);
       if (cost) {
         const {
@@ -1789,30 +1788,18 @@ export class Connectivity {
           genesisProfile,
           mainStateInfo.oposToken,
         );
-        let myProfile = new anchor.web3.PublicKey(profileNft);
-        const myProfileState = this.__getProfileStateAccount(myProfile);
-        console.log("mint pass 71", userProfile);
-        console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
-        console.log("mint pass 72");
-        let myProfileStateInfo =
-          await this.program.account.profileState.fetch(myProfileState);
-        console.log("mint pass 73");
-        profileHolderInfo = await this.__getProfileHoldersInfo(
-          myProfileStateInfo.lineage,
-          myProfile,
-          web3Consts.genesisProfile,
-          mainStateInfo.oposToken,
-        );
+        let lineage = await getLineage(userProfile);
+        
         let holdersfullInfo = [];
 
         holdersfullInfo.push({
-          receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+          receiver: lineage.gensis,
           vallue:
             cost * (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
         });
 
         holdersfullInfo.push({
-          receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+          receiver: lineage.parent,
           vallue:
             cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
         });
@@ -1916,7 +1903,6 @@ export class Connectivity {
     input: _MintProfileByAtInput,
     userProfile: string,
     payerProfile: string,
-    profileNft: string,
     cost?: number,
     supply?: number,
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
@@ -2052,29 +2038,19 @@ export class Connectivity {
           );
           console.log("mint pass 71", userProfile);
           console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
-          let myProfile = new anchor.web3.PublicKey(profileNft);
-          const myProfileState = this.__getProfileStateAccount(myProfile);
-          console.log("mint pass 72");
-          let myProfileStateInfo =
-            await this.program.account.profileState.fetch(myProfileState);
-          console.log("mint pass 73");
-          profileHolderInfo = await this.__getProfileHoldersInfo(
-            myProfileStateInfo.lineage,
-            myProfile,
-            web3Consts.genesisProfile,
-            mainStateInfo.oposToken,
-          );
+          let lineage = await getLineage(userProfile);
+
           let holdersfullInfo = [];
 
           holdersfullInfo.push({
-            receiver: profileHolderInfo.currentGenesisProfileHolder.toBase58(),
+            receiver: lineage.gensis,
             vallue:
               cost *
               (mainStateInfo.mintingCostDistribution.genesis / 100 / 100),
           });
 
           holdersfullInfo.push({
-            receiver: profileHolderInfo.currentParentProfileHolder.toBase58(),
+            receiver: lineage.parent,
             vallue:
               cost * (mainStateInfo.mintingCostDistribution.parent / 100 / 100),
           });

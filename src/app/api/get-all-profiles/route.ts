@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     profile: {
       $exists: true,
     },
-    profilenft: {
+    wallet: {
       $exists: true,
     },
   };

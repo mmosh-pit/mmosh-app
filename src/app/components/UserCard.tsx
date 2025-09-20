@@ -20,7 +20,7 @@ const UserCard = ({ user, currentuser }: Props) => {
   React.useEffect(() => {
     setConnectionStatus(user.profile.connection ? user.profile.connection : 0);
     setHasRequest(user.profile.request ? user.profile.request : false);
-  }, [user.profilenft]);
+  }, [user.wallet]);
 
   const connectionAction = async (type: any) => {
     if (!currentuser) {
@@ -83,7 +83,7 @@ const UserCard = ({ user, currentuser }: Props) => {
   return (
     <div
       className="flex bg-[#09073A] px-4 py-4 rounded-2xl"
-      id={user.profilenft && "member-container-home"}
+      id={user.wallet && "member-container-home"}
     >
       <div className="self-center max-w-[30%] mr-8">
         <div className="relative w-[6vmax] h-[6vmax]">

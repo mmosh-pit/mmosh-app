@@ -144,7 +144,7 @@ export async function POST(req: NextRequest) {
         uriHash: passMetaURI,
         genesisProfile: projectInfo.data.project.key,
         commonLut: projectInfo.data.project.lut
-      },body.account, body.payer, projectInfo.data.project.key);
+      },body.account, body.payer);
 
 
     if(result.Ok?.info?.profile) {

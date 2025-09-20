@@ -11,6 +11,7 @@ import { getUsername } from "../forge/getUsername";
 import { updateUserData } from "../forge/updateUserData";
 import { updateTotalMints } from "../forge/updateTotalMints";
 import { pinFileToShadowDrive } from "../uploadFileToShdwDrive";
+import { uploadFile } from "@/app/lib/firebase";
 import axios from "axios";
 
 export const createProfile = async ({
@@ -34,173 +35,16 @@ export const createProfile = async ({
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
 
     const seniority = (await getTotalMints()) + 1;
-    const generationData = await userConn.getProfileChilds(parentProfile);
-    const generation = generationData.generation;
-    const profileLineage = await userConn.getProfileLineage(parentProfile);
-    if (profileLineage.promoter === "") {
-      return {
-        type: "error",
-        message:
-          "We’re sorry, there was an error while trying to find parent profile.",
-      };
-    }
-    const genesisProfile = web3Consts.genesisProfile;
-
     let fullname = form.name;
 
     const body = {
-      name: fullname,
-      lastName: form.lastName,
-      displayName: form.displayName,
-      symbol: form.username.substring(0, 10),
-      description: form.description,
-      image: "",
-      banner,
-      enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL + "/" + form.username,
-      family: "MMOSH",
-      collection: "MMOSH Profile Collection",
-      attributes: [
-        {
-          trait_type: "Primitive",
-          value: "Profile",
-        },
-        {
-          trait_type: "Ecosystem",
-          value: "Genesis MMOSH",
-        },
-        {
-          trait_type: "Gen",
-          value: generation,
-        },
-        {
-          trait_type: "Seniority",
-          value: seniority,
-        },
-        {
-          trait_type: "Full Name",
-          value: fullname,
-        },
-        {
-          trait_type: "Username",
-          value: form.username,
-        },
-        {
-          trait_type: "Adjective",
-          value: form.descriptor,
-        },
-        {
-          trait_type: "Noun",
-          value: form.noun,
-        },
-        {
-          trait_type: "Membership",
-          value: membership
-        },
-        {
-          trait_type: "Renewal frequency",
-          value: membershipType
-        },
-        {
-          trait_type: "Membership status",
-          value: "Active"
-        },
-        {
-          trait_type: "Price",
-          value: price + " USD"
-        }
-      ],
+      image: ""
     };
 
-    // get promoter name
-    if (profileLineage.promoter.length > 0) {
-      let promoter: any = await getUsername(profileLineage.promoter);
-      if (promoter != "") {
-        body.attributes.push({
-          trait_type: "Source",
-          value: promoter,
-        });
-        body.attributes.push({
-          trait_type: "Promoter",
-          value: promoter,
-        });
-      } else {
-        body.attributes.push({
-          trait_type: "Source",
-          value: profileLineage.promoter,
-        });
-        body.attributes.push({
-          trait_type: "Promoter",
-          value: profileLineage.promoter,
-        });
-      }
-      body.attributes.push({
-        trait_type: "Promoter_Profile",
-        value: profileLineage.promoterprofile,
-      });
-    }
-
-    // get scout name
-    if (profileLineage.scout.length > 0) {
-      let scout: any = await getUsername(profileLineage.scout);
-      if (scout != "") {
-        body.attributes.push({
-          trait_type: "Scout",
-          value: scout,
-        });
-      } else {
-        body.attributes.push({
-          trait_type: "Scout",
-          value: profileLineage.scout,
-        });
-      }
-      body.attributes.push({
-        trait_type: "Scout_Profile",
-        value: profileLineage.scoutprofile,
-      });
-    }
-
-    // get recruiter name
-    if (profileLineage.recruiter.length > 0) {
-      let recruiter: any = await getUsername(profileLineage.recruiter);
-      if (recruiter != "") {
-        body.attributes.push({
-          trait_type: "Recruiter",
-          value: recruiter,
-        });
-      } else {
-        body.attributes.push({
-          trait_type: "Recruiter",
-          value: profileLineage.recruiter,
-        });
-      }
-      body.attributes.push({
-        trait_type: "Recruiter_Profile",
-        value: profileLineage.recruiterprofile,
-      });
-    }
-
-    // get originator name
-    if (profileLineage.originator.length > 0) {
-      let originator: any = await getUsername(profileLineage.originator);
-      if (originator != "") {
-        body.attributes.push({
-          trait_type: "Originator",
-          value: originator,
-        });
-      } else {
-        body.attributes.push({
-          trait_type: "Originator",
-          value: profileLineage.originator,
-        });
-      }
-      body.attributes.push({
-        trait_type: "Originator_Profile",
-        value: profileLineage.originatorprofile,
-      });
-    }
-
     if (image) {
-      const imageUri = await pinImageToShadowDrive(image);
+      // const imageUri = await pinImageToShadowDrive(image);
+      const date = new Date().getMilliseconds();
+           const imageUri = await uploadFile(image, `${form.username}-banner-${date}`, "user-images");
       body.image = imageUri;
       if (imageUri === "") {
         return {
@@ -213,23 +57,8 @@ export const createProfile = async ({
       body.image = preview;
     }
 
-    const shadowHash: any = await pinFileToShadowDrive(body);
-
-    if (shadowHash === "") {
-      return {
-        message:
-          "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
-        type: "error",
-      };
-    }
-
     const res = await userConn.mintProfile({
-      name: form.username.substring(0, 15),
-      symbol: form.username.substring(0, 10),
-      uriHash: shadowHash,
       parentProfile,
-      genesisProfile,
-      commonLut: web3Consts.commonLut,
       price
     });
 
@@ -330,8 +159,8 @@ export const buyMembership = async ({
       preflightCommitment: "processed",
     });
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
-    const profileLineage = await userConn.getProfileLineage(parentProfile);
-    if(profileLineage.promoter === "") {
+    const profileLineage = await getLineage(parentProfile.toBase58());
+    if(profileLineage.parent === "") {
       return {
         type: "error",
         message:
@@ -341,12 +170,7 @@ export const buyMembership = async ({
     const genesisProfile = web3Consts.genesisProfile;
 
     const res = await userConn.buyMembership({
-      name: form.username.substring(0, 15),
-      symbol: form.username.substring(0, 10).toUpperCase(),
-      uriHash: "",
       parentProfile,
-      genesisProfile,
-      commonLut: web3Consts.commonLut,
       price
     });
 
@@ -444,3 +268,25 @@ export const trasferUsdCoin = async (wallet: any, receiver: string, amount: numb
     };
   }
 };
+
+export const getLineage  = async(profile: string) =>  {
+    try {
+        const res = await axios.get("/api/get-elders?profile="+profile);
+        return {
+          gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          parent: res.data.promotor,
+          gparent: res.data.scout,
+          ggparent: res.data.recruitor,
+          gggparent: res.data.originator,
+        }
+    } catch (error) {
+      return {
+          gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          parent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          gparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          ggparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          gggparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      }
+    }
+    
+  }

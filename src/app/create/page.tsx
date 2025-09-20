@@ -17,19 +17,14 @@ const Forge = () => {
   const [isLoadingProfile] = useAtom(web3InfoLoading);
 
   const hasProfile = !!profileData?.profile.address;
-  const hasInvitation = !!profileData?.activationToken;
 
   const getFeaturedCard = React.useCallback(() => {
     if (hasProfile) {
       return <InvitationCard />;
     }
 
-    if (hasInvitation) {
-      return <ProfileCard />;
-    }
-
     return <GuestPassCard />;
-  }, [hasProfile, hasInvitation]);
+  }, [hasProfile]);
 
   if (isLoadingProfile) {
     return (
@@ -64,11 +59,6 @@ const Forge = () => {
           </DefaultCard>
         )}
 
-        {!hasInvitation && !hasProfile && (
-          <DefaultCard>
-            <ProfileCard />
-          </DefaultCard>
-        )}
       </div>
     </div>
   );

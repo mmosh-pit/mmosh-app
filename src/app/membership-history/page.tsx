@@ -143,14 +143,14 @@ const ClaimPage = () => {
 
     const claimAmount = async () => {
         try {
-            if (wallet && profileInfo?.profileLineage.recruiter) {
+            if (wallet && profileInfo?.profileLineage.parent) {
                 setIsLoading(true);
                 // const txAmount = (usage / history.inPool * 100) - claimed;
                 const txAmount = (usage - claimed / totalUsage) * history.inPool;
                 const result: any = await internalClient.post("/api/membership/claim", {
                     amount: txAmount,
                     address: wallet.publicKey.toString(),
-                    parentAddress: profileInfo?.profileLineage.recruiter
+                    parentAddress: profileInfo?.profileLineage.parent
                 });
                 if (result.data.status) {
                     const connection = new Connection(

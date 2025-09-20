@@ -30,16 +30,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (!userData.profilenft) {
-    console.log("Profile not found");
-    return NextResponse.json(
-      { status: false, message: "Profile not found" },
-      {
-        status: 200,
-      },
-    );
-  }
-
   let offerData: any = await offerCollection.findOne({
     symbol: symbol?.toUpperCase(),
   });
@@ -351,7 +341,6 @@ export async function POST(req: NextRequest) {
         },
         receiver,
         receiver,
-        userData.profilenft,
         price * 10 ** coinData.target.decimals * supply,
         supply,
       );
@@ -367,7 +356,6 @@ export async function POST(req: NextRequest) {
         },
         receiver,
         receiver,
-        userData.profilenft,
         price * 10 ** coinData.target.decimals * supply,
         supply,
       );

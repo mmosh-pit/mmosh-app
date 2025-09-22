@@ -57,25 +57,8 @@ const LinkedInAgentOption = ({ project }: { project: string }) => {
           instructions,
         },
       })
-      .catch((err: AxiosError) => {
-        if (err.response?.data === "invalid-linkedin") {
-          createMessage("Invalid LinkedIn Credentials", "danger-container");
-          return;
-        } else if (err.response?.data === "linkedin-exists") {
-          createMessage(
-            "LinkedIn Handle has already been saved",
-            "danger-container",
-          );
-          return;
-        } else {
-          createMessage(
-            "Unknown error ocurred, please try again",
-            "danger-container",
-          );
-        }
-        return;
-      })
       .then((_) => {
+        // Success: Add to local state only when API call succeeds
         setIsLoading(false);
 
         setLinkedinConnections((prev) => {
@@ -97,6 +80,24 @@ const LinkedInAgentOption = ({ project }: { project: string }) => {
           "Successfully added LinkedIn account to your Agent",
           "success-container",
         );
+      })
+      .catch((err: AxiosError) => {
+        // Error: Do NOT add to local state, only show error message
+        setIsLoading(false);
+
+        if (err.response?.data === "invalid-linkedin") {
+          createMessage("Invalid LinkedIn Credentials", "danger-container");
+        } else if (err.response?.data === "linkedin-exists") {
+          createMessage(
+            "LinkedIn Handle has already been saved",
+            "danger-container",
+          );
+        } else {
+          createMessage(
+            "Unknown error occurred, please try again",
+            "danger-container",
+          );
+        }
       });
   }, [project, linkedinHandle, linkedinPassword, instructions]);
 

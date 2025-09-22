@@ -59,7 +59,7 @@ const AgentPass = ({
 
   const [fields, setFields] = useState({
     image: {
-      preview: "",
+      preview: "", 
       type: "",
     },
     name: "",

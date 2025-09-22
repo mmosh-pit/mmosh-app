@@ -875,6 +875,162 @@ async buyMembership(
         return { Err: error };
     }
 }
+async distributeToLineage(input: any): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    try {
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      if (!user) throw "Wallet not found";
+      let { parentProfile, price, token } = input;
+
+
+      if (typeof parentProfile == "string")
+        parentProfile = new web3.PublicKey(parentProfile);
+
+      this.txis = [];
+
+      let lineage = await getLineage(parentProfile.toBase58())
+
+
+      let cost = price * (10**6);
+
+      let holdersfullInfo = [];
+
+      // genesis
+      holdersfullInfo.push({
+        receiver: lineage.gensis,
+        vallue: Math.ceil(cost * (20 / 100)),
+      });
+
+      // parent
+      holdersfullInfo.push({
+        receiver: parentProfile.toBase58(),
+        vallue: Math.ceil(cost * (10 / 100)),
+      });
+
+      // grandParent
+      holdersfullInfo.push({
+        receiver: lineage.parent,
+        vallue: Math.ceil(cost * (5 / 100)),
+      });
+
+      // greatGrandParent
+      holdersfullInfo.push({
+        receiver: lineage.gparent,
+        vallue: Math.ceil(cost * (3 / 100)),
+      });
+
+      // ggreatGrandParent
+      holdersfullInfo.push({
+        receiver:  lineage.ggparent,
+        vallue: Math.ceil(cost * (2 / 100)),
+      });
+
+      // ggreatGrandParent
+      holdersfullInfo.push({
+        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        vallue: Math.ceil(cost * (60 / 100)),
+      });
+
+      const holdermap: any = [];
+      holdersfullInfo.reduce(function(res: any, value) {
+        if (!res[value.receiver]) {
+          res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+          holdermap.push(res[value.receiver]);
+        }
+        res[value.receiver].vallue += value.vallue;
+        return res;
+      }, {});
+
+      for (let index = 0; index < holdermap.length; index++) {
+        const element = holdermap[index];
+        let createShare: any = await this.baseSpl.transfer_token_modified({
+          mint: usdcToken,
+          sender: user,
+          receiver: new anchor.web3.PublicKey(element.receiver),
+          init_if_needed: true,
+          amount: Math.ceil(element.vallue),
+        });
+        for (let index = 0; index < createShare.length; index++) {
+          this.txis.push(createShare[index]);
+        }
+      }
+
+
+      const tx = new web3.Transaction().add(...this.txis);
+      tx.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      tx.feePayer = this.provider.publicKey;
+
+      const feeEstimate = await this.getPriorityFeeEstimate(tx);
+      let feeIns;
+      if (feeEstimate > 0) {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: feeEstimate,
+        });
+      } else {
+        feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1_400_000,
+        });
+      }
+      tx.add(feeIns);
+      this.txis = [];
+
+      const signature = await this.provider.sendAndConfirm(tx, []);
+
+      await this.storeRoyalty(
+        user.toBase58(),
+        [
+          {
+            receiver: lineage.gensis,
+            amount: 8 * 0.2,
+          },
+          {
+            receiver: parentProfile,
+            amount: 8 * 0.1,
+          },
+          {
+            receiver: lineage.parent,
+            amount: 8 * 0.05,
+          },
+          {
+            receiver:  lineage.gparent,
+            amount: 8 * 0.03,
+          },
+          {
+            receiver:  lineage.ggparent,
+            amount: 8 * 0.02,
+          },
+        ],
+        web3Consts.usdcToken,
+        token
+      );
+
+      await this.storeLineage(
+        user.toBase58(),
+        {
+          promotor: parentProfile.toBase58(),
+          scout: lineage.parent,
+          recruitor: lineage.gparent,
+          originator: lineage.ggparent,
+          gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+        },
+        this.provider.publicKey.toBase58(),
+        token,
+      );
+
+      return {
+        Ok: {
+          signature,
+          info: { profile: this.provider.publicKey.toBase58() },
+        },
+      };
+    } catch (error) {
+      log({ error });
+      return { Err: error };
+    }
+  }
 
   async registerCommonLut() {
     const collection = web3Consts.profileCollection;
@@ -894,12 +1050,24 @@ async buyMembership(
     ]);
   }
 
-  async storeRoyalty(sender: string, receivers: any, coin: any) {
-    await internalClient.post("/api/update-royalty", {
-      sender,
-      receivers,
-      coin,
-    });
+  async storeRoyalty(sender: string, receivers: any, coin: any, token?: string) {
+    if (token) {
+      await axios.post(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/update-royalty", {
+        sender,
+        receivers,
+        coin,
+      }, {
+        headers: {
+          authorization : token
+        }
+      })
+    } else {
+      await internalClient.post("/api/update-royalty", {
+        sender,
+        receivers,
+        coin,
+      });
+    }
   }
 
   async calculatePriorityFee(instructions: any, lutsInfo: any, mintKp: any) {
@@ -967,12 +1135,24 @@ async buyMembership(
     }
   }
 
-  async storeLineage(wallet: string, lineage: any, profile: string) {
-    await internalClient.post("/api/save-lineage", {
-      wallet,
-      lineage,
-      profile,
-    });
+  async storeLineage(wallet: string, lineage: any, profile: string, token?: string) {
+    if (token) {
+      await axios.post(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/save-lineage", {
+        wallet,
+        lineage,
+        profile
+      }, {
+        headers: {
+          authorization: token
+        }
+      })
+    } else {
+      await internalClient.post("/api/save-lineage", {
+        wallet,
+        lineage,
+        profile,
+      });
+    }
   }
 
   async initSubscriptionBadge(input: {

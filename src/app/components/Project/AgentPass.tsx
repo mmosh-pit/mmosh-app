@@ -291,78 +291,8 @@ const AgentPass = ({
       );
 
       try {
-        setButtonText("Uploading pass metadata...");
-        let projectBody = {
-          name: fields.name,
-          symbol: fields.symbol,
-          description: fields.desc,
-          image: fields.image.preview,
-          enternal_url: "https://kinshipbots.com",
-          family: "MMOSH",
-          collection: "MMOSH Pass Collection",
-          attributes: [
-            {
-              trait_type: "Primitive",
-              value: "Pass",
-            },
-            {
-              trait_type: "Ecosystem",
-              value: " MMOSH",
-            },
-            {
-              trait_type: "Project",
-              value: symbol
-                ? projectDetail.project.key
-                : projectKeyPair.publicKey.toBase58(),
-            },
-            {
-              trait_type: "Founder",
-              value: "Moto",
-            },
-          ],
-        };
-
-        if (fields.website.length > 0) {
-          projectBody.attributes.push({
-            trait_type: "Website",
-            value: fields.website,
-          });
-        }
-
-        if (fields.telegram.length > 0) {
-          projectBody.attributes.push({
-            trait_type: "Telegram",
-            value: fields.telegram,
-          });
-        }
-
-        if (fields.twitter.length > 0) {
-          projectBody.attributes.push({
-            trait_type: "Bluesky",
-            value: fields.twitter,
-          });
-        }
-
-        const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
-        if (projectMetaURI === "") {
-          createMessage(
-            "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
-            "danger-container",
-          );
-          return;
-        }
 
         if (symbol) {
-          let res = await communityConnection.updateToken({
-            mint: new anchor.web3.PublicKey(projectDetail.project.key),
-            authority: wallet.publicKey,
-            payer: wallet.publicKey,
-            name: fields.name,
-            symbol: fields.symbol,
-            uri: projectMetaURI,
-          });
-          console.log("update result", res);
-
           setButtonText("Updating pass... ");
           await internalClient.put("/api/project/update-project", {
             key: projectDetail.project.key,
@@ -379,50 +309,6 @@ const AgentPass = ({
           setLoading(false);
           return;
         }
-
-        const profileMintingCost = new anchor.BN(
-          calcNonDecimalValue(Number(fields.passPrice), 9),
-        );
-        const invitationMintingCost = new anchor.BN(
-          calcNonDecimalValue(fields.invitationPrice, 9),
-        );
-        setButtonText("Minting Pass...");
-        const res1: any = await communityConnection.mintGenesisPass({
-          name: fields.name,
-          symbol: fields.symbol,
-          uri: projectMetaURI,
-          mintKp: projectKeyPair,
-          input: {
-            oposToken: web3Consts.oposToken,
-            profileMintingCost,
-            invitationMintingCost,
-            mintingCostDistribution: {
-              parent: 100 * fields.priceDistribution.curator,
-              grandParent: 100 * fields.priceDistribution.creator,
-              greatGrandParent: 100 * fields.priceDistribution.promoter,
-              ggreatGrandParent: 100 * fields.priceDistribution.scout,
-              genesis: 100 * fields.priceDistribution.echosystem,
-            },
-            tradingPriceDistribution: {
-              seller: 100 * fields.priceDistribution.curator,
-              parent: 100 * fields.priceDistribution.creator,
-              grandParent: 100 * fields.priceDistribution.promoter,
-              greatGrandParent: 100 * fields.priceDistribution.scout,
-              genesis: 100 * fields.priceDistribution.echosystem,
-            },
-          },
-        });
-
-        const genesisProfileStr = res1.Ok.info.profile;
-        console.log("genesisProfileStr ", genesisProfileStr);
-
-        setButtonText("Waiting for Confirmation...");
-        await delay(15000);
-        communityConnection.setMainState();
-
-        setButtonText("Creating LUT Registration...");
-        const res4: any = await communityConnection.registerCommonLut();
-        console.log("register lookup result ", res4);
 
         setButtonText("Buying new Pass...");
         console.log("Profile info: ", profileInfo);
@@ -443,9 +329,7 @@ const AgentPass = ({
           symbol: fields.symbol.toUpperCase(),
           desc: fields.desc,
           image: fields.image.preview,
-          inviteimage: "",
           key: projectKeyPair.publicKey.toBase58(),
-          lut: res4.Ok.info.lookupTable,
           seniority: 0,
           price: fields.passPrice,
           distribution: fields.priceDistribution,

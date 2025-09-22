@@ -22,9 +22,6 @@ import client from "@/app/lib/httpClient";
 import internalClient from "@/app/lib/internalHttpClient";
 import { randomStr } from "@metaplex-foundation/js";
 import WarningModal from "../common/WarningModal";
-import { uploadFile } from "@/app/lib/firebase";
-import { profile } from "console";
-
 
 const explanations: any = {
   private: "Only the Creator can view and interact with it.",
@@ -274,9 +271,7 @@ const AgentPass = ({
               (blobFile) =>
                 new File([blobFile], uuidv4(), { type: fields.image.type }),
             );
-          // let imageUri = await pinImageToShadowDrive(imageFile);
-           const date = new Date().getMilliseconds();
-               const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
+          let imageUri = await pinImageToShadowDrive(imageFile);
           fields.image.preview = imageUri;
         }
         localStorage.setItem("projectstep1", JSON.stringify(fields));

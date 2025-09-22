@@ -1,9 +1,19 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import Select from "../components/common/Select";
-// import { Shield, CreditCard, Clock, DollarSign, Search } from "lucide-react";
+import moment from "moment";
+import useWallet from "@/utils/wallet";
+import axios from "axios";
+import internalClient from "../lib/internalHttpClient";
+import { useRouter } from "next/navigation";
+import { Connection } from "@solana/web3.js";
+import * as anchor from "@coral-xyz/anchor";
+import { Connectivity as UserConn } from "@/anchor/user";
+import { web3Consts } from "@/anchor/web3Consts";
 
 export default function MyWalley() {
+  const wallet = useWallet();
+  const router = useRouter();
   const options = [
     "All Categories",
     "Various Coins",
@@ -13,7 +23,180 @@ export default function MyWalley() {
   ];
 
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("All Categories");
+  const [stakedHistory, setStakedHistory] = useState<any[]>([]);
+  const [filteredHistory, setFilteredHistory] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("All Categories");
+
+  const [earnedAmount, setEarnedAmount] = useState<number>(0);
+  const [availableTokens, setAvailableTokens] = useState<number>(0);
+  const [stakedTokens, setStakedTokens] = useState<number>(0);
+
+  React.useEffect(() => {
+    if (wallet) {
+      getHistory();
+    }
+  }, [wallet]);
+  React.useEffect(() => {
+    filterHistory();
+  }, [selectedCategory, stakedHistory]);
+
+  const getHistory = async () => {
+    const result = await internalClient.get(
+      `api/get-reward?wallet=${wallet?.publicKey.toBase58()}`
+    );
+    updateAmounts(result.data);
+    setStakedHistory(result.data);
+  };
+
+  const formatUnlocksIn = (target: any) => {
+    let m;
+    if (typeof target === "number") {
+      m = moment(target);
+    } else if (typeof target === "string") {
+      const digitsOnly = /^\d+$/;
+      if (digitsOnly.test(target)) {
+        m = moment(Number(target));
+      } else {
+        m = moment.parseZone(target);
+        if (!m.isValid()) {
+          const d = new Date(target);
+          if (!isNaN(d.getTime())) m = moment(d);
+        }
+      }
+    } else if (target instanceof Date) {
+      m = moment(target);
+    } else {
+      return "Invalid timestamp";
+    }
+
+    if (!m || !m.isValid()) return "Invalid timestamp";
+
+    const diffMs = m.valueOf() - Date.now();
+
+    if (diffMs <= 0) return "Unlocked!";
+
+    const duration = moment.duration(diffMs);
+    const days = Math.floor(duration.asDays());
+    const hours = duration.hours();
+    const minutes = duration.minutes();
+    const D = days === 1 ? "day" : "days";
+    const H = hours === 1 ? "hour" : "hours";
+    const M = minutes === 1 ? "minute" : "minutes";
+
+    return `Unlocks in ${days} ${D}, ${hours} ${H} ${minutes} ${M}`;
+  };
+
+  const filterHistory = () => {
+    if (selectedCategory === "All Categories") {
+      setFilteredHistory(stakedHistory);
+      return;
+    }
+    const result = stakedHistory.filter(
+      (history) =>
+        history.category.toLowerCase() === selectedCategory.toLowerCase()
+    );
+    setFilteredHistory(result);
+  };
+
+  const searchHistory = (value: string) => {
+    // if (value.trim().length === 0) {
+    //   setFilteredData(data);
+    // } else {
+    //   const filteredCodes = data.filter((code) =>
+    //     code.toLowerCase().includes(value.toLowerCase())
+    //   );
+    //   setFilteredData(filteredCodes);
+    // }
+  };
+
+  const updateAmounts = (history: any[]) => {
+    let total: number = 0;
+    let availableTokens: number = 0;
+    let stakedTokens: number = 0;
+
+    for (let i = 0; i < history.length; i++) {
+      const element = history[i];
+
+      for (let j = 0; j < element.royalty.length; j++) {
+        const royaltyElement = element.royalty[j];
+        if (royaltyElement.receiver === wallet?.publicKey.toBase58()) {
+          if (royaltyElement.isClaimed) {
+            total += royaltyElement.amount / 10 ** 6;
+          } else if (!moment(element.created_date).isAfter(moment())) {
+            availableTokens += royaltyElement.amount / 10 ** 6;
+          } else {
+            stakedTokens += royaltyElement.amount / 10 ** 6;
+          }
+
+          console.log("Processed royalty element:", royaltyElement);
+        }
+      }
+    }
+    setEarnedAmount(total);
+    setAvailableTokens(availableTokens);
+    setStakedTokens(stakedTokens);
+  };
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const claimRewardAmount = async (history: any) => {
+    const prepareTransactions = prepareTransaction(history);
+    const result: any = await internalClient.post("/api/claim-reward", {
+      transaction: prepareTransactions.transaction,
+      forceToDistributePool: prepareTransactions.transaction,
+      stakedAmount: history.stakedAmount,
+      receiverAddress: wallet?.publicKey.toBase58(),
+    });
+    if (result.data.status && wallet) {
+      const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        {
+          confirmTransactionInitialTimeout: 120000,
+        }
+      );
+      const env = new anchor.AnchorProvider(connection, wallet, {
+        preflightCommitment: "processed",
+      });
+      anchor.setProvider(env);
+
+      const userConn: UserConn = new UserConn(env, web3Consts.programID);
+      const data: any = Buffer.from(result.data.transaction, "base64");
+      const tx = anchor.web3.VersionedTransaction.deserialize(data);
+      console.log("Inside condition");
+      const signature = await userConn.provider.sendAndConfirm(tx);
+      console.log("tx signature", signature);
+      const updateResult = await internalClient.post(
+        "/api/update-staked-history",
+        {
+          wallet: wallet.publicKey.toBase58(),
+        }
+      );
+    }
+  };
+  const prepareTransaction = (history: any) => {
+    const transaction = [];
+    let forceToDistributePool = true;
+    for (let i = 0; i < history.royalty.length; i++) {
+      const element = history.royalty[i];
+      if (element.receiver === wallet?.publicKey.toBase58()) {
+        transaction.push({
+          receiver: element.receiver,
+          amount: element.amount,
+        });
+      }
+      forceToDistributePool = !element.isClaimed;
+    }
+    return {
+      transaction: transaction,
+      forceToDistributePool: forceToDistributePool,
+    };
+  };
 
   return (
     <div>
@@ -29,7 +212,13 @@ export default function MyWalley() {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            <p className="mr-2">awdggfgrgfrg......UX9</p>
+            <p className="mr-2">
+              {wallet?.publicKey
+                ? `${wallet.publicKey.toBase58().substring(0, 10)}...${wallet.publicKey
+                    .toBase58()
+                    .slice(-5)}`
+                : ""}
+            </p>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -123,15 +312,17 @@ export default function MyWalley() {
         <div className="lg:flex justify-center mt-6">
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13.5rem] w-full p-3 rounded-lg lg:mr-5 ">
             <p>Total Amount Earned</p>
-            <p className="text-4xl font-bold">$1059</p>
+            <p className="text-4xl font-bold">{formatAmount(earnedAmount)}</p>
           </div>
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13.5rem] w-full p-3 rounded-lg lg:mr-5 my-2 lg:my-0 ">
             <p>Available Tokens</p>
-            <p className="text-4xl font-bold">$850</p>
+            <p className="text-4xl font-bold">
+              {formatAmount(availableTokens)}
+            </p>
           </div>
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13.5rem] w-full] p-3 rounded-lg  ">
             <p>Staked Tokens</p>
-            <p className="text-4xl font-bold">$410</p>
+            <p className="text-4xl font-bold">{formatAmount(stakedTokens)}</p>
           </div>
         </div>
         <div className="lg:flex justify-center mt-6">
@@ -141,12 +332,7 @@ export default function MyWalley() {
               onClick={() => setIsOpen(!isOpen)}
               className="flex w-full items-center justify-between rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
             >
-              <span>{selected}</span>
-              {/* <ChevronDown
-                className={`h-4 w-4 transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              /> */}
+              <span>{selectedCategory}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -172,11 +358,13 @@ export default function MyWalley() {
                     <li key={option}>
                       <button
                         onClick={() => {
-                          setSelected(option);
+                          setSelectedCategory(option);
                           setIsOpen(false);
                         }}
                         className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
-                          selected === option ? "font-semibold" : "font-normal"
+                          selectedCategory === option
+                            ? "font-semibold"
+                            : "font-normal"
                         }`}
                       >
                         {option}
@@ -187,16 +375,6 @@ export default function MyWalley() {
               </div>
             )}
           </div>
-
-          {/* <select
-              defaultValue="Pick a browser"
-              className="select lg:w-[15.375rem] w-full rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] "
-            >
-              <option  className=" bg-black" disabled={true}>Pick a browser</option>
-              <option className="backdrop-blur-md">Chrome</option>
-              <option>FireFox</option>
-              <option>Safari</option>
-            </select> */}
 
           <label className="input flex items-center rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] lg:w-[30.375rem] w-full lg:ml-6 my-2 lg:my-0">
             <svg
@@ -224,79 +402,32 @@ export default function MyWalley() {
             <p className="text-[#FFFFFFBF] mr-10 text-sm">Staked</p>
             <p className="text-[#FFFFFFBF] text-sm">Unstaked</p>
           </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
-            <p className="text-sm">Airdrop</p>
-            <p className="text-sm">$1095</p>
-            <div className="lg:flex text-center">
-              <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">
-                Unlocks in 65 days, 12 hours 43 minutes
-              </p>
+          {filteredHistory.map((history) => (
+            <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
+              <p className="text-sm capitalize">{history.category}</p>
+              <p className="text-sm">${history.stakedAmount}</p>
+              <div className="lg:flex text-center">
+                <p className="text-sm">${history.unStakedAmount}</p>
+                <p className="text-xs text-[#FFFFFFBF] ml-5">
+                  {formatUnlocksIn(history.created_date)}
+                </p>
+              </div>
+              <div className="lg:flex ">
+                <button
+                  className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0"
+                  onClick={() => router.push("/swap")}
+                >
+                  Trade
+                </button>
+                <button
+                  className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink"
+                  onClick={() => claimRewardAmount(history)}
+                >
+                  Redeem
+                </button>
+              </div>
             </div>
-            <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
-                Trade
-              </button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
-                Redeem
-              </button>
-            </div>
-          </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
-            <p className="text-sm">Referrals</p>
-            <p className="text-sm">$1095</p>
-            <div className="lg:flex text-center">
-              <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">
-                Unlocks in 65 days, 12 hours 43 minutes
-              </p>
-            </div>
-            <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
-                Trade
-              </button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
-                Redeem
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
-            <p className="text-sm">Royalties</p>
-            <p className="text-sm">-</p>
-            <div className="lg:flex text-center">
-              <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">
-                Unlocks in 65 days, 12 hours 43 minutes
-              </p>
-            </div>
-            <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
-                Trade
-              </button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
-                Redeem
-              </button>
-            </div>
-          </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
-            <p className="text-sm">Coins</p>
-            <p className="text-sm">$1095</p>
-            <div className="lg:flex text-center">
-              <p className="text-sm">$559</p>
-              <p className="text-xs text-[#FFFFFFBF] ml-5">
-                Unlocks in 65 days, 12 hours 43 minutes
-              </p>
-            </div>
-            <div className="lg:flex ">
-              <button className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0">
-                Trade
-              </button>
-              <button className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink ">
-                Redeem
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

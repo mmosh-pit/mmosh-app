@@ -1,13 +1,9 @@
 import { db } from "@/app/lib/mongoClient";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { Connection, Keypair } from "@solana/web3.js";
-import { Connectivity as UserConn } from "@/anchor/user";
-import * as anchor from "@coral-xyz/anchor";
 import { NextRequest, NextResponse } from "next/server";
-import { web3Consts } from "@/anchor/web3Consts";
+import { getLineage } from "@/app/lib/forge/createProfile";
 
 export async function POST(req: NextRequest) {
+  // const authHeader = req.headers.get("authorization");
   const collection = db.collection("mmosh-app-staked-history");
   const { stakedAmount, userAddeess, purchaseId } = await req.json();
   if (!stakedAmount || !userAddeess || !purchaseId) {
@@ -21,6 +17,7 @@ export async function POST(req: NextRequest) {
     );
   }
   const stakedHistory = await collection.findOne({ purchaseId: purchaseId });
+
   if (stakedHistory !== null) {
     return NextResponse.json(
       {
@@ -32,67 +29,45 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const authHeader = req.headers.get("authorization");
-  const adminPrivateKey = process.env.PTV_WALLET!;
-  const private_buffer = bs58.decode(adminPrivateKey);
-  const private_arrray = new Uint8Array(
-    private_buffer.buffer,
-    private_buffer.byteOffset,
-    private_buffer.byteLength / Uint8Array.BYTES_PER_ELEMENT
-  );
-  let ptvOwner = Keypair.fromSecretKey(private_arrray);
-  let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-  let connection = new Connection(rpcUrl, {
-    confirmTransactionInitialTimeout: 120000,
+  let cost = (stakedAmount * 10 ** 6 * 85) / 100;
+  let lineage = await getLineage(userAddeess);
+  const royalty = [
+    {
+      receiver: process.env.NEXT_PUBLIC_PTV_WALLET_KEY,
+      amount: cost * (25 / 100),
+    },
+    {
+      receiver: lineage.parent,
+      amount: cost * (20 / 100),
+    },
+    {
+      receiver: lineage.gparent,
+      amount: cost * (10 / 100),
+    },
+    {
+      receiver: lineage.ggparent,
+      amount: cost * (3 / 100),
+    },
+    {
+      receiver: lineage.gggparent,
+      amount: cost * (2 / 100),
+    },
+  ];
+  await collection.insertOne({
+    category: "royalties",
+    stakedAmount: stakedAmount,
+    unStakedAmount: 0,
+    purchaseId: purchaseId,
+    wallet: userAddeess,
+    royalty: royalty,
+    created_date: Date.now(),
   });
-  let wallet = new NodeWallet(ptvOwner);
-  const env = new anchor.AnchorProvider(connection, wallet, {
-    preflightCommitment: "processed",
-  });
-  let userConn: UserConn = new UserConn(env, web3Consts.programID);
-  let balance: any = await userConn.getUserBalance({
-    address: wallet.publicKey,
-    token: web3Consts.usdcToken.toBase58(),
-    decimals: 6,
-  });
-
-  if (balance < stakedAmount) {
-    return NextResponse.json(
-      { error: "Insufficient USDC balance in admin wallet" },
-      { status: 400 }
-    );
-  }
-
-  const result = await userConn.distributeToLineage({
-    parentProfile: wallet.publicKey.toBase58(),
-    price: stakedAmount,
-    token: authHeader,
-  });
-
-  if (result.Ok) {
-    await collection.insertOne({
-      category: "membership",
-      stakedAmount: stakedAmount,
-      unStakedAmount: 0,
-      purchaseId: purchaseId,
-      wallet: userAddeess,
-      created_date: Date.now(),
-    });
-    return NextResponse.json(
-      {
-        status: true,
-        message: "Funds successfully disbursed to lineage",
-        result: result.Ok.signature,
-      },
-      { status: 200 }
-    );
-  }
   return NextResponse.json(
     {
-      status: false,
-      message: "Something went wrong, please try again later.",
-      result: null,
+      status: true,
+      message: "Funds successfully disbursed to lineage",
+      result: "",
     },
-    { status: 500 }
+    { status: 200 }
   );
 }

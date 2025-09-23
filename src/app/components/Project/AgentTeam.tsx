@@ -11,13 +11,8 @@ import Select from "../common/Select";
 import CloseIcon from "@/assets/icons/CloseIcon";
 import { useRouter } from "next/navigation";
 import MinusIcon from "@/assets/icons/MinusIcon";
-import Search from "../common/Search";
 import * as anchor from "@coral-xyz/anchor";
-import { Connectivity as ProjectConn } from "@/anchor/project";
-import { web3Consts } from "@/anchor/web3Consts";
-import { Connection, PublicKey } from "@solana/web3.js";
 import useWallet from "@/utils/wallet";
-import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import internalClient from "@/app/lib/internalHttpClient";
 
 export default function AgentTeam({
@@ -259,94 +254,23 @@ export default function AgentTeam({
       }
       setLoading(true);
 
-      const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-        {
-          confirmTransactionInitialTimeout: 120000,
-        },
-      );
+      const roleKeyPair = anchor.web3.Keypair.generate();
 
-      const env = new anchor.AnchorProvider(connection, wallet, {
-        preflightCommitment: "processed",
-      });
-      const projectConn: ProjectConn = new ProjectConn(
-        env,
-        web3Consts.programID,
-        new anchor.web3.PublicKey(projectDetail.project.key),
-      );
-
-      const body = {
-        name: projectDetail.project.name,
-        symbol: projectDetail.project.symbol,
-        description: projectDetail.project.desc,
-        image: projectDetail.project.image,
-        enternal_url: process.env.NEXT_PUBLIC_APP_MAIN_URL,
-        family: "Kinship Bots",
-        collection: "Kinship Roles",
-        attributes: [
-          {
-            trait_type: "Project",
-            value: projectDetail.project.key,
-          },
-          {
-            trait_type: "Role",
-            value: selectedRoles,
-          },
-        ],
-      };
-
-      const shadowHash: any = await pinFileToShadowDrive(body);
-      if (shadowHash === "") {
-        createMessage(
-          "There was an error while minting your role. Please, try again.",
-          "danger-container",
-        );
-        return;
-      }
-
-      const res = await projectConn.mintRolePass(
-        {
-          name: projectDetail.project.name,
-          symbol: projectDetail.project.symbol,
-          uriHash: shadowHash,
-          genesisProfile: projectDetail.project.key,
-          commonLut: new PublicKey(projectDetail.project.lut),
-        },
-        profileInfo?.profile.address!,
-      );
-
-      await delay(15000);
-
-      console.log("current profile", currentProfile);
-
-      const res1 = await projectConn.transferBadge({
-        amount: Number(1),
-        subscriptionToken: new anchor.web3.PublicKey(res.Ok?.info?.profile!),
-        receiver: currentProfile.wallet,
+      await internalClient.post("/api/project/save-profile", {
+        sender: wallet.publicKey.toBase58(),
+        name: currentProfile.profile.name,
+        profilekey: currentProfile.wallet,
+        role: selectedRoles,
+        projectkey: projectDetail.project.key,
+        key: roleKeyPair.publicKey.toBase58(),
       });
 
-      console.log("res1", res1);
-
-      if (res.Ok) {
-        await internalClient.post("/api/project/save-profile", {
-          sender: wallet.publicKey.toBase58(),
-          name: currentProfile.profile.name,
-          profilekey: currentProfile.wallet,
-          role: selectedRoles,
-          projectkey: projectDetail.project.key,
-          key: res.Ok?.info?.profile,
-        });
-
-        createMessage(
-          "Agent team role is successfully assigned to " +
-          currentProfile.profile.name,
-          "success-container",
-        );
-
-        getProjectDetailFromAPI();
-      } else {
-        createMessage("Something went wrong", "danger-container");
-      }
+      createMessage(
+        "Agent team role is successfully assigned to " +
+        currentProfile.profile.name,
+        "success-container",
+      );
+      getProjectDetailFromAPI();
     } catch (error) {
       createMessage("Something went wrong", "danger-container");
     }

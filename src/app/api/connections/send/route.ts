@@ -96,8 +96,7 @@ export async function POST(req: NextRequest) {
             await collection.insertOne({
                 sender,
                 receiver,
-                status:0,
-                badge
+                status:0
             })
             await sendNotification({
                 type: "request",

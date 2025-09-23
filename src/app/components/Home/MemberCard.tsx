@@ -63,17 +63,9 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
     // 4 - linked
     // 5 - has invite no connection
 
-    if (!wallet || !currentuser) {
+    if (!currentuser) {
       return;
     }
-
-    let connectionnft;
-    let connectionbadge;
-    let communityConnection: Community;
-    const env = new anchor.AnchorProvider(connection, wallet, {
-      preflightCommitment: "processed",
-    });
-    anchor.setProvider(env);
 
     try {
       setLoader(true);
@@ -84,159 +76,7 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
         connectionStatus == 3 ||
         connectionStatus == 5
       ) {
-        if (connectionStatus != 5) {
-          if (!currentuser.profile.connectionnft) {
-            setStatusMsg("Initiating...");
-            const projectKeyPair = anchor.web3.Keypair.generate();
-            communityConnection = new Community(
-              env,
-              web3Consts.programID,
-              projectKeyPair.publicKey,
-            );
 
-            let connectionBody = {
-              name: currentuser.profile.username + " Connection",
-              symbol: "CONNECTIONS",
-              description: currentuser.profile.bio,
-              image:
-                "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              enternal_url:
-                process.env.NEXT_PUBLIC_APP_MAIN_URL +
-                "/" +
-                currentuser.profile.username,
-              collection: "MMOSH Pass Collection",
-              attributes: [
-                {
-                  trait_type: "Project",
-                  value: projectKeyPair.publicKey.toBase58(),
-                },
-              ],
-            };
-            const projectMetaURI: any =
-              await pinFileToShadowDriveUrl(connectionBody);
-            const profileMintingCost = new anchor.BN(calcNonDecimalValue(0, 9));
-            const invitationMintingCost = new anchor.BN(
-              calcNonDecimalValue(0, 9),
-            );
-
-            const res1: any = await communityConnection.mintGenesisPass({
-              name: currentuser.profile.username,
-              symbol: "CONNECT",
-              uri: projectMetaURI,
-              mintKp: projectKeyPair,
-              input: {
-                oposToken: web3Consts.usdcToken,
-                profileMintingCost,
-                invitationMintingCost,
-                mintingCostDistribution: {
-                  parent: 100 * 2,
-                  grandParent: 100 * 70,
-                  greatGrandParent: 100 * 20,
-                  ggreatGrandParent: 100 * 5,
-                  genesis: 100 * 3,
-                },
-                tradingPriceDistribution: {
-                  seller: 100 * 2,
-                  parent: 100 * 70,
-                  grandParent: 100 * 20,
-                  greatGrandParent: 100 * 5,
-                  genesis: 100 * 3,
-                },
-              },
-            });
-
-            connectionnft = res1.Ok.info.profile;
-
-            await delay(15000);
-            setStatusMsg("Connecting...");
-            const invitebody = {
-              name: "Connection from " + currentuser.profile.username,
-              symbol: "CONNECTIONS",
-              description:
-                currentuser.profile.username +
-                " cordially invites you to link hearts on the MMOSH. Please feel free to link back.",
-              image:
-                "https://shdw-drive.genesysgo.net/FuBjTTmQuqM7pGR2gFsaiBxDmdj8ExP5fzNwnZyE2PgC/heart_on_fire.jpg",
-              external_url: "https://kinshipbots.com",
-              minter: currentuser.profile.name,
-              attributes: [
-                {
-                  trait_type: "Project",
-                  value: projectKeyPair.publicKey.toBase58(),
-                },
-              ],
-            };
-            const inviteMetaURI: any =
-              await pinFileToShadowDriveUrl(invitebody);
-
-            const res2: any = await communityConnection.initBadge({
-              name: "Invitation",
-              symbol: "CONNECT",
-              uri: inviteMetaURI,
-              profile: connectionnft,
-            });
-            console.log("invite result ", res2);
-            connectionbadge = res2.Ok.info.subscriptionToken;
-            await delay(15000);
-
-            const params = {
-              connectionnft,
-              connectionbadge,
-            };
-            await internalClient.put("/api/connections/update-wallet-data", {
-              value: params,
-              wallet: currentuser.wallet,
-            });
-            currentuser.profile.connectionnft = connectionnft;
-            currentuser.profile.connectionnft = connectionbadge;
-            setCurrentUser(currentuser);
-          } else {
-            connectionnft = currentuser.profile.connectionnft;
-            connectionbadge = currentuser.profile.connectionbadge;
-            communityConnection = new Community(
-              env,
-              web3Consts.programID,
-              new anchor.web3.PublicKey(currentuser.profile.connectionnft),
-            );
-          }
-          const balance = await communityConnection.getUserBalance({
-            token: connectionbadge,
-            address: wallet.publicKey,
-          });
-          if (balance == 0) {
-            setStatusMsg("Inviting...");
-            let res = await communityConnection.createBadge({
-              amount: 10000,
-              subscriptionToken: connectionbadge,
-            });
-            if (res.Err) {
-              setLoader(false);
-              return;
-            }
-            await delay(15000);
-          }
-
-          const userbalance = await communityConnection.getUserBalance({
-            token: connectionbadge,
-            address: new anchor.web3.PublicKey(user.wallet),
-          });
-          if (userbalance == 0) {
-            setStatusMsg("Sending...");
-            let res1;
-            res1 = await communityConnection.transferBadge({
-              amount: 1,
-              subscriptionToken: connectionbadge,
-              receiver: user.wallet,
-            });
-            if (res1.Err) {
-              setLoader(false);
-              return;
-            }
-            console.log("transferBadge ", res1);
-          }
-        } else {
-          setStatusMsg("connecting...");
-        }
         nextStatus = user.profile.isprivate ? 0 : 1;
         if (user.profile.isprivate) {
           nextConnectionStatus = 1;
@@ -263,7 +103,6 @@ const MemberCard = ({ user, wallet, currentuser, connection }: Props) => {
       await internalClient.post("/api/connections/send", {
         sender: currentuser.wallet,
         receiver: user.wallet,
-        badge: connectionbadge,
         status: nextStatus,
       });
       setConnectionStatus(nextConnectionStatus);

@@ -190,6 +190,7 @@ const ProfileForm = () => {
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });
+    setShowMsg(true)
     setTimeout(() => {
       setShowMsg(false);
     }, 4000);
@@ -932,7 +933,7 @@ const ProfileForm = () => {
                 <Button
                   isLoading={isLoading}
                   isPrimary
-                  title={`Mint Your Enjoyer Membership`}
+                  title={`Buy Your Enjoyer Membership`}
                   size="large"
                   disabled={isLoading}
                   action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
@@ -942,7 +943,7 @@ const ProfileForm = () => {
                 <Button
                   isLoading={isLoading}
                   isPrimary
-                  title={`Mint Your Creator Membership`}
+                  title={`Buy Your Creator Membership`}
                   size="large"
                   disabled={isLoading}
                   action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}

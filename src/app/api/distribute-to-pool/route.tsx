@@ -10,19 +10,8 @@ import * as anchor from "@coral-xyz/anchor";
 
 export async function POST(req: NextRequest) {
   try {
-    const collection = db.collection("mmosh-app-staked-history");
-    const { transaction, forceToDistributePool, stakedAmount, receiverAddress } =
-      await req.json();
-    // if (!amount || !receiverAddress) {
-    //   return NextResponse.json(
-    //     {
-    //       status: true,
-    //       message: "All params are required.",
-    //       result: null,
-    //     },
-    //     { status: 200 }
-    //   );
-    // }
+    const { stakedAmount } = await req.json();
+
     const adminPrivateKey = process.env.PTV_WALLET!;
     const private_buffer = bs58.decode(adminPrivateKey);
     const private_arrray = new Uint8Array(
@@ -55,36 +44,20 @@ export async function POST(req: NextRequest) {
         { status: 200 }
       );
     }
+
     let txis = [];
 
-    for (let i = 0; i < transaction.length; i++) {
-      const element = transaction[i];
-      let clamInstructions: any =
-        await userConn.baseSpl.transfer_token_modified({
-          mint: new anchor.web3.PublicKey(web3Consts.usdcToken),
-          sender: wallet.publicKey,
-          receiver: new anchor.web3.PublicKey(element.receiver),
-          init_if_needed: true,
-          amount: Math.ceil(element.amount),
-        });
-      for (let i = 0; i < clamInstructions.length; i++) {
-        txis.push(clamInstructions[i]);
-      }
-    }
-
-    if (forceToDistributePool && process.env.NEXT_PUBLIC_PTV_WALLET_KEY) {
-      let instructions: any = await userConn.baseSpl.transfer_token_modified({
-        mint: new anchor.web3.PublicKey(web3Consts.usdcToken),
-        sender: wallet.publicKey,
-        receiver: new anchor.web3.PublicKey(
-          process.env.NEXT_PUBLIC_PTV_WALLET_KEY
-        ),
-        init_if_needed: true,
-        amount: Math.ceil((stakedAmount * 10 ** 6 * 65) / 100),
-      });
-      for (let i = 0; i < instructions.length; i++) {
-        txis.push(instructions[i]);
-      }
+    let instructions: any = await userConn.baseSpl.transfer_token_modified({
+      mint: new anchor.web3.PublicKey(web3Consts.usdcToken),
+      sender: wallet.publicKey,
+      receiver: new anchor.web3.PublicKey(
+        process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+      ),
+      init_if_needed: true,
+      amount: Math.ceil((stakedAmount * 10 ** 6 * 65) / 100),
+    });
+    for (let i = 0; i < instructions.length; i++) {
+      txis.push(instructions[i]);
     }
     const freezeInstructions = await calculatePriorityFee(
       txis,
@@ -98,19 +71,21 @@ export async function POST(req: NextRequest) {
 
     const blockhash = (await connection.getLatestBlockhash()).blockhash;
     const message = new anchor.web3.TransactionMessage({
-      payerKey: new anchor.web3.PublicKey(receiverAddress),
+      payerKey: new anchor.web3.PublicKey(
+        process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+      ),
       recentBlockhash: blockhash,
       instructions: [...txis],
     }).compileToV0Message([]);
 
     const tx = new anchor.web3.VersionedTransaction(message);
     tx.sign([ptvOwner]);
-    const serialized = Buffer.from(tx.serialize()).toString("base64");
+    const signature = await userConn.provider.sendAndConfirm(tx);
     return NextResponse.json(
       {
         status: true,
-        transaction: serialized,
-        message: "Reward amount claimed successfully",
+        signature: signature,
+        message: "Reward amount distributed to the pool",
       },
       { status: 200 }
     );

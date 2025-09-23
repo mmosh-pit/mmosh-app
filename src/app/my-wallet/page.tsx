@@ -10,6 +10,7 @@ import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
+import MessageBanner from "../components/common/MessageBanner";
 
 export default function MyWalley() {
   const wallet = useWallet();
@@ -31,6 +32,11 @@ export default function MyWalley() {
   const [earnedAmount, setEarnedAmount] = useState<number>(0);
   const [availableTokens, setAvailableTokens] = useState<number>(0);
   const [stakedTokens, setStakedTokens] = useState<number>(0);
+  const [showMsg, setShowMsg] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState({
+    type: "",
+    message: "",
+  });
 
   React.useEffect(() => {
     if (wallet) {
@@ -41,10 +47,19 @@ export default function MyWalley() {
     filterHistory();
   }, [selectedCategory, stakedHistory]);
 
+  const createMessage = React.useCallback((text: string, type: string) => {
+    setMessage({ message: text, type });
+    setShowMsg(true);
+    setTimeout(() => {
+      setShowMsg(false);
+    }, 4000);
+  }, []);
+
   const getHistory = async () => {
     const result = await internalClient.get(
-      `api/get-reward?wallet=${wallet?.publicKey.toBase58()}`
+      `api/get-staked-history?wallet=${wallet?.publicKey.toBase58()}`
     );
+    console.log("result.data", result.data);
     updateAmounts(result.data);
     setStakedHistory(result.data);
   };
@@ -121,7 +136,7 @@ export default function MyWalley() {
       for (let j = 0; j < element.royalty.length; j++) {
         const royaltyElement = element.royalty[j];
         if (royaltyElement.receiver === wallet?.publicKey.toBase58()) {
-          if (royaltyElement.isClaimed) {
+          if (royaltyElement.isUnstaked) {
             total += royaltyElement.amount / 10 ** 6;
           } else if (!moment(element.created_date).isAfter(moment())) {
             availableTokens += royaltyElement.amount / 10 ** 6;
@@ -146,60 +161,52 @@ export default function MyWalley() {
   };
 
   const claimRewardAmount = async (history: any) => {
-    const prepareTransactions = prepareTransaction(history);
-    const result: any = await internalClient.post("/api/claim-reward", {
-      transaction: prepareTransactions.transaction,
-      forceToDistributePool: prepareTransactions.transaction,
-      stakedAmount: history.stakedAmount,
-      receiverAddress: wallet?.publicKey.toBase58(),
-    });
-    if (result.data.status && wallet) {
-      const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-        {
-          confirmTransactionInitialTimeout: 120000,
-        }
-      );
-      const env = new anchor.AnchorProvider(connection, wallet, {
-        preflightCommitment: "processed",
-      });
-      anchor.setProvider(env);
-
-      const userConn: UserConn = new UserConn(env, web3Consts.programID);
-      const data: any = Buffer.from(result.data.transaction, "base64");
-      const tx = anchor.web3.VersionedTransaction.deserialize(data);
-      console.log("Inside condition");
-      const signature = await userConn.provider.sendAndConfirm(tx);
-      console.log("tx signature", signature);
-      const updateResult = await internalClient.post(
-        "/api/update-staked-history",
-        {
-          wallet: wallet.publicKey.toBase58(),
-        }
-      );
+    // TODO: Need to integrate verify receipt api
+    if (!wallet) {
+      createMessage("Wallet info not found; please try again later.", "error");
+      return;
     }
+
+    const hasForce = hasForceToDistributePool(history);
+    console.log("hasForce", hasForce);
+    if (hasForce) {
+      const result = await internalClient.post("/api/distribute-to-pool", {
+        stakedAmount: history.stakedAmount,
+        receiverAddress: wallet?.publicKey.toBase58(),
+      });
+      console.log("----- DISTRIBUTE TO POOL RESULT -----", result.data);
+      if (!result.data.status) {
+        createMessage(result.data.message, "error");
+        return;
+      }
+    }
+    const updateResult = await internalClient.post(
+      "/api/update-staked-history",
+      {
+        wallet: wallet.publicKey.toBase58(),
+        purchaseId: history.purchaseId,
+      }
+    );
+    createMessage(
+      updateResult.data.message,
+      updateResult.data.status ? "success" : "error"
+    );
+    await getHistory();
+    console.log("unstaked updateResult", updateResult.data);
   };
-  const prepareTransaction = (history: any) => {
-    const transaction = [];
+  const hasForceToDistributePool = (history: any): boolean => {
     let forceToDistributePool = true;
     for (let i = 0; i < history.royalty.length; i++) {
-      const element = history.royalty[i];
-      if (element.receiver === wallet?.publicKey.toBase58()) {
-        transaction.push({
-          receiver: element.receiver,
-          amount: element.amount,
-        });
-      }
-      forceToDistributePool = !element.isClaimed;
+      forceToDistributePool = !history.royalty[i].isClaimed;
     }
-    return {
-      transaction: transaction,
-      forceToDistributePool: forceToDistributePool,
-    };
+    return forceToDistributePool;
   };
 
   return (
     <div>
+      {showMsg && (
+        <MessageBanner type={message.type} message={message.message} />
+      )}
       <p className="text-2xl font-bold text-center mt-10 mb-10">My Wallet</p>
       <div className="bg-[#0A044C63] border-2 border-[#FFFFFF38] lg:w-[52rem] w-full m-auto rounded-xl p-4">
         <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13rem] m-auto p-1 rounded-lg">

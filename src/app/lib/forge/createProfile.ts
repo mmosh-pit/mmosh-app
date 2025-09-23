@@ -274,10 +274,10 @@ export const getLineage  = async(profile: string) =>  {
         const res = await axios.get("/api/get-elders?profile="+profile);
         return {
           gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          parent: res.data.promotor,
-          gparent: res.data.scout,
-          ggparent: res.data.recruitor,
-          gggparent: res.data.originator,
+          parent: res.data.status ? res.data.result.promotor : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          gparent: res.data.status ? res.data.result.scout : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          ggparent: res.data.status ? res.data.result.recruitor : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+          gggparent: res.data.status ? res.data.result.originator : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
         }
     } catch (error) {
       return {

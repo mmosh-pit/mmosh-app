@@ -10,7 +10,27 @@ import * as anchor from "@coral-xyz/anchor";
 
 export async function POST(req: NextRequest) {
   try {
-    const { stakedAmount } = await req.json();
+    const collection = db.collection("mmosh-app-staked-history");
+    const { purchaseId } = await req.json();
+
+    const stakedHistory: any = await collection.findOne({
+      purchaseId: purchaseId,
+    });
+    let errorMessage = "";
+    if (stakedHistory === null) {
+      errorMessage = "staked history could not be found.";
+    }
+
+    if (errorMessage) {
+      return NextResponse.json(
+        {
+          status: false,
+          message: errorMessage,
+          result: null,
+        },
+        { status: 400 }
+      );
+    }
 
     const adminPrivateKey = process.env.PTV_WALLET!;
     const private_buffer = bs58.decode(adminPrivateKey);
@@ -35,7 +55,7 @@ export async function POST(req: NextRequest) {
       token: web3Consts.usdcToken.toBase58(),
       decimals: 6,
     });
-    if (balance * 10 ** 6 < stakedAmount) {
+    if (balance * 10 ** 6 < stakedHistory.stakedAmount) {
       return NextResponse.json(
         {
           status: false,
@@ -54,7 +74,7 @@ export async function POST(req: NextRequest) {
         process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
       ),
       init_if_needed: true,
-      amount: Math.ceil((stakedAmount * 10 ** 6 * 65) / 100),
+      amount: Math.ceil((stakedHistory.stakedAmount * 65) / 100),
     });
     for (let i = 0; i < instructions.length; i++) {
       txis.push(instructions[i]);

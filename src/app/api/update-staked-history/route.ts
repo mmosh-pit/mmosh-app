@@ -7,21 +7,66 @@ export async function POST(req: NextRequest) {
 
     const { wallet, purchaseId } = await req.json();
 
+    const stakedHistory = await collection.find({
+      purchaseId: purchaseId,
+    }).toArray();
+
+    let errorMessage = "";
+    if (stakedHistory.length === 0) {
+      errorMessage = "Staked entry not found.";
+    }
+
+    let stakedAmount: number = 0;
+    let hasUnstaked: boolean = false;
+    if (stakedHistory.length > 0) {
+      for (let i = 0; i < stakedHistory[0].royalty.length; i++) {
+        const element = stakedHistory[0].royalty[i];
+        if (wallet === element.receiver) {
+          stakedAmount += element.amount;
+          hasUnstaked = element.isUnstaked;
+        };
+      }
+    }
+    if (errorMessage.length === 0 && hasUnstaked) {
+      errorMessage = "User already unstaked the amount";
+    }
+
+    console.log("STAKED ERROR", errorMessage);
+    if (errorMessage) {
+      return NextResponse.json(
+        {
+          status: false,
+          message: errorMessage,
+          result: null,
+        },
+        { status: 400 }
+      );
+    }
+
     const result = await collection.updateMany(
-      { purchaseId: purchaseId },
-      { $set: { "royalty.$[elem].isUnstaked": true } },
+      { purchaseId },
+      {
+        $set: { "royalty.$[elem].isUnstaked": true },
+        $inc: { unStakedAmount: stakedAmount }
+      },
       { arrayFilters: [{ "elem.receiver": wallet }] }
     );
-    console.log("----- UPDATE STAKED TOKENS RESULT -----", result);
 
-    return NextResponse.json({
-      status: true,
-      message: "The amount has been successfully unstaked. Please go ahead and claim the amount.",
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        status: true,
+        message:
+          "The amount has been successfully unstaked. Please go ahead and claim the amount.",
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({
-      status: false,
-      message: "Something went wrong; please try again later.",
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        status: false,
+        message: "Something went wrong; please try again later.",
+      },
+      { status: 500 } // changed to proper error code
+    );
   }
 }

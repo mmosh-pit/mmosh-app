@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const ninetyDaysInMs = 90 * 24 * 60 * 60 * 1000;
   await collection.insertOne({
     category: "royalties",
-    stakedAmount: stakedAmount,
+    stakedAmount: cost,
     unStakedAmount: 0,
     purchaseId: purchaseId,
     wallet: userAddeess,

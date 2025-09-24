@@ -37,6 +37,7 @@ export default function MyWalley() {
     type: "",
     message: "",
   });
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (wallet) {
@@ -114,17 +115,6 @@ export default function MyWalley() {
     setFilteredHistory(result);
   };
 
-  const searchHistory = (value: string) => {
-    // if (value.trim().length === 0) {
-    //   setFilteredData(data);
-    // } else {
-    //   const filteredCodes = data.filter((code) =>
-    //     code.toLowerCase().includes(value.toLowerCase())
-    //   );
-    //   setFilteredData(filteredCodes);
-    // }
-  };
-
   const updateAmounts = (history: any[]) => {
     let total: number = 0;
     let availableTokens: number = 0;
@@ -166,17 +156,18 @@ export default function MyWalley() {
       createMessage("Wallet info not found; please try again later.", "error");
       return;
     }
+    setIsLoading(true);
 
-    const hasForce = hasForceToDistributePool(history);
+    const hasForce = getUnstakedAmount(history);
     console.log("hasForce", hasForce);
     if (hasForce) {
       const result = await internalClient.post("/api/distribute-to-pool", {
-        stakedAmount: history.stakedAmount,
-        receiverAddress: wallet?.publicKey.toBase58(),
+        purchaseId: history.purchaseId,
       });
       console.log("----- DISTRIBUTE TO POOL RESULT -----", result.data);
       if (!result.data.status) {
         createMessage(result.data.message, "error");
+        setIsLoading(false);
         return;
       }
     }
@@ -191,10 +182,11 @@ export default function MyWalley() {
       updateResult.data.message,
       updateResult.data.status ? "success" : "error"
     );
+    setIsLoading(false);
     await getHistory();
     console.log("unstaked updateResult", updateResult.data);
   };
-  const hasForceToDistributePool = (history: any): boolean => {
+  const getUnstakedAmount = (history: any): boolean => {
     let forceToDistributePool = true;
     for (let i = 0; i < history.royalty.length; i++) {
       forceToDistributePool = !history.royalty[i].isClaimed;
@@ -210,14 +202,7 @@ export default function MyWalley() {
       <p className="text-2xl font-bold text-center mt-10 mb-10">My Wallet</p>
       <div className="bg-[#0A044C63] border-2 border-[#FFFFFF38] lg:w-[52rem] w-full m-auto rounded-xl p-4">
         <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13rem] m-auto p-1 rounded-lg">
-          <p className="text-center font-bold text-[1.938rem]">$134.23</p>
-          <div className="flex items-center justify-center mb-1">
-            <p className="text-[#00EB72]  mr-5">+$21.43</p>
-
-            <div className="bg-gradient-to-r from-[#FFFFFF39] to-[#FFFFFF]/0 rounded-full p-1 border-2 border-[#FFFFFF49]">
-              <p className="text-[#00EB72]">+$21.43</p>
-            </div>
-          </div>
+          <p className="text-center font-bold text-[1.938rem]">$100</p>
           <div className="flex items-center justify-center">
             <p className="mr-2">
               {wallet?.publicKey
@@ -382,26 +367,6 @@ export default function MyWalley() {
               </div>
             )}
           </div>
-
-          <label className="input flex items-center rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] lg:w-[30.375rem] w-full lg:ml-6 my-2 lg:my-0">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 512 512"
-              className="mr-2"
-            >
-              <path
-                fill="#fff"
-                d="M456.69 421.39L362.6 327.3a173.8 173.8 0 0 0 34.84-104.58C397.44 126.38 319.06 48 222.72 48S48 126.38 48 222.72s78.38 174.72 174.72 174.72A173.8 173.8 0 0 0 327.3 362.6l94.09 94.09a25 25 0 0 0 35.3-35.3M97.92 222.72a124.8 124.8 0 1 1 124.8 124.8a124.95 124.95 0 0 1-124.8-124.8"
-              />
-            </svg>
-            <input
-              type="search"
-              className="grow bg-transparent"
-              placeholder="Type your search terms"
-            />
-          </label>
         </div>
         <div className=" mt-6">
           <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 p-3 rounded-lg flex justify-center lg:justify-start">
@@ -412,9 +377,13 @@ export default function MyWalley() {
           {filteredHistory.map((history) => (
             <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
               <p className="text-sm capitalize">{history.category}</p>
-              <p className="text-sm">${history.stakedAmount}</p>
+              <p className="text-sm">
+                {formatAmount((history.stakedAmount * 35) / 100 / 10 ** 6)}
+              </p>
               <div className="lg:flex text-center">
-                <p className="text-sm">${history.unStakedAmount}</p>
+                <p className="text-sm">
+                  {formatAmount(history.unStakedAmount / 10 ** 6)}
+                </p>
                 <p className="text-xs text-[#FFFFFFBF] ml-5">
                   {formatUnlocksIn(history.created_date)}
                 </p>
@@ -429,8 +398,9 @@ export default function MyWalley() {
                 <button
                   className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink"
                   onClick={() => claimRewardAmount(history)}
+                  disabled={isLoading}
                 >
-                  Redeem
+                  {isLoading ? "Loading..." : "Redeem"}
                 </button>
               </div>
             </div>

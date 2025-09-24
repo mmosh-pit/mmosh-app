@@ -207,7 +207,7 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (profileInfo.solBalance < 0.04) {
+    if (profileInfo.solBalance < 0.001) {
       createMessage(
         "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
         "warn",

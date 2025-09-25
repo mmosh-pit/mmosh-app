@@ -11,10 +11,13 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import MessageBanner from "../components/common/MessageBanner";
+import { useAtom } from "jotai";
+import { bagsBalance } from "../store/bags";
 
 export default function MyWalley() {
   const wallet = useWallet();
   const router = useRouter();
+  const [totalBalance] = useAtom(bagsBalance);
   const options = [
     "All Categories",
     "Various Coins",
@@ -60,7 +63,29 @@ export default function MyWalley() {
     const result = await internalClient.get(
       `api/get-staked-history?wallet=${wallet?.publicKey.toBase58()}`
     );
+    const history = [];
     console.log("result.data", result.data);
+    for (let i = 0; i < result.data.length; i++) {
+      const element = result.data[i];
+      let stakedAmount = 0;
+      let unStakedAmount = 0;
+      for (let j = 0; j < element.royalty.length; j++) {
+        const royaltyElement = element.royalty[j];
+        if (
+          royaltyElement.receiver === wallet?.publicKey.toBase58() &&
+          !royaltyElement.isUnstaked
+        ) {
+          stakedAmount += royaltyElement.amount;
+        } else if (
+          royaltyElement.receiver === wallet?.publicKey.toBase58() &&
+          royaltyElement.isUnstaked
+        ) {
+          unStakedAmount += royaltyElement.amount;
+        }
+      }
+      element.stakedAmountByUser = stakedAmount;
+      element.unStakedAmount = unStakedAmount;
+    }
     updateAmounts(result.data);
     setStakedHistory(result.data);
   };
@@ -151,16 +176,17 @@ export default function MyWalley() {
   };
 
   const claimRewardAmount = async (history: any) => {
-    // TODO: Need to integrate verify receipt api
-    if (!wallet) {
-      createMessage("Wallet info not found; please try again later.", "error");
-      return;
-    }
-    setIsLoading(true);
+    try {
+      // TODO: Need to integrate verify receipt api
+      if (!wallet) {
+        createMessage(
+          "Wallet info not found; please try again later.",
+          "error"
+        );
+        return;
+      }
+      setIsLoading(true);
 
-    const hasForce = getUnstakedAmount(history);
-    console.log("hasForce", hasForce);
-    if (hasForce) {
       const result = await internalClient.post("/api/distribute-to-pool", {
         purchaseId: history.purchaseId,
       });
@@ -170,28 +196,24 @@ export default function MyWalley() {
         setIsLoading(false);
         return;
       }
+      const updateResult = await internalClient.post(
+        "/api/update-staked-history",
+        {
+          wallet: wallet.publicKey.toBase58(),
+          purchaseId: history.purchaseId,
+        }
+      );
+      createMessage(
+        updateResult.data.message,
+        updateResult.data.status ? "success" : "error"
+      );
+      setIsLoading(false);
+      await getHistory();
+      console.log("unstaked updateResult", updateResult.data);
+    } catch (error: any) {
+      createMessage(error?.message, "error");
+      setIsLoading(false);
     }
-    const updateResult = await internalClient.post(
-      "/api/update-staked-history",
-      {
-        wallet: wallet.publicKey.toBase58(),
-        purchaseId: history.purchaseId,
-      }
-    );
-    createMessage(
-      updateResult.data.message,
-      updateResult.data.status ? "success" : "error"
-    );
-    setIsLoading(false);
-    await getHistory();
-    console.log("unstaked updateResult", updateResult.data);
-  };
-  const getUnstakedAmount = (history: any): boolean => {
-    let forceToDistributePool = true;
-    for (let i = 0; i < history.royalty.length; i++) {
-      forceToDistributePool = !history.royalty[i].isClaimed;
-    }
-    return forceToDistributePool;
   };
 
   return (
@@ -202,7 +224,9 @@ export default function MyWalley() {
       <p className="text-2xl font-bold text-center mt-10 mb-10">My Wallet</p>
       <div className="bg-[#0A044C63] border-2 border-[#FFFFFF38] lg:w-[52rem] w-full m-auto rounded-xl p-4">
         <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13rem] m-auto p-1 rounded-lg">
-          <p className="text-center font-bold text-[1.938rem]">$100</p>
+          <p className="text-center font-bold text-[1.938rem]">
+            {formatAmount(totalBalance)}
+          </p>
           <div className="flex items-center justify-center">
             <p className="mr-2">
               {wallet?.publicKey
@@ -378,7 +402,7 @@ export default function MyWalley() {
             <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
               <p className="text-sm capitalize">{history.category}</p>
               <p className="text-sm">
-                {formatAmount((history.stakedAmount * 35) / 100 / 10 ** 6)}
+                {formatAmount(history.stakedAmountByUser / 10 ** 6)}
               </p>
               <div className="lg:flex text-center">
                 <p className="text-sm">

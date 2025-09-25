@@ -20,6 +20,17 @@ export async function POST(req: NextRequest) {
     if (stakedHistory === null) {
       errorMessage = "staked history could not be found.";
     }
+    let hasUnstaked: boolean = true;
+    if (stakedHistory !== null) {
+      for (let i = 0; i < stakedHistory.royalty.length; i++) {
+        const element = stakedHistory.royalty[i];
+        hasUnstaked = !element.isUnstaked;
+      }
+    }
+    console.log("hasUnstaked", hasUnstaked);
+    if (!hasUnstaked) {
+      errorMessage = "Funds already distributed to the pool.";
+    }
 
     if (errorMessage) {
       return NextResponse.json(

@@ -80,7 +80,6 @@ export async function POST(req: NextRequest) {
   await collection.insertOne({
     category: "royalties",
     stakedAmount: cost,
-    unStakedAmount: 0,
     purchaseId: purchaseId,
     wallet: userAddeess,
     royalty: royalty,

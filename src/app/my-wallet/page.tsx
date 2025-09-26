@@ -13,6 +13,7 @@ import { web3Consts } from "@/anchor/web3Consts";
 import MessageBanner from "../components/common/MessageBanner";
 import { useAtom } from "jotai";
 import { bagsBalance } from "../store/bags";
+import USDCIcon from "@/assets/icons/UsdcIcon";
 
 export default function MyWalley() {
   const wallet = useWallet();
@@ -336,17 +337,66 @@ export default function MyWalley() {
               {formatAmount(availableTokens)}
             </p>
           </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13.5rem] w-full] p-3 rounded-lg  ">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-[13.5rem] w-full p-3 rounded-lg  ">
             <p>Staked Tokens</p>
             <p className="text-4xl font-bold">{formatAmount(stakedTokens)}</p>
           </div>
         </div>
-        <div className="lg:flex justify-center mt-6">
+        <div className="lg:flex justify-between mt-6">
           <div className="relative w-full lg:w-[15.375rem]">
             {/* Dropdown Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex w-full items-center justify-between rounded-full bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
+              className="flex w-full items-center justify-between rounded-lg bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
+            >
+              <span>{selectedCategory}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="none"
+                  stroke="#fff"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="m7 10l5 5l5-5"
+                />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {isOpen && (
+              <div className="absolute mt-2 w-full rounded-xl bg-[#FFFFFF14] shadow-lg border border-[#FFFFFF47] z-10 backdrop-blur-xl">
+                <ul className="py-2">
+                  {options.map((option) => (
+                    <li key={option}>
+                      <button
+                        onClick={() => {
+                          setSelectedCategory(option);
+                          setIsOpen(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
+                          selectedCategory === option
+                            ? "font-semibold"
+                            : "font-normal"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          <div className="relative w-full lg:w-[15.375rem] mt-1 lg:mt-0">
+            {/* Dropdown Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex w-full items-center justify-between rounded-lg bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
             >
               <span>{selectedCategory}</span>
               <svg
@@ -392,43 +442,121 @@ export default function MyWalley() {
             )}
           </div>
         </div>
-        <div className=" mt-6">
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 p-3 rounded-lg flex justify-center lg:justify-start">
-            <p className="text-[#FFFFFFBF] mr-10 text-sm">Category</p>
-            <p className="text-[#FFFFFFBF] mr-10 text-sm">Staked</p>
-            <p className="text-[#FFFFFFBF] text-sm">Unstaked</p>
-          </div>
-          {filteredHistory.map((history) => (
-            <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:mx-5 my-2 p-2 rounded-lg lg:flex items-center lg:justify-between justify-center text-center">
-              <p className="text-sm capitalize">{history.category}</p>
-              <p className="text-sm">
-                {formatAmount(history.stakedAmountByUser / 10 ** 6)}
-              </p>
-              <div className="lg:flex text-center">
-                <p className="text-sm">
-                  {formatAmount(history.unStakedAmount / 10 ** 6)}
-                </p>
-                <p className="text-xs text-[#FFFFFFBF] ml-5">
-                  {formatUnlocksIn(history.created_date)}
-                </p>
+        <div className="mt-6">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
+            <div className="lg:flex lg:justify-between justify-center">
+              <div className="flex items-start">
+                <div>
+                  <USDCIcon />
+                </div>
+                <div>
+                  <div className="ml-3 flex  justify-between lg:flex-col">
+                    <p className="text-sm">
+                      Earnings from John Smith 3rd Level Membership
+                    </p>
+                    <p className="text-xs text-[#FFFFFFBF] mt-1">
+                      15 SEP 11:21 AM
+                    </p>
+                  </div>
+                  <div className="flex items-center mt-5">
+                    <button
+                      className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] mb-2 lg:mb-0 lg:block hidden"
+                      onClick={() => router.push("/swap")}
+                    >
+                      Locked
+                    </button>
+                    <p className="ml-2 text-xs">
+                      Unlocks in 65 days, 12 hours 43 minutes
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="lg:flex ">
-                <button
-                  className="btn mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] w-full lg:shrink mb-2 lg:mb-0"
-                  onClick={() => router.push("/swap")}
+              <div className=" flex justify-center">
+              <div className="flex  mt-2 lg:mt-0">
+                <svg
+                  width="13"
+                  height="16"
+                  viewBox="0 0 13 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="mt-2"
                 >
-                  Trade
-                </button>
-                <button
-                  className="btn bg-[#FF00AE] hover:bg-[#FF00AE] w-full text-white lg:shrink"
-                  onClick={() => claimRewardAmount(history)}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading..." : "Redeem"}
-                </button>
+                  <path
+                    d="M12 9.55556L6.5 15M6.5 15L1 9.55556M6.5 15L6.5 0.999999"
+                    stroke="#00EB72"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <p className="text-xl font-bold ml-2">$454.61</p>
+              </div>
+              <button
+                      className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] rounded-full mb-2 lg:mb-0 lg:hidden ml-3 mt-2"
+                      onClick={() => router.push("/swap")}
+                    >
+                      Locked
+                    </button>
               </div>
             </div>
-          ))}
+          </div>
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
+            <div className="lg:flex lg:justify-between justify-center">
+              <div className="flex items-start">
+                <div>
+                  <USDCIcon />
+                </div>
+                <div>
+                  <div className="ml-3 flex  justify-between lg:flex-col">
+                    <p className="text-sm">
+                      Earnings from John Smith 3rd Level Membership
+                    </p>
+                    <p className="text-xs text-[#FFFFFFBF] mt-1">
+                      15 SEP 11:21 AM
+                    </p>
+                  </div>
+                  <div className="flex items-center mt-5">
+                    <button
+                      className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:block hidden"
+                      onClick={() => router.push("/swap")}
+                    >
+                      Unlock
+                    </button>
+                    <p className="ml-2 text-xs">
+                      Unlocks in 65 days, 12 hours 43 minutes
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className=" flex justify-center">
+              <div className="flex  mt-2 lg:mt-0">
+                <svg
+                  width="13"
+                  height="16"
+                  viewBox="0 0 13 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="mt-2"
+                >
+                  <path
+                    d="M12 9.55556L6.5 15M6.5 15L1 9.55556M6.5 15L6.5 0.999999"
+                    stroke="#00EB72"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <p className="text-xl font-bold ml-2">$454.61</p>
+              </div>
+              <button
+                      className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white rounded-full mb-2 lg:mb-0 lg:hidden ml-3 mt-2"
+                      onClick={() => router.push("/swap")}
+                    >
+                      Unlock
+                    </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

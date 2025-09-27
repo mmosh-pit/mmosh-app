@@ -22,6 +22,8 @@ import { Bars } from "react-loader-spinner";
 import useWallet from "@/utils/wallet";
 import useConnection from "@/utils/connection";
 import internalClient from "@/app/lib/internalHttpClient";
+import { uploadFile } from "@/app/lib/firebase";
+
 
 const AgentOffer = ({ symbol }: { symbol?: string }) => {
   const connection = useConnection();
@@ -336,10 +338,12 @@ const AgentOffer = ({ symbol }: { symbol?: string }) => {
             (blobFile) =>
               new File([blobFile], uuidv4(), { type: fields.image.type }),
           );
-        let imageUri = await pinImageToShadowDrive(imageFile);
+        // let imageUri = await pinImageToShadowDrive(imageFile);
+         const date = new Date().getMilliseconds();
+        const imageUri = await uploadFile( imageFile,`${fields.name}-banner-${date}`,"user-images");
         fields.image.preview = imageUri;
       }
-
+ 
       const offerKeyPair = anchor.web3.Keypair.generate();
 
       try {

@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { pinImageToShadowDrive } from "@/app/lib/uploadImageToShdwDrive";
+import { uploadFile } from "@/app/lib/firebase";
+
 
 export default function Minting({ onMenuChange, createMessage }: { onMenuChange: any, createMessage: any }) {
     
@@ -108,7 +110,9 @@ export default function Minting({ onMenuChange, createMessage }: { onMenuChange:
         if(validateFields(true)) {
             if(!isValidHttpUrl(fields.image.preview)) {
                 let imageFile = await fetch(fields.image.preview).then(r => r.blob()).then(blobFile => new File([blobFile], uuidv4(), { type: fields.image.type }));
-                let imageUri = await pinImageToShadowDrive(imageFile)
+                // let imageUri = await pinImageToShadowDrive(imageFile)
+                 const date = new Date().getMilliseconds();
+                const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
                 fields.image.preview = imageUri;
             }
             localStorage.setItem("coinstep1",JSON.stringify(fields));

@@ -14,6 +14,8 @@ import MessageBanner from "../components/common/MessageBanner";
 import { useAtom } from "jotai";
 import { bagsBalance } from "../store/bags";
 import USDCIcon from "@/assets/icons/UsdcIcon";
+import KinshipTransactionIcon from "@/assets/icons/KinshipTransactionIcon";
+import SolanaIcon from "@/assets/icons/SolanaIcon";
 
 export default function MyWalley() {
   const wallet = useWallet();
@@ -42,6 +44,31 @@ export default function MyWalley() {
     message: "",
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const [transactionHistory, setTransactionHistory] = React.useState<{
+    transactions: any[];
+    pagination: any;
+  }>({
+    transactions: [],
+    pagination: {},
+  });
+
+  React.useEffect(() => {
+    if (wallet) {
+      getTransactionHistory();
+    }
+  }, [wallet]);
+
+  const getTransactionHistory = async () => {
+    const result = await internalClient.get(
+      `api/history/get?wallet=${wallet?.publicKey.toBase58()}`
+    );
+    console.log(
+      "----- TRANSACTION HISTORY -----",
+      result.data.result.transactions
+    );
+    setTransactionHistory(result.data.result);
+  };
 
   React.useEffect(() => {
     if (wallet) {
@@ -215,6 +242,13 @@ export default function MyWalley() {
       createMessage(error?.message, "error");
       setIsLoading(false);
     }
+  };
+
+  const formatTimestamp = (timestamp: number) => {
+    return moment(timestamp).format("DD MMM hh:mm A").toUpperCase();
+  };
+  const isPastTimestamp = (timestamp: number) => {
+    return moment(timestamp).isBefore(moment());
   };
 
   return (
@@ -443,120 +477,109 @@ export default function MyWalley() {
           </div>
         </div>
         <div className="mt-6">
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
-            <div className="lg:flex lg:justify-between justify-center">
-              <div className="flex items-start">
-                <div>
-                  <USDCIcon />
+          {transactionHistory.transactions.map((data, index) => (
+            <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
+              <div className="lg:flex lg:justify-between justify-center">
+                <div className="flex items-start">
+                  <div>
+                    {(data.currency === "USDT" || data.currency === "USDC") && (
+                      <USDCIcon />
+                    )}
+                    {data.currency === "KINSHIP" && <KinshipTransactionIcon />}
+                    {data.currency === "SOL" && <SolanaIcon />}
+                  </div>
+                  <div>
+                    <div className="ml-3 flex  justify-between lg:flex-col">
+                      <p className="text-sm">{data.description}</p>
+                      <p className="text-xs text-[#FFFFFFBF] mt-1">
+                        {formatTimestamp(data.created_date)}
+                      </p>
+                    </div>
+                    <div>
+                      {data.isStaked && isPastTimestamp(data.unlock_date) && (
+                        <div className="flex items-center mt-5 ml-3">
+                          <button className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] mb-2 lg:mb-0 lg:block hidden">
+                            Locked
+                          </button>
+                          <p className="ml-2 text-xs">
+                            {formatUnlocksIn(data.unlock_date)}
+                          </p>
+                        </div>
+                      )}
+                      {data.isStaked && !isPastTimestamp(data.unlock_date) && (
+                        <button
+                          className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:block hidden ml-3 mt-4 "
+                          onClick={() => claimRewardAmount(data)}
+                        >
+                          Unlock
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="ml-3 flex  justify-between lg:flex-col">
-                    <p className="text-sm">
-                      Earnings from John Smith 3rd Level Membership
-                    </p>
-                    <p className="text-xs text-[#FFFFFFBF] mt-1">
-                      15 SEP 11:21 AM
+                <div className=" flex justify-center items-center lg:items-start">
+                  <div className="flex  mt-2 lg:mt-0">
+                    {!data.isSend && (
+                      <svg
+                        width="13"
+                        height="16"
+                        viewBox="0 0 13 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mt-2"
+                      >
+                        <path
+                          d="M12 9.55556L6.5 15M6.5 15L1 9.55556M6.5 15L6.5 0.999999"
+                          stroke="#00EB72"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    )}
+                    {data.isSend && (
+                      <svg
+                        width="13"
+                        height="16"
+                        viewBox="0 0 13 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mt-2"
+                      >
+                        <path
+                          d="M0.999999 6.44444L6.5 1M6.5 1L12 6.44445M6.5 1L6.5 15"
+                          stroke="#FF5B56"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    )}
+                    <p className="text-xl font-bold ml-2">
+                      {formatAmount(data.amount)}
                     </p>
                   </div>
-                  <div className="flex items-center mt-5">
-                    <button
-                      className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] mb-2 lg:mb-0 lg:block hidden"
-                      onClick={() => router.push("/swap")}
-                    >
-                      Locked
-                    </button>
-                    <p className="ml-2 text-xs">
-                      Unlocks in 65 days, 12 hours 43 minutes
-                    </p>
+                  <div>
+                    {data.isStaked && isPastTimestamp(data.unlock_date) && (
+                      <div className="flex items-center mt-5 ml-3">
+                        <button className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] mb-2 lg:mb-0 lg:hidden  rounded-full ">
+                          Locked
+                        </button>
+                      </div>
+                    )}
+                    {data.isStaked && !isPastTimestamp(data.unlock_date) && (
+                      <button
+                        className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:hidden ml-3 mt-4 rounded-full"
+                        onClick={() => claimRewardAmount(data)}
+                      >
+                        Unlock
+                      </button>
+                    )}
                   </div>
                 </div>
-              </div>
-              <div className=" flex justify-center">
-              <div className="flex  mt-2 lg:mt-0">
-                <svg
-                  width="13"
-                  height="16"
-                  viewBox="0 0 13 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="mt-2"
-                >
-                  <path
-                    d="M12 9.55556L6.5 15M6.5 15L1 9.55556M6.5 15L6.5 0.999999"
-                    stroke="#00EB72"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <p className="text-xl font-bold ml-2">$454.61</p>
-              </div>
-              <button
-                      className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] rounded-full mb-2 lg:mb-0 lg:hidden ml-3 mt-2"
-                      onClick={() => router.push("/swap")}
-                    >
-                      Locked
-                    </button>
               </div>
             </div>
-          </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
-            <div className="lg:flex lg:justify-between justify-center">
-              <div className="flex items-start">
-                <div>
-                  <USDCIcon />
-                </div>
-                <div>
-                  <div className="ml-3 flex  justify-between lg:flex-col">
-                    <p className="text-sm">
-                      Earnings from John Smith 3rd Level Membership
-                    </p>
-                    <p className="text-xs text-[#FFFFFFBF] mt-1">
-                      15 SEP 11:21 AM
-                    </p>
-                  </div>
-                  <div className="flex items-center mt-5">
-                    <button
-                      className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:block hidden"
-                      onClick={() => router.push("/swap")}
-                    >
-                      Unlock
-                    </button>
-                    <p className="ml-2 text-xs">
-                      Unlocks in 65 days, 12 hours 43 minutes
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className=" flex justify-center">
-              <div className="flex  mt-2 lg:mt-0">
-                <svg
-                  width="13"
-                  height="16"
-                  viewBox="0 0 13 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="mt-2"
-                >
-                  <path
-                    d="M12 9.55556L6.5 15M6.5 15L1 9.55556M6.5 15L6.5 0.999999"
-                    stroke="#00EB72"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <p className="text-xl font-bold ml-2">$454.61</p>
-              </div>
-              <button
-                      className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white rounded-full mb-2 lg:mb-0 lg:hidden ml-3 mt-2"
-                      onClick={() => router.push("/swap")}
-                    >
-                      Unlock
-                    </button>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

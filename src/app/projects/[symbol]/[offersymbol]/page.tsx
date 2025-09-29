@@ -163,12 +163,17 @@ const Offer = ({
       if (coin.status === "completed") {
         priceInUsd = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?ids=${coin!.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+          `?,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
         );
       } else {
-        let lastPriceResult = await axios.get(
-          "/api/token/lastprice?key=" + coin?.bonding,
-        );
+
+          let lastPriceResult = await axios.get(
+        `/api/offer/detail?symbol=${params.offersymbol}`,
+      );
+        // let lastPriceResult = await axios.get(
+        //   "/api/token/lastprice?key=" + coin?.bonding,
+        // );
+        console.log(lastPriceResult.data.priceonetime,"lastPriceResult data =====================>")
         const lookupUsdPrice = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
           `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
@@ -181,17 +186,15 @@ const Offer = ({
             ].price || 0.003,
           ),
         );
-        console.log("last price ", lastPriceResult.data.price);
+        console.log("last price ", lastPriceResult.data.priceonetime);
         priceInUsd =
-          lastPriceResult.data.price *
+          lastPriceResult.data.priceonetime *
           Number(
             lookupUsdPrice.data?.data[
               "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
             ].price || 0.003,
-          );
-        console.log("price in usd ", priceInUsd);
-      }
-
+          );      }
+      console.log(priceInUsd,"priceInUsd =====================>")
       setUsdcPrice(priceInUsd);
 
       if (wallet) {
@@ -209,7 +212,7 @@ const Offer = ({
 
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
         let balance = await userConn.getUserBalance({
-          address: wallet.publicKey,
+          address: wallet.publicKey.toBase58(),
           token: coin.target.token,
           decimals: 10 ** coin.target.decimals,
         });
@@ -218,7 +221,7 @@ const Offer = ({
 
       setLoading(false);
     } catch (error) {
-      console.log("getTokenPrice error", error);
+      console.log("setUsdcPrice getTokenPrice error ==========>>>", error);
       setUsdcPrice(0);
       setLoading(false);
     }
@@ -301,7 +304,6 @@ const Offer = ({
       new anchor.web3.PublicKey(offerDetail.key),
     );
     let projectInfo = await projectConn.getProjectUserInfo(offerDetail.key);
-
     if (projectInfo.profiles.length > 0) {
       if (projectInfo.profiles[0].address == offerDetail.key) {
         setOwner(true);
@@ -317,6 +319,7 @@ const Offer = ({
       let listResult = await axios.get(
         `/api/project/detail?symbol=${params.symbol}`,
       );
+      console.log(listResult.data,"getProjectDetailFromAPI =================================>>>")
       setProjectDetail(listResult.data);
     } catch (error) {
       console.log("getProjectDetailFromAPI error", error);
@@ -330,6 +333,7 @@ const Offer = ({
       let listResult = await axios.get(
         `/api/offer/detail?symbol=${params.offersymbol}`,
       );
+
       setOfferDetail(listResult.data);
       getCoinDetail();
     } catch (error) {
@@ -394,11 +398,14 @@ const Offer = ({
       } else {
         setInviteLoading(true);
       }
+      console.log("go to the result ===============================>>",supplyValue)
+      
       const result: any = await internalClient.post("/api/offer/buy", {
         receiver: wallet.publicKey?.toBase58(),
         symbol: offerDetail.symbol,
         type,
         supply: supplyValue,
+        profileInfo
       });
       if (result.data.status) {
         const connection = new Connection(
@@ -430,7 +437,6 @@ const Offer = ({
       setYearlyLoading(false);
       setInviteLoading(false);
     } catch (error) {
-      console.log("error ", error);
       createMessage("Something went wrong", "danger-container");
       setOneTimeLoading(false);
       setMonthlyLoading(false);

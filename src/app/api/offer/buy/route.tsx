@@ -8,10 +8,11 @@ import { Connectivity as CommunityConn } from "@/anchor/community";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import { pinFileToShadowDriveBackend } from "@/app/lib/uploadFileToShdwDrive";
+import {init, uploadFile } from "@/app/lib/firebase";
 
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-project-offer");
-  const { receiver, symbol, type, supply } = await req.json();
+  const { receiver, symbol, type, supply, profileInfo } = await req.json();
 
   const offerCollection = db.collection("mmosh-app-project-offer");
   const projectCollection = db.collection("mmosh-app-project");
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
       { status: false, message: "User not found" },
       {
         status: 200,
-      },
+      }
     );
   }
 
@@ -41,19 +42,24 @@ export async function POST(req: NextRequest) {
         { status: false, message: "Offer not available" },
         {
           status: 200,
-        },
+        }
       );
     }
   }
 
   if (offerData.supply > 0) {
+    console.log(
+      offerData,
+      "offer data from teh api ===============================>>"
+    );
+    console.log(supply, "supply =======================================>>");
     if (offerData.supply < offerData.sold + supply) {
       console.log("insufficent supply");
       return NextResponse.json(
         { status: false, message: "Insufficent supply" },
         {
           status: 200,
-        },
+        }
       );
     }
   }
@@ -79,7 +85,7 @@ export async function POST(req: NextRequest) {
           { status: false, message: "Coin not available" },
           {
             status: 200,
-          },
+          }
         );
       }
     }
@@ -89,7 +95,7 @@ export async function POST(req: NextRequest) {
     const private_arrray = new Uint8Array(
       private_buffer.buffer,
       private_buffer.byteOffset,
-      private_buffer.byteLength / Uint8Array.BYTES_PER_ELEMENT,
+      private_buffer.byteLength / Uint8Array.BYTES_PER_ELEMENT
     );
     let ptvOwner = Keypair.fromSecretKey(private_arrray);
 
@@ -109,7 +115,7 @@ export async function POST(req: NextRequest) {
     let projectConn: CommunityConn = new CommunityConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(offerData.key),
+      new anchor.web3.PublicKey(offerData.key)
     );
 
     console.log("test 2");
@@ -118,25 +124,29 @@ export async function POST(req: NextRequest) {
     if (coinData.status === "completed") {
       priceInUsd = await axios.get(
         process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-        `?ids=${coinData.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+          `?ids=${coinData.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
       );
     } else {
       let lastPriceResult = await axios.get(
         process.env.NEXT_PUBLIC_APP_MAIN_URL +
-        "/api/token/lastprice?key=" +
-        coinData.bonding,
+          "/api/token/lastprice?key=" +
+          coinData.bonding
+      );
+      console.log(
+        "last price result =================>> ",
+        lastPriceResult.data
       );
       const lookupUsdPrice = await axios.get(
         process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-        `?ids=${coinData.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+          `?ids=${coinData.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
       );
       console.log(
         "lookup price ",
         Number(
           lookupUsdPrice.data?.data[
             "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ].price || 0.003,
-        ),
+          ].price || 0.003
+        )
       );
       console.log("last price ", lastPriceResult.data.price);
       priceInUsd =
@@ -144,7 +154,7 @@ export async function POST(req: NextRequest) {
         Number(
           lookupUsdPrice.data?.data[
             "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ].price || 0.003,
+          ].price || 0.003
         );
       console.log("price in usd ", priceInUsd);
     }
@@ -153,7 +163,10 @@ export async function POST(req: NextRequest) {
 
     let price: any = 0;
     if (type === "onetime") {
+      console.log(offerData, "offer data for one time price");
+      console.log("one time price from ");
       price = offerData.priceonetime;
+      console.log("one time price from ", price);
     } else if (type === "month") {
       price = offerData.pricemonthly;
     } else {
@@ -165,18 +178,26 @@ export async function POST(req: NextRequest) {
     let hasInivtation: any = false;
 
     if (offerData.discount > 0) {
+      console.log("-------------step 5b---------------------");
       hasInivtation = await projectConn.isCreatorInvitation(
         new anchor.web3.PublicKey(offerData.badge),
-        receiver,
+        receiver
       );
       if (hasInivtation > 0) {
+        console.log("-------------step 6---------------------");
+
         let discount = Number(price) * (Number(offerData.discount) / 100);
         price = (Number(price - discount) / priceInUsd).toFixed(2);
       } else {
+        console.log("-------------step 57---------------------");
+
         price = (Number(price) / priceInUsd).toFixed(2);
       }
     } else {
-      price = (Number(price) / priceInUsd).toFixed(2);
+      console.log(priceInUsd, "priceInUsd =====================>");
+      console.log(price, "price =====================>");
+      price = price;
+      // price = (Number(price) / priceInUsd).toFixed(2);
     }
 
     if (offerData.invitationype === "required" && !hasInivtation) {
@@ -186,18 +207,28 @@ export async function POST(req: NextRequest) {
 
     console.log("token price", price);
 
-    let tokenBalance: any = await projectConn.getUserBalance({
-      address: new anchor.web3.PublicKey(receiver),
-      token: coinData.target.token,
-      decimals: 10 ** coinData.target.decimals,
-    });
+    console.log(
+      coinData,
+      "coin data ====> value from teh api ==================>"
+    );
 
-    console.log("balance", tokenBalance);
+    // let tokenBalance: any = await projectConn.getUserBalance({
+    //   address: new anchor.web3.PublicKey(receiver).toBase58(),
+    //   token: coinData.target.token,
+    //   decimals:  coinData.target.decimals,
+    // });
+
+    let tokenBalance: any = profileInfo?.usdcBalance;
+
+    console.log("balance from the header  ========>", tokenBalance);
+    console.log(price, "price ====>");
+    console.log(supply, "supply ====>");
+    console.log(price * supply, "total price from teh api ============>");
 
     if (tokenBalance < price * supply) {
       return NextResponse.json(
         { status: false, message: "Insufficent fund" },
-        { status: 200 },
+        { status: 200 }
       );
     }
 
@@ -315,17 +346,33 @@ export async function POST(req: NextRequest) {
 
     console.log("offer body", offerBody);
 
-    const passMetaURI: any = await pinFileToShadowDriveBackend(
-      offerBody,
-      receiver,
+    // const passMetaURI: any = await pinFileToShadowDriveBackend(
+    //   offerBody,
+    //   receiver,
+    // );
+
+    
+  init()
+    const offerFile = new File(
+      [JSON.stringify(offerBody)], // file content as string
+      `${receiver}.json`, // file name
+      { type: "application/json" } // MIME type
     );
+
+    // Now call your upload function
+    const passMetaURI: string = await uploadFile(
+      offerFile,
+      receiver,
+      "offer-purchase"
+    );
+    console.log("passMetaURI ", passMetaURI);
     if (passMetaURI == "") {
       console.log("error on creating meta uri");
       return NextResponse.json(
         { status: false, message: "Error on creating meta uri" },
         {
           status: 200,
-        },
+        }
       );
     }
 
@@ -342,7 +389,7 @@ export async function POST(req: NextRequest) {
         receiver,
         receiver,
         price * 10 ** coinData.target.decimals * supply,
-        supply,
+        supply
       );
     } else {
       result = await projectConn.mintPassTx(
@@ -357,14 +404,14 @@ export async function POST(req: NextRequest) {
         receiver,
         receiver,
         price * 10 ** coinData.target.decimals * supply,
-        supply,
+        supply
       );
     }
 
     if (result.Ok?.info?.profile) {
       let transaction: VersionedTransaction = result.Ok?.info?.profile;
       const serialized = Buffer.from(transaction.serialize()).toString(
-        "base64",
+        "base64"
       );
       const payload = {
         status: true,
@@ -380,7 +427,7 @@ export async function POST(req: NextRequest) {
       { status: false, message: "Something went wrong" },
       {
         status: 200,
-      },
+      }
     );
   } catch (error) {
     console.log("error ", error);
@@ -388,7 +435,7 @@ export async function POST(req: NextRequest) {
       { status: false, message: "Something went wrong" },
       {
         status: 200,
-      },
+      }
     );
   }
 }

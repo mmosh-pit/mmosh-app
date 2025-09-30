@@ -434,13 +434,6 @@ export async function POST(req: NextRequest) {
         }
       );
     }
-
-    return NextResponse.json(
-      { status: false, message: "Something went wrong" },
-      {
-        status: 200,
-      }
-    );
   } catch (error) {
     console.log("error ", error);
     return NextResponse.json(

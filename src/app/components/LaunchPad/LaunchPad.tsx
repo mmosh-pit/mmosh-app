@@ -83,6 +83,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
                   {element.percentage}%
                 </div>
               </div>
+
             </div>
             <div className="flex gap-[5px]">
               <div
@@ -133,7 +134,7 @@ export const LaunchPad = (props: LaunchPadProps) => {
   };
   return (
     <>
-      <div className="relative">
+      <div className="relative lg:w-[27.5rem] w-full mb-12 lg:mr-16">
         {/* Header */}
         <div
           className="flex flex-col lg:flex-row rounded-t-[14px] py-2 px-1 

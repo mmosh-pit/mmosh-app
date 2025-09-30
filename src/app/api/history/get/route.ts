@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
         const skip = (page - 1) * limit;
         const total = await collection.countDocuments({ wallet: wallet });
-        const transactions = await collection.find({ wallet: wallet }).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray();
+        const transactions = await collection.find({ wallet: wallet }).sort({ updated_date: -1 }).skip(skip).limit(limit).toArray();
 
         const totalPages = Math.ceil(total / limit);
         const hasNextPage = page < totalPages;

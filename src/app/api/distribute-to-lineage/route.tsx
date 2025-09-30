@@ -1,12 +1,15 @@
 import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 import { getLineage } from "@/app/lib/forge/createProfile";
+import axios from "axios";
 
 export async function POST(req: NextRequest) {
-  // const authHeader = req.headers.get("authorization");
+  const authHeader = req.headers.get("authorization");
   const collection = db.collection("mmosh-app-staked-history");
   const userCollection = db.collection("mmosh-users");
-  const { stakedAmount, userAddeess, purchaseId } = await req.json();
+  const { stakedAmount, userAddeess, purchaseId, referrerName } =
+    await req.json();
+  const { origin } = new URL(req.url);
   if (!stakedAmount || !userAddeess || !purchaseId) {
     return NextResponse.json(
       {
@@ -84,6 +87,21 @@ export async function POST(req: NextRequest) {
     wallet: userAddeess,
     royalty: royalty,
     created_date: Date.now() + ninetyDaysInMs,
+  });
+  const params = {
+    transactionType: "membership_royalty",
+    membershipRoyalty: {
+      royalty: royalty,
+      referrerName: referrerName,
+      isStaked: true,
+      isUnlocked: false,
+      purchaseId: purchaseId,
+    },
+  };
+  const res = await axios.post(`${origin}/api/history/save`, params, {
+    headers: {
+      Authorization: authHeader,
+    },
   });
   return NextResponse.json(
     {

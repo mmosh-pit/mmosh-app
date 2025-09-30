@@ -219,7 +219,10 @@ export default function MyWalley() {
         purchaseId: history.purchaseId,
       });
       console.log("----- DISTRIBUTE TO POOL RESULT -----", result.data);
-      if (!result.data.status) {
+      if (
+        !result.data.status &&
+        !result.data.message.includes("Funds already distributed to the pool")
+      ) {
         createMessage(result.data.message, "error");
         setIsLoading(false);
         return;
@@ -229,6 +232,7 @@ export default function MyWalley() {
         {
           wallet: wallet.publicKey.toBase58(),
           purchaseId: history.purchaseId,
+          historyId: history._id,
         }
       );
       createMessage(
@@ -496,7 +500,7 @@ export default function MyWalley() {
                       </p>
                     </div>
                     <div>
-                      {data.isStaked && isPastTimestamp(data.unlock_date) && (
+                      {data.isStaked && !isPastTimestamp(data.unlock_date) && (
                         <div className="flex items-center mt-5 ml-3">
                           <button className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] mb-2 lg:mb-0 lg:block hidden">
                             Locked
@@ -506,14 +510,16 @@ export default function MyWalley() {
                           </p>
                         </div>
                       )}
-                      {data.isStaked && !isPastTimestamp(data.unlock_date) && (
-                        <button
-                          className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:block hidden ml-3 mt-4 "
-                          onClick={() => claimRewardAmount(data)}
-                        >
-                          Unlock
-                        </button>
-                      )}
+                      {data.isStaked &&
+                        isPastTimestamp(data.unlock_date) &&
+                        !data.isUnlocked && (
+                          <button
+                            className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:block hidden ml-3 mt-4 "
+                            onClick={() => claimRewardAmount(data)}
+                          >
+                            Unlock
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -556,25 +562,29 @@ export default function MyWalley() {
                       </svg>
                     )}
                     <p className="text-xl font-bold ml-2">
-                      {formatAmount(data.amount)}
+                      {data.amount < 1
+                        ? data.amount
+                        : formatAmount(data.amount / 10 ** 6)}
                     </p>
                   </div>
                   <div>
-                    {data.isStaked && isPastTimestamp(data.unlock_date) && (
+                    {data.isStaked && !isPastTimestamp(data.unlock_date) && (
                       <div className="flex items-center mt-5 ml-3">
                         <button className="btn btn-sm mr-2 bg-transparent hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] border-2 border-[#FFFFFF47] mb-2 lg:mb-0 lg:hidden  rounded-full ">
                           Locked
                         </button>
                       </div>
                     )}
-                    {data.isStaked && !isPastTimestamp(data.unlock_date) && (
-                      <button
-                        className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:hidden ml-3 mt-4 rounded-full"
-                        onClick={() => claimRewardAmount(data)}
-                      >
-                        Unlock
-                      </button>
-                    )}
+                    {data.isStaked &&
+                      isPastTimestamp(data.unlock_date) &&
+                      !data.isUnlocked && (
+                        <button
+                          className="btn btn-sm mr-2 bg-[#FF00AE] hover:bg-[#FF00AE] text-white mb-2 lg:mb-0 lg:hidden ml-3 mt-4 rounded-full"
+                          onClick={() => claimRewardAmount(data)}
+                        >
+                          Unlock
+                        </button>
+                      )}
                   </div>
                 </div>
               </div>

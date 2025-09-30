@@ -1,11 +1,13 @@
 import { db } from "../../lib/mongoClient";
+import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const collection = db.collection("mmosh-app-staked-history");
+    const transactionCollection = db.collection("mmosh-app-transaction-history");
 
-    const { wallet, purchaseId } = await req.json();
+    const { wallet, purchaseId, historyId } = await req.json();
 
     const stakedHistory = await collection.find({
       purchaseId: purchaseId,
@@ -50,6 +52,12 @@ export async function POST(req: NextRequest) {
         $inc: { unStakedAmount: stakedAmount }
       },
       { arrayFilters: [{ "elem.receiver": wallet }] }
+    );
+    const result_ = await transactionCollection.updateOne(
+      { _id: new ObjectId(historyId) },
+      {
+        $set: { isUnlocked: true, updated_date: Date.now() },
+      },
     );
 
     return NextResponse.json(

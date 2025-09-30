@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
           message: errorMessage,
           result: null,
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
 

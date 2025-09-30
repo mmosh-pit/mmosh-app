@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
           message: validateResult.message,
           result: null,
         },
-        { status: 400 }
+        { status: 200 }
       );
     }
 
@@ -28,11 +28,11 @@ export async function POST(req: NextRequest) {
           transactionType: transactionType,
           wallet: element.receiver,
           currency: "USDT",
-          description: formatTransactionDescription({ transactionType: transactionType, referrerName: membershipRoyalty.referrerName, membershipLevel: getMembershipLevel(index) }),
+          description: formatTransactionDescription({ transactionType: transactionType, referrerName: membershipRoyalty.referrerName || await getReferrerName(membershipRoyalty.wallet, false), membershipLevel: getMembershipLevel(index) }),
           isSend: false,
           amount: element.amount,
           isStaked: membershipRoyalty.isStaked,
-          isUnlocked: false,
+          isUnlocked: membershipRoyalty.isUnlocked,
           purchaseId: membershipRoyalty.purchaseId,
           created_date: Date.now(),
           updated_date: Date.now(),
@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
       data.push({
         transactionType: transactionType,
         wallet: tokenExchange.wallet,
-        currency: tokenExchange.currency,
-        description: formatTransactionDescription({ transactionType: transactionType, amount: tokenExchange.amount, fromCurrency: tokenExchange.fromCurrency, exchangedAmount: tokenExchange.exchangedAmount, toCurrency: tokenExchange.currency }),
+        currency: tokenExchange.fromCurrency,
+        description: formatTransactionDescription({ transactionType: transactionType, amount: formatAmount(tokenExchange.amount), fromCurrency: tokenExchange.fromCurrency, exchangedAmount: formatAmount(tokenExchange.exchangedAmount), toCurrency: tokenExchange.currency }),
         isSend: false,
         amount: tokenExchange.exchangedAmount,
         isStaked: false,
@@ -73,8 +73,8 @@ export async function POST(req: NextRequest) {
       data.push({
         transactionType: transactionType,
         wallet: transfer.wallet,
-        currency: transfer.currency,
-        description: formatTransactionDescription({ transactionType: transactionType, amount: transfer.amount, fromCurrency: transfer.fromCurrency, referrerName: transfer.referrerName }),
+        currency: transfer.fromCurrency,
+        description: formatTransactionDescription({ transactionType: transactionType, amount: transfer.amount, fromCurrency: transfer.fromCurrency, referrerName: await getReferrerName(transfer.receiver, true) }),
         isSend: true,
         amount: transfer.amount,
         isStaked: false,
@@ -111,6 +111,14 @@ export async function POST(req: NextRequest) {
   }
 }
 
+const formatAmount = (amount: number) => {
+  return Number(new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(amount).replace("$", "").replace(",", "").trim());
+};
+
 const validate = (transactionType: string, params: any) => {
   const throwError = (msg: string) => {
     return {
@@ -123,7 +131,7 @@ const validate = (transactionType: string, params: any) => {
     if (params.membershipRoyalty === undefined) {
       return throwError("membershipRoyalty objects is required");
     }
-    const { royalty, referrerName, isStaked } = params.membershipRoyalty || {};
+    const { royalty, referrerName, isStaked, purchaseId } = params.membershipRoyalty || {};
     if (!Array.isArray(royalty) || royalty.length === 0) {
       return throwError("royalty must be a non-empty array");
     }
@@ -131,7 +139,6 @@ const validate = (transactionType: string, params: any) => {
       if (!r.receiver) return throwError(`royalty[${i}].receiver is required`);
       if (typeof r.amount !== "number") return throwError(`royalty[${i}].amount must be a number`);
     });
-    if (!referrerName) return throwError("referrerName is required");
     if (typeof isStaked !== "boolean") return throwError("isStaked must be a boolean");
 
   } else if (transactionType === "token_exchange") {
@@ -159,10 +166,10 @@ const validate = (transactionType: string, params: any) => {
     if (params.transfer === undefined) {
       return throwError("transfer objects is required");
     }
-    const { wallet, currency, amount, referrerName } = params.transfer || {};
+    const { wallet, fromCurrency, amount, receiver } = params.transfer || {};
     if (!wallet) return throwError("wallet is required");
-    if (!currency) return throwError("currency is required");
-    if (!referrerName) return throwError("referrerName is required");
+    if (!fromCurrency) return throwError("currency is required");
+    if (!receiver) return throwError("receiver address is required");
     if (typeof amount !== "number") return throwError("amount must be a number");
   } else {
     return throwError("Invalid transactionType");
@@ -209,3 +216,24 @@ function getSuccessMessage(transactionType: string) {
       return "Transaction recorded successfully";
   }
 }
+
+const getReferrerName = async (wallet: string, isTransfer: boolean) => {
+  const usersCollection = db.collection("mmosh-users");
+
+  let referrerWallet = wallet;
+
+  if (!isTransfer) {
+    const user = await usersCollection.findOne(
+      { wallet },
+      { projection: { referred_by: 1 } }
+    );
+    referrerWallet = user?.referred_by || process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER;
+  }
+
+  const referrer = await usersCollection.findOne(
+    { wallet: referrerWallet },
+    { projection: { "profile.username": 1, name: 1 } }
+  );
+
+  return referrer?.profile?.username || referrer?.name || "Unknown user";
+};

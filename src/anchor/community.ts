@@ -282,8 +282,10 @@ export class Connectivity {
 
         this.txis = [];
         const signature = await this.provider.sendAndConfirm(tx);
+        console.log(signature, "signature =========================>");
+        console.log("---------------------step 5----------------");
 
-        await this.storeRoyalty(
+        let storeRoyalty = await this.storeRoyalty(
           user.toBase58(),
           [
             {
@@ -315,7 +317,12 @@ export class Connectivity {
                   100),
             },
           ],
-          web3Consts.oposToken,
+
+          web3Consts.oposToken
+        );
+        console.log(
+          storeRoyalty,
+          "---------------------step 6----------------"
         );
 
         return {
@@ -344,6 +351,163 @@ export class Connectivity {
     }
     return { Err: "Unreachable" };
   }
+
+
+
+    async sendOfferPrice(
+    profile: any,
+    amount: any
+  ): Promise<Result<TxPassType<{ profile: string }>, any>> {
+    for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
+      try {
+        const user = this.provider.publicKey;
+
+        const rootMainState = web3.PublicKey.findProgramAddressSync(
+          [Seeds.mainState],
+          this.programId
+        )[0];
+
+        let lineage = await getLineage(profile);
+
+        console.log("lineage from the send project price ", lineage);
+        const rootMainStateInfo =
+          await this.program.account.mainState.fetch(rootMainState);
+
+        let cost = amount * web3Consts.LAMPORTS_PER_OPOS;
+
+        console.log("cost from the send project price ", cost);
+
+        let holdersfullInfo = [];
+
+        holdersfullInfo.push({
+          receiver: lineage.gensis,
+          vallue:
+            cost *
+            (rootMainStateInfo.mintingCostDistribution.genesis / 100 / 100),
+        });
+
+        holdersfullInfo.push({
+          receiver: lineage.parent,
+          vallue:
+            cost *
+            (rootMainStateInfo.mintingCostDistribution.parent / 100 / 100),
+        });
+
+        holdersfullInfo.push({
+          receiver: lineage.gparent,
+          vallue:
+            cost *
+            (rootMainStateInfo.mintingCostDistribution.grandParent / 100 / 100),
+        });
+
+        holdersfullInfo.push({
+          receiver: lineage.ggparent,
+          vallue:
+            cost *
+            (rootMainStateInfo.mintingCostDistribution.greatGrandParent /
+              100 /
+              100),
+        });
+
+        holdersfullInfo.push({
+          receiver: lineage.gggparent,
+          vallue:
+            cost *
+            (rootMainStateInfo.mintingCostDistribution.ggreatGrandParent /
+              100 /
+              100),
+        });
+
+        console.log(
+          "holdersfullInfo from the send project price ",
+          holdersfullInfo
+        );
+        var holdermap: any = [];
+        holdersfullInfo.reduce(function (res: any, value: any) {
+          if (!res[value.receiver]) {
+            res[value.receiver] = { receiver: value.receiver, vallue: 0 };
+            holdermap.push(res[value.receiver]);
+          }
+          res[value.receiver].vallue += value.vallue;
+          return res;
+        }, {});
+
+        console.log("holdermap from the send project price ", holdermap);
+        for (let index = 0; index < holdermap.length; index++) {
+          const element = holdermap[index];
+          let createShare: any = await this.baseSpl.transfer_token_modified({
+            mint: rootMainStateInfo.oposToken,
+            sender: user,
+            receiver: new anchor.web3.PublicKey(element.receiver),
+            init_if_needed: true,
+            amount: Math.ceil(element.vallue),
+          });
+          for (let index = 0; index < createShare.length; index++) {
+            this.txis.push(createShare[index]);
+          }
+        }
+
+        console.log("send project price 1 ");
+
+        const tx = new web3.Transaction().add(...this.txis);
+
+        console.log(tx, "transaction before send =========================>");
+
+        tx.recentBlockhash = (
+          await this.connection.getLatestBlockhash()
+        ).blockhash;
+        tx.feePayer = this.provider.publicKey;
+        console.log("---------------------step 1----------------");
+        const feeEstimate = await this.getPriorityFeeEstimate(tx);
+        let feeIns;
+        if (feeEstimate > 0) {
+          console.log("---------------------step 2----------------");
+
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: feeEstimate,
+          });
+        } else {
+          console.log("---------------------step 3----------------");
+
+          feeIns = web3.ComputeBudgetProgram.setComputeUnitLimit({
+            units: 1_400_000,
+          });
+        }
+        tx.add(feeIns);
+        console.log("---------------------step 4----------------");
+
+        this.txis = [];
+        const signature = await this.provider.sendAndConfirm(tx);
+        console.log(signature, "signature =========================>");
+        console.log("---------------------step 5----------------");
+
+        return {
+          Ok: {
+            signature,
+            info: { profile: profile },
+          },
+        };
+      } catch (error: any) {
+        log({ error: error });
+        const isRetryable =
+          error.message?.includes("blockhash not found") ||
+          error.message?.includes("timeout") ||
+          error.message?.includes("rate limit") ||
+          error.message?.includes("too many requests");
+
+        if (!isRetryable || attempt === web3Consts.MAX_RETRIES - 1) {
+          return { Err: error };
+        }
+        const backoff =
+          web3Consts.INITIAL_BACKOFF *
+          Math.pow(2, attempt) *
+          (0.5 + Math.random());
+        await sleep(backoff);
+      }
+    }
+    return { Err: "Unreachable" };
+  }
+
 
   async setupLookupTable(
     addresses: web3.PublicKey[] = []
@@ -1796,8 +1960,10 @@ export class Connectivity {
             mainStateInfo.oposToken,
           );
           console.log("mint pass 71", userProfile);
-          console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
+          // console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
           let lineage = await getLineage(userProfile);
+
+          console.log(lineage, "lineage =============================>>>");
 
           let holdersfullInfo = [];
 
@@ -2059,7 +2225,7 @@ export class Connectivity {
       console.log(cost, "cost value from the api =========================>");
       console.log(payerProfile, "payerProfile =========================>");
       console.log(userProfile, "userProfile =========================>");
-      let sendPrice = await this.sendProjectPrice(userProfile, cost);
+      let sendPrice = await this.sendOfferPrice(userProfile, cost);
 
       console.log("sendPrice =========================>", sendPrice);
 

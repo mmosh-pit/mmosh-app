@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const collection = db.collection("mmosh-app-staked-history");
     const transactionCollection = db.collection("mmosh-app-transaction-history");
 
-    const { wallet, purchaseId, historyId } = await req.json();
+    const { wallet, purchaseId, historyId, royaltyLevel } = await req.json();
 
     const stakedHistory = await collection.find({
       purchaseId: purchaseId,
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         $set: { "royalty.$[elem].isUnstaked": true },
         $inc: { unStakedAmount: stakedAmount }
       },
-      { arrayFilters: [{ "elem.receiver": wallet }] }
+      { arrayFilters: [{ "elem.receiver": wallet, "elem.royaltyLevel": royaltyLevel }] }
     );
     const result_ = await transactionCollection.updateOne(
       { _id: new ObjectId(historyId) },

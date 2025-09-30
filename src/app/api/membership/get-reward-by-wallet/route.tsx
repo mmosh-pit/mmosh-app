@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     const element = result[i];
     for (let j = 0; j < element.royalty.length; j++) {
       const royaltyElement = element.royalty[j];
-      if (wallet === royaltyElement.receiver && royaltyElement.isUnstaked) {
+      if (wallet === royaltyElement.receiver && royaltyElement.isUnstaked && !royaltyElement.isClaimed) {
         rewardAmount += royaltyElement.amount;
       }
       if (wallet === royaltyElement.receiver && royaltyElement.isClaimed) {

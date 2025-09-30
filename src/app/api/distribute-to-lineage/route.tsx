@@ -59,24 +59,28 @@ export async function POST(req: NextRequest) {
       amount: cost * (20 / 100),
       isClaimed: false,
       isUnstaked: false,
+      royaltyLevel: 0,
     },
     {
       receiver: lineage.gparent,
       amount: cost * (10 / 100),
       isClaimed: false,
       isUnstaked: false,
+      royaltyLevel: 1,
     },
     {
       receiver: lineage.ggparent,
       amount: cost * (3 / 100),
       isClaimed: false,
       isUnstaked: false,
+      royaltyLevel: 2,
     },
     {
       receiver: lineage.gggparent,
       amount: cost * (2 / 100),
       isClaimed: false,
       isUnstaked: false,
+      royaltyLevel: 3,
     },
   ];
   const ninetyDaysInMs = 90 * 24 * 60 * 60 * 1000;

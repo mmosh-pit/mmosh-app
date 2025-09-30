@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const { agentId, withdrawal, withdrawalAmount, isRoyalty, wallet } =
     await req.json();
   if (isRoyalty) {
-    const result = await collection.updateMany(
+    const result = await stakedCollection.updateMany(
       {},
       {
         $set: { "royalty.$[elem].isClaimed": true },

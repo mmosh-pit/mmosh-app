@@ -21,19 +21,30 @@ export default function MyWalley() {
   const wallet = useWallet();
   const router = useRouter();
   const [totalBalance] = useAtom(bagsBalance);
-  const options = [
-    "All Categories",
-    "Various Coins",
-    "Airdrop",
-    "Royalties",
-    "Referrals",
+  const categoriesOptions = [
+    { label: "All Categories", value: "" },
+    { label: "Various Coins", value: "token_exchange" },
+    { label: "Airdrop", value: "airdrop" },
+    { label: "Royalties", value: "membership_royalty" },
+    { label: "Transfers", value: "transfer" },
+  ];
+  const sortingOptions = [
+    { label: "Newest First", value: "newest" },
+    { label: "Oldest First", value: "oldest" },
   ];
 
   const [isOpen, setIsOpen] = useState(false);
+  const [openSortingFilter, setOpenSortingFilter] = useState(false);
   const [stakedHistory, setStakedHistory] = useState<any[]>([]);
   const [filteredHistory, setFilteredHistory] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] =
-    useState<string>("All Categories");
+  const [selectedCategory, setSelectedCategory] = useState<{
+    label: string;
+    value: string;
+  }>({ label: "All Categories", value: "" });
+  const [selectedSortingOptions, setSelectedSortingOptions] = useState<{
+    label: string;
+    value: string;
+  }>({ label: "Newest First", value: "newest" });
 
   const [earnedAmount, setEarnedAmount] = useState<number>(0);
   const [availableTokens, setAvailableTokens] = useState<number>(0);
@@ -44,6 +55,7 @@ export default function MyWalley() {
     message: "",
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [historyLoading, setHistoryLoading] = React.useState<boolean>(false);
 
   const [transactionHistory, setTransactionHistory] = React.useState<{
     transactions: any[];
@@ -52,9 +64,13 @@ export default function MyWalley() {
     transactions: [],
     pagination: {},
   });
+  const [selectedTab, setSelectedTab] = React.useState<number>(3);
+  const [isTooltipShown, setIsTooltipShown] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (wallet) {
+      getHistory();
+      setHistoryLoading(true);
       getTransactionHistory();
     }
   }, [wallet]);
@@ -68,16 +84,16 @@ export default function MyWalley() {
       result.data.result.transactions
     );
     setTransactionHistory(result.data.result);
+    setHistoryLoading(false);
   };
 
   React.useEffect(() => {
-    if (wallet) {
-      getHistory();
-    }
-  }, [wallet]);
-  React.useEffect(() => {
     filterHistory();
-  }, [selectedCategory, stakedHistory]);
+  }, [selectedCategory, transactionHistory]);
+
+  React.useEffect(() => {
+    sortedData(selectedSortingOptions.value);
+  }, [selectedSortingOptions]);
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });
@@ -157,13 +173,18 @@ export default function MyWalley() {
   };
 
   const filterHistory = () => {
-    if (selectedCategory === "All Categories") {
-      setFilteredHistory(stakedHistory);
+    if (selectedCategory.value === "") {
+      setFilteredHistory(transactionHistory.transactions);
       return;
     }
-    const result = stakedHistory.filter(
+    console.log(
+      "transactionHistory.transactions",
+      transactionHistory.transactions
+    );
+    const result = transactionHistory.transactions.filter(
       (history) =>
-        history.category.toLowerCase() === selectedCategory.toLowerCase()
+        history.transactionType.toLowerCase() ===
+        selectedCategory.value.toLowerCase()
     );
     setFilteredHistory(result);
   };
@@ -179,15 +200,13 @@ export default function MyWalley() {
       for (let j = 0; j < element.royalty.length; j++) {
         const royaltyElement = element.royalty[j];
         if (royaltyElement.receiver === wallet?.publicKey.toBase58()) {
-          if (royaltyElement.isUnstaked) {
+          if (royaltyElement.isUnstaked && royaltyElement.isClaimed) {
             total += royaltyElement.amount / 10 ** 6;
-          } else if (!moment(element.created_date).isAfter(moment())) {
+          } else if (royaltyElement.isUnstaked && !royaltyElement.isClaimed) {
             availableTokens += royaltyElement.amount / 10 ** 6;
           } else {
             stakedTokens += royaltyElement.amount / 10 ** 6;
           }
-
-          console.log("Processed royalty element:", royaltyElement);
         }
       }
     }
@@ -205,6 +224,9 @@ export default function MyWalley() {
 
   const claimRewardAmount = async (history: any) => {
     try {
+      if (isLoading) {
+        return;
+      }
       // TODO: Need to integrate verify receipt api
       if (!wallet) {
         createMessage(
@@ -233,6 +255,7 @@ export default function MyWalley() {
           wallet: wallet.publicKey.toBase58(),
           purchaseId: history.purchaseId,
           historyId: history._id,
+          royaltyLevel: history.royaltyLevel,
         }
       );
       createMessage(
@@ -241,6 +264,7 @@ export default function MyWalley() {
       );
       setIsLoading(false);
       await getHistory();
+      await getTransactionHistory();
       console.log("unstaked updateResult", updateResult.data);
     } catch (error: any) {
       createMessage(error?.message, "error");
@@ -253,6 +277,25 @@ export default function MyWalley() {
   };
   const isPastTimestamp = (timestamp: number) => {
     return moment(timestamp).isBefore(moment());
+  };
+  const copyToClipboard = async (text: string) => {
+    setIsTooltipShown(true);
+    await navigator.clipboard.writeText(text);
+
+    setTimeout(() => {
+      setIsTooltipShown(false);
+    }, 2000);
+  };
+
+  const sortedData = (type: string) => {
+    const result = filteredHistory.sort((a, b) => {
+      if (type === "newest") {
+        return Number(b.updated_date) - Number(a.updated_date);
+      } else {
+        return Number(a.updated_date) - Number(b.updated_date);
+      }
+    });
+    setFilteredHistory(result);
   };
 
   return (
@@ -274,25 +317,36 @@ export default function MyWalley() {
                     .slice(-5)}`
                 : ""}
             </p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
+            <button
+              onClick={() =>
+                copyToClipboard(wallet?.publicKey.toBase58() || "")
+              }
             >
-              <path
-                fill="#fff"
-                d="M15.24 2h-3.894c-1.764 0-3.162 0-4.255.148c-1.126.152-2.037.472-2.755 1.193c-.719.721-1.038 1.636-1.189 2.766C3 7.205 3 8.608 3 10.379v5.838c0 1.508.92 2.8 2.227 3.342c-.067-.91-.067-2.185-.067-3.247v-5.01c0-1.281 0-2.386.118-3.27c.127-.948.413-1.856 1.147-2.593s1.639-1.024 2.583-1.152c.88-.118 1.98-.118 3.257-.118h3.07c1.276 0 2.374 0 3.255.118A3.6 3.6 0 0 0 15.24 2"
-              />
-              <path
-                fill="#fff"
-                d="M6.6 11.397c0-2.726 0-4.089.844-4.936c.843-.847 2.2-.847 4.916-.847h2.88c2.715 0 4.073 0 4.917.847S21 8.671 21 11.397v4.82c0 2.726 0 4.089-.843 4.936c-.844.847-2.202.847-4.917.847h-2.88c-2.715 0-4.073 0-4.916-.847c-.844-.847-.844-2.21-.844-4.936z"
-              />
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="#fff"
+                  d="M15.24 2h-3.894c-1.764 0-3.162 0-4.255.148c-1.126.152-2.037.472-2.755 1.193c-.719.721-1.038 1.636-1.189 2.766C3 7.205 3 8.608 3 10.379v5.838c0 1.508.92 2.8 2.227 3.342c-.067-.91-.067-2.185-.067-3.247v-5.01c0-1.281 0-2.386.118-3.27c.127-.948.413-1.856 1.147-2.593s1.639-1.024 2.583-1.152c.88-.118 1.98-.118 3.257-.118h3.07c1.276 0 2.374 0 3.255.118A3.6 3.6 0 0 0 15.24 2"
+                />
+                <path
+                  fill="#fff"
+                  d="M6.6 11.397c0-2.726 0-4.089.844-4.936c.843-.847 2.2-.847 4.916-.847h2.88c2.715 0 4.073 0 4.917.847S21 8.671 21 11.397v4.82c0 2.726 0 4.089-.843 4.936c-.844.847-2.202.847-4.917.847h-2.88c-2.715 0-4.073 0-4.916-.847c-.844-.847-.844-2.21-.844-4.936z"
+                />
+              </svg>
+            </button>
+            {isTooltipShown && (
+              <div className="absolute z-10   ml-[17rem] inline-block rounded-xl bg-gray-900 px-3 py-4ont-medium text-white shadow-sm dark:bg-gray-700">
+                Copied!
+              </div>
+            )}
           </div>
         </div>
         <div className="lg:flex justify-center mt-6">
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg lg:mr-5 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF]">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg lg:mr-5 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -308,7 +362,7 @@ export default function MyWalley() {
             </svg>
             <p className="text-center">Vault</p>
           </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg lg:mr-5 my-2 lg:my-0 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF]">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg lg:mr-5 my-2 lg:my-0 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -325,7 +379,7 @@ export default function MyWalley() {
             </svg>
             <p className="text-center">Ramps</p>
           </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg lg:mr-5 my-2 lg:my-0 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF]">
+          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg lg:mr-5 my-2 lg:my-0 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -346,7 +400,9 @@ export default function MyWalley() {
             </svg>
             <p className="text-center">History</p>
           </div>
-          <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38] lg:w-24 w-full p-2 rounded-lg hover:bg-[#FFFFFF29] hover:border-[#FFFFFF]">
+          <div
+            className={`${selectedTab === 3 ? "bg-[#FFFFFF29] border-[#FFFFFF]" : "bg-[#FFFFFF14] border-[#FFFFFF38]"} border-2 lg:w-24 w-full p-2 rounded-lg hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] cursor-pointer`}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -387,7 +443,7 @@ export default function MyWalley() {
               onClick={() => setIsOpen(!isOpen)}
               className="flex w-full items-center justify-between rounded-lg bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
             >
-              <span>{selectedCategory}</span>
+              <span>{selectedCategory.label}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -409,20 +465,20 @@ export default function MyWalley() {
             {isOpen && (
               <div className="absolute mt-2 w-full rounded-xl bg-[#FFFFFF14] shadow-lg border border-[#FFFFFF47] z-10 backdrop-blur-xl">
                 <ul className="py-2">
-                  {options.map((option) => (
-                    <li key={option}>
+                  {categoriesOptions.map((option) => (
+                    <li key={option.value}>
                       <button
                         onClick={() => {
                           setSelectedCategory(option);
                           setIsOpen(false);
                         }}
                         className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
-                          selectedCategory === option
+                          selectedCategory.value === option.value
                             ? "font-semibold"
                             : "font-normal"
                         }`}
                       >
-                        {option}
+                        {option.label}
                       </button>
                     </li>
                   ))}
@@ -433,10 +489,10 @@ export default function MyWalley() {
           <div className="relative w-full lg:w-[15.375rem] mt-1 lg:mt-0">
             {/* Dropdown Button */}
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setOpenSortingFilter(!openSortingFilter)}
               className="flex w-full items-center justify-between rounded-lg bg-[#FFFFFF14] border-2 border-[#FFFFFF47] px-4 py-2.5 text-white"
             >
-              <span>{selectedCategory}</span>
+              <span>{selectedSortingOptions.label}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -455,23 +511,23 @@ export default function MyWalley() {
             </button>
 
             {/* Dropdown Menu */}
-            {isOpen && (
+            {openSortingFilter && (
               <div className="absolute mt-2 w-full rounded-xl bg-[#FFFFFF14] shadow-lg border border-[#FFFFFF47] z-10 backdrop-blur-xl">
                 <ul className="py-2">
-                  {options.map((option) => (
-                    <li key={option}>
+                  {sortingOptions.map((option) => (
+                    <li key={option.value}>
                       <button
                         onClick={() => {
-                          setSelectedCategory(option);
-                          setIsOpen(false);
+                          setSelectedSortingOptions(option);
+                          setOpenSortingFilter(false);
                         }}
                         className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
-                          selectedCategory === option
+                          selectedSortingOptions.value === option.value
                             ? "font-semibold"
                             : "font-normal"
                         }`}
                       >
-                        {option}
+                        {option.label}
                       </button>
                     </li>
                   ))}
@@ -481,7 +537,7 @@ export default function MyWalley() {
           </div>
         </div>
         <div className="mt-6">
-          {transactionHistory.transactions.map((data, index) => (
+          {filteredHistory.map((data, index) => (
             <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
               <div className="lg:flex lg:justify-between justify-center">
                 <div className="flex items-start">
@@ -563,7 +619,7 @@ export default function MyWalley() {
                     )}
                     <p className="text-xl font-bold ml-2">
                       {data.amount < 1
-                        ? data.amount
+                        ? `$ ${data.amount.toString().length > 6 ? data.amount.toFixed(6) : data.amount}`
                         : formatAmount(data.amount / 10 ** 6)}
                     </p>
                   </div>
@@ -590,6 +646,11 @@ export default function MyWalley() {
               </div>
             </div>
           ))}
+          {filteredHistory.length === 0 && (
+            <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
+              <p className="text-sm text-center">{historyLoading ?"Loading..." : "No transactions found"}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

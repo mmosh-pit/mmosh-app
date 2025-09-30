@@ -8,7 +8,8 @@ import { Connectivity as CommunityConn } from "@/anchor/community";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
 import { pinFileToShadowDriveBackend } from "@/app/lib/uploadFileToShdwDrive";
-import {init, uploadFile } from "@/app/lib/firebase";
+import { init, uploadFile } from "@/app/lib/firebase";
+import { status } from "@/app/store";
 
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-project-offer");
@@ -166,7 +167,6 @@ export async function POST(req: NextRequest) {
       console.log(offerData, "offer data for one time price");
       console.log("one time price from ");
       price = offerData.priceonetime;
-      console.log("one time price from ", price);
     } else if (type === "month") {
       price = offerData.pricemonthly;
     } else {
@@ -194,7 +194,6 @@ export async function POST(req: NextRequest) {
         price = (Number(price) / priceInUsd).toFixed(2);
       }
     } else {
-      console.log(priceInUsd, "priceInUsd =====================>");
       console.log(price, "price =====================>");
       price = price;
       // price = (Number(price) / priceInUsd).toFixed(2);
@@ -351,8 +350,7 @@ export async function POST(req: NextRequest) {
     //   receiver,
     // );
 
-    
-  init()
+    init();
     const offerFile = new File(
       [JSON.stringify(offerBody)], // file content as string
       `${receiver}.json`, // file name
@@ -378,7 +376,9 @@ export async function POST(req: NextRequest) {
 
     let result;
     if (!hasInivtation) {
-      result = await projectConn.mintGuestPassTx(
+      console.log("minting without invitation");
+      console.log("minting guest pass");
+      result = await projectConn.offerGuestPassTx(
         {
           name: offerData.name,
           symbol: offerData.symbol,
@@ -388,10 +388,11 @@ export async function POST(req: NextRequest) {
         },
         receiver,
         receiver,
-        price * 10 ** coinData.target.decimals * supply,
+        price * supply,
         supply
       );
     } else {
+      console.log("minting with invitation");
       result = await projectConn.mintPassTx(
         {
           name: offerData.name,
@@ -408,19 +409,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (result.Ok?.info?.profile) {
-      let transaction: VersionedTransaction = result.Ok?.info?.profile;
-      const serialized = Buffer.from(transaction.serialize()).toString(
-        "base64"
+    console.log(
+      "result  from the  mintGuestPassTx @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
+      result
+    );
+    if (result.Ok) {
+      return NextResponse.json(
+        {
+          status: true,
+          signature: result.Ok.signature,
+        },
+        {
+          status: 200,
+        }
       );
-      const payload = {
-        status: true,
-        transaction: serialized,
-        message: "Congratulations on minting offer",
-      };
-      return NextResponse.json(payload, {
-        status: 200,
-      });
+    } else {
+      return NextResponse.json(
+        {
+          status: false,
+          signature: "",
+        },
+        {
+          status: 200,
+        }
+      );
     }
 
     return NextResponse.json(

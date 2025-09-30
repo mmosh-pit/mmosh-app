@@ -87,6 +87,7 @@ const Offer = ({
   }, [offerDetail, wallet]);
 
   useEffect(() => {
+    console.log(localStorage.getItem("token"),"token ==============================>>")
     if (stakeType != "") {
       (document.getElementById("stake_modal") as any)?.showModal();
     }
@@ -397,7 +398,7 @@ const Offer = ({
         setYearlyLoading(true);
       } else {
         setInviteLoading(true);
-      }
+      } 
       console.log("go to the result ===============================>>",supplyValue)
       
       const result: any = await internalClient.post("/api/offer/buy", {
@@ -407,27 +408,10 @@ const Offer = ({
         supply: supplyValue,
         profileInfo
       });
-      if (result.data.status) {
-        const connection = new Connection(
-          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-          {
-            confirmTransactionInitialTimeout: 120000,
-          },
-        );
-        const env = new anchor.AnchorProvider(connection, wallet, {
-          preflightCommitment: "processed",
-        });
 
-        anchor.setProvider(env);
-
-        const userConn: UserConn = new UserConn(env, web3Consts.programID);
-        const data: any = Buffer.from(result.data.transaction, "base64");
-        const tx = anchor.web3.VersionedTransaction.deserialize(data);
-
-        const signature = await userConn.provider.sendAndConfirm(tx);
-        console.log("signature is ", signature);
-
-        await delay(15000);
+      console.log(result,"result from the offer buy===============================>>")
+      if (result.data.status === true) {
+        createMessage("Offer purchased successfully", "success-container");
       } else {
         createMessage(result.data.message, "danger-container");
       }

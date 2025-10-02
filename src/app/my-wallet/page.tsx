@@ -547,6 +547,14 @@ export default function MyWalley() {
                     )}
                     {data.currency === "KINSHIP" && <KinshipTransactionIcon />}
                     {data.currency === "SOL" && <SolanaIcon />}
+                    {data.currency !== "USDT" &&
+                      data.currency !== "USDC" &&
+                      data.currency !== "SOL" && (
+                        // <div className="lg:w-[50px]">
+                        //   <img src={"https://img.freepik.com/free-vector/hand-drawn-nft-style-ape-illustration_23-2149622021.jpg"} alt="icon" />
+                        // </div>
+                        <SolanaIcon />
+                      )}
                   </div>
                   <div>
                     <div className="ml-3 flex  justify-between lg:flex-col">
@@ -618,9 +626,17 @@ export default function MyWalley() {
                       </svg>
                     )}
                     <p className="text-xl font-bold ml-2">
-                      {data.amount < 1
-                        ? `$ ${data.amount.toString().length > 6 ? data.amount.toFixed(6) : data.amount}`
-                        : formatAmount(data.amount / 10 ** 6)}
+                      {(data.currency === "USDT" ||
+                        data.currency === "USDC") && (
+                        <>
+                          {data.amount < 1
+                            ? `$ ${data.amount.toString().length > 6 ? data.amount.toFixed(6) : data.amount}`
+                            : formatAmount(data.amount / 10 ** 6)}
+                        </>
+                      )}
+                      {data.currency !== "USDT" && data.currency !== "USDC" && (
+                        <>{`${data.amount} ${data.currency.toUpperCase()}`}</>
+                      )}
                     </p>
                   </div>
                   <div>
@@ -648,7 +664,9 @@ export default function MyWalley() {
           ))}
           {filteredHistory.length === 0 && (
             <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
-              <p className="text-sm text-center">{historyLoading ?"Loading..." : "No transactions found"}</p>
+              <p className="text-sm text-center">
+                {historyLoading ? "Loading..." : "No transactions found"}
+              </p>
             </div>
           )}
         </div>

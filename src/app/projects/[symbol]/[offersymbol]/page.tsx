@@ -87,6 +87,7 @@ const Offer = ({
   }, [offerDetail, wallet]);
 
   useEffect(() => {
+    console.log(localStorage.getItem("token"),"token ==============================>>")
     if (stakeType != "") {
       (document.getElementById("stake_modal") as any)?.showModal();
     }
@@ -157,72 +158,75 @@ const Offer = ({
     }
   };
 
-  const getTokenPrice = async (coin: CoinDetail) => {
+const getTokenPrice = async (coin: CoinDetail) => {
     try {
       let priceInUsd = 0;
       if (coin.status === "completed") {
         priceInUsd = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?ids=${coin!.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+            `?,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
         );
       } else {
         let lastPriceResult = await axios.get(
-          "/api/token/lastprice?key=" + coin?.bonding,
+          `/api/offer/detail?symbol=${params.offersymbol}`
+        );
+        // let lastPriceResult = await axios.get(
+        //   "/api/token/lastprice?key=" + coin?.bonding,
+        // );
+        console.log(
+          lastPriceResult.data.priceonetime,
+          "lastPriceResult data =====================>"
         );
         const lookupUsdPrice = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+            `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
         );
+ 
         console.log(
-          "lookup price ",
-          Number(
-            lookupUsdPrice.data?.data[
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ].price || 0.003,
-          ),
+          lookupUsdPrice,
+          "lookupUsdPrice from the jupiter api  =====================>"
         );
-        console.log("last price ", lastPriceResult.data.price);
         priceInUsd =
-          lastPriceResult.data.price *
+          lastPriceResult.data.priceonetime *
           Number(
-            lookupUsdPrice.data?.data[
+            lookupUsdPrice.data?.data?.[
               "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ].price || 0.003,
+            ]?.usdPrice || 0.003
           );
-        console.log("price in usd ", priceInUsd);
       }
-
+      console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
-
+ 
       if (wallet) {
         const connection = new Connection(
           process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
           {
             confirmTransactionInitialTimeout: 120000,
-          },
+          }
         );
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",
         });
-
+ 
         anchor.setProvider(env);
-
+ 
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
         let balance = await userConn.getUserBalance({
-          address: wallet.publicKey,
+          address: wallet.publicKey.toBase58(),
           token: coin.target.token,
           decimals: 10 ** coin.target.decimals,
         });
         setTokenBlance(balance);
       }
-
+ 
       setLoading(false);
     } catch (error) {
-      console.log("getTokenPrice error", error);
+      console.log("setUsdcPrice getTokenPrice error ==========>>>", error);
       setUsdcPrice(0);
       setLoading(false);
     }
   };
+ 
 
   const getStakeBalance = async () => {
     if (!wallet) {
@@ -301,7 +305,6 @@ const Offer = ({
       new anchor.web3.PublicKey(offerDetail.key),
     );
     let projectInfo = await projectConn.getProjectUserInfo(offerDetail.key);
-
     if (projectInfo.profiles.length > 0) {
       if (projectInfo.profiles[0].address == offerDetail.key) {
         setOwner(true);
@@ -317,6 +320,7 @@ const Offer = ({
       let listResult = await axios.get(
         `/api/project/detail?symbol=${params.symbol}`,
       );
+      console.log(listResult.data,"getProjectDetailFromAPI =================================>>>")
       setProjectDetail(listResult.data);
     } catch (error) {
       console.log("getProjectDetailFromAPI error", error);
@@ -330,6 +334,7 @@ const Offer = ({
       let listResult = await axios.get(
         `/api/offer/detail?symbol=${params.offersymbol}`,
       );
+
       setOfferDetail(listResult.data);
       getCoinDetail();
     } catch (error) {
@@ -393,34 +398,31 @@ const Offer = ({
         setYearlyLoading(true);
       } else {
         setInviteLoading(true);
-      }
+      } 
+      console.log("go to the result ===============================>>",supplyValue)
+      
       const result: any = await internalClient.post("/api/offer/buy", {
         receiver: wallet.publicKey?.toBase58(),
         symbol: offerDetail.symbol,
         type,
         supply: supplyValue,
+        profileInfo
       });
-      if (result.data.status) {
-        const connection = new Connection(
-          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-          {
-            confirmTransactionInitialTimeout: 120000,
-          },
-        );
-        const env = new anchor.AnchorProvider(connection, wallet, {
-          preflightCommitment: "processed",
-        });
 
-        anchor.setProvider(env);
-
-        const userConn: UserConn = new UserConn(env, web3Consts.programID);
-        const data: any = Buffer.from(result.data.transaction, "base64");
-        const tx = anchor.web3.VersionedTransaction.deserialize(data);
-
-        const signature = await userConn.provider.sendAndConfirm(tx);
-        console.log("signature is ", signature);
-
-        await delay(15000);
+      console.log(result,"result from the offer buy===============================>>")
+      if (result.data.status === true) {
+        const historyParams = {
+          transactionType: "offer_purchase",
+          offerPurchase: {
+            wallet: wallet.publicKey.toBase58(),
+            currency: params.offersymbol,
+            botName: params.symbol,
+            amount: supplyValue
+          }
+        };
+        const res = await internalClient.post(`/api/history/save`, historyParams);
+        console.log("----- SAVE HISTORY RESPONSE -----", res.data);
+        createMessage("Offer purchased successfully", "success-container");
       } else {
         createMessage(result.data.message, "danger-container");
       }
@@ -430,7 +432,6 @@ const Offer = ({
       setYearlyLoading(false);
       setInviteLoading(false);
     } catch (error) {
-      console.log("error ", error);
       createMessage("Something went wrong", "danger-container");
       setOneTimeLoading(false);
       setMonthlyLoading(false);

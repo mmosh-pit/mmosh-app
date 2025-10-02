@@ -141,23 +141,14 @@ export async function POST(req: NextRequest) {
         process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
           `?ids=${coinData.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
       );
-      console.log(
-        "lookup price ",
-        Number(
-          lookupUsdPrice.data?.data[
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ].price || 0.003
-        )
-      );
-      console.log("last price ", lastPriceResult.data.price);
-      priceInUsd =
-        lastPriceResult.data.price *
-        Number(
-          lookupUsdPrice.data?.data[
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ].price || 0.003
-        );
-      console.log("price in usd ", priceInUsd);
+
+      console.log(lookupUsdPrice.data, "lookupUsdPrice.data =================>>");
+      const tokenInfo = lookupUsdPrice.data["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"];
+      const price = tokenInfo?.usdPrice ?? 0.003; 
+      priceInUsd = lastPriceResult.data.price * price;
+
+    
+      console.log("price in usd ========================>> ", priceInUsd);
     }
 
     console.log("test 3 priceInUsd", priceInUsd);
@@ -417,7 +408,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           status: true,
-          signature: result.Ok.signature,
+          signature: result.Ok,
         },
         {
           status: 200,

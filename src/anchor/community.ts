@@ -484,7 +484,46 @@ export class Connectivity {
         return {
           Ok: {
             signature,
-            info: { profile: profile },
+            info: {
+              profile: profile,
+              sender: user.toBase58(),
+              receivers: [
+                {
+                  receiver: lineage.gensis,
+                  amount:
+                    amount *
+                    (rootMainStateInfo.mintingCostDistribution.genesis /
+                      100 /
+                      100),
+                },
+                {
+                  receiver: lineage.parent,
+                  amount:
+                    amount *
+                    (rootMainStateInfo.mintingCostDistribution.parent /
+                      100 /
+                      100),
+                },
+                {
+                  receiver: lineage.gparent,
+                  amount:
+                    amount *
+                    (rootMainStateInfo.mintingCostDistribution.grandParent /
+                      100 /
+                      100),
+                },
+                {
+                  receiver: lineage.ggparent,
+                  amount:
+                    amount *
+                    (rootMainStateInfo.mintingCostDistribution
+                      .ggreatGrandParent /
+                      100 /
+                      100),
+                },
+              ],
+              coin: web3Consts.oposToken,
+            } as any,
           },
         };
       } catch (error: any) {
@@ -2231,10 +2270,10 @@ export class Connectivity {
 
       return {
         Ok: {
-          signature: sendPrice.Ok?.signature || '',
-          info: { profile: this.provider.publicKey.toBase58() },
+          signature: sendPrice.Ok?.signature || "",
+          info: sendPrice.Ok?.info || {}
         },
-      };
+      } as any;
     } catch (error) {
       log({ error });
       return { Err: error };

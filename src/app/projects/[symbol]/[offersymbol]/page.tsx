@@ -37,6 +37,7 @@ const Offer = ({
   const [usdcPrice, setUsdcPrice] = useState(0);
   const [tokenBalance, setTokenBlance] = useState(0);
   const [stakeBalance, setStakeBlance] = useState(0);
+  const [saveOfferDetails, setsaveOfferDetails] = useState<any>(null);
   const wallet = useWallet();
 
   const [showMsg, setShowMsg] = useState(false);
@@ -100,7 +101,10 @@ const Offer = ({
       let url =
         "/api/offer/receipts?page=" + page + "&&offer=" + offerDetail.key;
       let apiResult = await axios.get(url);
-
+      console.log(
+        apiResult,
+        "listHistoryApi from the api ==================>>"
+      );
       let newHistories: any = page == 1 ? [] : histories;
 
       for (let index = 0; index < apiResult.data.length; index++) {
@@ -148,7 +152,7 @@ const Offer = ({
   const getCoinDetail = async () => {
     try {
       const result = await axios.get<CoinDetail>(
-        `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`,
+        `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`
       );
       setCoin(result.data);
       getTokenPrice(result.data);
@@ -164,38 +168,56 @@ const Offer = ({
       if (coin.status === "completed") {
         priceInUsd = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+            `?,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
         );
       } else {
-
-          let lastPriceResult = await axios.get(
-        `/api/offer/detail?symbol=${params.offersymbol}`,
-      );
+        let lastPriceResult = await axios.get(
+          `/api/offer/detail?symbol=${params.offersymbol}`
+        );
         // let lastPriceResult = await axios.get(
         //   "/api/token/lastprice?key=" + coin?.bonding,
         // );
-        console.log(lastPriceResult.data.priceonetime,"lastPriceResult data =====================>")
-        const lookupUsdPrice = await axios.get(
-          process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+        setsaveOfferDetails(lastPriceResult.data);
+        console.log(
+          lastPriceResult.data,
+          "lastPriceResult data =====================>"
         );
         console.log(
-          "lookup price ",
-          Number(
-            lookupUsdPrice.data?.data[
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ].price || 0.003,
-          ),
+          lastPriceResult.data.priceonetime,
+          "lastPriceResult data =====================>"
         );
-        console.log("last price ", lastPriceResult.data.priceonetime);
-        priceInUsd =
+        const lookupUsdPrice = await axios.get(
+          process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
+            `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
+        );
+
+        console.log(
+          lookupUsdPrice.data,
+          "lookupUsdPrice data =====================>"
+        );
+       if ( offerDetail.pricetype === "onetime") {
+          priceInUsd =
           lastPriceResult.data.priceonetime *
           Number(
-            lookupUsdPrice.data?.data[
+            lookupUsdPrice.data?.[
               "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ].price || 0.003,
-          );      }
-      console.log(priceInUsd,"priceInUsd =====================>")
+            ]?.usdPrice || 0.003
+          );
+
+       } else {
+        priceInUsd =
+        lastPriceResult.data.pricemonthly *
+        Number(
+          lookupUsdPrice.data?.[
+            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+          ]?.usdPrice || 0.003
+        );
+       }
+
+ 
+      
+      }
+      console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
 
       if (wallet) {
@@ -203,7 +225,7 @@ const Offer = ({
           process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
           {
             confirmTransactionInitialTimeout: 120000,
-          },
+          }
         );
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",
@@ -246,10 +268,10 @@ const Offer = ({
       const projectConn: CommunityConn = new CommunityConn(
         env,
         web3Consts.programID,
-        new anchor.web3.PublicKey(projectDetail.coins[0].key),
+        new anchor.web3.PublicKey(projectDetail.coins[0].key)
       );
       let balance = await projectConn.getStakeBalance(
-        new anchor.web3.PublicKey(projectDetail.coins[0].key),
+        new anchor.web3.PublicKey(projectDetail.coins[0].key)
       );
       setStakeBlance(balance);
     } catch (error) {
@@ -275,11 +297,11 @@ const Offer = ({
       const projectConn: CommunityConn = new CommunityConn(
         env,
         web3Consts.programID,
-        new anchor.web3.PublicKey(offerDetail.key),
+        new anchor.web3.PublicKey(offerDetail.key)
       );
       let isAvailable = await projectConn.isCreatorInvitation(
         new anchor.web3.PublicKey(offerDetail.badge),
-        wallet.publicKey.toBase58(),
+        wallet.publicKey.toBase58()
       );
       setHasInvitation(isAvailable);
     } catch (error) {
@@ -302,7 +324,7 @@ const Offer = ({
     let projectConn: CommunityConn = new CommunityConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(offerDetail.key),
+      new anchor.web3.PublicKey(offerDetail.key)
     );
     let projectInfo = await projectConn.getProjectUserInfo(offerDetail.key);
     if (projectInfo.profiles.length > 0) {
@@ -318,7 +340,7 @@ const Offer = ({
   const getProjectDetailFromAPI = async () => {
     try {
       let listResult = await axios.get(
-        `/api/project/detail?symbol=${params.symbol}`,
+        `/api/project/detail?symbol=${params.symbol}`
       );
       console.log(listResult.data,"getProjectDetailFromAPI =================================>>>")
       setProjectDetail(listResult.data);
@@ -332,7 +354,7 @@ const Offer = ({
   const getOfferDetailFromAPI = async () => {
     try {
       let listResult = await axios.get(
-        `/api/offer/detail?symbol=${params.offersymbol}`,
+        `/api/offer/detail?symbol=${params.offersymbol}`
       );
 
       setOfferDetail(listResult.data);
@@ -409,7 +431,42 @@ const Offer = ({
         profileInfo
       });
 
-      console.log(result,"result from the offer buy===============================>>")
+      const info = result.data.signature.info;
+      let signature = result.data.signature.signature;
+      const receiver = wallet.publicKey.toBase58();
+      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let pricetype = offer?.pricetype;
+      let supply = supplyValue;
+      let price = 0;
+
+      if (type === "onetime") {
+        console.log("one time price from ");
+        price = offer?.priceonetime;
+      } else if (type === "month") {
+        price = offer?.pricemonthly;
+      } else {
+        price = offer?.priceyearly;
+      }
+
+      console.log(offer, "offer =============>");
+      console.log(price, "price =============>");
+      console.log(pricetype, "priceType =============>");
+      console.log(supply, "supply =============>");
+      //type
+      //supply
+      // price
+
+      let storageRoyal = await internalClient.post("/api/update-royalty", {
+        sender: info.sender,
+        receivers: info.receivers,
+        coin: info.coin,
+      });
+      let insertRecipt = await internalClient.get(
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}`,
+        {}
+      );
+
+      console.log(insertRecipt, "insertRecipt ===================>");
       if (result.data.status === true) {
         createMessage("Offer purchased successfully", "success-container");
       } else {
@@ -429,7 +486,7 @@ const Offer = ({
     }
   };
 
-  const showInvitation = () => { };
+  const showInvitation = () => {};
 
   const closeDrawer = () => {
     if (drawerRef.current) {

@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("pricetype");
   const price = searchParams.get("price");
   const supply = searchParams.get("supply");
+  const paidtype = searchParams.get("paidType");
 
 
   if (!offer) {
@@ -47,39 +48,18 @@ export async function GET(req: NextRequest) {
   // })
 
   let gensisOffer: any = offer;
-  let startDate: any = new Date();
-  let endDate: any = new Date();
- 
-  // if(offerInfo.json?.attributes) {
-  //   for (let index = 0; index < offerInfo.json?.attributes.length; index++) {
-  //       const element = offerInfo.json?.attributes[index];
-  //       if(element.trait_type === "Offer") {
-  //         gensisOffer = element.value;
-  //       } else if(element.trait_type === "Purchase Type") {
-  //         type = element.value;
-  //       } else if(element.trait_type === "Buyer") {
-  //         receiver = element.value;
-  //       } else if(element.trait_type === "Supply") {
-  //         supply = element.value;
-  //       } else if(element.trait_type === "Price") {
-  //         price = element.value;
-  //       } else if(element.trait_type === "Valid from") {
-  //         startDate = new Date(element.value!);
-  //       } else if(element.trait_type === "Valid up to") {
-  //         endDate = new Date(element.value!);
-  //       }
-  //   }
-  // }
-
-  // if(gensisOffer === "" && receiver === "") {
-  //   console.log("gensis and receiver not found");
-  //   return NextResponse.json(
-  //     false,
-  //     {
-  //       status: 200,
-  //     },
-  //   );
-  // }
+  let startDate: any = "";
+  let endDate: any = "";
+  if (paidtype === "month") {
+    endDate = new Date();
+    endDate.setDate(endDate.getDate() + 30);
+    startDate = new Date();
+  } else if (paidtype === "year") {
+    endDate = new Date();
+    endDate.setDate(endDate.getDate() + 365);
+    startDate = new Date();
+  }
+  console.log(endDate, "endDate ==================>>");
 
   let offerData: any = await offerCollection.findOne({ key: gensisOffer });
   if (!offerData) {
@@ -94,10 +74,21 @@ export async function GET(req: NextRequest) {
   const receipt = await receiptCollection.findOne({ key: offer });
   console.log(receipt, "receipt from the database ==============>>");
   if (receipt) {
-    console.log("receipt already exist");
-    return NextResponse.json(false, {
-      status: 200,
-    });
+    if (type == "subscription") {
+      const result = await receiptCollection.updateOne(
+        { key: offer },
+        {
+          $set: {
+            created_date: new Date(),
+            updated_date: new Date(),
+          },
+        }
+      );
+    } else {
+      return NextResponse.json(false, {
+        status: 200,
+      });
+    }
   }
   if (startDate != "" && endDate != "") {
     const data = await subscriptionCollection.findOne({

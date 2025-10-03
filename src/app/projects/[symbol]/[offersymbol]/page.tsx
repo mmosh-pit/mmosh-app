@@ -38,7 +38,7 @@ const Offer = ({
   const [tokenBalance, setTokenBlance] = useState(0);
   const [stakeBalance, setStakeBlance] = useState(0);
   const [saveOfferDetails, setsaveOfferDetails] = useState<any>(null);
-  const wallet = useWallet();
+  const wallet: any = useWallet();
 
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
@@ -195,27 +195,23 @@ const Offer = ({
           lookupUsdPrice.data,
           "lookupUsdPrice data =====================>"
         );
-       if ( offerDetail.pricetype === "onetime") {
+        if (offerDetail.pricetype === "onetime") {
           priceInUsd =
-          lastPriceResult.data.priceonetime *
-          Number(
-            lookupUsdPrice.data?.[
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ]?.usdPrice || 0.003
-          );
-
-       } else {
-        priceInUsd =
-        lastPriceResult.data.pricemonthly *
-        Number(
-          lookupUsdPrice.data?.[
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ]?.usdPrice || 0.003
-        );
-       }
-
- 
-      
+            lastPriceResult.data.priceonetime *
+            Number(
+              lookupUsdPrice.data?.[
+                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              ]?.usdPrice || 0.003
+            );
+        } else {
+          priceInUsd =
+            lastPriceResult.data.pricemonthly *
+            Number(
+              lookupUsdPrice.data?.[
+                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              ]?.usdPrice || 0.003
+            );
+        }
       }
       console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
@@ -373,9 +369,9 @@ const Offer = ({
       }
       let subscriptionResult = await axios.get(
         "/api/offer/subscriptions?wallet=" +
-        wallet?.publicKey.toBase58() +
-        "&&offer=" +
-        offerDetail.key,
+          wallet?.publicKey.toBase58() +
+          "&&offer=" +
+          offerDetail.key
       );
       setSubscription(subscriptionResult.data);
     } catch (error) {
@@ -439,13 +435,17 @@ const Offer = ({
       let supply = supplyValue;
       let price = 0;
 
+      let paidtype;
       if (type === "onetime") {
         console.log("one time price from ");
+        paidtype === "onetime";
         price = offer?.priceonetime;
       } else if (type === "month") {
         price = offer?.pricemonthly;
+        paidtype = "month";
       } else {
         price = offer?.priceyearly;
+        paidtype = "year";
       }
 
       console.log(offer, "offer =============>");
@@ -462,7 +462,7 @@ const Offer = ({
         coin: info.coin,
       });
       let insertRecipt = await internalClient.get(
-        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}`,
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}&paidType=${paidtype}`,
         {}
       );
 
@@ -483,6 +483,75 @@ const Offer = ({
       setMonthlyLoading(false);
       setYearlyLoading(false);
       setInviteLoading(false);
+    }
+  };
+
+  const renewsubscription = async () => {
+    console.log(subscription, "subscription Data =========================>>");
+
+    console.log("renewsubscription called =========================>>");
+    if (!wallet) {
+      createMessage("Wallet is not connected", "danger-container");
+      return;
+    }
+
+    try {
+      setOneTimeLoading(true);
+      let renewResult = await internalClient.get(
+        `/api/offer/renew-subscription?receiver=${wallet.publicKey.toBase58()}&usdcBalance=${profileInfo?.usdcBalance}`,
+        {}
+      );
+      console.log(renewResult, "renewResult =========================>>");
+
+      const info = renewResult.data.signature.info;
+      let signature = renewResult.data.signature.signature;
+      const receiver = wallet.publicKey.toBase58();
+      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let pricetype = offer?.pricetype;
+      let supply = supplyValue;
+      let price = 0;
+      let paidtype;
+
+      const startDate = subscription.start;
+      const endDate = subscription.end;
+      const start = moment(startDate);
+      const end = moment(endDate);
+
+      const daysDiff = end.diff(start, "days");
+
+      if (daysDiff >= 31) {
+        paidtype = "year";
+        price = offer?.priceyearly;
+      } else {
+        paidtype = "month";
+        price = offer?.pricemonthly;
+      }
+
+      let storageRoyal = await internalClient.post("/api/update-royalty", {
+        sender: info.sender,
+        receivers: info.receivers,
+        coin: info.coin,
+      });
+      let insertRecipt = await internalClient.get(
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}&paidType=${paidtype}`,
+        {}
+      );
+
+      console.log(
+        insertRecipt,
+        "insertRecipt from the renew result ===================>"
+      );
+      if (renewResult.data.status === true) {
+        createMessage("Subscription renewed successfully", "success-container");
+        setOneTimeLoading(false);
+      } else {
+        createMessage(renewResult.data.message, "danger-container");
+        setOneTimeLoading(false);
+      }
+    } catch (error) {
+      console.log("renewsubscription error =========================>>", error);
+      createMessage("Failed to renew subscription", "danger-container");
+      setOneTimeLoading(false);
     }
   };
 
@@ -1171,6 +1240,20 @@ const Offer = ({
                                   onClick={actionSubscribe}
                                 >
                                   Activate
+                                </button>
+                              )}
+                              {!oneTimeLoading &&
+                                subscription.status === "expired" && (
+                                  <button
+                                    className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none"
+                                    onClick={renewsubscription}
+                                  >
+                                    renew
+                                  </button>
+                                )}
+                              {oneTimeLoading && (
+                                <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white">
+                                  renewing...
                                 </button>
                               )}
                             </div>

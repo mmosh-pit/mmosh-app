@@ -87,6 +87,15 @@ export async function GET(req: NextRequest) {
           as: "pass",
         },
       },
+
+      {
+        $match: isAdmin
+          ? {}
+          : {
+              $or: [{ creator: creator }, { "profiles.profilekey": creator }],
+            },
+      },
+
       {
         $project: {
           name: 1,
@@ -101,11 +110,11 @@ export async function GET(req: NextRequest) {
           presalesupply: 1,
           minpresalesupply: 1,
           type: 1,
-          coins: "$coins",
-          community: "$community",
-          profiles: "$profiles",
-          tokenomics: "$tokenomics",
-          pass: "$pass",
+          coins: 1,
+          community: 1,
+          profiles: 1,
+          tokenomics: 1,
+          pass: 1,
         },
       },
       { $sort: { created_date: -1 } },

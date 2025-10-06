@@ -221,7 +221,10 @@ const AgentPass = ({
       return false;
     }
 
+
+    
     if (fields.image.preview.length == 0) {
+      console.log(fields.image,"image ==========================================>>")
       if (isMessage) {
         createMessage("Project pass Image is required", "danger-container");
       }
@@ -276,7 +279,7 @@ const AgentPass = ({
             );
           // let imageUri = await pinImageToShadowDrive(imageFile);
            const date = new Date().getMilliseconds();
-               const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
+          const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
           fields.image.preview = imageUri;
         }
         localStorage.setItem("projectstep1", JSON.stringify(fields));
@@ -299,10 +302,22 @@ const AgentPass = ({
 
         if (symbol) {
           setButtonText("Updating pass... ");
+          let imageFile = await fetch(fields.image.preview)
+            .then((r) => r.blob())
+            .then(
+              (blobFile) =>
+                new File([blobFile], uuidv4(), { type: fields.image.type }),
+            );
+          // let imageUri = await pinImageToShadowDrive(imageFile);
+           const date = new Date().getMilliseconds();
+          const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
+          fields.image.preview = imageUri;
+          console.log("image uri ===>", fields.image.preview);
           await internalClient.put("/api/project/update-project", {
             key: projectDetail.project.key,
             name: fields.name,
             symbol: fields.symbol.toUpperCase(),
+            image: fields.image.preview,
             desc: fields.desc,
             telegram: fields.telegram,
             twitter: fields.twitter,
@@ -394,7 +409,7 @@ const AgentPass = ({
             <ImagePicker
               changeImage={setImage}
               image={fields.image.preview}
-              readonly={symbol ? true : false}
+              // readonly={symbol ? true : false}
             />
           </div>
           <div className="xl:col-span-3">

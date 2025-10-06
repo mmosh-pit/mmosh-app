@@ -37,7 +37,8 @@ const Offer = ({
   const [usdcPrice, setUsdcPrice] = useState(0);
   const [tokenBalance, setTokenBlance] = useState(0);
   const [stakeBalance, setStakeBlance] = useState(0);
-  const wallet = useWallet();
+  const [saveOfferDetails, setsaveOfferDetails] = useState<any>(null);
+  const wallet: any = useWallet();
 
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
@@ -87,6 +88,7 @@ const Offer = ({
   }, [offerDetail, wallet]);
 
   useEffect(() => {
+    console.log(localStorage.getItem("token"),"token ==============================>>")
     if (stakeType != "") {
       (document.getElementById("stake_modal") as any)?.showModal();
     }
@@ -99,7 +101,10 @@ const Offer = ({
       let url =
         "/api/offer/receipts?page=" + page + "&&offer=" + offerDetail.key;
       let apiResult = await axios.get(url);
-
+      console.log(
+        apiResult,
+        "listHistoryApi from the api ==================>>"
+      );
       let newHistories: any = page == 1 ? [] : histories;
 
       for (let index = 0; index < apiResult.data.length; index++) {
@@ -147,7 +152,7 @@ const Offer = ({
   const getCoinDetail = async () => {
     try {
       const result = await axios.get<CoinDetail>(
-        `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`,
+        `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`
       );
       setCoin(result.data);
       getTokenPrice(result.data);
@@ -163,35 +168,52 @@ const Offer = ({
       if (coin.status === "completed") {
         priceInUsd = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?ids=${coin!.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+            `?,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
         );
       } else {
         let lastPriceResult = await axios.get(
-          "/api/token/lastprice?key=" + coin?.bonding,
+          `/api/offer/detail?symbol=${params.offersymbol}`
+        );
+        // let lastPriceResult = await axios.get(
+        //   "/api/token/lastprice?key=" + coin?.bonding,
+        // );
+        setsaveOfferDetails(lastPriceResult.data);
+        console.log(
+          lastPriceResult.data,
+          "lastPriceResult data =====================>"
+        );
+        console.log(
+          lastPriceResult.data.priceonetime,
+          "lastPriceResult data =====================>"
         );
         const lookupUsdPrice = await axios.get(
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-          `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+            `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
         );
-        console.log(
-          "lookup price ",
-          Number(
-            lookupUsdPrice.data?.data[
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ].price || 0.003,
-          ),
-        );
-        console.log("last price ", lastPriceResult.data.price);
-        priceInUsd =
-          lastPriceResult.data.price *
-          Number(
-            lookupUsdPrice.data?.data[
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ].price || 0.003,
-          );
-        console.log("price in usd ", priceInUsd);
-      }
 
+        console.log(
+          lookupUsdPrice.data,
+          "lookupUsdPrice data =====================>"
+        );
+        if (offerDetail.pricetype === "onetime") {
+          priceInUsd =
+            lastPriceResult.data.priceonetime *
+            Number(
+              lookupUsdPrice.data?.[
+                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              ]?.usdPrice || 0.003
+            );
+        } else {
+          priceInUsd =
+            lastPriceResult.data.pricemonthly *
+            Number(
+              lookupUsdPrice.data?.[
+                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              ]?.usdPrice || 0.003
+            );
+        }
+      }
+      console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
 
       if (wallet) {
@@ -199,7 +221,7 @@ const Offer = ({
           process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
           {
             confirmTransactionInitialTimeout: 120000,
-          },
+          }
         );
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",
@@ -209,7 +231,7 @@ const Offer = ({
 
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
         let balance = await userConn.getUserBalance({
-          address: wallet.publicKey,
+          address: wallet.publicKey.toBase58(),
           token: coin.target.token,
           decimals: 10 ** coin.target.decimals,
         });
@@ -218,7 +240,7 @@ const Offer = ({
 
       setLoading(false);
     } catch (error) {
-      console.log("getTokenPrice error", error);
+      console.log("setUsdcPrice getTokenPrice error ==========>>>", error);
       setUsdcPrice(0);
       setLoading(false);
     }
@@ -242,10 +264,10 @@ const Offer = ({
       const projectConn: CommunityConn = new CommunityConn(
         env,
         web3Consts.programID,
-        new anchor.web3.PublicKey(projectDetail.coins[0].key),
+        new anchor.web3.PublicKey(projectDetail.coins[0].key)
       );
       let balance = await projectConn.getStakeBalance(
-        new anchor.web3.PublicKey(projectDetail.coins[0].key),
+        new anchor.web3.PublicKey(projectDetail.coins[0].key)
       );
       setStakeBlance(balance);
     } catch (error) {
@@ -271,11 +293,11 @@ const Offer = ({
       const projectConn: CommunityConn = new CommunityConn(
         env,
         web3Consts.programID,
-        new anchor.web3.PublicKey(offerDetail.key),
+        new anchor.web3.PublicKey(offerDetail.key)
       );
       let isAvailable = await projectConn.isCreatorInvitation(
         new anchor.web3.PublicKey(offerDetail.badge),
-        wallet.publicKey.toBase58(),
+        wallet.publicKey.toBase58()
       );
       setHasInvitation(isAvailable);
     } catch (error) {
@@ -298,10 +320,9 @@ const Offer = ({
     let projectConn: CommunityConn = new CommunityConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(offerDetail.key),
+      new anchor.web3.PublicKey(offerDetail.key)
     );
     let projectInfo = await projectConn.getProjectUserInfo(offerDetail.key);
-
     if (projectInfo.profiles.length > 0) {
       if (projectInfo.profiles[0].address == offerDetail.key) {
         setOwner(true);
@@ -315,8 +336,9 @@ const Offer = ({
   const getProjectDetailFromAPI = async () => {
     try {
       let listResult = await axios.get(
-        `/api/project/detail?symbol=${params.symbol}`,
+        `/api/project/detail?symbol=${params.symbol}`
       );
+      console.log(listResult.data,"getProjectDetailFromAPI =================================>>>")
       setProjectDetail(listResult.data);
     } catch (error) {
       console.log("getProjectDetailFromAPI error", error);
@@ -328,8 +350,9 @@ const Offer = ({
   const getOfferDetailFromAPI = async () => {
     try {
       let listResult = await axios.get(
-        `/api/offer/detail?symbol=${params.offersymbol}`,
+        `/api/offer/detail?symbol=${params.offersymbol}`
       );
+
       setOfferDetail(listResult.data);
       getCoinDetail();
     } catch (error) {
@@ -346,9 +369,9 @@ const Offer = ({
       }
       let subscriptionResult = await axios.get(
         "/api/offer/subscriptions?wallet=" +
-        wallet?.publicKey.toBase58() +
-        "&&offer=" +
-        offerDetail.key,
+          wallet?.publicKey.toBase58() +
+          "&&offer=" +
+          offerDetail.key
       );
       setSubscription(subscriptionResult.data);
     } catch (error) {
@@ -393,34 +416,59 @@ const Offer = ({
         setYearlyLoading(true);
       } else {
         setInviteLoading(true);
-      }
+      } 
+      console.log("go to the result ===============================>>",supplyValue)
+      
       const result: any = await internalClient.post("/api/offer/buy", {
         receiver: wallet.publicKey?.toBase58(),
         symbol: offerDetail.symbol,
         type,
         supply: supplyValue,
+        profileInfo
       });
-      if (result.data.status) {
-        const connection = new Connection(
-          process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-          {
-            confirmTransactionInitialTimeout: 120000,
-          },
-        );
-        const env = new anchor.AnchorProvider(connection, wallet, {
-          preflightCommitment: "processed",
-        });
 
-        anchor.setProvider(env);
+      const info = result.data.signature.info;
+      let signature = result.data.signature.signature;
+      const receiver = wallet.publicKey.toBase58();
+      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let pricetype = offer?.pricetype;
+      let supply = supplyValue;
+      let price = 0;
 
-        const userConn: UserConn = new UserConn(env, web3Consts.programID);
-        const data: any = Buffer.from(result.data.transaction, "base64");
-        const tx = anchor.web3.VersionedTransaction.deserialize(data);
+      let paidtype;
+      if (type === "onetime") {
+        console.log("one time price from ");
+        paidtype === "onetime";
+        price = offer?.priceonetime;
+      } else if (type === "month") {
+        price = offer?.pricemonthly;
+        paidtype = "month";
+      } else {
+        price = offer?.priceyearly;
+        paidtype = "year";
+      }
 
-        const signature = await userConn.provider.sendAndConfirm(tx);
-        console.log("signature is ", signature);
+      console.log(offer, "offer =============>");
+      console.log(price, "price =============>");
+      console.log(pricetype, "priceType =============>");
+      console.log(supply, "supply =============>");
+      //type
+      //supply
+      // price
 
-        await delay(15000);
+      let storageRoyal = await internalClient.post("/api/update-royalty", {
+        sender: info.sender,
+        receivers: info.receivers,
+        coin: info.coin,
+      });
+      let insertRecipt = await internalClient.get(
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}&paidType=${paidtype}`,
+        {}
+      );
+
+      console.log(insertRecipt, "insertRecipt ===================>");
+      if (result.data.status === true) {
+        createMessage("Offer purchased successfully", "success-container");
       } else {
         createMessage(result.data.message, "danger-container");
       }
@@ -430,7 +478,6 @@ const Offer = ({
       setYearlyLoading(false);
       setInviteLoading(false);
     } catch (error) {
-      console.log("error ", error);
       createMessage("Something went wrong", "danger-container");
       setOneTimeLoading(false);
       setMonthlyLoading(false);
@@ -439,7 +486,76 @@ const Offer = ({
     }
   };
 
-  const showInvitation = () => { };
+  const renewsubscription = async () => {
+    console.log(subscription, "subscription Data =========================>>");
+
+    console.log("renewsubscription called =========================>>");
+    if (!wallet) {
+      createMessage("Wallet is not connected", "danger-container");
+      return;
+    }
+
+    try {
+      setOneTimeLoading(true);
+      let renewResult = await internalClient.get(
+        `/api/offer/renew-subscription?receiver=${wallet.publicKey.toBase58()}&usdcBalance=${profileInfo?.usdcBalance}`,
+        {}
+      );
+      console.log(renewResult, "renewResult =========================>>");
+
+      const info = renewResult.data.signature.info;
+      let signature = renewResult.data.signature.signature;
+      const receiver = wallet.publicKey.toBase58();
+      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let pricetype = offer?.pricetype;
+      let supply = supplyValue;
+      let price = 0;
+      let paidtype;
+
+      const startDate = subscription.start;
+      const endDate = subscription.end;
+      const start = moment(startDate);
+      const end = moment(endDate);
+
+      const daysDiff = end.diff(start, "days");
+
+      if (daysDiff >= 31) {
+        paidtype = "year";
+        price = offer?.priceyearly;
+      } else {
+        paidtype = "month";
+        price = offer?.pricemonthly;
+      }
+
+      let storageRoyal = await internalClient.post("/api/update-royalty", {
+        sender: info.sender,
+        receivers: info.receivers,
+        coin: info.coin,
+      });
+      let insertRecipt = await internalClient.get(
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}&paidType=${paidtype}`,
+        {}
+      );
+
+      console.log(
+        insertRecipt,
+        "insertRecipt from the renew result ===================>"
+      );
+      if (renewResult.data.status === true) {
+        createMessage("Subscription renewed successfully", "success-container");
+        setOneTimeLoading(false);
+      } else {
+        createMessage(renewResult.data.message, "danger-container");
+        setOneTimeLoading(false);
+      }
+    } catch (error) {
+      console.log("renewsubscription error =========================>>", error);
+      createMessage("Failed to renew subscription", "danger-container");
+      setOneTimeLoading(false);
+    }
+  };
+
+  const showInvitation = () => {};
 
   const closeDrawer = () => {
     if (drawerRef.current) {
@@ -1124,6 +1240,20 @@ const Offer = ({
                                   onClick={actionSubscribe}
                                 >
                                   Activate
+                                </button>
+                              )}
+                              {!oneTimeLoading &&
+                                subscription.status === "expired" && (
+                                  <button
+                                    className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none"
+                                    onClick={renewsubscription}
+                                  >
+                                    renew
+                                  </button>
+                                )}
+                              {oneTimeLoading && (
+                                <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white">
+                                  renewing...
                                 </button>
                               )}
                             </div>

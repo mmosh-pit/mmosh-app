@@ -7,6 +7,8 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as CommunityConn } from "@/anchor/community";
 import { web3Consts } from "@/anchor/web3Consts";
 import axios from "axios";
+import { init, uploadFile } from "@/app/lib/firebase";
+
 import { pinFileToShadowDriveBackend } from "@/app/lib/uploadFileToShdwDrive";
 
 export async function GET(req: NextRequest) {
@@ -16,11 +18,28 @@ export async function GET(req: NextRequest) {
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
   const tokenCollection = db.collection("mmosh-app-tokens");
   const usercollection = db.collection("mmosh-users");
+  const { searchParams } = new URL(req.url);
+  const receiver = searchParams.get("receiver");
+  const usdcBalance = searchParams.get("usdcBalance");
+
+
+  console.log("receiver ==========================>>> ", receiver);
+  console.log("usdcBalance ===================> ", usdcBalance); 
+
+
+  if(!receiver){   
+     return NextResponse.json(null, {
+      status: 200,
+    });
+  }
 
   const data = await collection.findOne({
-    end: { $lt: new Date() },
-    status: "active",
+    wallet: receiver,
+    status: "expired",
   });
+
+
+  console.log("subscription data ==========================>>> ", data);
 
   if (!data) {
     console.log("no new subscription available");
@@ -29,7 +48,8 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  let userData = await usercollection.findOne({ wallet: data.receiver });
+  console.log("userData ==========================>>> ", data.wallet);
+  let userData = await usercollection.findOne({ wallet: data.wallet });
   if (!userData) {
     console.log("User not found");
     return NextResponse.json(null, {
@@ -102,64 +122,66 @@ export async function GET(req: NextRequest) {
     if (coinData.status === "completed") {
       priceInUsd = await axios.get(
         process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-        `?ids=${coinData.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+          `?ids=${coinData.target.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
       );
     } else {
       let lastPriceResult = await axios.get(
         process.env.NEXT_PUBLIC_APP_MAIN_URL +
-        "/api/token/lastprice?key=" +
-        coinData.bonding,
+          "/api/token/lastprice?key=" +
+          coinData.bonding
+      );
+      console.log(
+        "last price result =================>> ",
+        lastPriceResult.data
       );
       const lookupUsdPrice = await axios.get(
         process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
-        `?ids=${coinData.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`,
+          `?ids=${coinData.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
       );
       console.log(
-        "lookup price ",
-        Number(
-          lookupUsdPrice.data?.data[
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ].price || 0.003,
-        ),
+        lookupUsdPrice.data,
+        "lookupUsdPrice.data =================>>"
       );
-      console.log("last price ", lastPriceResult.data.price);
-      priceInUsd =
-        lastPriceResult.data.price *
-        Number(
-          lookupUsdPrice.data?.data[
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-          ].price || 0.003,
-        );
-      console.log("price in usd ", priceInUsd);
+      const tokenInfo = lookupUsdPrice.data["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"];
+      const price = tokenInfo?.usdPrice ?? 0.003;
+      priceInUsd = lastPriceResult.data.price * price;
     }
 
     console.log("test 3 priceInUsd", priceInUsd);
 
     let price: any = 0;
     if (data.type === "month") {
+      console.log("offerData.pricemonthly", offerData.pricemonthly);
       price = offerData.pricemonthly;
     } else {
       price = offerData.priceyearly;
     }
 
     console.log("test 4");
+    console.log(price, "price before usd convertion");
+    console.log(priceInUsd, "priceInUsd  usd convertion");
+    price = price
+    console.log("price  ==========>", price);
+    // let tokenBalance = await projectConn.getStakeBalance(
+    //   new anchor.web3.PublicKey(projectData.coins[0].key),
+    // );
 
-    price = (Number(price) / priceInUsd).toFixed(2);
-
-    let tokenBalance = await projectConn.getStakeBalance(
-      new anchor.web3.PublicKey(projectData.coins[0].key),
-    );
+    let tokenBalance: any = usdcBalance;
+    console.log("tokenBalance ", tokenBalance, " price ", price);
 
     if (tokenBalance < price) {
       console.log("Insufficent fund");
-      return NextResponse.json(null, { status: 200 });
+        return NextResponse.json(
+        { status: false, message: "Insufficent fund" },
+        { status: 200 }
+      );
     }
-
-    const unstakeres = await projectConn.unStakeCoin({
-      stakeKey: new anchor.web3.PublicKey(data.receiver),
-      mint: new anchor.web3.PublicKey(projectData.coins[0].key),
-      amount: Math.ceil(price * 10 ** coinData?.target.decimals),
-    });
+ 
+    // const unstakeres = await projectConn.unStakeCoin({
+    //   stakeKey: new anchor.web3.PublicKey(data.receiver),
+    //   mint: new anchor.web3.PublicKey(projectData.coins[0].key),
+    //   amount: Math.ceil(price * 10 ** coinData?.target.decimals),
+    // });
 
     let offerBody = {
       name: offerData.name,
@@ -264,18 +286,30 @@ export async function GET(req: NextRequest) {
 
     console.log("offer body", offerBody);
 
-    const passMetaURI: any = await pinFileToShadowDriveBackend(
-      offerBody,
-      data.receiver,
+    init();
+    const offerFile = new File(
+      [JSON.stringify(offerBody)], // file content as string
+      `${receiver}.json`, // file name
+      { type: "application/json" } // MIME type
     );
+
+    const passMetaURI: string = await uploadFile(
+      offerFile,
+      receiver,
+      "offer-purchase"
+    );
+    console.log("passMetaURI  from the firebase", passMetaURI);
     if (passMetaURI == "") {
       console.log("error on creating meta uri");
-      return NextResponse.json(null, {
-        status: 200,
-      });
+      return NextResponse.json(
+        { status: false, message: "Error on creating meta uri" },
+        {
+          status: 200,
+        }
+      );
     }
 
-    let result = await projectConn.mintGuestPassTx(
+    let result = await projectConn.offerGuestPassTx(
       {
         name: offerData.name,
         symbol: offerData.symbol,
@@ -283,16 +317,36 @@ export async function GET(req: NextRequest) {
         genesisProfile: offerData.key,
         commonLut: offerData.lut,
       },
-      data.receiver,
-      wallet.publicKey.toBase58(),
-      price * 10 ** coinData.target.decimals * 1,
-      1,
+      receiver,
+      receiver,
+      price * 1,
+      1
     );
 
-    let transaction: VersionedTransaction = result.Ok?.info?.profile!;
-    const signature = await projectConn.provider.sendAndConfirm(transaction);
-    console.log("signature is ", signature);
-  } catch (error) { }
+
+    console.log("value from the oferGuestPassTx ", result);
+    if (result.Ok) {
+      return NextResponse.json(
+        {
+          status: true,
+          signature: result.Ok,
+        },
+        {
+          status: 200,
+        }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          status: false,
+          signature: "",
+        },
+        {
+          status: 200,
+        }
+      );
+    }
+  } catch (error) {}
 
   return NextResponse.json(data, {
     status: 200,

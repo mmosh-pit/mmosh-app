@@ -68,7 +68,6 @@ const Header = () => {
 
   const [isLoadingLogout, setIsLoadingLogout] = useState(false);
   const [badge, setBadge] = useState(0);
-  const [notifications, setNotifications] = useState([]);
 
   const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
@@ -85,7 +84,7 @@ const Header = () => {
 
   const [isModalOpen, setIsModalOpen] = useAtom(signInModal);
   const [initialModalStep, setInitialModalStep] = useAtom(
-    signInModalInitialStep
+    signInModalInitialStep,
   );
 
   const [community] = useAtom(currentGroupCommunity);
@@ -95,7 +94,7 @@ const Header = () => {
 
   const [pageViewCount, setPageViewCount] = React.useState(0);
   const [sessionId, setSessionId] = React.useState(
-    localStorage.getItem("analytics_session") || nanoid()
+    localStorage.getItem("analytics_session") || nanoid(),
   );
   const [isInitialized, setIsInitialized] = React.useState<boolean>(false);
   const [geo, setGeo] = React.useState({
@@ -252,7 +251,7 @@ const Header = () => {
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   React.useEffect(() => {
@@ -340,7 +339,7 @@ const Header = () => {
       );
       USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
     } catch (error) {
-      console.error('Error fetching MMOSH price:', error);
+      console.error("Error fetching MMOSH price:", error);
       USDCPrice = 0;
     }
 
@@ -434,7 +433,7 @@ const Header = () => {
           };
           if (value.group_definition && value.group_definition?.length > 0) {
             const collectionDefinition = value.grouping.find(
-              (e) => e.group_key === "collection"
+              (e) => e.group_key === "collection",
             );
 
             if (
@@ -464,7 +463,7 @@ const Header = () => {
       }
 
       const collectionDefinition = value.grouping.find(
-        (e) => e.group_key === "collection"
+        (e) => e.group_key === "collection",
       );
 
       if (
@@ -479,7 +478,7 @@ const Header = () => {
       ) {
         nft.parentKey = value.content.metadata.attributes?.find(
           (attr) =>
-            attr.trait_type === "Community" || attr.trait_type === "Project"
+            attr.trait_type === "Community" || attr.trait_type === "Project",
         )?.value;
 
         passes.push(nft);
@@ -513,7 +512,7 @@ const Header = () => {
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
         {
           confirmTransactionInitialTimeout: 120000,
-        }
+        },
       );
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",
@@ -568,7 +567,7 @@ const Header = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     setMembershipStatus(membershipInfo.data);
   };
@@ -615,7 +614,7 @@ const Header = () => {
         headers: {
           authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
-      }
+      },
     );
   };
 
@@ -712,9 +711,8 @@ const Header = () => {
             <div className={`flex items-center justify-end w-[100%]`}>
               {!!currentUser?.profile?.image && isUserAuthenticated && (
                 <div
-                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${
-                    isDrawerShown ? "z-[-1]" : ""
-                  } cursor-pointer`}
+                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                    } cursor-pointer`}
                   onClick={() => {
                     router.push(`/${currentUser?.profile.username}`);
                   }}
@@ -732,9 +730,8 @@ const Header = () => {
                 !currentUser?.profile?.image &&
                 isUserAuthenticated && (
                   <div
-                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${
-                      isDrawerShown ? "z-[-1]" : ""
-                    } cursor-pointer`}
+                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                      } cursor-pointer`}
                     onClick={() => {
                       if (
                         !!currentUser?.guest_data.username &&
@@ -824,14 +821,12 @@ const Header = () => {
 
         {pathname.includes("/communities/") && community !== null && (
           <div
-            className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${
-              isDrawerShown ? "z-[-1]" : "z-0"
-            }`}
+            className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"
+              }`}
           >
             <div
-              className={`flex flex-col justify-center items-center ${
-                isDrawerShown && "z-[-1]"
-              } py-20`}
+              className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"
+                } py-20`}
             >
               <h2 className="text-center">{community.name}</h2>
 

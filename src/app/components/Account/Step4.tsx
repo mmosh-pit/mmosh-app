@@ -112,7 +112,10 @@ const Step4 = () => {
     }
   }, [onboarding, user]);
 
-  const getFileFromObjectURL = async (objectURL: any, filename = "downloaded-file") => {
+  const getFileFromObjectURL = async (
+    objectURL: any,
+    filename = "downloaded-file",
+  ) => {
     try {
       const response = await fetch(objectURL);
       const blob = await response.blob();
@@ -122,7 +125,7 @@ const Step4 = () => {
     } catch (error) {
       setImage(null);
     }
-  }
+  };
 
   const lookupReferer = async (username: string) => {
     if (!username) return;
@@ -186,7 +189,6 @@ const Step4 = () => {
       createMessage("Invalid activation token", "error");
       return false;
     }
-
 
     if (profileInfo.solBalance < 0.04) {
       createMessage(
@@ -355,6 +357,20 @@ const Step4 = () => {
         picture: imageResult,
       });
       setPreview(imageResult);
+      setCurrentUser((prev) => ({
+        ...prev!,
+        guest_data: {
+          picture: imageResult,
+          banner: bannerResult,
+          bio: form.description,
+          displayName: form.displayName,
+          lastName: form.lastName,
+          name: form.name,
+          pronouns: "",
+          username: form.username,
+          website: form.link,
+        },
+      }));
 
       createMessage("Your guest data has been successfully saved!", "success");
 
@@ -379,9 +395,7 @@ const Step4 = () => {
       process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
       "confirmed",
     );
-    const address = new PublicKey(
-      wallet!.publicKey,
-    );
+    const address = new PublicKey(wallet!.publicKey);
     const solBalance = await connection.getBalance(address);
 
     const usdcMint = new PublicKey(process.env.NEXT_PUBLIC_USDC_TOKEN!); //new
@@ -442,54 +456,58 @@ const Step4 = () => {
   const [hasMonthly, setHasMonthly] = React.useState<boolean>(true);
   const [tab, setTab] = React.useState("guest");
 
-  const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
-    if (!wallet || !profileInfo || !validateFields()) {
-      return;
-    }
-    createMessage("", "");
-    setIsLoading(true);
-
-    let parentProfile;
-    if (referer == "") {
-      const res = await axios.get(`/api/get-user-data?username=${form.host}`);
-      console.log("lookupHost ", res.data);
-      if (res.data) {
-        parentProfile = res.data.wallet;
-      } else {
-        createMessage("Host is invalid", "error");
+  const mintMembership = React.useCallback(
+    async (membership: any, membershipType: any, price: any) => {
+      if (!wallet || !profileInfo || !validateFields()) {
         return;
       }
-    } else {
-      parentProfile = referer;
-    }
+      createMessage("", "");
+      setIsLoading(true);
 
-    const result = await createProfile({
-      wallet,
-      profileInfo,
-      image,
-      form,
-      preview,
-      parentProfile: new PublicKey(referer),
-      banner: "",
-      membership,
-      membershipType,
-      price
-    });
-    console.log("----- BUY MEMBERSHIP RESULT -----", result);
+      let parentProfile;
+      if (referer == "") {
+        const res = await axios.get(`/api/get-user-data?username=${form.host}`);
+        console.log("lookupHost ", res.data);
+        if (res.data) {
+          parentProfile = res.data.wallet;
+        } else {
+          createMessage("Host is invalid", "error");
+          return;
+        }
+      } else {
+        parentProfile = referer;
+      }
 
-    createMessage(result.message, result.type);
-
-    if (result.type === "success") {
-      setCurrentUser((prev) => {
-        return { ...prev!, profile: result.data };
+      const result = await createProfile({
+        wallet,
+        profileInfo,
+        image,
+        form,
+        preview,
+        parentProfile: new PublicKey(referer),
+        banner: "",
+        membership,
+        membershipType,
+        price,
       });
+      console.log("----- BUY MEMBERSHIP RESULT -----", result);
 
-      setTimeout(() => {
-        router.replace(`/bots`);
-      }, 5000);
-    }
-    setIsLoading(false);
-  }, [wallet, profileInfo, image, form]);
+      createMessage(result.message, result.type);
+
+      if (result.type === "success") {
+        console.log("Setting up user! ", result.data);
+        setCurrentUser((prev) => {
+          return { ...prev!, profile: result.data };
+        });
+
+        setTimeout(() => {
+          router.replace(`/bots`);
+        }, 5000);
+      }
+      setIsLoading(false);
+    },
+    [wallet, profileInfo, image, form],
+  );
 
   return (
     <div className="w-full flex justify-center">
@@ -502,12 +520,17 @@ const Step4 = () => {
                 Create your Profile <br />
               </h4>
               <p className="text-base max-w-5xl mx-auto light-gray-color">
-                You can mint a Membership Profile, which allows you to create your own Personal and Community Bots, connect with other members,
-                earn royalties and receive referral rewards. You can also generate income from the goods and services you offer to other members.
+                You can mint a Membership Profile, which allows you to create
+                your own Personal and Community Bots, connect with other
+                members, earn royalties and receive referral rewards. You can
+                also generate income from the goods and services you offer to
+                other members.
               </p>
               <p className="text-base max-w-3xl mx-auto light-gray-color mt-2.5">
-                For a limited time only, receive a lifetime membership for 8 USDC and about 21 cents in SOL
-                network fees. If you’re not ready to join, you can save a Guest Profile and mint your membership later.
+                For a limited time only, receive a lifetime membership for 8
+                USDC and about 21 cents in SOL network fees. If you’re not ready
+                to join, you can save a Guest Profile and mint your membership
+                later.
               </p>
               <div
                 className="absolute left-0 top-0 cursor-pointer"
@@ -523,43 +546,62 @@ const Step4 = () => {
             <div className="flex flex-col items-center text-white font-sans text-sm leading-[1.875rem] pt-6">
               <div className="bg-gradient-to-r from-[#e93d87] via-[#a06cd5] to-[#512d6d] p-[1px] rounded-full inline-block mb-6">
                 <ul className="flex bg-[#1b1937] rounded-full py-1 px-1 space-x-2">
-                  <li className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`} onClick={() => setTab("guest")}>
+                  <li
+                    className={`px-7 py-2 rounded-full text-sm font-extrabold ${tab === "guest" && "bg-gradient-to-r from-[#d660a1] to-[#6356d5]"} text-white text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] shadow cursor-pointer`}
+                    onClick={() => setTab("guest")}
+                  >
                     Guest
                   </li>
-                  <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("enjoyer")}>
+                  <li
+                    className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "enjoyer" && "bg-gradient-to-r from-[#d660a1] to-[#6356d5]"}`}
+                    onClick={() => setTab("enjoyer")}
+                  >
                     Enjoyer
                   </li>
-                  <li className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "creator" && 'bg-gradient-to-r from-[#d660a1] to-[#6356d5]'}`} onClick={() => setTab("creator")}>
+                  <li
+                    className={`px-7 py-2 rounded-full text-sm font-medium text-white/70 hover:text-white hover:bg-gradient-to-r hover:from-[#d660a1] hover:to-[#6356d5] transition cursor-pointer  ${tab === "creator" && "bg-gradient-to-r from-[#d660a1] to-[#6356d5]"}`}
+                    onClick={() => setTab("creator")}
+                  >
                     Creator
                   </li>
                 </ul>
               </div>
-              {tab === "guest" &&
+              {tab === "guest" && (
                 <>
                   <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
                       <div>Can only interact with Public Bots</div>
                     </div>
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
-                      <div>No access to Bot Studio, Offers or Bot Subscriptions</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
+                      <div>
+                        No access to Bot Studio, Offers or Bot Subscriptions
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center mb-0 space-x-4">
                     <span className="font-bold text-2xl">Free</span>
                   </div>
                 </>
-              }
-              {tab === "enjoyer" &&
+              )}
+              {tab === "enjoyer" && (
                 <>
                   <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
                       <div>Revenue Distribution</div>
                     </div>
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
                       <div>Up to 3 Personal Bots</div>
                     </div>
                   </div>
@@ -578,20 +620,26 @@ const Step4 = () => {
                     />
                   </div>
                 </>
-              }
-              {tab === "creator" &&
+              )}
+              {tab === "creator" && (
                 <>
                   <div className="flex flex-col text-[#e2d7ff] mb-2 space-y-1">
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
                       <div>Revenue Distribution</div>
                     </div>
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
                       <div>Up to 3 Personal Bots</div>
                     </div>
                     <div className="flex items-start">
-                      <div className="text-[#b59be4] font-extrabold mr-2">•</div>
+                      <div className="text-[#b59be4] font-extrabold mr-2">
+                        •
+                      </div>
                       <div>Up to 3 Community Bots</div>
                     </div>
                   </div>
@@ -610,7 +658,7 @@ const Step4 = () => {
                     />
                   </div>
                 </>
-              }
+              )}
             </div>
             <div className="w-full h-full flex flex-col p-5">
               <div className="mb-4">
@@ -761,7 +809,7 @@ const Step4 = () => {
                 )}
 
                 <div className="flex flex-col justify-center items-center w-[25%]">
-                  {tab === "guest" &&
+                  {tab === "guest" && (
                     <Button
                       isLoading={isLoading}
                       isPrimary
@@ -770,36 +818,52 @@ const Step4 = () => {
                       disabled={isLoading}
                       action={saveUserData}
                     />
-                  }
-                  {tab === "enjoyer" &&
+                  )}
+                  {tab === "enjoyer" && (
                     <Button
                       isLoading={isLoading}
                       isPrimary
                       title={`Mint Your Enjoyer Membership`}
                       size="large"
                       disabled={isLoading}
-                      action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
+                      action={() =>
+                        mintMembership(
+                          tab,
+                          hasMonthly ? "monthly" : "yearly",
+                          hasMonthly ? 15 : 90,
+                        )
+                      }
                     />
-                  }
-                  {tab === "creator" &&
+                  )}
+                  {tab === "creator" && (
                     <Button
                       isLoading={isLoading}
                       isPrimary
                       title={`Mint Your Creator Membership`}
                       size="large"
                       disabled={isLoading}
-                      action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
+                      action={() =>
+                        mintMembership(
+                          tab,
+                          hasMonthly ? "monthly" : "yearly",
+                          hasMonthly ? 24 : 180,
+                        )
+                      }
                     />
-                  }
-                  {tab !== "guest" &&
+                  )}
+                  {tab !== "guest" && (
                     <>
                       <div className="flex flex-col justify-center items-center mt-3">
-                        {hasMonthly &&
-                          <p className="text-sm text-white">Price: {tab === "enjoyer" ? 15 : 24} USDC</p>
-                        }
-                        {!hasMonthly &&
-                          <p className="text-sm text-white">Price: {tab === "enjoyer" ? 90 : 180} USDC</p>
-                        }
+                        {hasMonthly && (
+                          <p className="text-sm text-white">
+                            Price: {tab === "enjoyer" ? 15 : 24} USDC
+                          </p>
+                        )}
+                        {!hasMonthly && (
+                          <p className="text-sm text-white">
+                            Price: {tab === "enjoyer" ? 90 : 180} USDC
+                          </p>
+                        )}
                         <p className="text-tiny text-white">
                           plus a small amount of SOL for gas fees
                         </p>
@@ -826,7 +890,7 @@ const Step4 = () => {
                         </div>
                       </div>
                     </>
-                  }
+                  )}
                 </div>
               </div>
 

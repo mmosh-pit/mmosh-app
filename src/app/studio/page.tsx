@@ -73,15 +73,22 @@ export default function ProjectCreate() {
     }
   }, [selectedProjectType]);
 
+  // Sync selectedOption with the first option dynamically
+  useEffect(() => {
+    console.log(options, "options in the useEffect");
+    if (options.length > 0) {
+      console.log(options[0].value, "options[0].value in the useEffect");
+      setSelectedOption(options[0].value);
+    }
+  }, [options]);
+
   const checkAccountType = async () => {
     const token = localStorage.getItem("token") || "";
     let response = await axios.get(
       `/api/is-admin?wallet=${wallet.publicKey.toBase58()}`,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
     setIsAdmin(response.data.result);
   };
@@ -89,10 +96,21 @@ export default function ProjectCreate() {
   const getProjectDetailFromAPI = async (symbol: any) => {
     try {
       const projectName = projectType.find(
-        (val) => val.value === symbol,
+        (val) => val.value === symbol
       )?.label;
+      console.log(projectName, "projectName from the projectType array");
+
       let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
-      if (listResult.data.project.creator == wallet.publicKey.toBase58()) {
+      console.log(
+        listResult.data.project.creator,
+        "listResult from the api list call in getProjectDetailFromAPI"
+      );
+      console.log(
+        wallet.publicKey.toBase58(),
+        "wallet.publicKey.toBase58() in getProjectDetailFromAPI"
+      );
+
+      if (listResult.data.project.creator === wallet.publicKey.toBase58()) {
         setOptions([
           { label: `Empower ${projectName}`, value: "Tools" },
           { label: `Update ${projectName} Genesis Pass`, value: "Update" },
@@ -290,7 +308,7 @@ export default function ProjectCreate() {
                           value: "Instruct",
                         },
                       ]);
-                      setSelectedOption("Tools");
+
                     } else {
                       setOptions([
                         {
@@ -298,7 +316,7 @@ export default function ProjectCreate() {
                           value: "Tokenize Agent",
                         },
                       ]);
-                      setSelectedOption("Tokenize Agent");
+
                     }
                     setSelectedProjectType(e.target.value);
                   }}

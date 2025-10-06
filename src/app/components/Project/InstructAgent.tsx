@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useAtom } from "jotai";
 
 import EditIcon from "@/assets/icons/EditIcon";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
@@ -10,6 +11,7 @@ import Input from "../common/Input";
 import Button from "../common/Button";
 import Select from "../common/Select";
 import internalClient from "@/app/lib/internalHttpClient";
+import { selectedChatStore } from "@/app/store/chat";
 
 interface CheckpointAttribute {
   id: string;
@@ -30,6 +32,7 @@ interface Checkpoint {
 }
 
 const InstructAgent = ({ symbol }: { symbol: string }) => {
+  const [selectedChat] = useAtom(selectedChatStore);
   const [isLoading, setIsLoading] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<"instruct" | "checkpoints">("instruct");
 
@@ -516,6 +519,8 @@ const InstructAgent = ({ symbol }: { symbol: string }) => {
   };
 
   const saveCheckpoint = async () => {
+    if (!projectDetail?.project?.key) return;
+    
     try {
       setIsLoading(true);
       
@@ -531,7 +536,7 @@ const InstructAgent = ({ symbol }: { symbol: string }) => {
       const response = await internalClient.post('/api/project/checkpoints', {
         project: projectDetail.project.key,
         checkpoint: checkpointData,
-        bot_id: projectDetail.project.key
+        bot_id: projectDetail.project.key  // Use project key as bot_id
       });
 
       if (response.data.success) {
@@ -548,6 +553,8 @@ const InstructAgent = ({ symbol }: { symbol: string }) => {
   };
 
   const deleteCheckpoint = async (id: string) => {
+    if (!projectDetail?.project?.key) return;
+    
     try {
       setIsLoading(true);
       
@@ -566,6 +573,8 @@ const InstructAgent = ({ symbol }: { symbol: string }) => {
   };
 
   const updateCheckpoint = async (id: string) => {
+    if (!projectDetail?.project?.key) return;
+    
     try {
       setIsLoading(true);
       
@@ -582,7 +591,7 @@ const InstructAgent = ({ symbol }: { symbol: string }) => {
         id,
         project: projectDetail.project.key,
         checkpoint: checkpointData,
-        bot_id: projectDetail.project.key
+        bot_id: projectDetail.project.key  // Use project key as bot_id
       });
 
       if (response.data.success) {

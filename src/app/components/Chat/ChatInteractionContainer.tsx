@@ -78,7 +78,7 @@ const ChatInteractionContainer = () => {
 
   const formatChatHistory = (messages: Message[]) => {
     // Get the last N messages (excluding the current loading message)
-    const historyLimit = 20; // Adjust this number based on your needs
+    const historyLimit = 10; // Adjust this number based on your needs
     const relevantMessages = messages
       .filter((msg) => !msg.is_loading) // Exclude loading messages
       .slice(-historyLimit) // Get last N messages
@@ -141,7 +141,8 @@ const ChatInteractionContainer = () => {
           query: content,
           instructions: selectedChat!.chatAgent!.system_prompt,
           chatHistory: chatHistory,
-          agentId: selectedChat.chatAgent!.id
+          agentId: selectedChat.chatAgent!.id,
+          bot_id: selectedChat.chatAgent!.key,
         };
 
         console.log("Message data being sent:", queryData);

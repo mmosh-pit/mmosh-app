@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   const collection = db.collection("mmosh-app-staked-history");
   const userCollection = db.collection("mmosh-users");
-  const { stakedAmount, userAddeess, purchaseId, referrerName } =
-    await req.json();
+  const { stakedAmount, userAddeess, purchaseId } = await req.json();
+  const username = getUserName(userAddeess);
   const { origin } = new URL(req.url);
   if (!stakedAmount || !userAddeess || !purchaseId) {
     return NextResponse.json(
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     transactionType: "membership_royalty",
     membershipRoyalty: {
       royalty: royalty,
-      referrerName: referrerName,
+      referrerName: username,
       isStaked: true,
       isUnlocked: false,
       purchaseId: purchaseId,
@@ -116,3 +116,13 @@ export async function POST(req: NextRequest) {
     { status: 200 }
   );
 }
+
+const getUserName = async (wallet: string) => {
+  const usersCollection = db.collection("mmosh-users");
+  let username = "unknown user";
+  const parentDetails = await usersCollection.findOne({ wallet: wallet });
+  if (parentDetails !== null) {
+    username = parentDetails.guest_data.username || parentDetails.name;
+  }
+  return username;
+};

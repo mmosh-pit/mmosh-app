@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
 
     const checkpoints = await db.collection("checkpoints")
       .find({
-        user_id: userId,
         bot_id: botId
       })
       .sort({ execution_order: 1, created_at: 1 })
@@ -127,7 +126,7 @@ export async function POST(request: NextRequest) {
     // Get the next execution order
     const lastCheckpoint = await db.collection("checkpoints")
       .findOne(
-        { user_id: userId, bot_id },
+        { bot_id },
         { sort: { execution_order: -1 } }
       );
 
@@ -135,7 +134,6 @@ export async function POST(request: NextRequest) {
 
     const checkpointDoc = {
       _id: new ObjectId(),
-      user_id: userId,
       bot_id,
       checkpoint_name: checkpoint.name,
       tag: checkpoint.tag,
@@ -238,7 +236,6 @@ export async function PUT(request: NextRequest) {
     const result = await db.collection("checkpoints").updateOne(
       { 
         _id: new ObjectId(id), 
-        user_id: userId,
         bot_id 
       },
       { $set: updateDoc }
@@ -303,7 +300,6 @@ export async function DELETE(request: NextRequest) {
 
     const result = await db.collection("checkpoints").deleteOne({
       _id: new ObjectId(id),
-      user_id: userId,
       bot_id: botId
     });
 

@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-staked-history");
   const userCollection = db.collection("mmosh-users");
   const { stakedAmount, userAddeess, purchaseId } = await req.json();
-  const username = getUserName(userAddeess);
+  const username = await getUserName(userAddeess);
   const { origin } = new URL(req.url);
   if (!stakedAmount || !userAddeess || !purchaseId) {
     return NextResponse.json(

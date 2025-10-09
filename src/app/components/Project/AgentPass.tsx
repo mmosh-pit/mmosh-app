@@ -22,6 +22,9 @@ import client from "@/app/lib/httpClient";
 import internalClient from "@/app/lib/internalHttpClient";
 import { randomStr } from "@metaplex-foundation/js";
 import WarningModal from "../common/WarningModal";
+import { uploadFile } from "@/app/lib/firebase";
+import { profile } from "console";
+
 
 const explanations: any = {
   private: "Only the Creator can view and interact with it.",
@@ -218,7 +221,10 @@ const AgentPass = ({
       return false;
     }
 
+
+    
     if (fields.image.preview.length == 0) {
+      console.log(fields.image,"image ==========================================>>")
       if (isMessage) {
         createMessage("Project pass Image is required", "danger-container");
       }
@@ -271,7 +277,9 @@ const AgentPass = ({
               (blobFile) =>
                 new File([blobFile], uuidv4(), { type: fields.image.type }),
             );
-          let imageUri = await pinImageToShadowDrive(imageFile);
+          // let imageUri = await pinImageToShadowDrive(imageFile);
+           const date = new Date().getMilliseconds();
+          const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
           fields.image.preview = imageUri;
         }
         localStorage.setItem("projectstep1", JSON.stringify(fields));
@@ -291,83 +299,25 @@ const AgentPass = ({
       );
 
       try {
-        setButtonText("Uploading pass metadata...");
-        let projectBody = {
-          name: fields.name,
-          symbol: fields.symbol,
-          description: fields.desc,
-          image: fields.image.preview,
-          enternal_url: "https://kinshipbots.com",
-          family: "MMOSH",
-          collection: "MMOSH Pass Collection",
-          attributes: [
-            {
-              trait_type: "Primitive",
-              value: "Pass",
-            },
-            {
-              trait_type: "Ecosystem",
-              value: " MMOSH",
-            },
-            {
-              trait_type: "Project",
-              value: symbol
-                ? projectDetail.project.key
-                : projectKeyPair.publicKey.toBase58(),
-            },
-            {
-              trait_type: "Founder",
-              value: "Moto",
-            },
-          ],
-        };
-
-        if (fields.website.length > 0) {
-          projectBody.attributes.push({
-            trait_type: "Website",
-            value: fields.website,
-          });
-        }
-
-        if (fields.telegram.length > 0) {
-          projectBody.attributes.push({
-            trait_type: "Telegram",
-            value: fields.telegram,
-          });
-        }
-
-        if (fields.twitter.length > 0) {
-          projectBody.attributes.push({
-            trait_type: "Bluesky",
-            value: fields.twitter,
-          });
-        }
-
-        const projectMetaURI: any = await pinFileToShadowDriveUrl(projectBody);
-        if (projectMetaURI === "") {
-          createMessage(
-            "We’re sorry, there was an error while trying to prepare meta url. please try again later.",
-            "danger-container",
-          );
-          return;
-        }
 
         if (symbol) {
-          let res = await communityConnection.updateToken({
-            mint: new anchor.web3.PublicKey(projectDetail.project.key),
-            authority: wallet.publicKey,
-            payer: wallet.publicKey,
-            name: fields.name,
-            symbol: fields.symbol,
-            uri: projectMetaURI,
-          });
-          console.log("update result", res);
-
           setButtonText("Updating pass... ");
+          let imageFile = await fetch(fields.image.preview)
+            .then((r) => r.blob())
+            .then(
+              (blobFile) =>
+                new File([blobFile], uuidv4(), { type: fields.image.type }),
+            );
+          // let imageUri = await pinImageToShadowDrive(imageFile);
+           const date = new Date().getMilliseconds();
+          const imageUri = await uploadFile(imageFile, `${fields.name}-banner-${date}`, "user-images");
+          fields.image.preview = imageUri;
+          console.log("image uri ===>", fields.image.preview);
           await internalClient.put("/api/project/update-project", {
             key: projectDetail.project.key,
             name: fields.name,
             symbol: fields.symbol.toUpperCase(),
+            image: fields.image.preview,
             desc: fields.desc,
             telegram: fields.telegram,
             twitter: fields.twitter,
@@ -379,50 +329,6 @@ const AgentPass = ({
           setLoading(false);
           return;
         }
-
-        const profileMintingCost = new anchor.BN(
-          calcNonDecimalValue(Number(fields.passPrice), 9),
-        );
-        const invitationMintingCost = new anchor.BN(
-          calcNonDecimalValue(fields.invitationPrice, 9),
-        );
-        setButtonText("Minting Pass...");
-        const res1: any = await communityConnection.mintGenesisPass({
-          name: fields.name,
-          symbol: fields.symbol,
-          uri: projectMetaURI,
-          mintKp: projectKeyPair,
-          input: {
-            oposToken: web3Consts.oposToken,
-            profileMintingCost,
-            invitationMintingCost,
-            mintingCostDistribution: {
-              parent: 100 * fields.priceDistribution.curator,
-              grandParent: 100 * fields.priceDistribution.creator,
-              greatGrandParent: 100 * fields.priceDistribution.promoter,
-              ggreatGrandParent: 100 * fields.priceDistribution.scout,
-              genesis: 100 * fields.priceDistribution.echosystem,
-            },
-            tradingPriceDistribution: {
-              seller: 100 * fields.priceDistribution.curator,
-              parent: 100 * fields.priceDistribution.creator,
-              grandParent: 100 * fields.priceDistribution.promoter,
-              greatGrandParent: 100 * fields.priceDistribution.scout,
-              genesis: 100 * fields.priceDistribution.echosystem,
-            },
-          },
-        });
-
-        const genesisProfileStr = res1.Ok.info.profile;
-        console.log("genesisProfileStr ", genesisProfileStr);
-
-        setButtonText("Waiting for Confirmation...");
-        await delay(15000);
-        communityConnection.setMainState();
-
-        setButtonText("Creating LUT Registration...");
-        const res4: any = await communityConnection.registerCommonLut();
-        console.log("register lookup result ", res4);
 
         setButtonText("Buying new Pass...");
         console.log("Profile info: ", profileInfo);
@@ -443,9 +349,7 @@ const AgentPass = ({
           symbol: fields.symbol.toUpperCase(),
           desc: fields.desc,
           image: fields.image.preview,
-          inviteimage: "",
           key: projectKeyPair.publicKey.toBase58(),
-          lut: res4.Ok.info.lookupTable,
           seniority: 0,
           price: fields.passPrice,
           distribution: fields.priceDistribution,
@@ -505,7 +409,7 @@ const AgentPass = ({
             <ImagePicker
               changeImage={setImage}
               image={fields.image.preview}
-              readonly={symbol ? true : false}
+              // readonly={symbol ? true : false}
             />
           </div>
           <div className="xl:col-span-3">

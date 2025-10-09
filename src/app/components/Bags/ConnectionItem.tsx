@@ -72,24 +72,7 @@ const ConnectionItem = ({
     if (!currentuser) {
       return;
     }
-    console.log("testing 3");
-    let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-    let connection = new Connection(rpcUrl, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
-    console.log("connection badge", badge);
-
-    let result = await userConn.burnToken(new anchor.web3.PublicKey(badge));
-    console.log(result);
-    if (result.Err) {
-      setReqestLoader(false);
-      return;
-    }
     await internalClient.post("/api/connections/send", {
       sender: user.sender[0].wallet,
       receiver: currentuser.wallet,
@@ -107,23 +90,6 @@ const ConnectionItem = ({
 
   const processUnFollow = async () => {
     if (!currentuser) {
-      return;
-    }
-    let rpcUrl: any = process.env.NEXT_PUBLIC_SOLANA_CLUSTER;
-    let connection = new Connection(rpcUrl, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet!, {
-      preflightCommitment: "processed",
-    });
-    let userConn: UserConn = new UserConn(env, web3Consts.programID);
-
-    console.log("connection badge", badge);
-
-    let result = await userConn.burnToken(new anchor.web3.PublicKey(badge));
-    console.log(result);
-    if (result.Err) {
-      setReqestLoader(false);
       return;
     }
     await internalClient.post("/api/connections/send", {

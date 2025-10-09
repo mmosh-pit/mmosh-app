@@ -37,7 +37,8 @@ const Offer = ({
   const [usdcPrice, setUsdcPrice] = useState(0);
   const [tokenBalance, setTokenBlance] = useState(0);
   const [stakeBalance, setStakeBlance] = useState(0);
-  const wallet = useWallet();
+  const [saveOfferDetails, setsaveOfferDetails] = useState<any>(null);
+  const wallet: any = useWallet();
 
   const [showMsg, setShowMsg] = useState(false);
   const [msgClass, setMsgClass] = useState("");
@@ -100,7 +101,10 @@ const Offer = ({
       let url =
         "/api/offer/receipts?page=" + page + "&&offer=" + offerDetail.key;
       let apiResult = await axios.get(url);
-
+      console.log(
+        apiResult,
+        "listHistoryApi from the api ==================>>"
+      );
       let newHistories: any = page == 1 ? [] : histories;
 
       for (let index = 0; index < apiResult.data.length; index++) {
@@ -148,7 +152,7 @@ const Offer = ({
   const getCoinDetail = async () => {
     try {
       const result = await axios.get<CoinDetail>(
-        `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`,
+        `/api/get-token-by-symbol?symbol=${projectDetail.coins[0].symbol}`
       );
       setCoin(result.data);
       getTokenPrice(result.data);
@@ -173,6 +177,11 @@ const getTokenPrice = async (coin: CoinDetail) => {
         // let lastPriceResult = await axios.get(
         //   "/api/token/lastprice?key=" + coin?.bonding,
         // );
+        setsaveOfferDetails(lastPriceResult.data);
+        console.log(
+          lastPriceResult.data,
+          "lastPriceResult data =====================>"
+        );
         console.log(
           lastPriceResult.data.priceonetime,
           "lastPriceResult data =====================>"
@@ -181,18 +190,28 @@ const getTokenPrice = async (coin: CoinDetail) => {
           process.env.NEXT_PUBLIC_JUPITER_PRICE_API +
             `?ids=${coin!.base.token},EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`
         );
- 
+
         console.log(
-          lookupUsdPrice,
-          "lookupUsdPrice from the jupiter api  =====================>"
+          lookupUsdPrice.data,
+          "lookupUsdPrice data =====================>"
         );
-        priceInUsd =
-          lastPriceResult.data.priceonetime *
-          Number(
-            lookupUsdPrice.data?.data?.[
-              "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            ]?.usdPrice || 0.003
-          );
+        if (offerDetail.pricetype === "onetime") {
+          priceInUsd =
+            lastPriceResult.data.priceonetime *
+            Number(
+              lookupUsdPrice.data?.[
+                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              ]?.usdPrice || 0.003
+            );
+        } else {
+          priceInUsd =
+            lastPriceResult.data.pricemonthly *
+            Number(
+              lookupUsdPrice.data?.[
+                "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+              ]?.usdPrice || 0.003
+            );
+        }
       }
       console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
@@ -246,10 +265,10 @@ const getTokenPrice = async (coin: CoinDetail) => {
       const projectConn: CommunityConn = new CommunityConn(
         env,
         web3Consts.programID,
-        new anchor.web3.PublicKey(projectDetail.coins[0].key),
+        new anchor.web3.PublicKey(projectDetail.coins[0].key)
       );
       let balance = await projectConn.getStakeBalance(
-        new anchor.web3.PublicKey(projectDetail.coins[0].key),
+        new anchor.web3.PublicKey(projectDetail.coins[0].key)
       );
       setStakeBlance(balance);
     } catch (error) {
@@ -275,11 +294,11 @@ const getTokenPrice = async (coin: CoinDetail) => {
       const projectConn: CommunityConn = new CommunityConn(
         env,
         web3Consts.programID,
-        new anchor.web3.PublicKey(offerDetail.key),
+        new anchor.web3.PublicKey(offerDetail.key)
       );
       let isAvailable = await projectConn.isCreatorInvitation(
         new anchor.web3.PublicKey(offerDetail.badge),
-        wallet.publicKey.toBase58(),
+        wallet.publicKey.toBase58()
       );
       setHasInvitation(isAvailable);
     } catch (error) {
@@ -302,7 +321,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
     let projectConn: CommunityConn = new CommunityConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(offerDetail.key),
+      new anchor.web3.PublicKey(offerDetail.key)
     );
     let projectInfo = await projectConn.getProjectUserInfo(offerDetail.key);
     if (projectInfo.profiles.length > 0) {
@@ -318,7 +337,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
   const getProjectDetailFromAPI = async () => {
     try {
       let listResult = await axios.get(
-        `/api/project/detail?symbol=${params.symbol}`,
+        `/api/project/detail?symbol=${params.symbol}`
       );
       console.log(listResult.data,"getProjectDetailFromAPI =================================>>>")
       setProjectDetail(listResult.data);
@@ -332,7 +351,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
   const getOfferDetailFromAPI = async () => {
     try {
       let listResult = await axios.get(
-        `/api/offer/detail?symbol=${params.offersymbol}`,
+        `/api/offer/detail?symbol=${params.offersymbol}`
       );
 
       setOfferDetail(listResult.data);
@@ -351,9 +370,9 @@ const getTokenPrice = async (coin: CoinDetail) => {
       }
       let subscriptionResult = await axios.get(
         "/api/offer/subscriptions?wallet=" +
-        wallet?.publicKey.toBase58() +
-        "&&offer=" +
-        offerDetail.key,
+          wallet?.publicKey.toBase58() +
+          "&&offer=" +
+          offerDetail.key
       );
       setSubscription(subscriptionResult.data);
     } catch (error) {
@@ -409,7 +428,46 @@ const getTokenPrice = async (coin: CoinDetail) => {
         profileInfo
       });
 
-      console.log(result,"result from the offer buy===============================>>")
+      const info = result.data.signature.info;
+      let signature = result.data.signature.signature;
+      const receiver = wallet.publicKey.toBase58();
+      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let pricetype = offer?.pricetype;
+      let supply = supplyValue;
+      let price = 0;
+
+      let paidtype;
+      if (type === "onetime") {
+        console.log("one time price from ");
+        paidtype === "onetime";
+        price = offer?.priceonetime;
+      } else if (type === "month") {
+        price = offer?.pricemonthly;
+        paidtype = "month";
+      } else {
+        price = offer?.priceyearly;
+        paidtype = "year";
+      }
+
+      console.log(offer, "offer =============>");
+      console.log(price, "price =============>");
+      console.log(pricetype, "priceType =============>");
+      console.log(supply, "supply =============>");
+      //type
+      //supply
+      // price
+
+      let storageRoyal = await internalClient.post("/api/update-royalty", {
+        sender: info.sender,
+        receivers: info.receivers,
+        coin: info.coin,
+      });
+      let insertRecipt = await internalClient.get(
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}&paidType=${paidtype}`,
+        {}
+      );
+
+      console.log(insertRecipt, "insertRecipt ===================>");
       if (result.data.status === true) {
         const historyParams = {
           transactionType: "offer_purchase",
@@ -440,7 +498,76 @@ const getTokenPrice = async (coin: CoinDetail) => {
     }
   };
 
-  const showInvitation = () => { };
+  const renewsubscription = async () => {
+    console.log(subscription, "subscription Data =========================>>");
+
+    console.log("renewsubscription called =========================>>");
+    if (!wallet) {
+      createMessage("Wallet is not connected", "danger-container");
+      return;
+    }
+
+    try {
+      setOneTimeLoading(true);
+      let renewResult = await internalClient.get(
+        `/api/offer/renew-subscription?receiver=${wallet.publicKey.toBase58()}&usdcBalance=${profileInfo?.usdcBalance}`,
+        {}
+      );
+      console.log(renewResult, "renewResult =========================>>");
+
+      const info = renewResult.data.signature.info;
+      let signature = renewResult.data.signature.signature;
+      const receiver = wallet.publicKey.toBase58();
+      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let pricetype = offer?.pricetype;
+      let supply = supplyValue;
+      let price = 0;
+      let paidtype;
+
+      const startDate = subscription.start;
+      const endDate = subscription.end;
+      const start = moment(startDate);
+      const end = moment(endDate);
+
+      const daysDiff = end.diff(start, "days");
+
+      if (daysDiff >= 31) {
+        paidtype = "year";
+        price = offer?.priceyearly;
+      } else {
+        paidtype = "month";
+        price = offer?.pricemonthly;
+      }
+
+      let storageRoyal = await internalClient.post("/api/update-royalty", {
+        sender: info.sender,
+        receivers: info.receivers,
+        coin: info.coin,
+      });
+      let insertRecipt = await internalClient.get(
+        `/api/offer/process?offer=${saveOfferDetails.key}&signature=${signature}&receiver=${receiver}&price=${price}&pricetype=${pricetype}&supply=${supply}&paidType=${paidtype}`,
+        {}
+      );
+
+      console.log(
+        insertRecipt,
+        "insertRecipt from the renew result ===================>"
+      );
+      if (renewResult.data.status === true) {
+        createMessage("Subscription renewed successfully", "success-container");
+        setOneTimeLoading(false);
+      } else {
+        createMessage(renewResult.data.message, "danger-container");
+        setOneTimeLoading(false);
+      }
+    } catch (error) {
+      console.log("renewsubscription error =========================>>", error);
+      createMessage("Failed to renew subscription", "danger-container");
+      setOneTimeLoading(false);
+    }
+  };
+
+  const showInvitation = () => {};
 
   const closeDrawer = () => {
     if (drawerRef.current) {
@@ -1125,6 +1252,20 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                   onClick={actionSubscribe}
                                 >
                                   Activate
+                                </button>
+                              )}
+                              {!oneTimeLoading &&
+                                subscription.status === "expired" && (
+                                  <button
+                                    className="btn btn-primary bg-primary hover:text-white text-white hover:bg-primary border-none"
+                                    onClick={renewsubscription}
+                                  >
+                                    renew
+                                  </button>
+                                )}
+                              {oneTimeLoading && (
+                                <button className="btn btn-primary bg-primary text-white border-none hover:bg-primary hover:text-white">
+                                  renewing...
                                 </button>
                               )}
                             </div>

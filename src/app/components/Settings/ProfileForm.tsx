@@ -190,6 +190,7 @@ const ProfileForm = () => {
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });
+    setShowMsg(true)
     setTimeout(() => {
       setShowMsg(false);
     }, 4000);
@@ -206,7 +207,7 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (profileInfo.solBalance < 0.04) {
+    if (profileInfo.solBalance < 0.001) {
       createMessage(
         "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
         "warn",
@@ -932,7 +933,7 @@ const ProfileForm = () => {
                 <Button
                   isLoading={isLoading}
                   isPrimary
-                  title={`Mint Your Enjoyer Membership`}
+                  title={`Buy Your Enjoyer Membership`}
                   size="large"
                   disabled={isLoading}
                   action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
@@ -942,7 +943,7 @@ const ProfileForm = () => {
                 <Button
                   isLoading={isLoading}
                   isPrimary
-                  title={`Mint Your Creator Membership`}
+                  title={`Buy Your Creator Membership`}
                   size="large"
                   disabled={isLoading}
                   action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}

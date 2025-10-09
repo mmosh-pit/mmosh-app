@@ -227,12 +227,39 @@ export default function MyWalley() {
       if (isLoading) {
         return;
       }
-      // TODO: Need to integrate verify receipt api
       if (!wallet) {
         createMessage(
           "Wallet info not found; please try again later.",
           "error"
         );
+        return;
+      }
+      let isValidReceipt: boolean = false;
+      try {
+        const params = {
+          wallet: wallet?.publicKey.toString(),
+          purchase_token: history.purchaseId,
+        };
+        const result = await axios.post(
+          process.env.NEXT_PUBLIC_BACKEND_URL + "/verify-receipt",
+          params,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        isValidReceipt = result.data.data === "completed";
+      } catch (error: any) {
+        createMessage(
+          error.response.data.error ||
+            "Something went wrong, please try again later",
+          "error"
+        );
+        return;
+      }
+      if (!isValidReceipt) {
+        createMessage("invalid subscription.", "error");
         return;
       }
       setIsLoading(true);

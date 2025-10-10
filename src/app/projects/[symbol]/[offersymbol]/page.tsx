@@ -162,7 +162,7 @@ const Offer = ({
     }
   };
 
-  const getTokenPrice = async (coin: CoinDetail) => {
+const getTokenPrice = async (coin: CoinDetail) => {
     try {
       let priceInUsd = 0;
       if (coin.status === "completed") {
@@ -215,7 +215,7 @@ const Offer = ({
       }
       console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
-
+ 
       if (wallet) {
         const connection = new Connection(
           process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
@@ -226,9 +226,9 @@ const Offer = ({
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",
         });
-
+ 
         anchor.setProvider(env);
-
+ 
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
         let balance = await userConn.getUserBalance({
           address: wallet.publicKey.toBase58(),
@@ -237,7 +237,7 @@ const Offer = ({
         });
         setTokenBlance(balance);
       }
-
+ 
       setLoading(false);
     } catch (error) {
       console.log("setUsdcPrice getTokenPrice error ==========>>>", error);
@@ -245,6 +245,7 @@ const Offer = ({
       setLoading(false);
     }
   };
+ 
 
   const getStakeBalance = async () => {
     if (!wallet) {
@@ -468,6 +469,17 @@ const Offer = ({
 
       console.log(insertRecipt, "insertRecipt ===================>");
       if (result.data.status === true) {
+        const historyParams = {
+          transactionType: "offer_purchase",
+          offerPurchase: {
+            wallet: wallet.publicKey.toBase58(),
+            currency: params.offersymbol,
+            botName: params.symbol,
+            amount: supplyValue
+          }
+        };
+        const res = await internalClient.post(`/api/history/save`, historyParams);
+        console.log("----- SAVE HISTORY RESPONSE -----", res.data);
         createMessage("Offer purchased successfully", "success-container");
       } else {
         createMessage(result.data.message, "danger-container");

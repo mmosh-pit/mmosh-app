@@ -223,32 +223,36 @@ const LaunchPadVC = () => {
         </div>
       }
       {!projectLoading && groupedCards.length > 0 &&
-        <div className="min-h-screen flex flex-col items-center pt-10 pb-12">
-          <div className="min-h-screen py-10 px-4">
-            <h2 className="text-center text-[4vmax] sm:text-[3vmax] md:text-[5vmax] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
+        <div className=" flex flex-col items-center pt-10 m-auto">
+          <div className=" py-10 px-4">
+            <h2 className="text-center text-[4.75rem] font-extrabold font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] tracking-[-0.02em]">
               Next launch
             </h2>
 
-            <div className="flex justify-center items-center gap-5 mt-3">
+            <div className=" lg:flex justify-center">
               {timerData.map((item, index) => (
-                <div key={index} className="relative flex flex-col items-center w-[71px] h-[64px]">
-                  <span className="text-[54px] leading-[50px] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
+                <div key={index} className="flex  lg:justify-between justify-center items-center">
+                  <div className="lg:mx-5 mb-2 lg:mb-0">
+                  <div className="text-[4rem] leading-[3rem] font-[500] font-goudy text-transparent bg-clip-text bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)]">
                     {getCountDownValues(countDown, item.label)}
-                  </span>
-                  <span className="text-base text-[#FFFFFFC7] font-avenir font-medium mt-[2px]">
+                  </div>
+                  <div className="text-base text-[#FFFFFFC7] text-center font-avenir font-medium mt-1">
                     {item.label}
-                  </span>
+                  </div>
+                  </div>
+                  
                   {index !== timerData.length - 1 && (
-                    <span className="absolute right-[-8px] top-1/2 -translate-y-1/2 w-px h-[60px] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px]" />
+                    <span className="h-[4rem] bg-[#66666638] border border-[#FFFFFF38] rounded-[6px] backdrop-blur-[39px] lg:block hidden" />
                   )}
+                  
                 </div>
               ))}
             </div>
-            <div className="min-h-screen py-10 px-4">
+            <div className=" py-10 px-2">
               {groupedCards.map((group, groupIdx) => (
                 <div
                   key={groupIdx}
-                  className={`flex flex-wrap justify-center gap-6 mb-8`}
+                  className={`lg:flex lg:flex-wrap justify-center w-full`}
                 >
                   {group.map((presale: any, index: number) => (
                     <LaunchPad getCountDownValues={getCountDownValues} creator={creator} buyToken={(amount: string, token: number) => buyToken(presale, amount, token)} presale={presale} isBuying={isBuying} />

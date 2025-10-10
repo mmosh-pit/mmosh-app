@@ -25,6 +25,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { Connectivity as UserConn } from "@/anchor/user";
 import useWallet from "@/utils/wallet";
 import baseCoins from "../lib/baseCoins";
+import internalClient from "../lib/internalHttpClient";
 
 const defaultBaseToken = {
   name: "",
@@ -175,9 +176,26 @@ const Swap = () => {
           setSwapLoading(false);
         }
       } else {
-
         const response = await swapTokens(targetToken, baseToken, wallet!);
-        console.log("response ", response)
+        const historyParams = {
+          transactionType: "token_exchange",
+          tokenExchange: {
+            wallet: wallet.publicKey.toBase58(),
+            fromCurrency: baseToken.symbol,
+            currency: targetToken.symbol,
+            amount: Number(baseToken.value),
+            exchangedAmount: Number(targetToken.value),
+          },
+        };
+        await internalClient.post(
+          `/api/history/save`,
+          historyParams,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         setResult({ res: response.type, message: response.message });
         setSwapLoading(false);
       }

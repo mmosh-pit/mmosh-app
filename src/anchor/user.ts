@@ -424,7 +424,7 @@ export class Connectivity {
       });
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value) {
+      holdersfullInfo.reduce(function (res: any, value) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
           holdermap.push(res[value.receiver]);
@@ -554,7 +554,7 @@ export class Connectivity {
 
       let lineage = await getLineage(parentProfile.toBase58())
 
-      let cost = price * (10**6);
+      let cost = price * (10 ** 6);
 
       let holdersfullInfo = [];
 
@@ -589,7 +589,7 @@ export class Connectivity {
       });
 
       holdersfullInfo.push({
-        receiver:  lineage.ggparent,
+        receiver: lineage.ggparent,
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
@@ -605,7 +605,7 @@ export class Connectivity {
       });
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value) {
+      holdersfullInfo.reduce(function (res: any, value) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
           holdermap.push(res[value.receiver]);
@@ -673,16 +673,17 @@ export class Connectivity {
             amount: 8 * 0.05,
           },
           {
-            receiver:  lineage.gparent,
+            receiver: lineage.gparent,
             amount: 8 * 0.03,
           },
           {
-            receiver:  lineage.ggparent,
+            receiver: lineage.ggparent,
             amount: 8 * 0.02,
           },
         ],
         web3Consts.usdcToken,
       );
+
 
       await this.storeLineage(
         user.toBase58(),
@@ -696,6 +697,47 @@ export class Connectivity {
         this.provider.publicKey.toBase58(),
       );
 
+      const saveHistoryparams = {
+        transactionType: "membership_royalty",
+        membershipRoyalty: {
+          royalty: [
+            {
+              receiver: lineage.parent,
+              amount: Math.ceil(cost * (20 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gparent,
+              amount: Math.ceil(cost * (10 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.ggparent,
+              amount: Math.ceil(cost * (3 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gggparent,
+              amount: Math.ceil(cost * (2 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+          ],
+          isStaked: false,
+          isUnlocked: true,
+          purchaseId: "",
+        },
+      };
+      const res = await axios.post(`${origin}/api/history/save`, saveHistoryparams, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("----- MINT PROFILE RESPONSE CHECK -----", res);
+
       return {
         Ok: {
           signature,
@@ -708,7 +750,7 @@ export class Connectivity {
     }
   }
 
-async buyMembership(
+  async buyMembership(
     input: _MintProfile,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
@@ -755,7 +797,7 @@ async buyMembership(
       });
 
       holdersfullInfo.push({
-        receiver:lineage.gparent,
+        receiver: lineage.gparent,
         vallue:
           Math.ceil(cost * (3 / 100)),
       });
@@ -814,6 +856,46 @@ async buyMembership(
       }
       transaction.add(feeIns);
       const signature = await this.provider.sendAndConfirm(transaction, []);
+      const saveHistoryparams = {
+        transactionType: "membership_royalty",
+        membershipRoyalty: {
+          royalty: [
+            {
+              receiver: lineage.parent,
+              amount: Math.ceil(cost * (20 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gparent,
+              amount: Math.ceil(cost * (10 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.ggparent,
+              amount: Math.ceil(cost * (3 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gggparent,
+              amount: Math.ceil(cost * (2 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+          ],
+          isStaked: false,
+          isUnlocked: true,
+          purchaseId: "",
+        },
+      };
+      const res = await axios.post(`${origin}/api/history/save`, saveHistoryparams, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("----- MINT PROFILE RESPONSE CHECK -----", res);
       return {
         Ok: {
           signature: signature,
@@ -827,54 +909,54 @@ async buyMembership(
   }
   async trasferUsdCoin(
     input: {
-        recipient: { receiver: string; amount: number },
-        sender: PublicKey
+      recipient: { receiver: string; amount: number },
+      sender: PublicKey
     }
-): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
+  ): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
     try {
-        this.reinit();
-        this.baseSpl.__reinit();
-        const user = this.provider.publicKey;
-        if (!user) throw "Wallet not found";
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      if (!user) throw "Wallet not found";
 
-        const { recipient, sender } = input;
-        this.txis = [];
-        
-        const createTransfer = await this.baseSpl.transfer_token_modified({
-          mint: usdcToken,
-          sender: new anchor.web3.PublicKey(sender),
-          receiver: new anchor.web3.PublicKey(recipient.receiver),
-          init_if_needed: true,
-          amount: Math.ceil(recipient.amount * (10**6)),
-        });
+      const { recipient, sender } = input;
+      this.txis = [];
 
-        for (let i = 0; i < createTransfer.length; i++) {
-          this.txis.push(createTransfer[i]);
-        }
+      const createTransfer = await this.baseSpl.transfer_token_modified({
+        mint: usdcToken,
+        sender: new anchor.web3.PublicKey(sender),
+        receiver: new anchor.web3.PublicKey(recipient.receiver),
+        init_if_needed: true,
+        amount: Math.ceil(recipient.amount * (10 ** 6)),
+      });
 
-        const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
-        const message = new web3.TransactionMessage({
-            payerKey: this.provider.publicKey,
-            recentBlockhash: blockhash,
-            instructions: [...this.txis],
-        }).compileToV0Message();
+      for (let i = 0; i < createTransfer.length; i++) {
+        this.txis.push(createTransfer[i]);
+      }
 
-        const tx = new web3.VersionedTransaction(message);
-        const signature = await this.provider.sendAndConfirm(tx as any);
-        console.log("===== SIGNATURE =====", signature);
+      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+      const message = new web3.TransactionMessage({
+        payerKey: this.provider.publicKey,
+        recentBlockhash: blockhash,
+        instructions: [...this.txis],
+      }).compileToV0Message();
 
-        return {
-            Ok: {
-                signature,
-                info: { txSignature: signature },
-            },
-        };
+      const tx = new web3.VersionedTransaction(message);
+      const signature = await this.provider.sendAndConfirm(tx as any);
+      console.log("===== SIGNATURE =====", signature);
+
+      return {
+        Ok: {
+          signature,
+          info: { txSignature: signature },
+        },
+      };
     } catch (error) {
       console.log("===== ERROR =====", error);
-        // console.error({ error });
-        return { Err: error };
+      // console.error({ error });
+      return { Err: error };
     }
-}
+  }
 
   async registerCommonLut() {
     const collection = web3Consts.profileCollection;
@@ -894,12 +976,24 @@ async buyMembership(
     ]);
   }
 
-  async storeRoyalty(sender: string, receivers: any, coin: any) {
-    await internalClient.post("/api/update-royalty", {
-      sender,
-      receivers,
-      coin,
-    });
+  async storeRoyalty(sender: string, receivers: any, coin: any, token?: string) {
+    if (token) {
+      await axios.post(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/update-royalty", {
+        sender,
+        receivers,
+        coin,
+      }, {
+        headers: {
+          authorization: token
+        }
+      })
+    } else {
+      await internalClient.post("/api/update-royalty", {
+        sender,
+        receivers,
+        coin,
+      });
+    }
   }
 
   async calculatePriorityFee(instructions: any, lutsInfo: any, mintKp: any) {
@@ -967,12 +1061,24 @@ async buyMembership(
     }
   }
 
-  async storeLineage(wallet: string, lineage: any, profile: string) {
-    await internalClient.post("/api/save-lineage", {
-      wallet,
-      lineage,
-      profile,
-    });
+  async storeLineage(wallet: string, lineage: any, profile: string, token?: string) {
+    if (token) {
+      await axios.post(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/save-lineage", {
+        wallet,
+        lineage,
+        profile
+      }, {
+        headers: {
+          authorization: token
+        }
+      })
+    } else {
+      await internalClient.post("/api/save-lineage", {
+        wallet,
+        lineage,
+        profile,
+      });
+    }
   }
 
   async initSubscriptionBadge(input: {
@@ -1732,7 +1838,7 @@ async buyMembership(
       const user = this.provider.publicKey;
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value: any) {
+      holdersfullInfo.reduce(function (res: any, value: any) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, value: 0 };
           holdermap.push(res[value.receiver]);

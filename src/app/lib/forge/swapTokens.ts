@@ -68,110 +68,110 @@ export const swapTokens = async (
     new anchor.web3.PublicKey(listResult.data.project.key),
   );
 
-  if (hasProfile) {
-    let creatorShare: any;
-    if (targetToken.symbol.toLowerCase() == "sol") {
-      console.log("ownerUser ", ownerUser.profileHolder.toBase58());
-      creatorShare = anchor.web3.SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
-        toPubkey: ownerUser.profileHolder,
-        lamports: Math.ceil(
-          targetToken.value * 0.03 * 10 ** targetToken.decimals,
-        ),
-      });
-    } else {
-      creatorShare = await userConn.baseSpl.transfer_token_modified({
-        mint: new anchor.web3.PublicKey(targetToken.token),
-        sender: wallet.publicKey,
-        receiver: ownerUser.profileHolder,
-        init_if_needed: true,
-        amount: Math.ceil(
-          targetToken.value * 0.03 * 10 ** targetToken.decimals,
-        ),
-      });
-    }
+  // if (hasProfile) {
+  //   let creatorShare: any;
+  //   if (targetToken.symbol.toLowerCase() == "sol") {
+  //     console.log("ownerUser ", ownerUser.profileHolder.toBase58());
+  //     creatorShare = anchor.web3.SystemProgram.transfer({
+  //       fromPubkey: wallet.publicKey,
+  //       toPubkey: ownerUser.profileHolder,
+  //       lamports: Math.ceil(
+  //         targetToken.value * 0.03 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   } else {
+  //     creatorShare = await userConn.baseSpl.transfer_token_modified({
+  //       mint: new anchor.web3.PublicKey(targetToken.token),
+  //       sender: wallet.publicKey,
+  //       receiver: ownerUser.profileHolder,
+  //       init_if_needed: true,
+  //       amount: Math.ceil(
+  //         targetToken.value * 0.03 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   }
 
-    let gensisPassShare: any;
-    if (targetToken.symbol.toLowerCase() == "sol") {
-      console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58());
-      gensisPassShare = anchor.web3.SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
-        toPubkey: genesisPassUser.profileHolder,
-        lamports: Math.ceil(
-          targetToken.value * 0.02 * 10 ** targetToken.decimals,
-        ),
-      });
-    } else {
-      gensisPassShare = await userConn.baseSpl.transfer_token_modified({
-        mint: new anchor.web3.PublicKey(targetToken.token),
-        sender: wallet.publicKey,
-        receiver: genesisPassUser.profileHolder,
-        init_if_needed: true,
-        amount: Math.ceil(
-          targetToken.value * 0.02 * 10 ** targetToken.decimals,
-        ),
-      });
-    }
+  //   let gensisPassShare: any;
+  //   if (targetToken.symbol.toLowerCase() == "sol") {
+  //     console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58());
+  //     gensisPassShare = anchor.web3.SystemProgram.transfer({
+  //       fromPubkey: wallet.publicKey,
+  //       toPubkey: genesisPassUser.profileHolder,
+  //       lamports: Math.ceil(
+  //         targetToken.value * 0.02 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   } else {
+  //     gensisPassShare = await userConn.baseSpl.transfer_token_modified({
+  //       mint: new anchor.web3.PublicKey(targetToken.token),
+  //       sender: wallet.publicKey,
+  //       receiver: genesisPassUser.profileHolder,
+  //       init_if_needed: true,
+  //       amount: Math.ceil(
+  //         targetToken.value * 0.02 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   }
 
-    for (let index = 0; index < creatorShare.length; index++) {
-      curveConn.txis.push(creatorShare[index]);
-    }
+  //   for (let index = 0; index < creatorShare.length; index++) {
+  //     curveConn.txis.push(creatorShare[index]);
+  //   }
 
-    for (let index = 0; index < gensisPassShare.length; index++) {
-      curveConn.txis.push(gensisPassShare[index]);
-    }
-  } else {
-    let creatorShare: any;
-    if (targetToken.symbol.toLowerCase() == "sol") {
-      console.log("ownerUser ", ownerUser.profileHolder.toBase58());
-      creatorShare = anchor.web3.SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
-        toPubkey: ownerUser.profileHolder,
-        lamports: Math.ceil(
-          targetToken.value * 0.02 * 10 ** targetToken.decimals,
-        ),
-      });
-    } else {
-      creatorShare = await userConn.baseSpl.transfer_token_modified({
-        mint: new anchor.web3.PublicKey(targetToken.token),
-        sender: wallet.publicKey,
-        receiver: ownerUser.profileHolder,
-        init_if_needed: true,
-        amount: Math.ceil(
-          targetToken.value * 0.02 * 10 ** targetToken.decimals,
-        ),
-      });
-    }
-    let gensisPassShare: any;
-    if (targetToken.symbol.toLowerCase() == "sol") {
-      console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58());
-      gensisPassShare = anchor.web3.SystemProgram.transfer({
-        fromPubkey: wallet.publicKey,
-        toPubkey: genesisPassUser.profileHolder,
-        lamports: Math.ceil(
-          targetToken.value * 0.03 * 10 ** targetToken.decimals,
-        ),
-      });
-    } else {
-      gensisPassShare = await userConn.baseSpl.transfer_token_modified({
-        mint: new anchor.web3.PublicKey(targetToken.token),
-        sender: wallet.publicKey,
-        receiver: genesisPassUser.profileHolder,
-        init_if_needed: true,
-        amount: Math.ceil(
-          targetToken.value * 0.03 * 10 ** targetToken.decimals,
-        ),
-      });
-    }
+  //   for (let index = 0; index < gensisPassShare.length; index++) {
+  //     curveConn.txis.push(gensisPassShare[index]);
+  //   }
+  // } else {
+  //   let creatorShare: any;
+  //   if (targetToken.symbol.toLowerCase() == "sol") {
+  //     console.log("ownerUser ", ownerUser.profileHolder.toBase58());
+  //     creatorShare = anchor.web3.SystemProgram.transfer({
+  //       fromPubkey: wallet.publicKey,
+  //       toPubkey: ownerUser.profileHolder,
+  //       lamports: Math.ceil(
+  //         targetToken.value * 0.02 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   } else {
+  //     creatorShare = await userConn.baseSpl.transfer_token_modified({
+  //       mint: new anchor.web3.PublicKey(targetToken.token),
+  //       sender: wallet.publicKey,
+  //       receiver: ownerUser.profileHolder,
+  //       init_if_needed: true,
+  //       amount: Math.ceil(
+  //         targetToken.value * 0.02 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   }
+  //   let gensisPassShare: any;
+  //   if (targetToken.symbol.toLowerCase() == "sol") {
+  //     console.log("genesisPassUser ", genesisPassUser.profileHolder.toBase58());
+  //     gensisPassShare = anchor.web3.SystemProgram.transfer({
+  //       fromPubkey: wallet.publicKey,
+  //       toPubkey: genesisPassUser.profileHolder,
+  //       lamports: Math.ceil(
+  //         targetToken.value * 0.03 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   } else {
+  //     gensisPassShare = await userConn.baseSpl.transfer_token_modified({
+  //       mint: new anchor.web3.PublicKey(targetToken.token),
+  //       sender: wallet.publicKey,
+  //       receiver: genesisPassUser.profileHolder,
+  //       init_if_needed: true,
+  //       amount: Math.ceil(
+  //         targetToken.value * 0.03 * 10 ** targetToken.decimals,
+  //       ),
+  //     });
+  //   }
 
-    for (let index = 0; index < gensisPassShare.length; index++) {
-      curveConn.txis.push(gensisPassShare[index]);
-    }
+  //   for (let index = 0; index < gensisPassShare.length; index++) {
+  //     curveConn.txis.push(gensisPassShare[index]);
+  //   }
 
-    for (let index = 0; index < creatorShare.length; index++) {
-      curveConn.txis.push(creatorShare[index]);
-    }
-  }
+  //   for (let index = 0; index < creatorShare.length; index++) {
+  //     curveConn.txis.push(creatorShare[index]);
+  //   }
+  // }
 
   let genesisShare: any;
   if (targetToken.symbol.toLowerCase() == "sol") {

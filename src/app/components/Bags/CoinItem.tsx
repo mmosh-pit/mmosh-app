@@ -18,7 +18,7 @@ const CoinItem = ({ coin, onSelect }: Props) => {
 
   return (
     <div
-      className="flex justify-between bg-[#2E3C4E80] rounded-md my-2 cursor-pointer py-4 px-4"
+      className="flex justify-between bg-[#FFFFFF14] rounded-md my-2 border-[1px] border-[#FFFFFF47] cursor-pointer py-4 px-4"
       onClick={() => onSelect(coin)}
     >
       <div className="flex">

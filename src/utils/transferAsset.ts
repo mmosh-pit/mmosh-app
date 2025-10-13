@@ -29,6 +29,7 @@ export async function transferAsset(
   decimals: number,
   isMax: boolean,
   retries = 0,
+  topup = false
 ): Promise<string> {
   try {
     // connection to Solana.
@@ -76,7 +77,7 @@ export async function transferAsset(
     transaction.recentBlockhash = (
       await userConn.connection.getLatestBlockhash()
     ).blockhash;
-    transaction.feePayer = new PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY!);
+    transaction.feePayer = topup ? wallet.publicKey : new PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY!);
 
     const feeEstimate = await userConn.getPriorityFeeEstimate(transaction);
     let feeIns;
@@ -90,17 +91,13 @@ export async function transferAsset(
       });
     }
     transaction.add(feeIns);
-
-    console.log("transfer asset 1");
-
-    const signedTx = await wallet.signTransaction(transaction as any);
-
-    console.log("transfer asset 2");
-
-    const txid = await connection.sendAndConfirm(signedTx as any, wallet.publicKey.toBase58());
-
-    console.log("transfer asset 3");
-
+    let txid;
+    if(topup) {
+      txid = await userConn.provider.sendAndConfirm(transaction);
+    } else {
+      const signedTx = await wallet.signTransaction(transaction as any);
+      txid = await connection.sendAndConfirm(signedTx as any, wallet.publicKey.toBase58());
+    }
     const explorerLink = getExplorerLink("transaction", txid, "mainnet-beta");
     return explorerLink;
   } catch (err) {

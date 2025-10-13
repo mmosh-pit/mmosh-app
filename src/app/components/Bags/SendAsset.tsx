@@ -42,7 +42,9 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
       destination,
       amount,
       decimals,
-      ismax
+      ismax,
+      0,
+      selectedCoin!.topup
     );
 
     console.log("test 2", res)

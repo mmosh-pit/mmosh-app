@@ -127,45 +127,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
     }
   };
 
-  const topUp = async () => {
-    if (!wallet) {
-      console.log("Walllet not found...........");
-      return 
-    }
-    console.log(localStorage.getItem('token'))
-    const result = await axios.post(
-      "/api/octane-gas-fees/top-up",
-      {
-        token: localStorage.getItem("token"),
-        wallet: wallet.publicKey,
-        gasBalance: 0.001,
-      },
-      {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
 
-    if(result.data.status == true) {
-      const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet, {
-      preflightCommitment: "processed",
-    });
-    anchor.setProvider(env);
-
-    console.log("====TOP UP RESULT ======", result.data.serialized);    
-    const userConn: UserConn = new UserConn(env, web3Consts.programID);
-    const data: any = Buffer.from(result.data.serialized, "base64");
-    const tx = anchor.web3.VersionedTransaction.deserialize(data);
-    const signature = await userConn.provider.sendAndConfirm(tx);
-    console.log("====signature======", signature);
-    }
-   
-    
-  };
 
   return (
     <>
@@ -256,14 +218,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
 
               <p className="text-sm text-white mt-1">Send</p>
             </div>
-            <div
-              className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
-              onClick={() => topUp()}
-            >
-              <SendWalletIcon />
-
-              <p className="text-sm text-white mt-1">Top Up</p>
-            </div>
+       
 
             <div
               className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"

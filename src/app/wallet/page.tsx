@@ -27,10 +27,10 @@ export default function MyWalley() {
   const [totalBalance] = useAtom(bagsBalance);
   const categoriesOptions = [
     { label: "All Categories", value: "" },
-    { label: "Various Coins", value: "token_exchange" },
-    { label: "Airdrop", value: "airdrop" },
+    { label: "Various Coins", value: "token_exchange" }, // swap
+    { label: "Offers", value: "offer_purchase" },
     { label: "Royalties", value: "membership_royalty" },
-    { label: "Transfers", value: "transfer" },
+    { label: "Transfers", value: "transfer" }, // normal send
   ];
   const sortingOptions = [
     { label: "Newest First", value: "newest" },
@@ -62,6 +62,9 @@ export default function MyWalley() {
   });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [historyLoading, setHistoryLoading] = React.useState<boolean>(false);
+  const [nextLoading, setNextLoading] = useState(false);
+    const [PreviousLoading, setPreviousLoading] = useState(false);
+
 
   const [transactionHistory, setTransactionHistory] = React.useState<{
     transactions: any[];
@@ -72,6 +75,7 @@ export default function MyWalley() {
   });
   const [selectedTab, setSelectedTab] = React.useState<number>(1);
   const [isTooltipShown, setIsTooltipShown] = React.useState<boolean>(false);
+  const [page, setPage] = useState(1);
 
   React.useEffect(() => {
     if (wallet) {
@@ -79,27 +83,39 @@ export default function MyWalley() {
       setHistoryLoading(true);
       getTransactionHistory();
     }
-  }, [wallet]);
+  }, [wallet, selectedCategory, selectedSortingOptions]);
 
-  const getTransactionHistory = async () => {
+  const getTransactionHistory = async (page = 1, limit = 10) => {
+    console.log(selectedCategory.value, "value ==========================>>");
     const result = await internalClient.get(
-      `api/history/get?wallet=${wallet?.publicKey.toBase58()}`
+      `api/history/get?wallet=${wallet?.publicKey.toBase58()}&page=${page}&limit=${limit}&category=${selectedCategory.value}&isDescending=${selectedSortingOptions.value}`
     );
+
     console.log(
       "----- TRANSACTION HISTORY -----",
       result.data.result.transactions
     );
     setTransactionHistory(result.data.result);
     setHistoryLoading(false);
+    setNextLoading(false);
+    setPreviousLoading(false)
+  };
+
+  const handleNext = () => {
+     setNextLoading(true)
+    setPage(page + 1);
+    getTransactionHistory(page + 1);
+  };
+
+  const handlePrev = () => {
+    setPreviousLoading(true)
+    setPage(page - 1);
+    getTransactionHistory(page - 1);
   };
 
   React.useEffect(() => {
     filterHistory();
   }, [selectedCategory, transactionHistory]);
-
-  React.useEffect(() => {
-    sortedData(selectedSortingOptions.value);
-  }, [selectedSortingOptions]);
 
   const createMessage = React.useCallback((text: string, type: string) => {
     setMessage({ message: text, type });
@@ -321,7 +337,7 @@ export default function MyWalley() {
   };
 
   const sortedData = (type: string) => {
-    const result = filteredHistory.sort((a, b) => {
+    const result = transactionHistory.transactions.sort((a, b) => {
       if (type === "newest") {
         return Number(b.updated_date) - Number(a.updated_date);
       } else {
@@ -399,9 +415,8 @@ export default function MyWalley() {
             <p className="text-center">Vault</p>
           </div>
 
-             <div
+          <div
             className="bg-[#FFFFFF14] border-[#FFFFFF38] border-2 lg:w-24 w-full p-2 rounded-lg lg:mr-5 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] cursor-pointer"
-
             onClick={() => router.push("/swap")}
           >
             <svg
@@ -462,7 +477,6 @@ export default function MyWalley() {
             </svg>
             <p className="text-center">History</p>
           </div>
-       
         </div>
 
         {selectedTab === 1 && (
@@ -601,7 +615,7 @@ export default function MyWalley() {
               </div>
             </div>
             <div className="mt-6">
-              {filteredHistory.map((data, index) => (
+              {transactionHistory.transactions.map((data, index) => (
                 <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
                   <div className="lg:flex lg:justify-between justify-center">
                     <div className="flex items-start">
@@ -730,7 +744,7 @@ export default function MyWalley() {
                   </div>
                 </div>
               ))}
-              {filteredHistory.length === 0 && (
+              {transactionHistory.transactions.length === 0 && (
                 <div className="bg-[#FFFFFF14] border-2 border-[#FFFFFF38]  px-3 py-5 rounded-lg my-5 ">
                   <p className="text-sm text-center">
                     {historyLoading ? "Loading..." : "No transactions found"}
@@ -738,6 +752,27 @@ export default function MyWalley() {
                 </div>
               )}
             </div>
+            {transactionHistory.transactions.length > 0 && (
+
+            <div className="flex justify-center items-center gap-4 mt-4">
+              <button
+                onClick={() => handlePrev()}
+                disabled={!transactionHistory.pagination.hasPrev}
+                className="px-4 py-2 bg-[#FFFFFF14] border border-[#FFFFFF38] rounded-lg text-white disabled:opacity-50"
+              >
+                
+                {PreviousLoading ? "Loading" : "Previous"}
+              </button>
+
+              <button
+                onClick={() => handleNext()}
+                disabled={!transactionHistory.pagination.hasNext}
+                className="px-4 py-2 bg-[#FFFFFF14] border border-[#FFFFFF38] rounded-lg text-white disabled:opacity-50"
+              >
+                {nextLoading ? "Loading" : "Next"}
+              </button>
+            </div>
+            )}
           </>
         )}
       </div>

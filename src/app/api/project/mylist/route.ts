@@ -1,4 +1,4 @@
-import { db } from "@/app/lib/mongoClient";
+  import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 const adminUsers = [
@@ -7,7 +7,8 @@ const adminUsers = [
   "support@kinship.systems",
   "motodave@gmail.com",
   "alirehman41f@gmail.com",
-  "elias.ramirez@kinship.systems",
+  "elias.ramirez@kinship.systems"
+  
 ];
 
 export async function GET(req: NextRequest) {
@@ -41,12 +42,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid Payload" }, { status: 400 });
   }
 
-  let match = isAdmin ? { $match: {} } : { $match: { creator: creator } };
+  // let match = isAdmin ? { $match: {} } : { $match: { creator: creator } };
+
+
+  console.log(creator,"mmosh-app-project-profiles creator profile address =====================>>")
 
   const result = await db
     .collection("mmosh-app-project")
     .aggregate([
-      match,
       {
         $lookup: {
           from: "mmosh-app-project-coins",
@@ -86,7 +89,7 @@ export async function GET(req: NextRequest) {
           foreignField: "projectkey",
           as: "pass",
         },
-      },
+      },  
 
       {
         $match: isAdmin
@@ -121,5 +124,7 @@ export async function GET(req: NextRequest) {
     ])
     .limit(100)
     .toArray();
+
+    console.log(result,"result ========================================>>")
   return NextResponse.json(result, { status: 200 });
 }

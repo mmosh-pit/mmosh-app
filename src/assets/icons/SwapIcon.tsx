@@ -6,6 +6,8 @@ const SwapIcon = (props: Props) => (
     height="17"
     viewBox="0 0 17 17"
     fill="none"
+    className="place-self-center"
+
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >

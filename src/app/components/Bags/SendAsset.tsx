@@ -7,6 +7,8 @@ import Button from "../common/Button";
 import { transferAsset } from "@/utils/transferAsset";
 import useWallet from "@/utils/wallet";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
+import axios from "axios";
+import useConnection from "@/utils/connection";
 
 type Props = {
   selectedCoin: BagsCoin | BagsNFT;
@@ -15,7 +17,8 @@ type Props = {
 
 const SendAsset = ({ selectedCoin, goBack }: Props) => {
   const wallet = useWallet();
-  const [destination, setDestination] = React.useState("");
+  const connection = useConnection()
+  const [destination, setDestination] = React.useState(selectedCoin.topup ? process.env.NEXT_PUBLIC_PTV_WALLET_KEY! : "");
   const [amount, setAmount] = React.useState("0");
 
   const [isSending, setIsSending] = React.useState(false);
@@ -30,8 +33,11 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
 
     const decimals = "decimals" in selectedCoin ? selectedCoin.decimals : 0;
 
+    console.log("test 1")
+
     const res = await transferAsset(
       wallet!,
+      connection,
       selectedCoin.tokenAddress,
       destination,
       amount,
@@ -39,8 +45,39 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
       ismax
     );
 
+    console.log("test 2", res)
+
+    if(res !== "") {
+       await topUp(Number(amount));
+    }
+
+
     setIsSending(false);
     setResult(res);
+  };
+
+  const topUp = async (amount: number) => {
+    if (!wallet) {
+      console.log("Walllet not found...........");
+      return 
+    }
+     console.log("test 3")
+    const result = await axios.post(
+      "/api/octane/top-up",
+      {
+        token: localStorage.getItem("token"),
+        wallet: wallet.publicKey,
+        gasBalance: amount,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    console.log("test 4")
+    
   };
 
   if (isSending && !result) {
@@ -124,11 +161,12 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
           <div className="w-full flex flex-col px-8 mt-4">
             <Input
               value={destination}
-              onChange={(e) => setDestination(e.target.value)}
+              onChange={(e) =>  setDestination(e.target.value)}
               type="text"
               placeholder="Wallet Address"
               title=""
               required={false}
+              readonly={selectedCoin.topup}
             />
 
             <div className="mt-4">

@@ -17,9 +17,12 @@ import { getOrCreateTokenAccountInstruction } from "./getOrCreateAssociatedToken
 import { FrostWallet } from "./frostWallet";
 import { Connectivity as UserConn } from "@/anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
+import { ConnectionContextState } from "./connection";
+import { convertSolToUSDC } from "@/lib/juipter";
 
 export async function transferAsset(
   wallet: FrostWallet,
+  connection: ConnectionContextState,
   mintAddress: string,
   receiver: string,
   amount: string,
@@ -29,13 +32,7 @@ export async function transferAsset(
 ): Promise<string> {
   try {
     // connection to Solana.
-    const connection = new Connection(
-        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-        {
-          confirmTransactionInitialTimeout: 120000,
-        },
-     );
-    const env = new anchor.AnchorProvider(connection, wallet, {
+    const env = new anchor.AnchorProvider(connection.connection, wallet, {
       preflightCommitment: "processed",
     });
 
@@ -79,7 +76,7 @@ export async function transferAsset(
     transaction.recentBlockhash = (
       await userConn.connection.getLatestBlockhash()
     ).blockhash;
-    transaction.feePayer = userConn.provider.publicKey;
+    transaction.feePayer = new PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY!);
 
     const feeEstimate = await userConn.getPriorityFeeEstimate(transaction);
     let feeIns;
@@ -94,7 +91,15 @@ export async function transferAsset(
     }
     transaction.add(feeIns);
 
-    const txid = await userConn.provider.sendAndConfirm(transaction as any);
+    console.log("transfer asset 1");
+
+    const signedTx = await wallet.signTransaction(transaction as any);
+
+    console.log("transfer asset 2");
+
+    const txid = await connection.sendAndConfirm(signedTx as any, wallet.publicKey.toBase58());
+
+    console.log("transfer asset 3");
 
     const explorerLink = getExplorerLink("transaction", txid, "mainnet-beta");
     return explorerLink;

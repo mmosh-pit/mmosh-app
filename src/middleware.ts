@@ -20,7 +20,9 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("forgot-password") &&
     !req.url.includes("reset-password") &&
     !req.url.includes("inform") &&
-    !req.url.includes("document")
+    !req.url.includes("document") &&
+    !req.url.includes("distribute-to-lineage") &&
+    !req.url.includes("/api/history/save")
   ) {
     if (!authorization) {
       return NextResponse.json("", { status: 401 });

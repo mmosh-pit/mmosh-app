@@ -33,18 +33,6 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  const stakedHistory = await collection.findOne({ purchaseId: purchaseId });
-
-  if (stakedHistory !== null) {
-    return NextResponse.json(
-      {
-        status: false,
-        message: "Purchase ID already exists.",
-        result: null,
-      },
-      { status: 400 }
-    );
-  }
 
   let cost = (stakedAmount * 10 ** 6 * 85) / 100;
   let lineage = await getLineage(userAddeess);

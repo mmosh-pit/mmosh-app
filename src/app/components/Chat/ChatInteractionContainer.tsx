@@ -3,6 +3,9 @@ import { useAtom } from "jotai";
 
 import { data } from "@/app/store";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import { selectedChatStore, chatsStore, chatsLoading } from "@/app/store/chat";
 import { Message } from "@/app/models/chat";
@@ -508,8 +511,177 @@ const ChatInteractionContainer = () => {
                           </span>
                         </div>
                       ) : (
-                        <div className="text-base leading-relaxed">
-                          <Markdown children={message.content} />
+                        <div className="text-base leading-relaxed prose prose-invert max-w-none">
+                          <Markdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code({ node, inline, className, children, ...props }: any) {
+                                const match = /language-(\w+)/.exec(className || "");
+                                return !inline && match ? (
+                                  <SyntaxHighlighter
+                                    style={vscDarkPlus}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    customStyle={{
+                                      borderRadius: "0.5rem",
+                                      padding: "1rem",
+                                      marginTop: "0.5rem",
+                                      marginBottom: "0.5rem",
+                                    }}
+                                    {...props}
+                                  >
+                                    {String(children).replace(/\n$/, "")}
+                                  </SyntaxHighlighter>
+                                ) : (
+                                  <code
+                                    className="bg-gray-800 text-pink-400 px-1.5 py-0.5 rounded text-sm font-mono"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </code>
+                                );
+                              },
+                              a({ node, children, ...props }: any) {
+                                return (
+                                  <a
+                                    className="text-blue-400 hover:text-blue-300 underline"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </a>
+                                );
+                              },
+                              p({ node, children, ...props }: any) {
+                                return (
+                                  <p className="mb-2 last:mb-0" {...props}>
+                                    {children}
+                                  </p>
+                                );
+                              },
+                              ul({ node, children, ...props }: any) {
+                                return (
+                                  <ul
+                                    className="list-disc ml-4 mb-2 space-y-1"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </ul>
+                                );
+                              },
+                              ol({ node, children, ...props }: any) {
+                                return (
+                                  <ol
+                                    className="list-decimal ml-4 mb-2 space-y-1"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </ol>
+                                );
+                              },
+                              h1({ node, children, ...props }: any) {
+                                return (
+                                  <h1
+                                    className="text-2xl font-bold mb-3 mt-4"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </h1>
+                                );
+                              },
+                              h2({ node, children, ...props }: any) {
+                                return (
+                                  <h2
+                                    className="text-xl font-bold mb-2 mt-3"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </h2>
+                                );
+                              },
+                              h3({ node, children, ...props }: any) {
+                                return (
+                                  <h3
+                                    className="text-lg font-bold mb-2 mt-2"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </h3>
+                                );
+                              },
+                              blockquote({ node, children, ...props }: any) {
+                                return (
+                                  <blockquote
+                                    className="border-l-4 border-purple-500 pl-4 italic my-2 text-gray-300"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </blockquote>
+                                );
+                              },
+                              table({ node, children, ...props }: any) {
+                                return (
+                                  <div className="overflow-x-auto my-2">
+                                    <table
+                                      className="min-w-full border-collapse border border-gray-700"
+                                      {...props}
+                                    >
+                                      {children}
+                                    </table>
+                                  </div>
+                                );
+                              },
+                              thead({ node, children, ...props }: any) {
+                                return (
+                                  <thead className="bg-gray-800" {...props}>
+                                    {children}
+                                  </thead>
+                                );
+                              },
+                              th({ node, children, ...props }: any) {
+                                return (
+                                  <th
+                                    className="border border-gray-700 px-3 py-2 text-left font-semibold"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </th>
+                                );
+                              },
+                              td({ node, children, ...props }: any) {
+                                return (
+                                  <td
+                                    className="border border-gray-700 px-3 py-2"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </td>
+                                );
+                              },
+                              strong({ node, children, ...props }: any) {
+                                return (
+                                  <strong className="font-bold text-white" {...props}>
+                                    {children}
+                                  </strong>
+                                );
+                              },
+                              em({ node, children, ...props }: any) {
+                                return (
+                                  <em className="italic text-gray-200" {...props}>
+                                    {children}
+                                  </em>
+                                );
+                              },
+                              hr({ node, ...props }: any) {
+                                return (
+                                  <hr className="my-4 border-gray-700" {...props} />
+                                );
+                              },
+                            }}
+                          >
+                            {message.content}
+                          </Markdown>
                         </div>
                       )}
                     </div>

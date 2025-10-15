@@ -49,15 +49,32 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
         receiver: destination,
       },
     };
-    const result = await internalClient.post(
-      `/api/history/save`,
-      historyParams,
-      {
+    await internalClient.post(`/api/history/save`, historyParams, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const notificationParams = {
+      amount: Number(amount),
+      currency: selectedCoin.symbol,
+      senderAddress: wallet.publicKey.toBase58(),
+      receiverAddress: destination,
+      transactionHash: "",
+    };
+    internalClient
+      .post(`/api/notifications/send-transaction`, notificationParams, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
-    );
+      })
+      .then((result) => {
+        console.log("send notification result", result);
+      })
+      .catch((error) => {
+        console.log("Send notification error", error);
+      });
+
     setIsSending(false);
     setResult(res);
   };

@@ -165,7 +165,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
         <div className="bags-background-card lg:w-[40%] md:w-[60%] w-[85%]">
           <div className="bags-background-card-balance-card" id="balance-card">
             <h6>Balance: {currencyFormatter(totalBalance)}</h6>
-            <p>Gas Relayer: {currencyFormatter(gasBalance)}</p>
+            {/* <p>Gas Relayer: {currencyFormatter(gasBalance)}</p> */}
             <div className="flex">
               <p className="text-base text-white">
                 {walletAddressShortener(address)}
@@ -235,7 +235,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
               <SendWalletIcon />
                 <p className="text-sm text-white mt-1">Send</p>
             </div>
-            <div
+            {/* <div
               className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"
               onClick={() => {
                 if (bags) {
@@ -248,7 +248,7 @@ const Bags = ({ onSelectCoin, onSelectAsset, totalBalance }: Props) => {
               <SendWalletIcon />
 
               <p className="text-sm text-white mt-1">Top Up</p>
-            </div>
+            </div> */}
 
             <div
               className="min-w-[60px] flex flex-col justify-center items-center py-2 bg-[#2E3C4E] cursor-pointer rounded-xl hover:bg-[rgba(114,149,195,0.6)]"

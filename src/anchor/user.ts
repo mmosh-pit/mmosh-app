@@ -64,7 +64,7 @@ export class Connectivity {
     this.baseSpl = new BaseSpl(this.connection);
     this.mainState = web3.PublicKey.findProgramAddressSync(
       [Seeds.mainState],
-      this.programId,
+      this.programId
     )[0];
   }
 
@@ -84,27 +84,27 @@ export class Connectivity {
     if (typeof mint == "string") mint = new web3.PublicKey(mint);
     return web3.PublicKey.findProgramAddressSync(
       [Seeds.profileState, mint.toBuffer()],
-      this.programId,
+      this.programId
     )[0];
   }
 
   __getCollectionStateAccount(mint: web3.PublicKey): web3.PublicKey {
     return web3.PublicKey.findProgramAddressSync(
       [Seeds.collectionState, mint.toBuffer()],
-      this.programId,
+      this.programId
     )[0];
   }
 
   __getActivationTokenStateAccount(mint: web3.PublicKey): web3.PublicKey {
     return web3.PublicKey.findProgramAddressSync(
       [Seeds.activationTokenState, mint.toBuffer()],
-      this.programId,
+      this.programId
     )[0];
   }
   __getValutAccount(profile: web3.PublicKey): web3.PublicKey {
     return web3.PublicKey.findProgramAddressSync(
       [Seeds.vault, profile.toBuffer()],
-      this.programId,
+      this.programId
     )[0];
   }
 
@@ -187,7 +187,7 @@ export class Connectivity {
   }
 
   async setupLookupTable(
-    addresses: web3.PublicKey[] = [],
+    addresses: web3.PublicKey[] = []
   ): Promise<Result<TxPassType<{ lookupTable: string }>, any>> {
     try {
       const slot = await this.connection.getSlot();
@@ -214,7 +214,7 @@ export class Connectivity {
       const transaction = new web3.Transaction().add(
         lookupTableInst,
         extendInstruction,
-        freezeInstruction,
+        freezeInstruction
       );
 
       transaction.recentBlockhash = (
@@ -246,7 +246,7 @@ export class Connectivity {
   }
 
   async mintProfileByActivationToken(
-    input: _MintProfileByAtInput,
+    input: _MintProfileByAtInput
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
@@ -273,12 +273,12 @@ export class Connectivity {
         this.__getActivationTokenStateAccount(activationToken);
       const activationTokenStateInfo =
         await this.program.account.activationTokenState.fetch(
-          activationTokenState,
+          activationTokenState
         );
       const parentProfile = activationTokenStateInfo.parentProfile;
       const parentProfileStateInfo =
         await this.program.account.profileState.fetch(
-          this.__getProfileStateAccount(parentProfile),
+          this.__getProfileStateAccount(parentProfile)
         );
       // const lut = parentProfileStateInfo.lut;
       const parentProfileNftInfo = await this.metaplex
@@ -331,7 +331,7 @@ export class Connectivity {
       const { ata: userActivationTokenAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
           { mint: activationToken, owner: user },
-          this.ixCallBack,
+          this.ixCallBack
         );
       const profileMetadata = BaseMpl.getMetadataAccount(profile);
       const profileEdition = BaseMpl.getEditionAccount(profile);
@@ -352,7 +352,7 @@ export class Connectivity {
       } = await this.__getProfileHoldersInfo(
         parentProfileStateInfo.lineage,
         parentProfile,
-        genesisProfile,
+        genesisProfile
       );
       // const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
 
@@ -384,7 +384,7 @@ export class Connectivity {
       this.txis.push(ix);
 
       const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
+        this.mainState
       );
       let cost = mainStateInfo.profileMintingCost.toNumber();
 
@@ -424,7 +424,7 @@ export class Connectivity {
       });
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value) {
+      holdersfullInfo.reduce(function (res: any, value) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
           holdermap.push(res[value.receiver]);
@@ -456,7 +456,7 @@ export class Connectivity {
       const freezeInstructions = await this.calculatePriorityFee(
         ix,
         lutsInfo,
-        mintKp,
+        mintKp
       );
 
       for (let index = 0; index < freezeInstructions.length; index++) {
@@ -501,7 +501,7 @@ export class Connectivity {
             amount: 600,
           },
         ],
-        web3Consts.oposToken,
+        web3Consts.oposToken
       );
 
       await this.storeLineage(
@@ -513,7 +513,7 @@ export class Connectivity {
           originator: ggreateGrandParentProfile.toBase58(),
           gensis: genesisProfile.toBase58(),
         },
-        profile.toBase58(),
+        profile.toBase58()
       );
 
       return {
@@ -529,7 +529,7 @@ export class Connectivity {
   }
 
   async mintProfile(
-    input: _MintProfile,
+    input: _MintProfile
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
@@ -537,11 +537,7 @@ export class Connectivity {
       const user = this.provider.publicKey;
       if (!user) throw "Wallet not found";
 
-      let {
-        parentProfile,
-        price
-      } = input;
-
+      let { parentProfile, price } = input;
 
       if (typeof parentProfile == "string")
         parentProfile = new web3.PublicKey(parentProfile);
@@ -549,12 +545,12 @@ export class Connectivity {
       this.txis = [];
 
       const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
+        this.mainState
       );
 
-      let lineage = await getLineage(parentProfile.toBase58())
+      let lineage = await getLineage(parentProfile.toBase58());
 
-      let cost = price * (10**6);
+      let cost = price * 10 ** 6;
 
       let holdersfullInfo = [];
 
@@ -589,7 +585,7 @@ export class Connectivity {
       });
 
       holdersfullInfo.push({
-        receiver:  lineage.ggparent,
+        receiver: lineage.ggparent,
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
@@ -597,7 +593,9 @@ export class Connectivity {
       });
 
       holdersfullInfo.push({
-        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        receiver: new anchor.web3.PublicKey(
+          process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+        ).toBase58(),
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
@@ -605,7 +603,7 @@ export class Connectivity {
       });
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value) {
+      holdersfullInfo.reduce(function (res: any, value) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, vallue: 0 };
           holdermap.push(res[value.receiver]);
@@ -628,12 +626,13 @@ export class Connectivity {
         }
       }
 
-
       const tx = new web3.Transaction().add(...this.txis);
       tx.recentBlockhash = (
         await this.connection.getLatestBlockhash()
       ).blockhash;
-      tx.feePayer = this.provider.publicKey;
+      tx.feePayer = new anchor.web3.PublicKey(
+        process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+      );
 
       const feeEstimate = await this.getPriorityFeeEstimate(tx);
       let feeIns;
@@ -654,8 +653,22 @@ export class Connectivity {
       // const txLen = signedTx.serialize().length;
       // log({ txLen, luts: lutsInfo.length });
 
-      const signature = await this.provider.sendAndConfirm(tx, []);
-      console.log("----- PROFILE MINT SIGNATURE -----", signature);
+      // const signature = await this.provider.sendAndConfirm(tx, []);
+      // console.log("----- PROFILE MINT SIGNATURE -----", signature);
+
+      console.log(tx, "tx ===============================>>");
+      console.log(
+        this.provider.wallet.publicKey.toBase58(),
+        "this.provider.wallet.publicKey.toBase58() ============>"
+      );
+      const signedTx = await this.provider.wallet.signTransaction(tx as any);
+      console.log(signedTx, "====================>");
+      const signature = await input.connection.sendAndConfirm(
+        signedTx as any,
+        this.provider.wallet.publicKey.toBase58()
+      );
+
+      console.log(signature, "signature ====================>");
 
       await this.storeRoyalty(
         user.toBase58(),
@@ -673,15 +686,15 @@ export class Connectivity {
             amount: 8 * 0.05,
           },
           {
-            receiver:  lineage.gparent,
+            receiver: lineage.gparent,
             amount: 8 * 0.03,
           },
           {
-            receiver:  lineage.ggparent,
+            receiver: lineage.ggparent,
             amount: 8 * 0.02,
           },
         ],
-        web3Consts.usdcToken,
+        web3Consts.usdcToken
       );
 
       await this.storeLineage(
@@ -693,7 +706,7 @@ export class Connectivity {
           originator: lineage.ggparent,
           gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
         },
-        this.provider.publicKey.toBase58(),
+        this.provider.publicKey.toBase58()
       );
 
       return {
@@ -708,66 +721,58 @@ export class Connectivity {
     }
   }
 
-async buyMembership(
-    input: _MintProfile,
+  async buyMembership(
+    input: _MintProfile
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
       this.baseSpl.__reinit();
       const user = this.provider.publicKey;
       if (!user) throw "Wallet not found";
-      let {
-        parentProfile,
-        price
-      } = input;
+      let { parentProfile, price } = input;
 
       if (typeof parentProfile == "string")
         parentProfile = new web3.PublicKey(parentProfile);
 
-
-
       this.txis = [];
 
       const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
+        this.mainState
       );
-      let lineage = await getLineage(parentProfile.toBase58())
-      let cost = price * (10 ** 6);
+      let lineage = await getLineage(parentProfile.toBase58());
+      let cost = price * 10 ** 6;
 
       let holdersfullInfo = [];
 
       holdersfullInfo.push({
         receiver: lineage.gensis,
-        vallue:
-          Math.ceil(cost * (20 / 100)),
+        vallue: Math.ceil(cost * (20 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: parentProfile.toBase58(),
-        vallue:
-          Math.ceil(cost * (10 / 100)),
+        vallue: Math.ceil(cost * (10 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: lineage.parent,
-        vallue:
-          Math.ceil(cost * (5 / 100)),
+        vallue: Math.ceil(cost * (5 / 100)),
       });
 
       holdersfullInfo.push({
-        receiver:lineage.gparent,
-        vallue:
-          Math.ceil(cost * (3 / 100)),
+        receiver: lineage.gparent,
+        vallue: Math.ceil(cost * (3 / 100)),
       });
 
       holdersfullInfo.push({
         receiver: lineage.ggparent,
-        vallue:
-          Math.ceil(cost * (2 / 100)),
+        vallue: Math.ceil(cost * (2 / 100)),
       });
 
       holdersfullInfo.push({
-        receiver: new anchor.web3.PublicKey(process.env.NEXT_PUBLIC_PTV_WALLET_KEY || "").toBase58(),
+        receiver: new anchor.web3.PublicKey(
+          process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+        ).toBase58(),
         vallue:
           // cost *
           // (mainStateInfo.mintingCostDistribution.ggreatGrandParent / 100 / 100),
@@ -799,8 +804,12 @@ async buyMembership(
       }
 
       const transaction = new web3.Transaction().add(...this.txis);
-      transaction.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
-      transaction.feePayer = this.provider.publicKey;
+      transaction.recentBlockhash = (
+        await this.connection.getLatestBlockhash()
+      ).blockhash;
+      transaction.feePayer = new anchor.web3.PublicKey(
+        process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+      );
       const feeEstimate = await this.getPriorityFeeEstimate(transaction);
       let feeIns;
       if (feeEstimate > 0) {
@@ -813,7 +822,18 @@ async buyMembership(
         });
       }
       transaction.add(feeIns);
-      const signature = await this.provider.sendAndConfirm(transaction, []);
+      // const signature = await this.provider.sendAndConfirm(transaction, []);
+      console.log(transaction, "transation ================================>");
+      const signedTx = await this.provider.wallet.signTransaction(
+        transaction as any
+      );
+      console.log(signedTx, "signed tx ================================>>");
+      const signature = await input.connection.sendAndConfirm(
+        signedTx as any,
+        this.provider.wallet.publicKey.toBase58()
+      );
+
+      console.log(signature, "signature ================================>");
       return {
         Ok: {
           signature: signature,
@@ -825,56 +845,54 @@ async buyMembership(
       return { Err: error };
     }
   }
-  async trasferUsdCoin(
-    input: {
-        recipient: { receiver: string; amount: number },
-        sender: PublicKey
-    }
-): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
+  async trasferUsdCoin(input: {
+    recipient: { receiver: string; amount: number };
+    sender: PublicKey;
+  }): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
     try {
-        this.reinit();
-        this.baseSpl.__reinit();
-        const user = this.provider.publicKey;
-        if (!user) throw "Wallet not found";
+      this.reinit();
+      this.baseSpl.__reinit();
+      const user = this.provider.publicKey;
+      if (!user) throw "Wallet not found";
 
-        const { recipient, sender } = input;
-        this.txis = [];
-        
-        const createTransfer = await this.baseSpl.transfer_token_modified({
-          mint: usdcToken,
-          sender: new anchor.web3.PublicKey(sender),
-          receiver: new anchor.web3.PublicKey(recipient.receiver),
-          init_if_needed: true,
-          amount: Math.ceil(recipient.amount * (10**6)),
-        });
+      const { recipient, sender } = input;
+      this.txis = [];
 
-        for (let i = 0; i < createTransfer.length; i++) {
-          this.txis.push(createTransfer[i]);
-        }
+      const createTransfer = await this.baseSpl.transfer_token_modified({
+        mint: usdcToken,
+        sender: new anchor.web3.PublicKey(sender),
+        receiver: new anchor.web3.PublicKey(recipient.receiver),
+        init_if_needed: true,
+        amount: Math.ceil(recipient.amount * 10 ** 6),
+      });
 
-        const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
-        const message = new web3.TransactionMessage({
-            payerKey: this.provider.publicKey,
-            recentBlockhash: blockhash,
-            instructions: [...this.txis],
-        }).compileToV0Message();
+      for (let i = 0; i < createTransfer.length; i++) {
+        this.txis.push(createTransfer[i]);
+      }
 
-        const tx = new web3.VersionedTransaction(message);
-        const signature = await this.provider.sendAndConfirm(tx as any);
-        console.log("===== SIGNATURE =====", signature);
+      const blockhash = (await this.connection.getLatestBlockhash()).blockhash;
+      const message = new web3.TransactionMessage({
+        payerKey: this.provider.publicKey,
+        recentBlockhash: blockhash,
+        instructions: [...this.txis],
+      }).compileToV0Message();
 
-        return {
-            Ok: {
-                signature,
-                info: { txSignature: signature },
-            },
-        };
+      const tx = new web3.VersionedTransaction(message);
+      const signature = await this.provider.sendAndConfirm(tx as any);
+      console.log("===== SIGNATURE =====", signature);
+
+      return {
+        Ok: {
+          signature,
+          info: { txSignature: signature },
+        },
+      };
     } catch (error) {
       console.log("===== ERROR =====", error);
-        // console.error({ error });
-        return { Err: error };
+      // console.error({ error });
+      return { Err: error };
     }
-}
+  }
 
   async registerCommonLut() {
     const collection = web3Consts.profileCollection;
@@ -919,18 +937,18 @@ async buyMembership(
       feeIns.push(
         web3.ComputeBudgetProgram.setComputeUnitPrice({
           microLamports: feeEstimate,
-        }),
+        })
       );
       feeIns.push(
         web3.ComputeBudgetProgram.setComputeUnitLimit({
           units: 1_400_000,
-        }),
+        })
       );
     } else {
       feeIns.push(
         web3.ComputeBudgetProgram.setComputeUnitLimit({
           units: 1_400_000,
-        }),
+        })
       );
     }
 
@@ -952,7 +970,7 @@ async buyMembership(
                 transaction.serialize({
                   requireAllSignatures: false,
                   verifySignatures: false,
-                }),
+                })
               ),
               options: { priorityLevel: "High" },
             },
@@ -995,7 +1013,7 @@ async buyMembership(
       if (profileStateInfo.activationToken) {
         let hasInvitation = await this.isCreatorInvitation(
           profileStateInfo.activationToken,
-          user.toBase58(),
+          user.toBase58()
         );
         if (hasInvitation) {
           return {
@@ -1016,7 +1034,7 @@ async buyMembership(
       const { ata: userProfileAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
           { mint: profile, owner: user },
-          this.ixCallBack,
+          this.ixCallBack
         );
       const activationTokenKp = web3.Keypair.generate();
       const activationToken = activationTokenKp.publicKey;
@@ -1026,7 +1044,7 @@ async buyMembership(
         this.__getActivationTokenStateAccount(activationToken);
       const userActivationTokenAta = getAssociatedTokenAddressSync(
         activationToken,
-        user,
+        user
       );
 
       // const mainStateInfo = await this.program.account.mainState.fetch(
@@ -1100,7 +1118,7 @@ async buyMembership(
   }
 
   async mintSubscriptionToken(
-    input: _MintSubscriptionToken,
+    input: _MintSubscriptionToken
   ): Promise<Result<TxPassType<any>, any>> {
     try {
       this.reinit();
@@ -1116,7 +1134,7 @@ async buyMembership(
           parentProfile = new web3.PublicKey(parentProfile);
         const parentProfileStateInfoData =
           await this.program.account.profileState.fetch(
-            this.__getProfileStateAccount(parentProfile),
+            this.__getProfileStateAccount(parentProfile)
           );
         subscriptionToken = parentProfileStateInfoData.activationToken!;
         if (!subscriptionToken) throw "Subscription Token not initialised";
@@ -1131,7 +1149,7 @@ async buyMembership(
 
       const activationTokenStateInfo =
         await this.program.account.activationTokenState.fetch(
-          subscriptionTokenState,
+          subscriptionTokenState
         );
       parentProfile = activationTokenStateInfo.parentProfile;
       const parentProfileState = this.__getProfileStateAccount(parentProfile);
@@ -1143,7 +1161,7 @@ async buyMembership(
       const { ata: receiverAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
           { mint: subscriptionToken, owner: receiver },
-          this.ixCallBack,
+          this.ixCallBack
         );
 
       // const profile = activationTokenStateInfo.parentProfile
@@ -1151,16 +1169,16 @@ async buyMembership(
       const { ata: minterProfileAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
           { mint: parentProfile, owner: user },
-          this.ixCallBack,
+          this.ixCallBack
         );
 
       const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
+        this.mainState
       );
       const profileCollection = mainStateInfo.profileCollection;
       const profileCollectionState =
         await this.program.account.collectionState.fetch(
-          this.__getCollectionStateAccount(profileCollection),
+          this.__getCollectionStateAccount(profileCollection)
         );
       const genesisProfile = profileCollectionState.genesisProfile;
 
@@ -1192,7 +1210,7 @@ async buyMembership(
       } = await this.__getProfileHoldersInfo(
         parentProfileStateInfo.lineage,
         parentProfile,
-        genesisProfile,
+        genesisProfile
       );
 
       const userOposAta = getAssociatedTokenAddressSync(oposToken, user);
@@ -1276,7 +1294,7 @@ async buyMembership(
             amount: Number(amount),
           },
         ],
-        web3Consts.oposToken,
+        web3Consts.oposToken
       );
       return { Ok: { signature, info: {} } };
     } catch (error) {
@@ -1300,7 +1318,7 @@ async buyMembership(
 
     const accounts: any = await this.connection.getParsedProgramAccounts(
       TOKEN_PROGRAM_ID, //importing from solana spl-token library
-      { filters },
+      { filters }
     );
     let mintKeys = [];
     let mintList: any = [];
@@ -1374,7 +1392,7 @@ async buyMembership(
       usdcTokenBalance =
         (parseInt(tokenAccount?.amount?.toString()) ?? 0) / 1000_000;
     }
-    const lineage = await getLineage(this.provider.publicKey.toBase58())
+    const lineage = await getLineage(this.provider.publicKey.toBase58());
     try {
       const profileInfo = {
         solBalance,
@@ -1407,7 +1425,7 @@ async buyMembership(
   async getProfileLineage(currentParentProfile: web3.PublicKey) {
     try {
       const profileStateInfo = await this.program.account.profileState.fetch(
-        this.__getProfileStateAccount(currentParentProfile),
+        this.__getProfileStateAccount(currentParentProfile)
       );
 
       const {
@@ -1422,7 +1440,7 @@ async buyMembership(
       } = await this.__getProfileHoldersInfo(
         profileStateInfo.lineage,
         currentParentProfile,
-        web3Consts.genesisProfile,
+        web3Consts.genesisProfile
       );
 
       return {
@@ -1433,7 +1451,7 @@ async buyMembership(
         recruiter: this.getAddressString(currentGreatGrandParentProfileHolder),
         recruiterprofile: this.getAddressString(greatGrandParentProfile),
         originator: this.getAddressString(
-          currentGgreatGrandParentProfileHolder,
+          currentGgreatGrandParentProfileHolder
         ),
         originatorprofile: this.getAddressString(ggreateGrandParentProfile),
       };
@@ -1463,7 +1481,7 @@ async buyMembership(
   async getProfileChilds(parentProfile: web3.PublicKey) {
     try {
       const profileStateInfo = await this.program.account.profileState.fetch(
-        this.__getProfileStateAccount(parentProfile),
+        this.__getProfileStateAccount(parentProfile)
       );
       return {
         totalChild: profileStateInfo.lineage.totalChild.toNumber(),
@@ -1481,11 +1499,11 @@ async buyMembership(
     profileHolder: web3.PublicKey;
   }> {
     const mainStateInfo = await this.program.account.mainState.fetch(
-      this.mainState,
+      this.mainState
     );
     const genesisProfileAta = (
       await this.connection.getTokenLargestAccounts(
-        mainStateInfo.genesisProfile,
+        mainStateInfo.genesisProfile
       )
     ).value[0].address;
 
@@ -1495,7 +1513,7 @@ async buyMembership(
 
     const genesisProfileAtaHolder = unpackAccount(
       genesisProfileAta,
-      atasInfo[0],
+      atasInfo[0]
     ).owner;
 
     return {
@@ -1517,7 +1535,7 @@ async buyMembership(
 
       const genesisProfileAtaHolder = unpackAccount(
         genesisProfileAta,
-        atasInfo[0],
+        atasInfo[0]
       ).owner;
 
       return {
@@ -1537,7 +1555,7 @@ async buyMembership(
       console.log("user is ", user);
       const userOposAta = getAssociatedTokenAddressSync(
         new anchor.web3.PublicKey(tokenData.token),
-        user,
+        user
       );
       const infoes = await this.connection.getTokenAccountBalance(userOposAta);
       console.log("infoes ", infoes);
@@ -1551,7 +1569,7 @@ async buyMembership(
   async __getProfileHoldersInfo(
     input: LineageInfo,
     parentProfile: web3.PublicKey,
-    genesisProfile: web3.PublicKey,
+    genesisProfile: web3.PublicKey
   ): Promise<{
     //profiles:
     parentProfile: web3.PublicKey;
@@ -1608,23 +1626,23 @@ async buyMembership(
 
     const currentParentProfileHolder = unpackAccount(
       currentParentProfileHolderAta,
-      atasInfo[0],
+      atasInfo[0]
     ).owner;
     const currentGrandParentProfileHolder = unpackAccount(
       currentGrandParentProfileHolderAta,
-      atasInfo[1],
+      atasInfo[1]
     ).owner;
     const currentGreatGrandParentProfileHolder = unpackAccount(
       currentGreatGrandParentProfileHolderAta,
-      atasInfo[2],
+      atasInfo[2]
     ).owner;
     const currentGgreatGrandParentProfileHolder = unpackAccount(
       currentGgreatGrandParentProfileHolderAta,
-      atasInfo[3],
+      atasInfo[3]
     ).owner;
     const currentGenesisProfileHolder = unpackAccount(
       currentGenesisProfileHolderAta,
-      atasInfo[4],
+      atasInfo[4]
     ).owner;
 
     return {
@@ -1651,23 +1669,23 @@ async buyMembership(
       // profile holder oposAta
       parentProfileHolderOposAta: getAssociatedTokenAddressSync(
         oposToken,
-        currentParentProfileHolder,
+        currentParentProfileHolder
       ),
       grandParentProfileHolderOposAta: getAssociatedTokenAddressSync(
         oposToken,
-        currentGrandParentProfileHolder,
+        currentGrandParentProfileHolder
       ),
       greatGrandParentProfileHolderOposAta: getAssociatedTokenAddressSync(
         oposToken,
-        currentGreatGrandParentProfileHolder,
+        currentGreatGrandParentProfileHolder
       ),
       ggreatGrandParentProfileHolderOposAta: getAssociatedTokenAddressSync(
         oposToken,
-        currentGgreatGrandParentProfileHolder,
+        currentGgreatGrandParentProfileHolder
       ),
       genesisProfileHolderOposAta: getAssociatedTokenAddressSync(
         oposToken,
-        currentGenesisProfileHolder,
+        currentGenesisProfileHolder
       ),
     };
   }
@@ -1724,7 +1742,7 @@ async buyMembership(
 
   async sendShare(
     token: any,
-    holdersfullInfo: any,
+    holdersfullInfo: any
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
@@ -1732,7 +1750,7 @@ async buyMembership(
       const user = this.provider.publicKey;
 
       const holdermap: any = [];
-      holdersfullInfo.reduce(function(res: any, value: any) {
+      holdersfullInfo.reduce(function (res: any, value: any) {
         if (!res[value.receiver]) {
           res[value.receiver] = { receiver: value.receiver, value: 0 };
           holdermap.push(res[value.receiver]);
@@ -1790,7 +1808,7 @@ async buyMembership(
   }
 
   async burnToken(
-    token: anchor.web3.PublicKey,
+    token: anchor.web3.PublicKey
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
@@ -1799,7 +1817,7 @@ async buyMembership(
       const { ata: minterProfileAta } =
         await this.baseSpl.__getOrCreateTokenAccountInstruction(
           { mint: token, owner: user },
-          this.ixCallBack,
+          this.ixCallBack
         );
 
       const burnIx = createBurnInstruction(
@@ -1808,7 +1826,7 @@ async buyMembership(
         this.provider.publicKey, // authority
         1, // amount to burn (based on decimals)
         [], // multisig signers (empty for single-signer)
-        TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID
       );
 
       this.txis.push(burnIx);

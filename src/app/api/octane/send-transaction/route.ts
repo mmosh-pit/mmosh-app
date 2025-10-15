@@ -21,17 +21,17 @@ export async function POST(req: NextRequest) {
       if (!findUser) {
         return NextResponse.json({ message: "User not found" }, { status: 404 });
       } 
-      let gasdata:any = await gasBalanceCollection.findOne({
-          wallet: userWallet,
-      });
+      // let gasdata:any = await gasBalanceCollection.findOne({
+      //     wallet: userWallet,
+      // });
 
-      if (!gasdata) {
-        return NextResponse.json({ message: "Gas balance not available" }, { status: 404 });
-      } 
+      // if (!gasdata) {
+      //   return NextResponse.json({ message: "Gas balance not available" }, { status: 404 });
+      // } 
 
-      if(gasdata.gasBalance < 1) {
-        return NextResponse.json({ message: "User atleast have 1 USDC as balance" }, { status: 404 });
-      }
+      // if(gasdata.gasBalance < 1) {
+      //   return NextResponse.json({ message: "User atleast have 1 USDC as balance" }, { status: 404 });
+      // }
 
       const adminPrivateKey = process.env.PTV_WALLET!;
       const private_buffer = bs58.decode(adminPrivateKey);
@@ -52,10 +52,13 @@ export async function POST(req: NextRequest) {
       let userConn: UserConn = new UserConn(env, web3Consts.programID);
 
       // ✅ Deserialize the FULL SIGNED transaction
+      // const txBytes = Buffer.from(serialized, "hex");
       const txBytes = new Uint8Array(Buffer.from(serialized, "hex"));
+      console.log("===========txBytes==================", txBytes);
       let transaction: Transaction | VersionedTransaction;
       
       try {
+        console.log("================= CHECK 1 ==============");
         // ✅ Try to deserialize as FULL VersionedTransaction (not just message)
         transaction = VersionedTransaction.deserialize(txBytes);
         
@@ -114,15 +117,16 @@ export async function POST(req: NextRequest) {
       const gasUsed = await convertSolToUSDC(fee);
 
       // Update gas balance
-      const currentBalance = gasdata.gasBalance;
-      const newBalance = currentBalance - gasUsed;
-      await gasBalanceCollection.updateOne(
-        { wallet: userWallet },
-        { $set: { gasBalance: newBalance, updatedAt: new Date() } }
-      );
+      // const currentBalance = gasdata.gasBalance;
+      const newBalance = 50;
+      // await gasBalanceCollection.updateOne(
+      //   { wallet: userWallet },
+      //   { $set: { gasBalance: newBalance, updatedAt: new Date() } }
+      // );
 
       console.log("Gas used (USDC):", gasUsed);
       console.log("New balance:", newBalance);
+
       
       return NextResponse.json({ 
         signature, 

@@ -1,6 +1,7 @@
 import { IdlAccounts, IdlTypes } from "@coral-xyz/anchor";
 import { web3 } from "@coral-xyz/anchor";
 import { Mmoshforge } from "./mmoshforge";
+import { ConnectionContextState } from "@/utils/connection";
 
 const mainStateTypeName = "mainState";
 const profileStateTypeName = "profileState";
@@ -26,6 +27,9 @@ export type Result<T, E> = {
   Err?: E;
 };
 export type TxPassType<Info> = { signature: string; info?: Info };
+export type TransactionPassType<Info> = { transactionTx: any; info?: Info };
+
+
 
 export type _MintGensisInput = {
   name: string;
@@ -53,7 +57,8 @@ export type _MintProfileByAtInput = {
 
 export type _MintProfile= {
   parentProfile: string | web3.PublicKey;
-  price: number
+  price: number;
+  connection: ConnectionContextState
 };
 
 

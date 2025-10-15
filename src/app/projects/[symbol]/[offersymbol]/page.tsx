@@ -478,8 +478,14 @@ const getTokenPrice = async (coin: CoinDetail) => {
             amount: supplyValue
           }
         };
-        const res = await internalClient.post(`/api/history/save`, historyParams);
-        console.log("----- SAVE HISTORY RESPONSE -----", res.data);
+        await internalClient.post(`/api/history/save`, historyParams);
+        const notificationParams = {
+          senderWallet: wallet.publicKey.toBase58(),
+          receiverWallet: projectDetail.project.creator,
+          botName: projectDetail.project.symbol,
+          isSubscribed: type !== "onetime"
+        };
+        const res = await internalClient.post(`/api/notifications/send-offer-notification`, notificationParams);
         createMessage("Offer purchased successfully", "success-container");
       } else {
         createMessage(result.data.message, "danger-container");

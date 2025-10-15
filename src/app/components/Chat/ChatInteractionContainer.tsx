@@ -149,7 +149,7 @@ const ChatInteractionContainer = () => {
         console.log("Message data being sent:", queryData);
 
         const response = await fetch(
-          "http://localhost:3000/react/stream",
+          "https://ai.kinshipbots.com/react/stream",
           {
             method: "POST",
             headers: {

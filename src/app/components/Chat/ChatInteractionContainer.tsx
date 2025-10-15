@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 
 import { data } from "@/app/store";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import { selectedChatStore, chatsStore, chatsLoading } from "@/app/store/chat";
 import { Message } from "@/app/models/chat";
@@ -508,8 +509,10 @@ const ChatInteractionContainer = () => {
                           </span>
                         </div>
                       ) : (
-                        <div className="text-base leading-relaxed">
-                          <Markdown children={message.content} />
+                        <div className="text-base leading-relaxed prose prose-invert max-w-none">
+                          <Markdown remarkPlugins={[remarkGfm]}>
+                            {message.content}
+                          </Markdown>
                         </div>
                       )}
                     </div>

@@ -942,7 +942,7 @@ const ProfileForm = () => {
                   title={`Buy Your Enjoyer Membership`}
                   size="large"
                   disabled={isLoading}
-                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 0.01 : 90)}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
                 />
               }
               {tab === "creator" &&
@@ -952,7 +952,7 @@ const ProfileForm = () => {
                   title={`Buy Your Creator Membership`}
                   size="large"
                   disabled={isLoading}
-                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 0.01 : 180)}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
                 />
               }
             </div>

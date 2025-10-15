@@ -209,21 +209,21 @@ const ProfileForm = () => {
       return false;
     }
 
-    // if (profileInfo.solBalance < 0.001) {
-    //   createMessage(
-    //     "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
-    //     "warn",
-    //   );
-    //   return false;
-    // }
+    if (profileInfo.solBalance < 0.001) {
+      createMessage(
+        "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
+        "warn",
+      );
+      return false;
+    }
 
-    // if (profileInfo.usdcBalance < 8) {
-    //   createMessage(
-    //     "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
-    //     "warn",
-    //   );
-    //   return false;
-    // }
+    if (profileInfo.usdcBalance < 8) {
+      createMessage(
+        "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
+        "warn",
+      );
+      return false;
+    }
 
     if (!image) {
       createMessage("Image is required", "error");
@@ -942,7 +942,7 @@ const ProfileForm = () => {
                   title={`Buy Your Enjoyer Membership`}
                   size="large"
                   disabled={isLoading}
-                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 15 : 90)}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 0.01 : 90)}
                 />
               }
               {tab === "creator" &&
@@ -952,7 +952,7 @@ const ProfileForm = () => {
                   title={`Buy Your Creator Membership`}
                   size="large"
                   disabled={isLoading}
-                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 24 : 180)}
+                  action={() => mintMembership(tab, hasMonthly ? "monthly" : "yearly", hasMonthly ? 0.01 : 180)}
                 />
               }
             </div>

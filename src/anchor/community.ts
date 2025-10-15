@@ -60,7 +60,6 @@ import { getLineage } from "@/app/lib/forge/createProfile";
 import { ConnectionContextState } from "@/utils/connection";
 import { FrostWallet } from "@/utils/frostWallet";
 
-
 const {
   systemProgram,
   associatedTokenProgram,
@@ -266,8 +265,8 @@ export class Connectivity {
           await this.connection.getLatestBlockhash()
         ).blockhash;
         tx.feePayer = new anchor.web3.PublicKey(
-                process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
-              );
+          process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+        );
         console.log("---------------------step 1----------------");
         const feeEstimate = await this.getPriorityFeeEstimate(tx);
         let feeIns;
@@ -289,11 +288,11 @@ export class Connectivity {
 
         this.txis = [];
 
-       const signedTx = await this.provider.wallet.signTransaction(tx as any);
+        const signedTx = await this.provider.wallet.signTransaction(tx as any);
         const signature = await connection.sendAndConfirm(
-        signedTx as any,
-        this.provider.wallet.publicKey.toBase58()
-      );
+          signedTx as any,
+          this.provider.wallet.publicKey.toBase58()
+        );
 
         // const signature = await this.provider.sendAndConfirm(tx);
 
@@ -3760,7 +3759,10 @@ export class Connectivity {
     return targetMintKeypair.publicKey.toBase58();
   }
 
-  async stakeCoin(element: any): Promise<string> {
+  async stakeCoin(
+    element: any,
+    connection: ConnectionContextState
+  ): Promise<string> {
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
     console.log("stakecoin 1", element);
@@ -3840,7 +3842,9 @@ export class Connectivity {
     const tx = new web3.Transaction().add(...instructions);
 
     tx.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
-    tx.feePayer = this.provider.publicKey;
+    tx.feePayer = new anchor.web3.PublicKey(
+      process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+    );
 
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
@@ -3855,7 +3859,17 @@ export class Connectivity {
     }
     tx.add(feeIns);
     console.log("stakecoin 6");
-    const signature = await this.provider.sendAndConfirm(tx, []);
+    console.log("send adn confirm from the stakeCoin");
+    const signedTx = await this.provider.wallet.signTransaction(tx as any);
+     const signature = await connection.sendAndConfirm(
+          signedTx as any,
+          this.provider.wallet.publicKey.toBase58()
+        );
+
+
+        console.log(signature,"signature from the stake coinn ======================")
+    // const signature = await this.provider.sendAndConfirm(tx, []);
+
     return signature;
   }
 

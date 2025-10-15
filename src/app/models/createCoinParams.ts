@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Candidate } from "./candidate";
 import { FrostWallet } from "@/utils/frostWallet";
+import { ConnectionContextState } from "@/utils/connection";
 
 export type CreateCoinParams = {
   username: string;
@@ -15,6 +16,7 @@ export type CreateCoinParams = {
   initialPrice: number;
   type: string;
   baseToken: any;
+  connection:ConnectionContextState
   setMintingStatus: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -33,5 +35,7 @@ export type CreateProjectCoinParams = {
   baseToken: any;
   candidate: Candidate;
   position: string;
+  connect:ConnectionContextState
+
   setMintingStatus: React.Dispatch<React.SetStateAction<string>>;
 };

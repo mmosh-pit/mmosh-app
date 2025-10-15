@@ -10,6 +10,7 @@ import {
   MintingCostDistribution,
   Result,
   TxPassType,
+  TransactionPassType,
   _MintGensisInput,
   _MintGuestPass,
   _MintProfileByAtInput,
@@ -56,6 +57,8 @@ import {
 import { NATIVE_MINT, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { Token } from "./curve/spl-token-curve/index";
 import { getLineage } from "@/app/lib/forge/createProfile";
+import { ConnectionContextState } from "@/utils/connection";
+import { FrostWallet } from "@/utils/frostWallet";
 
 const {
   systemProgram,
@@ -160,7 +163,8 @@ export class Connectivity {
 
   async sendProjectPrice(
     profile: any,
-    amount: any
+    amount: any,
+    connection: ConnectionContextState,
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
@@ -260,7 +264,9 @@ export class Connectivity {
         tx.recentBlockhash = (
           await this.connection.getLatestBlockhash()
         ).blockhash;
-        tx.feePayer = this.provider.publicKey;
+        tx.feePayer = new anchor.web3.PublicKey(
+          process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+        );
         console.log("---------------------step 1----------------");
         const feeEstimate = await this.getPriorityFeeEstimate(tx);
         let feeIns;
@@ -281,7 +287,15 @@ export class Connectivity {
         console.log("---------------------step 4----------------");
 
         this.txis = [];
-        const signature = await this.provider.sendAndConfirm(tx);
+
+        const signedTx = await this.provider.wallet.signTransaction(tx as any);
+        const signature = await connection.sendAndConfirm(
+          signedTx as any,
+          this.provider.wallet.publicKey.toBase58()
+        );
+
+        // const signature = await this.provider.sendAndConfirm(tx);
+
         console.log(signature, "signature =========================>");
         console.log("---------------------step 5----------------");
 
@@ -352,9 +366,7 @@ export class Connectivity {
     return { Err: "Unreachable" };
   }
 
-
-
-    async sendOfferPrice(
+  async sendOfferPrice(
     profile: any,
     amount: any
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
@@ -546,7 +558,6 @@ export class Connectivity {
     }
     return { Err: "Unreachable" };
   }
-
 
   async setupLookupTable(
     addresses: web3.PublicKey[] = []
@@ -1640,7 +1651,7 @@ export class Connectivity {
     userProfile: string,
     payerProfile: string,
     cost?: number,
-    supply?: number,
+    supply?: number
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
     try {
       this.reinit();
@@ -1662,7 +1673,7 @@ export class Connectivity {
       console.log("mint pass 3");
       const parentProfileStateInfo =
         await this.program.account.profileState.fetch(
-          this.__getProfileStateAccount(genesisProfile),
+          this.__getProfileStateAccount(genesisProfile)
         );
       console.log("mint pass 4");
       const lut = parentProfileStateInfo.lut;
@@ -1702,7 +1713,7 @@ export class Connectivity {
 
       const parentMainState = web3.PublicKey.findProgramAddressSync(
         [Seeds.mainState],
-        this.programId,
+        this.programId
       )[0];
       console.log("mint pass 9");
       const ix = await this.program.methods
@@ -1732,7 +1743,7 @@ export class Connectivity {
       this.txis.push(ix);
 
       const mainStateInfo = await this.program.account.mainState.fetch(
-        this.mainState,
+        this.mainState
       );
 
       console.log("cost ", cost);
@@ -1745,10 +1756,10 @@ export class Connectivity {
           parentProfileStateInfo.lineage,
           genesisProfile,
           genesisProfile,
-          mainStateInfo.oposToken,
+          mainStateInfo.oposToken
         );
         let lineage = await getLineage(userProfile);
-        
+
         let holdersfullInfo = [];
 
         holdersfullInfo.push({
@@ -1789,7 +1800,7 @@ export class Connectivity {
         });
 
         var holdermap: any = [];
-        holdersfullInfo.reduce(function(res: any, value: any) {
+        holdersfullInfo.reduce(function (res: any, value: any) {
           if (!res[value.receiver]) {
             res[value.receiver] = { receiver: value.receiver, vallue: 0 };
             holdermap.push(res[value.receiver]);
@@ -1816,7 +1827,7 @@ export class Connectivity {
       console.log("mint pass 10", commonLut);
       const commonLutInfo = await (
         await this.connection.getAddressLookupTable(
-          new anchor.web3.PublicKey(commonLut),
+          new anchor.web3.PublicKey(commonLut)
         )
       ).value;
       console.log("mint pass 11");
@@ -1825,7 +1836,7 @@ export class Connectivity {
       const freezeInstructions = await this.calculatePriorityFee(
         ix,
         lutsInfo,
-        mintKp,
+        mintKp
       );
 
       console.log("mint pass 12");
@@ -1863,7 +1874,7 @@ export class Connectivity {
     userProfile: string,
     payerProfile: string,
     cost?: number,
-    supply?: number,
+    supply?: number
   ): Promise<Result<TxPassType<{ profile: VersionedTransaction }>, any>> {
     for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
@@ -1896,13 +1907,13 @@ export class Connectivity {
           this.__getActivationTokenStateAccount(activationToken);
         const activationTokenStateInfo =
           await this.program.account.activationTokenState.fetch(
-            activationTokenState,
+            activationTokenState
           );
         console.log("mint pass 3");
         const parentProfile = activationTokenStateInfo.parentProfile;
         const parentProfileStateInfo =
           await this.program.account.profileState.fetch(
-            this.__getProfileStateAccount(parentProfile),
+            this.__getProfileStateAccount(parentProfile)
           );
         console.log("mint pass 4");
         const lut = parentProfileStateInfo.lut;
@@ -1938,7 +1949,7 @@ export class Connectivity {
         const { ata: userActivationTokenAta } =
           await this.baseSpl.__getOrCreateTokenAccountInstruction(
             { mint: activationToken, owner: user },
-            this.ixCallBack,
+            this.ixCallBack
           );
         console.log("mint pass 6");
         const profileMetadata = BaseMpl.getMetadataAccount(profile);
@@ -1946,14 +1957,14 @@ export class Connectivity {
         const profileState = this.__getProfileStateAccount(profile);
         const parentProfileState = this.__getProfileStateAccount(parentProfile);
         const mainStateInfo = await this.program.account.mainState.fetch(
-          this.mainState,
+          this.mainState
         );
 
         console.log("mint pass 8");
 
         const parentMainState = web3.PublicKey.findProgramAddressSync(
           [Seeds.mainState],
-          this.programId,
+          this.programId
         )[0];
         console.log("mint pass 9");
         const ix = await this.program.methods
@@ -1996,7 +2007,7 @@ export class Connectivity {
             parentProfileStateInfo.lineage,
             genesisProfile,
             genesisProfile,
-            mainStateInfo.oposToken,
+            mainStateInfo.oposToken
           );
           console.log("mint pass 71", userProfile);
           // console.log("mint pass 711", mainStateInfo.oposToken.toBase58());
@@ -2045,7 +2056,7 @@ export class Connectivity {
           });
 
           var holdermap: any = [];
-          holdersfullInfo.reduce(function(res: any, value: any) {
+          holdersfullInfo.reduce(function (res: any, value: any) {
             if (!res[value.receiver]) {
               res[value.receiver] = { receiver: value.receiver, vallue: 0 };
               holdermap.push(res[value.receiver]);
@@ -2072,7 +2083,7 @@ export class Connectivity {
         console.log("mint pass 10", commonLut);
         const commonLutInfo = await (
           await this.connection.getAddressLookupTable(
-            new anchor.web3.PublicKey(commonLut),
+            new anchor.web3.PublicKey(commonLut)
           )
         ).value;
         console.log("mint pass 11");
@@ -2081,7 +2092,7 @@ export class Connectivity {
         const freezeInstructions = await this.calculatePriorityFee(
           ix,
           lutsInfo,
-          mintKp,
+          mintKp
         );
 
         console.log("mint pass 12");
@@ -2109,7 +2120,7 @@ export class Connectivity {
             info: { profile: tx },
           },
         };
-      } catch (error: any) { 
+      } catch (error: any) {
         log({ error: error });
         const isRetryable =
           error.message?.includes("blockhash not found") ||
@@ -2163,9 +2174,9 @@ export class Connectivity {
 
   async storeRoyalty(sender: string, receivers: any, coin: any) {
     await internalClient.post("/api/update-royalty", {
-        sender,
-        receivers,
-        coin,
+      sender,
+      receivers,
+      coin,
     });
   }
 
@@ -2241,8 +2252,7 @@ export class Connectivity {
     }
   }
 
-
- async offerGuestPassTx(
+  async offerGuestPassTx(
     input: _MintGuestPass,
     userProfile: string,
     payerProfile: string,
@@ -2271,7 +2281,7 @@ export class Connectivity {
       return {
         Ok: {
           signature: sendPrice.Ok?.signature || "",
-          info: sendPrice.Ok?.info || {}
+          info: sendPrice.Ok?.info || {},
         },
       } as any;
     } catch (error) {
@@ -3749,7 +3759,10 @@ export class Connectivity {
     return targetMintKeypair.publicKey.toBase58();
   }
 
-  async stakeCoin(element: any): Promise<string> {
+  async stakeCoin(
+    element: any,
+    connection: ConnectionContextState
+  ): Promise<string> {
     const instructions: anchor.web3.TransactionInstruction[] = [];
 
     console.log("stakecoin 1", element);
@@ -3829,7 +3842,9 @@ export class Connectivity {
     const tx = new web3.Transaction().add(...instructions);
 
     tx.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
-    tx.feePayer = this.provider.publicKey;
+    tx.feePayer = new anchor.web3.PublicKey(
+      process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+    );
 
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
@@ -3844,7 +3859,17 @@ export class Connectivity {
     }
     tx.add(feeIns);
     console.log("stakecoin 6");
-    const signature = await this.provider.sendAndConfirm(tx, []);
+    console.log("send adn confirm from the stakeCoin");
+    const signedTx = await this.provider.wallet.signTransaction(tx as any);
+     const signature = await connection.sendAndConfirm(
+          signedTx as any,
+          this.provider.wallet.publicKey.toBase58()
+        );
+
+
+        console.log(signature,"signature from the stake coinn ======================")
+    // const signature = await this.provider.sendAndConfirm(tx, []);
+
     return signature;
   }
 

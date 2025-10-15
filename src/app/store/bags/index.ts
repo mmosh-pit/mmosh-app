@@ -10,6 +10,7 @@ export type BagsCoin = {
   usdcPrice: number;
   mmoshPrice: number;
   parentKey?: string;
+  topup?: boolean
 };
 
 export type BagsCoins = {
@@ -28,6 +29,7 @@ export type BagsNFT = {
   balance: number;
   metadata: any;
   parentKey?: string;
+  topup?: boolean
 };
 
 export type BagsNFTAssets = {

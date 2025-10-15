@@ -18,12 +18,15 @@ import Input from "@/app/components/common/Input";
 import moment from "moment";
 import internalClient from "@/app/lib/internalHttpClient";
 import internal from "stream";
+import useConnection from "@/utils/connection";
 
 const Offer = ({
   params,
 }: {
   params: { symbol: string; offersymbol: string };
 }) => {
+
+  const connection = useConnection()
   const drawerRef = useRef<HTMLInputElement>(null);
   const [profileInfo] = useAtom(userWeb3Info);
   const [offerDetail, setOfferDetail] = React.useState<any>(null);
@@ -719,10 +722,8 @@ const getTokenPrice = async (coin: CoinDetail) => {
       return;
     }
 
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet, {
+ 
+    const env = new anchor.AnchorProvider(connection.connection, wallet, {
       preflightCommitment: "processed",
     });
 
@@ -742,7 +743,10 @@ const getTokenPrice = async (coin: CoinDetail) => {
           mint: new anchor.web3.PublicKey(projectDetail.coins[0].key),
           value: Math.ceil(value * 10 ** coin?.target.decimals),
           duration: 0,
-        });
+        },
+        connection
+        
+      );
         console.log("stake signature ", stakeres);
         await delay(15000);
       } else {

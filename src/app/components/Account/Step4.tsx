@@ -23,8 +23,10 @@ import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
 import { storeFormAtom } from "@/app/store/signup";
 import Radio from "../common/Radio";
+import useConnection from "@/utils/connection";
 
 const Step4 = () => {
+  const connection = useConnection()
   const router = useRouter();
   const isMobileScreen = useCheckMobileScreen();
 
@@ -295,6 +297,7 @@ const Step4 = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
+      connection,
     });
 
     createMessage(result.message, result.type);
@@ -489,6 +492,7 @@ const Step4 = () => {
         membership,
         membershipType,
         price,
+        connection,
       });
       console.log("----- BUY MEMBERSHIP RESULT -----", result);
 

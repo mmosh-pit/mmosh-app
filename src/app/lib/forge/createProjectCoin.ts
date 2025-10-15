@@ -56,6 +56,7 @@ export const createProjectCoin = async ({
   baseToken,
   candidate,
   position,
+  connect
 }: CreateProjectCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
@@ -140,7 +141,7 @@ export const createProjectCoin = async ({
 
     setMintingStatus("Creating Token...");
     await delay(15000);
-    const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash, 0);
+    const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash, 0,connect);
 
     setMintingStatus("Creating Bonding Curve...");
 

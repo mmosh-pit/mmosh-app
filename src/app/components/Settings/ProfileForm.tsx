@@ -22,8 +22,10 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import * as anchor from "@coral-xyz/anchor";
 import { updateUserData } from "@/app/lib/forge/updateUserData";
 import Radio from "../common/Radio";
+import useConnection from "@/utils/connection";
 
 const ProfileForm = () => {
+  const connection = useConnection()
   const wallet = useWallet();
   const navigate = useRouter();
   const searchParams = useSearchParams();
@@ -207,21 +209,21 @@ const ProfileForm = () => {
       return false;
     }
 
-    if (profileInfo.solBalance < 0.001) {
-      createMessage(
-        "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
-        "warn",
-      );
-      return false;
-    }
+    // if (profileInfo.solBalance < 0.001) {
+    //   createMessage(
+    //     "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
+    //     "warn",
+    //   );
+    //   return false;
+    // }
 
-    if (profileInfo.usdcBalance < 8) {
-      createMessage(
-        "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
-        "warn",
-      );
-      return false;
-    }
+    // if (profileInfo.usdcBalance < 8) {
+    //   createMessage(
+    //     "Hey! We checked your wallet and you don't have enough USDC to mint.\n[Get some USDC here](https://jup.ag/swap/SOL-USDC) and try again!",
+    //     "warn",
+    //   );
+    //   return false;
+    // }
 
     if (!image) {
       createMessage("Image is required", "error");
@@ -298,6 +300,7 @@ const ProfileForm = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
+      connection,
     });
 
     createMessage(result.message, result.type);
@@ -556,7 +559,8 @@ const ProfileForm = () => {
         membership,
         membershipType,
         price,
-        banner: ""
+        banner: "",
+        connection,
       });
       console.log("----- UPGRADE PROFILE RESULT -----", result);
       setIsLoading(false);
@@ -597,9 +601,11 @@ const ProfileForm = () => {
       banner: "",
       membership,
       membershipType,
-      price
+      price,
+      connection,
     });
     console.log("----- BUY MEMBERSHIP RESULT -----", result);
+    
 
     checkMembershipStatus();
     createMessage(result.message, result.type);

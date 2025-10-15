@@ -33,13 +33,11 @@ export const createCoin = async ({
   setMintingStatus,
   username,
   baseToken,
+  connection
 }: CreateCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
-  const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-    confirmTransactionInitialTimeout: 120000,
-  });
-  const env = new anchor.AnchorProvider(connection, wallet, {
+  const env = new anchor.AnchorProvider(connection.connection, wallet, {
     preflightCommitment: "processed",
   });
 
@@ -117,7 +115,7 @@ export const createCoin = async ({
 
     setMintingStatus("Creating Token...");
     await delay(15000);
-    const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash, 0);
+    const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash, 0,connection);
 
     setMintingStatus("Creating Bonding Curve...");
 

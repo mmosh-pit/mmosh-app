@@ -500,7 +500,7 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
         localStorage.removeItem("coinstep1")
         localStorage.removeItem("coinstep2")
 
-        navigate.push("/projects/" + symbol);
+        navigate.push("/coins/" + symbol);
       }
     } catch (error) {
       console.log("error ", error)

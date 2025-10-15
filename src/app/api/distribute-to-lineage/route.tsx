@@ -110,7 +110,7 @@ const getUserName = async (wallet: string) => {
   let username = "unknown user";
   const parentDetails = await usersCollection.findOne({ wallet: wallet });
   if (parentDetails !== null) {
-    username = parentDetails.guest_data.username || parentDetails.name;
+    username = parentDetails.guest_data ? parentDetails.guest_data.username || parentDetails.name : parentDetails.name;
   }
   return username;
 };

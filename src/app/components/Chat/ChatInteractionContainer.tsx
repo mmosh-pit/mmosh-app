@@ -141,7 +141,8 @@ const ChatInteractionContainer = () => {
           query: content,
           instructions: selectedChat!.chatAgent!.system_prompt,
           chatHistory: chatHistory,
-          agentId: selectedChat.chatAgent!.id
+          agentId: selectedChat.chatAgent!.id,
+          bot_id: selectedChat.chatAgent!.key,
         };
 
         console.log("Message data being sent:", queryData);
@@ -152,6 +153,7 @@ const ChatInteractionContainer = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Accept": "text/event-stream",
               "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
             },
             body: JSON.stringify(queryData),

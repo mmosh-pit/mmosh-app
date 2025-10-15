@@ -550,7 +550,7 @@ export class Connectivity {
 
       let lineage = await getLineage(parentProfile.toBase58());
 
-      let cost = price * 10 ** 6;
+      let cost = price * (10 ** 6);
 
       let holdersfullInfo = [];
 
@@ -697,6 +697,7 @@ export class Connectivity {
         web3Consts.usdcToken
       );
 
+
       await this.storeLineage(
         user.toBase58(),
         {
@@ -708,6 +709,47 @@ export class Connectivity {
         },
         this.provider.publicKey.toBase58()
       );
+
+      const saveHistoryparams = {
+        transactionType: "membership_royalty",
+        membershipRoyalty: {
+          royalty: [
+            {
+              receiver: lineage.parent,
+              amount: Math.ceil(cost * (20 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gparent,
+              amount: Math.ceil(cost * (10 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.ggparent,
+              amount: Math.ceil(cost * (3 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gggparent,
+              amount: Math.ceil(cost * (2 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+          ],
+          isStaked: false,
+          isUnlocked: true,
+          purchaseId: "",
+        },
+      };
+      const res = await axios.post(`${origin}/api/history/save`, saveHistoryparams, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("----- MINT PROFILE RESPONSE CHECK -----", res);
 
       return {
         Ok: {
@@ -761,7 +803,8 @@ export class Connectivity {
 
       holdersfullInfo.push({
         receiver: lineage.gparent,
-        vallue: Math.ceil(cost * (3 / 100)),
+        vallue:
+          Math.ceil(cost * (3 / 100)),
       });
 
       holdersfullInfo.push({
@@ -823,7 +866,6 @@ export class Connectivity {
       }
       transaction.add(feeIns);
       // const signature = await this.provider.sendAndConfirm(transaction, []);
-      console.log(transaction, "transation ================================>");
       const signedTx = await this.provider.wallet.signTransaction(
         transaction as any
       );
@@ -834,6 +876,46 @@ export class Connectivity {
       );
 
       console.log(signature, "signature ================================>");
+      const saveHistoryparams = {
+        transactionType: "membership_royalty",
+        membershipRoyalty: {
+          royalty: [
+            {
+              receiver: lineage.parent,
+              amount: Math.ceil(cost * (20 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gparent,
+              amount: Math.ceil(cost * (10 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.ggparent,
+              amount: Math.ceil(cost * (3 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+            {
+              receiver: lineage.gggparent,
+              amount: Math.ceil(cost * (2 / 100)),
+              isClaimed: true,
+              isUnstaked: true
+            },
+          ],
+          isStaked: false,
+          isUnlocked: true,
+          purchaseId: "",
+        },
+      };
+      const res = await axios.post(`${origin}/api/history/save`, saveHistoryparams, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("----- MINT PROFILE RESPONSE CHECK -----", res);
       return {
         Ok: {
           signature: signature,
@@ -845,10 +927,12 @@ export class Connectivity {
       return { Err: error };
     }
   }
-  async trasferUsdCoin(input: {
-    recipient: { receiver: string; amount: number };
-    sender: PublicKey;
-  }): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
+  async trasferUsdCoin(
+    input: {
+      recipient: { receiver: string; amount: number },
+      sender: PublicKey
+    }
+  ): Promise<Result<TxPassType<{ txSignature: string }>, any>> {
     try {
       this.reinit();
       this.baseSpl.__reinit();
@@ -863,7 +947,7 @@ export class Connectivity {
         sender: new anchor.web3.PublicKey(sender),
         receiver: new anchor.web3.PublicKey(recipient.receiver),
         init_if_needed: true,
-        amount: Math.ceil(recipient.amount * 10 ** 6),
+        amount: Math.ceil(recipient.amount * (10 ** 6)),
       });
 
       for (let i = 0; i < createTransfer.length; i++) {
@@ -912,12 +996,24 @@ export class Connectivity {
     ]);
   }
 
-  async storeRoyalty(sender: string, receivers: any, coin: any) {
-    await internalClient.post("/api/update-royalty", {
-      sender,
-      receivers,
-      coin,
-    });
+  async storeRoyalty(sender: string, receivers: any, coin: any, token?: string) {
+    if (token) {
+      await axios.post(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/update-royalty", {
+        sender,
+        receivers,
+        coin,
+      }, {
+        headers: {
+          authorization: token
+        }
+      })
+    } else {
+      await internalClient.post("/api/update-royalty", {
+        sender,
+        receivers,
+        coin,
+      });
+    }
   }
 
   async calculatePriorityFee(instructions: any, lutsInfo: any, mintKp: any) {
@@ -985,12 +1081,24 @@ export class Connectivity {
     }
   }
 
-  async storeLineage(wallet: string, lineage: any, profile: string) {
-    await internalClient.post("/api/save-lineage", {
-      wallet,
-      lineage,
-      profile,
-    });
+  async storeLineage(wallet: string, lineage: any, profile: string, token?: string) {
+    if (token) {
+      await axios.post(process.env.NEXT_PUBLIC_APP_MAIN_URL + "/api/save-lineage", {
+        wallet,
+        lineage,
+        profile
+      }, {
+        headers: {
+          authorization: token
+        }
+      })
+    } else {
+      await internalClient.post("/api/save-lineage", {
+        wallet,
+        lineage,
+        profile,
+      });
+    }
   }
 
   async initSubscriptionBadge(input: {

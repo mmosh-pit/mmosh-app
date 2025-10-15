@@ -9,6 +9,7 @@ import useWallet from "@/utils/wallet";
 import { walletAddressShortener } from "@/app/lib/walletAddressShortener";
 import axios from "axios";
 import useConnection from "@/utils/connection";
+import internalClient from "@/app/lib/internalHttpClient";
 
 type Props = {
   selectedCoin: BagsCoin | BagsNFT;
@@ -22,7 +23,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
   const [amount, setAmount] = React.useState("0");
 
   const [isSending, setIsSending] = React.useState(false);
-  const [ismax, setIsmax] = React.useState(false)
+  const [ismax, setIsmax] = React.useState(false);
 
   const [result, setResult] = React.useState("");
 
@@ -47,13 +48,24 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
       selectedCoin!.topup
     );
 
-    console.log("test 2", res)
-
-    if(res !== "") {
-       await topUp(Number(amount));
-    }
-
-
+    const historyParams = {
+      transactionType: "transfer",
+      transfer: {
+        wallet: wallet.publicKey.toBase58(),
+        fromCurrency: selectedCoin.symbol,
+        amount: Number(amount),
+        receiver: destination,
+      },
+    };
+    const result = await internalClient.post(
+      `/api/history/save`,
+      historyParams,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     setIsSending(false);
     setResult(res);
   };
@@ -183,8 +195,8 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
 
                   setAmount(e.target.value);
                 }}
-                onFocus={()=>{
-                  setIsmax(false)
+                onFocus={() => {
+                  setIsmax(false);
                 }}
                 type="text"
                 placeholder="Amount"
@@ -196,12 +208,15 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
                       {selectedCoin.symbol.toUpperCase()}
                     </p>
                     <button
-                      className={(ismax ? "bg-primary" : "send-max-button") +" rounded-xl px-2 py-1"}
+                      className={
+                        (ismax ? "bg-primary" : "send-max-button") +
+                        " rounded-xl px-2 py-1"
+                      }
                       onClick={() => {
                         if ("decimals" in selectedCoin) {
                           const decimals = "1".padEnd(
                             selectedCoin.decimals + 1,
-                            "0",
+                            "0"
                           );
 
                           const coinBalance =
@@ -212,7 +227,7 @@ const SendAsset = ({ selectedCoin, goBack }: Props) => {
 
                           setAmount(max <= 0 ? "0" : max.toString());
                         }
-                        setIsmax(ismax ? false : true)
+                        setIsmax(ismax ? false : true);
                       }}
                     >
                       Max

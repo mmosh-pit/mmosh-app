@@ -15,10 +15,7 @@ import {
   getSwapPricesForJup,
 } from "@/app/lib/forge/getSwapPrices";
 import { isDrawerOpen } from "@/app/store";
-import {
-  getquote,
-  getSwapTransaction,
-} from "@/app/lib/forge/jupiter";
+import { getquote, getSwapTransaction } from "@/app/lib/forge/jupiter";
 
 import { Connection } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
@@ -47,7 +44,7 @@ const Swap = () => {
   const [targetToken, setTargetToken] = React.useState<SwapCoin>({
     ...baseCoins[0],
     balance: 0,
-    value: 0
+    value: 0,
   });
 
   const [curve, setCurve] = React.useState<BondingPricing>();
@@ -57,52 +54,51 @@ const Swap = () => {
     let base;
     let target;
     if (isBase) {
-      base = token
-      target = targetToken
-      setBaseToken(base)
+      base = token;
+      target = targetToken;
+      setBaseToken(base);
     } else {
-      base = baseToken
-      target = token
-      setTargetToken(target)
+      base = baseToken;
+      target = token;
+      setTargetToken(target);
     }
 
-    console.log("onTokenSelect 0", isBase)
+    console.log("onTokenSelect 0", isBase);
 
-    console.log("onTokenSelect 0", base)
+    console.log("onTokenSelect 0", base);
 
-    console.log("onTokenSelect 0", target)
+    console.log("onTokenSelect 0", target);
 
-    if(base.token == "" || target.token == "") {
-      console.log("onTokenSelect 1")
-      return
+    if (base.token == "" || target.token == "") {
+      console.log("onTokenSelect 1");
+      return;
     }
 
-    if(base.token === target.token) {
-      console.log("onTokenSelect 2")
+    if (base.token === target.token) {
+      console.log("onTokenSelect 2");
       setResult({ res: "error", message: "cannot swap same coin" });
-      return
+      return;
     }
 
-    console.log("onTokenSelect 3")
-    if(base.is_memecoin && target.is_memecoin) {
-      console.log("onTokenSelect 4")
+    console.log("onTokenSelect 3");
+    if (base.is_memecoin && target.is_memecoin) {
+      console.log("onTokenSelect 4");
       setResult({ res: "error", message: "one coin only be memecoin" });
     }
 
-    console.log("onTokenSelect 5")
-    if(!base.is_memecoin && !target.is_memecoin) {
-      console.log("onTokenSelect 6")
+    console.log("onTokenSelect 5");
+    if (!base.is_memecoin && !target.is_memecoin) {
+      console.log("onTokenSelect 6");
       const result: any = await getSwapPricesForJup(base, target, wallet!);
       console.log("jup result ", result);
       setIsJupiter(true);
       setBaseToken(result.baseToken);
       setTargetToken(result.targetToken);
     } else {
-      console.log("onTokenSelect 7")
-      let memecoin = base.is_memecoin ? base : target
+      console.log("onTokenSelect 7");
+      let memecoin = base.is_memecoin ? base : target;
       await loadMemecoin(memecoin, isBase);
     }
-
   };
 
   const loadMemecoin = async (token: SwapCoin, isBase: boolean) => {
@@ -138,13 +134,13 @@ const Swap = () => {
             quote: result.data,
             wallet: wallet?.publicKey.toBase58(),
           });
-          let txHex:any = swapResult.data;
+          let txHex: any = swapResult.data;
 
           const connection = new Connection(
             process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
             {
               confirmTransactionInitialTimeout: 120000,
-            },
+            }
           );
           const env = new anchor.AnchorProvider(connection, wallet, {
             preflightCommitment: "processed",
@@ -153,10 +149,8 @@ const Swap = () => {
           anchor.setProvider(env);
 
           const userConn: UserConn = new UserConn(env, web3Consts.programID);
-          const data:any = Buffer.from(txHex, "base64");
-          const tx = anchor.web3.VersionedTransaction.deserialize(
-            data,
-          );
+          const data: any = Buffer.from(txHex, "base64");
+          const tx = anchor.web3.VersionedTransaction.deserialize(data);
           const signature = await userConn.provider.sendAndConfirm(tx);
 
           console.log("signature", signature);
@@ -168,7 +162,7 @@ const Swap = () => {
           setTargetToken({
             ...baseCoins[0],
             balance: 0,
-            value: 0
+            value: 0,
           });
           setSwapLoading(false);
         } else {
@@ -187,19 +181,40 @@ const Swap = () => {
             exchangedAmount: Number(targetToken.value),
           },
         };
-        await internalClient.post(
-          `/api/history/save`,
-          historyParams,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        await internalClient.post(`/api/history/save`, historyParams, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+
+        const notificationParams = {
+          receiverAddress: wallet.publicKey.toBase58(),
+          fromToken: baseToken.symbol,
+          toToken: targetToken.symbol,
+          fromAmount: Number(baseToken.value),
+          toAmount: Number(targetToken.value),
+          transactionHash: "",
+        };
+        internalClient
+          .post(
+            `/api/notifications/send-swap-notification`,
+            notificationParams,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          )
+          .then((result) => {
+            console.log("send notification result", result.data);
+          })
+          .catch((error) => {
+            console.log("Send notification error", error);
+          });
         setResult({ res: response.type, message: response.message });
         setSwapLoading(false);
       }
-      
+
       setTimeout(() => {
         setResult({ res: "", message: "" });
       }, 4000);
@@ -271,8 +286,7 @@ const Swap = () => {
           });
         }
       } else {
-        const isMMOSHBase = !baseToken.is_memecoin 
-
+        const isMMOSHBase = !baseToken.is_memecoin;
 
         setBaseToken({ ...baseToken!, value });
         const buyValue = isMMOSHBase
@@ -280,9 +294,8 @@ const Swap = () => {
           : curve!.sellTargetAmount(value - value * 0.06);
         setTargetToken({ ...targetToken!, value: buyValue });
       }
-    
     },
-    [baseToken, targetToken],
+    [baseToken, targetToken]
   );
 
   return (

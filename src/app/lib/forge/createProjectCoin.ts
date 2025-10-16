@@ -137,7 +137,7 @@ export const createProjectCoin = async ({
     setMintingStatus("Creating Curve Config...");
     let curve = await curveConn.initializeCurve({
       config: new ExponentialCurveConfig(curveConfig),
-    });
+    },connect);
 
     setMintingStatus("Creating Token...");
     await delay(15000);
@@ -160,7 +160,7 @@ export const createProjectCoin = async ({
       sellBaseRoyaltyPercentage: 0,
       sellTargetRoyaltyPercentage: 0,
       targetMint: new anchor.web3.PublicKey(targetMint),
-    });
+    },connect);
 
     setMintingStatus("Swapping Token...");
     await delay(15000);

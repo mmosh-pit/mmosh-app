@@ -13,5 +13,6 @@ export type CreateProfileParams = {
   parentProfile: PublicKey,
   membership: string,
   membershipType: string,
-  price: number
+  price: number,
+  previousMembership: string
 };

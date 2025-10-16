@@ -295,6 +295,7 @@ const Step4 = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
+      previousMembership: "guest"
     });
 
     createMessage(result.message, result.type);
@@ -489,6 +490,7 @@ const Step4 = () => {
         membership,
         membershipType,
         price,
+        previousMembership: "guest"
       });
       console.log("----- BUY MEMBERSHIP RESULT -----", result);
 

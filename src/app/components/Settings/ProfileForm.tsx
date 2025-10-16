@@ -298,6 +298,7 @@ const ProfileForm = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
+      previousMembership: membershipInfo.membership
     });
 
     createMessage(result.message, result.type);
@@ -556,7 +557,8 @@ const ProfileForm = () => {
         membership,
         membershipType,
         price,
-        banner: ""
+        banner: "",
+        previousMembership: membershipInfo.membership
       });
       console.log("----- UPGRADE PROFILE RESULT -----", result);
       setIsLoading(false);
@@ -597,7 +599,8 @@ const ProfileForm = () => {
       banner: "",
       membership,
       membershipType,
-      price
+      price,
+      previousMembership: membershipInfo.membership
     });
     console.log("----- BUY MEMBERSHIP RESULT -----", result);
 

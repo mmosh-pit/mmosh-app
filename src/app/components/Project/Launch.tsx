@@ -357,6 +357,7 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
         );
 
         setButtonStatus("Creating Coin...");
+        // changed
         const targetMint = await curveConn.createTargetMint(coinDetail.name, coinDetail.symbol, coinDetail.image.preview, presaleDetail.presaleMaximum * (10 ** 9),connection);
         await delay(15000)
 
@@ -372,6 +373,7 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           anchor.setProvider(env);
           console.log('go to the stake coin ==============================>')
           let communityConnection: Community = new Community(env, web3Consts.programID, projectKeyPair.publicKey);
+          // changed
           const stakeres = await communityConnection.stakeCoin({
             mint: new anchor.web3.PublicKey(targetMint),
             user: wallet.publicKey,
@@ -435,12 +437,14 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
         );
 
         setButtonStatus("Creating Curve Config...");
+        // changed
         let curve = await curveConn.initializeCurve({
           config: new ExponentialCurveConfig(curveConfig),
-        });
+        },connection);
 
         setButtonStatus("Creating Curve...");
 
+        // to change
         const res = await curveConn.createTokenBonding({
           name: coinDetail.name,
           symbol: coinDetail.symbol,
@@ -454,7 +458,7 @@ export default function Launch({ onMenuChange, symbol, createMessage }: { onMenu
           sellBaseRoyaltyPercentage: 0,
           sellTargetRoyaltyPercentage: 0,
           targetMint: new anchor.web3.PublicKey(targetMint),
-        });
+        },connection);
 
         console.log("bonding result ", res)
 

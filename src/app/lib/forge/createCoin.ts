@@ -146,7 +146,7 @@ export const createCoin = async ({
           Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
         ),
         slippage: 0.5,
-      });
+      },connection);
     } else {
       const buytx = await internalClient.post("/api/ptv/swap", {
         coin: baseToken.token,
@@ -184,7 +184,7 @@ export const createCoin = async ({
               Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
             ),
             slippage: 0.5,
-          });
+          },connection);
         } else {
           return {
             message:

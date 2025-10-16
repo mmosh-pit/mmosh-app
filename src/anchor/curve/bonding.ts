@@ -711,7 +711,8 @@ export class Connectivity {
   }
 
   async createTokenBonding(
-    args: ICreateTokenBondingArgs,connection:ConnectionContextState
+    args: ICreateTokenBondingArgs,
+    connection: ConnectionContextState
   ): Promise<ICreateTokenBondingOutput> {
     const tokenObj = await this.createTokenBondingInstructions(args);
     const tx = new web3.Transaction().add(...tokenObj.instructions);
@@ -736,25 +737,27 @@ export class Connectivity {
       "-------------------------createtokenbonding--------------------------------------------"
     );
     console.log(tokenObj.signers, "signer============>>");
-    let targetMintKeypair = tokenObj.signers[0]
+    let targetMintKeypair = tokenObj.signers[0];
     const messageBuffer = tx.compileMessage().serialize();
     const messageBytes = new Uint8Array(
       messageBuffer.buffer,
       messageBuffer.byteOffset,
       messageBuffer.byteLength
     );
-     const mintSig = nacl.sign.detached(
+    const mintSig = nacl.sign.detached(
       messageBytes,
       targetMintKeypair.secretKey
     );
     tx.addSignature(targetMintKeypair.publicKey, Buffer.from(mintSig));
     const signedTx = await this.provider.wallet.signTransaction(tx as any);
-     console.log(signedTx, " sign from the createTokenBonding=======================================>");
+    console.log(
+      signedTx,
+      " sign from the createTokenBonding=======================================>"
+    );
     const signature = await connection.sendAndConfirm(
       signedTx as any,
       this.provider.wallet.publicKey.toBase58()
     );
-
 
     // const signature = await this.provider.sendAndConfirm(tx, tokenObj.signers);
 
@@ -1179,7 +1182,8 @@ export class Connectivity {
   }
 
   async initializeCurve(
-    args: IInitializeCurveArgs,connection:ConnectionContextState
+    args: IInitializeCurveArgs,
+    connection: ConnectionContextState
   ): Promise<anchor.web3.PublicKey> {
     const tokenObj = await this.initializeCurveInstructions(args);
     const tx = new web3.Transaction().add(...tokenObj.instructions);
@@ -1203,28 +1207,37 @@ export class Connectivity {
     console.log(
       "initialloze curve send and confirm -------------------------------------------"
     );
-    console.log(tx,"tx value =================================>>")
-    console.log(tokenObj.signers[0],"signers ================================>")
-    let targetMintKeypair = tokenObj.signers[0]
+    console.log(tx, "tx value =================================>>");
+    console.log(
+      tokenObj.signers[0],
+      "signers ================================>"
+    );
+    let targetMintKeypair = tokenObj.signers[0];
     const messageBuffer = tx.compileMessage().serialize();
     const messageBytes = new Uint8Array(
       messageBuffer.buffer,
       messageBuffer.byteOffset,
       messageBuffer.byteLength
     );
-     const mintSig = nacl.sign.detached(
+    const mintSig = nacl.sign.detached(
       messageBytes,
       targetMintKeypair.secretKey
     );
     tx.addSignature(targetMintKeypair.publicKey, Buffer.from(mintSig));
     const signedTx = await this.provider.wallet.signTransaction(tx as any);
-     console.log(signedTx, " sign from the initializeCurve=======================================>");
+    console.log(
+      signedTx,
+      " sign from the initializeCurve=======================================>"
+    );
     const signature = await connection.sendAndConfirm(
       signedTx as any,
       this.provider.wallet.publicKey.toBase58()
     );
     // const signature = await this.provider.sendAndConfirm(tx, tokenObj.signers);
-    console.log("initializeCurve singnature from the api ----------------- ", signature);
+    console.log(
+      "initializeCurve singnature from the api ----------------- ",
+      signature
+    );
     console.log("initializeCurve ", tokenObj.output.curve.toBase58());
     return tokenObj.output.curve;
   }
@@ -1266,12 +1279,13 @@ export class Connectivity {
     };
   }
 
-  async buy(args: IBuyArgs): Promise<string> {
+  async buy(args: IBuyArgs, connect: ConnectionContextState): Promise<string> {
     const tokenObj = await this.buyInstructions(args);
     const tx = new web3.Transaction().add(...tokenObj.instructions);
     tx.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
-    tx.feePayer = this.provider.publicKey;
-
+    tx.feePayer = new anchor.web3.PublicKey(
+      process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+    );
     const feeEstimate = await this.getPriorityFeeEstimate(tx);
     let feeIns;
     if (feeEstimate > 0) {
@@ -1287,8 +1301,54 @@ export class Connectivity {
     console.log(
       "------------------------buy send and confirm ---------------------------------"
     );
-    const signature = await this.provider.sendAndConfirm(tx, tokenObj.signers);
-    console.log("buy ", signature);
+    console.log(tokenObj.signers, "token signer ===========================>");
+    console.log(
+      tokenObj.signers[0],
+      "tokenObj.signers[0] ====================>"
+    );
+    console.log(
+      tokenObj.signers.length,
+      "token signer length===========================>"
+    );
+
+    let signature;
+    if (tokenObj.signers.length != 0) {
+      let targetMintKeypair = tokenObj.signers[0];
+      const messageBuffer = tx.compileMessage().serialize();
+      const messageBytes = new Uint8Array(
+        messageBuffer.buffer,
+        messageBuffer.byteOffset,
+        messageBuffer.byteLength
+      );
+      const mintSig = nacl.sign.detached(
+        messageBytes,
+        targetMintKeypair.secretKey
+      );
+      tx.addSignature(targetMintKeypair.publicKey, Buffer.from(mintSig));
+      const signedTx = await this.provider.wallet.signTransaction(tx as any);
+      console.log(
+        signedTx,
+        " sign from the swap transaction=======================================>"
+      );
+      signature = await connect.sendAndConfirm(
+        signedTx as any,
+        this.provider.wallet.publicKey.toBase58()
+      );
+      console.log(
+        signature,
+        "signature from the send and confirm api from the if condtion ======================"
+      );
+    } else {
+      const signedTx = await this.provider.wallet.signTransaction(tx as any);
+      console.log(signedTx, "====================>");
+      signature = await connect.sendAndConfirm(
+        signedTx as any,
+        this.provider.wallet.publicKey.toBase58()
+      );
+      console.log(signature,"signature from the else contion ===============>>=======================")
+    }
+    // const signature = await this.provider.sendAndConfirm(tx, tokenObj.signers);
+    console.log("buy =================================", signature);
     return signature;
   }
 

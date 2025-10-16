@@ -111,7 +111,7 @@ export const createCoin = async ({
     setMintingStatus("Creating Curve Config...");
     let curve = await curveConn.initializeCurve({
       config: new ExponentialCurveConfig(curveConfig),
-    });
+    },connection);
 
     setMintingStatus("Creating Token...");
     await delay(15000);
@@ -134,7 +134,7 @@ export const createCoin = async ({
       sellBaseRoyaltyPercentage: 0,
       sellTargetRoyaltyPercentage: 0,
       targetMint: new anchor.web3.PublicKey(targetMint),
-    });
+    },connection);
 
     setMintingStatus("Swapping Token...");
     await delay(15000);
@@ -146,7 +146,7 @@ export const createCoin = async ({
           Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
         ),
         slippage: 0.5,
-      });
+      },connection);
     } else {
       const buytx = await internalClient.post("/api/ptv/swap", {
         coin: baseToken.token,
@@ -184,7 +184,7 @@ export const createCoin = async ({
               Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
             ),
             slippage: 0.5,
-          });
+          },connection);
         } else {
           return {
             message:

@@ -597,13 +597,21 @@ const Header = () => {
   }, [wallet]);
   React.useEffect(() => {
     if (wallet) {
-      fetchNotifications();
       checkMembershipStatus();
       if (isInitialized) {
         trackPageView();
       }
     }
   }, [pathname, wallet]);
+
+  React.useEffect(() => {
+    if (wallet) {
+      const intervalId = setInterval(() => {
+        fetchNotifications();
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, [wallet]);
 
   React.useEffect(() => {
     if (

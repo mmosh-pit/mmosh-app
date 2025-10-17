@@ -67,6 +67,9 @@ const config: Config = {
       montserrat: ["Montserrat", "sans-serif"],
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+    require("@tailwindcss/typography"),
+  ],
 };
 export default config;

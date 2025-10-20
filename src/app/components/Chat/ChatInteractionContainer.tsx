@@ -511,7 +511,16 @@ const ChatInteractionContainer = () => {
                       ) : (
                         <div className="text-base leading-relaxed prose prose-invert max-w-none">
                           <Markdown remarkPlugins={[remarkGfm]}>
-                            {message.content}
+                            {message.type === "bot" && message.content.includes("Thought:") 
+                              ? message.content
+                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
+                                  .replace(/Action:/g, "\n\n> *Action:*\n")
+                                  .replace(/^((?!Thought:|Action:).+)/gm, (match) => {
+                                    return match.startsWith(">") ? match : `**${match}**`;
+                                  })
+                                  .trim()
+                              : message.content
+                            }
                           </Markdown>
                         </div>
                       )}

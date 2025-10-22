@@ -112,6 +112,7 @@ export async function POST(req: NextRequest) {
     });
 
     console.log("test 1");
+    console.log(offerData.key,"from the frontEnd ==============================>>")
 
     let projectConn: CommunityConn = new CommunityConn(
       env,
@@ -365,50 +366,61 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log(offerData.key,"offerData.key ============================>>")
     let result;
-    if (!hasInivtation) {
-      console.log("minting without invitation");
-      console.log("minting guest pass");
-      result = await projectConn.offerGuestPassTx(
-        {
-          name: offerData.name,
-          symbol: offerData.symbol,
-          uriHash: passMetaURI,
-          genesisProfile: offerData.key,
-          commonLut: offerData.lut,
-        },
-        receiver,
-        receiver,
-        price * supply,
-        supply
-      );
-    } else {
-      console.log("minting with invitation");
-      result = await projectConn.mintPassTx(
-        {
-          name: offerData.name,
-          symbol: offerData.symbol,
-          uriHash: passMetaURI,
-          activationToken: offerData.badge,
-          genesisProfile: offerData.key,
-          commonLut: offerData.lut,
-        },
-        receiver,
-        receiver,
-        price * 10 ** coinData.target.decimals * supply,
-        supply
-      );
-    }
+    let supplyValue = price * supply
+    // if (!hasInivtation) {
+    //   console.log("minting without invitation");
+    //   console.log("minting guest pass");
+    //   result = await projectConn.offerGuestPassTx(
+    //     {
+    //       name: offerData.name,
+    //       symbol: offerData.symbol,
+    //       uriHash: passMetaURI,
+    //       genesisProfile: offerData.key,
+    //       commonLut: offerData.lut,
+    //     },
+    //     receiver,
+    //     receiver,
+    //     price * supply,
+    //     Oksupply
+    //   );
+    // } else {
+    //   console.log("minting with invitation");
+    //   result = await projectConn.mintPassTx(
+    //     {
+    //       name: offerData.name,
+    //       symbol: offerData.symbol,
+    //       uriHash: passMetaURI,
+    //       activationToken: offerData.badge,
+    //       genesisProfile: offerData.key,
+    //       commonLut: offerData.lut,
+    //     },
+    //     receiver,
+    //     receiver,
+    //     price * 10 ** coinData.target.decimals * supply,
+    //     supply
+    //   );
+    // }
 
     console.log(
       "result  from the  mintGuestPassTx @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
       result
     );
-    if (result.Ok) {
+    if (!hasInivtation) {
       return NextResponse.json(
         {
           status: true,
-          signature: result.Ok,
+          data : {
+          name: offerData.name,
+          symbol: offerData.symbol,
+          uriHash: passMetaURI,
+          genesisProfile: offerData.key,
+          commonLut: offerData.lut,
+          },
+        receiver,
+        supplyValue,
+        supply
         },
         {
           status: 200,

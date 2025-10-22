@@ -25,8 +25,7 @@ const Offer = ({
 }: {
   params: { symbol: string; offersymbol: string };
 }) => {
-
-  const connection = useConnection()
+  const connect = useConnection();
   const drawerRef = useRef<HTMLInputElement>(null);
   const [profileInfo] = useAtom(userWeb3Info);
   const [offerDetail, setOfferDetail] = React.useState<any>(null);
@@ -91,7 +90,10 @@ const Offer = ({
   }, [offerDetail, wallet]);
 
   useEffect(() => {
-    console.log(localStorage.getItem("token"),"token ==============================>>")
+    console.log(
+      localStorage.getItem("token"),
+      "token ==============================>>"
+    );
     if (stakeType != "") {
       (document.getElementById("stake_modal") as any)?.showModal();
     }
@@ -165,7 +167,7 @@ const Offer = ({
     }
   };
 
-const getTokenPrice = async (coin: CoinDetail) => {
+  const getTokenPrice = async (coin: CoinDetail) => {
     try {
       let priceInUsd = 0;
       if (coin.status === "completed") {
@@ -218,7 +220,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
       }
       console.log(priceInUsd, "priceInUsd =====================>");
       setUsdcPrice(priceInUsd);
- 
+
       if (wallet) {
         const connection = new Connection(
           process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
@@ -229,9 +231,9 @@ const getTokenPrice = async (coin: CoinDetail) => {
         const env = new anchor.AnchorProvider(connection, wallet, {
           preflightCommitment: "processed",
         });
- 
+
         anchor.setProvider(env);
- 
+
         const userConn: UserConn = new UserConn(env, web3Consts.programID);
         let balance = await userConn.getUserBalance({
           address: wallet.publicKey.toBase58(),
@@ -240,7 +242,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
         });
         setTokenBlance(balance);
       }
- 
+
       setLoading(false);
     } catch (error) {
       console.log("setUsdcPrice getTokenPrice error ==========>>>", error);
@@ -248,7 +250,6 @@ const getTokenPrice = async (coin: CoinDetail) => {
       setLoading(false);
     }
   };
- 
 
   const getStakeBalance = async () => {
     if (!wallet) {
@@ -342,7 +343,10 @@ const getTokenPrice = async (coin: CoinDetail) => {
       let listResult = await axios.get(
         `/api/project/detail?symbol=${params.symbol}`
       );
-      console.log(listResult.data,"getProjectDetailFromAPI =================================>>>")
+      console.log(
+        listResult.data,
+        "getProjectDetailFromAPI =================================>>>"
+      );
       setProjectDetail(listResult.data);
     } catch (error) {
       console.log("getProjectDetailFromAPI error", error);
@@ -362,7 +366,8 @@ const getTokenPrice = async (coin: CoinDetail) => {
     } catch (error) {
       console.log("getOfferDetailFromAPI error", error);
       setLoading(false);
-      setOfferDetail(null);
+      
+      (null);
     }
   };
 
@@ -420,24 +425,79 @@ const getTokenPrice = async (coin: CoinDetail) => {
         setYearlyLoading(true);
       } else {
         setInviteLoading(true);
-      } 
-      console.log("go to the result ===============================>>",supplyValue)
-      
+      }
+      console.log(
+        "go to the result ===============================>>",
+        supplyValue
+      );
+
       const result: any = await internalClient.post("/api/offer/buy", {
         receiver: wallet.publicKey?.toBase58(),
         symbol: offerDetail.symbol,
         type,
         supply: supplyValue,
-        profileInfo
+        profileInfo,
       });
+      let signFromApi
 
-      const info = result.data.signature.info;
-      let signature = result.data.signature.signature;
+      console.log(
+        result,
+        "result from the resut from offer-buy---------------------"
+      );
+      console.log(
+        result.data.status,
+        "result from the resut from offer-buy---------------------"
+      );
+            console.log(result.data.receiver,"result.data.data.receiver two================>>")
+
+   
+      if (result.data.status === true) {
+
+        console.log('-------------------- the if condtion-----------------------')
+          const env = new anchor.AnchorProvider(connect.connection, wallet, {
+          preflightCommitment: "processed",
+        });
+
+        console.log("test 1");
+
+        let projectConn: CommunityConn = new CommunityConn(
+          env,
+          web3Consts.programID,
+          new anchor.web3.PublicKey( offerDetail.key)
+        );
+
+        console.log(offerDetail.key,"from the frontEnd ==============================>>")
+        console.log('--------go to offer guest pass tx ---------------------------')
+        signFromApi = await projectConn.offerGuestPassTx(
+          {
+            name: result.data.data.name,
+            symbol: result.data.data.symbol,
+            uriHash: result.data.data.uriHash,
+            genesisProfile: result.data.data.genesisProfile,
+            commonLut: result.data.data.commonLut,
+          },
+          result.data.receiver,
+          connect,
+          result.data.supplyValue,
+          result.data.supply
+        );
+      }
+
+      console.log(signFromApi,"signFromApi ====================>")
+
+
+      const info : any = signFromApi?.Ok?.info;
+      let signature = signFromApi?.Ok?.signature;
       const receiver = wallet.publicKey.toBase58();
-      let offer = projectDetail.offers?.[0]; // get the first offer safely
+      let offer = projectDetail.offers?.[0];
+      
       let pricetype = offer?.pricetype;
       let supply = supplyValue;
       let price = 0;
+
+
+      console.log(info,"info =========================>")
+      console.log(signature,"signature ================================>>>>")
 
       let paidtype;
       if (type === "onetime") {
@@ -478,10 +538,13 @@ const getTokenPrice = async (coin: CoinDetail) => {
             wallet: wallet.publicKey.toBase58(),
             currency: params.offersymbol,
             botName: params.symbol,
-            amount: supplyValue
-          }
+            amount: supplyValue,
+          },
         };
-        const res = await internalClient.post(`/api/history/save`, historyParams);
+        const res = await internalClient.post(
+          `/api/history/save`,
+          historyParams
+        );
         console.log("----- SAVE HISTORY RESPONSE -----", res.data);
         createMessage("Offer purchased successfully", "success-container");
       } else {
@@ -518,8 +581,46 @@ const getTokenPrice = async (coin: CoinDetail) => {
       );
       console.log(renewResult, "renewResult =========================>>");
 
-      const info = renewResult.data.signature.info;
-      let signature = renewResult.data.signature.signature;
+
+       let signFromApi
+
+     
+
+   
+      if (renewResult.data.status === true) {
+
+        console.log('-------------------- the if condtion-----------------------')
+          const env = new anchor.AnchorProvider(connect.connection, wallet, {
+          preflightCommitment: "processed",
+        });
+
+        console.log("test 1");
+
+        let projectConn: CommunityConn = new CommunityConn(
+          env,
+          web3Consts.programID,
+          new anchor.web3.PublicKey(offerDetail.key)
+        );
+
+        console.log('--------go to offer guest pass tx ---------------------------')
+        signFromApi = await projectConn.offerGuestPassTx(
+          {
+            name: renewResult.data.data.name,
+            symbol: renewResult.data.data.symbol,
+            uriHash: renewResult.data.data.uriHash,
+            genesisProfile: renewResult.data.data.genesisProfile,
+            commonLut: renewResult.data.data.commonLut,
+          },
+          renewResult.data.receiver,
+          connect,
+          renewResult.data.supplyValue,
+          renewResult.data.supply
+        );
+      }
+
+
+      const info : any = signFromApi?.Ok?.info;
+      let signature = signFromApi?.Ok?.signature;
       const receiver = wallet.publicKey.toBase58();
       let offer = projectDetail.offers?.[0]; // get the first offer safely
       let pricetype = offer?.pricetype;
@@ -591,7 +692,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
     if (!wallet) {
       createMessage(
         "Hey! We checked your wallet is not connected",
-        "warning-container",
+        "warning-container"
       );
       closeDrawer();
       return;
@@ -611,7 +712,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
     if (profileInfo?.solBalance == 0) {
       createMessage(
         "Hey! We checked your wallet and you don’t have enough SOL for the gas fees. Get some Solana and try again!",
-        "warning-container",
+        "warning-container"
       );
       closeDrawer();
       return;
@@ -627,7 +728,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
     let projectConn: CommunityConn = new CommunityConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(offerDetail.key),
+      new anchor.web3.PublicKey(offerDetail.key)
     );
 
     try {
@@ -657,12 +758,12 @@ const getTokenPrice = async (coin: CoinDetail) => {
         });
         createMessage(
           "Congrats! You have minted your Invitation(s) successfully.",
-          "success-container",
+          "success-container"
         );
       } else {
         createMessage(
           "We’re sorry, there was an error while trying to mint your Invitation Badge(s). Check your wallet and try again.",
-          "danger-container",
+          "danger-container"
         );
       }
       closeDrawer();
@@ -670,7 +771,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
     } catch (error) {
       createMessage(
         "We’re sorry, there was an error while trying to mint your Invitation Badge(s). Check your wallet and try again.",
-        "danger-container",
+        "danger-container"
       );
       setInviteLoading(false);
       closeDrawer();
@@ -684,7 +785,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
       }
       let subscriptionResult = await internalClient.post(
         "/api/offer/cancel-subscription",
-        { wallet: wallet?.publicKey.toBase58(), offer: offerDetail.key },
+        { wallet: wallet?.publicKey.toBase58(), offer: offerDetail.key }
       );
       if (subscriptionResult.data) {
         await getUserSubscription();
@@ -722,8 +823,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
       return;
     }
 
- 
-    const env = new anchor.AnchorProvider(connection.connection, wallet, {
+    const env = new anchor.AnchorProvider(connect.connection, wallet, {
       preflightCommitment: "processed",
     });
 
@@ -733,20 +833,20 @@ const getTokenPrice = async (coin: CoinDetail) => {
     let projectConn: CommunityConn = new CommunityConn(
       env,
       web3Consts.programID,
-      new anchor.web3.PublicKey(projectDetail.project.key),
+      new anchor.web3.PublicKey(projectDetail.project.key)
     );
     setStakeLoading(true);
     try {
       if (stakeType == "deposit") {
-        const stakeres = await projectConn.stakeCoin({
-          user: wallet.publicKey,
-          mint: new anchor.web3.PublicKey(projectDetail.coins[0].key),
-          value: Math.ceil(value * 10 ** coin?.target.decimals),
-          duration: 0,
-        },
-        connection
-        
-      );
+        const stakeres = await projectConn.stakeCoin(
+          {
+            user: wallet.publicKey,
+            mint: new anchor.web3.PublicKey(projectDetail.coins[0].key),
+            value: Math.ceil(value * 10 ** coin?.target.decimals),
+            duration: 0,
+          },
+          connect
+        );
         console.log("stake signature ", stakeres);
         await delay(15000);
       } else {
@@ -886,7 +986,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                 }
                                 onChange={(e) =>
                                   setSupplyValue(
-                                    prepareNumber(Number(e.target.value)),
+                                    prepareNumber(Number(e.target.value))
                                   )
                                 }
                               />
@@ -926,7 +1026,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
                     {usdcPrice > 0 &&
                       (offerDetail.supply == 0 ||
                         offerDetail.supply >=
-                        offerDetail.sold + supplyValue) && (
+                          offerDetail.sold + supplyValue) && (
                         <>
                           {offerDetail.pricetype === "onetime" && (
                             <div className="mb-5">
@@ -973,7 +1073,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                       {(
                                         (Number(offerDetail.priceonetime) -
                                           Number(offerDetail.priceonetime) *
-                                          (offerDetail.discount / 100)) /
+                                            (offerDetail.discount / 100)) /
                                         usdcPrice
                                       ).toFixed(2)}
                                     </span>
@@ -1008,20 +1108,20 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                   {!(
                                     offerDetail.discount > 0 && hasInivtation
                                   ) && (
-                                      <>
-                                        {" "}
-                                        <p className="text-base">Current Price</p>
-                                        <h2 className="text-white text-lg uppercase mb-3.5">
-                                          {projectDetail.coins[0].symbol.toUpperCase()}
-                                          <span className="mr-3.5 ml-3.5 text-lg text-white">
-                                            {(
-                                              Number(offerDetail.pricemonthly) /
-                                              usdcPrice
-                                            ).toFixed(2)}
-                                          </span>
-                                        </h2>
-                                      </>
-                                    )}
+                                    <>
+                                      {" "}
+                                      <p className="text-base">Current Price</p>
+                                      <h2 className="text-white text-lg uppercase mb-3.5">
+                                        {projectDetail.coins[0].symbol.toUpperCase()}
+                                        <span className="mr-3.5 ml-3.5 text-lg text-white">
+                                          {(
+                                            Number(offerDetail.pricemonthly) /
+                                            usdcPrice
+                                          ).toFixed(2)}
+                                        </span>
+                                      </h2>
+                                    </>
+                                  )}
                                   {offerDetail.discount > 0 &&
                                     hasInivtation && (
                                       <>
@@ -1049,13 +1149,13 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                           <span className="font-normal">
                                             {(
                                               (Number(
-                                                offerDetail.pricemonthly,
+                                                offerDetail.pricemonthly
                                               ) -
                                                 Number(
-                                                  offerDetail.pricemonthly,
+                                                  offerDetail.pricemonthly
                                                 ) *
-                                                (offerDetail.discount /
-                                                  100)) /
+                                                  (offerDetail.discount /
+                                                    100)) /
                                               usdcPrice
                                             ).toFixed(2)}
                                           </span>
@@ -1086,20 +1186,20 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                   {!(
                                     offerDetail.discount > 0 && hasInivtation
                                   ) && (
-                                      <>
-                                        {" "}
-                                        <p className="text-base">Current Price</p>
-                                        <h2 className="text-white text-lg uppercase mb-3.5">
-                                          {projectDetail.coins[0].symbol.toUpperCase()}
-                                          <span className="mr-3.5 ml-3.5 text-lg text-white">
-                                            {(
-                                              Number(offerDetail.priceyearly) /
-                                              usdcPrice
-                                            ).toFixed(2)}
-                                          </span>
-                                        </h2>
-                                      </>
-                                    )}
+                                    <>
+                                      {" "}
+                                      <p className="text-base">Current Price</p>
+                                      <h2 className="text-white text-lg uppercase mb-3.5">
+                                        {projectDetail.coins[0].symbol.toUpperCase()}
+                                        <span className="mr-3.5 ml-3.5 text-lg text-white">
+                                          {(
+                                            Number(offerDetail.priceyearly) /
+                                            usdcPrice
+                                          ).toFixed(2)}
+                                        </span>
+                                      </h2>
+                                    </>
+                                  )}
                                   {offerDetail.discount > 0 &&
                                     hasInivtation && (
                                       <>
@@ -1128,10 +1228,10 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                             {(
                                               (Number(offerDetail.priceyearly) -
                                                 Number(
-                                                  offerDetail.priceyearly,
+                                                  offerDetail.priceyearly
                                                 ) *
-                                                (offerDetail.discount /
-                                                  100)) /
+                                                  (offerDetail.discount /
+                                                    100)) /
                                               usdcPrice
                                             ).toFixed(2)}
                                           </span>
@@ -1346,7 +1446,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                           {item.buyer.substring(0, 4)}...
                                           {item.buyer.substring(
                                             item.buyer.length - 4,
-                                            item.buyer.length,
+                                            item.buyer.length
                                           )}
                                         </a>
                                       </th>
@@ -1361,7 +1461,7 @@ const getTokenPrice = async (coin: CoinDetail) => {
                                           {item.signature.substring(0, 4)}...
                                           {item.signature.substring(
                                             item.signature.length - 4,
-                                            item.signature.length,
+                                            item.signature.length
                                           )}
                                         </a>
                                       </th>

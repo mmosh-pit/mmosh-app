@@ -7,12 +7,66 @@ import ChatInteractionContainer from "../components/Chat/ChatInteractionContaine
 import { chatsStore } from "../store/chat";
 import useWsConnection from "../lib/useWsConnection";
 import { isAuth } from "../store";
+import MessageBanner from "../components/common/MessageBanner";
+import internalClient from "../lib/internalHttpClient";
+import useWallet from "@/utils/wallet";
 
 export default function OPOS() {
   const [_, setChats] = useAtom(chatsStore);
   const [isUserAuth] = useAtom(isAuth);
+  const wallet = useWallet();
 
   const socket = useWsConnection({ isAuth: isUserAuth });
+  const [showMessage, setShowMessage] = React.useState<boolean>(false);
+
+  const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
+  const [membershipStatus, setMembershipStatus] = React.useState<string>("");
+
+  const checkUsage = async () => {
+    console.log("membershipStatus", membershipStatus);
+    if (membershipStatus !== "active") {
+      try {
+        const result = await internalClient.get("/api/check-usage", {
+          params: {
+            wallet: wallet?.publicKey.toBase58(),
+            agentId: "",
+            role: "guest",
+          },
+        });
+        setShowMessage(!result.data.allowed);
+        setHasAllowed(result.data.allowed);
+      } catch (error) {
+        setShowMessage(true);
+        setHasAllowed(false);
+      }
+    } else {
+      setShowMessage(false);
+      setHasAllowed(true);
+    }
+  };
+  const checkMembershipStatus = async () => {
+    const token = localStorage.getItem("token") || "";
+    const membershipInfo = await internalClient.get(
+      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    setMembershipStatus(membershipInfo.data);
+  };
+
+  React.useEffect(() => {
+    if (membershipStatus.length > 0) { 
+      checkUsage();
+    }
+  }, [membershipStatus]);
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet])
 
   React.useEffect(() => {
     if (socket) {
@@ -31,8 +85,7 @@ export default function OPOS() {
 
             const currentChatIdx = newChats.findIndex(
               (e) =>
-                e.chatAgent?.id === message.agent_id ||
-                e.id === message.chat_id,
+                e.chatAgent?.id === message.agent_id || e.id === message.chat_id
             );
 
             const messages = newChats[currentChatIdx].messages;
@@ -83,10 +136,20 @@ export default function OPOS() {
   }, [socket]);
 
   return (
-    <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
-      <ChatAgentSelector />
+    <>
+      {showMessage && (
+        <div>
+          <MessageBanner
+            type="warn"
+            message="Daily usage limit ($0.20) reached. Access temporarily disabled."
+          />
+        </div>
+      )}
+      <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
+        <ChatAgentSelector />
 
-      <ChatInteractionContainer />
-    </div>
+        <ChatInteractionContainer setShowMessage={setShowMessage} hasAllowed={hasAllowed} checkUsage={() => checkUsage()}/>
+      </div>
+    </>
   );
 }

@@ -164,7 +164,7 @@ export class Connectivity {
   async sendProjectPrice(
     profile: any,
     amount: any,
-    connection: ConnectionContextState,
+    connection: ConnectionContextState
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
@@ -368,7 +368,8 @@ export class Connectivity {
 
   async sendOfferPrice(
     profile: any,
-    amount: any
+    amount: any,
+    connect: ConnectionContextState
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     for (let attempt = 0; attempt < web3Consts.MAX_RETRIES; attempt++) {
       try {
@@ -468,7 +469,9 @@ export class Connectivity {
         tx.recentBlockhash = (
           await this.connection.getLatestBlockhash()
         ).blockhash;
-        tx.feePayer = this.provider.publicKey;
+        tx.feePayer = new anchor.web3.PublicKey(
+          process.env.NEXT_PUBLIC_PTV_WALLET_KEY || ""
+        );
         console.log("---------------------step 1----------------");
         const feeEstimate = await this.getPriorityFeeEstimate(tx);
         let feeIns;
@@ -488,8 +491,19 @@ export class Connectivity {
         tx.add(feeIns);
         console.log("---------------------step 4----------------");
 
+        console.log(tx.feePayer,"tx.feePayer  admin wallet addres =======================>>");
+        console.log(
+          this.provider.wallet.publicKey.toBase58(),
+          "user wallet addres ==========================>"
+        );
         this.txis = [];
-        const signature = await this.provider.sendAndConfirm(tx);
+        const signedTx = await this.provider.wallet.signTransaction(tx as any);
+        console.log(signedTx, "singtedtx ==============================>");
+        const signature = await connect.sendAndConfirm(
+          signedTx as any,
+          this.provider.wallet.publicKey.toBase58()
+        );
+        // const signature = await this.provider.sendAndConfirm(tx);
         console.log(signature, "signature =========================>");
         console.log("---------------------step 5----------------");
 
@@ -2255,26 +2269,24 @@ export class Connectivity {
   async offerGuestPassTx(
     input: _MintGuestPass,
     userProfile: string,
-    payerProfile: string,
+    connect: ConnectionContextState,
     cost?: number,
     supply?: number
   ): Promise<Result<TxPassType<{ profile: string }>, any>> {
     try {
       this.reinit();
       this.baseSpl.__reinit();
+      console.log(userProfile,"userProfile=================================")
       const user = new anchor.web3.PublicKey(userProfile);
-      const payer = new anchor.web3.PublicKey(payerProfile);
       if (!user) throw "Wallet not found";
-      if (!payer) throw "Payer wallet not found";
       let { name, symbol, uriHash, genesisProfile, commonLut } = input;
       const mintKp = web3.Keypair.generate();
       symbol = symbol ?? "";
       uriHash = uriHash ?? "";
       this.txis = [];
       console.log(cost, "cost value from the api =========================>");
-      console.log(payerProfile, "payerProfile =========================>");
       console.log(userProfile, "userProfile =========================>");
-      let sendPrice = await this.sendOfferPrice(userProfile, cost);
+      let sendPrice = await this.sendOfferPrice(userProfile, cost, connect);
 
       console.log("sendPrice =========================>", sendPrice);
 
@@ -3861,13 +3873,15 @@ export class Connectivity {
     console.log("stakecoin 6");
     console.log("send adn confirm from the stakeCoin");
     const signedTx = await this.provider.wallet.signTransaction(tx as any);
-     const signature = await connection.sendAndConfirm(
-          signedTx as any,
-          this.provider.wallet.publicKey.toBase58()
-        );
+    const signature = await connection.sendAndConfirm(
+      signedTx as any,
+      this.provider.wallet.publicKey.toBase58()
+    );
 
-
-        console.log(signature,"signature from the stake coinn ======================")
+    console.log(
+      signature,
+      "signature from the stake coinn ======================"
+    );
     // const signature = await this.provider.sendAndConfirm(tx, []);
 
     return signature;

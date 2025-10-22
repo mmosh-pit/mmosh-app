@@ -14,7 +14,7 @@ import VoiceIcon from "@/assets/icons/VoiceIcon";
 import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
 
-const ChatInteractionContainer = () => {
+const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -93,7 +93,7 @@ const ChatInteractionContainer = () => {
 
   const sendMessage = React.useCallback(
     async (content: string) => {
-      if (!selectedChat?.messages) return;
+      if (!selectedChat?.messages || !props.hasAllowed) return;
 
       // Add user message to the chat immediately
       const userMessage: Message = {
@@ -274,6 +274,7 @@ const ChatInteractionContainer = () => {
                           body: JSON.stringify(saveChatData),
                         },
                       );
+                      props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
@@ -574,12 +575,13 @@ const ChatInteractionContainer = () => {
               <button
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 
-                  ${!text.trim() || isLoading
-                    ? "bg-[#565656] cursor-not-allowed"
-                    : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
+                  ${
+                    !props.hasAllowed || !text.trim() || isLoading
+                      ? "bg-[#565656] cursor-not-allowed"
+                      : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}
-                disabled={!text.trim() || isLoading}
+                disabled={!props.hasAllowed}
                 type="submit"
               >
                 {isLoading ? (

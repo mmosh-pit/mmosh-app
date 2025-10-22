@@ -20,9 +20,10 @@ export default function OPOS() {
   const [showMessage, setShowMessage] = React.useState<boolean>(false);
 
   const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
-  const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
+  const [membershipStatus, setMembershipStatus] = React.useState<string>("");
 
   const checkUsage = async () => {
+    console.log("membershipStatus", membershipStatus);
     if (membershipStatus !== "active") {
       try {
         const result = await internalClient.get("/api/check-usage", {
@@ -57,11 +58,15 @@ export default function OPOS() {
   };
 
   React.useEffect(() => {
-    if (wallet) {
-      checkMembershipStatus();
+    if (membershipStatus.length > 0) { 
       checkUsage();
     }
-  }, [membershipStatus, wallet]);
+  }, [membershipStatus]);
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet])
 
   React.useEffect(() => {
     if (socket) {
@@ -143,7 +148,7 @@ export default function OPOS() {
       <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
         <ChatAgentSelector />
 
-        <ChatInteractionContainer setShowMessage={setShowMessage} hasAllowed={hasAllowed} checkUsage={checkUsage}/>
+        <ChatInteractionContainer setShowMessage={setShowMessage} hasAllowed={hasAllowed} checkUsage={() => checkUsage()}/>
       </div>
     </>
   );

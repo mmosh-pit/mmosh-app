@@ -23,6 +23,7 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import useWallet from "@/utils/wallet";
 import baseCoins from "../lib/baseCoins";
 import internalClient from "../lib/internalHttpClient";
+import useConnection from "@/utils/connection";
 
 const defaultBaseToken = {
   name: "",
@@ -37,6 +38,7 @@ const defaultBaseToken = {
 
 const Swap = () => {
   const wallet = useWallet();
+  const connect = useConnection()
   const [isDrawerShown] = useAtom(isDrawerOpen);
   const [swapLoading, setSwapLoading] = React.useState(false);
   const [result, setResult] = React.useState({ res: "", message: "" });
@@ -170,7 +172,8 @@ const Swap = () => {
           setSwapLoading(false);
         }
       } else {
-        const response = await swapTokens(targetToken, baseToken, wallet!);
+        console.log('----------------inside the else condition ----------------------------------')
+        const response = await swapTokens(targetToken, baseToken, wallet!,connect);
         const historyParams = {
           transactionType: "token_exchange",
           tokenExchange: {

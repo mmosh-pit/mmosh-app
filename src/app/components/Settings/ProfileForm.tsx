@@ -22,8 +22,10 @@ import { pinFileToShadowDrive } from "@/app/lib/uploadFileToShdwDrive";
 import * as anchor from "@coral-xyz/anchor";
 import { updateUserData } from "@/app/lib/forge/updateUserData";
 import Radio from "../common/Radio";
+import useConnection from "@/utils/connection";
 
 const ProfileForm = () => {
+  const connection = useConnection()
   const wallet = useWallet();
   const navigate = useRouter();
   const searchParams = useSearchParams();
@@ -298,7 +300,8 @@ const ProfileForm = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
-      previousMembership: membershipInfo.membership
+      previousMembership: membershipInfo.membership,
+      connection,
     });
 
     createMessage(result.message, result.type);
@@ -558,7 +561,8 @@ const ProfileForm = () => {
         membershipType,
         price,
         banner: "",
-        previousMembership: membershipInfo.membership
+        previousMembership: membershipInfo.membership,
+        connection,
       });
       console.log("----- UPGRADE PROFILE RESULT -----", result);
       setIsLoading(false);
@@ -600,9 +604,11 @@ const ProfileForm = () => {
       membership,
       membershipType,
       price,
-      previousMembership: membershipInfo.membership
+      previousMembership: membershipInfo.membership,
+      connection,
     });
     console.log("----- BUY MEMBERSHIP RESULT -----", result);
+    
 
     checkMembershipStatus();
     createMessage(result.message, result.type);

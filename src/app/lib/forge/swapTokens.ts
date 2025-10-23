@@ -13,11 +13,13 @@ import { getPriceForPTV } from "./jupiter";
 import { CoinDetail } from "@/app/models/coin";
 import { FrostWallet } from "@/utils/frostWallet";
 import internalClient from "../internalHttpClient";
+import { ConnectionContextState } from "@/utils/connection";
 
 export const swapTokens = async (
   baseToken: SwapCoin,
   targetToken: SwapCoin,
   wallet: FrostWallet,
+  connect:ConnectionContextState
 ): Promise<MintResultMessage> => {
   const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
     confirmTransactionInitialTimeout: 120000,
@@ -224,13 +226,14 @@ export const swapTokens = async (
       console.log("desired amount ", baseToken.value);
 
       if (balance > targetToken.value) {
+        console.log('-----------------------------inside the buy---------------------------------------')
         buyres = await curveConn.buy({
           tokenBonding: new anchor.web3.PublicKey(result.data.bonding),
           desiredTargetAmount: new anchor.BN(
             baseToken.value * 10 ** baseToken.decimals,
           ),
           slippage: 0.5,
-        });
+        },connect);
       } else {
         return {
           message:

@@ -13,6 +13,7 @@ import { BondingPricing } from "@/anchor/curve/curves";
 import { web3Consts } from "@/anchor/web3Consts";
 import { SwapCoin } from "@/app/models/swapCoin";
 import useWallet from "@/utils/wallet";
+import useConnection from "@/utils/connection";
 
 type Props = {
   coin: Coin;
@@ -20,6 +21,7 @@ type Props = {
 
 const Swap = ({ coin }: Props) => {
   const wallet = useWallet();
+  const connection = useConnection()
 
   const [_, setTargetTokenBalance] = useAtom(targetTokenBalance);
 
@@ -44,7 +46,7 @@ const Swap = ({ coin }: Props) => {
 
   const executeSwap = React.useCallback(async () => {
     setSwapLoading(true);
-    const response = await swapTokens(targetToken!, baseToken!, wallet!);
+    const response = await swapTokens(targetToken!, baseToken!, wallet!,connection);
 
     setResult({ res: response.type, message: response.message });
     if (response.data?.token) {

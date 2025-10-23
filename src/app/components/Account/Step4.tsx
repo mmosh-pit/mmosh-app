@@ -24,8 +24,10 @@ import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
 import { storeFormAtom } from "@/app/store/signup";
 import Radio from "../common/Radio";
 import internalClient from "@/app/lib/internalHttpClient";
+import useConnection from "@/utils/connection";
 
 const Step4 = () => {
+  const connection = useConnection()
   const router = useRouter();
   const isMobileScreen = useCheckMobileScreen();
 
@@ -296,7 +298,8 @@ const Step4 = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
-      previousMembership: "guest"
+      previousMembership: "guest",
+      connection,
     });
 
     createMessage(result.message, result.type);
@@ -517,7 +520,8 @@ const Step4 = () => {
         membership,
         membershipType,
         price,
-        previousMembership: "guest"
+        previousMembership: "guest",
+        connection,
       });
       console.log("----- BUY MEMBERSHIP RESULT -----", result);
 

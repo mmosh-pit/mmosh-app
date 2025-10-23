@@ -24,6 +24,7 @@ import { Connectivity as UserConn } from "@/anchor/user";
 import useWallet from "@/utils/wallet";
 import { BondingPricing } from "@/anchor/curve/curves";
 import client from "@/app/lib/httpClient";
+import useConnection from "@/utils/connection";
 
 const defaultBaseToken = {
   name: "",
@@ -38,6 +39,7 @@ const defaultBaseToken = {
 
 const Step3 = () => {
   const wallet = useWallet();
+  const connect = useConnection()
   const [_, setSelectedStep] = useAtom(onboardingStep);
 
   const [curve, setCurve] = React.useState<BondingPricing>();
@@ -135,13 +137,8 @@ const Step3 = () => {
           });
           let txHex: any = swapResult.data;
 
-          const connection = new Connection(
-            process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
-            {
-              confirmTransactionInitialTimeout: 120000,
-            },
-          );
-          const env = new anchor.AnchorProvider(connection, wallet, {
+        
+          const env = new anchor.AnchorProvider(connect.connection, wallet, {
             preflightCommitment: "processed",
           });
 
@@ -169,7 +166,7 @@ const Step3 = () => {
           setSwapLoading(false);
         }
       } else {
-        const response = await swapTokens(targetToken, baseToken, wallet!);
+        const response = await swapTokens(targetToken, baseToken, wallet!,connect);
         console.log("response ", response);
         setResult({ res: response.type, message: response.message });
         setSwapLoading(false);

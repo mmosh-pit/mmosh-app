@@ -606,9 +606,10 @@ const Header = () => {
 
   React.useEffect(() => {
     if (wallet) {
+      fetchNotifications();
       const intervalId = setInterval(() => {
         fetchNotifications();
-      }, 5000);
+      }, 60000);
       return () => clearInterval(intervalId);
     }
   }, [wallet]);

@@ -60,7 +60,8 @@ export const createProfile = async ({
 
     const res = await userConn.mintProfile({
       parentProfile,
-      price
+      price,
+      membership
     });
 
     if (res.Ok) {
@@ -186,7 +187,8 @@ export const buyMembership = async ({
 
     const res = await userConn.buyMembership({
       parentProfile,
-      price
+      price,
+      membership
     });
 
     if (res.Ok) {

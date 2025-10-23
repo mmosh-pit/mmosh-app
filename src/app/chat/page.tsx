@@ -21,6 +21,7 @@ export default function OPOS() {
 
   const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
   const [membershipStatus, setMembershipStatus] = React.useState<string>("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
   const checkUsage = async () => {
     console.log("membershipStatus", membershipStatus);
@@ -35,13 +36,16 @@ export default function OPOS() {
         });
         setShowMessage(!result.data.allowed);
         setHasAllowed(result.data.allowed);
+        setIsLoading(false);
       } catch (error) {
         setShowMessage(true);
         setHasAllowed(false);
+        setIsLoading(false);
       }
     } else {
       setShowMessage(false);
       setHasAllowed(true);
+      setIsLoading(false);
     }
   };
   const checkMembershipStatus = async () => {
@@ -58,7 +62,7 @@ export default function OPOS() {
   };
 
   React.useEffect(() => {
-    if (membershipStatus.length > 0) { 
+    if (membershipStatus.length > 0) {
       checkUsage();
     }
   }, [membershipStatus]);
@@ -146,7 +150,7 @@ export default function OPOS() {
         </div>
       )}
       <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
-        <ChatAgentSelector />
+        <ChatAgentSelector isLoading={isLoading} />
 
         <ChatInteractionContainer setShowMessage={setShowMessage} hasAllowed={hasAllowed} checkUsage={() => checkUsage()}/>
       </div>

@@ -274,7 +274,7 @@ const ChatInteractionContainer = (props: any) => {
                           body: JSON.stringify(saveChatData),
                         },
                       );
-                      props.checkUsage();
+                      await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(

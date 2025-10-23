@@ -10,7 +10,7 @@ import moment from "moment";
 import PersonalIcon from "@/assets/icons/PersonalIcon";
 import Avatar from "../common/Avatar";
 
-const ChatAgentSelector = () => {
+const ChatAgentSelector = (props: any) => {
   const [currentUser] = useAtom(data);
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
@@ -88,7 +88,7 @@ const ChatAgentSelector = () => {
         <p className="text-sm text-gray-400">Your active conversations</p>
       </div>
 
-      {areChatsLoading ? (
+      {areChatsLoading || props.isLoading ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
             <Bars

@@ -7,12 +7,14 @@ import { incomingReferAddress, storeFormAtom } from "@/app/store/signup";
 import SimpleInput from "@/app/components/common/SimpleInput";
 import { useRouter } from "next/navigation";
 import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
+import { onboardingStep } from "@/app/store/account";
 
 function codeIsValid(myString: string) {
   return /\d/.test(myString);
 }
 
 const Code = () => {
+  const [selectedStep, setSelectedStep] = useAtom(onboardingStep);
   const router = useRouter();
 
   const divRefs = [
@@ -62,6 +64,7 @@ const Code = () => {
       const token = response.data.data.token;
       window.localStorage.setItem("token", token);
       setForm({ ...form, address: response.data.data.user.address });
+      setSelectedStep(0);
       router.replace("/account");
     } catch (err) {
       console.error(err);

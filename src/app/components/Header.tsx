@@ -67,7 +67,6 @@ const Header = () => {
   const renderedUserInfo = React.useRef(false);
 
   const [isLoadingLogout, setIsLoadingLogout] = useState(false);
-  const [badge, setBadge] = useState(0);
 
   const [_, setReferAddress] = useAtom(incomingReferAddress);
   const [__, setProfileInfo] = useAtom(userWeb3Info);
@@ -84,7 +83,7 @@ const Header = () => {
 
   const [isModalOpen, setIsModalOpen] = useAtom(signInModal);
   const [initialModalStep, setInitialModalStep] = useAtom(
-    signInModalInitialStep,
+    signInModalInitialStep
   );
 
   const [community] = useAtom(currentGroupCommunity);
@@ -94,7 +93,7 @@ const Header = () => {
 
   const [pageViewCount, setPageViewCount] = React.useState(0);
   const [sessionId, setSessionId] = React.useState(
-    localStorage.getItem("analytics_session") || nanoid(),
+    localStorage.getItem("analytics_session") || nanoid()
   );
   const [isInitialized, setIsInitialized] = React.useState<boolean>(false);
   const [geo, setGeo] = React.useState({
@@ -103,6 +102,8 @@ const Header = () => {
     city: "Unknown",
     ip: "0.0.0.0",
   });
+  const [notifications, setNotifications] = useState([]);
+  const [badge, setBadge] = useState(0);
 
   React.useEffect(() => {
     if (!wallet) return;
@@ -251,7 +252,7 @@ const Header = () => {
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
       });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   React.useEffect(() => {
@@ -335,7 +336,7 @@ const Header = () => {
     let USDCPrice = 0;
     try {
       const mmoshUsdcPrice = await axios.get(
-        `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`,
+        `${process.env.NEXT_PUBLIC_JUPITER_PRICE_API}?ids=${process.env.NEXT_PUBLIC_OPOS_TOKEN},${process.env.NEXT_PUBLIC_USDC_TOKEN}`
       );
       USDCPrice = mmoshUsdcPrice.data?.data?.MMOSH?.price || 0;
     } catch (error) {
@@ -433,7 +434,7 @@ const Header = () => {
           };
           if (value.group_definition && value.group_definition?.length > 0) {
             const collectionDefinition = value.grouping.find(
-              (e) => e.group_key === "collection",
+              (e) => e.group_key === "collection"
             );
 
             if (
@@ -463,7 +464,7 @@ const Header = () => {
       }
 
       const collectionDefinition = value.grouping.find(
-        (e) => e.group_key === "collection",
+        (e) => e.group_key === "collection"
       );
 
       if (
@@ -478,7 +479,7 @@ const Header = () => {
       ) {
         nft.parentKey = value.content.metadata.attributes?.find(
           (attr) =>
-            attr.trait_type === "Community" || attr.trait_type === "Project",
+            attr.trait_type === "Community" || attr.trait_type === "Project"
         )?.value;
 
         passes.push(nft);
@@ -512,7 +513,7 @@ const Header = () => {
         process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
         {
           confirmTransactionInitialTimeout: 120000,
-        },
+        }
       );
       const env = new anchor.AnchorProvider(connection, wallet!, {
         preflightCommitment: "processed",
@@ -525,7 +526,7 @@ const Header = () => {
       const profileInfo = await userConn.getUserInfo();
 
       const user = await axios.get(
-        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`,
+        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`
       );
 
       const username = user.data?.profile?.username;
@@ -567,9 +568,23 @@ const Header = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
     setMembershipStatus(membershipInfo.data);
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await internalClient.get(
+        `/api/notifications?wallet=${wallet?.publicKey.toBase58()}`
+      );
+      setBadge(response.data.unread);
+      setNotifications(response.data.data);
+      console.log("NOTIFICATION LIST:", response.data);
+    } catch (error) {
+      setBadge(0);
+      setNotifications([]);
+    }
   };
 
   React.useEffect(() => {
@@ -588,6 +603,16 @@ const Header = () => {
       }
     }
   }, [pathname, wallet]);
+
+  React.useEffect(() => {
+    if (wallet) {
+      fetchNotifications();
+      const intervalId = setInterval(() => {
+        fetchNotifications();
+      }, 60000);
+      return () => clearInterval(intervalId);
+    }
+  }, [wallet]);
 
   React.useEffect(() => {
     if (
@@ -614,7 +639,7 @@ const Header = () => {
         headers: {
           authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         },
-      },
+      }
     );
   };
 
@@ -710,28 +735,81 @@ const Header = () => {
 
             <div className={`flex items-center justify-end w-[100%]`}>
               {!!currentUser?.profile?.image && isUserAuthenticated && (
-                <div
-                  className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
+                <>
+                  <div
+                    className={`relative w-[3.5vmax] md:w-[2.5vmax] h-[2.5vmax] md:mr-4 md:ml-4 ${
+                      isDrawerShown ? "z-[-1]" : ""
                     } cursor-pointer`}
-                  onClick={() => {
-                    router.push(`/${currentUser?.profile.username}`);
-                  }}
-                >
-                  <Image
-                    src={currentUser.profile.image}
-                    alt="Profile Image"
-                    className="rounded-md"
-                    layout="fill"
-                  />
-                </div>
+                    onClick={() => {
+                      router.push(`/${currentUser?.profile.username}`);
+                    }}
+                  >
+                    <Image
+                      src={currentUser.profile.image}
+                      alt="Profile Image"
+                      className="rounded-md"
+                      layout="fill"
+                    />
+                  </div>
+                  <div className="dropdown dropdown-bottom dropdown-left">
+                    <a
+                      className="relative text-base text-white cursor-pointer"
+                      tabIndex={0}
+                      href="#"
+                      onClick={resetNotification}
+                    >
+                      {/* Notification Icon */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="30"
+                        height="30"
+                        viewBox="0 0 20 20"
+                        className="transition-transform duration-200 hover:scale-110"
+                      >
+                        <path
+                          fill="#fff"
+                          fillRule="evenodd"
+                          d="M3.909 1.53a4.372 4.372 0 0 1 7.463 3.092c0 .543.088 1.062.23 1.613q.054.168.117.316c.057.133.172.248.392.39c.086.054.174.105.274.162l.093.054c.134.077.283.167.426.273c.518.383.708.973.682 1.505c-.025.517-.257 1.057-.69 1.383a1 1 0 0 1-.087.06a2 2 0 0 1-.226.125a5 5 0 0 1-.928.318c-.87.22-2.311.429-4.655.429s-3.785-.209-4.655-.429a5 5 0 0 1-.928-.318a2 2 0 0 1-.293-.17l-.02-.015C.671 9.992.44 9.452.414 8.935c-.026-.532.164-1.122.682-1.505l.297.401l-.297-.401a5 5 0 0 1 .426-.273l.093-.054c.1-.057.188-.108.274-.163c.22-.14.335-.256.391-.389c.203-.476.348-1.104.348-1.93c0-1.159.461-2.27 1.28-3.09m1.93 10.455a.5.5 0 0 0-.602.71a2 2 0 0 0 3.526 0a.5.5 0 0 0-.601-.71c-.254.086-.628.152-1.162.152s-.908-.066-1.162-.152"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+
+                      {/* Notification Badge */}
+                      {badge > 0 && (
+                        <span className="absolute right-[-6px] top-[-8px] flex items-center justify-center bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5">
+                          {badge}
+                        </span>
+                      )}
+                    </a>
+
+                    {notifications && (
+                      <div className="dropdown-content mt-3 z-[50]">
+                        <div className="menu bg-[#030007cc] backdrop-blur-xl rounded-xl shadow-xl p-3 w-[60vw] sm:w-70 md:w-[25rem] max-h-[60vh] overflow-y-auto border border-white/10">
+                          {notifications.length > 0 ? (
+                            <div className="space-y-2">
+                              {notifications.map((value: any) => (
+                                <Notification data={value} key={value._id} />
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-300 text-center py-4">
+                              You don't have any notifications
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
 
               {!!currentUser &&
                 !currentUser?.profile?.image &&
                 isUserAuthenticated && (
                   <div
-                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${isDrawerShown ? "z-[-1]" : ""
-                      } cursor-pointer`}
+                    className={`relative w-[3.5vmax] md:w-[2.5vmax] md:h-[2.5vmax] h-[3.5vmax] md:mr-4 md:ml-4 ${
+                      isDrawerShown ? "z-[-1]" : ""
+                    } cursor-pointer`}
                     onClick={() => {
                       if (
                         !!currentUser?.guest_data.username &&
@@ -821,12 +899,14 @@ const Header = () => {
 
         {pathname.includes("/communities/") && community !== null && (
           <div
-            className={`self-center lg:max-w-[50%] md:max-w-[60%] max-w-[75%] relative w-full flex justify-center items-end mt-12 pb-4 ${isDrawerShown ? "z-[-1]" : "z-0"
-              }`}
+            className={`self-center lg:max-w-[50%] relative  flex justify-center items-end mt-12 pb-4 ${
+              isDrawerShown ? "z-[-1]" : "z-0"
+            }`}
           >
             <div
-              className={`flex flex-col justify-center items-center ${isDrawerShown && "z-[-1]"
-                } py-20`}
+              className={`flex flex-col justify-center items-center ${
+                isDrawerShown && "z-[-1]"
+              } py-20`}
             >
               <h2 className="text-center">{community.name}</h2>
 

@@ -58,7 +58,8 @@ export type _MintProfileByAtInput = {
 export type _MintProfile= {
   parentProfile: string | web3.PublicKey;
   price: number;
-  connection: ConnectionContextState
+  membership: string;
+  connection: ConnectionContextState;
 };
 
 

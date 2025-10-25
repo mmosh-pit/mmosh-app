@@ -24,6 +24,7 @@ export const createProfile = async ({
   membership,
   membershipType,
   price,
+  previousMembership,
   connection,
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
@@ -42,7 +43,7 @@ export const createProfile = async ({
     if (image) {
       // const imageUri = await pinImageToShadowDrive(image);
       const date = new Date().getMilliseconds();
-           const imageUri = await uploadFile(image, `${form.username}-banner-${date}`, "user-images");
+      const imageUri = await uploadFile(image, `${form.username}-banner-${date}`, "user-images");
       body.image = imageUri;
       if (imageUri === "") {
         return {
@@ -58,6 +59,7 @@ export const createProfile = async ({
     const res = await userConn.mintProfile({
       parentProfile,
       price,
+      membership,
       connection
     });
 
@@ -80,12 +82,25 @@ export const createProfile = async ({
 
       await updateUserData(params);
 
-        let date = new Date(); // Now
-        if(membershipType === "monthly") {
-          date.setDate(date.getDate() + 30);
-        } else if (membershipType === "yearly") {
-          date.setDate(date.getDate() + 365);
+      let date = new Date(); // Now
+      if (membershipType === "monthly") {
+        date.setDate(date.getDate() + 30);
+      } else if (membershipType === "yearly") {
+        date.setDate(date.getDate() + 365);
+      }
+
+      const notificationParams = {
+        receiverAddress: wallet.publicKey.toBase58(),
+        newMembership: membership,
+        previousMembership: previousMembership
+      }
+      await axios.post("/api/notifications/send-membership-notification", notificationParams, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          'Content-Type': 'application/json',
         }
+      });
+
 
       const membershipparams = {
         membership,
@@ -96,11 +111,11 @@ export const createProfile = async ({
       };
 
       await axios.post("/api/membership/add", membershipparams, {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-            'Content-Type': 'application/json',
-          }
-        });
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          'Content-Type': 'application/json',
+        }
+      });
       const historyparams = {
         wallet: wallet.publicKey.toString(),
         membership,
@@ -153,6 +168,7 @@ export const buyMembership = async ({
   membership,
   membershipType,
   price,
+  previousMembership,
   connection,
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
@@ -161,7 +177,7 @@ export const buyMembership = async ({
     });
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
     const profileLineage = await getLineage(parentProfile.toBase58());
-    if(profileLineage.parent === "") {
+    if (profileLineage.parent === "") {
       return {
         type: "error",
         message:
@@ -173,16 +189,29 @@ export const buyMembership = async ({
     const res = await userConn.buyMembership({
       parentProfile,
       price,
+      membership,
       connection
     });
 
     if (res.Ok) {
-        let date = new Date(); // Now
-        if(membershipType === "monthly") {
-          date.setDate(date.getDate() + 30);
-        } else if (membershipType === "yearly") {
-          date.setDate(date.getDate() + 365);
+      let date = new Date(); // Now
+      if (membershipType === "monthly") {
+        date.setDate(date.getDate() + 30);
+      } else if (membershipType === "yearly") {
+        date.setDate(date.getDate() + 365);
+      }
+      const notificationParams = {
+        receiverAddress: wallet.publicKey.toBase58(),
+        newMembership: membership,
+        previousMembership: previousMembership
+      }
+      await axios.post("/api/notifications/send-membership-notification", notificationParams, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          'Content-Type': 'application/json',
         }
+      });
+
 
       const membershipparams = {
         membership,
@@ -275,24 +304,24 @@ export const trasferUsdCoin = async (wallet: any, receiver: string, amount: numb
   }
 };
 
-export const getLineage  = async(profile: string) =>  {
-    try {
-        const res = await axios.get("/api/get-elders?profile="+profile);
-        return {
-          gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          parent: res.data.status ? res.data.result.promotor : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          gparent: res.data.status ? res.data.result.scout : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          ggparent: res.data.status ? res.data.result.recruitor : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          gggparent: res.data.status ? res.data.result.originator : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-        }
-    } catch (error) {
-      return {
-          gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          parent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          gparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          ggparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-          gggparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
-      }
+export const getLineage = async (profile: string) => {
+  try {
+    const res = await axios.get("/api/get-elders?profile=" + profile);
+    return {
+      gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      parent: res.data.status ? res.data.result.promotor : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      gparent: res.data.status ? res.data.result.scout : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      ggparent: res.data.status ? res.data.result.recruitor : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      gggparent: res.data.status ? res.data.result.originator : process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
     }
-    
+  } catch (error) {
+    return {
+      gensis: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      parent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      gparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      ggparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+      gggparent: process.env.NEXT_PUBLIC_GENESIS_PROFILE_HOLDER,
+    }
   }
+
+}

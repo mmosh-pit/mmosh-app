@@ -23,6 +23,7 @@ import useCheckMobileScreen from "@/app/lib/useCheckMobileScreen";
 import { getAccount, getAssociatedTokenAddress } from "forge-spl-token";
 import { storeFormAtom } from "@/app/store/signup";
 import Radio from "../common/Radio";
+import internalClient from "@/app/lib/internalHttpClient";
 import useConnection from "@/utils/connection";
 
 const Step4 = () => {
@@ -297,6 +298,7 @@ const Step4 = () => {
       membership: "enjoyer",
       membershipType: "monthly",
       price: 15,
+      previousMembership: "guest",
       connection,
     });
 
@@ -431,7 +433,33 @@ const Step4 = () => {
     setSelectedStep(2);
   }, []);
 
-  const skipStep = React.useCallback(() => {
+  const skipStep = React.useCallback(async () => {
+    let parentProfile = referer;
+    if (parentProfile == "" && user) {
+      const res = await axios.get(`/api/get-user-data?username=${user.referred_by}`);
+      if (res.data) {
+        parentProfile = res.data.wallet;
+      }
+    }
+    const walletAddress = await client.get("/address");
+    const lineageNotificationParams = {
+      action: "signup",
+      referredUserAddress: walletAddress.data.data,
+      referrerId: parentProfile || process.env.NEXT_PUBLIC_PTV_WALLET_KEY,
+      membershipType: "guest"
+    };
+    internalClient.post(
+      "/api/notifications/send-lineage-notification",
+      lineageNotificationParams,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    ).then((result) => {
+    }).catch((error) => {
+
+    })
     router.replace("/bots");
     client.put("/onboarding-step", {
       step: 5,
@@ -492,6 +520,7 @@ const Step4 = () => {
         membership,
         membershipType,
         price,
+        previousMembership: "guest",
         connection,
       });
       console.log("----- BUY MEMBERSHIP RESULT -----", result);

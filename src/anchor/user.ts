@@ -537,7 +537,12 @@ export class Connectivity {
       const user = this.provider.publicKey;
       if (!user) throw "Wallet not found";
 
-      let { parentProfile, price } = input;
+      let {
+        parentProfile,
+        price,
+        membership
+      } = input;
+
 
       if (typeof parentProfile == "string")
         parentProfile = new web3.PublicKey(parentProfile);
@@ -750,6 +755,18 @@ export class Connectivity {
         },
       });
       console.log("----- MINT PROFILE RESPONSE CHECK -----", res);
+      const lineageNotificationParams = {
+        action: "became_member",
+        referredUserAddress: this.provider.wallet.publicKey.toBase58(),
+        referrerId: "",
+        lineage: [lineage.parent, lineage.gparent, lineage.ggparent, lineage.gggparent],
+        membershipType: membership
+      }
+      const result = await axios.post(`${origin}/api/notifications/send-lineage-notification`, lineageNotificationParams, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       return {
         Ok: {
@@ -771,7 +788,11 @@ export class Connectivity {
       this.baseSpl.__reinit();
       const user = this.provider.publicKey;
       if (!user) throw "Wallet not found";
-      let { parentProfile, price } = input;
+      let {
+        parentProfile,
+        price,
+        membership
+      } = input;
 
       if (typeof parentProfile == "string")
         parentProfile = new web3.PublicKey(parentProfile);
@@ -916,6 +937,18 @@ export class Connectivity {
         },
       });
       console.log("----- MINT PROFILE RESPONSE CHECK -----", res);
+      const lineageNotificationParams = {
+        action: "membership_change",
+        referredUserAddress: this.provider.wallet.publicKey.toBase58(),
+        referrerId: "",
+        lineage: [lineage.parent, lineage.gparent, lineage.ggparent, lineage.gggparent],
+        membershipType: membership
+      }
+      const result = await axios.post(`${origin}/api/notifications/send-lineage-notification`, lineageNotificationParams, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return {
         Ok: {
           signature: signature,

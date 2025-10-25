@@ -15,5 +15,6 @@ export type CreateProfileParams = {
   membership: string,
   membershipType: string,
   price: number,
+  previousMembership: string,
   connection: ConnectionContextState
 };

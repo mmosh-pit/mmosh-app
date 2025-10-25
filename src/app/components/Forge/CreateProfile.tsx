@@ -256,6 +256,7 @@ const CreateProfile = () => {
         membershipType,
         price,
         banner: "",
+        previousMembership: "",
         connection,
       });
       createMessage("Your membership is updated", "success");
@@ -292,6 +293,7 @@ const CreateProfile = () => {
       membership,
       membershipType,
       price,
+      previousMembership: "",
       connection,
     });
 

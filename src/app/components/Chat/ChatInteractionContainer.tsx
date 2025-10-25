@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import VoiceIcon from "@/assets/icons/VoiceIcon";
 import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
+import internalClient from "@/app/lib/internalHttpClient";
+import useWallet from "@/utils/wallet";
 
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -30,10 +32,57 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
+  const wallet = useWallet();
 
   const [text, setText] = React.useState("");
 
+  const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
+  const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
+
   const messages = selectedChat?.messages;
+
+  const checkMembershipStatus = async () => {
+    const token = localStorage.getItem("token") || "";
+    const membershipInfo = await internalClient.get(
+      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("Membership check", membershipInfo.data === "active");
+    setMembershipStatus(membershipInfo.data);
+  };
+
+  const checkUsage = () => {
+    if (!selectedChat) return;
+    if (membershipStatus !== "active") {
+      internalClient
+        .get("/api/check-usage", {
+          params: { wallet: wallet?.publicKey.toBase58(), agentId: selectedChat.chatAgent!.id, role: "guest" },
+        })
+        .then((result) => {
+          setHasAllowed(result.data.allowed);
+        })
+        .catch((err) => {
+          setHasAllowed(false);
+        });
+    } else {
+      setHasAllowed(true);
+    }
+  };
+
+  React.useEffect(() => {
+    if (wallet) {
+      checkMembershipStatus();
+    }
+  }, [wallet]);
+  React.useEffect(() => {
+    if (selectedChat && wallet) {
+      checkUsage();
+    }
+  }, [membershipStatus, selectedChat, wallet]);
 
   const getMessageImage = React.useCallback(
     (message: Message) => {
@@ -55,7 +104,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
 
   const getMessageUsername = React.useCallback(
@@ -74,7 +123,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
 
   const formatChatHistory = (messages: Message[]) => {
@@ -127,7 +176,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat,
+        chat.id === selectedChat.id ? updatedSelectedChat : chat
       );
       setChats(updatedChats);
 
@@ -154,11 +203,11 @@ const ChatInteractionContainer = (props: any) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "text/event-stream",
-              "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
+              Accept: "text/event-stream",
+              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
             },
             body: JSON.stringify(queryData),
-          },
+          }
         );
 
         if (!response.ok) {
@@ -221,9 +270,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id
-                        ? streamingSelectedChat
-                        : chat,
+                      chat.id === selectedChat.id ? streamingSelectedChat : chat
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -246,7 +293,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat,
+                      chat.id === selectedChat.id ? finalSelectedChat : chat
                     );
                     setChats(finalChats);
 
@@ -269,24 +316,25 @@ const ChatInteractionContainer = (props: any) => {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
-                            "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
+                            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        },
+                        }
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
                         );
                       } else {
                         console.log("Chat saved successfully to database");
                       }
+                      // checkUsage();
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError,
+                        saveError
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -331,12 +379,12 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat,
+          chat.id === selectedChat.id ? finalSelectedChat : chat
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat],
+    [selectedChat, currentUser, chats, setChats, setSelectedChat]
   );
 
   const handleEnter = (evt: any) => {
@@ -487,9 +535,10 @@ const ChatInteractionContainer = (props: any) => {
                     <div
                       className={`
                         px-4 py-3 rounded-2xl 
-                        ${message.type === "user"
-                          ? "bg-[#25235a] text-white rounded-tr-md"
-                          : "bg-[#00073a] text-white rounded-tl-md"
+                        ${
+                          message.type === "user"
+                            ? "bg-[#25235a] text-white rounded-tr-md"
+                            : "bg-[#00073a] text-white rounded-tl-md"
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
                       `}
@@ -581,7 +630,7 @@ const ChatInteractionContainer = (props: any) => {
                       : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}
-                disabled={!props.hasAllowed}
+                disabled={!props.hasAllowed || !text.trim() || isLoading}
                 type="submit"
               >
                 {isLoading ? (

@@ -332,9 +332,11 @@ const AgentPass = ({
 
         setButtonText("Buying new Pass...");
         console.log("Profile info: ", profileInfo);
+        console.log('go to send project price -------------------------------------------->')
         const res5 = await communityConnection.sendProjectPrice(
           profileInfo?.profile.address,
           25000,
+          connection,
         );
 
         if (res5.Err) {

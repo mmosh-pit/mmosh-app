@@ -41,6 +41,7 @@ const MobileDrawer = () => {
               Chat
             </a>
 
+            {/*}
             <div className="lg:my-4 md:my-2" />
 
             <a
@@ -51,6 +52,7 @@ const MobileDrawer = () => {
             >
               Bots
             </a>
+            {*/}
 
             <div className="lg:my-4 my-2" />
 

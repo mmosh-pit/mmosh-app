@@ -15,6 +15,7 @@ const Tabs = () => {
         Chat
       </a>
 
+      {/*}
       <div className="lg:mx-4 md:mx-2" />
 
       <a
@@ -25,6 +26,7 @@ const Tabs = () => {
       >
         Bots
       </a>
+      {*/}
 
       <div className="lg:mx-4 md:mx-2" />
 

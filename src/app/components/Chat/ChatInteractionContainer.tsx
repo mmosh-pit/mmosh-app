@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 
 import { data } from "@/app/store";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import ArrowUpHome from "@/assets/icons/ArrowUpHome";
 import { selectedChatStore, chatsStore, chatsLoading } from "@/app/store/chat";
 import { Message } from "@/app/models/chat";
@@ -15,7 +16,7 @@ import AudioInteraction from "./AudioInteraction";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 
-const ChatInteractionContainer = () => {
+const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -141,7 +142,7 @@ const ChatInteractionContainer = () => {
 
   const sendMessage = React.useCallback(
     async (content: string) => {
-      if (!selectedChat?.messages) return;
+      if (!selectedChat?.messages || !props.hasAllowed) return;
 
       // Add user message to the chat immediately
       const userMessage: Message = {
@@ -197,7 +198,7 @@ const ChatInteractionContainer = () => {
         console.log("Message data being sent:", queryData);
 
         const response = await fetch(
-          "https://ai.kinshipbots.com/react/stream",
+          "https://react-mcp-auth-api-1094217356440.us-central1.run.app/react/stream",
           {
             method: "POST",
             headers: {
@@ -320,6 +321,7 @@ const ChatInteractionContainer = () => {
                           body: JSON.stringify(saveChatData),
                         }
                       );
+                      await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
@@ -557,8 +559,19 @@ const ChatInteractionContainer = () => {
                           </span>
                         </div>
                       ) : (
-                        <div className="text-base leading-relaxed">
-                          <Markdown children={message.content} />
+                        <div className="text-base leading-relaxed prose prose-invert max-w-none">
+                          <Markdown remarkPlugins={[remarkGfm]}>
+                            {message.type === "bot" && message.content.includes("Thought:") 
+                              ? message.content
+                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
+                                  .replace(/Action:/g, "\n\n> *Action:*\n")
+                                  .replace(/^((?!Thought:|Action:).+)/gm, (match) => {
+                                    return match.startsWith(">") ? match : `**${match}**`;
+                                  })
+                                  .trim()
+                              : message.content
+                            }
+                          </Markdown>
                         </div>
                       )}
                     </div>
@@ -612,12 +625,12 @@ const ChatInteractionContainer = () => {
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 
                   ${
-                    !hasAllowed || !text.trim() || isLoading
+                    !props.hasAllowed || !text.trim() || isLoading
                       ? "bg-[#565656] cursor-not-allowed"
                       : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}
-                disabled={!hasAllowed || !text.trim() || isLoading}
+                disabled={!props.hasAllowed || !text.trim() || isLoading}
                 type="submit"
               >
                 {isLoading ? (

@@ -24,6 +24,7 @@ import { Connection } from "@solana/web3.js";
 import { Connectivity as UserConn } from "../../../anchor/user";
 import { web3Consts } from "@/anchor/web3Consts";
 import useWallet from "@/utils/wallet";
+import useConnection from "@/utils/connection";
 
 /* TEMPORAL CONSOLE FIX, HIDING A CONSOLE ERROR TRIGGERED BY RECHARTS */
 /* THE LIBRARY STILL WORKS WELL, SO IT IS NOT A BREAKING ERROR. RECHART DEV TEAM IS WORKING ON IT */
@@ -71,6 +72,7 @@ const customStyles = {
 
 const CreateCoin = () => {
   const wallet = useWallet();
+  const connection = useConnection();
   const [profileInfo] = useAtom(userWeb3Info);
   const [currentUser] = useAtom(data);
   const [isDrawerShown] = useAtom(isDrawerOpen);
@@ -103,7 +105,7 @@ const CreateCoin = () => {
       logoURI:
         "https://shdw-drive.genesysgo.net/7nPP797RprCMJaSXsyoTiFvMZVQ6y1dUgobvczdWGd35/MMoshCoin.png",
       decimals: 9,
-    },
+    }
   );
 
   const [selectedCommunityBalance, setSelectedCommunityBalance] =
@@ -115,7 +117,7 @@ const CreateCoin = () => {
 
       return "";
     },
-    [datasets],
+    [datasets]
   );
 
   const validateFields = () => {
@@ -199,6 +201,7 @@ const CreateCoin = () => {
       setMintingStatus,
       username: currentUser ? currentUser!.profile.username : "",
       baseToken: selectedCommunityCoin,
+      connection: connection,
     };
 
     const res = await createCoin(params);
@@ -216,12 +219,12 @@ const CreateCoin = () => {
   const checkSymbolExists = React.useCallback(async () => {
     setError(null);
     const result = await axios.get(
-      `/api/check-token-symbol?symbol=${form.symbol}`,
+      `/api/check-token-symbol?symbol=${form.symbol}`
     );
 
     if (result.data) {
       setError(
-        "Symbol already exist. please choose different symbol and try again",
+        "Symbol already exist. please choose different symbol and try again"
       );
     }
   }, [form.symbol]);
@@ -297,7 +300,7 @@ const CreateCoin = () => {
       form.supply,
       initialPrice.toString(),
       form.bonding,
-      multiplier,
+      multiplier
     );
 
     const datasetsValue = res.data.map((value) => ({
@@ -346,7 +349,7 @@ const CreateCoin = () => {
             .includes(event.target.value.trim().toLowerCase()) ||
           item.symbol
             .toLowerCase()
-            .includes(event.target.value.trim().toLowerCase()),
+            .includes(event.target.value.trim().toLowerCase())
       );
       setCoinList(newCoinList);
     }

@@ -14,6 +14,7 @@ import BalanceBox from "../common/BalanceBox";
 import useWallet from "@/utils/wallet";
 import { PublicKey } from "@solana/web3.js";
 import ArrowBack from "@/assets/icons/ArrowBack";
+import useConnection from "@/utils/connection";
 
 const PronounsSelectOptions = [
   {
@@ -31,6 +32,7 @@ const PronounsSelectOptions = [
 ];
 
 const CreateProfile = () => {
+  const connection = useConnection()
   const wallet = useWallet();
   const navigate = useRouter();
   const searchParams = useSearchParams();
@@ -255,6 +257,7 @@ const CreateProfile = () => {
         price,
         banner: "",
         previousMembership: "",
+        connection,
       });
       createMessage("Your membership is updated", "success");
       return
@@ -291,6 +294,7 @@ const CreateProfile = () => {
       membershipType,
       price,
       previousMembership: "",
+      connection,
     });
 
     createMessage(result.message, result.type);

@@ -56,6 +56,7 @@ export const createProjectCoin = async ({
   baseToken,
   candidate,
   position,
+  connect
 }: CreateProjectCoinParams): Promise<MintResultMessage> => {
   let shdwHash = "";
 
@@ -136,11 +137,11 @@ export const createProjectCoin = async ({
     setMintingStatus("Creating Curve Config...");
     let curve = await curveConn.initializeCurve({
       config: new ExponentialCurveConfig(curveConfig),
-    });
+    },connect);
 
     setMintingStatus("Creating Token...");
     await delay(15000);
-    const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash, 0);
+    const targetMint = await curveConn.createTargetMint(name, symbol, shdwHash, 0,connect);
 
     setMintingStatus("Creating Bonding Curve...");
 
@@ -159,7 +160,7 @@ export const createProjectCoin = async ({
       sellBaseRoyaltyPercentage: 0,
       sellTargetRoyaltyPercentage: 0,
       targetMint: new anchor.web3.PublicKey(targetMint),
-    });
+    },connect);
 
     setMintingStatus("Swapping Token...");
     await delay(15000);
@@ -171,7 +172,7 @@ export const createProjectCoin = async ({
           Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
         ),
         slippage: 0.5,
-      });
+      },connect);
     } else {
       const buytx = await internalClient.post("/api/ptv/swap", {
         coin: baseToken.token,
@@ -205,7 +206,7 @@ export const createProjectCoin = async ({
               Number(supply) * web3Consts.LAMPORTS_PER_OPOS,
             ),
             slippage: 0.5,
-          });
+          },connect);
         } else {
           return {
             message:

@@ -308,9 +308,14 @@ export async function GET(req: NextRequest) {
         }
       );
     }
-
-    let result = await projectConn.offerGuestPassTx(
-      {
+    else {
+      let amount =  price * 1
+      const supplyValue : number = 1
+      return NextResponse.json(
+        {
+          status: true,
+          data: 
+            {
         name: offerData.name,
         symbol: offerData.symbol,
         uriHash: passMetaURI,
@@ -318,34 +323,52 @@ export async function GET(req: NextRequest) {
         commonLut: offerData.lut,
       },
       receiver,
-      receiver,
-      price * 1,
-      1
-    );
-
-
-    console.log("value from the oferGuestPassTx ", result);
-    if (result.Ok) {
-      return NextResponse.json(
-        {
-          status: true,
-          signature: result.Ok,
-        },
-        {
-          status: 200,
-        }
-      );
-    } else {
-      return NextResponse.json(
-        {
-          status: false,
-          signature: "",
+      amount,
+      supplyValue,
         },
         {
           status: 200,
         }
       );
     }
+
+    // let result = await projectConn.offerGuestPassTx(
+    //   {
+    //     name: offerData.name,
+    //     symbol: offerData.symbol,
+    //     uriHash: passMetaURI,
+    //     genesisProfile: offerData.key,
+    //     commonLut: offerData.lut,
+    //   },
+    //   receiver,
+    //   receiver,
+    //   price * 1,
+    //   1
+    // );
+
+
+    // console.log("value from the oferGuestPassTx ", result);
+    // if (result.Ok) {
+    //   return NextResponse.json(
+    //     {
+    //       status: true,
+    //       signature: result.Ok,
+    //     },
+    //     {
+    //       status: 200,
+    //     }
+    //   );
+    // } else {
+    //   return NextResponse.json(
+    //     {
+    //       status: false,
+    //       signature: "",
+    //     },
+    //     {
+    //       status: 200,
+    //     }
+    //   );
+    // }
   } catch (error) {}
 
   return NextResponse.json(data, {

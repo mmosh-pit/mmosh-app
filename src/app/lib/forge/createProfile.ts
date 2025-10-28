@@ -24,13 +24,11 @@ export const createProfile = async ({
   membership,
   membershipType,
   price,
-  previousMembership
+  previousMembership,
+  connection,
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet, {
+    const env = new anchor.AnchorProvider(connection.connection, wallet, {
       preflightCommitment: "processed",
     });
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
@@ -61,7 +59,8 @@ export const createProfile = async ({
     const res = await userConn.mintProfile({
       parentProfile,
       price,
-      membership
+      membership,
+      connection
     });
 
     if (res.Ok) {
@@ -124,11 +123,15 @@ export const createProfile = async ({
         price,
         expirydate: date,
       };
-      await axios.post("/api/membership/add-history", historyparams, {
+      axios.post("/api/membership/add-history", historyparams, {
         headers: {
           authorization: `Bearer ${localStorage.getItem("token") || ""}`,
           'Content-Type': 'application/json',
         }
+      }).then((result) => {
+        console.log("ADD HISTORY RESULT", result);
+      }).catch((error) => {
+        console.log("ADD HISTORY RESPONSE", error);
       });
 
       await updateTotalMints(seniority);
@@ -166,12 +169,10 @@ export const buyMembership = async ({
   membershipType,
   price,
   previousMembership,
+  connection,
 }: CreateProfileParams): Promise<MintResultMessage> => {
   try {
-    const connection = new Connection(process.env.NEXT_PUBLIC_SOLANA_CLUSTER!, {
-      confirmTransactionInitialTimeout: 120000,
-    });
-    const env = new anchor.AnchorProvider(connection, wallet, {
+    const env = new anchor.AnchorProvider(connection.connection, wallet, {
       preflightCommitment: "processed",
     });
     const userConn: UserConn = new UserConn(env, web3Consts.programID);
@@ -188,7 +189,8 @@ export const buyMembership = async ({
     const res = await userConn.buyMembership({
       parentProfile,
       price,
-      membership
+      membership,
+      connection
     });
 
     if (res.Ok) {
@@ -232,11 +234,15 @@ export const buyMembership = async ({
         price,
         expirydate: date,
       };
-      await axios.post("/api/membership/add-history", historyparams, {
+       axios.post("/api/membership/add-history", historyparams, {
         headers: {
           authorization: `Bearer ${localStorage.getItem("token") || ""}`,
           'Content-Type': 'application/json',
         }
+      }).then((result) => {
+        console.log("ADD HISTORY RESULT", result);
+      }).catch((error) => {
+        console.log("ADD HISTORY RESPONSE", error);
       });
 
 

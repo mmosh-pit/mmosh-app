@@ -1,4 +1,5 @@
 import { db } from "@/app/lib/mongoClient";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 // Membership types
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
       newMembership,
       previousMembership,
     }: MembershipNotificationRequest = await req.json();
+    const authHeader = req.headers.get("authorization");
 
     // Validate required fields
     if (!receiverAddress || !newMembership) {
@@ -70,6 +72,7 @@ export async function POST(req: NextRequest) {
 
     // Send notification
     await sendNotification(notificationParams);
+    await pushNotification(authHeader || "", notificationParams);
 
     return NextResponse.json(
       {
@@ -140,7 +143,8 @@ const generateMessage = (
     },
     downgrade: {
       [MembershipType.GUEST]: "Your membership has been downgraded to Guest",
-      [MembershipType.ENJOYER]: "Your membership has been downgraded to Creator",
+      [MembershipType.ENJOYER]:
+        "Your membership has been downgraded to Creator",
     },
   };
 
@@ -189,5 +193,51 @@ const sendNotification = async (params: NotificationParams) => {
 
   if (!notificationDetail || true) {
     await notification.insertOne(params);
+  }
+};
+
+/**
+ * Push notifications to one signal queue.
+ * Sends relevant titles/messages for membership changes.
+ */
+const pushNotification = async (
+  token: string,
+  notification: NotificationParams
+) => {
+  try {
+    let title = "Membership Update";
+    let message = notification.message;
+
+    // Detect upgrade / downgrade / purchase keywords for better titles
+    if (message.toLowerCase().includes("upgraded")) {
+      title = "Membership Upgrade";
+    } else if (message.toLowerCase().includes("purchased")) {
+      title = "New Membership Purchased";
+    } else if (message.toLowerCase().includes("downgraded")) {
+      title = "Membership Downgrade";
+    } else if (message.toLowerCase().includes("updated")) {
+      title = "Membership Updated";
+    }
+
+    const pushNotificationParams = {
+      title,
+      message,
+      wallet: notification.receiver,
+    };
+
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/push-notification`,
+      pushNotificationParams,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Push notification error:", error);
+    return false;
   }
 };

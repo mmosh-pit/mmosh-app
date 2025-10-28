@@ -1,4 +1,5 @@
 import { db } from "@/app/lib/mongoClient";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 interface NotificationParams {
@@ -20,8 +21,15 @@ interface TransactionRequest {
 
 export async function POST(req: NextRequest) {
   try {
-    const { amount, currency, senderAddress, receiverAddress, transactionHash } =
-      (await req.json()) as TransactionRequest;
+    const {
+      amount,
+      currency,
+      senderAddress,
+      receiverAddress,
+      transactionHash,
+    } = (await req.json()) as TransactionRequest;
+
+    const authHeader = req.headers.get("authorization");
 
     // Validate required fields
     if (!amount || !currency || !senderAddress || !receiverAddress) {
@@ -33,7 +41,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const senderName: string = await getSenderName(senderAddress)
+    const senderName: string = await getSenderName(senderAddress);
 
     // Create notification message
     const message = `You've received ${amount} ${currency} from ${senderName || senderAddress}`;
@@ -50,6 +58,7 @@ export async function POST(req: NextRequest) {
 
     // Send notification
     await sendNotification(notificationParams);
+    await pushNotification(authHeader || "", notificationParams);
 
     return NextResponse.json(
       {
@@ -85,7 +94,58 @@ const getSenderName = async (senderWallet: string) => {
   let username = "unknown user";
   const senderDetails = await usersCollection.findOne({ wallet: senderWallet });
   if (senderDetails !== null) {
-    username = senderDetails.guest_data ? senderDetails.guest_data.username || senderDetails.name : senderDetails.name;
+    username = senderDetails.guest_data
+      ? senderDetails.guest_data.username || senderDetails.name
+      : senderDetails.name;
   }
   return username;
+};
+
+/**
+ * Push notifications to one signal queue.
+ * Sends relevant titles/messages for transactions.
+ */
+const pushNotification = async (
+  token: string,
+  notification: NotificationParams
+) => {
+  try {
+    let title = "Transaction Alert";
+    let message = notification.message;
+    const msg = message.toLowerCase();
+
+    // Dynamically adjust the title based on context
+    if (msg.includes("received")) {
+      title = "Payment Received";
+    } else if (msg.includes("sent")) {
+      title = "Payment Sent";
+    } else if (msg.includes("failed")) {
+      title = "Transaction Failed";
+    } else if (msg.includes("pending")) {
+      title = "Transaction Pending";
+    } else if (msg.includes("confirmed")) {
+      title = "Transaction Confirmed";
+    }
+    console.log("===== RECEIVER WALLET ADDRESS =====", notification.receiver);
+
+    const pushNotificationParams = {
+      title,
+      message,
+      wallet: notification.receiver,
+    };
+
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/push-notification`,
+      pushNotificationParams,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    return true;
+  } catch (error) {
+    return false;
+  }
 };

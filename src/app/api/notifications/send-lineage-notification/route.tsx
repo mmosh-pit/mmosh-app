@@ -1,4 +1,5 @@
 import { db } from "@/app/lib/mongoClient";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 // Notification types
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
       lineage = [],
       membershipType,
     }: NotificationRequest = await req.json();
+    const authHeader = req.headers.get("authorization");
 
     // Validate required fields
     if (!action || !referredUserAddress || !membershipType) {
@@ -112,7 +114,10 @@ export async function POST(req: NextRequest) {
       case "membership_change":
         // Notify lineage when someone changes their membership
         lineage.forEach((lineageMemberId) => {
-          if (lineageMemberId !== referredUserAddress && !notifiedUsers.includes(lineageMemberId)) {
+          if (
+            lineageMemberId !== referredUserAddress &&
+            !notifiedUsers.includes(lineageMemberId)
+          ) {
             notifiedUsers.push(lineageMemberId);
             notifications.push({
               type: "lineage_membership_change",
@@ -134,6 +139,7 @@ export async function POST(req: NextRequest) {
     }
 
     const results = await sendNotification(notifications);
+    await pushNotification(authHeader || "", notifications);
     // Send all notifications
     // const results = await Promise.all(
     //   notifications.map((notification) => sendNotification(notification))
@@ -156,6 +162,62 @@ export async function POST(req: NextRequest) {
   }
 }
 
+/**
+ * Push notifications to one signal queue.
+ * Sends relevant titles/messages based on the notification type.
+ */
+const pushNotification = async (
+  token: string,
+  notifications: NotificationParams[]
+) => {
+  try {
+    for (let i = 0; i < notifications.length; i++) {
+      const element = notifications[i];
+      let title = "";
+      let message = element.message;
+
+      // Customize title based on notification type
+      switch (element.type) {
+        case "referral_signup_guest":
+          title = "New Guest Signup";
+          break;
+        case "referral_signup_member":
+          title = "New Member Joined";
+          break;
+        case "lineage_became_member":
+          title = "Lineage Member Upgrade";
+          break;
+        case "lineage_membership_change":
+          title = "Membership Change";
+          break;
+        default:
+          title = "Network Update";
+          break;
+      }
+
+      const pushNotificationParams = {
+        title,
+        message,
+        wallet: element.receiver,
+      };
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/push-notification`,
+        pushNotificationParams,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Push notification error:", error);
+    return false;
+  }
+};
 /**
  * Send notification to user
  * For referral notifications, always insert a new notification

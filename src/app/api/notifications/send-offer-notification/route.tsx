@@ -1,4 +1,5 @@
 import { db } from "@/app/lib/mongoClient";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 interface PurchaseNotificationBody {
@@ -21,6 +22,8 @@ export async function POST(req: NextRequest) {
   try {
     const { senderWallet, botName, receiverWallet, isSubscribed } =
       (await req.json()) as PurchaseNotificationBody;
+
+    const authHeader = req.headers.get("authorization");
 
     // Validate required fields
     if (!senderWallet || !botName || !receiverWallet) {
@@ -53,6 +56,7 @@ export async function POST(req: NextRequest) {
 
     // Send notification to seller
     await sendNotification(notificationParams);
+    await pushNotification(authHeader || "", notificationParams);
 
     return NextResponse.json({
       success: true,
@@ -97,4 +101,38 @@ const getSenderName = async (senderWallet: string) => {
       : senderDetails.name;
   }
   return username;
+};
+
+const pushNotification = async (
+  token: string,
+  notification: NotificationParams
+) => {
+  try {
+    let title = "Bot Update";
+    let message = notification.message;
+    const msg = message.toLowerCase();
+
+    if (msg.includes("subscribed")) {
+      title = "Someone Subscribed to Your Bot!";
+    } else if (msg.includes("purchased")) {
+      title = "Bot offer Purchased!";
+    }
+
+    const pushNotificationParams = {
+      title,
+      message,
+      wallet: notification.receiver,
+    };
+
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/push-notification`,
+      pushNotificationParams,
+      { headers: { Authorization: token } }
+    );
+
+    return true;
+  } catch (error) {
+    console.error("Push notification error:", error);
+    return false;
+  }
 };

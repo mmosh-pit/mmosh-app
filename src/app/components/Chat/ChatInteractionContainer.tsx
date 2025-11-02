@@ -33,6 +33,9 @@ const ChatInteractionContainer = (props: any) => {
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
   const wallet = useWallet();
+  const [selectedModel, setSelectedModel] = React.useState("gpt-4.1");
+  const selectedModelRef = React.useRef(selectedModel);
+
 
   const [text, setText] = React.useState("");
 
@@ -49,7 +52,7 @@ const ChatInteractionContainer = (props: any) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
     console.log("Membership check", membershipInfo.data === "active");
     setMembershipStatus(membershipInfo.data);
@@ -108,7 +111,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
 
   const getMessageUsername = React.useCallback(
@@ -127,8 +130,12 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
+  React.useEffect(() => {
+  selectedModelRef.current = selectedModel;
+}, [selectedModel]);
+
 
   const formatChatHistory = (messages: Message[]) => {
     // Get the last N messages (excluding the current loading message)
@@ -180,7 +187,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat,
+        chat.id === selectedChat.id ? updatedSelectedChat : chat
       );
       setChats(updatedChats);
 
@@ -197,6 +204,7 @@ const ChatInteractionContainer = (props: any) => {
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
+          model:  selectedModelRef.current,
         };
 
         console.log("Message data being sent:", queryData);
@@ -274,9 +282,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id
-                        ? streamingSelectedChat
-                        : chat,
+                      chat.id === selectedChat.id ? streamingSelectedChat : chat
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -299,7 +305,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat,
+                      chat.id === selectedChat.id ? finalSelectedChat : chat
                     );
                     setChats(finalChats);
 
@@ -325,13 +331,13 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        },
+                        }
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
                         );
                       } else {
                         console.log("Chat saved successfully to database");
@@ -340,7 +346,7 @@ const ChatInteractionContainer = (props: any) => {
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError,
+                        saveError
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -385,12 +391,12 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat,
+          chat.id === selectedChat.id ? finalSelectedChat : chat
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat],
+    [selectedChat, currentUser, chats, setChats, setSelectedChat]
   );
 
   const handleEnter = (evt: any) => {
@@ -493,6 +499,19 @@ const ChatInteractionContainer = (props: any) => {
                 @{selectedChat.chatAgent?.symbol}
               </p>
             </div>
+          <select
+            className="bg-[#1F1F1F] text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+            value={selectedModel}
+            onChange={(e) => 
+              
+              setSelectedModel(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <option value="gemini">Gemini</option>
+            <option value="gpt-5">ChatGPT 5</option>
+            <option value="gpt-4o">ChatGPT 4</option>
+            <option value="gpt-4.1">GPT-4.1</option>
+          </select>
           </div>
 
           {/* Messages Container */}
@@ -541,9 +560,10 @@ const ChatInteractionContainer = (props: any) => {
                     <div
                       className={`
                         px-4 py-3 rounded-2xl 
-                        ${message.type === "user"
-                          ? "bg-[#25235a] text-white rounded-tr-md"
-                          : "bg-[#00073a] text-white rounded-tl-md"
+                        ${
+                          message.type === "user"
+                            ? "bg-[#25235a] text-white rounded-tr-md"
+                            : "bg-[#00073a] text-white rounded-tl-md"
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
                       `}
@@ -567,19 +587,19 @@ const ChatInteractionContainer = (props: any) => {
                         <div className="text-base leading-relaxed prose prose-invert max-w-none">
                           <Markdown remarkPlugins={[remarkGfm]}>
                             {message.type === "bot" &&
-                              message.content.includes("Thought:")
+                            message.content.includes("Thought:")
                               ? message.content
-                                .replace(/Thought:/g, "\n\n> *Thought:*\n")
-                                .replace(/Action:/g, "\n\n> *Action:*\n")
-                                .replace(
-                                  /^((?!Thought:|Action:).+)/gm,
-                                  (match) => {
-                                    return match.startsWith(">")
-                                      ? match
-                                      : `**${match}**`;
-                                  },
-                                )
-                                .trim()
+                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
+                                  .replace(/Action:/g, "\n\n> *Action:*\n")
+                                  .replace(
+                                    /^((?!Thought:|Action:).+)/gm,
+                                    (match) => {
+                                      return match.startsWith(">")
+                                        ? match
+                                        : `**${match}**`;
+                                    }
+                                  )
+                                  .trim()
                               : message.content}
                           </Markdown>
                         </div>
@@ -634,9 +654,10 @@ const ChatInteractionContainer = (props: any) => {
               <button
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 
-                  ${!props.hasAllowed || !text.trim() || isLoading
-                    ? "bg-[#565656] cursor-not-allowed"
-                    : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
+                  ${
+                    !props.hasAllowed || !text.trim() || isLoading
+                      ? "bg-[#565656] cursor-not-allowed"
+                      : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}
                 disabled={!props.hasAllowed || !text.trim() || isLoading}

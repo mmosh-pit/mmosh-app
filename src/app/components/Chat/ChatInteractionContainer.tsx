@@ -13,12 +13,16 @@ import { useRouter } from "next/navigation";
 import VoiceIcon from "@/assets/icons/VoiceIcon";
 import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
+import DisambiguationModal from "./DisambiguationModal";
+import { DisambiguationResponse, SelectedRecipients } from "@/app/types/disambiguation";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const chatBaseUrl =  "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
+
 
   const {
     isSessionActive,
@@ -38,8 +42,141 @@ const ChatInteractionContainer = (props: any) => {
 
   const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
   const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
-
+  const [disambiguationData, setDisambiguationData] = React.useState<DisambiguationResponse | null>(null);
+  const [pendingMessage, setPendingMessage] = React.useState<string | null>(null);
   const messages = selectedChat?.messages;
+  
+  const handleDisambiguationSelect = async (selected: SelectedRecipients) => {
+    if (!pendingMessage || !selectedChat) return;
+    
+    // Add a loading message while we process the selection
+    const loadingMessage: Message = {
+      id: Date.now().toString(),
+      content: "",
+      sender_id: selectedChat.chatAgent!.id,
+      type: "bot",
+      created_at: new Date().toISOString(),
+      sender: selectedChat.chatAgent!.name,
+      is_loading: true,
+    };
+
+    const updatedMessages = [...selectedChat.messages, loadingMessage];
+    const updatedSelectedChat = {
+      ...selectedChat,
+      messages: updatedMessages,
+    };
+    setSelectedChat(updatedSelectedChat);
+
+    try {
+      // Call the confirm-send endpoint with selected recipients
+      const response = await fetch(`${chatBaseUrl}react/confirm-send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "text/event-stream",
+          "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          recipient_wallets: Object.values(selected).flatMap(recipients => recipients.map(r => r.wallet)),
+          message: pendingMessage,
+          agentId: selectedChat.chatAgent!.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to confirm recipients");
+      }
+
+      // Continue with the chat flow using the confirmed recipients
+      const result = await response.json();
+      // Handle the response - you might want to add it to the chat
+      if (result.content) {
+        // // Add a bot message for each recipient with their formatted message
+        // const detailMessages = Object.entries(result.details).map(([wallet, detail]) => {
+        //   const d = detail as { formatted: string };
+        //   return {
+        //     id: `${Date.now()}-${wallet}`,
+        //     content: d.formatted,
+        //     sender_id: selectedChat!.chatAgent!.id,
+        //     type: "bot",
+        //     created_at: new Date().toISOString(),
+        //     sender: selectedChat!.chatAgent!.name,
+        //     is_loading: false,
+        //   };
+        // });
+         let botMessage : Message = {
+           id: Date.now().toString(),
+           content: result.content,
+           sender_id: selectedChat!.chatAgent!.id,
+           type: "bot",
+           created_at: new Date().toISOString(),
+           sender: selectedChat!.chatAgent!.name,
+           is_loading: false,
+         };
+
+        const updatedMessages = [...selectedChat!.messages, ...[botMessage]];
+        const updatedSelectedChat = {
+          ...selectedChat!,
+          messages: updatedMessages,
+        };
+
+        setSelectedChat(updatedSelectedChat);
+
+        const updatedChats = chats.map((chat) =>
+          chat.id === selectedChat!.id ? updatedSelectedChat : chat
+        );
+        setChats(updatedChats);
+        // Save the chat conversation to the database
+        try {
+          const saveChatData = {
+            chatId: selectedChat.id,
+            agentID: selectedChat.chatAgent!.id,
+            namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
+            systemPrompt: selectedChat.chatAgent!.system_prompt,
+            userContent: '',
+            botContent: result.content,
+          };
+
+          console.log("Saving chat to database:", saveChatData);
+
+          const saveResponse = await fetch(
+            `${chatBaseUrl}save-chat`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify(saveChatData),
+            },
+          );
+
+          if (!saveResponse.ok) {
+            console.warn(
+              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+            );
+          } else {
+            console.log("Chat saved successfully to database");
+          }
+        } catch (saveError) {
+          console.error(
+            "Error saving chat to database:",
+            saveError,
+          );
+          // Note: We don't want to show this error to the user as the main functionality (chat) worked
+        }
+        handleDisambiguationCancel();
+      }
+    } catch (error) {
+      console.error("Error confirming recipients:", error);
+      // Handle error - you might want to show an error message in the chat
+    }
+  };
+
+  const handleDisambiguationCancel = () => {
+    setDisambiguationData(null);
+    setPendingMessage(null);
+  };
 
   const checkMembershipStatus = async () => {
     const token = localStorage.getItem("token") || "";
@@ -198,7 +335,7 @@ const ChatInteractionContainer = (props: any) => {
         console.log("Message data being sent:", queryData);
 
         const response = await fetch(
-          "https://react-mcp-auth-api-1094217356440.us-central1.run.app/react/stream",
+          `${chatBaseUrl}react/stream`,
           {
             method: "POST",
             headers: {
@@ -246,8 +383,31 @@ const ChatInteractionContainer = (props: any) => {
               if (line.startsWith("data: ")) {
                 try {
                   const data = JSON.parse(line.slice(6));
+                  console.log("SSE data received:", data);
 
-                  if (data.type === "content") {
+                if (data.type === "disambiguation") {
+                    console.log("Received disambiguation data:", data);
+                    // Store disambiguation data and pending message
+                    setDisambiguationData(data);
+                    setPendingMessage(content);
+                    
+                    // Remove the loading message since we're showing the disambiguation modal
+                    const currentMessages = [...updatedSelectedChat.messages];
+                    currentMessages.pop(); // Remove the loading message
+                    const disambiguationSelectedChat = {
+                      ...updatedSelectedChat,
+                      messages: currentMessages,
+                    };
+                    setSelectedChat(disambiguationSelectedChat);
+                    
+                    // Update chats array
+                    const disambiguationChats = chats.map((chat) =>
+                      chat.id === selectedChat.id ? disambiguationSelectedChat : chat
+                    );
+                    setChats(disambiguationChats);
+                    
+                    // return;
+                  } else if (data.type === "content") {
                     accumulatedContent += data.content;
 
                     // Update the streaming message with accumulated content
@@ -311,7 +471,7 @@ const ChatInteractionContainer = (props: any) => {
                       console.log("Saving chat to database:", saveChatData);
 
                       const saveResponse = await fetch(
-                        "https://ai.kinshipbots.com/save-chat",
+                        `${chatBaseUrl}save-chat`,
                         {
                           method: "POST",
                           headers: {
@@ -432,6 +592,14 @@ const ChatInteractionContainer = (props: any) => {
 
   return (
     <div className="w-[75%] flex justify-center">
+      {/* Disambiguation Modal */}
+      {disambiguationData && (
+        <DisambiguationModal
+          data={disambiguationData}
+          onSelect={handleDisambiguationSelect}
+          onCancel={handleDisambiguationCancel}
+        />
+      )}
       {areChatsLoading ? (
         <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
           <div className="text-center space-y-4">
@@ -506,6 +674,7 @@ const ChatInteractionContainer = (props: any) => {
               </div>
             ) : (
               messages?.map((message, index) => (
+                message.content && (
                 <div
                   className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
                   key={`${message.type}-${index}`}
@@ -577,6 +746,7 @@ const ChatInteractionContainer = (props: any) => {
                     </div>
                   </div>
                 </div>
+                )
               ))
             )}
           </div>

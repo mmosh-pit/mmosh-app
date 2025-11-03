@@ -204,7 +204,7 @@ const ChatInteractionContainer = (props: any) => {
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
-          model:  selectedModelRef.current,
+          aiModel:  selectedModelRef.current,
         };
 
         console.log("Message data being sent:", queryData);

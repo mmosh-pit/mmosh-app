@@ -15,6 +15,7 @@ import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
+import Select from "../common/Select";
 
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -35,7 +36,6 @@ const ChatInteractionContainer = (props: any) => {
   const wallet = useWallet();
   const [selectedModel, setSelectedModel] = React.useState("gpt-4.1");
   const selectedModelRef = React.useRef(selectedModel);
-
 
   const [text, setText] = React.useState("");
 
@@ -133,9 +133,8 @@ const ChatInteractionContainer = (props: any) => {
     [currentUser, selectedChat]
   );
   React.useEffect(() => {
-  selectedModelRef.current = selectedModel;
-}, [selectedModel]);
-
+    selectedModelRef.current = selectedModel;
+  }, [selectedModel]);
 
   const formatChatHistory = (messages: Message[]) => {
     // Get the last N messages (excluding the current loading message)
@@ -204,7 +203,7 @@ const ChatInteractionContainer = (props: any) => {
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
-          aiModel:  selectedModelRef.current,
+          aiModel: selectedModelRef.current,
         };
 
         console.log("Message data being sent:", queryData);
@@ -219,7 +218,7 @@ const ChatInteractionContainer = (props: any) => {
               Authorization: `Bearer ${window.localStorage.getItem("token")}`,
             },
             body: JSON.stringify(queryData),
-          },
+          }
         );
 
         if (!response.ok) {
@@ -480,11 +479,12 @@ const ChatInteractionContainer = (props: any) => {
         <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
           {/* Chat Header */}
           <div
-            className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
+            className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
             onClick={() =>
               router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
             }
           >
+            <div className="flex">
             <Avatar
               src={selectedChat.chatAgent?.image}
               alt={selectedChat.chatAgent?.name}
@@ -498,20 +498,19 @@ const ChatInteractionContainer = (props: any) => {
               <p className="text-sm text-gray-400">
                 @{selectedChat.chatAgent?.symbol}
               </p>
+            </div></div>
+            <div className="lg:col-start-2 xl:col-start-2">
+              <Select
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                options={[
+                  { label: `Gemini`, value: "gemini" },
+                  { label: `ChatGPT 5`, value: "gpt-5" },
+                  { label: `ChatGPT 4`, value: "gpt-4o" },
+                  { label: `gpt-4.1`, value: "gpt-4.1" },
+                ]}
+              />
             </div>
-          <select
-            className="bg-[#1F1F1F] text-white border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
-            value={selectedModel}
-            onChange={(e) => 
-              
-              setSelectedModel(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <option value="gemini">Gemini</option>
-            <option value="gpt-5">ChatGPT 5</option>
-            <option value="gpt-4o">ChatGPT 4</option>
-            <option value="gpt-4.1">GPT-4.1</option>
-          </select>
           </div>
 
           {/* Messages Container */}

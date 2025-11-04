@@ -33,63 +33,12 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const wallet = useWallet();
-  const [selectedModel, setSelectedModel] = React.useState("gpt-4.1");
+  const [selectedModel, setSelectedModel] = React.useState(localStorage.getItem("ai_model") || "gpt-4.1");
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
 
-  const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
-  const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
-
   const messages = selectedChat?.messages;
-
-  const checkMembershipStatus = async () => {
-    const token = localStorage.getItem("token") || "";
-    const membershipInfo = await internalClient.get(
-      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log("Membership check", membershipInfo.data === "active");
-    setMembershipStatus(membershipInfo.data);
-  };
-
-  const checkUsage = () => {
-    if (!selectedChat) return;
-    if (membershipStatus !== "active") {
-      internalClient
-        .get("/api/check-usage", {
-          params: {
-            wallet: wallet?.publicKey.toBase58(),
-            agentId: selectedChat.chatAgent!.id,
-            role: "guest",
-          },
-        })
-        .then((result) => {
-          setHasAllowed(result.data.allowed);
-        })
-        .catch((err) => {
-          setHasAllowed(false);
-        });
-    } else {
-      setHasAllowed(true);
-    }
-  };
-
-  React.useEffect(() => {
-    if (wallet) {
-      checkMembershipStatus();
-    }
-  }, [wallet]);
-  React.useEffect(() => {
-    if (selectedChat && wallet) {
-      checkUsage();
-    }
-  }, [membershipStatus, selectedChat, wallet]);
 
   const getMessageImage = React.useCallback(
     (message: Message) => {
@@ -341,7 +290,6 @@ const ChatInteractionContainer = (props: any) => {
                       } else {
                         console.log("Chat saved successfully to database");
                       }
-                      // checkUsage();
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
@@ -478,36 +426,40 @@ const ChatInteractionContainer = (props: any) => {
       ) : (
         <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
           {/* Chat Header */}
-          <div
-            className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
-            onClick={() =>
-              router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
-            }
-          >
-            <div className="flex">
-            <Avatar
-              src={selectedChat.chatAgent?.image}
-              alt={selectedChat.chatAgent?.name}
-              size={48}
-              className="mr-3"
-            />
-            <div>
-              <h3 className="text-lg font-semibold text-white underline">
-                {selectedChat.chatAgent?.name}
-              </h3>
-              <p className="text-sm text-gray-400">
-                @{selectedChat.chatAgent?.symbol}
-              </p>
-            </div></div>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer">
+            <div
+              className="flex"
+              onClick={() =>
+                router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
+              }
+            >
+              <Avatar
+                src={selectedChat.chatAgent?.image}
+                alt={selectedChat.chatAgent?.name}
+                size={48}
+                className="mr-3"
+              />
+              <div>
+                <h3 className="text-lg font-semibold text-white underline">
+                  {selectedChat.chatAgent?.name}
+                </h3>
+                <p className="text-sm text-gray-400">
+                  @{selectedChat.chatAgent?.symbol}
+                </p>
+              </div>
+            </div>
             <div className="lg:col-start-2 xl:col-start-2">
               <Select
                 value={selectedModel}
-                onChange={(e) => setSelectedModel(e.target.value)}
+                onChange={(e) => {
+                  setSelectedModel(e.target.value);
+                  localStorage.setItem("ai_model", e.target.value);
+                }}
                 options={[
-                  { label: `Gemini`, value: "gemini" },
+                  { label: `ChatGPT 4.1`, value: "gpt-4.1" },
                   { label: `ChatGPT 5`, value: "gpt-5" },
-                  { label: `ChatGPT 4`, value: "gpt-4o" },
-                  { label: `gpt-4.1`, value: "gpt-4.1" },
+                  { label: `Gemini 2.5 Flash`, value: "gemini-2.5-flash" },
+                  // { label: `Gemini 2.5 Pro`, value: "gemini-2.5-pro" },
                 ]}
               />
             </div>

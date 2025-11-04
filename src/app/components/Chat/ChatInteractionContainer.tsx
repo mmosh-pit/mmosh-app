@@ -15,6 +15,7 @@ import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
+import Select from "../common/Select";
 
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -32,61 +33,12 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const wallet = useWallet();
+  const [selectedModel, setSelectedModel] = React.useState(localStorage.getItem("ai_model") || "gpt-4.1");
+  const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
 
-  const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
-  const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
-
   const messages = selectedChat?.messages;
-
-  const checkMembershipStatus = async () => {
-    const token = localStorage.getItem("token") || "";
-    const membershipInfo = await internalClient.get(
-      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    console.log("Membership check", membershipInfo.data === "active");
-    setMembershipStatus(membershipInfo.data);
-  };
-
-  const checkUsage = () => {
-    if (!selectedChat) return;
-    if (membershipStatus !== "active") {
-      internalClient
-        .get("/api/check-usage", {
-          params: {
-            wallet: wallet?.publicKey.toBase58(),
-            agentId: selectedChat.chatAgent!.id,
-            role: "guest",
-          },
-        })
-        .then((result) => {
-          setHasAllowed(result.data.allowed);
-        })
-        .catch((err) => {
-          setHasAllowed(false);
-        });
-    } else {
-      setHasAllowed(true);
-    }
-  };
-
-  React.useEffect(() => {
-    if (wallet) {
-      checkMembershipStatus();
-    }
-  }, [wallet]);
-  React.useEffect(() => {
-    if (selectedChat && wallet) {
-      checkUsage();
-    }
-  }, [membershipStatus, selectedChat, wallet]);
 
   const getMessageImage = React.useCallback(
     (message: Message) => {
@@ -108,7 +60,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
 
   const getMessageUsername = React.useCallback(
@@ -127,8 +79,11 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
+  React.useEffect(() => {
+    selectedModelRef.current = selectedModel;
+  }, [selectedModel]);
 
   const formatChatHistory = (messages: Message[]) => {
     // Get the last N messages (excluding the current loading message)
@@ -180,7 +135,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat,
+        chat.id === selectedChat.id ? updatedSelectedChat : chat
       );
       setChats(updatedChats);
 
@@ -197,6 +152,7 @@ const ChatInteractionContainer = (props: any) => {
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
+          aiModel: selectedModelRef.current,
         };
 
         console.log("Message data being sent:", queryData);
@@ -211,7 +167,7 @@ const ChatInteractionContainer = (props: any) => {
               Authorization: `Bearer ${window.localStorage.getItem("token")}`,
             },
             body: JSON.stringify(queryData),
-          },
+          }
         );
 
         if (!response.ok) {
@@ -274,9 +230,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id
-                        ? streamingSelectedChat
-                        : chat,
+                      chat.id === selectedChat.id ? streamingSelectedChat : chat
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -299,7 +253,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat,
+                      chat.id === selectedChat.id ? finalSelectedChat : chat
                     );
                     setChats(finalChats);
 
@@ -325,22 +279,21 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        },
+                        }
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
                         );
                       } else {
                         console.log("Chat saved successfully to database");
                       }
-                      // checkUsage();
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError,
+                        saveError
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -385,12 +338,12 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat,
+          chat.id === selectedChat.id ? finalSelectedChat : chat
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat],
+    [selectedChat, currentUser, chats, setChats, setSelectedChat]
   );
 
   const handleEnter = (evt: any) => {
@@ -473,25 +426,42 @@ const ChatInteractionContainer = (props: any) => {
       ) : (
         <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
           {/* Chat Header */}
-          <div
-            className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
-            onClick={() =>
-              router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
-            }
-          >
-            <Avatar
-              src={selectedChat.chatAgent?.image}
-              alt={selectedChat.chatAgent?.name}
-              size={48}
-              className="mr-3"
-            />
-            <div>
-              <h3 className="text-lg font-semibold text-white underline">
-                {selectedChat.chatAgent?.name}
-              </h3>
-              <p className="text-sm text-gray-400">
-                @{selectedChat.chatAgent?.symbol}
-              </p>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer">
+            <div
+              className="flex"
+              onClick={() =>
+                router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
+              }
+            >
+              <Avatar
+                src={selectedChat.chatAgent?.image}
+                alt={selectedChat.chatAgent?.name}
+                size={48}
+                className="mr-3"
+              />
+              <div>
+                <h3 className="text-lg font-semibold text-white underline">
+                  {selectedChat.chatAgent?.name}
+                </h3>
+                <p className="text-sm text-gray-400">
+                  @{selectedChat.chatAgent?.symbol}
+                </p>
+              </div>
+            </div>
+            <div className="lg:col-start-2 xl:col-start-2">
+              <Select
+                value={selectedModel}
+                onChange={(e) => {
+                  setSelectedModel(e.target.value);
+                  localStorage.setItem("ai_model", e.target.value);
+                }}
+                options={[
+                  { label: `ChatGPT 4.1`, value: "gpt-4.1" },
+                  { label: `ChatGPT 5`, value: "gpt-5" },
+                  { label: `Gemini 2.5 Flash`, value: "gemini-2.5-flash" },
+                  // { label: `Gemini 2.5 Pro`, value: "gemini-2.5-pro" },
+                ]}
+              />
             </div>
           </div>
 
@@ -541,9 +511,10 @@ const ChatInteractionContainer = (props: any) => {
                     <div
                       className={`
                         px-4 py-3 rounded-2xl 
-                        ${message.type === "user"
-                          ? "bg-[#25235a] text-white rounded-tr-md"
-                          : "bg-[#00073a] text-white rounded-tl-md"
+                        ${
+                          message.type === "user"
+                            ? "bg-[#25235a] text-white rounded-tr-md"
+                            : "bg-[#00073a] text-white rounded-tl-md"
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
                       `}
@@ -567,19 +538,19 @@ const ChatInteractionContainer = (props: any) => {
                         <div className="text-base leading-relaxed prose prose-invert max-w-none">
                           <Markdown remarkPlugins={[remarkGfm]}>
                             {message.type === "bot" &&
-                              message.content.includes("Thought:")
+                            message.content.includes("Thought:")
                               ? message.content
-                                .replace(/Thought:/g, "\n\n> *Thought:*\n")
-                                .replace(/Action:/g, "\n\n> *Action:*\n")
-                                .replace(
-                                  /^((?!Thought:|Action:).+)/gm,
-                                  (match) => {
-                                    return match.startsWith(">")
-                                      ? match
-                                      : `**${match}**`;
-                                  },
-                                )
-                                .trim()
+                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
+                                  .replace(/Action:/g, "\n\n> *Action:*\n")
+                                  .replace(
+                                    /^((?!Thought:|Action:).+)/gm,
+                                    (match) => {
+                                      return match.startsWith(">")
+                                        ? match
+                                        : `**${match}**`;
+                                    }
+                                  )
+                                  .trim()
                               : message.content}
                           </Markdown>
                         </div>
@@ -634,9 +605,10 @@ const ChatInteractionContainer = (props: any) => {
               <button
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 
-                  ${!props.hasAllowed || !text.trim() || isLoading
-                    ? "bg-[#565656] cursor-not-allowed"
-                    : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
+                  ${
+                    !props.hasAllowed || !text.trim() || isLoading
+                      ? "bg-[#565656] cursor-not-allowed"
+                      : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}
                 disabled={!props.hasAllowed || !text.trim() || isLoading}

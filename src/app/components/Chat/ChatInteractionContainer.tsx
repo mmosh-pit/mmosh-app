@@ -17,6 +17,7 @@ import DisambiguationModal from "./DisambiguationModal";
 import { DisambiguationResponse, SelectedRecipients } from "@/app/types/disambiguation";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
+import Select from "../common/Select";
 
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -36,7 +37,8 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const wallet = useWallet();
+  const [selectedModel, setSelectedModel] = React.useState(localStorage.getItem("ai_model") || "gpt-4.1");
+  const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
 
@@ -262,6 +264,9 @@ const ChatInteractionContainer = (props: any) => {
     },
     [currentUser, selectedChat]
   );
+  React.useEffect(() => {
+    selectedModelRef.current = selectedModel;
+  }, [selectedModel]);
 
   const formatChatHistory = (messages: Message[]) => {
     // Get the last N messages (excluding the current loading message)
@@ -330,6 +335,7 @@ const ChatInteractionContainer = (props: any) => {
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
+          aiModel: selectedModelRef.current,
         };
 
         console.log("Message data being sent:", queryData);
@@ -490,7 +496,6 @@ const ChatInteractionContainer = (props: any) => {
                       } else {
                         console.log("Chat saved successfully to database");
                       }
-                      // checkUsage();
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
@@ -635,25 +640,42 @@ const ChatInteractionContainer = (props: any) => {
       ) : (
         <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
           {/* Chat Header */}
-          <div
-            className="flex items-center px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer"
-            onClick={() =>
-              router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
-            }
-          >
-            <Avatar
-              src={selectedChat.chatAgent?.image}
-              alt={selectedChat.chatAgent?.name}
-              size={48}
-              className="mr-3"
-            />
-            <div>
-              <h3 className="text-lg font-semibold text-white underline">
-                {selectedChat.chatAgent?.name}
-              </h3>
-              <p className="text-sm text-gray-400">
-                @{selectedChat.chatAgent?.symbol}
-              </p>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer">
+            <div
+              className="flex"
+              onClick={() =>
+                router.push(`/bots/${selectedChat.chatAgent?.symbol}`)
+              }
+            >
+              <Avatar
+                src={selectedChat.chatAgent?.image}
+                alt={selectedChat.chatAgent?.name}
+                size={48}
+                className="mr-3"
+              />
+              <div>
+                <h3 className="text-lg font-semibold text-white underline">
+                  {selectedChat.chatAgent?.name}
+                </h3>
+                <p className="text-sm text-gray-400">
+                  @{selectedChat.chatAgent?.symbol}
+                </p>
+              </div>
+            </div>
+            <div className="lg:col-start-2 xl:col-start-2">
+              <Select
+                value={selectedModel}
+                onChange={(e) => {
+                  setSelectedModel(e.target.value);
+                  localStorage.setItem("ai_model", e.target.value);
+                }}
+                options={[
+                  { label: `ChatGPT 4.1`, value: "gpt-4.1" },
+                  { label: `ChatGPT 5`, value: "gpt-5" },
+                  { label: `Gemini 2.5 Flash`, value: "gemini-2.5-flash" },
+                  // { label: `Gemini 2.5 Pro`, value: "gemini-2.5-pro" },
+                ]}
+              />
             </div>
           </div>
 
@@ -730,16 +752,21 @@ const ChatInteractionContainer = (props: any) => {
                       ) : (
                         <div className="text-base leading-relaxed prose prose-invert max-w-none">
                           <Markdown remarkPlugins={[remarkGfm]}>
-                            {message.type === "bot" && message.content.includes("Thought:") 
+                            {message.type === "bot" &&
+                            message.content.includes("Thought:")
                               ? message.content
                                   .replace(/Thought:/g, "\n\n> *Thought:*\n")
                                   .replace(/Action:/g, "\n\n> *Action:*\n")
-                                  .replace(/^((?!Thought:|Action:).+)/gm, (match) => {
-                                    return match.startsWith(">") ? match : `**${match}**`;
-                                  })
+                                  .replace(
+                                    /^((?!Thought:|Action:).+)/gm,
+                                    (match) => {
+                                      return match.startsWith(">")
+                                        ? match
+                                        : `**${match}**`;
+                                    }
+                                  )
                                   .trim()
-                              : message.content
-                            }
+                              : message.content}
                           </Markdown>
                         </div>
                       )}

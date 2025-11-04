@@ -9,6 +9,49 @@ export default function useVoiceSession() {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const audioElement = useRef<HTMLAudioElement | null>(null);
 
+
+  // ✅ CRITICAL: Configure session immediately after connection opens
+  function configureSessionForEnglish() {
+    if (!dataChannel || dataChannel.readyState !== "open") {
+      return;
+    }
+
+    const sessionConfig = {
+      type: "session.update",
+      session: {
+        modalities: ["text", "audio"],
+        // ✅ STRONG English-only instructions
+        instructions: `You are a helpful assistant. You MUST ALWAYS respond in English, regardless of the input language.
+
+  CRITICAL RULES:
+  - Always respond in English
+  - If user speaks Spanish, respond in English
+  - If user speaks any other language, respond in English
+  - Never use Spanish words or phrases
+  - Translate any non-English input and respond in English
+
+  You are an English-only assistant.`,
+        voice: "alloy", // or "echo", "shimmer"
+        input_audio_format: "pcm16",
+        output_audio_format: "pcm16",
+        input_audio_transcription: {
+          model: "whisper-1",
+        },
+        turn_detection: {
+          type: "server_vad",
+          threshold: 0.5,
+          prefix_padding_ms: 300,
+          silence_duration_ms: 500,
+        },
+        temperature: 0.8,
+        max_response_output_tokens: "inf",
+      },
+    };
+
+    console.log("📝 Configuring session for English-only responses");
+    sendClientEvent(sessionConfig);
+  }
+
   async function startSession() {
     setIsLoadingSession(true);
     try {
@@ -157,6 +200,9 @@ export default function useVoiceSession() {
         if (!event.timestamp) {
           event.timestamp = new Date().toLocaleTimeString();
         }
+        if (event.type === "session.updated") {
+           console.log("✅ Session configured successfully:", event.session);
+        }
 
         if (event.type === "output_audio_buffer.stopped") {
           console.log("Changing is speaking value to false");
@@ -177,6 +223,10 @@ export default function useVoiceSession() {
         setIsSessionActive(true);
         setIsLoadingSession(false);
         setEvents([]);
+        // ✅ IMPORTANT: Configure session for English immediately
+        setTimeout(() => {
+          configureSessionForEnglish();
+        }, 50); // Small delay to ensure channel is fully ready
       });
 
       // Handle data channel errors and state changes

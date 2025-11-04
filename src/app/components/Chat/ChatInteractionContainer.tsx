@@ -41,6 +41,7 @@ const ChatInteractionContainer = (props: any) => {
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
+  const wallet = useWallet();
 
   const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
   const [membershipStatus, setMembershipStatus] = React.useState<string>("na");

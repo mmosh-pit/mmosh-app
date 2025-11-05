@@ -14,7 +14,10 @@ import VoiceIcon from "@/assets/icons/VoiceIcon";
 import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
 import DisambiguationModal from "./DisambiguationModal";
-import { DisambiguationResponse, SelectedRecipients } from "@/app/types/disambiguation";
+import {
+  DisambiguationResponse,
+  SelectedRecipients,
+} from "@/app/types/disambiguation";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 import Select from "../common/Select";
@@ -22,8 +25,7 @@ import Select from "../common/Select";
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const chatBaseUrl =  "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
-
+  const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
 
   const {
     isSessionActive,
@@ -37,7 +39,9 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const [selectedModel, setSelectedModel] = React.useState(localStorage.getItem("ai_model") || "gpt-4.1");
+  const [selectedModel, setSelectedModel] = React.useState(
+    localStorage.getItem("ai_model") || "gpt-4.1",
+  );
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
@@ -45,13 +49,16 @@ const ChatInteractionContainer = (props: any) => {
 
   const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
   const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
-  const [disambiguationData, setDisambiguationData] = React.useState<DisambiguationResponse | null>(null);
-  const [pendingMessage, setPendingMessage] = React.useState<string | null>(null);
+  const [disambiguationData, setDisambiguationData] =
+    React.useState<DisambiguationResponse | null>(null);
+  const [pendingMessage, setPendingMessage] = React.useState<string | null>(
+    null,
+  );
   const messages = selectedChat?.messages;
-  
+
   const handleDisambiguationSelect = async (selected: SelectedRecipients) => {
     if (!pendingMessage || !selectedChat) return;
-    
+
     // Add a loading message while we process the selection
     const loadingMessage: Message = {
       id: Date.now().toString(),
@@ -76,11 +83,13 @@ const ChatInteractionContainer = (props: any) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "text/event-stream",
-          "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          recipient_wallets: Object.values(selected).flatMap(recipients => recipients.map(r => r.wallet)),
+          recipient_wallets: Object.values(selected).flatMap((recipients) =>
+            recipients.map((r) => r.wallet),
+          ),
           message: pendingMessage,
           agentId: selectedChat.chatAgent!.id,
         }),
@@ -107,15 +116,15 @@ const ChatInteractionContainer = (props: any) => {
         //     is_loading: false,
         //   };
         // });
-         let botMessage : Message = {
-           id: Date.now().toString(),
-           content: result.content,
-           sender_id: selectedChat!.chatAgent!.id,
-           type: "bot",
-           created_at: new Date().toISOString(),
-           sender: selectedChat!.chatAgent!.name,
-           is_loading: false,
-         };
+        let botMessage: Message = {
+          id: Date.now().toString(),
+          content: result.content,
+          sender_id: selectedChat!.chatAgent!.id,
+          type: "bot",
+          created_at: new Date().toISOString(),
+          sender: selectedChat!.chatAgent!.name,
+          is_loading: false,
+        };
 
         const updatedMessages = [...selectedChat!.messages, ...[botMessage]];
         const updatedSelectedChat = {
@@ -126,7 +135,7 @@ const ChatInteractionContainer = (props: any) => {
         setSelectedChat(updatedSelectedChat);
 
         const updatedChats = chats.map((chat) =>
-          chat.id === selectedChat!.id ? updatedSelectedChat : chat
+          chat.id === selectedChat!.id ? updatedSelectedChat : chat,
         );
         setChats(updatedChats);
         // Save the chat conversation to the database
@@ -136,23 +145,20 @@ const ChatInteractionContainer = (props: any) => {
             agentID: selectedChat.chatAgent!.id,
             namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
             systemPrompt: selectedChat.chatAgent!.system_prompt,
-            userContent: '',
+            userContent: "",
             botContent: result.content,
           };
 
           console.log("Saving chat to database:", saveChatData);
 
-          const saveResponse = await fetch(
-            `${chatBaseUrl}save-chat`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
-              },
-              body: JSON.stringify(saveChatData),
+          const saveResponse = await fetch(`${chatBaseUrl}save-chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
             },
-          );
+            body: JSON.stringify(saveChatData),
+          });
 
           if (!saveResponse.ok) {
             console.warn(
@@ -162,10 +168,7 @@ const ChatInteractionContainer = (props: any) => {
             console.log("Chat saved successfully to database");
           }
         } catch (saveError) {
-          console.error(
-            "Error saving chat to database:",
-            saveError,
-          );
+          console.error("Error saving chat to database:", saveError);
           // Note: We don't want to show this error to the user as the main functionality (chat) worked
         }
         handleDisambiguationCancel();
@@ -189,7 +192,7 @@ const ChatInteractionContainer = (props: any) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     console.log("Membership check", membershipInfo.data === "active");
     setMembershipStatus(membershipInfo.data);
@@ -200,7 +203,11 @@ const ChatInteractionContainer = (props: any) => {
     if (membershipStatus !== "active") {
       internalClient
         .get("/api/check-usage", {
-          params: { wallet: wallet?.publicKey.toBase58(), agentId: selectedChat.chatAgent!.id, role: "guest" },
+          params: {
+            wallet: wallet?.publicKey.toBase58(),
+            agentId: selectedChat.chatAgent!.id,
+            role: "guest",
+          },
         })
         .then((result) => {
           setHasAllowed(result.data.allowed);
@@ -244,7 +251,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
 
   const getMessageUsername = React.useCallback(
@@ -263,7 +270,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
   React.useEffect(() => {
     selectedModelRef.current = selectedModel;
@@ -319,7 +326,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat
+        chat.id === selectedChat.id ? updatedSelectedChat : chat,
       );
       setChats(updatedChats);
 
@@ -341,18 +348,15 @@ const ChatInteractionContainer = (props: any) => {
 
         console.log("Message data being sent:", queryData);
 
-        const response = await fetch(
-          `${chatBaseUrl}react/stream`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "text/event-stream",
-              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(queryData),
-          }
-        );
+        const response = await fetch(`${chatBaseUrl}react/stream`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(queryData),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -392,12 +396,12 @@ const ChatInteractionContainer = (props: any) => {
                   const data = JSON.parse(line.slice(6));
                   console.log("SSE data received:", data);
 
-                if (data.type === "disambiguation") {
+                  if (data.type === "disambiguation") {
                     console.log("Received disambiguation data:", data);
                     // Store disambiguation data and pending message
                     setDisambiguationData(data);
                     setPendingMessage(content);
-                    
+
                     // Remove the loading message since we're showing the disambiguation modal
                     const currentMessages = [...updatedSelectedChat.messages];
                     currentMessages.pop(); // Remove the loading message
@@ -406,13 +410,15 @@ const ChatInteractionContainer = (props: any) => {
                       messages: currentMessages,
                     };
                     setSelectedChat(disambiguationSelectedChat);
-                    
+
                     // Update chats array
                     const disambiguationChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? disambiguationSelectedChat : chat
+                      chat.id === selectedChat.id
+                        ? disambiguationSelectedChat
+                        : chat,
                     );
                     setChats(disambiguationChats);
-                    
+
                     // return;
                   } else if (data.type === "content") {
                     accumulatedContent += data.content;
@@ -437,7 +443,9 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? streamingSelectedChat : chat
+                      chat.id === selectedChat.id
+                        ? streamingSelectedChat
+                        : chat,
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -460,7 +468,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat
+                      chat.id === selectedChat.id ? finalSelectedChat : chat,
                     );
                     setChats(finalChats);
 
@@ -486,13 +494,13 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        }
+                        },
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
                         );
                       } else {
                         console.log("Chat saved successfully to database");
@@ -500,7 +508,7 @@ const ChatInteractionContainer = (props: any) => {
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError
+                        saveError,
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -545,12 +553,12 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat
+          chat.id === selectedChat.id ? finalSelectedChat : chat,
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat]
+    [selectedChat, currentUser, chats, setChats, setSelectedChat],
   );
 
   const handleEnter = (evt: any) => {
@@ -697,7 +705,6 @@ const ChatInteractionContainer = (props: any) => {
               </div>
             ) : (
               messages?.map((message, index) => (
-                message.content && (
                 <div
                   className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
                   key={`${message.type}-${index}`}
@@ -727,25 +734,16 @@ const ChatInteractionContainer = (props: any) => {
                     <div
                       className={`
                         px-4 py-3 rounded-2xl 
-                        ${
-                          message.type === "user"
-                            ? "bg-[#25235a] text-white rounded-tr-md"
-                            : "bg-[#00073a] text-white rounded-tl-md"
+                        ${message.type === "user"
+                          ? "bg-[#25235a] text-white rounded-tr-md"
+                          : "bg-[#00073a] text-white rounded-tl-md"
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
                       `}
                     >
                       {message.is_loading ? (
                         <div className="flex items-center space-x-2">
-                          <Bars
-                            height="24"
-                            width="24"
-                            color="rgba(255, 0, 199, 1)"
-                            ariaLabel="bars-loading"
-                            wrapperStyle={{}}
-                            wrapperClass="bars-loading"
-                            visible={true}
-                          />
+                          <span className="loading loading-spinner loading-lg bg-[#CD068E] w-[30px] h-[30px]"></span>
                           <span className="text-sm text-gray-400">
                             Thinking...
                           </span>
@@ -754,19 +752,19 @@ const ChatInteractionContainer = (props: any) => {
                         <div className="text-base leading-relaxed prose prose-invert max-w-none">
                           <Markdown remarkPlugins={[remarkGfm]}>
                             {message.type === "bot" &&
-                            message.content.includes("Thought:")
+                              message.content.includes("Thought:")
                               ? message.content
-                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
-                                  .replace(/Action:/g, "\n\n> *Action:*\n")
-                                  .replace(
-                                    /^((?!Thought:|Action:).+)/gm,
-                                    (match) => {
-                                      return match.startsWith(">")
-                                        ? match
-                                        : `**${match}**`;
-                                    }
-                                  )
-                                  .trim()
+                                .replace(/Thought:/g, "\n\n> *Thought:*\n")
+                                .replace(/Action:/g, "\n\n> *Action:*\n")
+                                .replace(
+                                  /^((?!Thought:|Action:).+)/gm,
+                                  (match) => {
+                                    return match.startsWith(">")
+                                      ? match
+                                      : `**${match}**`;
+                                  },
+                                )
+                                .trim()
                               : message.content}
                           </Markdown>
                         </div>
@@ -774,7 +772,6 @@ const ChatInteractionContainer = (props: any) => {
                     </div>
                   </div>
                 </div>
-                )
               ))
             )}
           </div>
@@ -822,10 +819,9 @@ const ChatInteractionContainer = (props: any) => {
               <button
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 
-                  ${
-                    !props.hasAllowed || !text.trim() || isLoading
-                      ? "bg-[#565656] cursor-not-allowed"
-                      : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
+                  ${!props.hasAllowed || !text.trim() || isLoading
+                    ? "bg-[#565656] cursor-not-allowed"
+                    : "bg-[#4A4B6C] hover:bg-[#5A5B7C] transform hover:scale-105"
                   }
                 `}
                 disabled={!props.hasAllowed || !text.trim() || isLoading}

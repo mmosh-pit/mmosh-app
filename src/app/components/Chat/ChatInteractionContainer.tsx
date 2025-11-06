@@ -269,9 +269,6 @@ const ChatInteractionContainer = (props: any) => {
                     );
                     setChats(finalChats);
                     if (window.speechSynthesis && JSON.parse(localStorage.getItem("isSpeek") || "{}").isSpeek === "true") {
-                      console.log(
-                        "************************* inside the voice *******************************************"
-                      );
                       const utterance = new SpeechSynthesisUtterance(
                         accumulatedContent
                       );

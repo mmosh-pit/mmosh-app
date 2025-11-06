@@ -22,7 +22,7 @@ const Account = () => {
   const getStep = () => {
     if (currentUser !== null) {
       if (currentUser!.onboarding_step >= 4) {
-        router.replace("/bots");
+        router.replace("/chat");
       }
     }
 
@@ -32,7 +32,7 @@ const Account = () => {
     if (selectedStep === 3) return <Step4 />;
 
     if (selectedStep >= 4) {
-      router.replace("/bots");
+      router.replace("/chat");
     }
 
     return <Step1 />;
@@ -47,7 +47,7 @@ const Account = () => {
 
   React.useEffect(() => {
     if (profileInfo?.profile.address !== undefined) {
-      router.replace("/bots");
+      router.replace("/chat");
     }
   }, [profileInfo]);
 

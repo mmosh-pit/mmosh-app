@@ -17,23 +17,30 @@ import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 import Select from "../common/Select";
 
+interface Window {
+  webkitSpeechRecognition: any;
+}
+
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const {
     isSessionActive,
-    startSession,
+    intractSession,
     isSpeaking,
-    stopSession,
+    intractStop,
     isLoadingSession,
+    setSpeechHandler,
   } = useVoiceSession();
 
   const [currentUser] = useAtom(data);
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const [selectedModel, setSelectedModel] = React.useState(localStorage.getItem("ai_model") || "gpt-4.1");
+  const [selectedModel, setSelectedModel] = React.useState(
+    localStorage.getItem("ai_model") || "gpt-4.1"
+  );
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
@@ -98,6 +105,11 @@ const ChatInteractionContainer = (props: any) => {
       }));
     return relevantMessages;
   };
+
+  //   const speakRef = React.useRef(speak);
+  // React.useEffect(() => {
+  //   speakRef.current = speak;
+  // }, [speak]);
 
   const sendMessage = React.useCallback(
     async (content: string) => {
@@ -256,6 +268,22 @@ const ChatInteractionContainer = (props: any) => {
                       chat.id === selectedChat.id ? finalSelectedChat : chat
                     );
                     setChats(finalChats);
+                    if (window.speechSynthesis && JSON.parse(localStorage.getItem("isSpeek") || "{}").isSpeek === "true") {
+                      console.log(
+                        "************************* inside the voice *******************************************"
+                      );
+                      const utterance = new SpeechSynthesisUtterance(
+                        accumulatedContent
+                      );
+                      utterance.lang = "en-US";
+                      utterance.rate = 1;
+                      utterance.pitch = 1;
+                      utterance.onend = () => {
+                        console.log("Voice finished");
+                        props.setSpeak("false", "CHECK 1");
+                      };
+                      window.speechSynthesis.speak(utterance);
+                    }
 
                     // Save the chat conversation to the database
                     try {
@@ -346,10 +374,26 @@ const ChatInteractionContainer = (props: any) => {
     [selectedChat, currentUser, chats, setChats, setSelectedChat]
   );
 
+  // Connect voice session handler to send messages automatically
+  React.useEffect(() => {
+    if (!setSpeechHandler) return;
+
+    setSpeechHandler((transcript: string) => {
+      console.log("Transcript from voice session:", transcript);
+      setText(transcript);
+      sendMessage(transcript);
+    });
+
+    return () => {
+      setSpeechHandler(() => {});
+    };
+  }, [setSpeechHandler, sendMessage]);
+
   const handleEnter = (evt: any) => {
     if (evt.keyCode == 13 && !evt.shiftKey) {
       evt.preventDefault();
       if (text.trim()) {
+        props.setSpeak("false", "CHECK 2");
         sendMessage(text);
       }
       return;
@@ -380,14 +424,15 @@ const ChatInteractionContainer = (props: any) => {
     }
   }, [selectedChat?.id]);
 
-  if (isSessionActive || isLoadingSession)
+  if (isSessionActive || isLoadingSession) {
     return (
       <AudioInteraction
         isSpeaking={isSpeaking}
-        stopSession={stopSession}
+        stopSession={intractStop}
         isLoading={isLoadingSession}
       />
     );
+  }
 
   return (
     <div className="w-[75%] flex justify-center">
@@ -580,12 +625,23 @@ const ChatInteractionContainer = (props: any) => {
                   className="w-full px-4 py-3 pr-12 bg-[#00073a] border border-[#FFFFFF1A] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4A4B6C] focus:border-transparent transition-all"
                   placeholder="Type your message..."
                   value={text}
-                  onKeyDown={handleEnter}
+                  onFocus={() => {
+                    window.speechSynthesis.cancel();
+                  }}
+                  onClick={() => {
+                    window.speechSynthesis.cancel();
+                    props.setSpeak("false", "CHECK 4");
+                  }}
+                  onKeyDown={(e) => {
+                    window.speechSynthesis.cancel();
+                    handleEnter(e);
+                  }}
                   onChange={(e) => {
                     setText(e.target.value);
                   }}
                   maxLength={1000}
                 />
+
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
                   {text.length}/1000
                 </div>
@@ -595,7 +651,8 @@ const ChatInteractionContainer = (props: any) => {
                 className="flex items-center justify-center bg-[#FFFFFF14] border-[1px] border-[#FFFFFF28] rounded-lg w-8 h-8"
                 onClick={() => {
                   if (!isSessionActive) {
-                    startSession();
+                    props.setSpeak("true", "CHECK 5");
+                    intractSession();
                   }
                 }}
               >

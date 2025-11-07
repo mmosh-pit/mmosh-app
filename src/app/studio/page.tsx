@@ -17,7 +17,7 @@ import AgentOffer from "@/app/components/Project/AgentOffer";
 import internalClient from "../lib/internalHttpClient";
 import { data } from "../store";
 import { useAtom } from "jotai";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();

@@ -1,8 +1,11 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { data } from "@/app/store";
 
 const Tabs = () => {
   const router = useRouter();
+  const [currentUser] = useAtom(data);
 
   return (
     <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
@@ -59,14 +62,18 @@ const Tabs = () => {
         Members
       </a>
 
-      <div className="lg:mx-4 md:mx-2" />
+      {currentUser?.role === "wizard" && (
+        <>
+          <div className="lg:mx-4 md:mx-2" />
 
-      <a
-        className="flex items-center cursor-pointer relative "
-        onClick={() => router.push("/studio")}
-      >
-        <p className="text-base text-white font-semibold">Studio</p>
-      </a>
+          <a
+            className="flex items-center cursor-pointer relative "
+            onClick={() => router.push("/studio")}
+          >
+            <p className="text-base text-white font-semibold">Studio</p>
+          </a>
+        </>
+      )}
 
       <div className="lg:mx-4 md:mx-2" />
       <a

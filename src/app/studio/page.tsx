@@ -15,9 +15,14 @@ import AgentStudioToolsCreate from "@/app/components/Project/AgentStudioToolsCre
 import InstructAgent from "@/app/components/Project/InstructAgent";
 import AgentOffer from "@/app/components/Project/AgentOffer";
 import internalClient from "../lib/internalHttpClient";
+import { data } from "../store";
+import { useAtom } from "jotai";
+import { useRouter } from "next/router";
 
 export default function ProjectCreate() {
   const wallet: any = useWallet();
+  const router = useRouter();
+  const [currentUser] = useAtom(data);
 
   const [projectType, setProjectType] = useState([
     { label: "New Personal Agent", value: "personal" },
@@ -57,6 +62,12 @@ export default function ProjectCreate() {
   };
 
   useEffect(() => {
+    if (currentUser?.role !== "wizard") {
+      router.replace("/chat");
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
     if (!wallet) {
       return;
     }
@@ -88,7 +99,7 @@ export default function ProjectCreate() {
       `/api/is-admin?wallet=${wallet.publicKey.toBase58()}`,
       {
         headers: { Authorization: `Bearer ${token}` },
-      }
+      },
     );
     setIsAdmin(response.data.result);
   };
@@ -96,18 +107,18 @@ export default function ProjectCreate() {
   const getProjectDetailFromAPI = async (symbol: any) => {
     try {
       const projectName = projectType.find(
-        (val) => val.value === symbol
+        (val) => val.value === symbol,
       )?.label;
       console.log(projectName, "projectName from the projectType array");
 
       let listResult = await axios.get(`/api/project/detail?symbol=${symbol}`);
       console.log(
         listResult.data.project.creator,
-        "listResult from the api list call in getProjectDetailFromAPI"
+        "listResult from the api list call in getProjectDetailFromAPI",
       );
       console.log(
         wallet.publicKey.toBase58(),
-        "wallet.publicKey.toBase58() in getProjectDetailFromAPI"
+        "wallet.publicKey.toBase58() in getProjectDetailFromAPI",
       );
 
       if (listResult.data.project.creator === wallet.publicKey.toBase58()) {
@@ -308,7 +319,6 @@ export default function ProjectCreate() {
                           value: "Instruct",
                         },
                       ]);
-
                     } else {
                       setOptions([
                         {
@@ -316,7 +326,6 @@ export default function ProjectCreate() {
                           value: "Tokenize Agent",
                         },
                       ]);
-
                     }
                     setSelectedProjectType(e.target.value);
                   }}

@@ -80,14 +80,18 @@ const MobileDrawer = () => {
               Members
             </a>
 
-            <div className="lg:my-4 my-2" />
+            {currentUser?.role === "wizard" && (
+              <>
+                <div className="lg:my-4 my-2" />
 
-            <a
-              className="flex items-center cursor-pointer relative "
-              onClick={() => router.push("/studio")}
-            >
-              <p className="text-base text-white font-semibold">Studio</p>
-            </a>
+                <a
+                  className="flex items-center cursor-pointer relative "
+                  onClick={() => router.push("/studio")}
+                >
+                  <p className="text-base text-white font-semibold">Studio</p>
+                </a>
+              </>
+            )}
 
             <div className="lg:my-4 my-2" />
             <a

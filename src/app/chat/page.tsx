@@ -20,6 +20,7 @@ export default function OPOS() {
   const [showMessage, setShowMessage] = React.useState<boolean>(false);
 
   const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
+  const [speak, setSpeak] = React.useState(false);
   const [membershipStatus, setMembershipStatus] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
@@ -70,7 +71,7 @@ export default function OPOS() {
     if (wallet) {
       checkMembershipStatus();
     }
-  }, [wallet])
+  }, [wallet]);
 
   React.useEffect(() => {
     if (socket) {
@@ -138,6 +139,9 @@ export default function OPOS() {
       };
     }
   }, [socket]);
+//   React.useEffect(() => {
+//   console.log("=================================", speak);
+// }, [speak])
 
   return (
     <>
@@ -152,7 +156,17 @@ export default function OPOS() {
       <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
         <ChatAgentSelector isLoading={isLoading} />
 
-        <ChatInteractionContainer setShowMessage={setShowMessage} hasAllowed={hasAllowed} checkUsage={() => checkUsage()}/>
+        <ChatInteractionContainer
+          setShowMessage={setShowMessage}
+          hasAllowed={true}
+          checkUsage={() => checkUsage()}
+          speak={speak}
+          setSpeak={(value: string, from: string) => {
+            console.log("FUNCTION CALLED ", value, from);
+            localStorage.setItem("isSpeek", JSON.stringify({isSpeek: value}));
+            // setSpeak(value)
+          }}
+        />
       </div>
     </>
   );

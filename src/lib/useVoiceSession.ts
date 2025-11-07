@@ -8,8 +8,13 @@ export default function useVoiceSession() {
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const audioElement = useRef<HTMLAudioElement | null>(null);
+  const speechHandlerRef = useRef<((text: string) => void) | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const hasProcessedRef = useRef<boolean>(false); 
 
-
+  function setSpeechHandler(fn: (text: string) => void) {
+    speechHandlerRef.current = fn;
+  }
   // ✅ CRITICAL: Configure session immediately after connection opens
   function configureSessionForEnglish() {
     if (!dataChannel || dataChannel.readyState !== "open") {
@@ -50,6 +55,64 @@ export default function useVoiceSession() {
 
     console.log("📝 Configuring session for English-only responses");
     sendClientEvent(sessionConfig);
+  }
+
+  async function intractSession() {
+    console.log("SpeechRecognition:", window.webkitSpeechRecognition);
+
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Speech recognition not supported in this browser.");
+      return;
+    }
+
+   
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    recognitionRef.current = recognition;
+    hasProcessedRef.current = false; 
+
+     setIsSessionActive(true);
+    setIsLoadingSession(false);
+
+    recognition.onstart = () => {
+      console.log(" Voice recognition started");
+      setIsSpeaking(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      console.log("************************************************");
+      const transcript = event.results[0][0].transcript;
+      console.log(" Recognized speech:", transcript);
+
+      if (speechHandlerRef.current) {
+        speechHandlerRef.current(transcript);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+    };
+
+    recognition.onend = () => {
+      console.log("Voice recognition ended");
+      setIsSpeaking(false);
+      setIsSessionActive(false);
+    };
+
+    recognition.start();
+  }
+
+  function intractStop() {
+    console.log("Stopping voice session");
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setIsSpeaking(false);
+    setIsSessionActive(false);
   }
 
   async function startSession() {
@@ -166,7 +229,7 @@ export default function useVoiceSession() {
     } else {
       console.error(
         "Failed to send message - data channel not available or not open. State:",
-        dataChannel?.readyState,
+        dataChannel?.readyState
       );
     }
   }
@@ -201,7 +264,7 @@ export default function useVoiceSession() {
           event.timestamp = new Date().toLocaleTimeString();
         }
         if (event.type === "session.updated") {
-           console.log("✅ Session configured successfully:", event.session);
+          console.log("✅ Session configured successfully:", event.session);
         }
 
         if (event.type === "output_audio_buffer.stopped") {
@@ -252,5 +315,8 @@ export default function useVoiceSession() {
     sendTextMessage,
     isSpeaking,
     isLoadingSession,
+    intractSession,
+    intractStop,
+    setSpeechHandler,
   };
 }

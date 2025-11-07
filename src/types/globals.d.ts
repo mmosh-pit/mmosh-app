@@ -2,6 +2,9 @@ declare global {
   interface Window {
     Telegram: any;
   }
+   interface Window {
+    webkitSpeechRecognition: any;
+  }
 
   declare var grecaptcha;
 

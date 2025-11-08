@@ -11,7 +11,7 @@ const AudioInteraction = ({
   isLoading: boolean;
 }) => {
   return (
-    <div className="w-[75%] flex flex-col items-center justify-between mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] py-16 rounded-xl mx-24">
+        <div className="w-[90%] h-[38rem] flex flex-col items-center justify-between mx-14 my-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl ">
       {isLoading ? (
         <div className="w-full h-full flex justify-center items-center">
           <span className="loading loading-spinner loading-md w-[5vmax] h-[5vmax] bg-[#7B30DB]"></span>

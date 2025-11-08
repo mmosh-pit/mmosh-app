@@ -149,7 +149,8 @@ export default function OPOS() {
           />
         </div>
       )}
-      <div className="background-content flex w-full justify-center overflow-y-hidden min-h-full">
+            <div className="background-content flex w-full justify-center overflow-y-hidden ">
+
         <ChatAgentSelector isLoading={isLoading} />
 
         <ChatInteractionContainer setShowMessage={setShowMessage} hasAllowed={hasAllowed} checkUsage={() => checkUsage()}/>

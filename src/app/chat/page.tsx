@@ -158,7 +158,7 @@ export default function OPOS() {
 
         <ChatInteractionContainer
           setShowMessage={setShowMessage}
-          hasAllowed={true}
+          hasAllowed={hasAllowed}
           checkUsage={() => checkUsage()}
           speak={speak}
           setSpeak={(value: string, from: string) => {

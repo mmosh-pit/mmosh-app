@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import internalClient from "@/app/lib/internalHttpClient";
 
 export default function useVoiceSession() {
   const [isSessionActive, setIsSessionActive] = useState(false);
@@ -10,7 +11,8 @@ export default function useVoiceSession() {
   const audioElement = useRef<HTMLAudioElement | null>(null);
   const speechHandlerRef = useRef<((text: string) => void) | null>(null);
   const recognitionRef = useRef<any>(null);
-  const hasProcessedRef = useRef<boolean>(false); 
+  const hasProcessedRef = useRef<boolean>(false);
+  const [isMicOn, setIsMicOn] = useState(false);
 
   function setSpeechHandler(fn: (text: string) => void) {
     speechHandlerRef.current = fn;
@@ -53,56 +55,128 @@ export default function useVoiceSession() {
       },
     };
 
-    console.log("📝 Configuring session for English-only responses");
+    console.log("Configuring session for English-only responses");
     sendClientEvent(sessionConfig);
   }
 
   async function intractSession() {
+    console.log("****************again call*************************");
     console.log("SpeechRecognition:", window.webkitSpeechRecognition);
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+      recognitionRef.current = recognition;
+      hasProcessedRef.current = false;
 
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Speech recognition not supported in this browser.");
-      return;
-    }
+      setIsSessionActive(true);
+      setIsLoadingSession(false);
 
-   
+      recognition.onstart = () => {
+        console.log(" Voice recognition started");
+        setIsMicOn(true);
+        setIsSpeaking(true);
+      };
 
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-    recognitionRef.current = recognition;
-    hasProcessedRef.current = false; 
+      recognition.onresult = (event: any) => {
+        console.log(
+          "****************speak again********************************"
+        );
+        const transcript = event.results[0][0].transcript;
+        console.log(" Recognized speech:", transcript);
 
-     setIsSessionActive(true);
-    setIsLoadingSession(false);
+        if (speechHandlerRef.current) {
+          speechHandlerRef.current(transcript);
+        }
+      };
 
-    recognition.onstart = () => {
-      console.log(" Voice recognition started");
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+      };
+
+      recognition.onend = () => {
+        console.log("Voice recognition ended");
+        setIsMicOn(false);
+      };
+
+      recognition.start();
+    } else {
+      console.log("Falling back to MediaRecorder for Firefox...");
+      setIsLoadingSession(false);
+      setIsSessionActive(true);
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: BlobPart[] = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          console.log("🎤 Got audio chunk:", event.data.size, "bytes");
+          audioChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        console.log(" MediaRecorder stopped, preparing upload...");
+        if (audioChunks.length === 0) {
+          console.error(" No audio data recorded!");
+          return;
+        }
+
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        console.log(
+          audioBlob,
+          "************************* audioBlob *********************************"
+        );
+        const formData = new FormData();
+        formData.append("file", audioBlob, "speech.webm");
+
+        console.log("FormData ready:", formData);
+
+        try {
+          const res = await internalClient.post(
+            "/api/speech-to-text",
+            formData,
+            {
+              headers: {
+                authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          const data = res.data;
+          console.log("📜 Transcription result:", data);
+
+          if (data?.text && speechHandlerRef.current) {
+            speechHandlerRef.current(data.text);
+          }
+        } catch (err) {
+          console.error("Upload/transcription failed:", err);
+        }
+
+        stream.getTracks().forEach((t) => t.stop());
+        setIsSpeaking(false);
+        setIsSessionActive(false);
+        setIsMicOn(false);
+      };
+
+      // ✅ use timeslice to ensure data chunks are emitted regularly
+      mediaRecorder.start(1000); // every second
+
       setIsSpeaking(true);
-    };
+      setIsMicOn(true);
+      setIsSessionActive(true);
 
-    recognition.onresult = (event: any) => {
-      console.log("************************************************");
-      const transcript = event.results[0][0].transcript;
-      console.log(" Recognized speech:", transcript);
-
-      if (speechHandlerRef.current) {
-        speechHandlerRef.current(transcript);
-      }
-    };
-
-    recognition.onerror = (event: any) => {
-      console.error("Speech recognition error:", event.error);
-    };
-
-    recognition.onend = () => {
-      console.log("Voice recognition ended");
-      setIsSpeaking(false);
-      setIsSessionActive(false);
-    };
-
-    recognition.start();
+      // Stop after 8 seconds
+      setTimeout(() => {
+        if (mediaRecorder.state !== "inactive") mediaRecorder.stop();
+      }, 8000);
+    }
   }
 
   function intractStop() {

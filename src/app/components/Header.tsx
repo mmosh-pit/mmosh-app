@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as anchor from "@coral-xyz/anchor";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -555,7 +555,7 @@ const Header = () => {
   };
 
   React.useEffect(() => {
-    localStorage.setItem("isSpeek", JSON.stringify({isSpeek: false}))
+    localStorage.setItem("isSpeek", JSON.stringify({ isSpeek: false }));
     if (!rendered.current) {
       init();
       rendered.current = true;
@@ -693,7 +693,14 @@ const Header = () => {
         initialStep={initialModalStep}
         isHome={pathname === "/"}
       />
-      <header className="flex flex-col bg-transparent">
+      <header
+        className="flex flex-col bg-transparent"
+        onClick={() => {
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+          }
+        }}
+      >
         <div className="w-full flex flex-col justify-center items-center py-6 md:px-20 px-8 relative">
           <div className="flex w-full justify-between items-center mx-8">
             {isMobileScreen ? (

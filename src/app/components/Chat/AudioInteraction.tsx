@@ -1,15 +1,34 @@
 import CloseIcon from "@/assets/icons/CloseIcon";
 import MicIcon from "@/assets/icons/MicIcon";
+import { useEffect, useState } from "react";
 
 const AudioInteraction = ({
   isSpeaking,
   stopSession,
   isLoading,
+  startSession,
+  isMicOn,
 }: {
   isSpeaking: boolean;
   stopSession: () => void;
   isLoading: boolean;
+  startSession: () => void;
+   isMicOn: boolean;
 }) => {
+
+
+
+  useEffect(()=>{
+    console.log(isMicOn,"isMicOn ***********************************************")
+  })
+  const handleMicClick = () => {
+    if (!isMicOn) {
+      console.log("inside the if condtion=================>")
+      startSession();
+    } 
+  };
+   
+
   return (
     <div className="w-[75%] flex flex-col items-center justify-between mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] py-16 rounded-xl mx-24">
       {isLoading ? (
@@ -34,11 +53,16 @@ const AudioInteraction = ({
 
               <div
                 className={`voice-inner-mic rounded-full ${isSpeaking && "animated"}`}
+                onClick={handleMicClick}
               >
                 <MicIcon />
               </div>
             </div>
-
+            {!isMicOn  && (
+              <p className="text-xl text-white mt-8 animate-pulse">
+                 Press mic to continue speaking
+              </p>
+            )}
             {!isSpeaking && !isLoading && (
               <p className="text-xl text-white mt-8">I'm Listening</p>
             )}

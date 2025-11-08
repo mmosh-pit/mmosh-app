@@ -24,6 +24,7 @@ interface Window {
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const [isMicOn, setIsMicOn] = React.useState(false);
 
   const {
     isSessionActive,
@@ -46,6 +47,50 @@ const ChatInteractionContainer = (props: any) => {
   const [text, setText] = React.useState("");
 
   const messages = selectedChat?.messages;
+
+  // 🧩 Firefox Speech Voice Preloader — ensures voices load properly
+  React.useEffect(() => {
+    if ("speechSynthesis" in window) {
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          console.log(
+            "✅ Voices loaded:",
+            voices.map((v) => v.name)
+          );
+        } else {
+          console.warn("⚠️ Voices not yet loaded — retrying...");
+        }
+      };
+
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+      loadVoices();
+
+      // Retry every 500ms until voices are ready (for Firefox)
+      const interval = setInterval(() => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          console.log("✅ Voices finally ready");
+          clearInterval(interval);
+        }
+      }, 500);
+
+      return () => clearInterval(interval);
+    } else {
+      console.warn("Speech Synthesis not supported");
+    }
+  }, []);
+
+  // 🧩 Unlock Firefox speech (must trigger once by user click)
+  React.useEffect(() => {
+    const unlockSpeech = () => {
+      const utter = new SpeechSynthesisUtterance(" ");
+      window.speechSynthesis.speak(utter);
+      document.removeEventListener("click", unlockSpeech);
+    };
+
+    document.addEventListener("click", unlockSpeech);
+  }, []);
 
   const getMessageImage = React.useCallback(
     (message: Message) => {
@@ -169,18 +214,15 @@ const ChatInteractionContainer = (props: any) => {
 
         console.log("Message data being sent:", queryData);
 
-        const response = await fetch(
-          "https://ai.kinshipbots.com/react/stream",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "text/event-stream",
-              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(queryData),
-          }
-        );
+        const response = await fetch("http://localhost:9000/react/stream", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(queryData),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -353,6 +395,40 @@ const ChatInteractionContainer = (props: any) => {
         // Replace the loading message with error message
         const finalMessages = [...updatedSelectedChat.messages];
         finalMessages[finalMessages.length - 1] = errorMessage;
+// add newly
+        React.useEffect(() => {
+          if ("speechSynthesis" in window) {
+            const loadVoices = () => {
+              const voices = window.speechSynthesis.getVoices();
+              if (voices.length > 0) {
+                console.log(
+                  "✅ Voices ready:",
+                  voices.map((v) => v.name)
+                );
+              } else {
+                console.warn("⚠️ No voices yet — Firefox may need a retry.");
+              }
+            };
+
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+
+            loadVoices();
+
+            const interval = setInterval(() => {
+              const voices = window.speechSynthesis.getVoices();
+              if (voices.length > 0) {
+                console.log("✅ Voices finally loaded after retry.");
+                clearInterval(interval);
+              }
+            }, 500);
+
+            return () => clearInterval(interval);
+          } else {
+            console.warn(
+              " ****************** SpeechSynthesis not supported in this browser. *******************************888"
+            );
+          }
+        }, []);
 
         const finalSelectedChat = {
           ...updatedSelectedChat,
@@ -427,8 +503,19 @@ const ChatInteractionContainer = (props: any) => {
         isSpeaking={isSpeaking}
         stopSession={intractStop}
         isLoading={isLoadingSession}
+        startSession={intractSession}
+        isMicOn={isMicOn}
       />
     );
+  } else {
+    console.log(
+      " ************************** inside the else condtion ***************************************************"
+    );
+    console.log(
+      " ************************** close the audioIntraction ***************************************************"
+    );
+    props.setSpeak("false", "CHECK 1");
+    window.speechSynthesis.cancel();
   }
 
   return (

@@ -29,9 +29,17 @@ export default function useVoiceSession() {
 
   // Flag to prevent recording when bot is speaking
   const shouldListenRef = useRef(true);
+  
+  // NEW: Track if session is being stopped to abort ongoing operations
+  const isStoppingRef = useRef(false);
+  
+  // NEW: Track ongoing fetch requests to abort them
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   async function startSession() {
     setIsLoadingSession(true);
+    isStoppingRef.current = false; // Reset stopping flag
+    
     try {
       // Initialize Audio Context
       audioContextRef.current = new AudioContext({ sampleRate: 24000 });
@@ -70,6 +78,12 @@ export default function useVoiceSession() {
       };
 
       mediaRecorder.onstop = async () => {
+        // NEW: Don't process if session is being stopped
+        if (isStoppingRef.current) {
+          audioChunksRef.current = [];
+          return;
+        }
+        
         if (audioChunksRef.current.length > 0) {
           const audioBlob = new Blob(audioChunksRef.current, {
             type: "audio/webm",
@@ -90,7 +104,6 @@ export default function useVoiceSession() {
       setIsSessionActive(true);
       setIsLoadingSession(false);
 
-      console.log("✅ Voice session started successfully");
     } catch (error) {
       console.error("Failed to start session:", error);
       setIsLoadingSession(false);
@@ -99,24 +112,40 @@ export default function useVoiceSession() {
   }
 
   function stopSession() {
+    console.log("Stopping voice session...");
+    
+    // NEW: Set stopping flag to prevent new operations
+    isStoppingRef.current = true;
+
+    // NEW: Abort any ongoing fetch requests
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    // Stop speech synthesis immediately
     if (window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
-      // Unmute microphone when manually stopping speech
-      if (streamRef.current) {
-        streamRef.current.getAudioTracks().forEach((track) => {
-          track.enabled = true;
-        });
-      }
-      setIsSpeaking(false);
-      shouldListenRef.current = true;
-      console.log("🔇 Speech stopped manually");
+      console.log("Speech cancelled");
     }
-    console.log("Stopping voice session...");
+
+    // Unmute microphone
+    if (streamRef.current) {
+      streamRef.current.getAudioTracks().forEach((track) => {
+        track.enabled = true;
+      });
+    }
 
     // Stop VAD monitoring
     if (vadCheckIntervalRef.current) {
       clearInterval(vadCheckIntervalRef.current);
       vadCheckIntervalRef.current = null;
+    }
+
+    // Clear silence timeout
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
     }
 
     // Stop media recorder
@@ -139,11 +168,6 @@ export default function useVoiceSession() {
       audioContextRef.current = null;
     }
 
-    // Stop any ongoing speech
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
-    }
-
     // Clear audio queue
     audioQueueRef.current = [];
     isPlayingRef.current = false;
@@ -154,10 +178,13 @@ export default function useVoiceSession() {
       websocketRef.current = null;
     }
 
+    // Reset all state
     setIsSessionActive(false);
     setIsSpeaking(false);
     setIsProcessing(false);
-    console.log("✅ Voice session stopped");
+    shouldListenRef.current = true;
+    
+    console.log("Voice session stopped");
   }
 
   function startVADMonitoring() {
@@ -166,6 +193,11 @@ export default function useVoiceSession() {
     let isSpeechDetected = false;
 
     vadCheckIntervalRef.current = setInterval(() => {
+      // NEW: Stop monitoring if session is being stopped
+      if (isStoppingRef.current) {
+        return;
+      }
+      
       if (!analyserRef.current) return;
 
       // Don't process audio if bot is speaking or processing
@@ -185,7 +217,6 @@ export default function useVoiceSession() {
       if (average > SPEECH_THRESHOLD) {
         // Speech detected
         if (!isSpeechDetected) {
-          console.log("🎤 Speech detected, starting recording...");
           isSpeechDetected = true;
 
           // Clear any existing silence timeout
@@ -212,7 +243,6 @@ export default function useVoiceSession() {
       } else if (isSpeechDetected && !silenceTimeoutRef.current) {
         // Silence detected after speech - start countdown
         silenceTimeoutRef.current = setTimeout(() => {
-          console.log("🔇 Silence detected, stopping recording...");
           if (
             mediaRecorderRef.current &&
             mediaRecorderRef.current.state === "recording"
@@ -227,24 +257,38 @@ export default function useVoiceSession() {
   }
 
   async function sendAudioToBackend(audioBlob: Blob) {
+    // NEW: Don't process if session is being stopped
+    if (isStoppingRef.current) {
+      return;
+    }
+    
     if (!selectedChat) return;
 
     // Disable listening while processing
     shouldListenRef.current = false;
     setIsProcessing(true);
 
+    // NEW: Create new AbortController for this request
+    abortControllerRef.current = new AbortController();
+
     try {
       // Step 1: Send audio to backend for transcription
       const transcription = await transcribeAudio(audioBlob);
 
-      if (!transcription || transcription.trim().length === 0) {
-        console.log("No transcription detected, skipping...");
+      // NEW: Check if session was stopped during transcription
+      if (isStoppingRef.current) {
         setIsProcessing(false);
-        shouldListenRef.current = true; // Re-enable listening
         return;
       }
 
-      console.log("📝 Transcription:", transcription);
+      if (!transcription || transcription.trim().length === 0) {
+        console.log("No transcription detected, skipping...");
+        setIsProcessing(false);
+        shouldListenRef.current = true;
+        return;
+      }
+
+      console.log("Transcription:", transcription);
 
       // Add user message to chat
       const userMessage: Message = {
@@ -300,12 +344,12 @@ export default function useVoiceSession() {
           Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         },
         body: JSON.stringify(queryData),
+        signal: abortControllerRef.current.signal, // NEW: Add abort signal
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = "";
@@ -321,6 +365,13 @@ export default function useVoiceSession() {
       };
 
       while (true) {
+        // NEW: Check if session was stopped during streaming
+        if (isStoppingRef.current) {
+          reader.cancel();
+          setIsProcessing(false);
+          return;
+        }
+
         const { done, value } = await reader.read();
         if (done) break;
 
@@ -356,6 +407,12 @@ export default function useVoiceSession() {
                 );
                 setChats(streamingChats);
               } else if (data.type === "complete") {
+                // NEW: Check if session was stopped before playing audio
+                if (isStoppingRef.current) {
+                  setIsProcessing(false);
+                  return;
+                }
+
                 // Step 3: Convert text response to audio and play
                 await textToSpeechAndPlay(accumulatedContent);
 
@@ -378,6 +435,46 @@ export default function useVoiceSession() {
                   chat.id === selectedChat.id ? finalSelectedChat : chat
                 );
                 setChats(finalChats);
+                 try {
+                      const saveChatData = {
+                        chatId: selectedChat.id,
+                        agentID: selectedChat.chatAgent!.id,
+                        namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
+                        systemPrompt: selectedChat.chatAgent!.system_prompt,
+                        userContent: transcription,
+                        botContent: accumulatedContent,
+                      };
+
+                      console.log("Saving chat to database:", saveChatData);
+
+                      const saveResponse = await fetch(
+                        "https://ai.kinshipbots.com/save-chat",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+                          },
+                          body: JSON.stringify(saveChatData),
+                        }
+                      );
+
+                      if (!saveResponse.ok) {
+                        console.warn(
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
+                        );
+                      } else {
+                        console.log("Chat saved successfully to database");
+                      }
+                    } catch (saveError) {
+                      console.error(
+                        "Error saving chat to database:",
+                        saveError
+                      );
+                      // Note: We don't want to show this error to the user as the main functionality (chat) worked
+                    }
+
+                    break;
               }
             } catch (parseError) {
               console.error("Error parsing SSE data:", parseError);
@@ -387,15 +484,20 @@ export default function useVoiceSession() {
       }
 
       setIsProcessing(false);
-      // Re-enable listening after speaking is done (handled in textToSpeechAndPlay)
-    } catch (error) {
+    } catch (error: any) {
+      // NEW: Don't log error if it was aborted intentionally
+      if (error.name === 'AbortError') {
+        console.log("Request aborted by user");
+        setIsProcessing(false);
+        return;
+      }
+      
       console.error("Error processing audio:", error);
       setIsProcessing(false);
-      shouldListenRef.current = true; // Re-enable listening on error
+      shouldListenRef.current = true;
     }
   }
 
-  // FIXED: Send audio directly to backend for transcription
   async function transcribeAudio(audioBlob: Blob): Promise<string> {
     try {
       const formData = new FormData();
@@ -407,6 +509,7 @@ export default function useVoiceSession() {
           Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         },
         body: formData,
+        signal: abortControllerRef.current?.signal, // NEW: Add abort signal
       });
 
       if (!response.ok) {
@@ -415,13 +518,24 @@ export default function useVoiceSession() {
 
       const data = await response.json();
       return data.text || "";
-    } catch (error) {
+    } catch (error: any) {
+      // NEW: Don't log error if it was aborted intentionally
+      if (error.name === 'AbortError') {
+        console.log("Transcription aborted by user");
+        return "";
+      }
+      
       console.error("Transcription error:", error);
       return "";
     }
   }
 
   async function textToSpeechAndPlay(text: string) {
+    // NEW: Don't play audio if session is being stopped
+    if (isStoppingRef.current) {
+      return;
+    }
+
     try {
       setIsSpeaking(true);
 
@@ -429,7 +543,7 @@ export default function useVoiceSession() {
       if (streamRef.current) {
         streamRef.current.getAudioTracks().forEach((track) => {
           track.enabled = false;
-          console.log("🔇 Microphone muted during speech");
+          console.log("Microphone muted during speech");
         });
       }
 
@@ -445,6 +559,11 @@ export default function useVoiceSession() {
       utterance.pitch = 1.0;
 
       utterance.onend = () => {
+        // NEW: Don't unmute if session was stopped
+        if (isStoppingRef.current) {
+          return;
+        }
+
         // Unmute the microphone after speaking
         if (streamRef.current) {
           streamRef.current.getAudioTracks().forEach((track) => {
@@ -453,33 +572,33 @@ export default function useVoiceSession() {
           });
         }
         setIsSpeaking(false);
-        shouldListenRef.current = true; // Re-enable listening after speaking
-        console.log("✅ Finished speaking");
+        shouldListenRef.current = true;
+        console.log("Finished speaking");
       };
 
       utterance.onerror = (event) => {
         console.error("Speech synthesis error:", event);
         // Unmute the microphone on error
-        if (streamRef.current) {
+        if (streamRef.current && !isStoppingRef.current) {
           streamRef.current.getAudioTracks().forEach((track) => {
             track.enabled = true;
           });
         }
         setIsSpeaking(false);
-        shouldListenRef.current = true; // Re-enable listening on error
+        shouldListenRef.current = true;
       };
 
       window.speechSynthesis.speak(utterance);
     } catch (error) {
       console.error("Error in text-to-speech:", error);
       // Unmute the microphone on error
-      if (streamRef.current) {
+      if (streamRef.current && !isStoppingRef.current) {
         streamRef.current.getAudioTracks().forEach((track) => {
           track.enabled = true;
         });
       }
       setIsSpeaking(false);
-      shouldListenRef.current = true; // Re-enable listening on error
+      shouldListenRef.current = true;
     }
   }
 
@@ -505,20 +624,16 @@ export default function useVoiceSession() {
     };
   }, [isSessionActive]);
 
-    // Send a message to the model
   function sendClientEvent(message: any) {
     if (dataChannel && dataChannel.readyState === "open") {
       try {
         const timestamp = new Date().toLocaleTimeString();
-        // Ensure unique event ID for each message
         if (!message.event_id) {
           message.event_id = crypto.randomUUID();
         }
 
-        // send event before setting timestamp since the backend peer doesn't expect this field
         dataChannel.send(JSON.stringify(message));
 
-        // if guard just in case the timestamp exists by miracle
         if (!message.timestamp) {
           message.timestamp = timestamp;
         }
@@ -534,7 +649,6 @@ export default function useVoiceSession() {
     }
   }
 
-    // Send a text message to the model
   function sendTextMessage(message: string) {
     const event = {
       type: "conversation.item.create",
@@ -559,6 +673,7 @@ export default function useVoiceSession() {
     startSession,
     stopSession,
     isSpeaking: isSpeaking || isProcessing,
+    isProcessing: isProcessing,
     isLoadingSession,
     events,
     sendClientEvent,

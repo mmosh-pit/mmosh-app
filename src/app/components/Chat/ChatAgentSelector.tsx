@@ -81,7 +81,7 @@ const ChatAgentSelector = (props: any) => {
   }, [currentUser]);
 
   return (
-    <div className="flex flex-col w-[25%] bg-[#181747] backdrop-filter backdrop-blur-[6px] border-r border-[#FFFFFF1A]">
+        <div className="flex flex-col w-[25%] bg-[#181747]  h-[40rem] backdrop-filter backdrop-blur-[6px] border-r border-[#FFFFFF1A]">
       {/* Header */}
       <div className="px-6 py-4 border-b border-[#FFFFFF1A]">
         <h2 className="text-lg font-semibold text-white">Chats</h2>

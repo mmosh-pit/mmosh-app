@@ -31,6 +31,7 @@ const ChatInteractionContainer = (props: any) => {
     isSpeaking,
     stopSession,
     isLoadingSession,
+    isProcessing,
   } = useVoiceSession();
 
   const [currentUser] = useAtom(data);
@@ -41,10 +42,6 @@ const ChatInteractionContainer = (props: any) => {
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
-  const wallet = useWallet();
-
-  const [hasAllowed, setHasAllowed] = React.useState<boolean>(false);
-  const [membershipStatus, setMembershipStatus] = React.useState<string>("na");
   const [disambiguationData, setDisambiguationData] = React.useState<DisambiguationResponse | null>(null);
   const [pendingMessage, setPendingMessage] = React.useState<string | null>(null);
   const messages = selectedChat?.messages;
@@ -180,49 +177,6 @@ const ChatInteractionContainer = (props: any) => {
     setDisambiguationData(null);
     setPendingMessage(null);
   };
-
-  const checkMembershipStatus = async () => {
-    const token = localStorage.getItem("token") || "";
-    const membershipInfo = await internalClient.get(
-      "/api/membership/has-membership?wallet=" + wallet!.publicKey.toBase58(),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log("Membership check", membershipInfo.data === "active");
-    setMembershipStatus(membershipInfo.data);
-  };
-
-  const checkUsage = () => {
-    if (!selectedChat) return;
-    if (membershipStatus !== "active") {
-      internalClient
-        .get("/api/check-usage", {
-          params: { wallet: wallet?.publicKey.toBase58(), agentId: selectedChat.chatAgent!.id, role: "guest" },
-        })
-        .then((result) => {
-          setHasAllowed(result.data.allowed);
-        })
-        .catch((err) => {
-          setHasAllowed(false);
-        });
-    } else {
-      setHasAllowed(true);
-    }
-  };
-
-  React.useEffect(() => {
-    if (wallet) {
-      checkMembershipStatus();
-    }
-  }, [wallet]);
-  React.useEffect(() => {
-    if (selectedChat && wallet) {
-      checkUsage();
-    }
-  }, [membershipStatus, selectedChat, wallet]);
 
   const getMessageImage = React.useCallback(
     (message: Message) => {
@@ -593,11 +547,12 @@ const ChatInteractionContainer = (props: any) => {
         isSpeaking={isSpeaking}
         stopSession={stopSession}
         isLoading={isLoadingSession}
+        isProcessing={isProcessing}
       />
     );
 
   return (
-    <div className="w-[75%] flex justify-center">
+    <div className="w-[75%] h-[32rem] flex justify-center">
       {/* Disambiguation Modal */}
       {disambiguationData && (
         <DisambiguationModal
@@ -607,7 +562,8 @@ const ChatInteractionContainer = (props: any) => {
         />
       )}
       {areChatsLoading ? (
-        <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
+                <div className="w-[90%] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-16 rounded-xl">
+
           <div className="text-center space-y-4">
             <Bars
               height="60"
@@ -627,7 +583,8 @@ const ChatInteractionContainer = (props: any) => {
           </div>
         </div>
       ) : !selectedChat ? (
-        <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
+                <div className="w-[90%] h-[38rem] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-20 rounded-xl">
+
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">💬</div>
             <h3 className="text-xl text-white font-semibold">
@@ -639,7 +596,8 @@ const ChatInteractionContainer = (props: any) => {
           </div>
         </div>
       ) : (
-        <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
+                <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[38rem] overflow-hidden">
+
           {/* Chat Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer">
             <div
@@ -815,6 +773,7 @@ const ChatInteractionContainer = (props: any) => {
                     startSession();
                   }
                 }}
+                disabled={!props.hasAllowed}
               >
                 <VoiceIcon />
               </button>

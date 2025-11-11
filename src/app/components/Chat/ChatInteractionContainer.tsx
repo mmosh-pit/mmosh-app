@@ -13,25 +13,27 @@ import { useRouter } from "next/navigation";
 import VoiceIcon from "@/assets/icons/VoiceIcon";
 import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
+import DisambiguationModal from "./DisambiguationModal";
+import {
+  DisambiguationResponse,
+  SelectedRecipients,
+} from "@/app/types/disambiguation";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 import Select from "../common/Select";
 
-interface Window {
-  webkitSpeechRecognition: any;
-}
-
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
 
   const {
     isSessionActive,
-    intractSession,
+    startSession,
     isSpeaking,
-    intractStop,
+    stopSession,
     isLoadingSession,
-    setSpeechHandler,
+    isProcessing,
   } = useVoiceSession();
 
   const [currentUser] = useAtom(data);
@@ -39,13 +41,145 @@ const ChatInteractionContainer = (props: any) => {
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
   const [selectedModel, setSelectedModel] = React.useState(
-    localStorage.getItem("ai_model") || "gpt-4.1"
+    localStorage.getItem("ai_model") || "gpt-4.1",
   );
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
-
+  const [disambiguationData, setDisambiguationData] =
+    React.useState<DisambiguationResponse | null>(null);
+  const [pendingMessage, setPendingMessage] = React.useState<string | null>(
+    null,
+  );
   const messages = selectedChat?.messages;
+
+  const handleDisambiguationSelect = async (selected: SelectedRecipients) => {
+    if (!pendingMessage || !selectedChat) return;
+
+    // Add a loading message while we process the selection
+    const loadingMessage: Message = {
+      id: Date.now().toString(),
+      content: "",
+      sender_id: selectedChat.chatAgent!.id,
+      type: "bot",
+      created_at: new Date().toISOString(),
+      sender: selectedChat.chatAgent!.name,
+      is_loading: true,
+    };
+
+    const updatedMessages = [...selectedChat.messages, loadingMessage];
+    const updatedSelectedChat = {
+      ...selectedChat,
+      messages: updatedMessages,
+    };
+    setSelectedChat(updatedSelectedChat);
+
+    try {
+      // Call the confirm-send endpoint with selected recipients
+      const response = await fetch(`${chatBaseUrl}react/confirm-send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          recipient_wallets: Object.values(selected).flatMap((recipients) =>
+            recipients.map((r) => r.wallet),
+          ),
+          message: pendingMessage,
+          agentId: selectedChat.chatAgent!.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to confirm recipients");
+      }
+
+      // Continue with the chat flow using the confirmed recipients
+      const result = await response.json();
+      // Handle the response - you might want to add it to the chat
+      if (result.content) {
+        // // Add a bot message for each recipient with their formatted message
+        // const detailMessages = Object.entries(result.details).map(([wallet, detail]) => {
+        //   const d = detail as { formatted: string };
+        //   return {
+        //     id: `${Date.now()}-${wallet}`,
+        //     content: d.formatted,
+        //     sender_id: selectedChat!.chatAgent!.id,
+        //     type: "bot",
+        //     created_at: new Date().toISOString(),
+        //     sender: selectedChat!.chatAgent!.name,
+        //     is_loading: false,
+        //   };
+        // });
+        let botMessage: Message = {
+          id: Date.now().toString(),
+          content: result.content,
+          sender_id: selectedChat!.chatAgent!.id,
+          type: "bot",
+          created_at: new Date().toISOString(),
+          sender: selectedChat!.chatAgent!.name,
+          is_loading: false,
+        };
+
+        const updatedMessages = [...selectedChat!.messages, ...[botMessage]];
+        const updatedSelectedChat = {
+          ...selectedChat!,
+          messages: updatedMessages,
+        };
+
+        setSelectedChat(updatedSelectedChat);
+
+        const updatedChats = chats.map((chat) =>
+          chat.id === selectedChat!.id ? updatedSelectedChat : chat,
+        );
+        setChats(updatedChats);
+        // Save the chat conversation to the database
+        try {
+          const saveChatData = {
+            chatId: selectedChat.id,
+            agentID: selectedChat.chatAgent!.id,
+            namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
+            systemPrompt: selectedChat.chatAgent!.system_prompt,
+            userContent: "",
+            botContent: result.content,
+          };
+
+          console.log("Saving chat to database:", saveChatData);
+
+          const saveResponse = await fetch(`${chatBaseUrl}save-chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify(saveChatData),
+          });
+
+          if (!saveResponse.ok) {
+            console.warn(
+              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+            );
+          } else {
+            console.log("Chat saved successfully to database");
+          }
+        } catch (saveError) {
+          console.error("Error saving chat to database:", saveError);
+          // Note: We don't want to show this error to the user as the main functionality (chat) worked
+        }
+        handleDisambiguationCancel();
+      }
+    } catch (error) {
+      console.error("Error confirming recipients:", error);
+      // Handle error - you might want to show an error message in the chat
+    }
+  };
+
+  const handleDisambiguationCancel = () => {
+    setDisambiguationData(null);
+    setPendingMessage(null);
+  };
 
   const getMessageImage = React.useCallback(
     (message: Message) => {
@@ -67,7 +201,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
 
   const getMessageUsername = React.useCallback(
@@ -86,7 +220,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
   React.useEffect(() => {
     selectedModelRef.current = selectedModel;
@@ -105,11 +239,6 @@ const ChatInteractionContainer = (props: any) => {
       }));
     return relevantMessages;
   };
-
-  //   const speakRef = React.useRef(speak);
-  // React.useEffect(() => {
-  //   speakRef.current = speak;
-  // }, [speak]);
 
   const sendMessage = React.useCallback(
     async (content: string) => {
@@ -147,7 +276,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat
+        chat.id === selectedChat.id ? updatedSelectedChat : chat,
       );
       setChats(updatedChats);
 
@@ -169,18 +298,15 @@ const ChatInteractionContainer = (props: any) => {
 
         console.log("Message data being sent:", queryData);
 
-        const response = await fetch(
-          "https://ai.kinshipbots.com/react/stream",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "text/event-stream",
-              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(queryData),
-          }
-        );
+        const response = await fetch(`${chatBaseUrl}react/stream`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(queryData),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -218,8 +344,33 @@ const ChatInteractionContainer = (props: any) => {
               if (line.startsWith("data: ")) {
                 try {
                   const data = JSON.parse(line.slice(6));
+                  console.log("SSE data received:", data);
 
-                  if (data.type === "content") {
+                  if (data.type === "disambiguation") {
+                    console.log("Received disambiguation data:", data);
+                    // Store disambiguation data and pending message
+                    setDisambiguationData(data);
+                    setPendingMessage(content);
+
+                    // Remove the loading message since we're showing the disambiguation modal
+                    const currentMessages = [...updatedSelectedChat.messages];
+                    currentMessages.pop(); // Remove the loading message
+                    const disambiguationSelectedChat = {
+                      ...updatedSelectedChat,
+                      messages: currentMessages,
+                    };
+                    setSelectedChat(disambiguationSelectedChat);
+
+                    // Update chats array
+                    const disambiguationChats = chats.map((chat) =>
+                      chat.id === selectedChat.id
+                        ? disambiguationSelectedChat
+                        : chat,
+                    );
+                    setChats(disambiguationChats);
+
+                    // return;
+                  } else if (data.type === "content") {
                     accumulatedContent += data.content;
 
                     // Update the streaming message with accumulated content
@@ -242,7 +393,9 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? streamingSelectedChat : chat
+                      chat.id === selectedChat.id
+                        ? streamingSelectedChat
+                        : chat,
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -265,22 +418,9 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat
+                      chat.id === selectedChat.id ? finalSelectedChat : chat,
                     );
                     setChats(finalChats);
-                    if (window.speechSynthesis && JSON.parse(localStorage.getItem("isSpeek") || "{}").isSpeek === "true") {
-                      const utterance = new SpeechSynthesisUtterance(
-                        accumulatedContent
-                      );
-                      utterance.lang = "en-US";
-                      utterance.rate = 1;
-                      utterance.pitch = 1;
-                      utterance.onend = () => {
-                        console.log("Voice finished");
-                        props.setSpeak("false", "CHECK 1");
-                      };
-                      window.speechSynthesis.speak(utterance);
-                    }
 
                     // Save the chat conversation to the database
                     try {
@@ -296,7 +436,7 @@ const ChatInteractionContainer = (props: any) => {
                       console.log("Saving chat to database:", saveChatData);
 
                       const saveResponse = await fetch(
-                        "https://ai.kinshipbots.com/save-chat",
+                        `${chatBaseUrl}save-chat`,
                         {
                           method: "POST",
                           headers: {
@@ -304,13 +444,13 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        }
+                        },
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
                         );
                       } else {
                         console.log("Chat saved successfully to database");
@@ -318,7 +458,7 @@ const ChatInteractionContainer = (props: any) => {
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError
+                        saveError,
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -363,34 +503,18 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat
+          chat.id === selectedChat.id ? finalSelectedChat : chat,
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat]
+    [selectedChat, currentUser, chats, setChats, setSelectedChat],
   );
-
-  // Connect voice session handler to send messages automatically
-  React.useEffect(() => {
-    if (!setSpeechHandler) return;
-
-    setSpeechHandler((transcript: string) => {
-      console.log("Transcript from voice session:", transcript);
-      setText(transcript);
-      sendMessage(transcript);
-    });
-
-    return () => {
-      setSpeechHandler(() => {});
-    };
-  }, [setSpeechHandler, sendMessage]);
 
   const handleEnter = (evt: any) => {
     if (evt.keyCode == 13 && !evt.shiftKey) {
       evt.preventDefault();
       if (text.trim()) {
-        props.setSpeak("false", "CHECK 2");
         sendMessage(text);
       }
       return;
@@ -421,20 +545,28 @@ const ChatInteractionContainer = (props: any) => {
     }
   }, [selectedChat?.id]);
 
-  if (isSessionActive || isLoadingSession) {
+  if (isSessionActive || isLoadingSession)
     return (
       <AudioInteraction
         isSpeaking={isSpeaking}
-        stopSession={intractStop}
+        stopSession={stopSession}
         isLoading={isLoadingSession}
+        isProcessing={isProcessing}
       />
     );
-  }
 
   return (
-    <div className="w-[75%] flex justify-center">
+    <div className="w-[75%] h-[32rem] flex justify-center">
+      {/* Disambiguation Modal */}
+      {disambiguationData && (
+        <DisambiguationModal
+          data={disambiguationData}
+          onSelect={handleDisambiguationSelect}
+          onCancel={handleDisambiguationCancel}
+        />
+      )}
       {areChatsLoading ? (
-        <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
+        <div className="w-[90%] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-16 rounded-xl">
           <div className="text-center space-y-4">
             <Bars
               height="60"
@@ -454,7 +586,7 @@ const ChatInteractionContainer = (props: any) => {
           </div>
         </div>
       ) : !selectedChat ? (
-        <div className="w-[90%] flex flex-col items-center justify-center mt-16 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl">
+        <div className="w-[90%] h-[38rem] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-20 rounded-xl">
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">💬</div>
             <h3 className="text-xl text-white font-semibold">
@@ -466,7 +598,7 @@ const ChatInteractionContainer = (props: any) => {
           </div>
         </div>
       ) : (
-        <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[75vh] overflow-hidden">
+        <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[38rem] overflow-hidden">
           {/* Chat Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer">
             <div
@@ -523,35 +655,40 @@ const ChatInteractionContainer = (props: any) => {
                 </div>
               </div>
             ) : (
-              messages?.map((message, index) => (
-                <div
-                  className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
-                  key={`${message.type}-${index}`}
-                >
-                  <Avatar
-                    src={getMessageImage(message)}
-                    alt={getMessageUsername(message)}
-                    size={40}
-                    className="flex-shrink-0"
-                  />
-
-                  <div
-                    className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-400 font-medium">
-                        {getMessageUsername(message)}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(message.created_at).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-
+              messages?.map(
+                (message, index) =>
+                  message.content && (
                     <div
-                      className={`
+                      className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
+                      key={`${message.type}-${index}`}
+                    >
+                      <Avatar
+                        src={getMessageImage(message)}
+                        alt={getMessageUsername(message)}
+                        size={40}
+                        className="flex-shrink-0"
+                      />
+
+                      <div
+                        className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-400 font-medium">
+                            {getMessageUsername(message)}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(message.created_at).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </span>
+                        </div>
+
+                        <div
+                          className={`
                         px-4 py-3 rounded-2xl 
                         ${
                           message.type === "user"
@@ -560,47 +697,51 @@ const ChatInteractionContainer = (props: any) => {
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
                       `}
-                    >
-                      {message.is_loading ? (
-                        <div className="flex items-center space-x-2">
-                          <Bars
-                            height="24"
-                            width="24"
-                            color="rgba(255, 0, 199, 1)"
-                            ariaLabel="bars-loading"
-                            wrapperStyle={{}}
-                            wrapperClass="bars-loading"
-                            visible={true}
-                          />
-                          <span className="text-sm text-gray-400">
-                            Thinking...
-                          </span>
+                        >
+                          {message.is_loading ? (
+                            <div className="flex items-center space-x-2">
+                              <Bars
+                                height="24"
+                                width="24"
+                                color="rgba(255, 0, 199, 1)"
+                                ariaLabel="bars-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="bars-loading"
+                                visible={true}
+                              />
+                              <span className="text-sm text-gray-400">
+                                Thinking...
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-base leading-relaxed prose prose-invert max-w-none">
+                              <Markdown remarkPlugins={[remarkGfm]}>
+                                {message.type === "bot" &&
+                                message.content.includes("Thought:")
+                                  ? message.content
+                                      .replace(
+                                        /Thought:/g,
+                                        "\n\n> *Thought:*\n",
+                                      )
+                                      .replace(/Action:/g, "\n\n> *Action:*\n")
+                                      .replace(
+                                        /^((?!Thought:|Action:).+)/gm,
+                                        (match) => {
+                                          return match.startsWith(">")
+                                            ? match
+                                            : `**${match}**`;
+                                        },
+                                      )
+                                      .trim()
+                                  : message.content}
+                              </Markdown>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="text-base leading-relaxed prose prose-invert max-w-none">
-                          <Markdown remarkPlugins={[remarkGfm]}>
-                            {message.type === "bot" &&
-                            message.content.includes("Thought:")
-                              ? message.content
-                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
-                                  .replace(/Action:/g, "\n\n> *Action:*\n")
-                                  .replace(
-                                    /^((?!Thought:|Action:).+)/gm,
-                                    (match) => {
-                                      return match.startsWith(">")
-                                        ? match
-                                        : `**${match}**`;
-                                    }
-                                  )
-                                  .trim()
-                              : message.content}
-                          </Markdown>
-                        </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))
+                  ),
+              )
             )}
           </div>
 
@@ -622,23 +763,12 @@ const ChatInteractionContainer = (props: any) => {
                   className="w-full px-4 py-3 pr-12 bg-[#00073a] border border-[#FFFFFF1A] rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4A4B6C] focus:border-transparent transition-all"
                   placeholder="Type your message..."
                   value={text}
-                  onFocus={() => {
-                    window.speechSynthesis.cancel();
-                  }}
-                  onClick={() => {
-                    window.speechSynthesis.cancel();
-                    props.setSpeak("false", "CHECK 4");
-                  }}
-                  onKeyDown={(e) => {
-                    window.speechSynthesis.cancel();
-                    handleEnter(e);
-                  }}
+                  onKeyDown={handleEnter}
                   onChange={(e) => {
                     setText(e.target.value);
                   }}
                   maxLength={1000}
                 />
-
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-500">
                   {text.length}/1000
                 </div>
@@ -648,10 +778,10 @@ const ChatInteractionContainer = (props: any) => {
                 className="flex items-center justify-center bg-[#FFFFFF14] border-[1px] border-[#FFFFFF28] rounded-lg w-8 h-8"
                 onClick={() => {
                   if (!isSessionActive) {
-                    props.setSpeak("true", "CHECK 5");
-                    intractSession();
+                    startSession();
                   }
                 }}
+                disabled={!props.hasAllowed}
               >
                 <VoiceIcon />
               </button>

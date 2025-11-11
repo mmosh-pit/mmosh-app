@@ -560,6 +560,7 @@ const Header = () => {
       init();
       rendered.current = true;
     }
+    window.speechSynthesis.cancel();
   }, []);
   const checkMembershipStatus = async () => {
     const token = localStorage.getItem("token") || "";

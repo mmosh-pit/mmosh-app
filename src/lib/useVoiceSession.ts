@@ -36,80 +36,90 @@ export default function useVoiceSession() {
   // NEW: Track ongoing fetch requests to abort them
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  async function startSession() {
-    setIsLoadingSession(true);
-    isStoppingRef.current = false; // Reset stopping flag
-    
-    try {
-      // Initialize Audio Context
-      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
+async function startSession() {
+  console.log("Starting voice session...");
+  setIsLoadingSession(true);
+  isStoppingRef.current = false;
 
-      // Get microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          channelCount: 1,
-          sampleRate: 16000,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
-      streamRef.current = stream;
+  try {
+    // Initialize Audio Context with proper sample rate
+    audioContextRef.current = new AudioContext({ sampleRate: 24000 });
 
-      // Set up Voice Activity Detection
-      const audioContext = new AudioContext();
-      const source = audioContext.createMediaStreamSource(stream);
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
-      source.connect(analyser);
-      analyserRef.current = analyser;
+    // Get microphone access with better constraints
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        channelCount: 1,
+        sampleRate: 16000,
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+    });
 
-      // Set up MediaRecorder for audio capture
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: "audio/webm;codecs=opus",
-      });
+    streamRef.current = stream;
 
-      mediaRecorderRef.current = mediaRecorder;
+    // IMPORTANT: Use the same AudioContext for VAD
+    // Don't create a new one
+    const source = audioContextRef.current.createMediaStreamSource(stream);
+    const analyser = audioContextRef.current.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.8; // Smooth out rapid changes
+    source.connect(analyser);
+    analyserRef.current = analyser;
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
+    console.log("Audio analysis setup complete");
 
-      mediaRecorder.onstop = async () => {
-        // NEW: Don't process if session is being stopped
-        if (isStoppingRef.current) {
-          audioChunksRef.current = [];
-          return;
-        }
-        
-        if (audioChunksRef.current.length > 0) {
-          const audioBlob = new Blob(audioChunksRef.current, {
-            type: "audio/webm",
-          });
-          audioChunksRef.current = [];
+    // Set up MediaRecorder
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: "audio/webm;codecs=opus",
+    });
 
-          // Send audio to backend for transcription and processing
-          await sendAudioToBackend(audioBlob);
-        }
-      };
+    mediaRecorderRef.current = mediaRecorder;
 
-      // Start recording
-      mediaRecorder.start();
+    mediaRecorder.ondataavailable = (event) => {
+      console.log(`Audio data available: ${event.data.size} bytes`);
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data);
+      }
+    };
 
-      // Start VAD monitoring
-      startVADMonitoring();
+    mediaRecorder.onstop = async () => {
+      console.log("MediaRecorder stopped");
+      
+      if (isStoppingRef.current) {
+        console.log("Session stopping, clearing chunks");
+        audioChunksRef.current = [];
+        return;
+      }
 
-      setIsSessionActive(true);
-      setIsLoadingSession(false);
+      if (audioChunksRef.current.length > 0) {
+        console.log(`Processing ${audioChunksRef.current.length} audio chunks`);
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        audioChunksRef.current = [];
+        await sendAudioToBackend(audioBlob);
+      } else {
+        console.log("No audio chunks to process");
+      }
+    };
 
-    } catch (error) {
-      console.error("Failed to start session:", error);
-      setIsLoadingSession(false);
-      alert("Failed to access microphone. Please check permissions.");
-    }
+    // Start recording initially (will be controlled by VAD)
+    mediaRecorder.start();
+    console.log("Initial recording started");
+
+    // Start VAD monitoring
+    startVADMonitoring();
+
+    setIsSessionActive(true);
+    setIsLoadingSession(false);
+    console.log("✅ Voice session active");
+  } catch (error) {
+    console.error("Failed to start session:", error);
+    setIsLoadingSession(false);
+    alert("Failed to access microphone. Please check permissions.");
   }
+}
 
   function stopSession() {
     console.log("Stopping voice session...");
@@ -187,74 +197,116 @@ export default function useVoiceSession() {
     console.log("Voice session stopped");
   }
 
-  function startVADMonitoring() {
-    const bufferLength = analyserRef.current!.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    let isSpeechDetected = false;
+function startVADMonitoring() {
+  const bufferLength = analyserRef.current!.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  let isSpeechDetected = false;
+  
+  // Track noise floor (ambient noise level when not speaking)
+  const noiseFloorSamples: number[] = [];
+  const NOISE_FLOOR_SAMPLE_SIZE = 30; // First 3 seconds to establish baseline
+  let noiseFloorCalibrated = false;
+  let noiseFloor = 15; // Default baseline
+  
+  console.log("startVADMonitoring started");
 
-    vadCheckIntervalRef.current = setInterval(() => {
-      // NEW: Stop monitoring if session is being stopped
-      if (isStoppingRef.current) {
-        return;
-      }
+  vadCheckIntervalRef.current = setInterval(() => {
+    if (isStoppingRef.current) {
+      return;
+    }
+    
+    if (!analyserRef.current) return;
+
+    // Don't process audio if bot is speaking or processing
+    if (!shouldListenRef.current || isSpeaking || isProcessing) {
+      return;
+    }
+
+    analyserRef.current.getByteFrequencyData(dataArray);
+
+    // Calculate RMS (Root Mean Square)
+    const rms = Math.sqrt(
+      dataArray.reduce((sum, value) => sum + value * value, 0) / bufferLength
+    );
+    
+    // Calibrate noise floor during the first few seconds
+    if (!noiseFloorCalibrated) {
+      noiseFloorSamples.push(rms);
       
-      if (!analyserRef.current) return;
-
-      // Don't process audio if bot is speaking or processing
-      if (!shouldListenRef.current || isSpeaking || isProcessing) {
-        return;
+      if (noiseFloorSamples.length >= NOISE_FLOOR_SAMPLE_SIZE) {
+        // Calculate noise floor as average of lowest 70% of samples
+        const sortedSamples = [...noiseFloorSamples].sort((a, b) => a - b);
+        const bottomSamples = sortedSamples.slice(0, Math.floor(sortedSamples.length * 0.7));
+        noiseFloor = bottomSamples.reduce((a, b) => a + b, 0) / bottomSamples.length;
+        noiseFloorCalibrated = true;
+        console.log(`🎤 Noise floor calibrated: ${noiseFloor.toFixed(2)}`);
       }
+    }
+    
+    // Use a fixed multiplier above the noise floor for speech detection
+    // This threshold does NOT adapt during speech
+    const SPEECH_MULTIPLIER = 2.0; // Speech should be 2x louder than ambient noise
+    const MIN_ABSOLUTE_THRESHOLD = 12; // Minimum threshold regardless of noise floor
+    const SPEECH_THRESHOLD = Math.max(noiseFloor * SPEECH_MULTIPLIER, MIN_ABSOLUTE_THRESHOLD);
+    
+    const SILENCE_DURATION = 1500; // 1.5 seconds of silence
 
-      analyserRef.current.getByteFrequencyData(dataArray);
+    console.log(`RMS: ${rms.toFixed(2)}, Threshold: ${SPEECH_THRESHOLD.toFixed(2)}, NoiseFloor: ${noiseFloor.toFixed(2)}, State: ${mediaRecorderRef.current?.state}`);
 
-      // Calculate average volume
-      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+    if (rms > SPEECH_THRESHOLD) {
+      // Speech detected
+      if (!isSpeechDetected) {
+        console.log("🎤 Speech detected! Starting recording...");
+        isSpeechDetected = true;
 
-      // Speech detection threshold (adjust as needed)
-      const SPEECH_THRESHOLD = 30;
-      const SILENCE_DURATION = 1500; // 1.5 seconds of silence
+        // Clear any existing silence timeout
+        if (silenceTimeoutRef.current) {
+          clearTimeout(silenceTimeoutRef.current);
+          silenceTimeoutRef.current = null;
+        }
 
-      if (average > SPEECH_THRESHOLD) {
-        // Speech detected
-        if (!isSpeechDetected) {
-          isSpeechDetected = true;
-
-          // Clear any existing silence timeout
-          if (silenceTimeoutRef.current) {
-            clearTimeout(silenceTimeoutRef.current);
-            silenceTimeoutRef.current = null;
-          }
-
-          // Start fresh recording
-          if (
-            mediaRecorderRef.current &&
-            mediaRecorderRef.current.state === "inactive"
-          ) {
-            audioChunksRef.current = [];
+        // Start fresh recording
+        if (
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === "inactive"
+        ) {
+          audioChunksRef.current = [];
+          try {
             mediaRecorderRef.current.start();
-          }
-        } else {
-          // Continue speech - clear silence timeout
-          if (silenceTimeoutRef.current) {
-            clearTimeout(silenceTimeoutRef.current);
-            silenceTimeoutRef.current = null;
+            console.log("✅ Recording started");
+          } catch (error) {
+            console.error("Failed to start recording:", error);
           }
         }
-      } else if (isSpeechDetected && !silenceTimeoutRef.current) {
-        // Silence detected after speech - start countdown
-        silenceTimeoutRef.current = setTimeout(() => {
-          if (
-            mediaRecorderRef.current &&
-            mediaRecorderRef.current.state === "recording"
-          ) {
-            mediaRecorderRef.current.stop();
-          }
-          isSpeechDetected = false;
+      } else {
+        // Continue speech - clear silence timeout
+        if (silenceTimeoutRef.current) {
+          clearTimeout(silenceTimeoutRef.current);
           silenceTimeoutRef.current = null;
-        }, SILENCE_DURATION);
+        }
       }
-    }, 100); // Check every 100ms
-  }
+    } else if (isSpeechDetected && !silenceTimeoutRef.current) {
+      // Silence detected after speech - start countdown
+      console.log("🔇 Silence detected, waiting for confirmation...");
+      silenceTimeoutRef.current = setTimeout(() => {
+        console.log("⏹️ Stopping recording after silence");
+        if (
+          mediaRecorderRef.current &&
+          mediaRecorderRef.current.state === "recording"
+        ) {
+          mediaRecorderRef.current.stop();
+        }
+        isSpeechDetected = false;
+        silenceTimeoutRef.current = null;
+      }, SILENCE_DURATION);
+    } else if (!isSpeechDetected && noiseFloorCalibrated) {
+      // Continuously update noise floor during silence (adaptive to environment changes)
+      // Use exponential moving average to slowly adapt to environment
+      const ADAPTATION_FACTOR = 0.02; // Very slow adaptation (2% weight to new sample)
+      noiseFloor = noiseFloor * (1 - ADAPTATION_FACTOR) + rms * ADAPTATION_FACTOR;
+    }
+  }, 100); // Check every 100ms
+}
 
   async function sendAudioToBackend(audioBlob: Blob) {
     // NEW: Don't process if session is being stopped

@@ -285,11 +285,17 @@ const ChatInteractionContainer = (props: any) => {
 
       //console.log(chatHistory)
 
+      const systemPrompt = JSON.parse(selectedChat!.chatAgent!.system_prompt);
+      systemPrompt[systemPrompt.length] = {
+        agentId: selectedChat.chatAgent!.key,
+        authorization: localStorage.getItem("token")
+      };
+
       try {
         const queryData = {
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
-          instructions: selectedChat!.chatAgent!.system_prompt,
+          instructions: JSON.stringify(systemPrompt),
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,

@@ -14,7 +14,10 @@ import VoiceIcon from "@/assets/icons/VoiceIcon";
 import useVoiceSession from "@/lib/useVoiceSession";
 import AudioInteraction from "./AudioInteraction";
 import DisambiguationModal from "./DisambiguationModal";
-import { DisambiguationResponse, SelectedRecipients } from "@/app/types/disambiguation";
+import {
+  DisambiguationResponse,
+  SelectedRecipients,
+} from "@/app/types/disambiguation";
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 import Select from "../common/Select";
@@ -22,8 +25,7 @@ import Select from "../common/Select";
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const chatBaseUrl =  "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
-
+  const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
 
   const {
     isSessionActive,
@@ -38,17 +40,22 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const [selectedModel, setSelectedModel] = React.useState(localStorage.getItem("ai_model") || "gpt-4.1");
+  const [selectedModel, setSelectedModel] = React.useState(
+    localStorage.getItem("ai_model") || "gpt-4.1",
+  );
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
-  const [disambiguationData, setDisambiguationData] = React.useState<DisambiguationResponse | null>(null);
-  const [pendingMessage, setPendingMessage] = React.useState<string | null>(null);
+  const [disambiguationData, setDisambiguationData] =
+    React.useState<DisambiguationResponse | null>(null);
+  const [pendingMessage, setPendingMessage] = React.useState<string | null>(
+    null,
+  );
   const messages = selectedChat?.messages;
-  
+
   const handleDisambiguationSelect = async (selected: SelectedRecipients) => {
     if (!pendingMessage || !selectedChat) return;
-    
+
     // Add a loading message while we process the selection
     const loadingMessage: Message = {
       id: Date.now().toString(),
@@ -73,11 +80,13 @@ const ChatInteractionContainer = (props: any) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "text/event-stream",
-          "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          recipient_wallets: Object.values(selected).flatMap(recipients => recipients.map(r => r.wallet)),
+          recipient_wallets: Object.values(selected).flatMap((recipients) =>
+            recipients.map((r) => r.wallet),
+          ),
           message: pendingMessage,
           agentId: selectedChat.chatAgent!.id,
         }),
@@ -104,15 +113,15 @@ const ChatInteractionContainer = (props: any) => {
         //     is_loading: false,
         //   };
         // });
-         let botMessage : Message = {
-           id: Date.now().toString(),
-           content: result.content,
-           sender_id: selectedChat!.chatAgent!.id,
-           type: "bot",
-           created_at: new Date().toISOString(),
-           sender: selectedChat!.chatAgent!.name,
-           is_loading: false,
-         };
+        let botMessage: Message = {
+          id: Date.now().toString(),
+          content: result.content,
+          sender_id: selectedChat!.chatAgent!.id,
+          type: "bot",
+          created_at: new Date().toISOString(),
+          sender: selectedChat!.chatAgent!.name,
+          is_loading: false,
+        };
 
         const updatedMessages = [...selectedChat!.messages, ...[botMessage]];
         const updatedSelectedChat = {
@@ -123,7 +132,7 @@ const ChatInteractionContainer = (props: any) => {
         setSelectedChat(updatedSelectedChat);
 
         const updatedChats = chats.map((chat) =>
-          chat.id === selectedChat!.id ? updatedSelectedChat : chat
+          chat.id === selectedChat!.id ? updatedSelectedChat : chat,
         );
         setChats(updatedChats);
         // Save the chat conversation to the database
@@ -133,23 +142,20 @@ const ChatInteractionContainer = (props: any) => {
             agentID: selectedChat.chatAgent!.id,
             namespaces: [selectedChat.chatAgent!.key, "PUBLIC"],
             systemPrompt: selectedChat.chatAgent!.system_prompt,
-            userContent: '',
+            userContent: "",
             botContent: result.content,
           };
 
           console.log("Saving chat to database:", saveChatData);
 
-          const saveResponse = await fetch(
-            `${chatBaseUrl}save-chat`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${window.localStorage.getItem("token")}`,
-              },
-              body: JSON.stringify(saveChatData),
+          const saveResponse = await fetch(`${chatBaseUrl}save-chat`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
             },
-          );
+            body: JSON.stringify(saveChatData),
+          });
 
           if (!saveResponse.ok) {
             console.warn(
@@ -159,10 +165,7 @@ const ChatInteractionContainer = (props: any) => {
             console.log("Chat saved successfully to database");
           }
         } catch (saveError) {
-          console.error(
-            "Error saving chat to database:",
-            saveError,
-          );
+          console.error("Error saving chat to database:", saveError);
           // Note: We don't want to show this error to the user as the main functionality (chat) worked
         }
         handleDisambiguationCancel();
@@ -198,7 +201,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
 
   const getMessageUsername = React.useCallback(
@@ -217,7 +220,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
   React.useEffect(() => {
     selectedModelRef.current = selectedModel;
@@ -273,7 +276,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat
+        chat.id === selectedChat.id ? updatedSelectedChat : chat,
       );
       setChats(updatedChats);
 
@@ -282,11 +285,17 @@ const ChatInteractionContainer = (props: any) => {
 
       //console.log(chatHistory)
 
+      const systemPrompt = JSON.parse(selectedChat!.chatAgent!.system_prompt);
+      systemPrompt[systemPrompt.length] = {
+        agentId: selectedChat.chatAgent!.key,
+        authorization: localStorage.getItem("token")
+      };
+
       try {
         const queryData = {
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
-          instructions: selectedChat!.chatAgent!.system_prompt,
+          instructions: JSON.stringify(systemPrompt),
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
@@ -295,18 +304,15 @@ const ChatInteractionContainer = (props: any) => {
 
         console.log("Message data being sent:", queryData);
 
-        const response = await fetch(
-          `${chatBaseUrl}react/stream`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "text/event-stream",
-              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(queryData),
-          }
-        );
+        const response = await fetch(`${chatBaseUrl}react/stream`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(queryData),
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -346,12 +352,12 @@ const ChatInteractionContainer = (props: any) => {
                   const data = JSON.parse(line.slice(6));
                   console.log("SSE data received:", data);
 
-                if (data.type === "disambiguation") {
+                  if (data.type === "disambiguation") {
                     console.log("Received disambiguation data:", data);
                     // Store disambiguation data and pending message
                     setDisambiguationData(data);
                     setPendingMessage(content);
-                    
+
                     // Remove the loading message since we're showing the disambiguation modal
                     const currentMessages = [...updatedSelectedChat.messages];
                     currentMessages.pop(); // Remove the loading message
@@ -360,13 +366,15 @@ const ChatInteractionContainer = (props: any) => {
                       messages: currentMessages,
                     };
                     setSelectedChat(disambiguationSelectedChat);
-                    
+
                     // Update chats array
                     const disambiguationChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? disambiguationSelectedChat : chat
+                      chat.id === selectedChat.id
+                        ? disambiguationSelectedChat
+                        : chat,
                     );
                     setChats(disambiguationChats);
-                    
+
                     // return;
                   } else if (data.type === "content") {
                     accumulatedContent += data.content;
@@ -391,7 +399,9 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? streamingSelectedChat : chat
+                      chat.id === selectedChat.id
+                        ? streamingSelectedChat
+                        : chat,
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -414,7 +424,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat
+                      chat.id === selectedChat.id ? finalSelectedChat : chat,
                     );
                     setChats(finalChats);
 
@@ -440,13 +450,13 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        }
+                        },
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
                         );
                       } else {
                         console.log("Chat saved successfully to database");
@@ -454,7 +464,7 @@ const ChatInteractionContainer = (props: any) => {
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError
+                        saveError,
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -499,12 +509,12 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat
+          chat.id === selectedChat.id ? finalSelectedChat : chat,
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat]
+    [selectedChat, currentUser, chats, setChats, setSelectedChat],
   );
 
   const handleEnter = (evt: any) => {
@@ -562,8 +572,7 @@ const ChatInteractionContainer = (props: any) => {
         />
       )}
       {areChatsLoading ? (
-                <div className="w-[90%] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-16 rounded-xl">
-
+        <div className="w-[90%] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-16 rounded-xl">
           <div className="text-center space-y-4">
             <Bars
               height="60"
@@ -583,8 +592,7 @@ const ChatInteractionContainer = (props: any) => {
           </div>
         </div>
       ) : !selectedChat ? (
-                <div className="w-[90%] h-[38rem] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-20 rounded-xl">
-
+        <div className="w-[90%] h-[38rem] flex flex-col items-center justify-center m-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-6 py-20 rounded-xl">
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">💬</div>
             <h3 className="text-xl text-white font-semibold">
@@ -596,8 +604,7 @@ const ChatInteractionContainer = (props: any) => {
           </div>
         </div>
       ) : (
-                <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[38rem] overflow-hidden">
-
+        <div className="w-[90%] flex flex-col rounded-xl mt-8 bg-[#181747] backdrop-filter backdrop-blur-[6px] h-[38rem] overflow-hidden">
           {/* Chat Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#FFFFFF1A] cursor-pointer">
             <div
@@ -654,36 +661,40 @@ const ChatInteractionContainer = (props: any) => {
                 </div>
               </div>
             ) : (
-              messages?.map((message, index) => (
-                message.content && (
-                <div
-                  className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
-                  key={`${message.type}-${index}`}
-                >
-                  <Avatar
-                    src={getMessageImage(message)}
-                    alt={getMessageUsername(message)}
-                    size={40}
-                    className="flex-shrink-0"
-                  />
-
-                  <div
-                    className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-400 font-medium">
-                        {getMessageUsername(message)}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(message.created_at).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-
+              messages?.map(
+                (message, index) =>
+                  message.content && (
                     <div
-                      className={`
+                      className={`flex items-start gap-3 ${message.type === "user" ? "flex-row-reverse" : "flex-row"}`}
+                      key={`${message.type}-${index}`}
+                    >
+                      <Avatar
+                        src={getMessageImage(message)}
+                        alt={getMessageUsername(message)}
+                        size={40}
+                        className="flex-shrink-0"
+                      />
+
+                      <div
+                        className={`flex flex-col space-y-1 max-w-[70%] ${message.type === "user" ? "items-end" : "items-start"}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-400 font-medium">
+                            {getMessageUsername(message)}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(message.created_at).toLocaleTimeString(
+                              [],
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </span>
+                        </div>
+
+                        <div
+                          className={`
                         px-4 py-3 rounded-2xl 
                         ${
                           message.type === "user"
@@ -692,48 +703,51 @@ const ChatInteractionContainer = (props: any) => {
                         }
                         ${message.is_loading ? "min-h-[60px] flex items-center justify-center" : ""}
                       `}
-                    >
-                      {message.is_loading ? (
-                        <div className="flex items-center space-x-2">
-                          <Bars
-                            height="24"
-                            width="24"
-                            color="rgba(255, 0, 199, 1)"
-                            ariaLabel="bars-loading"
-                            wrapperStyle={{}}
-                            wrapperClass="bars-loading"
-                            visible={true}
-                          />
-                          <span className="text-sm text-gray-400">
-                            Thinking...
-                          </span>
+                        >
+                          {message.is_loading ? (
+                            <div className="flex items-center space-x-2">
+                              <Bars
+                                height="24"
+                                width="24"
+                                color="rgba(255, 0, 199, 1)"
+                                ariaLabel="bars-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="bars-loading"
+                                visible={true}
+                              />
+                              <span className="text-sm text-gray-400">
+                                Thinking...
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-base leading-relaxed prose prose-invert max-w-none">
+                              <Markdown remarkPlugins={[remarkGfm]}>
+                                {message.type === "bot" &&
+                                message.content.includes("Thought:")
+                                  ? message.content
+                                      .replace(
+                                        /Thought:/g,
+                                        "\n\n> *Thought:*\n",
+                                      )
+                                      .replace(/Action:/g, "\n\n> *Action:*\n")
+                                      .replace(
+                                        /^((?!Thought:|Action:).+)/gm,
+                                        (match) => {
+                                          return match.startsWith(">")
+                                            ? match
+                                            : `**${match}**`;
+                                        },
+                                      )
+                                      .trim()
+                                  : message.content}
+                              </Markdown>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="text-base leading-relaxed prose prose-invert max-w-none">
-                          <Markdown remarkPlugins={[remarkGfm]}>
-                            {message.type === "bot" &&
-                            message.content.includes("Thought:")
-                              ? message.content
-                                  .replace(/Thought:/g, "\n\n> *Thought:*\n")
-                                  .replace(/Action:/g, "\n\n> *Action:*\n")
-                                  .replace(
-                                    /^((?!Thought:|Action:).+)/gm,
-                                    (match) => {
-                                      return match.startsWith(">")
-                                        ? match
-                                        : `**${match}**`;
-                                    }
-                                  )
-                                  .trim()
-                              : message.content}
-                          </Markdown>
-                        </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-                )
-              ))
+                  ),
+              )
             )}
           </div>
 

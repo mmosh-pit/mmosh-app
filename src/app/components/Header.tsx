@@ -555,6 +555,7 @@ const Header = () => {
   };
 
   React.useEffect(() => {
+    localStorage.setItem("isSpeek", JSON.stringify({isSpeek: false}))
     if (!rendered.current) {
       init();
       rendered.current = true;

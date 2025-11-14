@@ -27,7 +27,7 @@ import internalClient from "@/app/lib/internalHttpClient";
 import useConnection from "@/utils/connection";
 
 const Step4 = () => {
-  const connection = useConnection()
+  const connection = useConnection();
   const router = useRouter();
   const isMobileScreen = useCheckMobileScreen();
 
@@ -436,7 +436,9 @@ const Step4 = () => {
   const skipStep = React.useCallback(async () => {
     let parentProfile = referer;
     if (parentProfile == "" && user) {
-      const res = await axios.get(`/api/get-user-data?username=${user.referred_by}`);
+      const res = await axios.get(
+        `/api/get-user-data?username=${user.referred_by}`,
+      );
       if (res.data) {
         parentProfile = res.data.wallet;
       }
@@ -446,21 +448,21 @@ const Step4 = () => {
       action: "signup",
       referredUserAddress: walletAddress.data.data,
       referrerId: parentProfile || process.env.NEXT_PUBLIC_PTV_WALLET_KEY,
-      membershipType: "guest"
+      membershipType: "guest",
     };
-    internalClient.post(
-      "/api/notifications/send-lineage-notification",
-      lineageNotificationParams,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+    internalClient
+      .post(
+        "/api/notifications/send-lineage-notification",
+        lineageNotificationParams,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      }
-    ).then((result) => {
-    }).catch((error) => {
-
-    })
-    router.replace("/bots");
+      )
+      .then((result) => { })
+      .catch((error) => { });
+    router.replace("/chat");
     client.put("/onboarding-step", {
       step: 5,
     });

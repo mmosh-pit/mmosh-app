@@ -69,7 +69,7 @@ const HomeModalSignInForm = ({
       setUser(res.data.data.user);
 
       if (pathname === "/" || pathname === "/preview") {
-        router.replace("/bots");
+        router.replace("/chat");
       }
       onSuccess();
     } catch (err: any) {

@@ -76,16 +76,16 @@ const Profile = ({ username }: { username: any }) => {
   if (!userData) return <></>;
 
   const bannerImage =
-    userData.profile.banner !== ""
-      ? userData.profile.banner
-      : userData.guest_data.banner !== ""
-        ? userData.guest_data.banner
+    userData.profile?.banner !== ""
+      ? userData.profile?.banner
+      : userData.guest_data?.banner !== ""
+        ? userData.guest_data?.banner
         : "https://storage.googleapis.com/mmosh-assets/default_banner.png";
 
   const profileImage =
-    userData.profile.image !== ""
-      ? userData.profile.image
-      : userData.guest_data.picture;
+    userData.profile?.image !== ""
+      ? userData.profile?.image
+      : userData.guest_data?.picture;
 
   return (
     <div className="background-content-full-bg flex flex-col">
@@ -102,11 +102,7 @@ const Profile = ({ username }: { username: any }) => {
             <div
               className={`absolute right-[5px] bottom-[5px] px-4 py-1 creator-btn rounded-md ml-6`}
             >
-              <p
-                className={`text-black text-base`}
-              >
-                {"Creator"}
-              </p>
+              <p className={`text-black text-base`}>{"Creator"}</p>
             </div>
           )}
         </div>
@@ -125,42 +121,36 @@ const Profile = ({ username }: { username: any }) => {
               <div className="flex flex-col md:mt-4 mt-12 md:max-w-[60%] w-full">
                 <div className="flex items-center mb-4">
                   <h5 className="font-bold text-white text-lg capitalize">
-                    {userData.profile.displayName !== ""
-                      ? userData.profile.displayName
-                      : userData.guest_data.displayName !== ""
+                    {userData.profile?.displayName !== ""
+                      ? userData.profile?.displayName
+                      : userData.guest_data?.displayName !== ""
                         ? userData.guest_data.displayName
                         : userData.name}
                   </h5>
                   <span className="font-bold text-lg text-white mx-2">•</span>
                   <p className="text-base">
-                    {userData.profile.name !== ""
-                      ? `${userData.profile.name} ${userData.profile.lastName ?? ""}`
+                    {userData.profile?.name !== ""
+                      ? `${userData.profile?.name} ${userData.profile?.lastName ?? ""}`
                       : `${userData.guest_data.name} ${userData.guest_data.lastName ?? ""}`}
                   </p>
 
                   <p className="ml-4 text-base text-[#FF00AE]">
                     @
-                    {userData.profile.username !== ""
-                      ? userData.profile.username
+                    {userData.profile?.username !== ""
+                      ? userData.profile?.username
                       : userData.guest_data.username}
                   </p>
 
                   {!isMobileScreen && (
-                    <div
-                      className={`px-4 py-1 creator-btn rounded-md ml-6`}
-                    >
-                      <p
-                        className={`text-black text-base`}
-                      >
-                        Creator
-                      </p>
+                    <div className={`px-4 py-1 creator-btn rounded-md ml-6`}>
+                      <p className={`text-black text-base`}>Creator</p>
                     </div>
                   )}
                 </div>
 
                 <p className="text-sm">
-                  {userData.profile.bio !== ""
-                    ? userData.profile.bio
+                  {userData.profile?.bio !== ""
+                    ? userData.profile?.bio
                     : userData.guest_data.bio}
                 </p>
               </div>
@@ -228,8 +218,8 @@ const Profile = ({ username }: { username: any }) => {
               <GuildList
                 wallet={userData.wallet}
                 userName={
-                  userData.profile.username !== ""
-                    ? userData.profile.username
+                  userData.profile?.username !== ""
+                    ? userData.profile?.username
                     : userData.guest_data.username
                 }
                 isMyProfile={isMyProfile}

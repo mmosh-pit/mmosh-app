@@ -635,7 +635,7 @@ const ChatInteractionContainer = (props: any) => {
                   setSelectedModel(e.target.value);
                 }}
                 options={[
-                  { label: `ChatGPT 5.1`, value: "gpt-5.1" },
+                  { label: `ChatGPT 5.1 Instant`, value: "gpt-5.1" },
                   { label: `ChatGPT 5`, value: "gpt-5" },
                   { label: `ChatGPT 4.1`, value: "gpt-4.1" },
                   { label: `Gemini 2.5 Flash`, value: "gemini-2.5-flash" },

@@ -40,9 +40,7 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const [selectedModel, setSelectedModel] = React.useState(
-    localStorage.getItem("ai_model") || "gpt-4.1",
-  );
+  const [selectedModel, setSelectedModel] = React.useState("gpt-5.1");
   const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
@@ -635,11 +633,11 @@ const ChatInteractionContainer = (props: any) => {
                 value={selectedModel}
                 onChange={(e) => {
                   setSelectedModel(e.target.value);
-                  localStorage.setItem("ai_model", e.target.value);
                 }}
                 options={[
-                  { label: `ChatGPT 4.1`, value: "gpt-4.1" },
+                  { label: `ChatGPT 5.1`, value: "gpt-5.1" },
                   { label: `ChatGPT 5`, value: "gpt-5" },
+                  { label: `ChatGPT 4.1`, value: "gpt-4.1" },
                   { label: `Gemini 2.5 Flash`, value: "gemini-2.5-flash" },
                   // { label: `Gemini 2.5 Pro`, value: "gemini-2.5-pro" },
                 ]}

@@ -5,12 +5,10 @@ const AudioInteraction = ({
   isSpeaking,
   stopSession,
   isLoading,
-  isProcessing,
 }: {
   isSpeaking: boolean;
   stopSession: () => void;
   isLoading: boolean;
-  isProcessing: boolean;
 }) => {
   return (
     <div className="w-[90%] h-[38rem] flex flex-col items-center justify-between mx-14 my-5 bg-[#181747] backdrop-filter backdrop-blur-[6px] px-8 py-16 rounded-xl ">
@@ -50,7 +48,7 @@ const AudioInteraction = ({
             )}
           </div>
           <button
-            className={`relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] p-4 rounded-full mt-8 ${isProcessing ? "hidden" : ""}`}
+            className={`relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] p-4 rounded-full mt-8`}
             onClick={stopSession}
           >
             <CloseIcon width="0.8vmax" height="0.8vmax" />

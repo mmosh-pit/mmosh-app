@@ -32,8 +32,7 @@ const ChatInteractionContainer = (props: any) => {
     startSession,
     isSpeaking,
     stopSession,
-    isLoadingSession,
-    isProcessing,
+    isLoadingSession
   } = useVoiceSession();
 
   const [currentUser] = useAtom(data);
@@ -559,7 +558,6 @@ const ChatInteractionContainer = (props: any) => {
         isSpeaking={isSpeaking}
         stopSession={stopSession}
         isLoading={isLoadingSession}
-        isProcessing={isProcessing}
       />
     );
 

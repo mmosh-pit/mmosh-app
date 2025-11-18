@@ -136,6 +136,18 @@ export default function ProjectCreate() {
             label: `Instruct ${projectName}`,
             value: "Instruct",
           },
+          {
+            label: `5.1 Auto`,
+            value: "5.1 Auto",
+          },
+          {
+            label: `5.1 Instant`,
+            value: "5.1 Instant",
+          },
+          {
+            label: `5.1 Thinking`,
+            value: "5.1 Thinking",
+          },
         ]);
       } else {
         let role = "";

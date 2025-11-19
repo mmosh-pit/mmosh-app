@@ -25,6 +25,7 @@ interface Agent {
   system_prompt: string;
   creatorUsername: string;
   type: string;
+  defaultmodel: string | null;
 }
 
 export interface Chat {

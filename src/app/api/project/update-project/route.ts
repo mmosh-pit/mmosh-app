@@ -18,6 +18,7 @@ export async function PUT(req: NextRequest) {
     twitter,
     code,
     privacy,
+    defaultModel
   } = await req.json();
 
   const project = await collection.findOne({
@@ -34,6 +35,7 @@ export async function PUT(req: NextRequest) {
           "chatAgent.symbol": symbol,
           "chatAgent.name": name,
           "chatAgent.desc": desc,
+          "chatAgent.defaultModel": defaultModel,
         },
       },
     );
@@ -54,6 +56,7 @@ export async function PUT(req: NextRequest) {
           twitter,
           code,
           privacy,
+          defaultModel,
         },
       },
     );

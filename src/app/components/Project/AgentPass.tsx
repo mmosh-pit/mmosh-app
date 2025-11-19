@@ -24,7 +24,7 @@ import { randomStr } from "@metaplex-foundation/js";
 import WarningModal from "../common/WarningModal";
 import { uploadFile } from "@/app/lib/firebase";
 import { profile } from "console";
-
+import Select from "../common/Select";
 
 const explanations: any = {
   private: "Only the Creator can view and interact with it.",
@@ -84,6 +84,7 @@ const AgentPass = ({
     invitationType: "none",
     invitationPrice: 0,
     discount: 0.0,
+    defaultModel: "gpt-5.1",
   });
 
   const [isReady, setIsReady] = useState(false);
@@ -140,6 +141,7 @@ const AgentPass = ({
         twitter: listResult.data.project.twitter,
         code: listResult.data.project.code ?? randomStr(19),
         privacy: listResult.data.project.privacy,
+        defaultModel: listResult.data.project.defaultmodel || "gpt-5.1"
       });
       setProjectDetail(listResult.data);
       setLoading(false);
@@ -324,6 +326,7 @@ const AgentPass = ({
             website: fields.website,
             privacy: fields.privacy,
             code: fields.code,
+            defaultModel: fields.defaultModel,
           });
           navigate.push("/bots/" + fields.symbol);
           setLoading(false);
@@ -370,6 +373,7 @@ const AgentPass = ({
           type,
           privacy: fields.privacy,
           code: fields.code,
+          defaultmodel: fields.defaultModel,
         });
         setButtonText(symbol ? "Modify" : "Mint");
         localStorage.removeItem("projectstep1");
@@ -615,6 +619,26 @@ const AgentPass = ({
                   setFields({ ...fields, code: e.target.value });
                 }}
               />
+            </div>
+            <div>
+            <span>Default model</span>
+            <div className="lg:col-start-2 xl:col-start-2">
+              <Select
+                value={fields.defaultModel}
+                onChange={(e) => {
+                  setFields({ ...fields, defaultModel: e.target.value });
+                }}
+                options={[
+                  { label: "ChatGPT 5.1", value: "gpt-5.1" },
+                  { label: "ChatGPT 4.1", value: "gpt-4.1" },
+                  { label: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },
+                  {
+                    label: "Gemini 3 Pro",
+                    value: "gemini-3-pro-preview",
+                  },
+                ]}
+              />
+            </div>
             </div>
           </div>
         </div>

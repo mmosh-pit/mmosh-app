@@ -4,7 +4,7 @@ import * as React from "react";
 import { useAtom } from "jotai";
 import ChatAgentSelector from "../components/Chat/ChatAgentSelector";
 import ChatInteractionContainer from "../components/Chat/ChatInteractionContainer";
-import { chatsStore } from "../store/chat";
+import { chatsStore, selectedChatStore } from "../store/chat";
 import useWsConnection from "../lib/useWsConnection";
 import { isAuth } from "../store";
 import MessageBanner from "../components/common/MessageBanner";
@@ -14,6 +14,7 @@ import useWallet from "@/utils/wallet";
 export default function OPOS() {
   const [_, setChats] = useAtom(chatsStore);
   const [isUserAuth] = useAtom(isAuth);
+  const [selectedChat] = useAtom(selectedChatStore);
   const wallet = useWallet();
 
   const socket = useWsConnection({ isAuth: isUserAuth });
@@ -23,6 +24,9 @@ export default function OPOS() {
   const [speak, setSpeak] = React.useState(false);
   const [membershipStatus, setMembershipStatus] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [selectedModel, setSelectedModel] = React.useState(
+    selectedChat?.chatAgent?.defaultmodel || "gpt-5.1"
+  );
 
   const checkUsage = async () => {
     console.log("membershipStatus", membershipStatus);
@@ -142,6 +146,11 @@ export default function OPOS() {
 //   React.useEffect(() => {
 //   console.log("=================================", speak);
 // }, [speak])
+// 
+
+  React.useEffect(() => {
+    setSelectedModel(selectedChat?.chatAgent?.defaultmodel || "gpt-5.1")
+  }, [selectedChat?.chatAgent?.id]);
 
   return (
     <>
@@ -167,6 +176,8 @@ export default function OPOS() {
             localStorage.setItem("isSpeek", JSON.stringify({isSpeek: value}));
             // setSpeak(value)
           }}
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
         />
       </div>
     </>

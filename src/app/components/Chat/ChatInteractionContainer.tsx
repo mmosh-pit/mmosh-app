@@ -39,8 +39,6 @@ const ChatInteractionContainer = (props: any) => {
   const [chats, setChats] = useAtom(chatsStore);
   const [selectedChat, setSelectedChat] = useAtom(selectedChatStore);
   const [areChatsLoading] = useAtom(chatsLoading);
-  const [selectedModel, setSelectedModel] = React.useState("gpt-5.1");
-  const selectedModelRef = React.useRef(selectedModel);
 
   const [text, setText] = React.useState("");
   const [disambiguationData, setDisambiguationData] =
@@ -219,9 +217,6 @@ const ChatInteractionContainer = (props: any) => {
     },
     [currentUser, selectedChat],
   );
-  React.useEffect(() => {
-    selectedModelRef.current = selectedModel;
-  }, [selectedModel]);
 
   const formatChatHistory = (messages: Message[]) => {
     // Get the last N messages (excluding the current loading message)
@@ -298,7 +293,7 @@ const ChatInteractionContainer = (props: any) => {
           chatHistory: chatHistory,
           agentId: selectedChat.chatAgent!.id,
           bot_id: selectedChat.chatAgent!.key,
-          aiModel: selectedModelRef.current,
+          aiModel: props.selectedModel || "gpt-5.1",
         };
 
         console.log("Message data being sent:", queryData);
@@ -513,7 +508,7 @@ const ChatInteractionContainer = (props: any) => {
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat],
+    [selectedChat, currentUser, chats, setChats, setSelectedChat, props.selectedModel]
   );
 
   const handleEnter = (evt: any) => {
@@ -628,16 +623,18 @@ const ChatInteractionContainer = (props: any) => {
             </div>
             <div className="lg:col-start-2 xl:col-start-2">
               <Select
-                value={selectedModel}
+                value={props.selectedModel}
                 onChange={(e) => {
-                  setSelectedModel(e.target.value);
+                  props.setSelectedModel(e.target.value);
                 }}
                 options={[
-                  { label: `ChatGPT 5.1 Instant`, value: "gpt-5.1" },
-                  { label: `ChatGPT 5`, value: "gpt-5" },
-                  { label: `ChatGPT 4.1`, value: "gpt-4.1" },
-                  { label: `Gemini 2.5 Flash`, value: "gemini-2.5-flash" },
-                  // { label: `Gemini 2.5 Pro`, value: "gemini-2.5-pro" },
+                  { label: "ChatGPT 5.1", value: "gpt-5.1" },
+                  { label: "ChatGPT 4.1", value: "gpt-4.1" },
+                  { label: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },
+                  {
+                    label: "Gemini 3 Pro",
+                    value: "gemini-3-pro-preview",
+                  },
                 ]}
               />
             </div>

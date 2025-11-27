@@ -101,7 +101,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       const metadata = `${projectKey}-${id}`;
 
       await internalClient.delete(
-        `https://mmoshapi-uodcouqmia-uc.a.run.app/delete_by_metadata?metadata=${encodeURIComponent(metadata)}`,
+        `https://ai-files.kinshipbots.com/delete_by_metadata?metadata=${encodeURIComponent(metadata)}`,
       );
     },
     [projectDetail],
@@ -136,7 +136,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
         formData.append("text", "None");
 
         await axios.post(
-          "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+          "https://ai-files.kinshipbots.com/upload",
           formData,
         );
 
@@ -189,7 +189,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
       formData.append("metadata", metadata);
 
       await axios.post(
-        "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+        "https://ai-files.kinshipbots.com/upload",
         formData,
       );
     }
@@ -225,7 +225,7 @@ export default function ProjectCreateStep9({ symbol }: { symbol: any }) {
     formData.append("metadata", metadata);
 
     await axios.post(
-      "https://mmoshapi-uodcouqmia-uc.a.run.app/upload",
+      "https://ai-files.kinshipbots.com/upload",
       formData,
     );
 

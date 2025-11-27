@@ -90,7 +90,7 @@ const AgentPass = ({
   const [isReady, setIsReady] = useState(false);
 
   const [usdPrice, setUsdPrice] = useState(0);
-  const [buttonText, setButtonText] = useState(symbol ? "Modify" : "Mint");
+  const [buttonText, setButtonText] = useState(symbol ? "Modify Bot" : "Create Bot");
   const [projectDetail, setProjectDetail] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -168,7 +168,7 @@ const AgentPass = ({
     setMsgClass(type);
     setShowMsg(true);
     setLoading(false);
-    setButtonText(symbol ? "Modify" : "Mint");
+    setButtonText(symbol ? "Modify Bot" : "Create Bot");
     if (type == "success-container") {
       setTimeout(() => {
         setShowMsg(false);
@@ -273,6 +273,7 @@ const AgentPass = ({
           return;
         }
         if (!isValidHttpUrl(fields.image.preview)) {
+          setButtonText("Uploading image... ");
           let imageFile = await fetch(fields.image.preview)
             .then((r) => r.blob())
             .then(
@@ -336,18 +337,18 @@ const AgentPass = ({
         setButtonText("Buying new Pass...");
         console.log("Profile info: ", profileInfo);
         console.log('go to send project price -------------------------------------------->')
-        const res5 = await communityConnection.sendProjectPrice(
-          profileInfo?.profile.address,
-          25000,
-          connection,
-        );
+        // const res5 = await communityConnection.sendProjectPrice(
+        //   profileInfo?.profile.address,
+        //   25000,
+        //   connection,
+        // );
 
-        if (res5.Err) {
-          console.log("Error is here... ", res5.Err);
-          createMessage("error creating new project", "danger-container");
-          return;
-        }
-        console.log("send price result ", res5.Ok?.info);
+        // if (res5.Err) {
+        //   console.log("Error is here... ", res5.Err);
+        //   createMessage("error creating new project", "danger-container");
+        //   return;
+        // }
+        // console.log("send price result ", res5.Ok?.info);
 
         await client.post("/bots", {
           name: fields.name,
@@ -375,12 +376,12 @@ const AgentPass = ({
           code: fields.code,
           defaultmodel: fields.defaultModel,
         });
-        setButtonText(symbol ? "Modify" : "Mint");
+        setButtonText(symbol ? "Modify Bot" : "Create Bot");
         localStorage.removeItem("projectstep1");
         navigate.push("/bots/" + fields.symbol);
       } catch (error) {
         console.log("error ", error);
-        setButtonText(symbol ? "Modify" : "Mint");
+        setButtonText(symbol ? "Modify Bot" : "Create Bot");
         setLoading(false);
       }
     }
@@ -412,6 +413,7 @@ const AgentPass = ({
       <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-8 gap-4">
           <div className="xl:col-span-2">
+            <p className="text-xs text-white">Image<sup>*</sup></p>
             <ImagePicker
               changeImage={setImage}
               image={fields.image.preview}
@@ -658,7 +660,7 @@ const AgentPass = ({
             </button>
           )}
         </div>
-        <div className="w-full flex flex-col justify-center items-center mt-5">
+        {/* <div className="w-full flex flex-col justify-center items-center mt-5">
           <div className="flex flex-col justify-center items-center">
             <p className="text-sm text-white">Price: 25,000 MMOSH</p>
             <p className="text-tiny text-white">
@@ -666,7 +668,7 @@ const AgentPass = ({
             </p>
           </div>
           <BalanceBox />
-        </div>
+        </div> */}
       </div>
     </>
   );

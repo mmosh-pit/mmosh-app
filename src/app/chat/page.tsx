@@ -27,6 +27,7 @@ export default function OPOS() {
   const [selectedModel, setSelectedModel] = React.useState(
     selectedChat?.chatAgent?.defaultmodel || "gpt-5.1"
   );
+  const [selectedVoice, setSelectedVoice] = React.useState("nova");
 
   const checkUsage = async () => {
     console.log("membershipStatus", membershipStatus);
@@ -162,8 +163,7 @@ export default function OPOS() {
           />
         </div>
       )}
-            <div className="background-content flex w-full justify-center overflow-y-hidden ">
-
+      <div className="background-content flex w-full justify-center overflow-y-hidden ">
         <ChatAgentSelector isLoading={isLoading} />
 
         <ChatInteractionContainer
@@ -173,11 +173,13 @@ export default function OPOS() {
           speak={speak}
           setSpeak={(value: string, from: string) => {
             console.log("FUNCTION CALLED ", value, from);
-            localStorage.setItem("isSpeek", JSON.stringify({isSpeek: value}));
+            localStorage.setItem("isSpeek", JSON.stringify({ isSpeek: value }));
             // setSpeak(value)
           }}
           selectedModel={selectedModel}
           setSelectedModel={setSelectedModel}
+          selectedVoice={selectedVoice}
+          setSelectedVoice={setSelectedVoice}
         />
       </div>
     </>

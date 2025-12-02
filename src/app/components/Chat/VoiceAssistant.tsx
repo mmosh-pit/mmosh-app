@@ -4,8 +4,9 @@ import useAudioVisualizer from "./AudioVisualizer";
 import Select from "../common/Select";
 import { useAtom } from "jotai";
 import { selectedChatStore } from "@/app/store/chat";
+import CloseIcon from "@/assets/icons/CloseIcon";
 
-const VoiceAssistant: React.FC = (props: any) => {
+const VoiceAssistant = (props: any) => {
   // Refs for DOM elements
   const recordButtonRef = useRef<HTMLButtonElement | null>(null);
   const transcriptRef = useRef<HTMLParagraphElement | null>(null);
@@ -211,7 +212,7 @@ const VoiceAssistant: React.FC = (props: any) => {
       // const host = window.location.host;
       // const wsUrl = `${protocol}${host}/ws`;
 
-      const wsUrl = `ws://localhost:8001/ws?token=${localStorage.getItem("token") || ""}&system_prompt=${selectedChat!.chatAgent!.system_prompt}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}`;
+      const wsUrl = `ws://ai.kinshipbots.com/ws?token=${localStorage.getItem("token") || ""}&system_prompt=${selectedChat!.chatAgent!.system_prompt}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}`;
 
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
@@ -868,6 +869,12 @@ const VoiceAssistant: React.FC = (props: any) => {
         <div className="glowing-arc"></div>
         <div id="error-toast" className="error-toast"></div>
       </div>
+      <button
+        className={`relative border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] p-4 rounded-full mt-8 ${false ? "hidden" : ""}`}
+        onClick={() => props.setIsSessionActive(!props.isSessionActive)}
+      >
+        <CloseIcon width="0.8vmax" height="0.8vmax" />
+      </button>
     </div>
   );
 };

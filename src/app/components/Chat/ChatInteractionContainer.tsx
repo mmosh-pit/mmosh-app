@@ -26,7 +26,7 @@ import VoiceAssistant from "./VoiceAssistant";
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const chatBaseUrl = "http://192.168.1.13:8000/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
+  const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
 
   const {
     // isSessionActive,
@@ -49,7 +49,7 @@ const ChatInteractionContainer = (props: any) => {
     null
   );
 
-  const [isSessionActive, setIsSessionActive] = React.useState<boolean>(false)
+  const [isSessionActive, setIsSessionActive] = React.useState<boolean>(false);
 
   const messages = selectedChat?.messages;
 
@@ -293,13 +293,10 @@ const ChatInteractionContainer = (props: any) => {
 
       try {
         const queryData = {
+          agentId: selectedChat.chatAgent!.id,
+          aiModel: props.selectedModel || "gpt-5.1",
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
-          instructions: systemPrompt,
-          chatHistory: chatHistory,
-          agentId: selectedChat.chatAgent!.id,
-          bot_id: selectedChat.chatAgent!.key,
-          aiModel: props.selectedModel || "gpt-5.1",
         };
 
         console.log("Message data being sent:", queryData);
@@ -376,7 +373,7 @@ const ChatInteractionContainer = (props: any) => {
                     setChats(disambiguationChats);
 
                     // return;
-                  } else if (data.type === "content") {
+                  } else if (data.type === "chunk") {
                     accumulatedContent += data.content;
 
                     // Update the streaming message with accumulated content
@@ -558,7 +555,7 @@ const ChatInteractionContainer = (props: any) => {
 
   if (isSessionActive || isLoadingSession)
     return (
-      <VoiceAssistant />
+      <VoiceAssistant setIsSessionActive={setIsSessionActive} isSessionActive={isSessionActive}/>
       // <AudioInteraction
       //   isSpeaking={isSpeaking}
       //   stopSession={stopSession}

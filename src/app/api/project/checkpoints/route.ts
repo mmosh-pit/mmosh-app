@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ObjectId } from "mongodb";
+import axios from "axios";
 
 const MONGO_URI = process.env.MONGO_URI;
 const MONGO_DB_NAME = process.env.DATABASE_NAME;
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
     );
 
     const authData = await response.json();
-    
+
     if (!authData?.data?.is_auth) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -159,8 +160,9 @@ export async function POST(request: NextRequest) {
     await client.close();
 
     if (result.insertedId) {
-      return NextResponse.json({ 
-        success: true, 
+      await updateGoalsChanged(userId, bot_id, authorization || "");
+      return NextResponse.json({
+        success: true,
         checkpointId: result.insertedId.toString(),
         checkpoint: {
           id: result.insertedId.toString(),
@@ -181,6 +183,24 @@ export async function POST(request: NextRequest) {
     console.error("Error creating checkpoint:", error);
     return NextResponse.json({ error: "Failed to create checkpoint" }, { status: 500 });
   }
+}
+
+const updateGoalsChanged = async (userId: string, agentId: string, authorization: string) => {
+  const url = process.env.NEXT_PUBLIC_REACT_AGENT_URL + "/internal/goals-changed";
+
+  const params = {
+    user_id: userId,
+    agent_id: agentId
+  };
+
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": authorization
+  };
+
+  try {
+    await axios.post(url, params, { headers });
+  } catch (error) { }
 }
 
 // PUT - Update existing checkpoint
@@ -234,9 +254,9 @@ export async function PUT(request: NextRequest) {
     };
 
     const result = await db.collection("checkpoints").updateOne(
-      { 
-        _id: new ObjectId(id), 
-        bot_id 
+      {
+        _id: new ObjectId(id),
+        bot_id
       },
       { $set: updateDoc }
     );
@@ -244,7 +264,7 @@ export async function PUT(request: NextRequest) {
     await client.close();
 
     if (result.matchedCount > 0) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: true,
         checkpoint: {
           id,

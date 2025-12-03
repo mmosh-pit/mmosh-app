@@ -20,11 +20,11 @@ export default function useAudioVisualizer(canvasId: string) {
 
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * window.devicePixelRatio;
-    canvas.height = rect.height * window.devicePixelRatio;
+    // canvas.height = rect.height * window.devicePixelRatio;
 
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     canvas.style.width = rect.width + "px";
-    canvas.style.height = rect.height + "px";
+    // canvas.style.height = rect.height + "px";
   }, []);
 
   // Setup Audio Stream

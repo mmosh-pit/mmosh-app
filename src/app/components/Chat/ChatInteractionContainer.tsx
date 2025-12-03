@@ -293,7 +293,7 @@ const ChatInteractionContainer = (props: any) => {
 
       try {
         const queryData = {
-          agentId: selectedChat.chatAgent!.id,
+          agentId: selectedChat.chatAgent?.key,
           aiModel: props.selectedModel || "gpt-5.1",
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
@@ -555,7 +555,7 @@ const ChatInteractionContainer = (props: any) => {
 
   if (isSessionActive || isLoadingSession)
     return (
-      <VoiceAssistant setIsSessionActive={setIsSessionActive} isSessionActive={isSessionActive}/>
+      <VoiceAssistant setIsSessionActive={setIsSessionActive} isSessionActive={isSessionActive} selectedModel={props.selectedModel}/>
       // <AudioInteraction
       //   isSpeaking={isSpeaking}
       //   stopSession={stopSession}

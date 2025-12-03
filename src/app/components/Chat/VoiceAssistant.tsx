@@ -206,12 +206,6 @@ const VoiceAssistant = (props: any) => {
       });
       micStreamRef.current = micStream;
 
-      // Setup websocket
-      // const protocol =
-      //   window.location.protocol === "https:" ? "wss://" : "ws://";
-      // const host = window.location.host;
-      // const wsUrl = `${protocol}${host}/ws`;
-
       const wsUrl = `ws://ai.kinshipbots.com/ws?token=${localStorage.getItem("token") || ""}&system_prompt=${selectedChat!.chatAgent!.system_prompt}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}`;
 
       const ws = new WebSocket(wsUrl);
@@ -843,7 +837,7 @@ const VoiceAssistant = (props: any) => {
             <button
               id="record-button"
               className={`${isMicOn ? "bg-sky-500" : "bg-white"} rounded-full w-[70px] h-[70px] flex justify-center items-center
-           absolute bottom-3 left-1/2 top-[50%] transform -translate-x-1/2 -translate-y-1/2`}
+           absolute bottom-3 left-1/2 top-[70%] transform -translate-x-1/2 -translate-y-1/2`}
               ref={recordButtonRef}
               onClick={onRecordButtonClick}
             >

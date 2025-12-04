@@ -294,6 +294,7 @@ const ChatInteractionContainer = (props: any) => {
       try {
         const queryData = {
           agentId: selectedChat.chatAgent?.key,
+          bot_id: selectedChat.chatAgent!.id,
           aiModel: props.selectedModel || "gpt-5.1",
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,

@@ -206,7 +206,7 @@ const VoiceAssistant = (props: any) => {
       });
       micStreamRef.current = micStream;
 
-      const wsUrl = `ws://ai.kinshipbots.com/ws?token=${localStorage.getItem("token") || ""}&system_prompt=${selectedChat!.chatAgent!.system_prompt}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}`;
+      const wsUrl = `wss://ai.kinshipbots.com/ws?token=${localStorage.getItem("token") || ""}&system_prompt=${selectedChat!.chatAgent!.system_prompt}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}`;
 
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;

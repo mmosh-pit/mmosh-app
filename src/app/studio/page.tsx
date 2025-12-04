@@ -62,8 +62,10 @@ export default function ProjectCreate() {
   };
 
   useEffect(() => {
-    if (currentUser?.role !== "wizard") {
-      router.replace("/chat");
+    if (currentUser) {
+      if (currentUser?.role !== "wizard") {
+        router.replace("/chat");
+      }
     }
   }, [currentUser]);
 

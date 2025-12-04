@@ -33,8 +33,7 @@ const ChatInteractionContainer = (props: any) => {
     startSession,
     isSpeaking,
     stopSession,
-    isLoadingSession,
-    isProcessing,
+    isLoadingSession
   } = useVoiceSession();
 
   const [currentUser] = useAtom(data);

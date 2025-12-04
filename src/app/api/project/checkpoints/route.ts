@@ -185,24 +185,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-const updateGoalsChanged = async (userId: string, agentId: string, authorization: string) => {
-  const url = process.env.NEXT_PUBLIC_REACT_AGENT_URL + "/internal/goals-changed";
-
-  const params = {
-    user_id: userId,
-    agent_id: agentId
-  };
-
-  const headers = {
-    "Content-Type": "application/json",
-    "Authorization": authorization
-  };
-
-  try {
-    await axios.post(url, params, { headers });
-  } catch (error) { }
-}
-
 // PUT - Update existing checkpoint
 export async function PUT(request: NextRequest) {
   try {
@@ -264,6 +246,7 @@ export async function PUT(request: NextRequest) {
     await client.close();
 
     if (result.matchedCount > 0) {
+      await updateGoalsChanged(userId, bot_id, authorization || "");
       return NextResponse.json({
         success: true,
         checkpoint: {
@@ -334,4 +317,22 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting checkpoint:", error);
     return NextResponse.json({ error: "Failed to delete checkpoint" }, { status: 500 });
   }
+}
+
+const updateGoalsChanged = async (userId: string, agentId: string, authorization: string) => {
+  const url = process.env.NEXT_PUBLIC_REACT_AGENT_URL + "/internal/goals-changed";
+
+  const params = {
+    user_id: userId,
+    agent_id: agentId
+  };
+
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": authorization
+  };
+
+  try {
+    await axios.post(url, params, { headers });
+  } catch (error) { }
 }

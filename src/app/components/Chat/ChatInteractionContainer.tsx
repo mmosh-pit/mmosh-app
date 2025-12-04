@@ -21,6 +21,7 @@ import {
 import internalClient from "@/app/lib/internalHttpClient";
 import useWallet from "@/utils/wallet";
 import Select from "../common/Select";
+import VoiceAssistant from "./VoiceAssistant";
 
 const ChatInteractionContainer = (props: any) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -28,7 +29,7 @@ const ChatInteractionContainer = (props: any) => {
   const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
 
   const {
-    isSessionActive,
+    // isSessionActive,
     startSession,
     isSpeaking,
     stopSession,
@@ -44,8 +45,11 @@ const ChatInteractionContainer = (props: any) => {
   const [disambiguationData, setDisambiguationData] =
     React.useState<DisambiguationResponse | null>(null);
   const [pendingMessage, setPendingMessage] = React.useState<string | null>(
-    null,
+    null
   );
+
+  const [isSessionActive, setIsSessionActive] = React.useState<boolean>(false);
+
   const messages = selectedChat?.messages;
 
   const handleDisambiguationSelect = async (selected: SelectedRecipients) => {
@@ -80,7 +84,7 @@ const ChatInteractionContainer = (props: any) => {
         },
         body: JSON.stringify({
           recipient_wallets: Object.values(selected).flatMap((recipients) =>
-            recipients.map((r) => r.wallet),
+            recipients.map((r) => r.wallet)
           ),
           message: pendingMessage,
           agentId: selectedChat.chatAgent!.id,
@@ -127,7 +131,7 @@ const ChatInteractionContainer = (props: any) => {
         setSelectedChat(updatedSelectedChat);
 
         const updatedChats = chats.map((chat) =>
-          chat.id === selectedChat!.id ? updatedSelectedChat : chat,
+          chat.id === selectedChat!.id ? updatedSelectedChat : chat
         );
         setChats(updatedChats);
         // Save the chat conversation to the database
@@ -154,7 +158,7 @@ const ChatInteractionContainer = (props: any) => {
 
           if (!saveResponse.ok) {
             console.warn(
-              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
             );
           } else {
             console.log("Chat saved successfully to database");
@@ -196,7 +200,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
 
   const getMessageUsername = React.useCallback(
@@ -215,7 +219,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat],
+    [currentUser, selectedChat]
   );
 
   const formatChatHistory = (messages: Message[]) => {
@@ -268,7 +272,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat,
+        chat.id === selectedChat.id ? updatedSelectedChat : chat
       );
       setChats(updatedChats);
 
@@ -282,18 +286,17 @@ const ChatInteractionContainer = (props: any) => {
       //   agentId: selectedChat.chatAgent!.key,
       //   authorization: localStorage.getItem("token")
       // };
-      const systemPrompt = selectedChat!.chatAgent!.system_prompt + `agentId: ${selectedChat.chatAgent!.key}, authorization: ${localStorage.getItem("token")}`;
-
+      const systemPrompt =
+        selectedChat!.chatAgent!.system_prompt +
+        `agentId: ${selectedChat.chatAgent!.key}, authorization: ${localStorage.getItem("token")}`;
 
       try {
         const queryData = {
+          agentId: selectedChat.chatAgent?.key,
+          bot_id: selectedChat.chatAgent!.id,
+          aiModel: props.selectedModel || "gpt-5.1",
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
-          instructions: systemPrompt,
-          chatHistory: chatHistory,
-          agentId: selectedChat.chatAgent!.id,
-          bot_id: selectedChat.chatAgent!.key,
-          aiModel: props.selectedModel || "gpt-5.1",
         };
 
         console.log("Message data being sent:", queryData);
@@ -365,12 +368,12 @@ const ChatInteractionContainer = (props: any) => {
                     const disambiguationChats = chats.map((chat) =>
                       chat.id === selectedChat.id
                         ? disambiguationSelectedChat
-                        : chat,
+                        : chat
                     );
                     setChats(disambiguationChats);
 
                     // return;
-                  } else if (data.type === "content") {
+                  } else if (data.type === "chunk") {
                     accumulatedContent += data.content;
 
                     // Update the streaming message with accumulated content
@@ -393,9 +396,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id
-                        ? streamingSelectedChat
-                        : chat,
+                      chat.id === selectedChat.id ? streamingSelectedChat : chat
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -418,7 +419,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat,
+                      chat.id === selectedChat.id ? finalSelectedChat : chat
                     );
                     setChats(finalChats);
 
@@ -444,13 +445,13 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        },
+                        }
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
                         );
                       } else {
                         console.log("Chat saved successfully to database");
@@ -458,7 +459,7 @@ const ChatInteractionContainer = (props: any) => {
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError,
+                        saveError
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -503,12 +504,19 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat,
+          chat.id === selectedChat.id ? finalSelectedChat : chat
         );
         setChats(finalChats);
       }
     },
-    [selectedChat, currentUser, chats, setChats, setSelectedChat, props.selectedModel]
+    [
+      selectedChat,
+      currentUser,
+      chats,
+      setChats,
+      setSelectedChat,
+      props.selectedModel,
+    ]
   );
 
   const handleEnter = (evt: any) => {
@@ -547,11 +555,13 @@ const ChatInteractionContainer = (props: any) => {
 
   if (isSessionActive || isLoadingSession)
     return (
-      <AudioInteraction
-        isSpeaking={isSpeaking}
-        stopSession={stopSession}
-        isLoading={isLoadingSession}
-      />
+      <VoiceAssistant setIsSessionActive={setIsSessionActive} isSessionActive={isSessionActive} selectedModel={props.selectedModel}/>
+      // <AudioInteraction
+      //   isSpeaking={isSpeaking}
+      //   stopSession={stopSession}
+      //   isLoading={isLoadingSession}
+      //   isProcessing={isProcessing}
+      // />
     );
 
   return (
@@ -683,7 +693,7 @@ const ChatInteractionContainer = (props: any) => {
                               {
                                 hour: "2-digit",
                                 minute: "2-digit",
-                              },
+                              }
                             )}
                           </span>
                         </div>
@@ -722,7 +732,7 @@ const ChatInteractionContainer = (props: any) => {
                                   ? message.content
                                       .replace(
                                         /Thought:/g,
-                                        "\n\n> *Thought:*\n",
+                                        "\n\n> *Thought:*\n"
                                       )
                                       .replace(/Action:/g, "\n\n> *Action:*\n")
                                       .replace(
@@ -731,7 +741,7 @@ const ChatInteractionContainer = (props: any) => {
                                           return match.startsWith(">")
                                             ? match
                                             : `**${match}**`;
-                                        },
+                                        }
                                       )
                                       .trim()
                                   : message.content}
@@ -741,7 +751,7 @@ const ChatInteractionContainer = (props: any) => {
                         </div>
                       </div>
                     </div>
-                  ),
+                  )
               )
             )}
           </div>
@@ -778,9 +788,10 @@ const ChatInteractionContainer = (props: any) => {
               <button
                 className="flex items-center justify-center bg-[#FFFFFF14] border-[1px] border-[#FFFFFF28] rounded-lg w-8 h-8"
                 onClick={() => {
-                  if (!isSessionActive) {
-                    startSession();
-                  }
+                  setIsSessionActive(!isSessionActive);
+                  // if (!isSessionActive) {
+                  //   startSession();
+                  // }
                 }}
                 disabled={!props.hasAllowed}
               >

@@ -206,7 +206,7 @@ const VoiceAssistant = (props: any) => {
       });
       micStreamRef.current = micStream;
 
-      const wsUrl = `wss://ai.kinshipbots.com/ws?token=${localStorage.getItem("token") || ""}&system_prompt=${selectedChat!.chatAgent!.system_prompt}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}&ai_model=${props.selectedModel || "gpt-5.1"}`;
+      const wsUrl = `wss://ai.kinshipbots.com/ws?token=${localStorage.getItem("token") || ""}&agent_id=${selectedChat!.chatAgent!.id}&bot_id=${selectedChat!.chatAgent!.key}&ai_model=${props.selectedModel || "gpt-5.1"}`;
 
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
@@ -214,6 +214,12 @@ const VoiceAssistant = (props: any) => {
       ws.onopen = async () => {
         console.log("WebSocket connection established.");
         try {
+          ws.send(
+            JSON.stringify({
+              type: "system_prompt",
+              content: selectedChat!.chatAgent!.system_prompt,
+            })
+          );
           await initAudioContext();
           await setupAudioWorklet(micStream);
           setupAudioVisualization(micStream);

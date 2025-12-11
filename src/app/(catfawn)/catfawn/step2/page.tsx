@@ -100,14 +100,14 @@ export default function Step2VC() {
   };
 
   return (
-    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 lg:gap-x-9 max-lg:gap-y-8 items-center">
-      <div className="flex flex-col gap-7.5">
-        <h1 className="text-[2.188rem] max-md:text-2xl font-bold leading-[110%] font-poppins max-lg:text-center bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 max-lg:gap-y-8 items-center">
+      <div className="flex flex-col gap-[1.875rem]">
+        <h1 className="font-poppins text-[2.188rem] max-md:text-2xl font-bold leading-[110%] max-lg:text-center bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Join the CAT FAWN Connection <br className="max-md:hidden" />
           Early Access Circle
         </h1>
 
-        <div className="text-base leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
+        <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
           <p>
             Be among the first to use CAT FAWN Connection
             <br />
@@ -126,18 +126,27 @@ export default function Step2VC() {
         </div>
       </div>
 
-      <div className="min-h-119.5 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-8.5 ps-13 pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
+        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Request Early Access
         </h2>
-        <p className="text-base max-md:text-sm font-normal leading-[130%] mt-[0.313rem]">
-          Step 2 of 7: Check your email to confirm your early access request
-          We’ve sent a 6-digit verification code to frankie@mail.com
+        <p className="text-[1rem] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
+          Step 2 of 14: Check your email to confirm your early access request{" "}
+          <span className="text-[#FFFFFFE5] font-normal fonnt-avenir -tracking-[0.02em]">
+            {" "}
+            We’ve sent a 6-digit verification code to frankie@mail.com{" "}
+          </span>
+          <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
+            <ul className="ml-1">
+              <li>• Open your email</li>
+              <li>• Look for a message from security@kinshipbots.com</li>
+              <li>• Enter the code below to confirm it’s you</li>
+            </ul>
+          </div>
         </p>
-
-        <form className="mt-8.5 min-h-[295px] max-lg:min-h-[322px] text-base max-md:text-sm font-normal flex flex-col justify-between">
+        <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal">
           <div className="max-lg:text-center">
-            <label className="block mb-[0.313rem] text-base leading-[100%] text-[#FFFFFFCC]">
+            <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC]">
               Enter your 6-digit code
             </label>
             <div className="flex gap-7 max-xl:gap-4 max-lg:justify-center">
@@ -152,25 +161,31 @@ export default function Step2VC() {
                   }}
                   onChange={(e) => handleOtpChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
-                  className="w-14  h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:size-6 max-xl:size-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none"
+                  className="w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:size-6 max-xl:w-6 max-xl:h-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none"
                 />
               ))}
             </div>
 
-            <span
-              className="text-[0.688rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]"
-            >
-              The code expires in 15 minutes. Didn’t get it? Check spam or  <span onClick={resendOTP} className="cursor-pointer underline">request a new code</span>
+            <span className="text-[0.75rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]">
+              The code expires in 15 minutes. Didn’t get it? Check your spam
+              folder or request a new code.
             </span>
+
+            <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
+              Didn’t get a code?{" "}
+              <span onClick={resendOTP} className="cursor-pointer underline">
+                request code
+              </span>
+            </div>
           </div>
 
           <button
             type="button"
-            className="font-avenir-next w-full py-[1.063rem] bg-[#FF710F] text-base leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
+            className="font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 mt-[5.438rem]"
             onClick={verifyOTP}
             disabled={otp.join("").length !== 6}
           >
-            Join Early Access
+            Confirm My Early Access{" "}
           </button>
         </form>
       </div>

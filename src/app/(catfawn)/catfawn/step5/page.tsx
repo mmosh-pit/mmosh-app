@@ -125,14 +125,14 @@ export default function Step5VC() {
   };
 
   return (
-    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 lg:gap-x-9 max-lg:gap-y-8 items-center">
-      <div className="flex flex-col gap-7.5">
-        <h1 className="text-[2.188rem] max-md:text-2xl font-bold leading-[110%] font-poppins max-lg:text-center bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 max-lg:gap-y-8 items-center">
+      <div className="flex flex-col gap-[1.875rem]">
+        <h1 className="font-poppins text-[2.188rem] max-md:text-2xl font-bold leading-[110%] max-lg:text-center bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Join the CAT FAWN Connection <br className="max-md:hidden" />
           Early Access Circle
         </h1>
 
-        <div className="text-base leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
+        <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
           <p>
             Be among the first to use CAT FAWN Connection
             <br />
@@ -151,23 +151,51 @@ export default function Step5VC() {
         </div>
       </div>
 
-      <div className="min-h-[25.313rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-8.5 ps-12.5 pe-[3.313rem] max-md:px-5 max-md:py-8">
-        <h2 className="font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
+        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
         </h2>
-        <p className="text-base max-md:text-sm font-normal leading-[130%] mt-2.5  -tracking-[0.02em]">
-          Step 5 of 7: Kinship Code Verification. Enter your Kinship Code if you
-          have one.
+        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[88%] mt-[0.313rem] -tracking-[0.04em]">
+          Step 13 of 14: Kinship Code Verification.{" "}
+          <span className="font-normal font-avenir">
+            {" "}
+            Entry into the CAT FAWN Connections happens through relationship,
+            trust, and reciprocity. <br />A Kinship Code from an existing member
+            signals that connection. <br />
+            If you have one, enter it now.
+          </span>
         </p>
 
-        <form className="mt-[0.938rem] min-h-63.5 text-base max-md:text-sm font-normal flex flex-col justify-between">
-          <div className="max-lg:text-center">
-            <label className="block mb-[0.313rem] font-normal leading-[100%]">
-              Kinship Code (input field){" "}
-            </label>
-
-            <div className="flex gap-7 max-xl:gap-4 max-lg:justify-center">
-              {kinshipCode.map((digit, i) => (
+        <form className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal">
+          <div>
+            <div>
+              <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
+                Kinship Code{" "}
+              </label>
+              <input
+                type="text"
+                placeholder="Kinship Code"
+                className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
+              />
+            </div>
+            {/* {kinshipCode.map((digit, i) => (
                 <input
                   key={i}
                   type="text"
@@ -181,13 +209,12 @@ export default function Step5VC() {
                   onKeyDown={(e) => handleKeyDown(e, i)}
                   className="w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:size-6 max-xl:size-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none"
                 />
-              ))}
-            </div>
+              ))} */}
 
-            <label className="flex items-center gap-0.5 text-[0.813rem] max-md:text-xs leading-[140%] mt-2.5 -tracking-[0.02em]">
+            <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.813rem] max-md:text-xs leading-[140%] mt-[0.313rem] -tracking-[0.02em]">
               <input
                 type="checkbox"
-                className="size-[1.438rem] accent-[#402A2A] rounded-[0.313rem]"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
                 checked={noCodeChecked}
                 onChange={(e) => setNoCodeChecked(e.target.checked)}
               />
@@ -197,7 +224,7 @@ export default function Step5VC() {
 
           <button
             type="button"
-            className="font-avenir-next w-full py-[1.063rem] bg-[#FF710F] text-base leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
+            className="font-avenirNext h-[3.125rem] mt-[11rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={submitKinshipCode}
           >
             Join Early Access

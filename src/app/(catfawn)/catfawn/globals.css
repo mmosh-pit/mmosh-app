@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+input[type="checkbox"] {
+  appearance: none; /* Hide default checkbox */
+  /* Add custom styling for the checkbox outline */
+  min-width: 1.438rem;
+  height: 1.438rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 5px;
+  position: relative;
+  background-color: #402a2a;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #ffffff; /* Background color when checked */
+}
+
+input[type="checkbox"]:checked::before {
+  content: "✔"; /* Custom checkmark */
+  color: #FF710F; /* Color of the checkmark */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

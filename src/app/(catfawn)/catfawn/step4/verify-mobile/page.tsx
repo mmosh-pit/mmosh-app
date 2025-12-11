@@ -94,14 +94,14 @@ export default function VerifyMobileVC() {
   };
 
   return (
-    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 lg:gap-x-9 max-lg:gap-y-8 items-center">
-      <div className="flex flex-col gap-7.5">
-        <h1 className="text-[2.188rem] max-md:text-2xl font-bold leading-[110%] font-poppins max-lg:text-center bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 max-lg:gap-y-8 items-center">
+      <div className="flex flex-col gap-[1.875rem]">
+        <h1 className="font-poppins text-[2.188rem] max-md:text-2xl font-bold leading-[110%] max-lg:text-center bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Join the CAT FAWN Connection <br className="max-md:hidden" />
           Early Access Circle
         </h1>
 
-        <div className="text-base leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
+        <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
           <p>
             Be among the first to use CAT FAWN Connection
             <br />
@@ -120,18 +120,41 @@ export default function VerifyMobileVC() {
         </div>
       </div>
 
-      <div className="min-h-118 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-5 px-12.5 max-md:px-5 max-md:py-8">
-        <h2 className="font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
+        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
         </h2>
-        <p className="text-base max-md:text-sm font-normal leading-[130%] mt-2.5 -tracking-[0.02em]">
-          Step 4 of 7: Let’s Confirm Your Mobile Number. Enter the code we just
-          sent you.
+
+        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.04em]">
+          Step 12 of 14: Let’s Confirm Your Mobile Number.{" "}
+          <span className="font-normal font-avenir">
+            {" "}
+            We just sent you a one-time verification code by text message, along
+            with a personal message from CAT FAWN. Enter the code below so we
+            can reach you during early access.
+          </span>
         </p>
 
-        <form className="mt-2.5 min-h-[21.313rem] max-lg:min-h-[322px] text-base max-md:text-sm font-normal flex flex-col justify-between">
+        <form className="mt-[1.188rem] text-[1rem] max-md:text-sm font-normal">
           <div className="max-lg:text-center">
-            <label className="block mb-[0.313rem] font-normal leading-[100%]">
+            <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC]">
               Enter your 6-digit code
             </label>
             <div className="flex gap-7 max-xl:gap-4 max-lg:justify-center">
@@ -150,7 +173,7 @@ export default function VerifyMobileVC() {
               ))}
             </div>
 
-            <div className="text-base leading-[100%] font-normal text-[rgba(255,255,255,0.8)] flex items-center justify-between mt-[0.313rem]">
+            <div className="text-[1rem] leading-[100%] font-normal text-[#FFFFFFCC] flex items-center justify-between mt-[0.313rem]">
               <p>Valid for 10 minutes.</p>
               <p>
                 Need a new code?{" "}
@@ -163,7 +186,7 @@ export default function VerifyMobileVC() {
 
           <button
             type="button"
-            className="font-avenir-next w-full py-[1.063rem] bg-[#FF710F] text-base leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
+            className="mt-[10.875rem] font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={submitOTP}
           >
             Join Early Access

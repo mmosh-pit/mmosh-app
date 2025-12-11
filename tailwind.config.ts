@@ -65,6 +65,8 @@ const config: Config = {
       poppins: ["Avenir", "sans-serif"],
       goudy: ["Goudy", "sans-serif"],
       montserrat: ["Montserrat", "sans-serif"],
+      avenir: ["Avenir", "sans-serif"],
+      avenirNext: ["AvenirNext", "sans-serif"],
     },
   },
   plugins: [

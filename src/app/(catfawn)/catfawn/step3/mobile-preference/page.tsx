@@ -77,14 +77,14 @@ export default function MobilePreferenceVC() {
   };
 
   return (
-    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 lg:gap-x-9 max-lg:gap-y-8 items-center">
-      <div className="flex flex-col gap-7.5">
-        <h1 className="text-[2.188rem] max-md:text-2xl font-bold leading-[110%] font-poppins max-lg:text-center bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2 max-lg:gap-y-8 items-center">
+      <div className="flex flex-col gap-[1.875rem]">
+        <h1 className="font-poppins text-[2.188rem] max-md:text-2xl font-bold leading-[110%] max-lg:text-center bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Join the CAT FAWN Connection <br className="max-md:hidden" />
           Early Access Circle
         </h1>
 
-        <div className="text-base leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
+        <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
           <p>
             Be among the first to use CAT FAWN Connection
             <br />
@@ -103,39 +103,47 @@ export default function MobilePreferenceVC() {
         </div>
       </div>
 
-      <div className="min-h-109 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-5 px-12.5 max-md:px-5 max-md:py-8">
-        <h2 className="font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
+        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
         </h2>
-
-        <p className="text-base max-md:text-sm font-normal leading-[130%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 3 of 6: Tell Us More About Yourself <br />
-          Please tell us more about yourself and how we can reach you.
+        <p className="text-[1rem] font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+          Step 9 of 14: Which mobile platform do you prefer?
         </p>
 
-        <div className="text-sm font-bold leading-[100%] text-[#FFFFFFCC] mt-2.5">
-          3c. Which mobile platform do you prefer?{" "}
-          <span className="text-[0.688rem] font-normal">
-            (select all that apply, required)
-          </span>
-        </div>
-
-        <form className="min-h-69.5 mt-[1.063rem] text-base flex flex-col justify-between">
+        <form className="mt-[3.438rem] text-[1rem]">
           <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <label className="flex items-center gap-0.5">
               <input
                 type="checkbox"
-                className="size-[1.438rem] accent-[#402A2A] rounded-[0.313rem]"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
                 onChange={(e) =>
                   handleMobilePreferenceChange("iPhone", e.target.checked)
                 }
               />
               iPhone{" "}
             </label>
-            <label className="flex items-center  gap-0.5">
+            <label className="flex items-center gap-0.5">
               <input
                 type="checkbox"
-                className="size-[1.438rem] accent-[#402A2A] rounded-[0.313rem]"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
                 onChange={(e) =>
                   handleMobilePreferenceChange("android", e.target.checked)
                 }
@@ -146,7 +154,7 @@ export default function MobilePreferenceVC() {
 
           <button
             type="button"
-            className="font-avenir-next w-full py-[1.063rem] bg-[#FF710F] mt-2.5 text-base leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
+            className="mt-[14.563rem] font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={updateMobilePreference}
           >
             Next

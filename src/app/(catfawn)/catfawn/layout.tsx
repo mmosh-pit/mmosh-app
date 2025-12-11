@@ -93,7 +93,7 @@ export default function CatFawnLayout({
       <body
         className={`${poppins.variable} ${avenir.variable} ${avenirNext.variable} antialiased`}
       >
-        <div className="min-h-screen flex items-center py-5 bg-[#2b1417] text-[#FFFFFFE5]">
+        <div className="min-h-screen flex items-center py-5 bg-[#37191D] text-[#FFFFFFE5]">
           <div className="max-w-[73.875rem] mx-auto">{children}</div>
         </div>
       </body>

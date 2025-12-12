@@ -71,35 +71,9 @@ export default function Home() {
   };
 
   return (
-    <div className="font-avenir grid grid-cols-1 lg:grid-cols-2  max-lg:gap-y-8 items-center">
-      <div className="flex flex-col gap-[1.875rem]">
-        <h1 className="font-poppins text-[2.188rem] max-md:text-2xl font-bold leading-[110%] max-lg:text-center bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          Join the CAT FAWN Connection <br className="max-md:hidden" />
-          Early Access Circle
-        </h1>
-
-        <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
-          <p>
-            Be among the first to use CAT FAWN Connection
-            <br />
-            to change yourself, change your life, and change the world.
-            <br />
-            As an early access member, you&apos;ll:
-          </p>
-
-          <ul>
-            <li>• Experience the app before public launch</li>
-            <li>• Share insights that will shape the product</li>
-            <li>
-              • Join live sessions + private groups with Four Arrows & Kinship
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="min-h-135.5 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] ps-[3.25em] pe-[3.063em] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          {/* <div className="absolute left-0">
+    <div className="min-h-135.5 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] ps-[3.25em] pe-[3.063em] max-md:px-5 max-md:py-8">
+      <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        {/* <div className="absolute left-0">
             <svg
               width="24"
               height="24"
@@ -116,82 +90,84 @@ export default function Home() {
               />
             </svg>
           </div> */}
-          Request Early Access
-        </h2>
+        Request Early Access
+      </h2>
 
-        <p className="text-[1rem] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem]">
-          Step 1 of 14: Enter your name and email address.{" "}
-          <span className="text-[#FFFFFFE5] font-normal fonnt-avenir"> We’ll send a link to verify it’s really you.</span>
-        </p>
+      <p className="text-[1rem] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem]">
+        Step 1 of 14: Enter your name and email address.{" "}
+        <span className="text-[#FFFFFFE5] font-normal fonnt-avenir">
+          {" "}
+          We’ll send a link to verify it’s really you.
+        </span>
+      </p>
 
-        <form className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal">
-          <div className="flex flex-col gap-[0.313rem]">
-            <div>
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                First Name*
-              </label>
-              <input
-                type="text"
-                placeholder="First Name"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(event) =>
-                  setFormData({ ...formData, firstName: event.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Email address
-              </label>
-              <input
-                type="email"
-                placeholder="Email address"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(event) =>
-                  setFormData({ ...formData, email: event.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Password
-              </label>
-              <input
-                type="email"
-                placeholder="Password"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-              />
-            </div>
-          </div>
-          <button
-            type="button"
-            className="font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
-            onClick={createVisitorRecord}
-          >
-            Join Early Access
-          </button>
-          <label className="flex items-start gap-0.5  mt-1">
+      <form className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal">
+        <div className="flex flex-col gap-[0.313rem]">
+          <div>
+            <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
+              First Name*
+            </label>
             <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem] me-0.5"
-              checked={formData.hasChecked}
+              type="text"
+              placeholder="First Name"
+              className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
               onChange={(event) =>
-                setFormData({ ...formData, hasChecked: event.target.checked })
+                setFormData({ ...formData, firstName: event.target.value })
               }
             />
-            <span className="text-[0.813rem] font-normal max-md:text-xs leading-[140%] -tracking-[0.02em]">
-              I agree to receive communications about the CAT-FAWN Connection
-              early access program and launch updates.
-            </span>
-          </label>
+          </div>
 
-          <p className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem]">
-            Privacy Policy
-          </p>
-        </form>
-      </div>
+          <div>
+            <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
+              Email address
+            </label>
+            <input
+              type="email"
+              placeholder="Email address"
+              className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+              onChange={(event) =>
+                setFormData({ ...formData, email: event.target.value })
+              }
+            />
+          </div>
+
+          <div>
+            <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
+              Password
+            </label>
+            <input
+              type="email"
+              placeholder="Password"
+              className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+            />
+          </div>
+        </div>
+        <button
+          type="button"
+          className="font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
+          onClick={createVisitorRecord}
+        >
+          Join Early Access
+        </button>
+        <label className="flex items-start gap-0.5  mt-1">
+          <input
+            type="checkbox"
+            className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem] me-0.5"
+            checked={formData.hasChecked}
+            onChange={(event) =>
+              setFormData({ ...formData, hasChecked: event.target.checked })
+            }
+          />
+          <span className="text-[0.813rem] font-normal max-md:text-xs leading-[140%] -tracking-[0.02em]">
+            I agree to receive communications about the CAT-FAWN Connection
+            early access program and launch updates.
+          </span>
+        </label>
+
+        <p className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem]">
+          Privacy Policy
+        </p>
+      </form>
     </div>
   );
 }

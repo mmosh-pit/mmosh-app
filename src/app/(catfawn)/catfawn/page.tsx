@@ -3,6 +3,7 @@ import React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import Spinner from "./components/Spinner";
 // import toast from "react-hot-toast";
 
 export default function Home() {
@@ -156,10 +157,10 @@ export default function Home() {
           </div>
           <button
             type="button"
-            className="font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
+            className="font-avenirNext h-[3.125rem] flex justify-center items-end gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
             onClick={createVisitorRecord}
           >
-            Join Early Access
+            <Spinner size="sm" /> Join Early Access
           </button>
           <label className="flex items-start gap-0.5  mt-1">
             <input

@@ -18,7 +18,7 @@ export default function Step4VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      // router.replace("/");
       return;
     }
 
@@ -110,7 +110,7 @@ export default function Step4VC() {
       </div>
 
       <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between">
-        <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[110%] -tracking-[0.02em]">
+        <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] leading-[110%] -tracking-[0.02em]">
           <label className="flex items-center gap-0.5">
             <input
               type="checkbox"
@@ -302,7 +302,7 @@ export default function Step4VC() {
 
         <button
           type="button"
-          className="font-avenir-next w-full h-[3.125rem]  py-[1.063rem] bg-[#FF710F] mt-2.5 text-[1rem] leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
+          className="font-avenirNext w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[0.625rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
           onClick={updateIntent}
         >
           Next

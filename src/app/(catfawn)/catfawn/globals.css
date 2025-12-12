@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+label {
+  cursor: pointer;
+}
 
 input[type="checkbox"] {
   appearance: none; /* Hide default checkbox */
@@ -20,10 +23,39 @@ input[type="checkbox"]:checked {
 
 input[type="checkbox"]:checked::before {
   content: "✔"; /* Custom checkmark */
-  color: #FF710F; /* Color of the checkmark */
+  color: #ff710f; /* Color of the checkmark */
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="radio"] {
+  appearance: none; /* Hide default radio */
+  min-width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%; /* Radio is circular */
+  position: relative;
+  background-color: #402a2a;
+  cursor: pointer;
+}
+
+/* When checked */
+input[type="radio"]:checked {
+  background-color: #ff710f;
+}
+
+/* Optional: add the inner dot */
+input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  background-color: #ffffff;
+  border-radius: 50%;
   transform: translate(-50%, -50%);
 }
 

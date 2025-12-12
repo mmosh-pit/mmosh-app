@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <>
       {showMsg && (
-        <div>
+        <div className="absolue left-1/2 -translate-x-1/2">
           <MessageBanner
             type="error"
             message="Your membership is expired. pls upgrade"

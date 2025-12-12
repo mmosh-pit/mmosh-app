@@ -56,7 +56,7 @@ const Step7VC = () => {
         <br /> (Select at least three. You can modify them anytime.)
       </p>
 
-      <div className="mt-[2.438rem] ">
+      <div className="mt-[2.438rem]">
         <ChallengePills challenges={items} onChange={handleChange} min={3} />
       </div>
 

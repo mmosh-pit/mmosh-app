@@ -58,7 +58,7 @@ const Step6VC = () => {
         anytime.)
       </p>
 
-      <div className="mt-[0.563rem] h-[12.938rem]">
+      <div className="mt-[0.563rem]">
         <ChallengePills challenges={items} onChange={handleChange} min={3} />
       </div>
 

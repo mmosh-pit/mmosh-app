@@ -26,3 +26,43 @@ input[type="checkbox"]:checked::before {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.success-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.018) 0%,
+    rgba(33, 239, 0, 0.6) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.error-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 0, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.warn-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 132, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.info-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(255, 255, 255, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.info-container span {
+  color: #000;
+}

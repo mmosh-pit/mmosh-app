@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 // import toast from "react-hot-toast";
 
-export default function VerifyMobileVC() {
+export default function Step12VC() {
   const router = useRouter();
 
   const [otp, setOtp] = React.useState<string[]>(["", "", "", "", "", ""]);

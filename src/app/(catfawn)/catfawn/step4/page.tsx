@@ -1,31 +1,18 @@
-// step4a
+// step3b
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React from "react";
 // import toast from "react-hot-toast";
 
-interface ContactDetails {
-  mobileNumber: string;
-  telegramUsername: string;
-  blueskyHandle: string;
-  linkedinProfile: string;
-}
-
 export default function Step4VC() {
   const router = useRouter();
-
   const [cachedData, setCachedData] = React.useState({
     email: "",
     currentStep: "",
   });
 
-  const [contactDetails, setContactDetails] = React.useState<ContactDetails>({
-    mobileNumber: "",
-    telegramUsername: "",
-    blueskyHandle: "",
-    linkedinProfile: "",
-  });
+  const [intents, setIntents] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -39,7 +26,7 @@ export default function Step4VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result?.currentStep !== "step4") {
+      if (result?.currentStep && result.currentStep !== "step3/intent") {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
@@ -47,29 +34,25 @@ export default function Step4VC() {
     }
   }, []);
 
-  const handleChange = (field: keyof ContactDetails, value: string) => {
-    setContactDetails((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleIntentChange = (value: string, checked: boolean) => {
+    if (checked) {
+      setIntents((prev) => [...prev, value]);
+    } else {
+      setIntents((prev) => prev.filter((item) => item !== value));
+    }
   };
 
-  const updateContactDetails = async () => {
-    if (!contactDetails.mobileNumber.trim()) {
-      // toast.error("Mobile number is required.");
-      return;
-    }
-
-    if (contactDetails.mobileNumber.trim().length < 8) {
-      // toast.error("Please enter a valid mobile number.");
+  const updateIntent = async () => {
+    if (intents.length === 0) {
+      // toast.error("Please select at least one intent.");
       return;
     }
 
     try {
       const res = await axios.patch("/api/visitors/update-visitors", {
         email: cachedData.email,
-        currentStep: "step4/verify-mobile",
-        ...contactDetails,
+        currentStep: "step3/mobile-preference",
+        intent: intents,
       });
 
       if (res.data.status) {
@@ -77,22 +60,21 @@ export default function Step4VC() {
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            currentStep: "step4/verify-mobile",
+            currentStep: "step3/mobile-preference",
           })
         );
 
-        router.replace("/step4/verify-mobile");
+        router.replace("/step3/mobile-preference");
       } else {
-        // toast.error(res.data.message || "Unable to update contact details.");
+        // toast.error(res.data.message);
       }
     } catch (err) {
-      console.error(err);
       // toast.error("Something went wrong");
     }
   };
 
   return (
-    <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
+    <div className="min-h-[36.313rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[2.688rem] max-md:px-5 max-md:py-8">
       <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
         <div className="absolute left-0">
           <svg
@@ -113,77 +95,218 @@ export default function Step4VC() {
         </div>
         Request Early Access
       </h2>
-
-      <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.04em]">
-        Step 11 of 14: Your Contact Details.{" "}
+      <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.02em]">
+        Step 4 of 14: Tell Us More About Yourself.{" "}
         <span className="font-normal font-avenir">
-          {" "}
-          The CAT FAWN Connection is more than a mobile app. CAT FAWN
-          intelligence will be available to you through text messaging,
-          messaging apps and social networks. Please let us know the various
-          ways the CAT FAWN can reach you. You will have the option to opt-out
-          at any time.
+          How do you hope to use the CAT-FAWN Connection?{" "}
         </span>
       </p>
 
-      <form className="mt-[0.313rem] text-[1rem] max-md:text-sm font-normal leading-[100%]">
-        <div className="flex flex-col gap-[0.25rem]">
-          <div>
-            <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Mobile number
-            </label>
-            <input
-              type="number"
-              placeholder="Mobile number"
-              className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-              onChange={(e) => handleChange("mobileNumber", e.target.value)}
-            />
-          </div>
+      <div className="text-[0.875rem] font-bold leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
+        How do you hope to use CAT-FAWN Connection?{" "}
+        <span className="text-[0.6885rem] font-normal">
+          (select all that apply, required)
+        </span>
+      </div>
 
-          <div>
-            <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Telegram username
-            </label>
+      <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between">
+        <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[110%] -tracking-[0.02em]">
+          <label className="flex items-center gap-0.5">
             <input
-              type="text"
-              placeholder="@handle"
-              className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-              onChange={(e) => handleChange("telegramUsername", e.target.value)}
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-face-challenges-in-my-life-work-and-relationships-with-more-clarity-presence-and-wisdom",
+                  e.target.checked
+                )
+              }
             />
-          </div>
-
-          <div>
-            <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Bluesky handle
-            </label>
+            To face challenges in my life, work, and relationships with more
+            clarity, presence, and wisdom{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
             <input
-              type="text"
-              placeholder="@name.bsky.social"
-              className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem]  rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-              onChange={(e) => handleChange("blueskyHandle", e.target.value)}
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-turn-my-strengths-into-superpowers",
+                  e.target.checked
+                )
+              }
             />
-          </div>
-
-          <div>
-            <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              LinkedIn profile (full URL)
-            </label>
+            To turn my strengths into superpowers{" "}
+          </label>
+          <label className="flex items-center  gap-0.5">
             <input
-              type="text"
-              placeholder="http://url.com"
-              className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-              onChange={(e) => handleChange("linkedinProfile", e.target.value)}
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-create-meaningful-change-in-my-community-or-the-world",
+                  e.target.checked
+                )
+              }
             />
-          </div>
-
-          <button
-            type="button"
-            className="font-avenirNext h-[3.125rem]  mt-[1.063rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
-            onClick={updateContactDetails}
-          >
-            Next
-          </button>
+            To create meaningful change in my community or the world{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-break-old-patterns-and-respond-instead-of-react",
+                  e.target.checked
+                )
+              }
+            />
+            To break old patterns and respond instead of react{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-relate-to-fear-differently-seeing-it-as-a-catalyst-not-an-enemy",
+                  e.target.checked
+                )
+              }
+            />
+            To relate to fear differently – seeing it as a catalyst not an enemy{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-strengthen-my-inner-authority-and-self-authorship",
+                  e.target.checked
+                )
+              }
+            />
+            To strengthen my inner authority and self-authorship{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-use-my-words-as-sacred-intentional-powerful-communications",
+                  e.target.checked
+                )
+              }
+            />
+            To use my words as sacred, intentional, powerful communications
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-remember-my-inner-nature-and-experience-the-wisdom-of-the-natural-world",
+                  e.target.checked
+                )
+              }
+            />
+            To remember my inner nature and experience the wisdom of the natural
+            world{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-bring-more-respect-reciprocity-and-relational-wisdom-into-my-life",
+                  e.target.checked
+                )
+              }
+            />
+            To bring more respect, reciprocity, and relational wisdom into my
+            life{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-support-my-healing-therapy-or-spiritual-growth",
+                  e.target.checked
+                )
+              }
+            />
+            To support my healing, therapy, or spiritual growth{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-enhance-my-work-with-clients-students-or-communities",
+                  e.target.checked
+                )
+              }
+            />
+            To enhance my work with clients, students, or communities{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-grow-into-a-healthier-more-powerful-version-of-myself",
+                  e.target.checked
+                )
+              }
+            />
+            To grow into a healthier, more powerful version of myself{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+              onChange={(e) =>
+                handleIntentChange(
+                  "to-strengthen-my-professional-skills-and-effectiveness-at-work",
+                  e.target.checked
+                )
+              }
+            />
+            To strengthen my professional skills and effectiveness at work{" "}
+          </label>
+          <label className="flex items-center gap-0.5">
+            <input
+              type="checkbox"
+              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+            />
+            Other
+          </label>
         </div>
+
+        <input
+          type="text"
+          // value={otherRoleText}
+          // onChange={(e) => setOtherRoleText(e.target.value)}
+          placeholder="Please share how you see yourself in the world."
+          className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-60 placeholder:font-normal placeholder:leading-[140%] mt-[0.563rem]"
+        />
+
+        <button
+          type="button"
+          className="font-avenir-next w-full h-[3.125rem]  py-[1.063rem] bg-[#FF710F] mt-2.5 text-[1rem] leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
+          onClick={updateIntent}
+        >
+          Next
+        </button>
       </form>
     </div>
   );

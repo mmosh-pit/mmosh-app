@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 // import toast from "react-hot-toast";
 
-export default function MobilePreferenceVC() {
+export default function Step9VC() {
   const router = useRouter();
   const [cachedData, setCachedData] = React.useState({
     email: "",

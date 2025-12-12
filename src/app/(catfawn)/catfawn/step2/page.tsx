@@ -19,7 +19,7 @@ export default function Step2VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      // router.replace("/");
+      router.replace("/");
       return;
     }
 
@@ -135,7 +135,11 @@ export default function Step2VC() {
                 }}
                 onChange={(e) => handleOtpChange(e.target.value, idx)}
                 onKeyDown={(e) => handleKeyDown(e, idx)}
-                className="w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:w-6 max-xl:h-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none"
+                className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:w-6 max-xl:h-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none focus:bg-[#F8060624] focus:border-[#F806068F] ${
+                  digit
+                    ? "bg-[#F8060624] border-[#F806068F]" // When filled
+                    : "bg-[#402A2A] border-[#FFFFFF29]"
+                } `}
               />
             ))}
           </div>

@@ -142,7 +142,11 @@ export default function Step12VC() {
                   inputRefs.current[idx] = el;
                 }}
                 onChange={(e) => handleOtpChange(e.target.value, idx)}
-                className="w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:size-6 max-xl:size-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none"
+                className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:size-6 max-xl:size-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none focus:bg-[#F8060624] focus:border-[#F806068F] ${
+                  digit
+                    ? "bg-[#F8060624] border-[#F806068F]" // When filled
+                    : "bg-[#402A2A] border-[#FFFFFF29]"
+                }`}
               />
             ))}
           </div>

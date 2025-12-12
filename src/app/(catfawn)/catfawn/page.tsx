@@ -13,10 +13,9 @@ export default function Home() {
     email: "",
     hasChecked: false,
   });
-  const [errors, setErrors] = React.useState({});
   const [showMsg, setShowMsg] = React.useState(true);
-  const [msgClass, setMsgClass] = React.useState("warn-container");
-  const [msgText, setMsgText] = React.useState("Hello World");
+  const [msgClass, setMsgClass] = React.useState("success");
+  const [msgText, setMsgText] = React.useState("");
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -33,76 +32,78 @@ export default function Home() {
     const newErrors: any = {};
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required";
+      createMessage("First name is required", "error");
+      return false;
     } else if (formData.firstName.trim().length < 2) {
-      newErrors.firstName = "First name must be at least 2 characters";
+      createMessage("First name must be at least 2 characters", "error");
+      return false;
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+      createMessage("Email is required", "error");
+      return false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      newErrors.email = "Please enter a valid email";
+      createMessage("Please enter a valid email", "error");
+      return false;
     }
 
     if (!formData.hasChecked) {
-      newErrors.checkbox = "You must agree before submitting";
+      createMessage("You must agree before submitting", "error");
+      return false;
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return true;
   };
 
   const createVisitorRecord = async () => {
     if (!validateForm()) return;
 
     try {
-      const result = await axios.post("/api/visitors", formData);
+      const result = await axios.post("/api/visitors", formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      });
       if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
-          JSON.stringify({ currentStep: "step2", email: formData.email })
+          JSON.stringify({
+            currentStep: "catfawn/step2",
+            email: formData.email,
+          })
         );
-        router.replace("/step2");
+        router.replace("/catfawn/step2");
       } else {
-        // toast.error(result.data.message || "Something went wrong");
+        createMessage(result.data.message || "Something went wrong", "error");
       }
     } catch (err: any) {
-      // toast.error(
-      //   err?.response?.data?.message ||
-      //     "Unable to create visitor. Please try again."
-      // );
+      createMessage(
+        err?.response?.data?.message ||
+          "Unable to create visitor. Please try again.",
+        "error"
+      );
     }
+  };
+
+  const createMessage = (message: any, type: any) => {
+    window.scrollTo(0, 0);
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    setTimeout(() => {
+      setShowMsg(false);
+    }, 4000);
   };
 
   return (
     <>
       {showMsg && (
         <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner
-            type="error"
-            message="Your membership is expired. pls upgrade"
-          />
+          <MessageBanner type={msgClass} message={msgText} />
         </div>
       )}
       <div className="min-h-135.5 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] ps-[3.25em] pe-[3.063em] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          {/* <div className="absolute left-0">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div> */}
           Request Early Access
         </h2>
 

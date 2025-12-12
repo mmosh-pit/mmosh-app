@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
             mobilePreference: [],
             intent: [],
             contactPreference: [],
-            currentStep: "step2",
+            currentStep: "catfawn/step2",
             mobileNumber: null,
             telegramUsername: null,
             blueskyHandle: null,

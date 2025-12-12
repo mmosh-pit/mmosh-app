@@ -84,36 +84,56 @@ export default function Step14VC() {
   };
 
   return (
-    <div className="min-h-118 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.313rem] ps-13 pe-[3.063rem] max-md:px-5 max-md:py-8">
-      <h2 className="font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-linear-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+    <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] px-[3.125rem] max-md:px-5 max-md:py-8">
+      <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <div className="absolute left-0">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M20 12L4 12M4 12L10 6M4 12L10 18"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
         Request Early Access
       </h2>
-
-      <p className="text-base max-md:text-sm font-normal leading-[130%] mt-[0.313rem] -tracking-[0.02em]">
-        Step 6 of 7: Create Your Own Kinship Code. This will be the code you’ll
-        share with others.
+      <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        Step 14 of 14: Create Your Own Kinship Code.
+        <span className="font-normal font-avenir">
+          Every person in the Kinship ecosystem carries a unique code — a way of
+          extending relationship, trust, and reciprocity. Pick something
+          meaningful, memorable, or fun — whatever seems true to you. This will
+          be the code you’ll share with people you invite.
+        </span>
       </p>
 
-      <form className="mt-[0.938rem] min-h-[21.188rem] max-lg:min-h-[322px] text-base max-md:text-sm font-normal flex flex-col justify-between">
+      <form className="mt-[0.875rem] min-h-63.5 text-base max-md:text-sm font-normal">
         <div>
-          <label className="block mb-[0.313rem] font-normal leading-[100%]">
-            Kinship Code
+          <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
+            Set your Kinship Code{" "}
           </label>
-
           <input
             type="text"
-            placeholder="Kinship Code"
             value={kinshipCode}
             onChange={(e) => setKinshipCode(e.target.value.toUpperCase())}
             maxLength={6}
-            className="w-full h-[3.438rem] px-[1.294rem] py-4.5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+            placeholder="Set your Kinship Code"
+            className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
           />
         </div>
 
         <button
           type="button"
+          className="font-avenirNext h-[3.125rem] mt-[11.813rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
           onClick={submitNewKinshipCode}
-          className="font-avenir-next w-full py-[1.063rem] bg-[#FF710F] text-base leading-[100%] text-[#2C1316] font-bold rounded-[0.625rem] hover:opacity-90"
         >
           Join Early Access
         </button>

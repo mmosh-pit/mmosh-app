@@ -1,8 +1,9 @@
 "use client";
+import React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React from "react";
-// import toast from "react-hot-toast";
+import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import Spinner from "../components/Spinner";
 
 export default function Step3VC() {
   const router = useRouter();
@@ -14,6 +15,11 @@ export default function Step3VC() {
   const [roles, setRoles] = React.useState<string[]>([]);
   const [otherRoleEnabled, setOtherRoleEnabled] = React.useState(false);
   const [otherRoleText, setOtherRoleText] = React.useState("");
+
+  const [showMsg, setShowMsg] = React.useState(true);
+  const [msgClass, setMsgClass] = React.useState("success");
+  const [msgText, setMsgText] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -27,7 +33,7 @@ export default function Step3VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result?.currentStep && result.currentStep !== "step3/roles") {
+      if (result?.currentStep && result.currentStep !== "catfawn/step3") {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
@@ -62,7 +68,7 @@ export default function Step3VC() {
 
   const updateRoles = async () => {
     if (roles.length === 0 && !otherRoleText.trim()) {
-      // toast.error("Please select at least one role.");
+      createMessage("Please select at least one role.", "error");
       return;
     }
 
@@ -70,180 +76,205 @@ export default function Step3VC() {
 
     if (otherRoleEnabled) {
       if (!otherRoleText.trim()) {
-        // toast.error("Please enter your other role.");
+        createMessage("Please enter your other role.", "error");
         return;
       }
 
-      // convert spaces → hyphens
       const formattedOther = formatRole(otherRoleText);
       finalRoles.push(formattedOther);
     }
 
     try {
-      const res = await axios.patch("/api/visitors/update-visitors", {
-        email: cachedData.email,
-        currentStep: "step3/intent",
-        roles: finalRoles,
-      });
+      setIsLoading(true);
+      const res = await axios.patch(
+        "/api/visitors/update-visitors",
+        {
+          email: cachedData.email,
+          currentStep: "catfawn/step4",
+          roles: finalRoles,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }
+      );
 
       if (res.data.status) {
         localStorage.setItem(
           "catfawn-data",
-          JSON.stringify({ ...cachedData, currentStep: "step3/intent" })
+          JSON.stringify({ ...cachedData, currentStep: "catfawn/step4" })
         );
-
-        router.replace("/step3/intent");
+        setIsLoading(false);
+        router.replace("/catfawn/step4");
       } else {
-        // toast.error(res.data.message);
+        setIsLoading(false);
+        createMessage(res.data.message, "error");
       }
     } catch (err) {
-      // toast.error("Something went wrong");
+      setIsLoading(false);
+      createMessage("Something went wrong", "error");
     }
   };
 
+  const createMessage = (message: any, type: any) => {
+    window.scrollTo(0, 0);
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    setTimeout(() => {
+      setShowMsg(false);
+    }, 4000);
+  };
+
   return (
-    <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-      <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-        <div className="absolute left-0">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+    <>
+      {showMsg && (
+        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
+          <MessageBanner type={msgClass} message={msgText} />
+        </div>
+      )}
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
+        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          Request Early Access
+        </h2>
+
+        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+          Step 3 of 14: Tell Us More About Yourself.{" "}
+          <span className="font-normal font-avenir">
+            {" "}
+            The CAT FAWN Connection Early Access Program is for change makers,
+            educators, healers, and leaders who are ready and willing to shape
+            the future. Please tell us more about yourself and how we can reach
+            you.
+          </span>
+        </p>
+
+        <div className="text-[1rem] font-bold leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
+          How do you see yourself in the world?{" "}
+          <span className="text-[0.6885rem] font-normal">
+            (select all that apply, required)
+          </span>
+        </div>
+
+        <form className="mt-[0.563rem] text-[1rem]">
+          <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                onChange={(e) =>
+                  handleRoleChange(
+                    "change-maker/activist/advocate",
+                    e.target.checked
+                  )
+                }
+              />
+              Change-maker/Activist/Advocate
+            </label>
+
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                onChange={(e) =>
+                  handleRoleChange("educator/teacher", e.target.checked)
+                }
+              />
+              Educator/Teacher
+            </label>
+
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                onChange={(e) =>
+                  handleRoleChange("coach/trainer/guide", e.target.checked)
+                }
+              />
+              Coach/Trainer/Guide
+            </label>
+
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                onChange={(e) =>
+                  handleRoleChange("healer/therapist", e.target.checked)
+                }
+              />
+              Healer/Therapist
+            </label>
+
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                onChange={(e) => handleRoleChange("leader", e.target.checked)}
+              />
+              Leader
+            </label>
+
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                onChange={(e) =>
+                  handleRoleChange("student/learner", e.target.checked)
+                }
+              />
+              Student/Learner
+            </label>
+
+            <label className="flex items-center gap-0.5">
+              <input
+                type="checkbox"
+                className="size-[1.438rem] rounded-[0.313rem]"
+                checked={otherRoleEnabled}
+                onChange={(e) => {
+                  handleRoleChange("other", e.target.checked);
+                }}
+              />
+              Other
+            </label>
+          </div>
+
+          {otherRoleEnabled && (
+            <input
+              type="text"
+              value={otherRoleText}
+              onChange={(e) => setOtherRoleText(e.target.value)}
+              placeholder="Please share how you see yourself in the world."
+              className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-60 placeholder:font-normal placeholder:leading-[140%] mt-[0.563rem]"
+            />
+          )}
+
+          <button
+            type="button"
+            className="font-avenirNext mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            onClick={updateRoles}
           >
-            <path
-              d="M20 12L4 12M4 12L10 6M4 12L10 18"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-        Request Early Access
-      </h2>
-
-      <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-        Step 3 of 14: Tell Us More About Yourself.{" "}
-        <span className="font-normal font-avenir">
-          {" "}
-          The CAT FAWN Connection Early Access Program is for change makers,
-          educators, healers, and leaders who are ready and willing to shape the
-          future. Please tell us more about yourself and how we can reach you.
-        </span>
-      </p>
-
-      <div className="text-[1rem] font-bold leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
-        How do you see yourself in the world?{" "}
-        <span className="text-[0.6885rem] font-normal">
-          (select all that apply, required)
-        </span>
+            {isLoading && <Spinner size="sm" />} Next
+          </button>
+        </form>
       </div>
-
-      <form className="mt-[0.563rem] text-[1rem]">
-        <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
-          {/* All existing checkboxes */}
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-              onChange={(e) =>
-                handleRoleChange(
-                  "change-maker/activist/advocate",
-                  e.target.checked
-                )
-              }
-            />
-            Change-maker/Activist/Advocate
-          </label>
-
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-              onChange={(e) =>
-                handleRoleChange("educator/teacher", e.target.checked)
-              }
-            />
-            Educator/Teacher
-          </label>
-
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-              onChange={(e) =>
-                handleRoleChange("coach/trainer/guide", e.target.checked)
-              }
-            />
-            Coach/Trainer/Guide
-          </label>
-
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-              onChange={(e) =>
-                handleRoleChange("healer/therapist", e.target.checked)
-              }
-            />
-            Healer/Therapist
-          </label>
-
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-              onChange={(e) => handleRoleChange("leader", e.target.checked)}
-            />
-            Leader
-          </label>
-
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-              onChange={(e) =>
-                handleRoleChange("student/learner", e.target.checked)
-              }
-            />
-            Student/Learner
-          </label>
-
-          {/* OTHER OPTION */}
-          <label className="flex items-center gap-0.5">
-            <input
-              type="checkbox"
-              className="size-[1.438rem] rounded-[0.313rem]"
-              checked={otherRoleEnabled}
-              onChange={(e) => {
-                handleRoleChange("other", e.target.checked);
-              }}
-            />
-            Other
-          </label>
-        </div>
-
-        {/* SHOW INPUT ONLY IF OTHER IS SELECTED */}
-        {otherRoleEnabled && (
-          <input
-            type="text"
-            value={otherRoleText}
-            onChange={(e) => setOtherRoleText(e.target.value)}
-            placeholder="Please share how you see yourself in the world."
-            className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-60 placeholder:font-normal placeholder:leading-[140%] mt-[0.563rem]"
-          />
-        )}
-
-        <button
-          type="button"
-          className="font-avenirNext mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
-          onClick={updateRoles}
-        >
-          Next
-        </button>
-      </form>
-    </div>
+    </>
   );
 }

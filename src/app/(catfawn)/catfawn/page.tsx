@@ -16,6 +16,7 @@ export default function Home() {
   const [showMsg, setShowMsg] = React.useState(true);
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -29,8 +30,6 @@ export default function Home() {
   }, []);
 
   const validateForm = () => {
-    const newErrors: any = {};
-
     if (!formData.firstName.trim()) {
       createMessage("First name is required", "error");
       return false;
@@ -59,6 +58,7 @@ export default function Home() {
     if (!validateForm()) return;
 
     try {
+      setIsLoading(true);
       const result = await axios.post("/api/visitors", formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
@@ -72,11 +72,14 @@ export default function Home() {
             email: formData.email,
           })
         );
+        setIsLoading(false);
         router.replace("/catfawn/step2");
       } else {
+        setIsLoading(false);
         createMessage(result.data.message || "Something went wrong", "error");
       }
     } catch (err: any) {
+      setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
           "Unable to create visitor. Please try again.",
@@ -161,7 +164,7 @@ export default function Home() {
             className="font-avenirNext h-[3.125rem] flex justify-center items-end gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
             onClick={createVisitorRecord}
           >
-            <Spinner size="sm" /> Join Early Access
+            {isLoading && <Spinner size="sm" />} Join Early Access
           </button>
           <label className="flex items-start gap-0.5  mt-1">
             <input

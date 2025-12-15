@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
         const result = await collection.insertOne(userDocument);
 
         // Send OTP Email via Mailjet
-        await sendCodeEmail(email, otp);
+        // await sendCodeEmail(email, otp);
+        console.log("=========== OTP CHANGE ============", otp);
 
         return NextResponse.json(
             {

@@ -158,6 +158,17 @@ export default function Home() {
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
               />
             </div>
+
+            <div>
+              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
+                Confirm Password
+              </label>
+              <input
+                type="email"
+                placeholder="Confirm Password"
+                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+              />
+            </div>
           </div>
           <button
             type="button"

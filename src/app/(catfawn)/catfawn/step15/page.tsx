@@ -1,4 +1,3 @@
-// step7
 "use client";
 import { useRouter } from "next/navigation";
 
@@ -31,7 +30,7 @@ export default function Step15VC() {
         You’re in. Welcome to CAT FAWN Early Access
       </p>
 
-      <div className="text-[#FFFFFFE5] mt-[0.313rem] text-[1rem] leading-[100%] font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
+      <div className="text-[#FFFFFFE5] mt-[0.313rem] text-[1rem] leading-[100%] font-normal max-lg:text-start text-wrap -tracking-[0.02em]">
         <p>
           You can start connecting with CAT FAWN by email, text message,
           Telegram and BlueSky today. They’ll be sure to contact you by email as

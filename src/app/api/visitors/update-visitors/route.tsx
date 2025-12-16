@@ -22,6 +22,14 @@ interface UpdateVisitorBody {
   blueskyHandle?: string;
   linkedinProfile?: string;
 
+  likertAnswers?: Record<string, string>;
+
+  challenges?: string[];
+
+  abilities?: string[];
+
+  aspirations?:string[];
+
   // Step 5
   referedKinshipCode?: string;
 
@@ -57,6 +65,10 @@ export async function PATCH(req: NextRequest) {
       telegramUsername,
       blueskyHandle,
       linkedinProfile,
+      likertAnswers,
+      challenges,
+      abilities,
+      aspirations,
       referedKinshipCode,
       kinshipCode,
     } = validation.data!;
@@ -113,6 +125,28 @@ export async function PATCH(req: NextRequest) {
       updateFields.linkedinProfile = linkedinProfile;
 
     // Step 5 updates
+    if (likertAnswers !== undefined) {
+      updateFields.likertAnswers = {
+        ...(existingUser.likertAnswers || {}),
+        ...likertAnswers,
+      };
+    }
+
+    // Step 6 updates
+    if (challenges !== undefined) {
+      updateFields.challenges = challenges;
+    }
+
+    // Step 7 updates
+    if (abilities !== undefined) {
+      updateFields.abilities = abilities;
+    }
+
+    // Step 7 updates
+    if (aspirations !== undefined) {
+      updateFields.aspirations = aspirations;
+    }
+
     if (referedKinshipCode !== undefined) {
       updateFields.referedKinshipCode = referedKinshipCode;
     }
@@ -125,7 +159,7 @@ export async function PATCH(req: NextRequest) {
     // Step 4 mobile verification logic — Generate OTP + Send SMS via Twilio
     let otp: string | null = null;
 
-    if (currentStep === "step4/verify-mobile") {
+    if (currentStep === "catfawn/step12") {
       otp = generateSecureOTP();
       const hashedOTP = await bcrypt.hash(otp, 10);
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
@@ -134,6 +168,7 @@ export async function PATCH(req: NextRequest) {
       updateFields.expiresAt = expiresAt;
       updateFields.status = "pending_mobile_verification";
 
+      console.log(mobileNumber,"###################")
       await sendSMS(mobileNumber!, otp);
     }
 
@@ -193,6 +228,37 @@ function validateRequestBody(body: any) {
     }
   }
 
+  const ALLOWED_LIKERT_VALUES = [
+    "very rarely",
+    "rarely",
+    "sometimes",
+    "very",
+    "very often",
+  ];
+
+  if (body.likertAnswers !== undefined) {
+    if (
+      typeof body.likertAnswers !== "object" ||
+      Array.isArray(body.likertAnswers)
+    ) {
+      errors.push("likertAnswers must be an object");
+    } else {
+      for (const [question, answer] of Object.entries(body.likertAnswers)) {
+        if (
+          typeof question !== "string" ||
+          !question.trim() ||
+          typeof answer !== "string" ||
+          !ALLOWED_LIKERT_VALUES.includes(answer.toLowerCase())
+        ) {
+          errors.push(
+            "Each Likert answer must be a valid label (very rarely → very often)"
+          );
+          break;
+        }
+      }
+    }
+  }
+
   if (body.referedKinshipCode !== undefined) {
     if (!/^[A-Za-z0-9]{6}$/.test(body.referedKinshipCode)) {
       errors.push(
@@ -224,7 +290,7 @@ const sendSMS = async (to: string, otp: string) => {
     const message = await client.messages.create({
       body: `Your CatFawn Connection verification code is: ${otp}. It expires in 15 minutes.`,
       from: twilioNumber,
-      to,
+      to: `+91${to}`,
     });
 
     console.log("SMS sent:", message.sid);

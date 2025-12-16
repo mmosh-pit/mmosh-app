@@ -134,7 +134,7 @@ async function sendSMS(to: string, otp: string) {
     const message = await client.messages.create({
       body: `Your CatFawn Connection verification code is: ${otp}. It expires in 15 minutes.`,
       from: twilioNumber,
-      to,
+      to: `+91${to}`,
     });
 
     console.log("SMS sent:", message.sid);

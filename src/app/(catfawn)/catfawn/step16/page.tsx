@@ -1,90 +1,144 @@
-import React from "react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import Spinner from "../components/Spinner";
 
 const Step16VC = () => {
+  const router = useRouter();
+
+  const [cachedData, setCachedData] = useState({
+    email: "",
+    currentStep: "",
+  });
+
+  const [avatar, setAvatar] = useState<File | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
+  const [msgText, setMsgText] = useState("");
+  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
+
+  const createMessage = (text: string, type: "success" | "error") => {
+    setMsgText(text);
+    setMsgClass(type);
+    setShowMsg(true);
+  };
+
+  // useEffect(() => {
+  //   const stored = localStorage.getItem("catfawn-data");
+  //   if (!stored) {
+  //     router.replace("/");
+  //     return;
+  //   }
+
+  //   try {
+  //     const result = JSON.parse(stored);
+  //     setCachedData(result);
+
+  //     if (result.currentStep !== "catfawn/step16") {
+  //       router.replace(`/${result.currentStep}`);
+  //     }
+  //   } catch {
+  //     router.replace("/");
+  //   }
+  // }, [router]);
+
   return (
-    <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-      <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-        <div className="absolute left-0">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M20 12L4 12M4 12L10 6M4 12L10 18"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+    <>
+      {showMsg && (
+        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
+          <MessageBanner type={msgClass} message={msgText} />
         </div>
-        Request Early Access
-      </h2>
+      )}
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
 
-      <p className="text-[#FFFFFFE5] text-[1rem] max-md:text-sm font-normal leading-[100%] mt-[0.313rem] -tracking-[0.02em]">
-        Step x of 15: Your Contact Details.{" "}
-      </p>
+        <h2 className="text-center text-[1.563rem] font-bold text-white">
+          Request Early Access
+        </h2>
 
-      <form className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal">
-        <div className="flex flex-col gap-[0.313rem]">
-          <label className="block text-[0.813rem] text-[#FFFFFFCC] mb-[0.125rem] leading-[100%]">
-            Avatar selection
-          </label>
+        <p className="text-white/80 mt-1">
+          Step 16 of 16: Your Contact Details
+        </p>
+
+        <form className="mt-4">
+          {/* Avatar */}
+          <label className="text-sm text-white/80">Avatar selection *</label>
+
           <label
             htmlFor="avatar-input"
-            className="w-[7.5rem] h-[5.938rem] rounded-xl bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] flex items-center justify-center cursor-pointer hover:bg-[#362226] transition mb-[0.313rem]"
-          ></label>
+            className="w-[7.5rem] h-[5.938rem] rounded-xl bg-[#402A2A] border border-white/20 flex items-center justify-center cursor-pointer mt-2"
+          >
+            Select
+          </label>
 
           <input
             id="avatar-input"
             type="file"
-            accept="image/*"
+            accept=".jpeg,.jpg,.png"
             className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+
+              const allowedTypes = ["image/jpeg", "image/png"];
+              if (!allowedTypes.includes(file.type)) {
+                createMessage("Only JPEG, JPG, or PNG images are allowed.", "error");
+                e.target.value = "";
+                return;
+              }
+
+              const maxSize = 500 * 1024; // 500 KB
+              if (file.size > maxSize) {
+                createMessage("Image size must be less than 500 KB.", "error");
+                e.target.value = "";
+                return;
+              }
+
+              setAvatar(file);
+            }}
           />
-          <div>
-            <label className="block text-[0.813rem] text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-              Last Name{" "}
-            </label>
+
+          {/* Last Name */}
+          <div className="mt-3">
+            <label className="text-sm text-white/80">Last Name *</label>
             <input
               type="text"
               placeholder="Last Name"
-              className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20 placeholder:font-normal text-[1rem]"
+              className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
             />
           </div>
 
-          <div>
-            <label className="block text-[0.813rem] text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-              Bio
-            </label>
+          {/* Bio */}
+          <div className="mt-3">
+            <label className="text-sm text-white/80">Bio</label>
             <input
               type="text"
               placeholder="Bio"
-              className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20 placeholder:font-normal text-[1rem]"
+              className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
             />
           </div>
 
-          <div>
-            <label className="block text-[0.813rem] text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-              Web Link{" "}
-            </label>
+          {/* Web link */}
+          <div className="mt-3">
+            <label className="text-sm text-white/80">Web Link</label>
             <input
               type="text"
               placeholder="http://myweb.com"
-              className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20 placeholder:font-normal text-[1rem]"
+              className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
             />
           </div>
-        </div>
-        <button
-          type="button"
-          className="font-avenirNext h-[3.125rem] flex justify-center items-end gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.063rem]"
-        >
-          Next{" "}
-        </button>
-      </form>
-    </div>
+
+          <button
+            type="button"
+            className="w-full h-[3.125rem] mt-5 bg-[#FF710F] text-[#2C1316] font-bold rounded-lg"
+          >
+            Next
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 

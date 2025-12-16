@@ -87,7 +87,6 @@ export async function PATCH(req: NextRequest) {
     if (kinshipCode) {
       const existingCode = await collection.findOne({
         kinshipCode,
-        email: { $ne: email },
       });
 
       if (existingCode) {
@@ -268,8 +267,8 @@ function validateRequestBody(body: any) {
   }
 
   if (body.kinshipCode !== undefined) {
-    if (!/^[A-Za-z0-9]{6}$/.test(body.kinshipCode)) {
-      errors.push("Kinship Code must be exactly 6 alphanumeric characters");
+    if (!/^[A-Za-z0-9]{3,20}$/.test(body.kinshipCode)) {
+      errors.push("Kinship Code must be between 3 to 20 alphanumeric characters.");
     }
   }
 

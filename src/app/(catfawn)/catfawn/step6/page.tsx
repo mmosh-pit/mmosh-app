@@ -162,6 +162,7 @@ const Step6VC = () => {
         <button
           type="button"
           className="font-avenirNext w-full h-[3.125rem] bg-[#FF710F] mt-[5.563rem] text-[#2C1316] font-extrabold rounded-[0.625rem] flex items-center justify-center gap-2"
+          onClick={submitStep6}
         >
           {isLoading && <Spinner size="sm" />}
           Next

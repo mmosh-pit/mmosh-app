@@ -74,6 +74,7 @@ export default function Step11VC() {
     }
 
     try {
+      setIsLoading(true)
       const res = await axios.patch("/api/visitors/update-visitors", {
         email: cachedData.email,
         currentStep: "catfawn/step12",
@@ -210,6 +211,7 @@ export default function Step11VC() {
               className="font-avenirNext h-[3.125rem]  mt-[1.063rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
               onClick={updateContactDetails}
             >
+              {isLoading && <Spinner size="sm" />}
               Next
             </button>
           </div>

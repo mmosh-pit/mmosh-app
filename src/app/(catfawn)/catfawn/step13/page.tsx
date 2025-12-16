@@ -2,7 +2,9 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import Spinner from "../components/Spinner";
 // import toast from "react-hot-toast";
 
 export default function Step13VC() {
@@ -24,6 +26,11 @@ export default function Step13VC() {
   ]);
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
   const [noCodeChecked, setNoCodeChecked] = React.useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
+  const [msgText, setMsgText] = useState("");
+  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -79,30 +86,34 @@ export default function Step13VC() {
   };
 
   const submitKinshipCode = async () => {
-    const code = kinshipCode.join("");
+    if (!noCodeChecked){
+      createMessage("Please confirm by checking the box if you don’t have the code.", "error");
+      return;
+    }
     if (noCodeChecked) {
+      setIsLoading(true)
       localStorage.setItem(
         "catfawn-data",
         JSON.stringify({
           ...cachedData,
-          currentStep: "step6",
+          currentStep: "catfawn/step14",
         })
       );
 
-      return router.replace("/step6");
+      return router.replace("/catfawn/step14");
     }
+    const code = kinshipCode.join("");
 
     if (code.length !== 6) {
-      // toast.error(
-      //   "Please enter a valid 6-digit Kinship Code or check the box."
-      // );
+      createMessage("Please enter a valid 6-digit Kinship Code or check the box.", "error");
+      setIsLoading(false);
       return;
     }
 
     try {
       const res = await axios.patch("/api/visitors/update-visitors", {
         email: cachedData.email,
-        currentStep: "step6",
+        currentStep: "catfawn/step14",
         referedKinshipCode: code,
       });
 
@@ -111,20 +122,35 @@ export default function Step13VC() {
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            currentStep: "step6",
+            currentStep: "catfawn/step14",
           })
         );
 
-        router.replace("/step6");
+        router.replace("/catfawn/step14");
       } else {
-        // toast.error(res.data.message);
+        createMessage("res.data.message", "error");
       }
-    } catch (err) {
-      // toast.error("Something went wrong");
+    } catch {
+      createMessage("Something went wrong", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const createMessage = (message: string, type: "success" | "error") => {
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    setTimeout(() => setShowMsg(false), 4000);
+  };
+
   return (
+        <>
+      {showMsg && (
+        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
+          <MessageBanner type={msgClass} message={msgText} />
+        </div>
+      )}
     <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
       <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
         <div className="absolute left-0">
@@ -201,9 +227,11 @@ export default function Step13VC() {
           className="font-avenirNext h-[3.125rem] mt-[11rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
           onClick={submitKinshipCode}
         >
+          {isLoading && <Spinner size="sm" />}
           Join Early Access
         </button>
       </form>
     </div>
+    </>
   );
 }

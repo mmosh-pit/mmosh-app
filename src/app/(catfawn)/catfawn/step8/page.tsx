@@ -114,7 +114,7 @@ const step8 = () => {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 8 of 15: Aspirations.{" "}
+          Step 8 of 14: Aspirations.{" "}
           <span className="font-normal font-avenir">
             What are you working toward — in your life, your community, or the
             wider world? These aspirations help CAT-FAWN understand the values

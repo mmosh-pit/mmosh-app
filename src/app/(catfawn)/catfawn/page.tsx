@@ -165,7 +165,7 @@ export default function Home() {
 
             <div>
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Email address
+                Email address*
               </label>
               <input
                 type="email"
@@ -179,7 +179,7 @@ export default function Home() {
 
             <div>
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Password
+                Password*
               </label>
               <input
                 type="password"
@@ -193,7 +193,7 @@ export default function Home() {
 
             <div>
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Confirm Password
+                Confirm Password*
               </label>
               <input
                 type="password"

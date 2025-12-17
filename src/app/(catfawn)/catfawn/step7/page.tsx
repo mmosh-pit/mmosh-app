@@ -114,7 +114,7 @@ const Step7VC = () => {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 7 of 15: Attributes{" "}
+          Step 7 of 14: Attributes{" "}
           <span className="font-normal font-avenir">
             You already carry powerful abilities—gifts shaped by your experience,
             your nature, and your relationships. When named, they can become

@@ -105,7 +105,7 @@ export default function Step10VC() {
           Request Early Access
         </h2>
         <p className="text-[1rem] font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 10 of 15: How do you prefer to be contacted?{" "}
+          Step 10 of 14: How do you prefer to be contacted?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply)
           </span>

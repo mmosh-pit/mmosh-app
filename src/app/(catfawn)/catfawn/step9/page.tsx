@@ -105,7 +105,7 @@ export default function Step9VC() {
           Request Early Access
         </h2>
         <p className="text-[1rem] font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 9 of 15: Which mobile platform do you prefer?
+          Step 9 of 14: Which mobile platform do you prefer?
         </p>
 
         <form className="mt-[3.438rem] text-[1rem]">

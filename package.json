@@ -58,6 +58,8 @@
     "react-loader-spinner": "^6.1.6",
     "react-markdown": "^10.1.0",
     "react-modal": "^3.16.1",
+    "react-phone-number-input": "^3.4.14",
+    "react-simple-phone-input": "^5.2.2",
     "react-syntax-highlighter": "^15.6.6",
     "react-telegram-login": "^1.1.2",
     "recharts": "2.12.7",

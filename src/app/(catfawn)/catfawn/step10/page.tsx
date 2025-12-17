@@ -1,12 +1,8 @@
-// step3d
 "use client";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-import { headers } from "next/headers";
-// import toast from "react-hot-toast";
 
 export default function Step10VC() {
   const router = useRouter();
@@ -55,44 +51,23 @@ export default function Step10VC() {
   };
 
   const updateContactPreference = async () => {
+    setIsLoading(true)
     if (contactPreferences.length === 0) {
       createMessage("Please select at least one contact preference.", "error");
+      setIsLoading(false)
       return;
     }
 
-    try {
-      setIsLoading(true)
-      // const res = await axios.patch("/api/visitors/update-visitors", {
-      //   email: cachedData.email,
-      //   currentStep: "catfawn/step11",
-      //   contactPreference: contactPreferences,
-      // }, {
-      //   headers: {
-      //     Authorization:
-      //       `Bearer ${localStorage.getItem("token") || ""}`
-      //   }
-      // });
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step11",
-            contactPreference: contactPreferences,
-          })
-        );
-
-        router.replace("/catfawn/step11");
-      // } else {
-      //   createMessage("res.data.message", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn/step11",
+        contactPreference: contactPreferences,
+      })
+    );
+    router.replace("/catfawn/step11");
+    setIsLoading(false);
   };
 
   const createMessage = (message: string, type: "success" | "error") => {
@@ -130,7 +105,7 @@ export default function Step10VC() {
           Request Early Access
         </h2>
         <p className="text-[1rem] font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 10 of 14: How do you prefer to be contacted?{" "}
+          Step 10 of 15: How do you prefer to be contacted?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply)
           </span>
@@ -182,7 +157,7 @@ export default function Step10VC() {
 
           <button
             type="button"
-            className="font-avenirNext flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] mt-[11.188rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="steps_btn_submit mt-[11.188rem]"
             onClick={updateContactPreference}
           >
             {isLoading && <Spinner size="sm" />}

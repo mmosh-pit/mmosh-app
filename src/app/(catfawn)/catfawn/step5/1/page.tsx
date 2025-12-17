@@ -149,7 +149,7 @@ const Step5VC1 = () => {
         </h2>
 
         <p className="text-[#FFFFFFE5] font-bold mt-1">
-          Step 5 of 15: Your CAT FAWN Source Code.
+          Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-sm text-[#FFFFFFE5] mt-6">
@@ -181,7 +181,7 @@ const Step5VC1 = () => {
           type="button"
           onClick={submitStep5}
           disabled={isLoading}
-          className="font-avenirNext w-full h-[3.125rem] bg-[#FF710F] mt-20 text-[#2C1316] font-extrabold rounded-[0.625rem] flex items-center justify-center gap-2"
+          className="steps_btn_submit mt-20"
         >
           {isLoading && <Spinner size="sm" />}
           Next

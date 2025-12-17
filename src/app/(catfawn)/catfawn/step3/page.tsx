@@ -254,7 +254,7 @@ export default function Step3VC() {
               value={otherRoleText}
               onChange={(e) => setOtherRoleText(e.target.value)}
               placeholder="Please share how you see yourself in the world."
-              className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-60 placeholder:font-normal placeholder:leading-[140%] mt-[0.563rem]"
+              className="steps_btn_submit mt-[0.563rem]"
             />
           )}
 

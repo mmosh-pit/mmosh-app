@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
             message: "Failed to send OTP via SMS",
             result: null,
           },
-          { status: 500 }
+          { status: 200 }
         );
       }
 
@@ -193,8 +193,12 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.com$/i.test(email);
 }
 
+function isValidCountryCode(code: string): boolean {
+  return /^[1-9][0-9]{0,3}$/.test(code);
+}
+
 function isValidMobile(mobile: string): boolean {
-  return /^[0-9]{6,15}$/.test(mobile);
+  return /^[1-9][0-9]{5,14}$/.test(mobile);
 }
 
 function validateRequestBody(body: any): {
@@ -217,16 +221,19 @@ function validateRequestBody(body: any): {
   }
 
   if (body.type === "sms") {
-    if (!body.mobile || typeof body.mobile !== "string") {
-      errors.push("mobile is required and must be a string");
-    } else if (!isValidMobile(body.mobile)) {
-      errors.push("mobile must be valid");
+    if (!body.countryCode || typeof body.countryCode !== "string") {
+      errors.push("CountryCode is required and must be a string");
+    } else if (!isValidCountryCode(body.countryCode.trim())) {
+      errors.push("Country code must be valid");
     }
 
-    if (!body.countryCode || typeof body.countryCode !== "string") {
-      errors.push("countryCode is required and must be a string");
+    if (!body.mobile || typeof body.mobile !== "string") {
+      errors.push("Mobile is required and must be a string");
+    } else if (!isValidMobile(body.mobile.trim())) {
+      errors.push("Mobile number must be valid");
     }
   }
+
 
   if (errors.length) return { isValid: false, errors };
 

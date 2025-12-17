@@ -65,12 +65,54 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px #402A2A inset;
+  -webkit-box-shadow: 0 0 0 1000px #402a2a inset;
   -webkit-text-fill-color: #ffffff;
   caret-color: #ffffff;
   transition: background-color 5000s ease-in-out 0s;
 }
 
+@layer components {
+  .steps_btn_submit {
+    @apply font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer;
+  }
+
+  .phone-container .simple-phone-input-sri198-main {
+    @apply gap-[1.125rem] border-0;
+  }
+
+  .phone-container
+    .simple-phone-input-sri198-main
+    .simple-phone-input-sri198-dropdown-container {
+    @apply !bg-[#402A2A] rounded-lg border border-[#FFFFFF29];
+  }
+
+  .phone-container .simple-phone-input-sri198-main input {
+    @apply w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-solid border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20;
+  }
+
+  .phone-dropdown {
+    @apply !bg-[#402A2A] text-white
+         border-r border-[#FFFFFF29]
+         pr-3 mr-3
+         text-base;
+  }
+
+  .phone-input {
+    @apply bg-transparent text-white
+         placeholder:text-white
+         outline-none
+         text-base
+         w-full;
+  }
+
+  .phone-dropdown-btn {
+    @apply bg-[#402a2a] !w-[4.5rem] !ps-[0.688rem] !pe-3;
+  }
+
+  .phone-dropdown-btn img {
+    @apply hidden;
+  }
+}
 
 .success-container {
   background: linear-gradient(

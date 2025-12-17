@@ -351,7 +351,7 @@ export default function Step4VC() {
 
           <button
             type="button"
-            className="font-avenirNext flex justify-center items-center gap-2 w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[0.625rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="steps_btn_submit mt-[0.625rem]"
             onClick={updateIntent}
           >
             {isLoading && <Spinner size="sm" />} Next

@@ -32,10 +32,22 @@ const Step5VC6 = () => {
   };
 
   const LIKERT_QUESTIONS = [
-    { id: "q1", text: "Have members of the group debate their ideas, and then you make a final decision." },
-    { id: "q2", text: "Gather data by talking to people individually and make a considered decision." },
-    { id: "q3", text: "Give a pep talk that inspires people to think creatively and then see what the group comes up with." },
-    { id: "q4", text: "Follow your feelings to the best solution and present it to the group, while remaining open to their input." },
+    {
+      id: "q1",
+      text: "Have members of the group debate their ideas, and then you make a final decision.",
+    },
+    {
+      id: "q2",
+      text: "Gather data by talking to people individually and make a considered decision.",
+    },
+    {
+      id: "q3",
+      text: "Give a pep talk that inspires people to think creatively and then see what the group comes up with.",
+    },
+    {
+      id: "q4",
+      text: "Follow your feelings to the best solution and present it to the group, while remaining open to their input.",
+    },
   ];
 
   const [showMsg, setShowMsg] = useState(false);
@@ -145,11 +157,12 @@ const Step5VC6 = () => {
         </h2>
 
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 5 of 15: Your CAT FAWN Source Code.
+          Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
-          You have a difficult decision to make. Do you:
+          You’re the leader of a group at work that has to make some changes,
+          but there are differing opinions in the group. Do you:{" "}
         </p>
 
         <ul className="flex justify-end gap-[0.625rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em]">
@@ -176,7 +189,7 @@ const Step5VC6 = () => {
           type="button"
           onClick={submitStep5}
           disabled={isLoading}
-          className="font-avenirNext w-full h-[3.125rem] bg-[#FF710F] mt-[5.563rem] text-[#2C1316] font-extrabold rounded-[0.625rem] flex items-center justify-center gap-2"
+          className="steps_btn_submit mt-[5.563rem]"
         >
           {isLoading && <Spinner size="sm" />}
           Next

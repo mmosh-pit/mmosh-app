@@ -2,145 +2,210 @@ import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-
 import sgMail from "@sendgrid/mail";
+import twilio from "twilio";
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
-import twilio from "twilio";
-const accountSid = process.env.TWILIO_ACCOUNT_SID!;
-const authToken = process.env.TWILIO_AUTH_TOKEN!;
-const twilioNumber = process.env.TWILIO_PHONE_NUMBER!;
-const client = twilio(accountSid, authToken);
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID!,
+  process.env.TWILIO_AUTH_TOKEN!
+);
+
+type OTPType = "email" | "sms";
+
+interface ResendOTPBody {
+  type: OTPType;
+  email?: string;
+  mobile?: string;
+  countryCode?: string;
+}
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, type, countryCode } = body;
 
-    if (!email || typeof email !== "string") {
-      return NextResponse.json(
-        { status: false, message: "Email is required" },
-        { status: 400 }
-      );
-    }
-
-    if (!["email", "sms"].includes(type)) {
-      return NextResponse.json(
-        { status: false, message: "Invalid type. Must be 'email' or 'sms'." },
-        { status: 400 }
-      );
-    }
-
-    const collection = db.collection("mmosh-app-visitor");
-    const user = await collection.findOne({ email });
-
-    if (!user) {
-      return NextResponse.json(
-        { status: false, message: "User not found" },
-        { status: 404 }
-      );
-    }
-
-    if (type === "sms" && !user.mobileNumber) {
-      return NextResponse.json(
-        { status: false, message: "Mobile number not found for this user." },
-        { status: 400 }
-      );
-    }
-
-    const otp = generateSecureOTP();
-    const hashedOTP = await bcrypt.hash(otp, 10);
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-
-    await collection.updateOne(
-      { email },
-      {
-        $set: {
-          otpHash: hashedOTP,
-          expiresAt,
-          updatedAt: new Date(),
-        },
-      }
-    );
-
-    let sent = false;
-    if (type === "email") {
-      sent = await sendEmailOTP(email, otp);
-    } else if (type === "sms") {
-      sent = await sendSMS(user.mobileNumber, otp , countryCode);
-    }
-
-    if (!sent) {
+    const validation = validateRequestBody(body);
+    if (!validation.isValid) {
       return NextResponse.json(
         {
           status: false,
-          message: `Failed to send OTP via ${type}`,
+          message: "Validation failed",
+          errors: validation.errors,
+          result: null,
         },
-        { status: 500 }
+        { status: 200 }
       );
+    }
+
+    const { type, email, mobile, countryCode } = validation.data!;
+
+    const otp = generateSecureOTP();
+    const otpHash = await bcrypt.hash(otp, 10);
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    const collection = db.collection("mmosh-users-email-verification");
+
+    if (type === "email") {
+      await collection.updateOne(
+        { email },
+        {
+          $set: {
+            otpHash,
+            expiresAt,
+            updatedAt: new Date(),
+          },
+          $setOnInsert: {
+            email,
+            createdAt: new Date(),
+          },
+        },
+        { upsert: true }
+      );
+
+      await sendOTPEmail(email!, otp);
+    }
+
+    if (type === "sms") {
+      await collection.updateOne(
+        { mobile, countryCode },
+        {
+          $set: {
+            otpHash,
+            expiresAt,
+            updatedAt: new Date(),
+          },
+          $setOnInsert: {
+            mobile,
+            countryCode,
+            createdAt: new Date(),
+          },
+        },
+        { upsert: true }
+      );
+
+      const sent = await sendOTPSMS(mobile!, otp, countryCode!);
+      if (!sent) {
+        return NextResponse.json(
+          {
+            status: false,
+            message: "Failed to send OTP via SMS",
+            result: null,
+          },
+          { status: 200 }
+        );
+      }
     }
 
     return NextResponse.json(
       {
         status: true,
-        message: `OTP sent successfully via ${type}`,
+        message: `OTP resent successfully via ${type}`,
+        result: {
+          destination: type === "email" ? email : mobile,
+          expiresInMinutes: 15,
+        },
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Resend OTP Error:", error);
     return NextResponse.json(
-      { status: false, message: "Internal server error" },
+      {
+        status: false,
+        message: "Internal server error",
+        result: null,
+      },
       { status: 500 }
     );
   }
 }
 
-function generateSecureOTP(): string {
-  const buffer = crypto.randomBytes(4);
-  const num = buffer.readUInt32BE(0);
-  return ((num % 900000) + 100000).toString();
+async function sendOTPEmail(email: string, otp: string) {
+  await sgMail.send({
+    to: email,
+    from: {
+      email: "security@kinshipbots.com",
+      name: "CatFawn Connection",
+    },
+    subject: "Your Verification Code",
+    html: `
+      Hello,<br /><br />
+      Your verification code is:<br /><br />
+      <strong style="font-size:22px;letter-spacing:3px;">${otp}</strong><br /><br />
+      This code is valid for 15 minutes.<br /><br />
+      — CatFawn Team
+    `,
+  });
 }
 
-async function sendEmailOTP(email: string, otp: string) {
+async function sendOTPSMS(mobile: string, otp: string, countryCode: string) {
   try {
-    const msg = {
-      to: email,
-      from: {
-        email: "security@kinshipbots.com",
-        name: "CatFawn Connection",
-      },
-      subject: "Your Verification Code",
-      html: `
-        Hey there,<br /><br />
-        Here is your verification code:<br /><br />
-        <strong style="font-size: 22px; letter-spacing: 3px;">${otp}</strong><br /><br />
-        This code is valid for the next 15 minutes.<br /><br />
-        Warm regards,<br />
-        <strong>CatFawn Team</strong>
-      `,
-    };
-
-    await sgMail.send(msg);
-    return true;
-  } catch (err) {
-    console.error("SendGrid error:", err);
-    return false;
-  }
-}
-
-async function sendSMS(to: string, otp: string, countryCode: number) {
-  try {
-    const message = await client.messages.create({
-      body: `Your CatFawn Connection verification code is: ${otp}. It expires in 15 minutes.`,
-      from: twilioNumber,
-      to: `+91${to}`,
+    await twilioClient.messages.create({
+      body: `Your CatFawn Connection verification code is ${otp}. It expires in 15 minutes.`,
+      from: process.env.TWILIO_PHONE_NUMBER!,
+      to: `+${countryCode}${mobile}`,
     });
-
-    console.log("SMS sent:", message.sid);
     return true;
   } catch (error) {
-    console.error("Twilio SMS Error:", error);
     return false;
   }
+}
+
+function generateSecureOTP(): string {
+  const buffer = crypto.randomBytes(6);
+  const randomNumber = buffer.readUInt32BE(0);
+  return ((randomNumber % 900000) + 100000).toString();
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidMobile(mobile: string): boolean {
+  return /^[0-9]{6,15}$/.test(mobile);
+}
+
+function validateRequestBody(body: any): {
+  isValid: boolean;
+  errors: string[];
+  data?: ResendOTPBody;
+} {
+  const errors: string[] = [];
+
+  if (!body.type || !["email", "sms"].includes(body.type)) {
+    errors.push("type must be either 'email' or 'sms'");
+  }
+
+  if (body.type === "email") {
+    if (!body.email || typeof body.email !== "string") {
+      errors.push("email is required and must be a string");
+    } else if (!isValidEmail(body.email)) {
+      errors.push("email must be valid");
+    }
+  }
+
+  if (body.type === "sms") {
+    if (!body.mobile || typeof body.mobile !== "string") {
+      errors.push("mobile is required and must be a string");
+    } else if (!isValidMobile(body.mobile)) {
+      errors.push("mobile must be valid");
+    }
+
+    if (!body.countryCode || typeof body.countryCode !== "string") {
+      errors.push("countryCode is required and must be a string");
+    }
+  }
+
+  if (errors.length) return { isValid: false, errors };
+
+  return {
+    isValid: true,
+    errors: [],
+    data: {
+      type: body.type,
+      email: body.email?.trim().toLowerCase(),
+      mobile: body.mobile?.trim(),
+      countryCode: body.countryCode?.trim(),
+    },
+  };
 }

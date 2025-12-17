@@ -10,6 +10,7 @@ interface VerifyOTPBody {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
+
         const validation = validateRequestBody(body);
         if (!validation.isValid) {
             return NextResponse.json(
@@ -19,42 +20,44 @@ export async function POST(req: NextRequest) {
                     errors: validation.errors,
                     result: null,
                 },
-                { status: 400 }
+                { status: 200 }
             );
         }
 
         const { email, otp } = validation.data!;
 
-        const collection = db.collection("mmosh-app-visitor-otp");
+        const collection = db.collection("mmosh-users-email-verification");
 
-        const user = await collection.findOne({ email });
+        const record = await collection.findOne({ email });
 
-        if (!user) {
+        if (!record) {
             return NextResponse.json(
                 {
                     status: false,
-                    message: "User not found",
+                    message: "OTP not found",
                     result: null,
                 },
-                { status: 404 }
+                { status: 200 }
             );
         }
 
-        if (!user.otpHash || !user.expiresAt) {
+        if (!record.otpHash || !record.expiresAt) {
+            await collection.deleteOne({ email });
+
             return NextResponse.json(
                 {
                     status: false,
-                    message: "No OTP found for this user",
+                    message: "OTP data is invalid or missing",
                     result: null,
                 },
-                { status: 404 }
+                { status: 200 }
             );
         }
 
-        const currentTime = new Date();
-        const expirationTime = new Date(user.expiresAt);
+        const now = new Date();
+        const expiresAt = new Date(record.expiresAt);
 
-        if (currentTime > expirationTime) {
+        if (now > expiresAt) {
             await collection.deleteOne({ email });
 
             return NextResponse.json(
@@ -63,11 +66,13 @@ export async function POST(req: NextRequest) {
                     message: "OTP has expired. Please request a new one.",
                     result: null,
                 },
-                { status: 410 }
+                { status: 200 }
             );
         }
 
-        const isOTPValid = await bcrypt.compare(otp, user.otpHash);
+        const isOTPValid = await bcrypt.compare(otp, record.otpHash);
+
+        await collection.deleteOne({ email });
 
         if (!isOTPValid) {
             return NextResponse.json(
@@ -76,7 +81,7 @@ export async function POST(req: NextRequest) {
                     message: "Invalid OTP",
                     result: null,
                 },
-                { status: 401 }
+                { status: 200 }
             );
         }
 
@@ -99,10 +104,9 @@ export async function POST(req: NextRequest) {
                     message: "Invalid JSON format",
                     result: null,
                 },
-                { status: 400 }
+                { status: 200 }
             );
         }
-
         return NextResponse.json(
             {
                 status: false,
@@ -115,8 +119,7 @@ export async function POST(req: NextRequest) {
 }
 
 function isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function validateRequestBody(body: any): {

@@ -18,6 +18,9 @@ export default function Step2VC() {
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [hasInvalid, setHasInvalid] = React.useState<boolean>(false);
+  const [hasLoadingResendOTP, setHasLoadingResendOTP] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -41,6 +44,7 @@ export default function Step2VC() {
 
   const handleOtpChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
+    setHasInvalid(false);
 
     const updated = [...otp];
     updated[index] = value;
@@ -52,6 +56,7 @@ export default function Step2VC() {
   };
 
   const handleKeyDown = (e: any, index: number) => {
+    setHasInvalid(false);
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -88,9 +93,10 @@ export default function Step2VC() {
             currentStep: "catfawn/step3",
           })
         );
-        setIsLoading(false);
         router.replace("/catfawn/step3");
+        setIsLoading(false);
       } else {
+        setHasInvalid(true);
         setIsLoading(false);
         createMessage(
           result.data.message || "Invalid verification code.",
@@ -104,15 +110,27 @@ export default function Step2VC() {
   };
 
   const resendOTP = async () => {
-    const result = await axios.post("/api/visitors/resend-otp", {
-      email: cachedData.email,
-      type: "email",
-    });
+    setHasInvalid(false);
+    setHasLoadingResendOTP(true);
+    const result = await axios.post(
+      "/api/visitors/resend-otp",
+      {
+        email: cachedData.email,
+        type: "email",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+        },
+      }
+    );
     if (result.data.status) {
+      setOtp(["", "", "", "", "", ""]);
       createMessage(result.data.message, "success");
     } else {
       createMessage(result.data.message, "error");
     }
+    setHasLoadingResendOTP(false);
   };
 
   const createMessage = (message: any, type: any) => {
@@ -130,6 +148,7 @@ export default function Step2VC() {
     index: number
   ) => {
     e.preventDefault();
+    setHasInvalid(false);
     const pasteData = e.clipboardData.getData("text").trim();
 
     if (!/^\d+$/.test(pasteData)) return;
@@ -163,7 +182,7 @@ export default function Step2VC() {
           Step 2 of 14: Check your email to confirm your early access request{" "}
           <span className="text-[#FFFFFFE5] font-normal fonnt-avenir -tracking-[0.02em]">
             {" "}
-            We’ve sent a 6-digit verification code to frankie@mail.com{" "}
+            We’ve sent a 6-digit verification code to {cachedData.email}{" "}
           </span>
           <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
             <ul className="ml-6 list-disc">
@@ -191,11 +210,7 @@ export default function Step2VC() {
                   onChange={(e) => handleOtpChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   onPaste={(e) => handlePaste(e, idx)}
-                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:h-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none focus:bg-[#F8060624] focus:border-[#F806068F] ${
-                    digit
-                      ? "bg-[#F8060624] border-[#F806068F]" // When filled
-                      : "bg-[#402A2A] border-[#FFFFFF29]"
-                  }`}
+                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:h-6 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
                 />
               ))}
             </div>
@@ -208,7 +223,7 @@ export default function Step2VC() {
             <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
               Didn’t get a code?{" "}
               <span onClick={resendOTP} className="cursor-pointer underline">
-                request code
+                {hasLoadingResendOTP ? "Sending..." : "request code"}
               </span>
             </div>
           </div>
@@ -217,7 +232,6 @@ export default function Step2VC() {
             type="button"
             className="font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 mt-[5.438rem]"
             onClick={verifyOTP}
-            disabled={otp.join("").length !== 6}
           >
             {isLoading && <Spinner size="sm" />} Confirm My Early Access{" "}
           </button>

@@ -44,21 +44,20 @@ export async function POST(req: NextRequest) {
     const otpHash = await bcrypt.hash(otp, 10);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    const collection = db.collection("otp-verifications");
-
-    await collection.insertOne({
-      type,
-      email: email || null,
-      mobile: mobile || null,
-      countryCode: countryCode || null,
-      otpHash,
-      expiresAt,
-      createdAt: new Date(),
-    });
+    const collection = db.collection("mmosh-users-email-verification");
 
     if (type === "email") {
+      await collection.insertOne({
+        email,
+        otpHash,
+        expiresAt,
+        createdAt: new Date(),
+      });
+
       await sendOTPEmail(email!, otp);
-    } else {
+    }
+
+    if (type === "sms") {
       const sent = await sendOTPSMS(mobile!, otp, countryCode!);
       if (!sent) {
         return NextResponse.json(
@@ -108,7 +107,7 @@ async function sendOTPEmail(email: string, otp: string) {
       Hello,<br /><br />
       Your verification code is:<br /><br />
       <strong style="font-size:22px;letter-spacing:3px;">${otp}</strong><br /><br />
-      This code will expire in 15 minutes.<br /><br />
+      This code is valid for 15 minutes.<br /><br />
       — CatFawn Team
     `,
   });

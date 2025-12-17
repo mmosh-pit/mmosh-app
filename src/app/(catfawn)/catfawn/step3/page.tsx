@@ -67,8 +67,15 @@ export default function Step3VC() {
   };
 
   const updateRoles = async () => {
+    setIsLoading(true);
     if (roles.length === 0 && !otherRoleText.trim()) {
-      createMessage("Please select at least one role.", "error");
+      createMessage(
+        otherRoleEnabled
+          ? "Please enter a valid role to proceed."
+          : "Please select at least one role.",
+        "error"
+      );
+      setIsLoading(false);
       return;
     }
 
@@ -77,6 +84,7 @@ export default function Step3VC() {
     if (otherRoleEnabled) {
       if (!otherRoleText.trim()) {
         createMessage("Please enter your other role.", "error");
+        setIsLoading(false);
         return;
       }
 
@@ -84,37 +92,16 @@ export default function Step3VC() {
       finalRoles.push(formattedOther);
     }
 
-    try {
-      setIsLoading(true);
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step4",
-      //     roles: finalRoles,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({ ...cachedData, roles: finalRoles, currentStep: "catfawn/step4" })
-        );
-        setIsLoading(false);
-        router.replace("/catfawn/step4");
-      // } else {
-      //   setIsLoading(false);
-      //   createMessage(res.data.message, "error");
-      // }
-    } catch (err) {
-      setIsLoading(false);
-      createMessage("Something went wrong", "error");
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        roles: finalRoles,
+        currentStep: "catfawn/step4",
+      })
+    );
+    router.replace("/catfawn/step4");
+    setIsLoading(false);
   };
 
   const createMessage = (message: any, type: any) => {

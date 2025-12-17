@@ -64,8 +64,15 @@ export default function Step4VC() {
   };
 
   const updateIntent = async () => {
+    setIsLoading(true);
     if (intents.length === 0 && !otherIntentText.trim()) {
-      createMessage("Please select at least one intent.", "error");
+      createMessage(
+        otherIntentEnabled
+          ? "Please enter a valid intent to proceed."
+          : "Please select at least one intent.",
+        "error"
+      );
+      setIsLoading(false);
       return;
     }
 
@@ -74,6 +81,7 @@ export default function Step4VC() {
     if (otherIntentEnabled) {
       if (!otherIntentText.trim()) {
         createMessage("Please enter your other Iintent.", "error");
+        setIsLoading(false);
         return;
       }
 
@@ -81,41 +89,16 @@ export default function Step4VC() {
       finalIntents.push(formattedOther);
     }
 
-    try {
-      setIsLoading(true);
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step5",
-      //     intent: finalIntents,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            intent: finalIntents,
-            currentStep: "catfawn/step5",
-          })
-        );
-        setIsLoading(false);
-        router.replace("/catfawn/step5");
-      // } else {
-      //   createMessage(res.data.message, "error");
-      //   setIsLoading(false);
-      // }
-    } catch (err) {
-      setIsLoading(false);
-      createMessage("Something went wrong", "error");
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        intent: finalIntents,
+        currentStep: "catfawn/step5",
+      })
+    );
+    router.replace("/catfawn/step5");
+    setIsLoading(false);
   };
 
   const formatIntent = (value: string) => {
@@ -148,6 +131,9 @@ export default function Step4VC() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              onClick={() => {
+                router.back();
+              }}
             >
               <path
                 d="M20 12L4 12M4 12L10 6M4 12L10 18"

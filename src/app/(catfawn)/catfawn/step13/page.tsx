@@ -111,25 +111,27 @@ export default function Step13VC() {
     }
 
     try {
-      const res = await axios.patch("/api/visitors/update-visitors", {
-        email: cachedData.email,
-        currentStep: "catfawn/step14",
-        referedKinshipCode: code,
-      });
+      setIsLoading(true)
+      // const res = await axios.patch("/api/visitors/update-visitors", {
+      //   email: cachedData.email,
+      //   currentStep: "catfawn/step14",
+      //   referedKinshipCode: code,
+      // });
 
-      if (res.data.status) {
+      // if (res.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
             currentStep: "catfawn/step14",
+            referedKinshipCode: code,
           })
         );
 
         router.replace("/catfawn/step14");
-      } else {
-        createMessage("res.data.message", "error");
-      }
+      // } else {
+      //   createMessage("res.data.message", "error");
+      // }
     } catch {
       createMessage("Something went wrong", "error");
     } finally {

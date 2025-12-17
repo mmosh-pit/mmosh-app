@@ -86,31 +86,31 @@ export default function Step3VC() {
 
     try {
       setIsLoading(true);
-      const res = await axios.patch(
-        "/api/visitors/update-visitors",
-        {
-          email: cachedData.email,
-          currentStep: "catfawn/step4",
-          roles: finalRoles,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
-        }
-      );
+      // const res = await axios.patch(
+      //   "/api/visitors/update-visitors",
+      //   {
+      //     email: cachedData.email,
+      //     currentStep: "catfawn/step4",
+      //     roles: finalRoles,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      //     },
+      //   }
+      // );
 
-      if (res.data.status) {
+      // if (res.data.status) {
         localStorage.setItem(
           "catfawn-data",
-          JSON.stringify({ ...cachedData, currentStep: "catfawn/step4" })
+          JSON.stringify({ ...cachedData, roles: finalRoles, currentStep: "catfawn/step4" })
         );
         setIsLoading(false);
         router.replace("/catfawn/step4");
-      } else {
-        setIsLoading(false);
-        createMessage(res.data.message, "error");
-      }
+      // } else {
+      //   setIsLoading(false);
+      //   createMessage(res.data.message, "error");
+      // }
     } catch (err) {
       setIsLoading(false);
       createMessage("Something went wrong", "error");

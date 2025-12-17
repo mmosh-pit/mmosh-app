@@ -39,7 +39,7 @@ export default function Step10VC() {
 
       if (
         result?.currentStep &&
-        result.currentStep !== "step3/contact-preference"
+        result.currentStep !== "catfawn/step10"
       ) {
         router.replace(`/${result.currentStep}`);
       }
@@ -62,30 +62,31 @@ export default function Step10VC() {
 
     try {
       setIsLoading(true)
-      const res = await axios.patch("/api/visitors/update-visitors", {
-        email: cachedData.email,
-        currentStep: "catfawn/step11",
-        contactPreference: contactPreferences,
-      }, {
-        headers: {
-          Authorization:
-            `Bearer ${localStorage.getItem("token") || ""}`
-        }
-      });
+      // const res = await axios.patch("/api/visitors/update-visitors", {
+      //   email: cachedData.email,
+      //   currentStep: "catfawn/step11",
+      //   contactPreference: contactPreferences,
+      // }, {
+      //   headers: {
+      //     Authorization:
+      //       `Bearer ${localStorage.getItem("token") || ""}`
+      //   }
+      // });
 
-      if (res.data.status) {
+      // if (res.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
             currentStep: "catfawn/step11",
+            contactPreference: contactPreferences,
           })
         );
 
         router.replace("/catfawn/step11");
-      } else {
-        createMessage("res.data.message", "error");
-      }
+      // } else {
+      //   createMessage("res.data.message", "error");
+      // }
     } catch {
       createMessage("Something went wrong", "error");
     } finally {

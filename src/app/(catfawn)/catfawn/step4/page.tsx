@@ -83,34 +83,35 @@ export default function Step4VC() {
 
     try {
       setIsLoading(true);
-      const res = await axios.patch(
-        "/api/visitors/update-visitors",
-        {
-          email: cachedData.email,
-          currentStep: "catfawn/step5",
-          intent: finalIntents,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
-        }
-      );
+      // const res = await axios.patch(
+      //   "/api/visitors/update-visitors",
+      //   {
+      //     email: cachedData.email,
+      //     currentStep: "catfawn/step5",
+      //     intent: finalIntents,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      //     },
+      //   }
+      // );
 
-      if (res.data.status) {
+      // if (res.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
+            intent: finalIntents,
             currentStep: "catfawn/step5",
           })
         );
         setIsLoading(false);
         router.replace("/catfawn/step5");
-      } else {
-        createMessage(res.data.message, "error");
-        setIsLoading(false);
-      }
+      // } else {
+      //   createMessage(res.data.message, "error");
+      //   setIsLoading(false);
+      // }
     } catch (err) {
       setIsLoading(false);
       createMessage("Something went wrong", "error");

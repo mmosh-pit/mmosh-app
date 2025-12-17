@@ -94,6 +94,10 @@ export default function Step11VC() {
           JSON.stringify({
             ...cachedData,
             currentStep: "catfawn/step12",
+            mobileNumber: contactDetails.mobileNumber,
+            telegramUsername: contactDetails.telegramUsername,
+            blueskyHandle: contactDetails.blueskyHandle,
+            linkedinProfile: contactDetails.linkedinProfile
           })
         );
 

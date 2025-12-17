@@ -81,22 +81,22 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        await collection.updateOne(
-            { email },
-            {
-                $set: {
-                    status: "profile_incomplete",
-                    isVerified: true,
-                    currentStep: currentStep || "step3/roles",
-                    verifiedAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                $unset: {
-                    otpHash: "",
-                    expiresAt: "",
-                },
-            }
-        );
+        // await collection.updateOne(
+        //     { email },
+        //     {
+        //         $set: {
+        //             status: "profile_incomplete",
+        //             isVerified: true,
+        //             currentStep: currentStep || "step3/roles",
+        //             verifiedAt: new Date(),
+        //             updatedAt: new Date(),
+        //         },
+        //         $unset: {
+        //             otpHash: "",
+        //             expiresAt: "",
+        //         },
+        //     }
+        // );
 
         return NextResponse.json(
             {

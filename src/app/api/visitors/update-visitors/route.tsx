@@ -28,13 +28,18 @@ interface UpdateVisitorBody {
 
   abilities?: string[];
 
-  aspirations?:string[];
+  aspirations?: string[];
 
   // Step 5
   referedKinshipCode?: string;
 
   // Step 6
   kinshipCode?: string;
+
+  avatar?: string;
+  lastName?: string;
+  bio?: string;
+  web?: string;
 }
 
 export async function PATCH(req: NextRequest) {
@@ -71,6 +76,10 @@ export async function PATCH(req: NextRequest) {
       aspirations,
       referedKinshipCode,
       kinshipCode,
+      avatar,
+      lastName,
+      bio,
+      web
     } = validation.data!;
 
     const collection = db.collection("mmosh-app-visitor");
@@ -155,6 +164,25 @@ export async function PATCH(req: NextRequest) {
       updateFields.kinshipCode = kinshipCode;
     }
 
+    // Step 16 updates – Contact Details
+    if (typeof body.avatar === "string") {
+      updateFields.avatar = body.avatar;
+    }
+
+
+    if (body.lastName !== undefined) {
+      updateFields.lastName = body.lastName.trim();
+    }
+
+    if (body.bio !== undefined) {
+      updateFields.bio = body.bio.trim();
+    }
+
+    if (body.web !== undefined) {
+      updateFields.web = body.web.trim();
+    }
+
+
     // Step 4 mobile verification logic — Generate OTP + Send SMS via Twilio
     let otp: string | null = null;
 
@@ -167,11 +195,11 @@ export async function PATCH(req: NextRequest) {
       updateFields.expiresAt = expiresAt;
       updateFields.status = "pending_mobile_verification";
 
-      console.log(mobileNumber,"###################")
+      console.log(mobileNumber, "###################")
       await sendSMS(mobileNumber!, otp);
     }
 
-    await collection.updateOne({ email }, { $set: updateFields });
+    // await collection.updateOne({ email }, { $set: updateFields });
 
     return NextResponse.json(
       {
@@ -271,6 +299,48 @@ function validateRequestBody(body: any) {
       errors.push("Kinship Code must be between 3 to 20 alphanumeric characters.");
     }
   }
+
+  // Step 16 – Contact details validation
+  if (body.currentStep === "catfawn/step16") {
+    // Avatar
+    // Avatar (Firebase URL)
+    if (!body.avatar || typeof body.avatar !== "string") {
+      errors.push("Avatar URL is required");
+    } else {
+      try {
+        new URL(body.avatar);
+      } catch {
+        errors.push("Avatar must be a valid URL");
+      }
+    }
+
+
+    // Last name
+    if (!body.lastName || typeof body.lastName !== "string" || !body.lastName.trim()) {
+      errors.push("Last name is required");
+    }
+
+    // Bio
+    if (!body.bio || typeof body.bio !== "string" || !body.bio.trim()) {
+      errors.push("Bio is required");
+    }
+
+    // Web link
+    if (!body.web || typeof body.web !== "string") {
+      errors.push("Web link is required");
+    } else {
+      try {
+        const url = new URL(body.web);
+        if (!["http:", "https:"].includes(url.protocol)) {
+          errors.push("Web link must start with http or https");
+        }
+      } catch {
+        errors.push("Web link must be a valid URL");
+      }
+    }
+
+  }
+
 
   return errors.length
     ? { isValid: false, errors }

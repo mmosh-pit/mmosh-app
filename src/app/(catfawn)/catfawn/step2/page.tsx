@@ -85,8 +85,8 @@ export default function Step2VC() {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
+            ...cachedData,
             currentStep: "catfawn/step3",
-            email: cachedData.email,
           })
         );
         setIsLoading(false);

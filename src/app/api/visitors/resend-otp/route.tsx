@@ -15,7 +15,7 @@ const client = twilio(accountSid, authToken);
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, type } = body;
+    const { email, type, countryCode } = body;
 
     if (!email || typeof email !== "string") {
       return NextResponse.json(
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     if (type === "email") {
       sent = await sendEmailOTP(email, otp);
     } else if (type === "sms") {
-      sent = await sendSMS(user.mobileNumber, otp);
+      sent = await sendSMS(user.mobileNumber, otp , countryCode);
     }
 
     if (!sent) {
@@ -129,7 +129,7 @@ async function sendEmailOTP(email: string, otp: string) {
   }
 }
 
-async function sendSMS(to: string, otp: string) {
+async function sendSMS(to: string, otp: string, countryCode: number) {
   try {
     const message = await client.messages.create({
       body: `Your CatFawn Connection verification code is: ${otp}. It expires in 15 minutes.`,

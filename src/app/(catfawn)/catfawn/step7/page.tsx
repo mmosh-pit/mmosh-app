@@ -76,21 +76,21 @@ const Step7VC = () => {
     try {
       setIsLoading(true);
 
-      const res = await axios.patch(
-        "/api/visitors/update-visitors",
-        {
-          email: cachedData.email,
-          currentStep: "catfawn/step8",
-          abilities: selectedAbilities,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
-        }
-      );
+      // const res = await axios.patch(
+      //   "/api/visitors/update-visitors",
+      //   {
+      //     email: cachedData.email,
+      //     currentStep: "catfawn/step8",
+      //     abilities: selectedAbilities,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      //     },
+      //   }
+      // );
 
-      if (res.data.status) {
+      // if (res.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
@@ -101,9 +101,9 @@ const Step7VC = () => {
         );
 
         router.replace("/catfawn/step8");
-      } else {
-        createMessage(res.data.message || "Failed to save abilities", "error");
-      }
+      // } else {
+      //   createMessage(res.data.message || "Failed to save abilities", "error");
+      // }
     } catch {
       createMessage("Something went wrong", "error");
     } finally {

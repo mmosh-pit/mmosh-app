@@ -70,6 +70,7 @@ export default function Home() {
           JSON.stringify({
             currentStep: "catfawn/step2",
             email: formData.email,
+            firstName: formData.firstName
           })
         );
         setIsLoading(false);

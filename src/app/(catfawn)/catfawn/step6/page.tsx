@@ -116,7 +116,7 @@ const Step6VC = () => {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 6 of 14: Challenges.{" "}
+          Step 6 of 15: Challenges.{" "}
           <span className="font-normal font-avenir">
             The CAT-FAWN Connection can help you navigate the challenges you’re
             facing—whether they relate to personal growth, professional life, or

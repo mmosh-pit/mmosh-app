@@ -195,7 +195,7 @@ function generateSecureOTP(): string {
 }
 
 function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return /^[^\s@]+@[^\s@]+\.com$/i.test(email);
 }
 
 function isValidMobile(mobile: string): boolean {

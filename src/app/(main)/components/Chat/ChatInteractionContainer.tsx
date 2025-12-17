@@ -294,7 +294,7 @@ const ChatInteractionContainer = (props: any) => {
         const queryData = {
           agentId: selectedChat.chatAgent?.key,
           bot_id: selectedChat.chatAgent!.id,
-          aiModel: props.selectedModel || "gpt-5.1",
+          aiModel: props.selectedModel || "gpt-5.2",
           namespaces: [selectedChat!.chatAgent!.key, "PUBLIC"],
           query: content,
         };
@@ -638,6 +638,7 @@ const ChatInteractionContainer = (props: any) => {
                   props.setSelectedModel(e.target.value);
                 }}
                 options={[
+                  { label: "ChatGPT 5.2", value: "gpt-5.2" },
                   { label: "ChatGPT 5.1", value: "gpt-5.1" },
                   { label: "ChatGPT 4.1", value: "gpt-4.1" },
                   { label: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },

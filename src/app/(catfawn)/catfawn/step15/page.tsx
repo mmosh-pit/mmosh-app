@@ -69,6 +69,10 @@ const Step15VC = () => {
 
   const handleNext = async () => {
 
+    if (!avatar && !lastName && !bio && !webLink) {
+      createMessage("Please fill all the field", "error")
+      return;
+    }
     if (!avatar) {
       createMessage("Avatar is required.", "error");
       return;
@@ -96,13 +100,13 @@ const Step15VC = () => {
 
     try {
       setIsLoading(true);
-      
+
       const avatarUrl = await uploadFile(
         avatar,
         cachedData.email || "user",
         "avatars"
       );
-      console.log(avatarUrl,"$$$$$$$$$$$$$$$$$$$$$$")
+      console.log(avatarUrl, "$$$$$$$$$$$$$$$$$$$$$$")
       // const res = await axios.patch(
       //   "/api/visitors/update-visitors",
       //   {
@@ -132,6 +136,17 @@ const Step15VC = () => {
           bio: bio,
           web: webLink,
         })
+      );
+
+      const data = localStorage.getItem("catfawn-data");
+
+      if (!data) return;
+
+      const finalData = JSON.parse(data);
+
+      const res = await axios.post(
+        "/api/visitors/save",
+        finalData,
       );
 
       // // final step → redirect

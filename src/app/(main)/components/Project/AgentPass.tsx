@@ -84,7 +84,7 @@ const AgentPass = ({
     invitationType: "none",
     invitationPrice: 0,
     discount: 0.0,
-    defaultModel: "gpt-5.1",
+    defaultModel: "gpt-5.2",
   });
 
   const [isReady, setIsReady] = useState(false);
@@ -141,7 +141,7 @@ const AgentPass = ({
         twitter: listResult.data.project.twitter,
         code: listResult.data.project.code ?? randomStr(19),
         privacy: listResult.data.project.privacy,
-        defaultModel: listResult.data.project.defaultmodel || "gpt-5.1"
+        defaultModel: listResult.data.project.defaultmodel || "gpt-5.2"
       });
       setProjectDetail(listResult.data);
       setLoading(false);
@@ -631,6 +631,7 @@ const AgentPass = ({
                   setFields({ ...fields, defaultModel: e.target.value });
                 }}
                 options={[
+                  { label: "ChatGPT 5.2", value: "gpt-5.2" },
                   { label: "ChatGPT 5.1", value: "gpt-5.1" },
                   { label: "ChatGPT 4.1", value: "gpt-4.1" },
                   { label: "Gemini 2.5 Pro", value: "gemini-2.5-pro" },

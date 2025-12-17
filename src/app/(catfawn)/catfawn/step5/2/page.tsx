@@ -8,7 +8,6 @@ import Spinner from "../../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 
 const Step5VC2 = () => {
-
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>(null);
@@ -34,10 +33,22 @@ const Step5VC2 = () => {
   };
 
   const LIKERT_QUESTIONS = [
-    { id: "q1", text: "Research the issue and consider it carefully, searching for a solution" },
-    { id: "q2", text: "Remind both of them of your loyalty to them and your willingness to work with them to resolve the problem." },
-    { id: "q3", text: "Talk with each in turn, waiting for a flash of insight in the moment to help you resolve the situation" },
-    { id: "q4", text: "Try to understand how each of them feels and find a way to support both of them" },
+    {
+      id: "q1",
+      text: "Research the issue and consider it carefully, searching for a solution",
+    },
+    {
+      id: "q2",
+      text: "Remind both of them of your loyalty to them and your willingness to work with them to resolve the problem.",
+    },
+    {
+      id: "q3",
+      text: "Talk with each in turn, waiting for a flash of insight in the moment to help you resolve the situation",
+    },
+    {
+      id: "q4",
+      text: "Try to understand how each of them feels and find a way to support both of them",
+    },
   ];
 
   const [showMsg, setShowMsg] = useState(false);
@@ -114,16 +125,16 @@ const Step5VC2 = () => {
       // );
 
       // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step5/3",
-            likertAnswers: likertAnswers,
-          })
-        );
+      localStorage.setItem(
+        "catfawn-data",
+        JSON.stringify({
+          ...cachedData,
+          currentStep: "catfawn/step5/3",
+          likertAnswers: likertAnswers,
+        })
+      );
 
-        router.replace("/catfawn/step5/3");
+      router.replace("/catfawn/step5/3");
       // } else {
       //   createMessage(res.data.message || "Failed to save data", "error");
       // }
@@ -144,6 +155,23 @@ const Step5VC2 = () => {
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
           <div className="font-normal font-avenir absolute top-0 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
             <span className="font-extrabold">2</span>/12

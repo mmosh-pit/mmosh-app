@@ -233,7 +233,7 @@ export default function Step12VC() {
 
           <button
             type="button"
-            className="mt-[10.875rem] font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="mt-[10.875rem] flex justify-center items-center gap-2 font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={submitOTP}
           >
             {isLoading && <Spinner size="sm" />}

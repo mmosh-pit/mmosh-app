@@ -248,14 +248,14 @@ export default function Step2VC() {
             <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
               Didn’t get a code?{" "}
               <span onClick={resendOTP} className="cursor-pointer underline">
-                {hasLoadingResendOTP ? "Sending..." : "request code"}
+                {hasLoadingResendOTP ? "Sending..." : " Resend code"}
               </span>
             </div>
           </div>
 
           <button
             type="button"
-            className="font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 mt-[5.438rem]"
+            className="font-avenirNext flex justify-center items-center gap-2 h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 mt-[5.438rem]"
             onClick={verifyOTP}
           >
             {isLoading && <Spinner size="sm" />} Confirm My Early Access{" "}

@@ -25,7 +25,7 @@ export default function Step3VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      // router.replace("/");
+      router.replace("/");
       return;
     }
 
@@ -255,7 +255,7 @@ export default function Step3VC() {
 
           <button
             type="button"
-            className="font-avenirNext mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="font-avenirNext flex justify-center items-center gap-2 mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={updateRoles}
           >
             {isLoading && <Spinner size="sm" />} Next

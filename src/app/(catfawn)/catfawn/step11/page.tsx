@@ -16,10 +16,7 @@ interface ContactDetails {
 export default function Step11VC() {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -38,7 +35,7 @@ export default function Step11VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      router.replace("/catfawn");
       return;
     }
 
@@ -46,11 +43,11 @@ export default function Step11VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result?.currentStep !== "catfawn/step11") {
+      if (result?.completedSteps !== undefined && result?.completedSteps < 22) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -73,7 +70,7 @@ export default function Step11VC() {
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const result = await axios.post(
         "/api/visitors/generate-otp",
         {
@@ -93,17 +90,21 @@ export default function Step11VC() {
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            currentStep:"catfawn/step12",
+            currentStep: "catfawn/step12",
             mobileNumber: contactDetails.mobileNumber,
             telegramUsername: contactDetails.telegramUsername,
             blueskyHandle: contactDetails.blueskyHandle,
             linkedinProfile: contactDetails.linkedinProfile,
+            completedSteps: 23,
           })
         );
 
         router.replace("/catfawn/step12");
       } else {
-        createMessage(result.data.message || "Please check the mobile number", "error");
+        createMessage(
+          result.data.message || "Please check the mobile number",
+          "error"
+        );
       }
     } catch {
       createMessage("Something went wrong", "error");
@@ -128,7 +129,12 @@ export default function Step11VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step10");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -175,7 +181,7 @@ export default function Step11VC() {
                   if (!/^[0-9]*$/.test(e.target.value)) return;
                   handleChange("mobileNumber", e.target.value)
                 }}              /> */}
-        
+
               <PhoneInput
                 country="US"
                 value={phone}

@@ -7,10 +7,7 @@ import Spinner from "../components/Spinner";
 export default function Step10VC() {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [contactPreferences, setContactPreferences] = React.useState<string[]>(
     []
@@ -25,7 +22,7 @@ export default function Step10VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      router.replace("/catfawn");
       return;
     }
 
@@ -33,14 +30,11 @@ export default function Step10VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (
-        result?.currentStep &&
-        result.currentStep !== "catfawn/step10"
-      ) {
+      if (result?.completedSteps !== undefined && result?.completedSteps < 21) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -51,10 +45,10 @@ export default function Step10VC() {
   };
 
   const updateContactPreference = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (contactPreferences.length === 0) {
       createMessage("Please select at least one contact preference.", "error");
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
 
@@ -64,6 +58,7 @@ export default function Step10VC() {
         ...cachedData,
         currentStep: "catfawn/step11",
         contactPreference: contactPreferences,
+        completedSteps: 22,
       })
     );
     router.replace("/catfawn/step11");
@@ -85,7 +80,12 @@ export default function Step10VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step9");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -118,7 +118,10 @@ export default function Step10VC() {
                 type="checkbox"
                 className="sw-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
                 onChange={(e) =>
-                  handleContactPreferenceChange("text-message", e.target.checked)
+                  handleContactPreferenceChange(
+                    "text-message",
+                    e.target.checked
+                  )
                 }
               />
               Text message{" "}

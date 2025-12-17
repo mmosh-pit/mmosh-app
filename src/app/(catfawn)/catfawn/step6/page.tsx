@@ -9,7 +9,7 @@ import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 const Step6VC = () => {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = useState<any>(null);
+  const [cachedData, setCachedData] = useState<any>({});
   const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
 
   const [showMsg, setShowMsg] = useState(false);
@@ -29,29 +29,24 @@ const Step6VC = () => {
     { label: "⏰ Manage time better" },
   ];
 
-  /** 🔹 Load cached data */
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
       const parsed = JSON.parse(stored);
       setCachedData(parsed);
 
-      if (parsed.currentStep && parsed.currentStep !== "catfawn/step6") {
+      if (parsed?.completedSteps !== undefined && parsed?.completedSteps < 17) {
         router.replace(`/${parsed.currentStep}`);
       }
 
-      // Prefill if user comes back
       if (Array.isArray(parsed.challenges)) {
         setSelectedChallenges(parsed.challenges);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -67,10 +62,10 @@ const Step6VC = () => {
   };
 
   const submitStep6 = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (selectedChallenges.length < 3) {
       createMessage("Please select at least 3 challenges.", "error");
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
 
@@ -80,12 +75,12 @@ const Step6VC = () => {
         ...cachedData,
         challenges: selectedChallenges,
         currentStep: "catfawn/step7",
+        completedSteps: 18,
       })
     );
     router.replace("/catfawn/step7");
     setIsLoading(false);
   };
-
 
   return (
     <>
@@ -96,7 +91,12 @@ const Step6VC = () => {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step5/12");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -120,8 +120,8 @@ const Step6VC = () => {
           <span className="font-normal font-avenir">
             The CAT-FAWN Connection can help you navigate the challenges you’re
             facing—whether they relate to personal growth, professional life, or
-            your relationships with others. By sharing the areas you want support
-            with, CAT-FAWN can tailor your experience from the start.
+            your relationships with others. By sharing the areas you want
+            support with, CAT-FAWN can tailor your experience from the start.
           </span>
         </p>
 
@@ -132,7 +132,11 @@ const Step6VC = () => {
         </p>
 
         <div className="mt-[0.563rem]">
-          <ChallengePills challenges={CHALLENGES} onChange={handleChange} min={3} />
+          <ChallengePills
+            challenges={CHALLENGES}
+            onChange={handleChange}
+            min={3}
+          />
         </div>
 
         <button

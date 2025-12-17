@@ -31,26 +31,22 @@ const Step7VC = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
       const parsed = JSON.parse(stored);
       setCachedData(parsed);
 
-      if (parsed.currentStep && parsed.currentStep !== "catfawn/step7") {
+      if (parsed?.completedSteps !== undefined && parsed?.completedSteps < 18) {
         router.replace(`/${parsed.currentStep}`);
       }
 
-      // Prefill if user revisits
       if (Array.isArray(parsed.abilities)) {
         setSelectedAbilities(parsed.abilities);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -66,10 +62,10 @@ const Step7VC = () => {
   };
 
   const handleSubmit = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (selectedAbilities.length < 3) {
       createMessage("Please select at least 3 abilities.", "error");
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
 
@@ -79,6 +75,7 @@ const Step7VC = () => {
         ...cachedData,
         abilities: selectedAbilities,
         currentStep: "catfawn/step8",
+        completedSteps: 19,
       })
     );
     router.replace("/catfawn/step8");
@@ -94,7 +91,12 @@ const Step7VC = () => {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step6");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -116,9 +118,9 @@ const Step7VC = () => {
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 7 of 15: Attributes{" "}
           <span className="font-normal font-avenir">
-            You already carry powerful abilities—gifts shaped by your experience,
-            your nature, and your relationships. When named, they can become
-            steady sources of strength.
+            You already carry powerful abilities—gifts shaped by your
+            experience, your nature, and your relationships. When named, they
+            can become steady sources of strength.
           </span>
         </p>
 

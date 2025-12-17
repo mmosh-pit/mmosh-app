@@ -9,7 +9,7 @@ import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 const step8 = () => {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = useState<any>(null);
+  const [cachedData, setCachedData] = useState<any>({});
   const [selectedAspirations, setSelectedAspirations] = useState<string[]>([]);
 
   const [showMsg, setShowMsg] = useState(false);
@@ -32,24 +32,22 @@ const step8 = () => {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      router.replace("/catfawn");
       return;
     }
-
     try {
       const parsed = JSON.parse(stored);
       setCachedData(parsed);
 
-      if (parsed.currentStep && parsed.currentStep !== "catfawn/step8") {
+      if (parsed?.completedSteps !== undefined && parsed?.completedSteps < 19) {
         router.replace(`/${parsed.currentStep}`);
       }
 
-      // Prefill if user revisits
       if (Array.isArray(parsed.aspirations)) {
         setSelectedAspirations(parsed.aspirations);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -79,6 +77,7 @@ const step8 = () => {
         ...cachedData,
         aspirations: selectedAspirations,
         currentStep: "catfawn/step9",
+        completedSteps: 20,
       })
     );
     router.replace("/catfawn/step9");
@@ -94,7 +93,12 @@ const step8 = () => {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step7");
+            }}
+          >
             <svg
               width="24"
               height="24"

@@ -6,10 +6,7 @@ import Spinner from "../components/Spinner";
 
 export default function Step9VC() {
   const router = useRouter();
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [mobilePreferences, setMobilePreferences] = React.useState<string[]>(
     []
@@ -24,7 +21,7 @@ export default function Step9VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      router.replace("/catfawn");
       return;
     }
 
@@ -32,14 +29,11 @@ export default function Step9VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (
-        result?.currentStep &&
-        result.currentStep !== "catfawn/step9"
-      ) {
+      if (result?.completedSteps !== undefined && result?.completedSteps < 20) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -57,10 +51,10 @@ export default function Step9VC() {
   };
 
   const updateMobilePreference = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (mobilePreferences.length === 0) {
       createMessage("Please select at least one mobile preference.", "error");
-      setIsLoading(false)
+      setIsLoading(false);
       return;
     }
 
@@ -70,6 +64,7 @@ export default function Step9VC() {
         ...cachedData,
         currentStep: "catfawn/step10",
         mobilePreference: mobilePreferences,
+        completedSteps: 21,
       })
     );
     router.replace("/catfawn/step10");
@@ -85,7 +80,12 @@ export default function Step9VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step8");
+            }}
+          >
             <svg
               width="24"
               height="24"

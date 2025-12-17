@@ -1,10 +1,8 @@
-// step3c
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-// import toast from "react-hot-toast";
 
 export default function Step9VC() {
   const router = useRouter();

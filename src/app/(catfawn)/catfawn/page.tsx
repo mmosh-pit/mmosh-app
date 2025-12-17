@@ -4,13 +4,14 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "./components/Spinner";
-// import toast from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
   const [formData, setFormData] = React.useState({
     firstName: "",
     email: "",
+    password: "",
+    confirmPassword: "",
     hasChecked: false,
   });
   const [showMsg, setShowMsg] = React.useState(true);
@@ -46,6 +47,25 @@ export default function Home() {
       return false;
     }
 
+    if (!formData.password) {
+      createMessage("Password is required", "error");
+      return false;
+    } else if (formData.password.length < 6) {
+      createMessage("Password must be at least 6 characters", "error");
+      return false;
+    } else if (formData.password.length > 32) {
+      createMessage("Password must not exceed 32 characters", "error");
+      return false;
+    }
+
+    if (!formData.confirmPassword) {
+      createMessage("Confirm password is required.", "error");
+      return false;
+    } else if (formData.password !== formData.confirmPassword) {
+      createMessage("The password and confirm password do not match.", "error");
+      return false;
+    }
+
     if (!formData.hasChecked) {
       createMessage("You must agree before submitting", "error");
       return false;
@@ -59,18 +79,26 @@ export default function Home() {
 
     try {
       setIsLoading(true);
-      const result = await axios.post("/api/visitors", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      const result = await axios.post(
+        "/api/visitors/generate-otp",
+        {
+          type: "email",
+          email: formData.email,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }
+      );
       if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             currentStep: "catfawn/step2",
             email: formData.email,
-            firstName: formData.firstName
+            firstName: formData.firstName,
+            password: formData.password,
           })
         );
         setIsLoading(false);
@@ -83,7 +111,7 @@ export default function Home() {
       setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
-          "Unable to create visitor. Please try again.",
+          "Unable to generate OTP. Please try again.",
         "error"
       );
     }
@@ -154,9 +182,12 @@ export default function Home() {
                 Password
               </label>
               <input
-                type="email"
+                type="password"
                 placeholder="Password"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+                onChange={(event) =>
+                  setFormData({ ...formData, password: event.target.value })
+                }
               />
             </div>
 
@@ -165,12 +196,19 @@ export default function Home() {
                 Confirm Password
               </label>
               <input
-                type="email"
+                type="password"
                 placeholder="Confirm Password"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    confirmPassword: event.target.value,
+                  })
+                }
               />
             </div>
           </div>
+
           <button
             type="button"
             className="font-avenirNext h-[3.125rem] flex justify-center items-end gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
@@ -178,6 +216,7 @@ export default function Home() {
           >
             {isLoading && <Spinner size="sm" />} Join Early Access
           </button>
+
           <label className="flex items-start gap-0.5  mt-1">
             <input
               type="checkbox"

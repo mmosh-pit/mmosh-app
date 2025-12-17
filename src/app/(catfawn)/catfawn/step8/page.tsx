@@ -153,7 +153,7 @@ const step8 = () => {
           type="button"
           onClick={handleSubmit}
           disabled={isLoading}
-          className="font-avenirNext flex justify-center items-center gap-2 w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[1rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+          className="steps_btn_submit mt-[1rem]"
         >
           {isLoading ? <Spinner /> : "Next"}
         </button>

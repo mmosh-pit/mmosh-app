@@ -159,7 +159,7 @@ export default function Step9VC() {
 
           <button
             type="button"
-            className="mt-[14.563rem] flex justify-center items-center gap-2 font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="steps_btn_submit mt-[14.563rem]"
             onClick={updateMobilePreference}
           >
             {isLoading && <Spinner size="sm" />}

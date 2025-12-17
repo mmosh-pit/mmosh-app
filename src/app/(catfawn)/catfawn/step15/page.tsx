@@ -273,7 +273,7 @@ const Step15VC = () => {
 
           <button
             type="button"
-            className="w-full flex justify-center items-center gap-2 h-[3.125rem] mt-5 bg-[#FF710F] text-[#2C1316] font-bold rounded-lg"
+            className="steps_btn_submit mt-5"
             onClick={handleNext}
           >
             {isLoading && <Spinner size="sm" />}

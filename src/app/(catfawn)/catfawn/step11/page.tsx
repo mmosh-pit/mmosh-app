@@ -7,6 +7,8 @@ import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
 import { headers } from "next/headers";
 // import toast from "react-hot-toast";
+import { PhoneInput, PhoneInputResponseType } from "react-simple-phone-input";
+import "react-simple-phone-input/dist/style.css";
 
 interface ContactDetails {
   mobileNumber: string;
@@ -27,6 +29,7 @@ export default function Step11VC() {
   const [showMsg, setShowMsg] = useState(false);
   const [msgText, setMsgText] = useState("");
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
+  const [phone, setPhone] = useState("");
 
   const [contactDetails, setContactDetails] = React.useState<ContactDetails>({
     mobileNumber: "",
@@ -39,7 +42,7 @@ export default function Step11VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      // router.replace("/");
       return;
     }
 
@@ -74,19 +77,23 @@ export default function Step11VC() {
     }
 
     try {
-      setIsLoading(true)
-      const res = await axios.patch("/api/visitors/update-visitors", {
-        email: cachedData.email,
-        currentStep: "catfawn/step12",
-        mobileNumber: contactDetails.mobileNumber,
-        telegramUsername: contactDetails.telegramUsername,
-        blueskyHandle: contactDetails.blueskyHandle,
-        linkedinProfile: contactDetails.linkedinProfile
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`
+      setIsLoading(true);
+      const res = await axios.patch(
+        "/api/visitors/update-visitors",
+        {
+          email: cachedData.email,
+          currentStep: "catfawn/step12",
+          mobileNumber: contactDetails.mobileNumber,
+          telegramUsername: contactDetails.telegramUsername,
+          blueskyHandle: contactDetails.blueskyHandle,
+          linkedinProfile: contactDetails.linkedinProfile,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
         }
-      });
+      );
 
       if (res.data.status) {
         localStorage.setItem(
@@ -97,13 +104,16 @@ export default function Step11VC() {
             mobileNumber: contactDetails.mobileNumber,
             telegramUsername: contactDetails.telegramUsername,
             blueskyHandle: contactDetails.blueskyHandle,
-            linkedinProfile: contactDetails.linkedinProfile
+            linkedinProfile: contactDetails.linkedinProfile,
           })
         );
 
         router.replace("/catfawn/step12");
       } else {
-        createMessage(res.data.message || "Unable to update contact details.", "error");
+        createMessage(
+          res.data.message || "Unable to update contact details.",
+          "error"
+        );
       }
     } catch {
       createMessage("Something went wrong", "error");
@@ -162,15 +172,47 @@ export default function Step11VC() {
 
         <form className="mt-[0.313rem] text-[1rem] max-md:text-sm font-normal leading-[100%]">
           <div className="flex flex-col gap-[0.25rem]">
-            <div>
+            <div className="z-50">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Mobile number
               </label>
-              <input
+              {/* <input
                 type="number"
                 placeholder="Mobile number"
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 onChange={(e) => handleChange("mobileNumber", e.target.value)}
+              /> */}
+              {/* <PhoneInput
+                placeholder="Enter phone number"
+       
+                defaultCountry="IN"
+                onChange={(e) => handleChange("mobileNumber", e.target.value)}
+              /> */}
+              <PhoneInput
+                country="US"
+                value={phone}
+                onChange={(data: PhoneInputResponseType) => console.log(data)}
+                placeholder="Mobile number"
+                search={false}
+                iconComponent={
+                  <svg
+                    width="11"
+                    height="6"
+                    viewBox="0 0 11 6"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M0.5 0.5L5.10217 4.81454C5.50572 5.19286 6.13974 5.1717 6.51717 4.76732L10.5 0.5"
+                      stroke="white"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                }
+                buttonClass="phone-dropdown-btn"
+                containerClass="phone-container"
+                inputClass="phone-input"
+                dropdownClass="phone-dropdown"
               />
             </div>
 
@@ -182,7 +224,9 @@ export default function Step11VC() {
                 type="text"
                 placeholder="@handle"
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) => handleChange("telegramUsername", e.target.value)}
+                onChange={(e) =>
+                  handleChange("telegramUsername", e.target.value)
+                }
               />
             </div>
 
@@ -206,13 +250,15 @@ export default function Step11VC() {
                 type="text"
                 placeholder="http://url.com"
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) => handleChange("linkedinProfile", e.target.value)}
+                onChange={(e) =>
+                  handleChange("linkedinProfile", e.target.value)
+                }
               />
             </div>
 
             <button
               type="button"
-              className="font-avenirNext flex justify-center items-center gap-2 h-[3.125rem] mt-[1.063rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+              className="steps_btn_submit mt-[1.063rem]"
               onClick={updateContactDetails}
             >
               {isLoading && <Spinner size="sm" />}

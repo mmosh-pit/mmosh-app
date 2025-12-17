@@ -182,7 +182,7 @@ export default function Step10VC() {
 
           <button
             type="button"
-            className="font-avenirNext flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] mt-[11.188rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="steps_btn_submit mt-[11.188rem]"
             onClick={updateContactPreference}
           >
             {isLoading && <Spinner size="sm" />}

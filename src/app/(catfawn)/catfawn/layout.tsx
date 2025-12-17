@@ -6,13 +6,8 @@ import "./globals.css";
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["100", "300", "400", "600", "700"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
-
-export const metadata: Metadata = {
-  title: "CatFawn Early Access",
-  description: "CatFawn app",
-};
 
 const avenir = localFont({
   src: [
@@ -82,6 +77,11 @@ const avenirNext = localFont({
   variable: "--font-avenir-next",
   display: "swap",
 });
+
+export const metadata: Metadata = {
+  title: "CatFawn Early Access",
+  description: "CatFawn app",
+};
 
 export default function CatFawnLayout({
   children,

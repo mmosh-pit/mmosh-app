@@ -26,7 +26,7 @@ export default function Step2VC() {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
-      router.replace("/");
+      // router.replace("/");
       return;
     }
 
@@ -197,7 +197,7 @@ export default function Step2VC() {
         </h2>
         <p className="text-[1rem] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
           Step 2 of 14: Check your email to confirm your early access request{" "}
-          <span className="text-[#FFFFFFE5] font-normal fonnt-avenir -tracking-[0.02em]">
+          <span className="text-[#FFFFFFE5] font-normal font-avenir -tracking-[0.02em]">
             {" "}
             We’ve sent a 6-digit verification code to {cachedData.email}{" "}
           </span>
@@ -233,13 +233,13 @@ export default function Step2VC() {
             </div>
 
             {!hasInvalid && (
-              <span className="text-[0.75rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]">
+              <span className="text-[0.75rem] inline-block text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em] mt-[0.313rem]">
                 The code expires in 15 minutes. Didn’t get it? Check your spam
                 folder or request a new code.
               </span>
             )}
             {hasInvalid && (
-              <span className="text-[0.75rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]">
+              <span className="text-[0.75rem] inline-block text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em] mt-[0.313rem]">
                 That code doesn’t look right. Please check your email and try
                 again.
               </span>
@@ -255,7 +255,7 @@ export default function Step2VC() {
 
           <button
             type="button"
-            className="font-avenirNext flex justify-center items-center gap-2 h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 mt-[5.438rem]"
+            className="steps_btn_submit mt-[5.438rem]"
             onClick={verifyOTP}
           >
             {isLoading && <Spinner size="sm" />} Confirm My Early Access{" "}

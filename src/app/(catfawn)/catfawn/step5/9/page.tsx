@@ -200,7 +200,7 @@ const Step5VC9 = () => {
           type="button"
           onClick={submitStep5}
           disabled={isLoading}
-          className="font-avenirNext w-full h-[3.125rem] bg-[#FF710F] mt-[5.563rem] text-[#2C1316] font-extrabold rounded-[0.625rem] flex items-center justify-center gap-2"
+          className="steps_btn_submit mt-[5.563rem]"
         >
           {isLoading && <Spinner size="sm" />}
           Next

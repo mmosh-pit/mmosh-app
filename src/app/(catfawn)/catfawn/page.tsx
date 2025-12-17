@@ -211,7 +211,7 @@ export default function Home() {
 
           <button
             type="button"
-            className="font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
+            className="steps_btn_submit mt-[1.688rem]"
             onClick={createVisitorRecord}
           >
             {isLoading && <Spinner size="sm" />} Join Early Access

@@ -175,7 +175,7 @@ const Step15VC = () => {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
 
-        <h2 className="text-center text-[1.563rem] font-bold text-white">
+        <h2 className="text-center font-poppinsNew text-[1.563rem] font-bold text-white">
           Request Early Access
         </h2>
 
@@ -273,7 +273,7 @@ const Step15VC = () => {
 
           <button
             type="button"
-            className="w-full h-[3.125rem] mt-5 bg-[#FF710F] text-[#2C1316] font-bold rounded-lg"
+            className="w-full flex justify-center items-center gap-2 h-[3.125rem] mt-5 bg-[#FF710F] text-[#2C1316] font-bold rounded-lg"
             onClick={handleNext}
           >
             {isLoading && <Spinner size="sm" />}

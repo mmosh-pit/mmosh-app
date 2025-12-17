@@ -7,7 +7,6 @@ import Spinner from "../../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 
 const Step5VC7 = () => {
-
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>(null);
@@ -112,7 +111,6 @@ const Step5VC7 = () => {
     router.replace("/catfawn/step5/8");
   };
 
-
   return (
     <>
       {showMsg && (
@@ -122,9 +120,26 @@ const Step5VC7 = () => {
       )}
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
-          <div className="font-normal absolute top-0 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+          <div className="font-normal font-avenir absolute top-0 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
             <span className="font-extrabold">7</span>/12
           </div>
         </h2>
@@ -156,7 +171,6 @@ const Step5VC7 = () => {
             />
           ))}
         </div>
-
 
         <button
           type="button"

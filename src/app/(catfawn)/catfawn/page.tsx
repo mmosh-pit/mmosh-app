@@ -135,7 +135,7 @@ export default function Home() {
         </div>
       )}
       <div className="min-h-135.5 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] ps-[3.25em] pe-[3.063em] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Request Early Access
         </h2>
 
@@ -211,7 +211,7 @@ export default function Home() {
 
           <button
             type="button"
-            className="font-avenirNext h-[3.125rem] flex justify-center items-end gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
+            className="font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer mt-[1.688rem]"
             onClick={createVisitorRecord}
           >
             {isLoading && <Spinner size="sm" />} Join Early Access

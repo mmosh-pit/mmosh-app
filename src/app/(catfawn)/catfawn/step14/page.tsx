@@ -98,7 +98,7 @@ export default function Step14VC() {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div className="absolute left-0">
             <svg
               width="24"
@@ -146,7 +146,7 @@ export default function Step14VC() {
 
           <button
             type="button"
-            className="font-avenirNext h-[3.125rem] mt-[11.813rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="font-avenirNext flex justify-center items-center gap-2 h-[3.125rem] mt-[11.813rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={submitNewKinshipCode}
           >
             {isLoading && <Spinner size="sm" />}

@@ -119,7 +119,7 @@ const Step7VC = () => {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div className="absolute left-0">
             <svg
               width="24"
@@ -165,7 +165,7 @@ const Step7VC = () => {
           type="button"
           onClick={handleSubmit}
           disabled={isLoading}
-          className="font-avenirNext w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[1rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+          className="font-avenirNext flex justify-center items-center gap-2 w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[1rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
         >
           {isLoading ? <Spinner /> : "Next"}
         </button>

@@ -64,8 +64,15 @@ export default function Step4VC() {
   };
 
   const updateIntent = async () => {
+    setIsLoading(true);
     if (intents.length === 0 && !otherIntentText.trim()) {
-      createMessage("Please select at least one intent.", "error");
+      createMessage(
+        otherIntentEnabled
+          ? "Please enter a valid intent to proceed."
+          : "Please select at least one intent.",
+        "error"
+      );
+      setIsLoading(false);
       return;
     }
 
@@ -74,6 +81,7 @@ export default function Step4VC() {
     if (otherIntentEnabled) {
       if (!otherIntentText.trim()) {
         createMessage("Please enter your other Iintent.", "error");
+        setIsLoading(false);
         return;
       }
 
@@ -81,41 +89,16 @@ export default function Step4VC() {
       finalIntents.push(formattedOther);
     }
 
-    try {
-      setIsLoading(true);
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step5",
-      //     intent: finalIntents,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            intent: finalIntents,
-            currentStep: "catfawn/step5",
-          })
-        );
-        setIsLoading(false);
-        router.replace("/catfawn/step5");
-      // } else {
-      //   createMessage(res.data.message, "error");
-      //   setIsLoading(false);
-      // }
-    } catch (err) {
-      setIsLoading(false);
-      createMessage("Something went wrong", "error");
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        intent: finalIntents,
+        currentStep: "catfawn/step5",
+      })
+    );
+    router.replace("/catfawn/step5");
+    setIsLoading(false);
   };
 
   const formatIntent = (value: string) => {
@@ -140,7 +123,7 @@ export default function Step4VC() {
         </div>
       )}
       <div className="min-h-[36.313rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[2.688rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div className="absolute left-0">
             <svg
               width="24"
@@ -148,6 +131,9 @@ export default function Step4VC() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              onClick={() => {
+                router.back();
+              }}
             >
               <path
                 d="M20 12L4 12M4 12L10 6M4 12L10 18"
@@ -370,7 +356,7 @@ export default function Step4VC() {
 
           <button
             type="button"
-            className="font-avenirNext w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[0.625rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="font-avenirNext flex justify-center items-center gap-2 w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[0.625rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={updateIntent}
           >
             {isLoading && <Spinner size="sm" />} Next

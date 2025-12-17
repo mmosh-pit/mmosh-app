@@ -72,8 +72,6 @@ export async function POST(req: NextRequest) {
 
         const isOTPValid = await bcrypt.compare(otp, record.otpHash);
 
-        await collection.deleteOne({ email });
-
         if (!isOTPValid) {
             return NextResponse.json(
                 {
@@ -84,6 +82,7 @@ export async function POST(req: NextRequest) {
                 { status: 200 }
             );
         }
+        await collection.deleteOne({ email });
 
         return NextResponse.json(
             {

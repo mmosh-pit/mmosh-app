@@ -67,6 +67,7 @@ const config: Config = {
       montserrat: ["Montserrat", "sans-serif"],
       avenir: ["Avenir", "sans-serif"],
       avenirNext: ["AvenirNext", "sans-serif"],
+      poppinsNew: ["poppins", "sans-serif"],
     },
   },
   plugins: [

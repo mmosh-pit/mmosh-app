@@ -67,8 +67,15 @@ export default function Step3VC() {
   };
 
   const updateRoles = async () => {
+    setIsLoading(true);
     if (roles.length === 0 && !otherRoleText.trim()) {
-      createMessage("Please select at least one role.", "error");
+      createMessage(
+        otherRoleEnabled
+          ? "Please enter a valid role to proceed."
+          : "Please select at least one role.",
+        "error"
+      );
+      setIsLoading(false);
       return;
     }
 
@@ -77,6 +84,7 @@ export default function Step3VC() {
     if (otherRoleEnabled) {
       if (!otherRoleText.trim()) {
         createMessage("Please enter your other role.", "error");
+        setIsLoading(false);
         return;
       }
 
@@ -84,37 +92,16 @@ export default function Step3VC() {
       finalRoles.push(formattedOther);
     }
 
-    try {
-      setIsLoading(true);
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step4",
-      //     roles: finalRoles,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({ ...cachedData, roles: finalRoles, currentStep: "catfawn/step4" })
-        );
-        setIsLoading(false);
-        router.replace("/catfawn/step4");
-      // } else {
-      //   setIsLoading(false);
-      //   createMessage(res.data.message, "error");
-      // }
-    } catch (err) {
-      setIsLoading(false);
-      createMessage("Something went wrong", "error");
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        roles: finalRoles,
+        currentStep: "catfawn/step4",
+      })
+    );
+    router.replace("/catfawn/step4");
+    setIsLoading(false);
   };
 
   const createMessage = (message: any, type: any) => {
@@ -135,7 +122,7 @@ export default function Step3VC() {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div className="absolute left-0">
             <svg
               width="24"
@@ -268,7 +255,7 @@ export default function Step3VC() {
 
           <button
             type="button"
-            className="font-avenirNext mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className="font-avenirNext flex justify-center items-center gap-2 mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
             onClick={updateRoles}
           >
             {isLoading && <Spinner size="sm" />} Next

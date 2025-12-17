@@ -1,11 +1,9 @@
 // step3c
 "use client";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-import { headers } from "next/headers";
 // import toast from "react-hot-toast";
 
 export default function Step9VC() {
@@ -61,44 +59,23 @@ export default function Step9VC() {
   };
 
   const updateMobilePreference = async () => {
+    setIsLoading(true)
     if (mobilePreferences.length === 0) {
       createMessage("Please select at least one mobile preference.", "error");
+      setIsLoading(false)
       return;
     }
 
-    try {
-      setIsLoading(true)
-      // const res = await axios.patch("/api/visitors/update-visitors", {
-      //   email: cachedData.email,
-      //   currentStep: "catfawn/step10",
-      //   mobilePreference: mobilePreferences,
-      // }, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //   },
-      // }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step10",
-            mobilePreference: mobilePreferences,
-          })
-        );
-
-        router.replace("/catfawn/step10");
-      // } else {
-      //   createMessage("res.data.message", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn/step10",
+        mobilePreference: mobilePreferences,
+      })
+    );
+    router.replace("/catfawn/step10");
+    setIsLoading(false);
   };
 
   return (
@@ -130,7 +107,7 @@ export default function Step9VC() {
           Request Early Access
         </h2>
         <p className="text-[1rem] font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 9 of 14: Which mobile platform do you prefer?
+          Step 9 of 15: Which mobile platform do you prefer?
         </p>
 
         <form className="mt-[3.438rem] text-[1rem]">

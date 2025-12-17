@@ -25,7 +25,7 @@ export default function OPOS() {
   const [membershipStatus, setMembershipStatus] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [selectedModel, setSelectedModel] = React.useState(
-    selectedChat?.chatAgent?.defaultmodel || "gpt-5.1"
+    selectedChat?.chatAgent?.defaultmodel || "gpt-5.2"
   );
   const [selectedVoice, setSelectedVoice] = React.useState("nova");
 
@@ -150,7 +150,7 @@ export default function OPOS() {
   //
 
   React.useEffect(() => {
-    setSelectedModel(selectedChat?.chatAgent?.defaultmodel || "gpt-5.1");
+    setSelectedModel(selectedChat?.chatAgent?.defaultmodel || "gpt-5.2");
   }, [selectedChat?.chatAgent?.id]);
 
   return (

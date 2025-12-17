@@ -5,7 +5,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-import { uploadFile } from "@/app/lib/firebase";
+import { init, uploadFile } from "@/app/lib/firebase";
 
 
 const Step15VC = () => {
@@ -45,6 +45,7 @@ const Step15VC = () => {
     }
 
     try {
+      init();
       const result = JSON.parse(stored);
       setCachedData(result);
 
@@ -54,7 +55,7 @@ const Step15VC = () => {
     } catch {
       router.replace("/");
     }
-  }, [router]);
+  }, []);
 
   const isValidUrl = (url: string) => {
     try {
@@ -67,15 +68,24 @@ const Step15VC = () => {
 
 
   const handleNext = async () => {
-    const missingFields: string[] = [];
 
-    if (!avatar) missingFields.push("Avatar");
-    if (!lastName.trim()) missingFields.push("Last Name");
-    if (!bio.trim()) missingFields.push("Bio");
-    if (!webLink.trim()) missingFields.push("Web Link");
+    if (!avatar) {
+      createMessage("Avatar is required.", "error");
+      return;
+    }
 
-    if (missingFields.length > 0) {
-      createMessage(`${missingFields.join(", ")} is required`, "error");
+    if (!lastName.trim()) {
+      createMessage("Last Name is required.", "error");
+      return;
+    }
+
+    if (!bio.trim()) {
+      createMessage("Bio is required.", "error");
+      return;
+    }
+
+    if (!webLink.trim()) {
+      createMessage("Web link is required.", "error");
       return;
     }
 
@@ -86,42 +96,50 @@ const Step15VC = () => {
 
     try {
       setIsLoading(true);
+      
       const avatarUrl = await uploadFile(
-        avatar as File,
+        avatar,
         cachedData.email || "user",
         "avatars"
-      ); const res = await axios.patch(
-        "/api/visitors/update-visitors",
-        {
-          email: cachedData.email,
-          currentStep: "catfawn/step16",
+      );
+      console.log(avatarUrl,"$$$$$$$$$$$$$$$$$$$$$$")
+      // const res = await axios.patch(
+      //   "/api/visitors/update-visitors",
+      //   {
+      //     email: cachedData.email,
+      //     currentStep: "catfawn/step16",
 
-          avatar: avatarUrl,
+      //     avatar: avatarUrl,
+      //     lastName: lastName,
+      //     bio: bio,
+      //     web: webLink,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      //     },
+      //   }
+      // );
+
+      // if (res.data.status) {
+      localStorage.setItem(
+        "catfawn-data",
+        JSON.stringify({
+          ...cachedData,
+          currentStep: "catfawn/step15",
+          avatarUrl: avatarUrl,
           lastName: lastName,
           bio: bio,
           web: webLink,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
-        }
+        })
       );
 
-      if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step16",
-          })
-        );
-
-        // final step → redirect
-        router.replace("/success");
-      } else {
-        createMessage(res.data.message, "error");
-      }
+      // // final step → redirect
+      // router.replace("/success");
+      // } else {
+      //   createMessage(res.data.message, "error");
+      // }
+      createMessage("Successfully Completed", "success")
     } catch (err: any) {
       createMessage(
         err?.response?.data?.message || "Something went wrong",
@@ -147,7 +165,7 @@ const Step15VC = () => {
         </h2>
 
         <p className="text-white/80 mt-1">
-          Step 16 of 16: Your Contact Details
+          Step 15 of 15: Your Contact Details
         </p>
 
         <form className="mt-4">

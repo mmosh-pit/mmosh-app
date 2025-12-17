@@ -40,7 +40,7 @@ export default function Step14VC() {
     } catch {
       router.replace("/");
     }
-  }, [router]);
+  }, []);
 
   const submitNewKinshipCode = async () => {
 

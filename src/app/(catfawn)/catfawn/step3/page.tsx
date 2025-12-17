@@ -7,10 +7,7 @@ import Spinner from "../components/Spinner";
 
 export default function Step3VC() {
   const router = useRouter();
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [roles, setRoles] = React.useState<string[]>([]);
   const [otherRoleEnabled, setOtherRoleEnabled] = React.useState(false);
@@ -23,21 +20,18 @@ export default function Step3VC() {
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-
     if (!stored) {
-      // router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-
-      if (result?.currentStep && result.currentStep !== "catfawn/step3") {
+      console;
+      if (result?.completedSteps !== undefined && result?.completedSteps < 2) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -98,6 +92,7 @@ export default function Step3VC() {
         ...cachedData,
         roles: finalRoles,
         currentStep: "catfawn/step4",
+        completedSteps: 3,
       })
     );
     router.replace("/catfawn/step4");
@@ -130,6 +125,16 @@ export default function Step3VC() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              onClick={() => {
+                localStorage.setItem(
+                  "catfawn-data",
+                  JSON.stringify({
+                    ...cachedData,
+                    currentStep: "catfawn",
+                  })
+                );
+                router.replace("/catfawn");
+              }}
             >
               <path
                 d="M20 12L4 12M4 12L10 6M4 12L10 18"

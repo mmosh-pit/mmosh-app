@@ -7,10 +7,7 @@ import Spinner from "../components/Spinner";
 
 export default function Step2VC() {
   const router = useRouter();
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
@@ -24,21 +21,17 @@ export default function Step2VC() {
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-
-      if (result?.currentStep && result.currentStep !== "catfawn/step2") {
+      if (result?.completedSteps !== undefined && result?.completedSteps < 1) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -72,18 +65,10 @@ export default function Step2VC() {
 
     try {
       setIsLoading(true);
-      const result = await axios.post(
-        "/api/visitors/verify-otp",
-        {
-          email: cachedData.email,
-          otp: code,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
-        }
-      );
+      const result = await axios.post("/api/visitors/verify-otp", {
+        email: cachedData.email,
+        otp: code,
+      });
 
       if (result.data.status) {
         localStorage.setItem(
@@ -91,10 +76,11 @@ export default function Step2VC() {
           JSON.stringify({
             ...cachedData,
             currentStep: "catfawn/step3",
+            hasVerifiedEmail: true,
+            completedSteps: 2,
           })
         );
         router.replace("/catfawn/step3");
-        setIsLoading(false);
       } else {
         setHasInvalid(true);
         setIsLoading(false);
@@ -112,18 +98,10 @@ export default function Step2VC() {
   const resendOTP = async () => {
     setHasInvalid(false);
     setHasLoadingResendOTP(true);
-    const result = await axios.post(
-      "/api/visitors/resend-otp",
-      {
-        email: cachedData.email,
-        type: "email",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-        },
-      }
-    );
+    const result = await axios.post("/api/visitors/resend-otp", {
+      email: cachedData.email,
+      type: "email",
+    });
     if (result.data.status) {
       setOtp(["", "", "", "", "", ""]);
       createMessage(result.data.message, "success");
@@ -183,6 +161,16 @@ export default function Step2VC() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              onClick={() => {
+                localStorage.setItem(
+                  "catfawn-data",
+                  JSON.stringify({
+                    ...cachedData,
+                    currentStep: "catfawn",
+                  })
+                );
+                router.replace("/catfawn");
+              }}
             >
               <path
                 d="M20 12L4 12M4 12L10 6M4 12L10 18"

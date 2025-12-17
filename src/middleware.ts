@@ -22,7 +22,11 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("inform") &&
     !req.url.includes("document") &&
     !req.url.includes("distribute-to-lineage") &&
-    !req.url.includes("/api/history/save")
+    !req.url.includes("/api/history/save") &&
+    !req.url.includes("/api/visitors/generate-otp") &&
+    !req.url.includes("/api/visitors/resend-otp") &&
+    !req.url.includes("/api/visitors/verify-otp") &&
+    !req.url.includes("/api/visitors/save")
   ) {
     if (!authorization) {
       return NextResponse.json("", { status: 401 });

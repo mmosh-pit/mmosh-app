@@ -9,7 +9,7 @@ import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 const Step5VC12 = () => {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = useState<any>(null);
+  const [cachedData, setCachedData] = useState<any>({});
 
   const [form, setForm] = useState<{
     q1: number | null;
@@ -46,24 +46,20 @@ const Step5VC12 = () => {
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
   const [isLoading, setIsLoading] = useState(false);
 
-  /** 🔹 Load cached data */
-  useEffect(() => {
+  React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
-      const parsed = JSON.parse(stored);
-      setCachedData(parsed);
-
-      if (parsed.currentStep && parsed.currentStep !== "catfawn/step5/12") {
-        router.replace(`/${parsed.currentStep}`);
+      const result = JSON.parse(stored);
+      setCachedData(result);
+      console;
+      if (result?.completedSteps !== undefined && result?.completedSteps < 16) {
+        router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -109,6 +105,7 @@ const Step5VC12 = () => {
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
+        completedSteps: 17,
       })
     );
     router.replace("/catfawn/step6");
@@ -124,7 +121,12 @@ const Step5VC12 = () => {
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step5/11");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -156,12 +158,10 @@ const Step5VC12 = () => {
           you:{" "}
         </p>
 
-        <ul className="flex justify-end gap-[0.625rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em]">
-          <li>Very</li>
-          <li>Rarely</li>
+        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-2">
+          <li>Very Rarely</li>
           <li>Sometimes</li>
-          <li>Very</li>
-          <li>Often</li>
+          <li>Very Often</li>
         </ul>
 
         <div className="flex flex-col gap-[0.938rem] mt-[0.625rem]">

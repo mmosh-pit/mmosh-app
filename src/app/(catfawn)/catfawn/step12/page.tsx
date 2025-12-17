@@ -12,12 +12,7 @@ export default function Step12VC() {
   const [otp, setOtp] = React.useState<string[]>(["", "", "", "", "", ""]);
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-    mobileNumber: "",
-    countryCode: ""
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -27,17 +22,17 @@ export default function Step12VC() {
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-    if (!stored) return router.replace("/");
+    if (!stored) return router.replace("/catfawn");
 
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result.currentStep !== "catfawn/step12") {
-        router.replace("/" + result.currentStep);
+      if (result?.completedSteps !== undefined && result?.completedSteps < 23) {
+        router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -50,7 +45,6 @@ export default function Step12VC() {
       inputRefs.current[index - 1]?.focus();
     }
   };
-
 
   const handlePaste = (
     e: React.ClipboardEvent<HTMLInputElement>,
@@ -78,7 +72,6 @@ export default function Step12VC() {
     const nextIndex = Math.min(index + pasteData.length, 5);
     inputRefs.current[nextIndex]?.focus();
   };
-
 
   const handleOtpChange = (value: string, index: number) => {
     if (!/^\d?$/.test(value)) return;
@@ -110,10 +103,6 @@ export default function Step12VC() {
         email: cachedData.email,
         otp: enteredOtp,
         currentStep: "catfawn/step13",
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`
-        }
       });
 
       if (res.data.status) {
@@ -122,6 +111,7 @@ export default function Step12VC() {
           JSON.stringify({
             ...cachedData,
             currentStep: "catfawn/step13",
+            completedSteps: 24,
           })
         );
 
@@ -143,10 +133,6 @@ export default function Step12VC() {
       mobile: cachedData.mobileNumber,
       countryCode: cachedData.countryCode,
       type: "sms",
-    }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token") || ""}`
-      }
     });
     if (result.data.status) {
       createMessage(result.data.message, "success");
@@ -171,7 +157,12 @@ export default function Step12VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step11");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -196,8 +187,8 @@ export default function Step12VC() {
           <span className="font-normal font-avenir">
             {" "}
             We just sent you a one-time verification code by text message, along
-            with a personal message from CAT FAWN. Enter the code below so we can
-            reach you during early access.
+            with a personal message from CAT FAWN. Enter the code below so we
+            can reach you during early access.
           </span>
         </p>
 

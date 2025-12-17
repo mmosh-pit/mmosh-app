@@ -111,7 +111,7 @@ const Step5VC5 = () => {
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
-        completedSteps: 9,
+        completedSteps: 10,
       })
     );
     router.replace("/catfawn/step5/6");
@@ -163,12 +163,10 @@ const Step5VC5 = () => {
           A friend is acting obnoxiously at a party. Do you:{" "}
         </p>
 
-        <ul className="flex justify-end gap-[0.625rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em]">
-          <li>Very</li>
-          <li>Rarely</li>
+        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-2">
+          <li>Very Rarely</li>
           <li>Sometimes</li>
-          <li>Very</li>
-          <li>Often</li>
+          <li>Very Often</li>
         </ul>
 
         <div className="flex flex-col gap-[0.938rem] mt-[0.625rem]">

@@ -30,7 +30,7 @@ const Step5VC = () => {
         Request Early Access
       </h2>
       <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-        Step 5 of 14: Your CAT FAWN Source Code.{" "}
+        Step 5 of 15: Your CAT FAWN Source Code.{" "}
         <span className="font-normal font-avenir">
           The CAT FAWN Connection encourages personal growth, professional
           development and collective action. To get started, CAT FAWN would like
@@ -63,13 +63,10 @@ const Step5VC = () => {
         className="font-avenirNext w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[0.625rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
         onClick={() => {
           setIsLoading(true);
-
-          // ✅ read existing data
           const stored = localStorage.getItem("catfawn-data");
           if (stored) {
             const parsed = JSON.parse(stored);
 
-            // ✅ update step
             localStorage.setItem(
               "catfawn-data",
               JSON.stringify({
@@ -79,7 +76,6 @@ const Step5VC = () => {
             );
           }
 
-          // ✅ navigate
           router.replace("/catfawn/step5/1");
         }}
       >

@@ -140,7 +140,7 @@ export default function Home() {
         </h2>
 
         <p className="text-[1rem] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem]">
-          Step 1 of 14: Enter your name and email address.{" "}
+          Step 1 of 15: Enter your name and email address.{" "}
           <span className="text-[#FFFFFFE5] font-normal fonnt-avenir">
             {" "}
             We’ll send a link to verify it’s really you.

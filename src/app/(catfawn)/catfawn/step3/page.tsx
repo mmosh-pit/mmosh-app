@@ -157,7 +157,7 @@ export default function Step3VC() {
         </h2>
 
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 3 of 14: Tell Us More About Yourself.{" "}
+          Step 3 of 15: Tell Us More About Yourself.{" "}
           <span className="font-normal font-avenir">
             {" "}
             The CAT FAWN Connection Early Access Program is for change makers,

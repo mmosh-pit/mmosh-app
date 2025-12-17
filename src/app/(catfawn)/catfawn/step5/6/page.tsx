@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import LikertQuestion from "../../components/LikertQuestion";
 import Spinner from "../../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -33,7 +32,7 @@ const Step5VC6 = () => {
     5: "very often",
   };
 
-const LIKERT_QUESTIONS = [
+  const LIKERT_QUESTIONS = [
     { id: "q1", text: "Have members of the group debate their ideas, and then you make a final decision." },
     { id: "q2", text: "Gather data by talking to people individually and make a considered decision." },
     { id: "q3", text: "Give a pep talk that inspires people to think creatively and then see what the group comes up with." },
@@ -90,47 +89,27 @@ const LIKERT_QUESTIONS = [
   );
 
   const submitStep5 = async () => {
+    setIsLoading(true);
     if (Object.values(form).some((v) => v === null)) {
       createMessage("Please answer all questions.", "error");
+      setIsLoading(false);
       return;
     }
-
-    try {
-      setIsLoading(true);
-      // Replace with your API call
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step5/7",
-      //     likertAnswers,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step5/7",
-            likertAnswers: likertAnswers,
-          })
-        );
-
-        router.replace("/catfawn/step5/7");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save data", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    const existingData = JSON.parse(
+      localStorage.getItem("catfawn-data") || "{}"
+    );
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn/step5/7",
+        likertAnswers: {
+          ...(existingData.likertAnswers || {}),
+          ...likertAnswers,
+        },
+      })
+    );
+    router.replace("/catfawn/step5/7");
   };
 
 
@@ -151,7 +130,7 @@ const LIKERT_QUESTIONS = [
         </h2>
 
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 6 of 14: Your CAT FAWN Source Code.
+          Step 5 of 15: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">

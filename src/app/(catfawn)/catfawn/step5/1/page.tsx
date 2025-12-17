@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import LikertQuestion from "../../components/LikertQuestion";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../../components/Spinner";
@@ -45,7 +44,6 @@ const Step5VC1 = () => {
   const [msgText, setMsgText] = useState("");
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
-  /** 🔹 Load cached data */
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
 
@@ -92,50 +90,22 @@ const Step5VC1 = () => {
   );
 
 
-
-  /** 🔹 Submit Likert answers */
   const submitStep5 = async () => {
+    setIsLoading(true);
     if (Object.values(form).some((v) => v === null)) {
       createMessage("Please answer all questions.", "error");
+      setIsLoading(false);
       return;
     }
-
-    try {
-      setIsLoading(true);
-
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step5/2",
-      //     likertAnswers,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step5/2",
-            likertAnswers: likertAnswers,
-          })
-        );
-
-        router.replace("/catfawn/step5/2");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save data", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn/step5/2",
+        likertAnswers: likertAnswers,
+      })
+    );
+    router.replace("/catfawn/step5/2");
   };
 
   return (
@@ -155,7 +125,7 @@ const Step5VC1 = () => {
         </h2>
 
         <p className="text-[#FFFFFFE5] font-bold mt-1">
-          Step 5 of 14: Your CAT FAWN Source Code.
+          Step 5 of 15: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-sm text-[#FFFFFFE5] mt-6">

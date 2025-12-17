@@ -8,7 +8,6 @@ import Spinner from "../../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 
 const Step5VC6 = () => {
-
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>(null);
@@ -33,11 +32,23 @@ const Step5VC6 = () => {
     5: "very often",
   };
 
-const LIKERT_QUESTIONS = [
-    { id: "q1", text: "Have members of the group debate their ideas, and then you make a final decision." },
-    { id: "q2", text: "Gather data by talking to people individually and make a considered decision." },
-    { id: "q3", text: "Give a pep talk that inspires people to think creatively and then see what the group comes up with." },
-    { id: "q4", text: "Follow your feelings to the best solution and present it to the group, while remaining open to their input." },
+  const LIKERT_QUESTIONS = [
+    {
+      id: "q1",
+      text: "Have members of the group debate their ideas, and then you make a final decision.",
+    },
+    {
+      id: "q2",
+      text: "Gather data by talking to people individually and make a considered decision.",
+    },
+    {
+      id: "q3",
+      text: "Give a pep talk that inspires people to think creatively and then see what the group comes up with.",
+    },
+    {
+      id: "q4",
+      text: "Follow your feelings to the best solution and present it to the group, while remaining open to their input.",
+    },
   ];
 
   const [showMsg, setShowMsg] = useState(false);
@@ -113,16 +124,16 @@ const LIKERT_QUESTIONS = [
       // );
 
       // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step5/7",
-            likertAnswers: likertAnswers,
-          })
-        );
+      localStorage.setItem(
+        "catfawn-data",
+        JSON.stringify({
+          ...cachedData,
+          currentStep: "catfawn/step5/7",
+          likertAnswers: likertAnswers,
+        })
+      );
 
-        router.replace("/catfawn/step5/7");
+      router.replace("/catfawn/step5/7");
       // } else {
       //   createMessage(res.data.message || "Failed to save data", "error");
       // }
@@ -132,7 +143,6 @@ const LIKERT_QUESTIONS = [
       setIsLoading(false);
     }
   };
-
 
   return (
     <>
@@ -144,6 +154,23 @@ const LIKERT_QUESTIONS = [
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+          <div className="absolute left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
           <div className="font-normal font-avenir absolute top-0 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
             <span className="font-extrabold">6</span>/12
@@ -177,7 +204,6 @@ const LIKERT_QUESTIONS = [
             />
           ))}
         </div>
-
 
         <button
           type="button"

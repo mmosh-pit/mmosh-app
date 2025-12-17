@@ -426,10 +426,10 @@ const Offer = ({
       } else {
         setInviteLoading(true);
       }
-      console.log(
-        "go to the result ===============================>>",
-        supplyValue
-      );
+      // console.log(
+      //   "go to the result ===============================>>",
+      //   supplyValue
+      // );
 
       const result: any = await internalClient.post("/api/offer/buy", {
         receiver: wallet.publicKey?.toBase58(),

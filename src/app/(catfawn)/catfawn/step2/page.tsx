@@ -215,10 +215,18 @@ export default function Step2VC() {
               ))}
             </div>
 
-            <span className="text-[0.75rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]">
-              The code expires in 15 minutes. Didn’t get it? Check your spam
-              folder or request a new code.
-            </span>
+            {!hasInvalid && (
+              <span className="text-[0.75rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]">
+                The code expires in 15 minutes. Didn’t get it? Check your spam
+                folder or request a new code.
+              </span>
+            )}
+            {hasInvalid && (
+              <span className="text-[0.75rem] text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em]">
+                That code doesn’t look right. Please check your email and try
+                again.
+              </span>
+            )}
 
             <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
               Didn’t get a code?{" "}

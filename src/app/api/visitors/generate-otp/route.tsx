@@ -40,14 +40,46 @@ export async function POST(req: NextRequest) {
 
     const { type, email, mobile, countryCode } = validation.data!;
 
+    const visitorCollection = db.collection("mmosh-app-visitor");
+
+    if (type === "email") {
+      const existingEmail = await visitorCollection.findOne({ email });
+      if (existingEmail) {
+        return NextResponse.json(
+          {
+            status: false,
+            message: "Email already exists",
+            result: null,
+          },
+          { status: 200 }
+        );
+      }
+    }
+
+    if (type === "sms") {
+      const existingMobile = await visitorCollection.findOne({
+        mobileNumber: mobile,
+      });
+      if (existingMobile) {
+        return NextResponse.json(
+          {
+            status: false,
+            message: "Mobile number already exists",
+            result: null,
+          },
+          { status: 200 }
+        );
+      }
+    }
+
     const otp = generateSecureOTP();
     const otpHash = await bcrypt.hash(otp, 10);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    const collection = db.collection("mmosh-users-email-verification");
+    const otpCollection = db.collection("mmosh-users-email-verification");
 
     if (type === "email") {
-      await collection.insertOne({
+      await otpCollection.insertOne({
         email,
         otpHash,
         expiresAt,
@@ -83,7 +115,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Generate OTP error:", error);
     return NextResponse.json(
       {
         status: false,

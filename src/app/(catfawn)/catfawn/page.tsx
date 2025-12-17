@@ -19,15 +19,25 @@ export default function Home() {
   const [msgText, setMsgText] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
+  const [cachedData, setCachedData] = React.useState<any>({});
+
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) return;
 
     const result = JSON.parse(stored);
+    setCachedData(result);
 
-    if (result?.currentStep) {
-      router.replace(`/${result.currentStep}`);
+    if (result?.currentStep && result?.currentStep !== "catfawn") {
+      return router.replace(`/${result.currentStep}`);
     }
+    setFormData({
+      firstName: result.firstName || "",
+      email: result.email || "",
+      password: result.password || "",
+      confirmPassword: result.password || "",
+      hasChecked: true,
+    });
   }, []);
 
   const validateForm = () => {
@@ -79,18 +89,20 @@ export default function Home() {
 
     try {
       setIsLoading(true);
-      const result = await axios.post(
-        "/api/visitors/generate-otp",
-        {
-          type: "email",
-          email: formData.email,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
-        }
-      );
+      if (cachedData.email === formData.email && cachedData.hasVerifiedEmail) {
+        localStorage.setItem(
+          "catfawn-data",
+          JSON.stringify({
+            ...cachedData,
+            currentStep: "catfawn/step3",
+          })
+        );
+        return router.replace("/catfawn/step3");
+      }
+      const result = await axios.post("/api/visitors/generate-otp", {
+        type: "email",
+        email: formData.email,
+      });
       if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
@@ -99,6 +111,8 @@ export default function Home() {
             email: formData.email,
             firstName: formData.firstName,
             password: formData.password,
+            hasVerifiedEmail: false,
+            completedSteps: 1,
           })
         );
         setIsLoading(false);
@@ -157,6 +171,7 @@ export default function Home() {
                 type="text"
                 placeholder="First Name"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+                value={formData.firstName}
                 onChange={(event) =>
                   setFormData({ ...formData, firstName: event.target.value })
                 }
@@ -171,6 +186,7 @@ export default function Home() {
                 type="email"
                 placeholder="Email address"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+                value={formData.email}
                 onChange={(event) =>
                   setFormData({ ...formData, email: event.target.value })
                 }
@@ -185,6 +201,7 @@ export default function Home() {
                 type="password"
                 placeholder="Password"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+                value={formData.password}
                 onChange={(event) =>
                   setFormData({ ...formData, password: event.target.value })
                 }
@@ -199,6 +216,7 @@ export default function Home() {
                 type="password"
                 placeholder="Confirm Password"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+                value={formData.confirmPassword}
                 onChange={(event) =>
                   setFormData({
                     ...formData,

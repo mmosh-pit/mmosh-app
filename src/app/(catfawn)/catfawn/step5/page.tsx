@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Spinner from "../components/Spinner";
 import { useRouter } from "next/navigation";
@@ -6,6 +6,24 @@ import { useRouter } from "next/navigation";
 const Step5VC = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const router = useRouter();
+  const [cachedData, setCachedData] = React.useState<any>({});
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem("catfawn-data");
+    if (!stored) {
+      return router.replace("/catfawn");
+    }
+    try {
+      const result = JSON.parse(stored);
+      setCachedData(result);
+      console;
+      if (result?.completedSteps !== undefined && result?.completedSteps < 4) {
+        router.replace(`/${result.currentStep}`);
+      }
+    } catch {
+      router.replace("/catfawn");
+    }
+  }, []);
 
   return (
     <div className="min-h-[29.875rem]   xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
@@ -17,6 +35,9 @@ const Step5VC = () => {
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            onClick={() => {
+              router.replace("/catfawn/step4");
+            }}
           >
             <path
               d="M20 12L4 12M4 12L10 6M4 12L10 18"
@@ -63,18 +84,14 @@ const Step5VC = () => {
         className="font-avenirNext flex justify-center items-center gap-2 w-full h-[3.125rem] py-[1.063rem] bg-[#FF710F] mt-[2.313rem] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
         onClick={() => {
           setIsLoading(true);
-          const stored = localStorage.getItem("catfawn-data");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-
-            localStorage.setItem(
-              "catfawn-data",
-              JSON.stringify({
-                ...parsed,
-                currentStep: "catfawn/step5/1",
-              })
-            );
-          }
+          localStorage.setItem(
+            "catfawn-data",
+            JSON.stringify({
+              ...cachedData,
+              currentStep: "catfawn/step5/1",
+              completedSteps: 5,
+            })
+          );
 
           router.replace("/catfawn/step5/1");
         }}

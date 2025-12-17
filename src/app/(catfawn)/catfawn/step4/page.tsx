@@ -8,10 +8,7 @@ import Spinner from "../components/Spinner";
 
 export default function Step4VC() {
   const router = useRouter();
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [intents, setIntents] = React.useState<string[]>([]);
 
@@ -24,21 +21,18 @@ export default function Step4VC() {
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
-
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-
-      if (result?.currentStep && result.currentStep !== "catfawn/step4") {
+      console;
+      if (result?.completedSteps !== undefined && result?.completedSteps < 3) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -95,6 +89,7 @@ export default function Step4VC() {
         ...cachedData,
         intent: finalIntents,
         currentStep: "catfawn/step5",
+        completedSteps: 4,
       })
     );
     router.replace("/catfawn/step5");
@@ -132,7 +127,7 @@ export default function Step4VC() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               onClick={() => {
-                router.back();
+                router.replace("/catfawn/step3");
               }}
             >
               <path

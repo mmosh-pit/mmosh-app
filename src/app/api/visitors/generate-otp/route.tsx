@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       }
 
       await otpCollection.updateOne(
-        { mobile, countryCode },
+        { email },
         {
           $set: {
             otpHash,
@@ -120,8 +120,7 @@ export async function POST(req: NextRequest) {
             updatedAt: new Date(),
           },
           $setOnInsert: {
-            mobile,
-            countryCode,
+            email,
             createdAt: new Date(),
           },
         },
@@ -170,11 +169,7 @@ async function sendOTPEmail(email: string, otp: string) {
   });
 }
 
-async function sendOTPSMS(
-  mobile: string,
-  otp: string,
-  countryCode: string
-) {
+async function sendOTPSMS(mobile: string, otp: string, countryCode: string) {
   try {
     await twilioClient.messages.create({
       body: `Your CatFawn Connection verification code is ${otp}. It expires in 15 minutes.`,

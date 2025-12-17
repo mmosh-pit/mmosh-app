@@ -2,10 +2,9 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-// import toast from "react-hot-toast";
 
 export default function Step12VC() {
   const router = useRouter();
@@ -16,11 +15,14 @@ export default function Step12VC() {
   const [cachedData, setCachedData] = React.useState({
     email: "",
     currentStep: "",
+    mobileNumber: "",
+    countryCode: ""
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
   const [msgText, setMsgText] = useState("");
+  const [hasInvalid, setHasInvalid] = React.useState<boolean>(false);
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
   React.useEffect(() => {
@@ -43,6 +45,7 @@ export default function Step12VC() {
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
+    setHasInvalid(false);
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -54,6 +57,7 @@ export default function Step12VC() {
     index: number
   ) => {
     e.preventDefault();
+    setHasInvalid(false);
     const pasteData = e.clipboardData
       .getData("text")
       .replace(/\D/g, "")
@@ -78,7 +82,7 @@ export default function Step12VC() {
 
   const handleOtpChange = (value: string, index: number) => {
     if (!/^\d?$/.test(value)) return;
-
+    setHasInvalid(false);
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -102,7 +106,7 @@ export default function Step12VC() {
 
     try {
       setIsLoading(true)
-      const res = await axios.post("/api/visitors/verify-email", {
+      const res = await axios.post("/api/visitors/verify-otp", {
         email: cachedData.email,
         otp: enteredOtp,
         currentStep: "catfawn/step13",
@@ -123,6 +127,7 @@ export default function Step12VC() {
 
         router.replace("/catfawn/step13");
       } else {
+        setHasInvalid(true);
         createMessage(res.data.message || "Invalid OTP", "error");
       }
     } catch {
@@ -133,8 +138,10 @@ export default function Step12VC() {
   };
 
   const resendOTP = async () => {
+    setHasInvalid(false);
     const result = await axios.post("/api/visitors/resend-otp", {
-      email: cachedData.email,
+      mobile: cachedData.mobileNumber,
+      countryCode: cachedData.countryCode,
       type: "sms",
     }, {
       headers: {
@@ -212,10 +219,7 @@ export default function Step12VC() {
                   onChange={(e) => handleOtpChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   onPaste={(e) => handlePaste(e, idx)}
-                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:h-6 p-5 rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none focus:bg-[#F8060624] focus:border-[#F806068F] ${digit
-                      ? "bg-[#F8060624] border-[#F806068F]" // When filled
-                      : "bg-[#402A2A] border-[#FFFFFF29]"
-                    }`}
+                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:h-6 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
                 />
               ))}
             </div>

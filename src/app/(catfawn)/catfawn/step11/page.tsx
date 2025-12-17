@@ -8,6 +8,7 @@ import { PhoneInput, PhoneInputResponseType } from "react-simple-phone-input";
 import "react-simple-phone-input/dist/style.css";
 interface ContactDetails {
   mobileNumber: string;
+  countryCode: string;
   telegramUsername: string;
   blueskyHandle: string;
   linkedinProfile: string;
@@ -29,10 +30,12 @@ export default function Step11VC() {
 
   const [contactDetails, setContactDetails] = React.useState<ContactDetails>({
     mobileNumber: "",
+    countryCode: "",
     telegramUsername: "",
     blueskyHandle: "",
     linkedinProfile: "",
   });
+
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -79,7 +82,8 @@ export default function Step11VC() {
         {
           type: "sms",
           mobile: contactDetails.mobileNumber,
-          countryCode: "91",
+          countryCode: contactDetails.countryCode,
+          email:cachedData.email
         },
         {
           headers: {
@@ -88,13 +92,15 @@ export default function Step11VC() {
         }
       );
 
+
       if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            currentStep:"catfawn/step12",
+            currentStep: "catfawn/step12",
             mobileNumber: contactDetails.mobileNumber,
+            countryCode: contactDetails.countryCode,
             telegramUsername: contactDetails.telegramUsername,
             blueskyHandle: contactDetails.blueskyHandle,
             linkedinProfile: contactDetails.linkedinProfile,
@@ -175,11 +181,21 @@ export default function Step11VC() {
                   if (!/^[0-9]*$/.test(e.target.value)) return;
                   handleChange("mobileNumber", e.target.value)
                 }}              /> */}
-        
+
               <PhoneInput
                 country="US"
                 value={phone}
-                onChange={(data: PhoneInputResponseType) => console.log(data)}
+                onChange={(data) => {
+                  const countryCode = data.dialCode.replace("+", "");
+                  const mobileNumber = data.valueWithoutPlus.slice(countryCode.length);
+
+                  setContactDetails((prev) => ({
+                    ...prev,
+                    mobileNumber,
+                    countryCode,
+                  }));
+                }}
+
                 // onChange={(data: PhoneInputResponseType) => {
                 //   if (!/^[0-9]*$/.test(data.value)) return;
                 //   handleChange("mobileNumber", data.value)

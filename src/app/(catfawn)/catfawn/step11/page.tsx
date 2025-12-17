@@ -1,12 +1,9 @@
-// step4a
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-import { headers } from "next/headers";
-// import toast from "react-hot-toast";
 
 interface ContactDetails {
   mobileNumber: string;
@@ -75,25 +72,26 @@ export default function Step11VC() {
 
     try {
       setIsLoading(true)
-      const res = await axios.patch("/api/visitors/update-visitors", {
-        email: cachedData.email,
-        currentStep: "catfawn/step12",
-        mobileNumber: contactDetails.mobileNumber,
-        telegramUsername: contactDetails.telegramUsername,
-        blueskyHandle: contactDetails.blueskyHandle,
-        linkedinProfile: contactDetails.linkedinProfile
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token") || ""}`
+      const result = await axios.post(
+        "/api/visitors/generate-otp",
+        {
+          type: "sms",
+          mobile: contactDetails.mobileNumber,
+          countryCode: "91",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
         }
-      });
+      );
 
-      if (res.data.status) {
+      if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            currentStep: "catfawn/step12",
+            currentStep:"catfawn/step12",
             mobileNumber: contactDetails.mobileNumber,
             telegramUsername: contactDetails.telegramUsername,
             blueskyHandle: contactDetails.blueskyHandle,
@@ -103,7 +101,7 @@ export default function Step11VC() {
 
         router.replace("/catfawn/step12");
       } else {
-        createMessage(res.data.message || "Unable to update contact details.", "error");
+        createMessage(result.data.message || "Please check the mobile number", "error");
       }
     } catch {
       createMessage("Something went wrong", "error");
@@ -164,13 +162,17 @@ export default function Step11VC() {
           <div className="flex flex-col gap-[0.25rem]">
             <div>
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                Mobile number
+                Mobile number *
               </label>
               <input
-                type="number"
+                type="text"
                 placeholder="Mobile number"
+                value={contactDetails.mobileNumber}
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) => handleChange("mobileNumber", e.target.value)}
+                onChange={(e) => {
+                  if (!/^[0-9]*$/.test(e.target.value)) return;
+                  handleChange("mobileNumber", e.target.value)
+                }}
               />
             </div>
 
@@ -180,6 +182,7 @@ export default function Step11VC() {
               </label>
               <input
                 type="text"
+                value={contactDetails.telegramUsername}
                 placeholder="@handle"
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 onChange={(e) => handleChange("telegramUsername", e.target.value)}
@@ -192,6 +195,7 @@ export default function Step11VC() {
               </label>
               <input
                 type="text"
+                value={contactDetails.blueskyHandle}
                 placeholder="@name.bsky.social"
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem]  rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 onChange={(e) => handleChange("blueskyHandle", e.target.value)}
@@ -204,6 +208,7 @@ export default function Step11VC() {
               </label>
               <input
                 type="text"
+                value={contactDetails.linkedinProfile}
                 placeholder="http://url.com"
                 className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 onChange={(e) => handleChange("linkedinProfile", e.target.value)}

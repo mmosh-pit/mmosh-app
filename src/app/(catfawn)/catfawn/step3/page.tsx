@@ -254,13 +254,13 @@ export default function Step3VC() {
               value={otherRoleText}
               onChange={(e) => setOtherRoleText(e.target.value)}
               placeholder="Please share how you see yourself in the world."
-              className="steps_btn_submit mt-[0.563rem]"
+              className="w-full xl:w-[29.688rem] mt-[0.563rem] h-[2.375rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
             />
           )}
 
           <button
             type="button"
-            className="font-avenirNext flex justify-center items-center gap-2 mt-[4.375rem] h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
+            className={`steps_btn_submit ${otherRoleEnabled ? "mt-[1.438rem]" : " mt-[4.375rem]"}`}
             onClick={updateRoles}
           >
             {isLoading && <Spinner size="sm" />} Next

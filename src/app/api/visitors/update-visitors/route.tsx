@@ -301,7 +301,7 @@ function validateRequestBody(body: any) {
   }
 
   // Step 16 – Contact details validation
-  if (body.currentStep === "catfawn/step16") {
+  if (body.currentStep === "catfawn/step15") {
     // Avatar
     // Avatar (Firebase URL)
     if (!body.avatar || typeof body.avatar !== "string") {

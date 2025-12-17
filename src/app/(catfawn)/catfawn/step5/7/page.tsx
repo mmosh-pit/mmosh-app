@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import LikertQuestion from "../../components/LikertQuestion";
 import Spinner from "../../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -89,47 +88,27 @@ const Step5VC7 = () => {
   );
 
   const submitStep5 = async () => {
+    setIsLoading(true);
     if (Object.values(form).some((v) => v === null)) {
       createMessage("Please answer all questions.", "error");
+      setIsLoading(false);
       return;
     }
-
-    try {
-      setIsLoading(true);
-      // Replace with your API call
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step5/8",
-      //     likertAnswers,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-      localStorage.setItem(
-        "catfawn-data",
-        JSON.stringify({
-          ...cachedData,
-          currentStep: "catfawn/step5/8",
-          likertAnswers: likertAnswers,
-        })
-      );
-
-      router.replace("/catfawn/step5/8");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save data", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    const existingData = JSON.parse(
+      localStorage.getItem("catfawn-data") || "{}"
+    );
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn/step5/8",
+        likertAnswers: {
+          ...(existingData.likertAnswers || {}),
+          ...likertAnswers,
+        },
+      })
+    );
+    router.replace("/catfawn/step5/8");
   };
 
   return (
@@ -166,7 +145,7 @@ const Step5VC7 = () => {
         </h2>
 
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 6 of 14: Your CAT FAWN Source Code.
+          Step 5 of 15: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
 import Spinner from "../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -30,7 +29,6 @@ const Step7VC = () => {
     { label: "📪 Empathy and compassion" },
   ];
 
-  /** 🔹 Load cached data */
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
 
@@ -68,47 +66,23 @@ const Step7VC = () => {
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true)
     if (selectedAbilities.length < 3) {
       createMessage("Please select at least 3 abilities.", "error");
+      setIsLoading(false)
       return;
     }
 
-    try {
-      setIsLoading(true);
-
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step8",
-      //     abilities: selectedAbilities,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            abilities: selectedAbilities,
-            currentStep: "catfawn/step8",
-          })
-        );
-
-        router.replace("/catfawn/step8");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save abilities", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        abilities: selectedAbilities,
+        currentStep: "catfawn/step8",
+      })
+    );
+    router.replace("/catfawn/step8");
+    setIsLoading(false);
   };
 
   return (
@@ -140,7 +114,7 @@ const Step7VC = () => {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 7 of 14: Attributes{" "}
+          Step 7 of 15: Attributes{" "}
           <span className="font-normal font-avenir">
             You already carry powerful abilities—gifts shaped by your experience,
             your nature, and your relationships. When named, they can become

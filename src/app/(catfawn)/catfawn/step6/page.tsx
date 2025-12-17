@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
 import Spinner from "../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -68,48 +67,25 @@ const Step6VC = () => {
   };
 
   const submitStep6 = async () => {
+    setIsLoading(true)
     if (selectedChallenges.length < 3) {
       createMessage("Please select at least 3 challenges.", "error");
+      setIsLoading(false)
       return;
     }
 
-    try {
-      setIsLoading(true);
-
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step7",
-      //     challenges: selectedChallenges,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            challenges: selectedChallenges,
-            currentStep: "catfawn/step7",
-          })
-        );
-
-        router.replace("/catfawn/step7");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save challenges", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        challenges: selectedChallenges,
+        currentStep: "catfawn/step7",
+      })
+    );
+    router.replace("/catfawn/step7");
+    setIsLoading(false);
   };
+
 
   return (
     <>
@@ -140,7 +116,7 @@ const Step6VC = () => {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 6 of 14: Challenges.{" "}
+          Step 6 of 15: Challenges.{" "}
           <span className="font-normal font-avenir">
             The CAT-FAWN Connection can help you navigate the challenges you’re
             facing—whether they relate to personal growth, professional life, or

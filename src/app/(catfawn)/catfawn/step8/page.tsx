@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
 import Spinner from "../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -55,7 +54,7 @@ const step8 = () => {
   }, []);
 
   const handleChange = (selected: string[]) => {
-    setSelectedAspirations(selected)
+    setSelectedAspirations(selected);
     console.log("Selected:", selected);
   };
 
@@ -67,43 +66,25 @@ const step8 = () => {
   };
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     if (selectedAspirations.length < 3) {
-      createMessage("Please select at least 3 aspirations.", "error")
+      createMessage("Please select at least 3 aspirations.", "error");
+      setIsLoading(false);
       return;
     }
 
-    try {
-      setIsLoading(true);
-      // const res = await axios.patch("/api/visitors/update-visitors", {
-      //   email: cachedData.email,
-      //   currentStep: 'catfawn/step9',
-      //   aspirations: selectedAspirations
-      // },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   });
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            aspirations: selectedAspirations,
-            currentStep: "catfawn/step9",
-          })
-        );
-
-        router.replace("/catfawn/step9");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save abilities", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        aspirations: selectedAspirations,
+        currentStep: "catfawn/step9",
+      })
+    );
+    router.replace("/catfawn/step9");
+    setIsLoading(false);
   };
+
   return (
     <>
       {showMsg && (
@@ -133,11 +114,11 @@ const step8 = () => {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 8 of 14: Aspirations.{" "}
+          Step 8 of 15: Aspirations.{" "}
           <span className="font-normal font-avenir">
             What are you working toward — in your life, your community, or the
-            wider world? These aspirations help CAT-FAWN understand the values and
-            directions that matter to you.
+            wider world? These aspirations help CAT-FAWN understand the values
+            and directions that matter to you.
           </span>
         </p>
 
@@ -146,7 +127,11 @@ const step8 = () => {
         </p>
 
         <div className="mt-[3.375rem]">
-          <ChallengePills challenges={ASPIRATIONS} onChange={handleChange} min={3} />
+          <ChallengePills
+            challenges={ASPIRATIONS}
+            onChange={handleChange}
+            min={3}
+          />
         </div>
 
         <button

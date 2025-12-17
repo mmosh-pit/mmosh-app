@@ -147,7 +147,7 @@ export default function Step4VC() {
           Request Early Access
         </h2>
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 4 of 14: Tell Us More About Yourself.{" "}
+          Step 4 of 15: Tell Us More About Yourself.{" "}
           <span className="font-normal font-avenir">
             How do you hope to use the CAT-FAWN Connection?{" "}
           </span>

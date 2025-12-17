@@ -146,7 +146,7 @@ const Step5VC1 = () => {
         </h2>
 
         <p className="text-[#FFFFFFE5] font-bold mt-1">
-          Step 5 of 15: Your CAT FAWN Source Code.
+          Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-sm text-[#FFFFFFE5] mt-6">

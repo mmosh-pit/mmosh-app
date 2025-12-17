@@ -153,11 +153,12 @@ const Step5VC8 = () => {
         </h2>
 
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 5 of 15: Your CAT FAWN Source Code.
+          Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
-          You have a difficult decision to make. Do you:
+          Your town’s council is having a meeting to consider some changes that
+          may affect your neighborhood. Do you:{" "}
         </p>
 
         <ul className="flex justify-end gap-[0.625rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em]">

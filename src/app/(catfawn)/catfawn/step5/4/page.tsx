@@ -32,8 +32,14 @@ const Step5VC4 = () => {
   };
 
   const LIKERT_QUESTIONS = [
-    { id: "q1", text: "Put it through its paces and bring it in carefully for a landing." },
-    { id: "q2", text: "Get a feel for the plane by soaring and spiraling for a while." },
+    {
+      id: "q1",
+      text: "Put it through its paces and bring it in carefully for a landing.",
+    },
+    {
+      id: "q2",
+      text: "Get a feel for the plane by soaring and spiraling for a while.",
+    },
     { id: "q3", text: "Try some flips and aerobatics with it." },
     {
       id: "q4",
@@ -148,11 +154,11 @@ const Step5VC4 = () => {
         </h2>
 
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 5 of 15: Your CAT FAWN Source Code.
+          Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
         <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
-          You have a difficult decision to make. Do you:
+          You have a new model airplane you’re flying by remote control. Do you:{" "}
         </p>
 
         <ul className="flex justify-end gap-[0.625rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em]">

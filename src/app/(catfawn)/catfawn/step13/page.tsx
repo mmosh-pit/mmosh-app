@@ -1,11 +1,9 @@
-// step5
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-// import toast from "react-hot-toast";
 
 export default function Step13VC() {
   const router = useRouter();

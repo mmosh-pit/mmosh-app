@@ -19,6 +19,8 @@ export default function Step12VC() {
   const [msgText, setMsgText] = useState("");
   const [hasInvalid, setHasInvalid] = React.useState<boolean>(false);
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
+  const [hasLoadingResendOTP, setHasLoadingResendOTP] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -98,7 +100,7 @@ export default function Step12VC() {
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const res = await axios.post("/api/visitors/verify-otp", {
         email: cachedData.email,
         otp: enteredOtp,
@@ -129,16 +131,19 @@ export default function Step12VC() {
 
   const resendOTP = async () => {
     setHasInvalid(false);
+    setHasLoadingResendOTP(true);
     const result = await axios.post("/api/visitors/resend-otp", {
       mobile: cachedData.mobileNumber,
       countryCode: cachedData.countryCode,
       type: "sms",
     });
     if (result.data.status) {
+      setOtp(["", "", "", "", "", ""]);
       createMessage(result.data.message, "success");
     } else {
       createMessage(result.data.message, "error");
     }
+    setHasLoadingResendOTP(false);
   };
 
   const createMessage = (message: string, type: "success" | "error") => {

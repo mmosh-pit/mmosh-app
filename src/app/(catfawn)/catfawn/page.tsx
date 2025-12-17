@@ -42,7 +42,7 @@ export default function Home() {
     if (!formData.email.trim()) {
       createMessage("Email is required", "error");
       return false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+    } else if (!/^[^\s@]+@[^\s@]+\.com$/i.test(formData.email.trim())) {
       createMessage("Please enter a valid email", "error");
       return false;
     }

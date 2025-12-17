@@ -1,115 +1,255 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
-export default function Step15VC() {
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import Spinner from "../components/Spinner";
+import { uploadFile } from "@/app/lib/firebase";
+
+
+const Step15VC = () => {
   const router = useRouter();
+
+  const [cachedData, setCachedData] = useState({
+    email: "",
+    currentStep: "",
+  });
+
+  const [avatar, setAvatar] = useState<File | null>(null);
+
+  const [lastName, setLastName] = useState("");
+  const [bio, setBio] = useState("");
+  const [webLink, setWebLink] = useState("");
+
+
   const [isLoading, setIsLoading] = useState(false);
+  const [showMsg, setShowMsg] = useState(false);
+  const [msgText, setMsgText] = useState("");
+  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+
+  const createMessage = (message: string, type: "success" | "error") => {
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    setTimeout(() => setShowMsg(false), 4000);
+  };
+
+  useEffect(() => {
+    const stored = localStorage.getItem("catfawn-data");
+    if (!stored) {
+      router.replace("/");
+      return;
+    }
+
+    try {
+      const result = JSON.parse(stored);
+      setCachedData(result);
+
+      if (result.currentStep !== "catfawn/step15") {
+        router.replace(`/${result.currentStep}`);
+      }
+    } catch {
+      router.replace("/");
+    }
+  }, [router]);
+
+  const isValidUrl = (url: string) => {
+    try {
+      const parsed = new URL(url);
+      return ["http:", "https:"].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
+
+  const handleNext = async () => {
+    const missingFields: string[] = [];
+
+    if (!avatar) missingFields.push("Avatar");
+    if (!lastName.trim()) missingFields.push("Last Name");
+    if (!bio.trim()) missingFields.push("Bio");
+    if (!webLink.trim()) missingFields.push("Web Link");
+
+    if (missingFields.length > 0) {
+      createMessage(`${missingFields.join(", ")} is required`, "error");
+      return;
+    }
+
+    if (!isValidUrl(webLink.trim())) {
+      createMessage("Please enter a valid web link (http or https).", "error");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const avatarUrl = await uploadFile(
+        avatar as File,
+        cachedData.email || "user",
+        "avatars"
+      ); const res = await axios.patch(
+        "/api/visitors/update-visitors",
+        {
+          email: cachedData.email,
+          currentStep: "catfawn/step16",
+
+          avatar: avatarUrl,
+          lastName: lastName,
+          bio: bio,
+          web: webLink,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }
+      );
+
+      if (res.data.status) {
+        localStorage.setItem(
+          "catfawn-data",
+          JSON.stringify({
+            ...cachedData,
+            currentStep: "catfawn/step16",
+          })
+        );
+
+        // final step → redirect
+        router.replace("/success");
+      } else {
+        createMessage(res.data.message, "error");
+      }
+    } catch (err: any) {
+      createMessage(
+        err?.response?.data?.message || "Something went wrong",
+        "error"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   return (
-    <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-      <h2 className="relative font-poppins text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-        <div className="absolute left-0">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M20 12L4 12M4 12L10 6M4 12L10 18"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+    <>
+      {showMsg && (
+        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
+          <MessageBanner type={msgClass} message={msgText} />
         </div>
-        Request Early Access
-      </h2>
+      )}
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
 
-      <p className="text-[#FFFFFFE5] text-center text-[1rem] max-md:text-sm font-normal leading-[100%] mt-[0.688rem] -tracking-[0.02em]">
-        You’re in. Welcome to CAT FAWN Early Access
-      </p>
+        <h2 className="text-center text-[1.563rem] font-bold text-white">
+          Request Early Access
+        </h2>
 
-      <div className="text-[#FFFFFFE5] mt-[0.313rem] text-[1rem] leading-[100%] font-normal max-lg:text-start text-wrap -tracking-[0.02em]">
-        <p>
-          You can start connecting with CAT FAWN by email, text message,
-          Telegram and BlueSky today. They’ll be sure to contact you by email as
-          soon as:
+        <p className="text-white/80 mt-1">
+          Step 16 of 16: Your Contact Details
         </p>
 
-        <ul className="list-disc mt-[0.125rem] ml-5">
-          <li> The mobile app becomes available</li>
-          <li> We schedule small early access circles or live sessions</li>
-          <li> The public launch date is set</li>
-        </ul>
+        <form className="mt-4">
+          {/* Avatar */}
+          <span className="text-sm text-white/80">Avatar selection *</span>
 
-        <p className="mt-px leading-[130%]">
-          In the meantime, please subscribe to our blog for occasional updates
-          about Four Arrows’ work and the evolution of CAT-FAWN
-          <br />
-          Connection.
-        </p>
-      </div>
-
-      <form className="mt-[0.313rem] text-[1rem]">
-        <div>
-          <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC]">
-            Subscribe to the blog
+          <label
+            htmlFor="avatar-input"
+            className="w-[7.5rem] h-[5.938rem] rounded-xl bg-[#402A2A] border border-white/20 flex items-center justify-center cursor-pointer mt-2 overflow-hidden"
+          >
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="Avatar preview"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-xs text-white/70">Select</span>
+            )}
           </label>
 
-          <div className="flex gap-[0.625rem]">
+
+          <input
+            id="avatar-input"
+            type="file"
+            accept=".jpeg,.jpg,.png"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+
+              const allowedTypes = ["image/jpeg", "image/png"];
+              if (!allowedTypes.includes(file.type)) {
+                createMessage("Only JPEG, JPG, or PNG images are allowed.", "error");
+                e.target.value = "";
+                return;
+              }
+
+              const maxSize = 500 * 1024; // 500 KB
+              if (file.size > maxSize) {
+                createMessage("Image size must be less than 500 KB.", "error");
+                e.target.value = "";
+                return;
+              }
+
+              setAvatar(file);
+
+              // ✅ Create preview
+              const previewUrl = URL.createObjectURL(file);
+              setAvatarPreview(previewUrl);
+            }}
+          />
+
+
+          {/* Last Name */}
+          <div className="mt-3">
+            <span className="text-sm text-white/80">Last Name *</span>
             <input
               type="text"
-              placeholder="Subscribe to the blog"
-              className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
+              value={lastName}
+              placeholder="Last Name"
+              className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
+              onChange={(e) => setLastName(e.target.value.trim())}
             />
-
-            <button
-              style={{ textWrap: "nowrap" }}
-              className="w-[7.625rem] h-[3.438rem] pt-[1.25rem] pb-[1.063rem] px-[0.688rem] leading-[130%] -tracking-[0.02em] font-avenirNext font-semibold text-[0.875rem] rounded-[0.375rem] bg-[#FF710F] text-[#37191D]"
-            >
-              Subscribe Now
-            </button>
           </div>
 
-          <p className="mt-[0.313rem] text-[0.813rem] leading-[100%] -tracking-[0.02em]">
-            Thank you for helping us bring fearlessness, self-authorship, sacred
-            communication, and inner nature into the world through worldview
-            reflection and trance-based
-            <br /> learning.
-          </p>
-        </div>
+          {/* Bio */}
+          <div className="mt-3">
+            <span className="text-sm text-white/80">Bio *</span>
+            <input
+              type="text"
+              value={bio}
+              placeholder="Bio"
+              className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
+              onChange={(e) => setBio(e.target.value.trim())}
+            />
+          </div>
 
-        <button
-          type="button"
-          className="mt-[1.313rem] font-avenirNext h-[3.125rem] w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90"
-          onClick={() => {
-          setIsLoading(true);
+          {/* Web link */}
+          <div className="mt-3">
+            <span className="text-sm text-white/80">Web Link *</span>
+            <input
+              type="text"
+              value={webLink}
+              placeholder="http://myweb.com"
+              className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
+              onChange={(e) => setWebLink(e.target.value.trim())}
+            />
+          </div>
 
-          // ✅ read existing data
-          const stored = localStorage.getItem("catfawn-data");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-
-            // ✅ update step
-            localStorage.setItem(
-              "catfawn-data",
-              JSON.stringify({
-                ...parsed,
-                currentStep: "catfawn/step16",
-              })
-            );
-          }
-          router.replace("/catfawn/step16")
-        }
-      }
-        >
-          Thanks!
-        </button>
-      </form>
-    </div>
+          <button
+            type="button"
+            className="w-full h-[3.125rem] mt-5 bg-[#FF710F] text-[#2C1316] font-bold rounded-lg"
+            onClick={handleNext}
+          >
+            {isLoading && <Spinner size="sm" />}
+            Next
+          </button>
+        </form>
+      </div>
+    </>
   );
-}
+};
+
+export default Step15VC;

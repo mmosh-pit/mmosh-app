@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
 import Spinner from "../components/Spinner";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -68,48 +67,25 @@ const Step6VC = () => {
   };
 
   const submitStep6 = async () => {
+    setIsLoading(true)
     if (selectedChallenges.length < 3) {
       createMessage("Please select at least 3 challenges.", "error");
+      setIsLoading(false)
       return;
     }
 
-    try {
-      setIsLoading(true);
-
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step7",
-      //     challenges: selectedChallenges,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            challenges: selectedChallenges,
-            currentStep: "catfawn/step7",
-          })
-        );
-
-        router.replace("/catfawn/step7");
-      // } else {
-      //   createMessage(res.data.message || "Failed to save challenges", "error");
-      // }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        challenges: selectedChallenges,
+        currentStep: "catfawn/step7",
+      })
+    );
+    router.replace("/catfawn/step7");
+    setIsLoading(false);
   };
+
 
   return (
     <>

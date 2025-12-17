@@ -111,7 +111,7 @@ const Step5VC5 = () => {
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
-        completedSteps: 9,
+        completedSteps: 10,
       })
     );
     router.replace("/catfawn/step5/6");

@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 interface VerifyOTPBody {
     email: string;
     otp: string;
-    currentStep: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -24,9 +23,9 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { email, otp, currentStep } = validation.data!;
+        const { email, otp } = validation.data!;
 
-        const collection = db.collection("mmosh-app-visitor");
+        const collection = db.collection("mmosh-app-visitor-otp");
 
         const user = await collection.findOne({ email });
 
@@ -80,23 +79,6 @@ export async function POST(req: NextRequest) {
                 { status: 401 }
             );
         }
-
-        // await collection.updateOne(
-        //     { email },
-        //     {
-        //         $set: {
-        //             status: "profile_incomplete",
-        //             isVerified: true,
-        //             currentStep: currentStep || "step3/roles",
-        //             verifiedAt: new Date(),
-        //             updatedAt: new Date(),
-        //         },
-        //         $unset: {
-        //             otpHash: "",
-        //             expiresAt: "",
-        //         },
-        //     }
-        // );
 
         return NextResponse.json(
             {
@@ -164,7 +146,6 @@ function validateRequestBody(body: any): {
         data: {
             email: body.email.trim().toLowerCase(),
             otp: body.otp.trim(),
-            currentStep: body.currentStep
         },
     };
 }

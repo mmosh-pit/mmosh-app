@@ -68,11 +68,10 @@ export default function Step2VC() {
     try {
       setIsLoading(true);
       const result = await axios.post(
-        "/api/visitors/verify-email",
+        "/api/visitors/verify-otp",
         {
           email: cachedData.email,
           otp: code,
-          currentStep: "catfawn/step3",
         },
         {
           headers: {

@@ -28,6 +28,7 @@ export default function Step14VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 25) {
         router.replace(`/${result.currentStep}`);
       }
+      setKinshipCode(result.kinshipCode)
     } catch {
       router.replace("/catfawn");
     }
@@ -84,6 +85,7 @@ export default function Step14VC() {
   };
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);

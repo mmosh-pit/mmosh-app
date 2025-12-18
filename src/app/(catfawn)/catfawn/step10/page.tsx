@@ -84,7 +84,7 @@ export default function Step10VC() {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
@@ -109,14 +109,14 @@ export default function Step10VC() {
           </div>
           Request Early Access
         </h2>
-        <p className="max-sm:text-base font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        <p className="max-sm:text-base font-avenirNext text-[#FFFFFFE5] max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 10 of 15: How do you prefer to be contacted?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply)
           </span>
         </p>
 
-        <form className="mt-[3.438rem] text-[1rem]">
+        <form className="mt-6 lg:mt-[3.438rem] text-[1rem]">
           <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <label className="flex items-center gap-0.5">
               <input

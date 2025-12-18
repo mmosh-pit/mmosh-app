@@ -26,7 +26,7 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
 
   return (
     <div className="py-[0.875rem] relative ps-[0.5rem] pe-[0.313rem] bg-[#271114] rounded-[1.25rem] border border-[rgba(255,255,255,0.16)]">
-      <div className="max-h-[12.938rem]  custom-scroll overflow-y-scroll flex flex-wrap gap-[0.625rem] pe-[0.688rem]">
+      <div className="max-h-[12.938rem] custom-scroll overflow-y-scroll flex flex-wrap gap-[0.375rem] md:gap-[0.625rem] pe-[0.688rem]">
         {challenges.map((item) => {
           const isActive = value.includes(item.label);
 
@@ -35,7 +35,7 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
               key={item.label}
               type="button"
               onClick={() => toggleSelect(item.label)}
-              className={`py-[0.75rem] px-[0.525rem] rounded-full text-[0.875rem] leading-[1rem] font-normal transition border border-[rgba(255,255,255,0.16)]
+              className={`py-2 md:py-[0.75rem] px-[0.525rem] rounded-full text-[0.75rem] md:text-[0.875rem] leading-[1rem] font-normal transition border border-[rgba(255,255,255,0.16)]
               ${
                 isActive
                   ? "bg-[#FF710F] text-black"

@@ -25,7 +25,6 @@ export default function Step12VC() {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) return router.replace("/catfawn");
-
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
@@ -162,7 +161,7 @@ export default function Step12VC() {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
@@ -188,7 +187,7 @@ export default function Step12VC() {
           Request Early Access
         </h2>
 
-        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.04em]">
+        <p className="max-sm:text-[0.725rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.04em]">
           Step 12 of 15: Let’s Confirm Your Mobile Number.{" "}
           <span className="font-normal font-avenir">
             {" "}
@@ -199,11 +198,11 @@ export default function Step12VC() {
         </p>
 
         <form className="mt-[1.188rem] text-[1rem] max-md:text-sm font-normal">
-          <div className="max-lg:text-center">
-            <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC]">
+          <div className="max-sm:w-auto max-lg:w-max mx-auto">
+            <label className="block mb-[0.313rem] text-[0.75rem] md:text-[1rem] leading-[100%] text-[#FFFFFFCC]">
               Enter your 6-digit code
             </label>
-            <div className="flex gap-7 max-xl:gap-4 max-lg:justify-center">
+            <div className="lg:w-[29.75rem] mx-auto flex gap-7 max-sm:gap-[0.525rem] max-xl:gap-4 max-lg:justify-center">
               {otp.map((digit, idx) => (
                 <input
                   key={idx}
@@ -216,12 +215,12 @@ export default function Step12VC() {
                   onChange={(e) => handleOtpChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   onPaste={(e) => handlePaste(e, idx)}
-                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:h-6 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
+                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-[400px]:w-6 max-[400px]:h-6 max-sm:w-8 max-sm:h-8 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
                 />
               ))}
             </div>
 
-            <div className="text-[1rem] leading-[100%] font-normal text-[#FFFFFFCC] flex items-center justify-between mt-[0.313rem]">
+            <div className="text-[0.625rem] md:text-[1rem] leading-[100%] font-normal text-[#FFFFFFCC] flex items-center justify-between mt-[0.313rem]">
               <p>Valid for 10 minutes.</p>
               <p>
                 Need a new code?{" "}

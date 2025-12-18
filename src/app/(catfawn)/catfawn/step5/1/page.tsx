@@ -150,7 +150,7 @@ const Step5VC1 = () => {
       )}
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
@@ -183,7 +183,7 @@ const Step5VC1 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirLtStd mt-[1.813rem] text-[0.938rem] leading-[110%] font-bold -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirLtStd mt-2 lg:mt-[1.813rem] text-[0.938rem] leading-snug lg:leading-[110%] font-bold -tracking-[0.07em]">
           A group is making plans to go out, but nothing’s been decided yet. Are
           you:
         </p>

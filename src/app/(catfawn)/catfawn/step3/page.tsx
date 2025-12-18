@@ -20,8 +20,7 @@ export default function Step3VC() {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      router.replace("/catfawn");
-      return;
+      return router.replace("/catfawn");
     }
 
     try {
@@ -41,8 +40,6 @@ export default function Step3VC() {
         }
       }
 
-
-
       if (result?.completedSteps !== undefined && result?.completedSteps < 2) {
         router.replace(`/${result.currentStep}`);
       }
@@ -51,10 +48,7 @@ export default function Step3VC() {
     }
   }, []);
 
-
-  const formatRole = (value: string) =>
-    value.trim().replace(/\s+/g, "-");
-
+  const formatRole = (value: string) => value.trim().replace(/\s+/g, "-");
 
   const PREDEFINED_ROLES = [
     "change-maker/activist/advocate",
@@ -80,7 +74,6 @@ export default function Step3VC() {
         : prev.filter((item) => item !== formatted)
     );
   };
-
 
   const updateRoles = () => {
     setIsLoading(true);
@@ -126,8 +119,6 @@ export default function Step3VC() {
     setIsLoading(false);
   };
 
-
-
   const createMessage = (message: any, type: any) => {
     window.scrollTo(0, 0);
     setMsgText(message);
@@ -146,7 +137,7 @@ export default function Step3VC() {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer">
             <svg
               width="24"
@@ -154,9 +145,7 @@ export default function Step3VC() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              onClick={() =>
-                router.replace("/catfawn")
-              }
+              onClick={() => router.replace("/catfawn")}
             >
               <path
                 d="M20 12L4 12M4 12L10 6M4 12L10 18"
@@ -170,7 +159,7 @@ export default function Step3VC() {
           Request Early Access
         </h2>
 
-        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 3 of 15: Tell Us More About Yourself.{" "}
           <span className="font-normal font-avenir">
             {" "}
@@ -181,7 +170,7 @@ export default function Step3VC() {
           </span>
         </p>
 
-        <div className="max-sm:text-base font-bold leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
+        <div className="max-sm:text-base font-bold leading-snug lg:leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
           How do you see yourself in the world?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply, required)
@@ -194,9 +183,14 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("change-maker/activist/advocate"))}
+                checked={roles.includes(
+                  formatRole("change-maker/activist/advocate")
+                )}
                 onChange={(e) =>
-                  handleRoleChange("change-maker/activist/advocate", e.target.checked)
+                  handleRoleChange(
+                    "change-maker/activist/advocate",
+                    e.target.checked
+                  )
                 }
               />
               Change-maker/Activist/Advocate

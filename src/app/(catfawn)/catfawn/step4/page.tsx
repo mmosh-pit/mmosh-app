@@ -1,6 +1,4 @@
-// step3b
 "use client";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import React from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -19,6 +17,23 @@ export default function Step4VC() {
   const [otherIntentEnabled, setOtherIntentEnabled] = React.useState(false);
   const [otherIntentText, setOtherIntentText] = React.useState("");
 
+  const PREDEFINED_INTENTS = [
+    "to-face-challenges-in-my-life-work-and-relationships-with-more-clarity-presence-and-wisdom",
+    "to-turn-my-strengths-into-superpowers",
+    "to-create-meaningful-change-in-my-community-or-the-world",
+    "to-break-old-patterns-and-respond-instead-of-react",
+    "to-relate-to-fear-differently-seeing-it-as-a-catalyst-not-an-enemy",
+    "to-strengthen-my-inner-authority-and-self-authorship",
+    "to-use-my-words-as-sacred-intentional-powerful-communications",
+    "to-remember-my-inner-nature-and-experience-the-wisdom-of-the-natural-world",
+    "to-bring-more-respect-reciprocity-and-relational-wisdom-into-my-life",
+    "to-support-my-healing-therapy-or-spiritual-growth",
+    "to-enhance-my-work-with-clients-students-or-communities",
+    "to-grow-into-a-healthier-more-powerful-version-of-myself",
+    "to-strengthen-my-professional-skills-and-effectiveness-at-work",
+  ];
+
+
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
@@ -27,7 +42,19 @@ export default function Step4VC() {
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-      console;
+      if (Array.isArray(result.intent)) {
+        setIntents(result.intent);
+
+        const other = result.intent.find(
+          (i: string) => !PREDEFINED_INTENTS.includes(formatIntent(i))
+        );
+
+        if (other) {
+          setOtherIntentEnabled(true);
+          setOtherIntentText(other.replace(/-/g, " "));
+        }
+      }
+
       if (result?.completedSteps !== undefined && result?.completedSteps < 3) {
         router.replace(`/${result.currentStep}`);
       }
@@ -39,26 +66,23 @@ export default function Step4VC() {
   const handleIntentChange = (value: string, checked: boolean) => {
     if (value === "other") {
       setOtherIntentEnabled(checked);
-
-      if (!checked) {
-        setOtherIntentText("");
-        setIntents((prev) => prev.filter((item) => item !== "other-custom"));
-      }
-
+      if (!checked) setOtherIntentText("");
       return;
     }
 
     const formatted = formatIntent(value);
 
-    if (checked) {
-      setIntents((prev) => [...prev, formatted]);
-    } else {
-      setIntents((prev) => prev.filter((item) => item !== formatted));
-    }
+    setIntents((prev) =>
+      checked
+        ? Array.from(new Set([...prev, formatted]))
+        : prev.filter((item) => item !== formatted)
+    );
   };
 
-  const updateIntent = async () => {
+
+  const updateIntent = () => {
     setIsLoading(true);
+
     if (intents.length === 0 && !otherIntentText.trim()) {
       createMessage(
         otherIntentEnabled
@@ -70,18 +94,21 @@ export default function Step4VC() {
       return;
     }
 
-    let finalIntents = [...intents];
+    let finalIntents = intents.filter((intent) =>
+      PREDEFINED_INTENTS.includes(intent)
+    );
 
     if (otherIntentEnabled) {
       if (!otherIntentText.trim()) {
-        createMessage("Please enter your other Iintent.", "error");
+        createMessage("Please enter your other intent.", "error");
         setIsLoading(false);
         return;
       }
 
-      const formattedOther = formatIntent(otherIntentText);
-      finalIntents.push(formattedOther);
+      finalIntents.push(formatIntent(otherIntentText));
     }
+
+    finalIntents = Array.from(new Set(finalIntents));
 
     localStorage.setItem(
       "catfawn-data",
@@ -92,13 +119,15 @@ export default function Step4VC() {
         completedSteps: 4,
       })
     );
+
     router.replace("/catfawn/step5");
     setIsLoading(false);
   };
 
-  const formatIntent = (value: string) => {
-    return value.trim().toLowerCase().replace(/\s+/g, "-");
-  };
+
+  const formatIntent = (value: string) =>
+    value.trim().replace(/\s+/g, "-");
+
 
   const createMessage = (message: any, type: any) => {
     window.scrollTo(0, 0);
@@ -119,7 +148,7 @@ export default function Step4VC() {
       )}
       <div className="min-h-[36.313rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[2.688rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div className="absolute left-0 cursor pointer">
             <svg
               width="24"
               height="24"
@@ -161,6 +190,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-face-challenges-in-my-life-work-and-relationships-with-more-clarity-presence-and-wisdom"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-face-challenges-in-my-life-work-and-relationships-with-more-clarity-presence-and-wisdom",
@@ -175,6 +209,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-turn-my-strengths-into-superpowers"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-turn-my-strengths-into-superpowers",
@@ -188,6 +227,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-create-meaningful-change-in-my-community-or-the-world"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-create-meaningful-change-in-my-community-or-the-world",
@@ -201,6 +245,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-break-old-patterns-and-respond-instead-of-react"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-break-old-patterns-and-respond-instead-of-react",
@@ -214,6 +263,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-relate-to-fear-differently-seeing-it-as-a-catalyst-not-an-enemy"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-relate-to-fear-differently-seeing-it-as-a-catalyst-not-an-enemy",
@@ -228,6 +282,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-strengthen-my-inner-authority-and-self-authorship"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-strengthen-my-inner-authority-and-self-authorship",
@@ -241,6 +300,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-use-my-words-as-sacred-intentional-powerful-communications"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-use-my-words-as-sacred-intentional-powerful-communications",
@@ -254,6 +318,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-remember-my-inner-nature-and-experience-the-wisdom-of-the-natural-world"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-remember-my-inner-nature-and-experience-the-wisdom-of-the-natural-world",
@@ -268,6 +337,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-bring-more-respect-reciprocity-and-relational-wisdom-into-my-life"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-bring-more-respect-reciprocity-and-relational-wisdom-into-my-life",
@@ -282,6 +356,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-support-my-healing-therapy-or-spiritual-growth"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-support-my-healing-therapy-or-spiritual-growth",
@@ -295,6 +374,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-enhance-my-work-with-clients-students-or-communities"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-enhance-my-work-with-clients-students-or-communities",
@@ -308,6 +392,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-grow-into-a-healthier-more-powerful-version-of-myself"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-grow-into-a-healthier-more-powerful-version-of-myself",
@@ -321,6 +410,11 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={intents.includes(
+                  formatIntent(
+                    "to-strengthen-my-professional-skills-and-effectiveness-at-work"
+                  )
+                )}
                 onChange={(e) =>
                   handleIntentChange(
                     "to-strengthen-my-professional-skills-and-effectiveness-at-work",
@@ -334,6 +428,7 @@ export default function Step4VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={otherIntentEnabled}
                 onChange={(e) => handleIntentChange("other", e.target.checked)}
               />
               Other

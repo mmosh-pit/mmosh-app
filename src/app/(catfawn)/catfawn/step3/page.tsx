@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
@@ -32,17 +31,8 @@ export default function Step3VC() {
       if (Array.isArray(result.roles)) {
         setRoles(result.roles);
 
-        const predefined = [
-          "change-maker/activist/advocate",
-          "educator/teacher",
-          "coach/trainer/guide",
-          "healer/therapist",
-          "leader",
-          "student/learner",
-        ].map(normalizeRole);
-
         const other = result.roles.find(
-          (r: string) => !predefined.includes(normalizeRole(r))
+          (r: string) => !PREDEFINED_ROLES.includes(formatRole(r))
         );
 
         if (other) {
@@ -50,6 +40,7 @@ export default function Step3VC() {
           setOtherRoleText(other.replace(/-/g, " "));
         }
       }
+
 
 
       if (result?.completedSteps !== undefined && result?.completedSteps < 2) {
@@ -64,8 +55,6 @@ export default function Step3VC() {
   const formatRole = (value: string) =>
     value.trim().replace(/\s+/g, "-");
 
-  const normalizeRole = (value: string) =>
-    value.trim().toLowerCase().replace(/\s+/g, "-");
 
   const PREDEFINED_ROLES = [
     "change-maker/activist/advocate",
@@ -74,32 +63,26 @@ export default function Step3VC() {
     "healer/therapist",
     "leader",
     "student/learner",
-  ].map(normalizeRole);
-
-
+  ].map(formatRole);
 
   const handleRoleChange = (value: string, checked: boolean) => {
     if (value === "other") {
       setOtherRoleEnabled(checked);
-
-      if (!checked) {
-        setOtherRoleText("");
-        setRoles((prev) => prev.filter((item) => item !== "other-custom"));
-      }
-
+      if (!checked) setOtherRoleText("");
       return;
     }
 
     const formatted = formatRole(value);
 
-    if (checked) {
-      setRoles((prev) => [...prev, formatted]);
-    } else {
-      setRoles((prev) => prev.filter((item) => item !== formatted));
-    }
+    setRoles((prev) =>
+      checked
+        ? Array.from(new Set([...prev, formatted]))
+        : prev.filter((item) => item !== formatted)
+    );
   };
 
-  const updateRoles = async () => {
+
+  const updateRoles = () => {
     setIsLoading(true);
 
     if (roles.length === 0 && !otherRoleText.trim()) {
@@ -113,8 +96,8 @@ export default function Step3VC() {
       return;
     }
 
-    let finalRoles = roles.filter(role =>
-      PREDEFINED_ROLES.includes(normalizeRole(role))
+    let finalRoles = roles.filter((role) =>
+      PREDEFINED_ROLES.includes(formatRole(role))
     );
 
     if (otherRoleEnabled) {
@@ -126,6 +109,8 @@ export default function Step3VC() {
 
       finalRoles.push(formatRole(otherRoleText));
     }
+
+    finalRoles = Array.from(new Set(finalRoles)); // ✅ dedupe
 
     localStorage.setItem(
       "catfawn-data",

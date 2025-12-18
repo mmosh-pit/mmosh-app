@@ -136,6 +136,7 @@ export default function Step12VC() {
       mobile: cachedData.mobileNumber,
       countryCode: cachedData.countryCode,
       type: "sms",
+      email: cachedData.email,
     });
     if (result.data.status) {
       setOtp(["", "", "", "", "", ""]);

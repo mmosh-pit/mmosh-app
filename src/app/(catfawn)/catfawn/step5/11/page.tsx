@@ -45,70 +45,94 @@ const Step5VC11 = () => {
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
   const [isLoading, setIsLoading] = useState(false);
 
-  React.useEffect(() => {
-    const stored = localStorage.getItem("catfawn-data");
-    if (!stored) {
-      return router.replace("/catfawn");
-    }
-    try {
-      const result = JSON.parse(stored);
-      setCachedData(result);
-      console;
-      if (result?.completedSteps !== undefined && result?.completedSteps < 15) {
-        router.replace(`/${result.currentStep}`);
+  const formatLikertKey = (text: string) =>
+      text
+        .trim()
+        .replace(/[^\w\s]/g, "")
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+  
+    React.useEffect(() => {
+      const stored = localStorage.getItem("catfawn-data");
+      if (!stored) {
+        router.replace("/catfawn");
+        return;
       }
-    } catch {
-      router.replace("/catfawn");
-    }
-  }, []);
-
-  const createMessage = (message: string, type: "success" | "error") => {
-    setMsgText(message);
-    setMsgClass(type);
-    setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
-  };
-
-  const likertAnswers = LIKERT_QUESTIONS.reduce(
-    (acc, q) => {
+  
+      try {
+        const result = JSON.parse(stored);
+        setCachedData(result);
+  
+        if (result.likertAnswers) {
+          const restoredForm: any = { q1: null, q2: null, q3: null, q4: null };
+  
+          LIKERT_QUESTIONS.forEach((q) => {
+            const key = formatLikertKey(q.text);
+            const label = result.likertAnswers[key];
+  
+            if (label) {
+              const value = Number(
+                Object.keys(LIKERT_LABELS).find(
+                  (k) => LIKERT_LABELS[Number(k)] === label
+                )
+              );
+  
+              restoredForm[q.id] = value ?? null;
+            }
+          });
+  
+          setForm(restoredForm);
+        }
+  
+        if (result?.completedSteps !== undefined && result?.completedSteps < 15) {
+          router.replace(`/${result.currentStep}`);
+        }
+      } catch {
+        router.replace("/catfawn");
+      }
+    }, []);
+  
+  
+    const createMessage = (message: string, type: "success" | "error") => {
+      window.scrollTo(0, 0);
+      setMsgText(message);
+      setMsgClass(type);
+      setShowMsg(true);
+      setTimeout(() => setShowMsg(false), 4000);
+    };
+  
+    const likertAnswers = LIKERT_QUESTIONS.reduce((acc, q) => {
       const value = form[q.id as keyof typeof form];
+  
       if (value !== null) {
-        acc[
-          q.text
-            .trim()
-            .replace(/[^\w\s]/g, "")
-            .replace(/\s+/g, "-")
-        ] = LIKERT_LABELS[value];
+        acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
       }
+  
       return acc;
-    },
-    {} as Record<string, string>
-  );
-
-  const submitStep5 = async () => {
-    setIsLoading(true);
-    if (Object.values(form).some((v) => v === null)) {
-      createMessage("Please answer all questions.", "error");
-      setIsLoading(false);
-      return;
-    }
-    const existingData = JSON.parse(
-      localStorage.getItem("catfawn-data") || "{}"
-    );
-    localStorage.setItem(
-      "catfawn-data",
-      JSON.stringify({
-        ...cachedData,
-        currentStep: "catfawn/step5/12",
-        likertAnswers: {
-          ...(existingData.likertAnswers || {}),
-          ...likertAnswers,
-        },
-        completedSteps: 16,
-      })
-    );
-    router.replace("/catfawn/step5/12");
-  };
+    }, {} as Record<string, string>);
+  
+    const submitStep5 = async () => {
+      setIsLoading(true);
+      if (Object.values(form).some((v) => v === null)) {
+        createMessage("Please answer all questions.", "error");
+        setIsLoading(false);
+        return;
+      }
+      const existingData = cachedData
+      localStorage.setItem(
+        "catfawn-data",
+        JSON.stringify({
+          ...cachedData,
+          currentStep: "catfawn/step5/12",
+          likertAnswers: {
+            ...(existingData.likertAnswers || {}),
+            ...likertAnswers,
+          },
+          completedSteps: 16,
+        })
+      );
+      router.replace("/catfawn/step5/12");
+    };
 
   return (
     <>

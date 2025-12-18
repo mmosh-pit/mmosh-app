@@ -103,6 +103,7 @@ const Step5VC2 = () => {
     }, []);
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);

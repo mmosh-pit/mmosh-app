@@ -12,7 +12,6 @@ const Step15VC = () => {
   const [cachedData, setCachedData] = useState<any>({});
 
   const [avatar, setAvatar] = useState<File | null>(null);
-
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
   const [webLink, setWebLink] = useState("");
@@ -95,28 +94,23 @@ const Step15VC = () => {
         cachedData.email || "user",
         "avatars"
       );
-      localStorage.setItem(
-        "catfawn-data",
-        JSON.stringify({
-          ...cachedData,
-          currentStep: "catfawn/step15",
-          avatarUrl: avatarUrl,
-          lastName: lastName,
-          bio: bio,
-          web: webLink,
-          completedSteps: 27,
-        })
-      );
 
-      const data = localStorage.getItem("catfawn-data");
+      const updatedData = {
+        ...cachedData,
+        avatarUrl,
+        lastName,
+        bio,
+        web: webLink,
+        completedSteps: 27,
+      };
 
-      if (!data) return;
+      localStorage.setItem("catfawn-data", JSON.stringify(updatedData));
 
-      const finalData = JSON.parse(data);
+      await axios.post("/api/visitors/save", updatedData);
 
-      const res = await axios.post("/api/visitors/save", finalData);
+      createMessage("Successfully register the user information.", "success");
 
-      createMessage("Successfully Completed", "success");
+      router.replace("/join");
     } catch (err: any) {
       createMessage(
         err?.response?.data?.message || "Something went wrong",
@@ -125,6 +119,28 @@ const Step15VC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const saveImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      createMessage("Only JPEG, JPG, or PNG images are allowed.", "error");
+      e.target.value = "";
+      return;
+    }
+
+    const maxSize = 500 * 1024;
+    if (file.size > maxSize) {
+      createMessage("Image size must be less than 500 KB.", "error");
+      e.target.value = "";
+      return;
+    }
+
+    setAvatar(file);
+    setAvatarPreview(URL.createObjectURL(file));
   };
 
   return (
@@ -137,7 +153,7 @@ const Step15VC = () => {
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative text-center font-poppinsNew text-[1.563rem] font-bold text-white">
           <div
-            className="absolute top-1/2 -translate-y-1/2 left-0"
+            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
               router.replace("/catfawn/step14");
             }}
@@ -188,33 +204,9 @@ const Step15VC = () => {
             type="file"
             accept=".jpeg,.jpg,.png"
             className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-
-              const allowedTypes = ["image/jpeg", "image/png"];
-              if (!allowedTypes.includes(file.type)) {
-                createMessage(
-                  "Only JPEG, JPG, or PNG images are allowed.",
-                  "error"
-                );
-                e.target.value = "";
-                return;
-              }
-
-              const maxSize = 500 * 1024;
-              if (file.size > maxSize) {
-                createMessage("Image size must be less than 500 KB.", "error");
-                e.target.value = "";
-                return;
-              }
-
-              setAvatar(file);
-
-              const previewUrl = URL.createObjectURL(file);
-              setAvatarPreview(previewUrl);
-            }}
+            onChange={(e) => saveImage(e)}
           />
+
           <div className="mt-3">
             <span className="text-sm text-white/80">Last Name *</span>
             <input

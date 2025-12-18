@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     if (type === "sms") {
       await collection.updateOne(
-        { mobile, countryCode },
+        { email },
         {
           $set: {
             otpHash,
@@ -76,8 +76,7 @@ export async function POST(req: NextRequest) {
             updatedAt: new Date(),
           },
           $setOnInsert: {
-            mobile,
-            countryCode,
+            email,
             createdAt: new Date(),
           },
         },

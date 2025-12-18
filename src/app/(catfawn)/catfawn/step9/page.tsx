@@ -32,6 +32,9 @@ export default function Step9VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 20) {
         router.replace(`/${result.currentStep}`);
       }
+      if (Array.isArray(result.mobilePreference)) {
+        setMobilePreferences(result.mobilePreference);
+      }
     } catch {
       router.replace("/catfawn");
     }
@@ -44,6 +47,7 @@ export default function Step9VC() {
   };
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -114,6 +118,7 @@ export default function Step9VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={mobilePreferences.includes("iPhone")}
                 onChange={(e) =>
                   handleMobilePreferenceChange("iPhone", e.target.checked)
                 }
@@ -124,6 +129,7 @@ export default function Step9VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={mobilePreferences.includes("android")}
                 onChange={(e) =>
                   handleMobilePreferenceChange("android", e.target.checked)
                 }

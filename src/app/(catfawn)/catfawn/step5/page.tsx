@@ -50,7 +50,7 @@ const Step5VC = () => {
         </div>
         Request Early Access
       </h2>
-      <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+      <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
         Step 5 of 15: Your CAT FAWN Source Code.{" "}
         <span className="font-normal font-avenir">
           The CAT FAWN Connection encourages personal growth, professional
@@ -71,7 +71,7 @@ const Step5VC = () => {
         </ul>
       </div>
 
-      <p className="text-[1rem] text-[#FFFFFFE5] max-md:text-sm font-normal leading-[94%] mt-[1.25rem] -tracking-[0.02em] px-[0.313rem]">
+      <p className="text-[1rem] text-[#FFFFFFE5] max-md:text-sm font-normal leading-snug lg:leading-[94%] mt-[1.25rem] -tracking-[0.02em] px-[0.313rem]">
         Rate each response independent of the others; they may be the same or
         different. Some responses may seem equivalent or not applicable to you,
         and some questions may not have any responses that really fit you. Just

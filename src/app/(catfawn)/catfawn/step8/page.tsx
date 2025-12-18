@@ -92,7 +92,7 @@ const step8 = () => {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
@@ -117,7 +117,7 @@ const step8 = () => {
           </div>
           Request Early Access
         </h2>
-        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 8 of 15: Aspirations.{" "}
           <span className="font-normal font-avenir">
             What are you working toward — in your life, your community, or the
@@ -130,7 +130,7 @@ const step8 = () => {
           (Select at least three. You can modify them anytime.)
         </p>
 
-        <div className="mt-[3.375rem]">
+        <div className="mt-7 lg:mt-[3.375rem]">
           <ChallengePills
             challenges={ASPIRATIONS}
             onChange={handleChange}

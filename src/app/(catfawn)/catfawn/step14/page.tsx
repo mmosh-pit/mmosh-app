@@ -98,7 +98,7 @@ export default function Step14VC() {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
@@ -124,7 +124,7 @@ export default function Step14VC() {
           Request Early Access
         </h2>
 
-        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 14 of 15: Create Your Own Kinship Code.
           <span className="font-normal font-avenir">
             Every person in the Kinship ecosystem carries a unique code — a way

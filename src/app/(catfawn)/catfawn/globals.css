@@ -85,7 +85,6 @@ select:-webkit-autofill {
 
 .custom-scroll::-webkit-scrollbar-track {
   background: transparent;
-  margin: 6px 0; /* top & bottom gap */
 }
 
 .custom-scroll::-webkit-scrollbar-thumb {

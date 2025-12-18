@@ -170,7 +170,7 @@ const Step15VC = () => {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative text-center font-poppinsNew text-[1.563rem] font-bold text-white">
+        <h2 className="relative text-center font-poppinsNew text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
@@ -196,7 +196,7 @@ const Step15VC = () => {
           Request Early Access
         </h2>
 
-        <p className="text-white/80 mt-1">
+        <p className="max-sm:text-base font-avenirNext max-md:text-sm font-bold leading-[88%] mt-[0.313rem] -tracking-[0.04em]">
           Step 15 of 15: Your Contact Details
         </p>
 

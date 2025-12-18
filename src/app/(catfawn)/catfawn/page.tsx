@@ -101,8 +101,6 @@ export default function Home() {
             email: formData.email,
             firstName: formData.firstName,
             password: formData.password,
-            hasVerifiedEmail: false,
-            completedSteps: 1,
             currentStep: "catfawn/step3",
           })
         );
@@ -187,7 +185,7 @@ export default function Home() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.313rem]">
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
                 Email address*
               </label>
@@ -202,7 +200,7 @@ export default function Home() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.313rem]">
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
                 Password*
               </label>
@@ -217,7 +215,7 @@ export default function Home() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.313rem]">
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
                 Confirm Password*
               </label>

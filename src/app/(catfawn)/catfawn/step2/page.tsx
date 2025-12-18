@@ -192,7 +192,7 @@ export default function Step2VC() {
             We’ve sent a 6-digit verification code to {cachedData.email}{" "}
           </span>
           <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-relaxed lg:leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
-            <ul className="ml-6 list-disc">
+            <ul className="ml-6 list-disc font-avenir">
               <li>Open your email</li>
               <li>Look for a message from security@kinshipbots.com</li>
               <li>Enter the code below to confirm it’s you</li>

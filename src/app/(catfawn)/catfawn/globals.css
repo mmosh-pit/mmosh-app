@@ -116,7 +116,7 @@ select:-webkit-autofill {
 
 @layer components {
   .steps_btn_submit {
-    @apply font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer;
+    @apply font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] max-sm:text-xs text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer;
   }
 
   .phone-container .simple-phone-input-sri198-main {

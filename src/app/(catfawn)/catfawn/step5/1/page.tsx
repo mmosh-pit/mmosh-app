@@ -179,7 +179,7 @@ const Step5VC1 = () => {
           </div>
         </h2>
 
-        <p className="max-sm:text-base text-[#FFFFFFE5] font-bold mt-[0.375rem]">
+        <p className="max-sm:text-base font-avenirNext text-[#FFFFFFE5] font-bold mt-[0.375rem]">
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 

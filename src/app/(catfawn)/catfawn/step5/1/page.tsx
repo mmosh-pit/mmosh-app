@@ -52,8 +52,7 @@ const Step5VC1 = () => {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      // return router.replace("/catfawn");
-      return;
+      return router.replace("/catfawn");
     }
     try {
       const result = JSON.parse(stored);
@@ -144,16 +143,16 @@ const Step5VC1 = () => {
             </svg>
           </div>
           Request Early Access
-          <div className="font-normal font-avenir absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+          <div className="font-normal font-avenirNext absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
             <span className="font-extrabold">1</span>/12
           </div>
         </h2>
 
-        <p className="text-[#FFFFFFE5] font-bold mt-1">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-bold mt-[0.375rem]">
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="text-[#FFFFFFE5] font-avenirLtStd mt-[1.813rem] text-[0.938rem] leading-[110%] font-bold -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirLtStd mt-[1.813rem] text-[0.938rem] leading-[110%] font-bold -tracking-[0.07em]">
           A group is making plans to go out, but nothing’s been decided yet. Are
           you:
         </p>

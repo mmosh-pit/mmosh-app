@@ -112,7 +112,7 @@ export default function Step12VC() {
           JSON.stringify({
             ...cachedData,
             currentStep: "catfawn/step13",
-            isMobileNumberVerified:true,
+            isMobileNumberVerified: true,
             completedSteps: 24,
           })
         );

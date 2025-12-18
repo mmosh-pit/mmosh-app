@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import LikertQuestion from "../../components/LikertQuestion";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
@@ -49,15 +49,46 @@ const Step5VC1 = () => {
   const [msgText, setMsgText] = useState("");
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
+  const formatLikertKey = (text: string) =>
+    text
+      .trim()
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      return router.replace("/catfawn");
+      router.replace("/catfawn");
+      return;
     }
+
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-      console;
+
+      if (result.likertAnswers) {
+        const restoredForm: any = { q1: null, q2: null, q3: null, q4: null };
+
+        LIKERT_QUESTIONS.forEach((q) => {
+          const key = formatLikertKey(q.text);
+          const label = result.likertAnswers[key];
+
+          if (label) {
+            const value = Number(
+              Object.keys(LIKERT_LABELS).find(
+                (k) => LIKERT_LABELS[Number(k)] === label
+              )
+            );
+
+            restoredForm[q.id] = value ?? null;
+          }
+        });
+
+        setForm(restoredForm);
+      }
+
       if (result?.completedSteps !== undefined && result?.completedSteps < 5) {
         router.replace(`/${result.currentStep}`);
       }
@@ -67,29 +98,23 @@ const Step5VC1 = () => {
   }, []);
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
     setTimeout(() => setShowMsg(false), 4000);
   };
 
-  const likertAnswers = LIKERT_QUESTIONS.reduce(
-    (acc, q) => {
-      const value = form[q.id as keyof typeof form];
+  const likertAnswers = LIKERT_QUESTIONS.reduce((acc, q) => {
+    const value = form[q.id as keyof typeof form];
 
-      if (value !== null) {
-        acc[
-          q.text
-            .trim()
-            .replace(/[^\w\s]/g, "") // remove punctuation
-            .replace(/\s+/g, "-") // spaces → hyphen
-        ] = LIKERT_LABELS[value];
-      }
+    if (value !== null) {
+      acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
+    }
 
-      return acc;
-    },
-    {} as Record<string, string>
-  );
+    return acc;
+  }, {} as Record<string, string>);
+
 
   const submitStep5 = async () => {
     setIsLoading(true);
@@ -98,15 +123,21 @@ const Step5VC1 = () => {
       setIsLoading(false);
       return;
     }
+    const existingData = cachedData;
+
     localStorage.setItem(
       "catfawn-data",
       JSON.stringify({
         ...cachedData,
+        likertAnswers: {
+          ...(existingData.likertAnswers || {}),
+          ...likertAnswers,
+        },
         currentStep: "catfawn/step5/2",
-        likertAnswers: likertAnswers,
         completedSteps: 6,
       })
     );
+
     router.replace("/catfawn/step5/2");
   };
 
@@ -119,9 +150,9 @@ const Step5VC1 = () => {
       )}
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-lg sm:text-[1.563rem] leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-[1.563rem] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
+            className="absolute top-1/2 -translate-y-1/2 left-0"
             onClick={() => {
               router.replace("/catfawn/step5");
             }}

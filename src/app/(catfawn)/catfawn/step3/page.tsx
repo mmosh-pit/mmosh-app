@@ -147,7 +147,7 @@ export default function Step3VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0 cursor-pointer">
+          <div className="absolute top-1/2 -translate-y-1/2 left-0">
             <svg
               width="24"
               height="24"
@@ -181,7 +181,7 @@ export default function Step3VC() {
           </span>
         </p>
 
-        <div className="text-[1rem] font-bold leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
+        <div className="max-sm:text-base font-bold leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
           How do you see yourself in the world?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply, required)

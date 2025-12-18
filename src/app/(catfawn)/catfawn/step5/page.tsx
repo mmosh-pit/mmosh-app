@@ -28,7 +28,7 @@ const Step5VC = () => {
   return (
     <div className="min-h-[29.875rem]   xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
       <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-        <div className="absolute left-0">
+        <div className="absolute top-1/2 -translate-y-1/2 left-0">
           <svg
             width="24"
             height="24"
@@ -50,7 +50,7 @@ const Step5VC = () => {
         </div>
         Request Early Access
       </h2>
-      <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+      <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
         Step 5 of 15: Your CAT FAWN Source Code.{" "}
         <span className="font-normal font-avenir">
           The CAT FAWN Connection encourages personal growth, professional

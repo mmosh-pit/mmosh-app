@@ -104,6 +104,7 @@ const Step15VC = () => {
           lastName: lastName,
           bio: bio,
           web: webLink,
+          completedSteps: 27,
         })
       );
 
@@ -134,7 +135,29 @@ const Step15VC = () => {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-        <h2 className="text-center font-poppinsNew text-[1.563rem] font-bold text-white">
+        <h2 className="relative text-center font-poppinsNew text-[1.563rem] font-bold text-white">
+          <div
+            className="absolute top-1/2 -translate-y-1/2 left-0"
+            onClick={() => {
+              router.replace("/catfawn/step14");
+            }}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
         </h2>
 
@@ -192,7 +215,6 @@ const Step15VC = () => {
               setAvatarPreview(previewUrl);
             }}
           />
-
           <div className="mt-3">
             <span className="text-sm text-white/80">Last Name *</span>
             <input

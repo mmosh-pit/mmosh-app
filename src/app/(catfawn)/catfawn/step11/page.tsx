@@ -12,6 +12,7 @@ interface ContactDetails {
   telegramUsername: string;
   blueskyHandle: string;
   linkedinProfile: string;
+  country: string;
 }
 
 export default function Step11VC() {
@@ -31,23 +32,36 @@ export default function Step11VC() {
     telegramUsername: "",
     blueskyHandle: "",
     linkedinProfile: "",
+    country: "",
   });
 
-
   React.useEffect(() => {
-    const stored = localStorage.getItem("catfawn-data");
-
-    if (!stored) {
-      router.replace("/catfawn");
-      return;
-    }
-
     try {
+      const stored = localStorage.getItem("catfawn-data");
+
+      if (!stored) {
+        router.replace("/catfawn");
+        return;
+      }
       const result = JSON.parse(stored);
       setCachedData(result);
 
       if (result?.completedSteps !== undefined && result?.completedSteps < 22) {
         router.replace(`/${result.currentStep}`);
+      }
+
+
+      setContactDetails({
+        mobileNumber: result.mobileNumber || "",
+        countryCode: result.countryCode || "",
+        telegramUsername: result.telegramUsername || "",
+        blueskyHandle: result.blueskyHandle || "",
+        linkedinProfile: result.linkedinProfile || "",
+        country: result.country || "",
+      });
+
+      if (result.mobileNumber && result.countryCode) {
+        setPhone(`+${result.countryCode}${result.mobileNumber}`);
       }
     } catch {
       router.replace("/catfawn");
@@ -71,60 +85,94 @@ export default function Step11VC() {
       createMessage("Please enter a valid mobile number.", "error");
       return;
     }
+    const numberChanged =
+      cachedData.mobileNumber !== contactDetails.mobileNumber ||
+      cachedData.countryCode !== contactDetails.countryCode;
 
-    try {
-      setIsLoading(true);
-      const result = await axios.post(
-        "/api/visitors/generate-otp",
-        {
-          type: "sms",
-          mobile: contactDetails.mobileNumber,
-          countryCode: contactDetails.countryCode,
-          email:cachedData.email
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-          },
+    if (!cachedData.isMobileNumberVerified || numberChanged)
+
+      if ((cachedData.isMobileNumberVerified !== true) || numberChanged) {
+        try {
+          setIsLoading(true);
+          const result = await axios.post(
+            "/api/visitors/generate-otp",
+            {
+              type: "sms",
+              mobile: contactDetails.mobileNumber,
+              countryCode: contactDetails.countryCode,
+              email: cachedData.email,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+              },
+            }
+          );
+
+          if (result.data.status) {
+            localStorage.setItem(
+              "catfawn-data",
+              JSON.stringify({
+                ...cachedData,
+                currentStep: "catfawn/step12",
+                mobileNumber: contactDetails.mobileNumber,
+                countryCode: contactDetails.countryCode,
+                telegramUsername: contactDetails.telegramUsername,
+                blueskyHandle: contactDetails.blueskyHandle,
+                linkedinProfile: contactDetails.linkedinProfile,
+                country: contactDetails.country,
+                isMobileNumberVerified: false,
+                completedSteps: 23,
+              })
+            );
+
+            router.replace("/catfawn/step12");
+          } else {
+            createMessage(
+              result.data.message || "Please check the mobile number",
+              "error"
+            );
+          }
+        } catch {
+          createMessage("Something went wrong", "error");
+        } finally {
+          setIsLoading(false);
         }
-      );
-
-
-      if (result.data.status) {
+      }
+      else {
         localStorage.setItem(
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            currentStep: "catfawn/step12",
-            mobileNumber: contactDetails.mobileNumber,
-            countryCode: contactDetails.countryCode,
-            telegramUsername: contactDetails.telegramUsername,
-            blueskyHandle: contactDetails.blueskyHandle,
-            linkedinProfile: contactDetails.linkedinProfile,
-            completedSteps: 23,
-          })
-        );
-
-        router.replace("/catfawn/step12");
-      } else {
-        createMessage(
-          result.data.message || "Please check the mobile number",
-          "error"
-        );
+            currentStep: "catfawn/step13",
+          }));
+        router.replace("/catfawn/step13");
       }
-    } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
     setTimeout(() => setShowMsg(false), 4000);
   };
+
+  const getDefaultValue = (type: string) => {
+    try {
+      if (type === "country") {
+        return JSON.parse(localStorage.getItem("catfawn-data") || "{}").country || "US"
+      } else {
+        return JSON.parse(localStorage.getItem("catfawn-data") || "{}").mobileNumber || ""
+      }
+    } catch (error) {
+      if (type === "country") {
+        return "US"
+      } else {
+        return ""
+      }
+    }
+  }
 
   return (
     <>
@@ -178,34 +226,29 @@ export default function Step11VC() {
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Mobile number *
               </label>
-              {/* <input
-                type="number"
-                placeholder="Mobile number"
-                value={contactDetails.mobileNumber}
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-    onChange={(e) => {
-                  if (!/^[0-9]*$/.test(e.target.value)) return;
-                  handleChange("mobileNumber", e.target.value)
-                }}              /> */}
-
               <PhoneInput
-                country="US"
-                value={phone}
+                country={
+                  getDefaultValue("country")
+                }
+                value={
+                  getDefaultValue("mobileNumber")
+                }
                 onChange={(data) => {
+                  console.log("data", data);
                   const countryCode = data.dialCode.replace("+", "");
-                  const mobileNumber = data.valueWithoutPlus.slice(countryCode.length);
+                  const mobileNumber = data.valueWithoutPlus.slice(
+                    countryCode.length
+                  );
 
                   setContactDetails((prev) => ({
                     ...prev,
                     mobileNumber,
                     countryCode,
+                    country: data.code,
                   }));
-                }}
 
-                // onChange={(data: PhoneInputResponseType) => {
-                //   if (!/^[0-9]*$/.test(data.value)) return;
-                //   handleChange("mobileNumber", data.value)
-                // }}
+                  setPhone(data.value);
+                }}
                 placeholder="Mobile number"
                 search={true}
                 iconComponent={

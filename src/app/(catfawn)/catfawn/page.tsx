@@ -22,22 +22,26 @@ export default function Home() {
   const [cachedData, setCachedData] = React.useState<any>({});
 
   React.useEffect(() => {
-    const stored = localStorage.getItem("catfawn-data");
-    if (!stored) return;
+    try {
+      const stored = localStorage.getItem("catfawn-data");
+      if (!stored) return;
 
-    const result = JSON.parse(stored);
-    setCachedData(result);
+      const result = JSON.parse(stored);
+      setCachedData(result);
 
-    if (result?.currentStep && result?.currentStep !== "catfawn") {
-      return router.replace(`/${result.currentStep}`);
+      if (result?.currentStep && result?.currentStep !== "catfawn") {
+        return router.replace(`/${result.currentStep}`);
+      }
+      setFormData({
+        firstName: result.firstName || "",
+        email: result.email || "",
+        password: result.password || "",
+        confirmPassword: result.password || "",
+        hasChecked: true,
+      });
+    } catch {
+      localStorage.removeItem("catfawn-data")
     }
-    setFormData({
-      firstName: result.firstName || "",
-      email: result.email || "",
-      password: result.password || "",
-      confirmPassword: result.password || "",
-      hasChecked: true,
-    });
   }, []);
 
   const validateForm = () => {
@@ -94,6 +98,9 @@ export default function Home() {
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
+            email: formData.email,
+            firstName: formData.firstName,
+            password: formData.password,
             currentStep: "catfawn/step3",
           })
         );
@@ -125,7 +132,7 @@ export default function Home() {
       setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
-          "Unable to generate OTP. Please try again.",
+        "Unable to generate OTP. Please try again.",
         "error"
       );
     }

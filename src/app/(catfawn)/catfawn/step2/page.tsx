@@ -48,10 +48,26 @@ export default function Step2VC() {
     }
   };
 
-  const handleKeyDown = (e: any, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     setHasInvalid(false);
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+
+    if (e.key === "Backspace") {
+      e.preventDefault();
+
+      const updated = [...otp];
+
+      if (otp[index]) {
+        updated[index] = "";
+        setOtp(updated);
+        inputRefs.current[index]?.focus();
+      } else if (index > 0) {
+        updated[index - 1] = "";
+        setOtp(updated);
+        inputRefs.current[index - 1]?.focus();
+      }
     }
   };
 

@@ -49,6 +49,18 @@ export default function Step11VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 22) {
         router.replace(`/${result.currentStep}`);
       }
+
+      setContactDetails({
+        mobileNumber: cachedData.mobileNumber || "",
+        countryCode: result.countryCode || "",
+        telegramUsername: result.telegramUsername || "",
+        blueskyHandle: result.blueskyHandle || "",
+        linkedinProfile: result.linkedinProfile || "",
+      });
+
+      if (result.mobileNumber && result.countryCode) {
+        setPhone(`+${result.countryCode}${result.mobileNumber}`);
+      }
     } catch {
       router.replace("/catfawn");
     }
@@ -80,7 +92,7 @@ export default function Step11VC() {
           type: "sms",
           mobile: contactDetails.mobileNumber,
           countryCode: contactDetails.countryCode,
-          email:cachedData.email
+          email: cachedData.email
         },
         {
           headers: {
@@ -190,7 +202,7 @@ export default function Step11VC() {
 
               <PhoneInput
                 country="US"
-                value={phone}
+                value={contactDetails.mobileNumber}
                 onChange={(data) => {
                   const countryCode = data.dialCode.replace("+", "");
                   const mobileNumber = data.valueWithoutPlus.slice(countryCode.length);
@@ -200,6 +212,8 @@ export default function Step11VC() {
                     mobileNumber,
                     countryCode,
                   }));
+
+                  setPhone(data.value);
                 }}
 
                 // onChange={(data: PhoneInputResponseType) => {

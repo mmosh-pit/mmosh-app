@@ -166,7 +166,7 @@ export default function Step13VC() {
               }}
             />
 
-            <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.813rem] max-md:text-xs leading-[140%] mt-[0.313rem] -tracking-[0.02em]">
+            <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-[0.313rem] -tracking-[0.02em]">
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"

@@ -137,7 +137,7 @@ const Step15VC = () => {
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative text-center font-poppinsNew text-[1.563rem] font-bold text-white">
           <div
-            className="absolute top-1/2 -translate-y-1/2 left-0"
+            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
               router.replace("/catfawn/step14");
             }}

@@ -52,7 +52,8 @@ const Step5VC1 = () => {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      return router.replace("/catfawn");
+      // return router.replace("/catfawn");
+      return;
     }
     try {
       const result = JSON.parse(stored);
@@ -152,8 +153,9 @@ const Step5VC1 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="text-[#FFFFFFE5] mt-[1.813rem] text-[0.938rem] leading-[110%] font-bold -tracking-[0.07em]">
-          A group is making plans to go out, but nothing’s been decided yet. Are you:
+        <p className="text-[#FFFFFFE5] font-avenirLtStd mt-[1.813rem] text-[0.938rem] leading-[110%] font-bold -tracking-[0.07em]">
+          A group is making plans to go out, but nothing’s been decided yet. Are
+          you:
         </p>
 
         <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-2">

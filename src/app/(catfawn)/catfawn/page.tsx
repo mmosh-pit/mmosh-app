@@ -257,7 +257,7 @@ export default function Home() {
             </span>
           </label>
 
-          <p className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem]">
+          <p className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem]" onClick={() => window.open("https://catfawn.com/privacy-policy/")}>
             Privacy Policy
           </p>
         </form>

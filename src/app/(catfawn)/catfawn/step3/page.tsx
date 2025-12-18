@@ -36,7 +36,7 @@ export default function Step3VC() {
 
         if (other) {
           setOtherRoleEnabled(true);
-          setOtherRoleText(other.replace(/-/g, " "));
+          setOtherRoleText(other.replace(/^other-/, "").replace(/-/g, " "));
         }
       }
 
@@ -100,7 +100,16 @@ export default function Step3VC() {
         return;
       }
 
-      finalRoles.push(formatRole(otherRoleText));
+      if (otherRoleText.trim().length < 3 || otherRoleText.trim().length > 30) {
+        createMessage(
+          "Other role must be between 3 and 30 characters.",
+          "error"
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      finalRoles.push(`other-${otherRoleText.trim().replace(/\s+/g, "-")}`);
     }
 
     finalRoles = Array.from(new Set(finalRoles));
@@ -285,6 +294,7 @@ export default function Step3VC() {
               onChange={(e) => setOtherRoleText(e.target.value)}
               placeholder="Please share how you see yourself in the world."
               className="w-full xl:w-[29.688rem] mt-[0.563rem] h-[2.375rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+              maxLength={30}
             />
           )}
 

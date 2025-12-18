@@ -78,6 +78,32 @@ export async function POST(req: NextRequest) {
 
     const otpCollection = db.collection("mmosh-users-email-verification");
 
+    const existingOTP = await otpCollection.findOne({ email });
+
+    if (existingOTP?.expiresAt) {
+      const now = new Date();
+      const expiresAt = new Date(existingOTP.expiresAt);
+
+      if (now < expiresAt) {
+        return NextResponse.json(
+          {
+            status: true,
+            message:
+              type === "email"
+                ? "OTP already sent. Please check your email."
+                : "OTP already sent. Please check your phone message.",
+            result: {
+              destination: type === "email" ? email : mobile,
+              expiresInMinutes: Math.ceil(
+                (expiresAt.getTime() - now.getTime()) / (60 * 1000)
+              ),
+            },
+          },
+          { status: 200 }
+        );
+      }
+    }
+
     if (type === "email") {
       await sendOTPEmail(email!, otp);
 
@@ -233,7 +259,6 @@ function validateRequestBody(body: any): {
       errors.push("Mobile number must be valid");
     }
   }
-
 
   if (errors.length) return { isValid: false, errors };
 

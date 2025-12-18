@@ -39,12 +39,37 @@ export async function POST(req: NextRequest) {
     }
 
     const { type, email, mobile, countryCode } = validation.data!;
+    const collection = db.collection("mmosh-users-email-verification");
+
+    const existingOTP = await collection.findOne({ email });
+
+    if (existingOTP?.expiresAt) {
+      const now = new Date();
+      const expiresAt = new Date(existingOTP.expiresAt);
+
+      if (now < expiresAt) {
+        return NextResponse.json(
+          {
+            status: true,
+            message:
+              type === "email"
+                ? "OTP already sent. Please check your email."
+                : "OTP already sent. Please check your phone messages.",
+            result: {
+              destination: type === "email" ? email : mobile,
+              expiresInMinutes: Math.ceil(
+                (expiresAt.getTime() - now.getTime()) / (60 * 1000)
+              ),
+            },
+          },
+          { status: 200 }
+        );
+      }
+    }
 
     const otp = generateSecureOTP();
     const otpHash = await bcrypt.hash(otp, 10);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-
-    const collection = db.collection("mmosh-users-email-verification");
 
     if (type === "email") {
       await collection.updateOne(
@@ -107,7 +132,7 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         status: false,

@@ -50,7 +50,7 @@ export default function Step4VC() {
 
         if (other) {
           setOtherIntentEnabled(true);
-          setOtherIntentText(other.replace(/-/g, " "));
+          setOtherIntentText(other.replace(/^other-/, "").replace(/-/g, " "));
         }
       }
 
@@ -103,7 +103,19 @@ export default function Step4VC() {
         return;
       }
 
-      finalIntents.push(formatIntent(otherIntentText));
+      if (
+        otherIntentText.trim().length < 3 ||
+        otherIntentText.trim().length > 30
+      ) {
+        createMessage(
+          "Other Intent must be between 3 and 30 characters.",
+          "error"
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      finalIntents.push(`other-${otherIntentText.trim().replace(/\s+/g, "-")}`);
     }
 
     finalIntents = Array.from(new Set(finalIntents));

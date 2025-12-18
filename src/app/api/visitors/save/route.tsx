@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
       errors.firstName = "First name is required";
     }
 
-    if (!isNonEmptyString(body.password) || body.password.length < 8) {
-      errors.password = "Password must be at least 8 characters";
+    if (!isNonEmptyString(body.password) || body.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
     }
 
     if (!isNonEmptyString(body.currentStep)) {

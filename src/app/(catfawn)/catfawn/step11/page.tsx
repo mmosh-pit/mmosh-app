@@ -75,7 +75,31 @@ export default function Step11VC() {
     }));
   };
 
+  const isValidTelegram = (username: string) => {
+    // if (!username) return true;
+    // return /^@[a-zA-Z0-9_]{5}$/.test(username);
+    return true;
+  };
+
+  const isValidBluesky = (handle: string) => {
+    // if (!handle) return true;
+    // return /^@?[a-zA-Z0-9.-]+\.bsky\.social{3,18}$/.test(handle);
+    return true;
+  };
+
+  const isValidLinkedIn = (url: string) => {
+    // if (!url) return true;
+    // return /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9-]{3,100}\/?$/.test(
+    //   url.trim()
+    // );
+    return true;
+  };
+
+
+
   const updateContactDetails = async () => {
+    const telegram = contactDetails.telegramUsername.trim();
+
     if (!contactDetails.mobileNumber.trim()) {
       createMessage("Mobile number is required.", "error");
       return;
@@ -85,6 +109,32 @@ export default function Step11VC() {
       createMessage("Please enter a valid mobile number.", "error");
       return;
     }
+
+    if (!isValidTelegram(telegram)) {
+      createMessage(
+        "Please enter a valid Telegram username (example: @username)",
+        "error"
+      );
+      return;
+    }
+
+    if (!isValidBluesky(contactDetails.blueskyHandle)) {
+      createMessage(
+        "Please enter a valid Bluesky handle (example: name.bsky.social)",
+        "error"
+      );
+      return;
+    }
+
+    if (!isValidLinkedIn(contactDetails.linkedinProfile)) {
+      createMessage(
+        "Please enter a valid LinkedIn profile URL",
+        "error"
+      );
+      return;
+    }
+
+
     const numberChanged =
       cachedData.mobileNumber !== contactDetails.mobileNumber ||
       cachedData.countryCode !== contactDetails.countryCode;
@@ -116,7 +166,7 @@ export default function Step11VC() {
               currentStep: "catfawn/step12",
               mobileNumber: contactDetails.mobileNumber,
               countryCode: contactDetails.countryCode,
-              telegramUsername: contactDetails.telegramUsername,
+              telegramUsername: telegram,
               blueskyHandle: contactDetails.blueskyHandle,
               linkedinProfile: contactDetails.linkedinProfile,
               country: contactDetails.country,

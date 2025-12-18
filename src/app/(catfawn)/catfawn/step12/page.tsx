@@ -223,7 +223,7 @@ export default function Step12VC() {
             </div>
 
             <div className="text-[0.625rem] md:text-[1rem] leading-[100%] font-normal text-[#FFFFFFCC] flex items-center justify-between mt-[0.313rem]">
-              <p>Valid for 10 minutes.</p>
+              <p>Valid for 15 minutes.</p>
               <p>
                 Need a new code?{" "}
                 <span className="underline cursor-pointer" onClick={resendOTP}>

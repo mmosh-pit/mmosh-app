@@ -40,7 +40,7 @@ export default function Home() {
         hasChecked: true,
       });
     } catch {
-      localStorage.removeItem("catfawn-data")
+      localStorage.removeItem("catfawn-data");
     }
   }, []);
 
@@ -132,7 +132,7 @@ export default function Home() {
       setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
-        "Unable to generate OTP. Please try again.",
+          "Unable to generate OTP. Please try again.",
         "error"
       );
     }
@@ -251,13 +251,16 @@ export default function Home() {
                 setFormData({ ...formData, hasChecked: event.target.checked })
               }
             />
-            <span className="text-[0.813rem] font-normal max-md:text-xs leading-[140%] -tracking-[0.02em]">
+            <span className="text-[#FFFFFFE5] text-[0.813rem] font-normal max-md:text-xs leading-[140%] -tracking-[0.02em]">
               I agree to receive communications about the CAT-FAWN Connection
               early access program and launch updates.
             </span>
           </label>
 
-          <p className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem]" onClick={() => window.open("https://catfawn.com/privacy-policy/")}>
+          <p
+            className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem] tracking-normal"
+            onClick={() => window.open("https://catfawn.com/privacy-policy/")}
+          >
             Privacy Policy
           </p>
         </form>

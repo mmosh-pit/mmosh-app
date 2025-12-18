@@ -153,7 +153,7 @@ export default function Step4VC() {
           <MessageBanner type={msgClass} message={msgText} />
         </div>
       )}
-      <div className="min-h-[36.313rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[2.688rem] max-md:px-5 max-md:py-8">
+      <div className="min-h-[36.313rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pr-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
@@ -194,7 +194,7 @@ export default function Step4VC() {
         </div>
 
         <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between">
-          <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] leading-[110%] -tracking-[0.02em]">
+          <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] font-normal leading-[110%] -tracking-[0.02em]">
             <label className="flex items-center gap-0.5">
               <input
                 type="checkbox"

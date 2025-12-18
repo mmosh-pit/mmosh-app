@@ -179,7 +179,7 @@ export default function Step3VC() {
           Request Early Access
         </h2>
 
-        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 3 of 15: Tell Us More About Yourself.{" "}
           <span className="font-normal font-avenir">
             {" "}
@@ -198,7 +198,7 @@ export default function Step3VC() {
         </div>
 
         <form className="mt-[0.563rem] text-[1rem]">
-          <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
+          <div className="flex flex-col gap-1 text-[#FFFFFFE5] font-normal text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <label className="flex items-center gap-0.5">
               <input
                 type="checkbox"

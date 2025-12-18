@@ -134,6 +134,7 @@ const step8 = () => {
           <ChallengePills
             challenges={ASPIRATIONS}
             onChange={handleChange}
+            value={selectedAspirations}
             min={3}
           />
         </div>

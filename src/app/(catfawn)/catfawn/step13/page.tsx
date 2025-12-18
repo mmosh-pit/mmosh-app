@@ -28,6 +28,8 @@ export default function Step13VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 24) {
         router.replace(`/${result.currentStep}`);
       }
+      setKinshipCode(result.referedKinshipCode)
+      setNoCodeChecked(result.noCodeChecked)
     } catch {
       router.replace("/catfawn");
     }
@@ -48,6 +50,7 @@ export default function Step13VC() {
         "catfawn-data",
         JSON.stringify({
           ...cachedData,
+          referedKinshipCode:"",
           currentStep: "catfawn/step14",
           noCodeChecked: true,
         })
@@ -82,6 +85,7 @@ export default function Step13VC() {
         JSON.stringify({
           ...cachedData,
           referedKinshipCode: kinshipCode,
+          noCodeChecked:false,
           currentStep: "catfawn/step14",
           completedSteps: 25,
         })
@@ -95,6 +99,7 @@ export default function Step13VC() {
   };
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);

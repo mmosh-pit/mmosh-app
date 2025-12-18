@@ -292,6 +292,7 @@ const ChatInteractionContainer = (props: any) => {
 
       try {
         const queryData = {
+          instructions: systemPrompt,
           agentId: selectedChat.chatAgent?.key,
           bot_id: selectedChat.chatAgent!.id,
           aiModel: props.selectedModel || "gpt-5.2",

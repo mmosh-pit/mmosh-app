@@ -33,6 +33,10 @@ export default function Step10VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 21) {
         router.replace(`/${result.currentStep}`);
       }
+
+      if (Array.isArray(result.contactPreference)) {
+        setContactPreferences(result.contactPreference);
+      }
     } catch {
       router.replace("/catfawn");
     }
@@ -66,6 +70,7 @@ export default function Step10VC() {
   };
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -117,6 +122,7 @@ export default function Step10VC() {
               <input
                 type="checkbox"
                 className="sw-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={contactPreferences.includes("text-message")}
                 onChange={(e) =>
                   handleContactPreferenceChange(
                     "text-message",
@@ -130,6 +136,7 @@ export default function Step10VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={contactPreferences.includes("telegram")}
                 onChange={(e) =>
                   handleContactPreferenceChange("telegram", e.target.checked)
                 }
@@ -140,6 +147,7 @@ export default function Step10VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={contactPreferences.includes("whatsapp")}
                 onChange={(e) =>
                   handleContactPreferenceChange("whatsapp", e.target.checked)
                 }
@@ -150,6 +158,7 @@ export default function Step10VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={contactPreferences.includes("email")}
                 onChange={(e) =>
                   handleContactPreferenceChange("email", e.target.checked)
                 }

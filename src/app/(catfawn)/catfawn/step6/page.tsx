@@ -33,6 +33,7 @@ const Step6VC = () => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
       return router.replace("/catfawn");
+      return;
     }
     try {
       const parsed = JSON.parse(stored);

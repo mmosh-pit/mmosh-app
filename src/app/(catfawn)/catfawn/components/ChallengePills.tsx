@@ -14,7 +14,7 @@ interface ChallengePillsProps {
 const ChallengePills: React.FC<ChallengePillsProps> = ({
   challenges,
   onChange,
-  value=[],
+  value = [],
 }) => {
   const toggleSelect = (label: string) => {
     const next = value.includes(label)
@@ -25,8 +25,8 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
   };
 
   return (
-    <div className="py-[0.875rem] ps-[0.5rem] pe-[0.313rem] bg-[#271114] rounded-[1.25rem] border border-[rgba(255,255,255,0.16)]">
-      <div className="max-h-[12.938rem] overflow-y-scroll flex flex-wrap gap-[0.625rem] pe-[0.688rem]">
+    <div className="py-[0.875rem] relative ps-[0.5rem] pe-[0.313rem] bg-[#271114] rounded-[1.25rem] border border-[rgba(255,255,255,0.16)]">
+      <div className="max-h-[12.938rem]  custom-scroll overflow-y-scroll flex flex-wrap gap-[0.625rem] pe-[0.688rem]">
         {challenges.map((item) => {
           const isActive = value.includes(item.label);
 
@@ -47,6 +47,8 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
           );
         })}
       </div>
+      <div className="hide-arrow-top-scroll"></div>
+      <div className="hide-arrow-bottom-scroll"></div>
     </div>
   );
 };

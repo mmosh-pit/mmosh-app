@@ -97,8 +97,6 @@ export default function Home() {
             email: formData.email,
             firstName: formData.firstName,
             password: formData.password,
-            hasVerifiedEmail: false,
-            completedSteps: 1,
             currentStep: "catfawn/step3",
           })
         );

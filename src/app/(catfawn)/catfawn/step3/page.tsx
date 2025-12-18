@@ -21,12 +21,37 @@ export default function Step3VC() {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      return router.replace("/catfawn");
+      router.replace("/catfawn");
+      return;
     }
+
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-      console;
+
+      if (Array.isArray(result.roles)) {
+        setRoles(result.roles);
+
+        const predefined = [
+          "change-maker/activist/advocate",
+          "educator/teacher",
+          "coach/trainer/guide",
+          "healer/therapist",
+          "leader",
+          "student/learner",
+        ].map(normalizeRole);
+
+        const other = result.roles.find(
+          (r: string) => !predefined.includes(normalizeRole(r))
+        );
+
+        if (other) {
+          setOtherRoleEnabled(true);
+          setOtherRoleText(other.replace(/-/g, " "));
+        }
+      }
+
+
       if (result?.completedSteps !== undefined && result?.completedSteps < 2) {
         router.replace(`/${result.currentStep}`);
       }
@@ -35,9 +60,23 @@ export default function Step3VC() {
     }
   }, []);
 
-  const formatRole = (value: string) => {
-    return value.trim().toLowerCase().replace(/\s+/g, "-");
-  };
+
+  const formatRole = (value: string) =>
+    value.trim().replace(/\s+/g, "-");
+
+  const normalizeRole = (value: string) =>
+    value.trim().toLowerCase().replace(/\s+/g, "-");
+
+  const PREDEFINED_ROLES = [
+    "change-maker/activist/advocate",
+    "educator/teacher",
+    "coach/trainer/guide",
+    "healer/therapist",
+    "leader",
+    "student/learner",
+  ].map(normalizeRole);
+
+
 
   const handleRoleChange = (value: string, checked: boolean) => {
     if (value === "other") {
@@ -62,6 +101,7 @@ export default function Step3VC() {
 
   const updateRoles = async () => {
     setIsLoading(true);
+
     if (roles.length === 0 && !otherRoleText.trim()) {
       createMessage(
         otherRoleEnabled
@@ -73,7 +113,9 @@ export default function Step3VC() {
       return;
     }
 
-    let finalRoles = [...roles];
+    let finalRoles = roles.filter(role =>
+      PREDEFINED_ROLES.includes(normalizeRole(role))
+    );
 
     if (otherRoleEnabled) {
       if (!otherRoleText.trim()) {
@@ -82,8 +124,7 @@ export default function Step3VC() {
         return;
       }
 
-      const formattedOther = formatRole(otherRoleText);
-      finalRoles.push(formattedOther);
+      finalRoles.push(formatRole(otherRoleText));
     }
 
     localStorage.setItem(
@@ -95,9 +136,12 @@ export default function Step3VC() {
         completedSteps: 3,
       })
     );
+
     router.replace("/catfawn/step4");
     setIsLoading(false);
   };
+
+
 
   const createMessage = (message: any, type: any) => {
     window.scrollTo(0, 0);
@@ -118,23 +162,16 @@ export default function Step3VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div className="absolute left-0 cursor-pointer">
             <svg
               width="24"
               height="24"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              onClick={() => {
-                localStorage.setItem(
-                  "catfawn-data",
-                  JSON.stringify({
-                    ...cachedData,
-                    currentStep: "catfawn",
-                  })
-                );
-                router.replace("/catfawn");
-              }}
+              onClick={() =>
+                router.replace("/catfawn")
+              }
             >
               <path
                 d="M20 12L4 12M4 12L10 6M4 12L10 18"
@@ -172,11 +209,9 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={roles.includes(formatRole("change-maker/activist/advocate"))}
                 onChange={(e) =>
-                  handleRoleChange(
-                    "change-maker/activist/advocate",
-                    e.target.checked
-                  )
+                  handleRoleChange("change-maker/activist/advocate", e.target.checked)
                 }
               />
               Change-maker/Activist/Advocate
@@ -186,6 +221,7 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={roles.includes(formatRole("educator/teacher"))}
                 onChange={(e) =>
                   handleRoleChange("educator/teacher", e.target.checked)
                 }
@@ -197,6 +233,7 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={roles.includes(formatRole("coach/trainer/guide"))}
                 onChange={(e) =>
                   handleRoleChange("coach/trainer/guide", e.target.checked)
                 }
@@ -208,6 +245,7 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={roles.includes(formatRole("healer/therapist"))}
                 onChange={(e) =>
                   handleRoleChange("healer/therapist", e.target.checked)
                 }
@@ -219,6 +257,7 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={roles.includes(formatRole("leader"))}
                 onChange={(e) => handleRoleChange("leader", e.target.checked)}
               />
               Leader
@@ -228,6 +267,7 @@ export default function Step3VC() {
               <input
                 type="checkbox"
                 className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                checked={roles.includes(formatRole("student/learner"))}
                 onChange={(e) =>
                   handleRoleChange("student/learner", e.target.checked)
                 }

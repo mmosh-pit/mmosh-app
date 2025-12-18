@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           status: false,
-          message: "Validation failed",
+          message: validation.errors[0],
           errors: validation.errors,
           result: null,
         },
@@ -79,7 +79,8 @@ export async function POST(req: NextRequest) {
     const otpCollection = db.collection("mmosh-users-email-verification");
 
     if (type === "email") {
-      await sendOTPEmail(email!, otp);
+      // await sendOTPEmail(email!, otp);
+      console.log("++++++++++++OTP******************",otp)
 
       await otpCollection.updateOne(
         { email },

@@ -119,9 +119,9 @@ const Step5VC1 = () => {
       )}
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
-        <h2 className="relative font-poppinsNew text-center text-[1.563rem] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
+        <h2 className="relative font-poppinsNew text-center text-lg sm:text-[1.563rem] leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
-            className="absolute top-1/2 -translate-y-1/2 left-0"
+            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
               router.replace("/catfawn/step5");
             }}
@@ -152,9 +152,8 @@ const Step5VC1 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="text-sm text-[#FFFFFFE5] mt-6">
-          A group is making plans to go out, but nothing’s been decided yet. Are
-          you:
+        <p className="text-[#FFFFFFE5] mt-[1.813rem] text-[0.938rem] leading-[110%] font-bold -tracking-[0.07em]">
+          A group is making plans to go out, but nothing’s been decided yet. Are you:
         </p>
 
         <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-2">

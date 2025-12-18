@@ -51,6 +51,7 @@ const Step6VC = () => {
   }, []);
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -73,7 +74,7 @@ const Step6VC = () => {
       "catfawn-data",
       JSON.stringify({
         ...cachedData,
-        challenges: selectedChallenges,
+        challenges: [...selectedChallenges],
         currentStep: "catfawn/step7",
         completedSteps: 18,
       })
@@ -135,6 +136,7 @@ const Step6VC = () => {
           <ChallengePills
             challenges={CHALLENGES}
             onChange={handleChange}
+            value={selectedChallenges}
             min={3}
           />
         </div>

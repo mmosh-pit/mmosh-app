@@ -51,6 +51,7 @@ const Step7VC = () => {
   }, []);
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -133,6 +134,7 @@ const Step7VC = () => {
           <ChallengePills
             challenges={ABILITIES}
             onChange={handleChange}
+            value={selectedAbilities}
             min={3}
           />
         </div>

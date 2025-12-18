@@ -12,27 +12,27 @@ const poppins = Poppins({
 const avenir = localFont({
   src: [
     {
-      path: "../../../assets/fonts/avenir-light.ttf",
+      path: "../../../assets/fonts/avenir/avenir-light.ttf",
       weight: "300",
       style: "normal",
     },
     {
-      path: "../../../assets/fonts/avenir-regular.ttf",
+      path: "../../../assets/fonts/avenir/avenir-regular.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../../assets/fonts/avenir-book.ttf",
+      path: "../../../assets/fonts/avenir/avenir-book.ttf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../../../assets/fonts/avenir-heavy.ttf",
+      path: "../../../assets/fonts/avenir/avenir-heavy.ttf",
       weight: "800",
       style: "normal",
     },
     {
-      path: "../../../assets/fonts/avenir-black.ttf",
+      path: "../../../assets/fonts/avenir/avenir-black.ttf",
       weight: "900",
       style: "normal",
     },

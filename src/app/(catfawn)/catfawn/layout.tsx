@@ -78,6 +78,53 @@ const avenirNext = localFont({
   display: "swap",
 });
 
+const avenirLTStd = localFont({
+  src: [
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Light.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Roman.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Book.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Medium.otf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Heavy.otf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Black.otf",
+      weight: "900",
+      style: "normal",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-LightOblique.otf",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "../../../assets/fonts/avenirLTStd/AvenirLTStd-Oblique.otf",
+      weight: "400",
+      style: "italic",
+    },
+  ],
+  variable: "--font-avenir-lt-std",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "CatFawn Early Access",
   description: "CatFawn app",
@@ -91,7 +138,7 @@ export default function CatFawnLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} ${avenir.variable} ${avenirNext.variable} antialiased select-none`}
+        className={`${poppins.variable} ${avenir.variable} ${avenirLTStd.variable} ${avenirNext.variable} antialiased select-none`}
       >
         <div className="min-h-screen flex items-center py-5 bg-[#37191D] text-[#FFFFFFE5] px-4">
           <div className="w-[73.875rem] max-lg:container mx-auto">

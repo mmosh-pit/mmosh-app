@@ -113,7 +113,7 @@ export default function Step13VC() {
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
-              router.replace("/catfawn/step12");
+              router.replace("/catfawn/step11");
             }}
           >
             <svg

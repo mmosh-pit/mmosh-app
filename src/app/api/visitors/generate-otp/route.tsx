@@ -105,8 +105,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === "email") {
-      // await sendOTPEmail(email!, otp);
-      console.log("++++++++++++OTP******************",otp)
+      await sendOTPEmail(email!, otp);
 
       await otpCollection.updateOne(
         { email },

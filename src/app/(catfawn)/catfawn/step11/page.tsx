@@ -89,65 +89,64 @@ export default function Step11VC() {
       cachedData.mobileNumber !== contactDetails.mobileNumber ||
       cachedData.countryCode !== contactDetails.countryCode;
 
-    if (!cachedData.isMobileNumberVerified || numberChanged)
 
-      if ((cachedData.isMobileNumberVerified !== true) || numberChanged) {
-        try {
-          setIsLoading(true);
-          const result = await axios.post(
-            "/api/visitors/generate-otp",
-            {
-              type: "sms",
-              mobile: contactDetails.mobileNumber,
-              countryCode: contactDetails.countryCode,
-              email: cachedData.email,
+    if ((cachedData.isMobileNumberVerified !== true) || numberChanged) {
+      try {
+        setIsLoading(true);
+        const result = await axios.post(
+          "/api/visitors/generate-otp",
+          {
+            type: "sms",
+            mobile: contactDetails.mobileNumber,
+            countryCode: contactDetails.countryCode,
+            email: cachedData.email,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-              },
-            }
+          }
+        );
+
+        if (result.data.status) {
+          localStorage.setItem(
+            "catfawn-data",
+            JSON.stringify({
+              ...cachedData,
+              currentStep: "catfawn/step12",
+              mobileNumber: contactDetails.mobileNumber,
+              countryCode: contactDetails.countryCode,
+              telegramUsername: contactDetails.telegramUsername,
+              blueskyHandle: contactDetails.blueskyHandle,
+              linkedinProfile: contactDetails.linkedinProfile,
+              country: contactDetails.country,
+              isMobileNumberVerified: false,
+              completedSteps: 23,
+            })
           );
 
-          if (result.data.status) {
-            localStorage.setItem(
-              "catfawn-data",
-              JSON.stringify({
-                ...cachedData,
-                currentStep: "catfawn/step12",
-                mobileNumber: contactDetails.mobileNumber,
-                countryCode: contactDetails.countryCode,
-                telegramUsername: contactDetails.telegramUsername,
-                blueskyHandle: contactDetails.blueskyHandle,
-                linkedinProfile: contactDetails.linkedinProfile,
-                country: contactDetails.country,
-                isMobileNumberVerified: false,
-                completedSteps: 23,
-              })
-            );
-
-            router.replace("/catfawn/step12");
-          } else {
-            createMessage(
-              result.data.message || "Please check the mobile number",
-              "error"
-            );
-          }
-        } catch {
-          createMessage("Something went wrong", "error");
-        } finally {
-          setIsLoading(false);
+          router.replace("/catfawn/step12");
+        } else {
+          createMessage(
+            result.data.message || "Please check the mobile number",
+            "error"
+          );
         }
+      } catch {
+        createMessage("Something went wrong", "error");
+      } finally {
+        setIsLoading(false);
       }
-      else {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step13",
-          }));
-        router.replace("/catfawn/step13");
-      }
+    }
+    else {
+      localStorage.setItem(
+        "catfawn-data",
+        JSON.stringify({
+          ...cachedData,
+          currentStep: "catfawn/step13",
+        }));
+      router.replace("/catfawn/step13");
+    }
   };
 
   const createMessage = (message: string, type: "success" | "error") => {

@@ -225,7 +225,7 @@ export default function Step12VC() {
               <p>
                 Need a new code?{" "}
                 <span className="underline cursor-pointer" onClick={resendOTP}>
-                  Resend
+                  {hasLoadingResendOTP ? "Sending..." : "Resend"}
                 </span>
               </p>
             </div>

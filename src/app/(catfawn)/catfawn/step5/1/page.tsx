@@ -121,7 +121,7 @@ const Step5VC1 = () => {
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
-            className="absolute left-0"
+            className="absolute top-1/2 -translate-y-1/2 left-0"
             onClick={() => {
               router.replace("/catfawn/step5");
             }}
@@ -143,7 +143,7 @@ const Step5VC1 = () => {
             </svg>
           </div>
           Request Early Access
-          <div className="font-normal font-avenir absolute top-0 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+          <div className="font-normal font-avenir absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
             <span className="font-extrabold">1</span>/12
           </div>
         </h2>

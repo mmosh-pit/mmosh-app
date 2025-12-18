@@ -65,6 +65,10 @@ const config: Config = {
       poppins: ["Avenir", "sans-serif"],
       goudy: ["Goudy", "sans-serif"],
       montserrat: ["Montserrat", "sans-serif"],
+      avenir: ["var(--font-avenir)"],
+      avenirNext: ["var(--font-avenir-next)"],
+      avenirLtStd: ["var(--font-avenir-lt-std)"],
+      poppinsNew: ["var(--font-poppins)"],
     },
   },
   plugins: [

@@ -22,57 +22,57 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const errors: Record<string, string> = {};
+    const errors: string[] = [];
 
     if (!isNonEmptyString(body.email) || !isValidEmail(body.email)) {
-      errors.email = "Valid email is required";
+      errors.push("Valid email is required");
     }
 
     if (!isNonEmptyString(body.firstName)) {
-      errors.firstName = "First name is required";
+      errors.push("First name is required");
     }
 
     if (!isNonEmptyString(body.password) || body.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+      errors.push("Password must be at least 6 characters");
     }
 
     if (!isNonEmptyString(body.currentStep)) {
-      errors.currentStep = "Current step is required";
+      errors.push("Current step is required");
     }
 
     if (body.roles && !isArray(body.roles)) {
-      errors.roles = "Roles must be an array";
+      errors.push("Roles must be an array");
     }
 
     if (body.intent && !isArray(body.intent)) {
-      errors.intent = "Intent must be an array";
+      errors.push("Intent must be an array");
     }
 
     if (body.likertAnswers && !isObject(body.likertAnswers)) {
-      errors.likertAnswers = "Likert answers must be an object";
+      errors.push("Likert answers must be an object");
     }
 
     if (body.avatarUrl && !isValidUrl(body.avatarUrl)) {
-      errors.avatarUrl = "Avatar URL must be valid";
+      errors.push("Avatar URL must be valid");
     }
 
     if (body.web && !isValidUrl(body.web)) {
-      errors.web = "Website URL must be valid";
+      errors.push("Website URL must be valid");
     }
 
     if (body.mobileNumber && !isString(body.mobileNumber)) {
-      errors.mobileNumber = "Mobile number must be a string";
+      errors.push("Mobile number must be a string");
     }
 
     if (body.countryCode && !isString(body.countryCode)) {
-      errors.countryCode = "Country code must be a string";
+      errors.push("Country code must be a string");
     }
 
-    if (Object.keys(errors).length > 0) {
+    if (errors.length > 0) {
       return NextResponse.json(
         {
           status: false,
-          message: "Validation failed",
+          message: errors[0],
           errors,
         },
         { status: 200 }

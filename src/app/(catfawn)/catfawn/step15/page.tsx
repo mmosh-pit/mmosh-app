@@ -112,7 +112,7 @@ const Step15VC = () => {
         ...cachedData,
         avatarUrl,
         lastName,
-        bio,
+        bio: bio.trim(),
         web: webLink,
         completedSteps: 27,
       };
@@ -245,7 +245,7 @@ const Step15VC = () => {
               value={bio}
               placeholder="Bio"
               className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
-              onChange={(e) => setBio(e.target.value.trim())}
+              onChange={(e) => setBio(e.target.value)}
             />
           </div>
 

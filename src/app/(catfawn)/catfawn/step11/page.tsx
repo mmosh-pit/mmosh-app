@@ -283,7 +283,6 @@ export default function Step11VC() {
                   getDefaultValue("mobileNumber")
                 }
                 onChange={(data) => {
-                  console.log("data", data);
                   const countryCode = data.dialCode.replace("+", "");
                   const mobileNumber = data.valueWithoutPlus.slice(
                     countryCode.length

@@ -78,7 +78,9 @@ export async function POST(req: NextRequest) {
 
     const otpCollection = db.collection("mmosh-users-email-verification");
 
-    const existingOTP = await otpCollection.findOne({ email });
+    const existingOTP = await otpCollection.findOne(
+      type === "email" ? { email } : { mobile }
+    );
 
     if (existingOTP?.expiresAt) {
       const now = new Date();
@@ -143,6 +145,7 @@ export async function POST(req: NextRequest) {
           $set: {
             otpHash,
             expiresAt,
+            mobile,
             updatedAt: new Date(),
           },
           $setOnInsert: {

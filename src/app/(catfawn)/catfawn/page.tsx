@@ -98,6 +98,11 @@ export default function Home() {
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
+            email: formData.email,
+            firstName: formData.firstName,
+            password: formData.password,
+            hasVerifiedEmail: false,
+            completedSteps: 1,
             currentStep: "catfawn/step3",
           })
         );

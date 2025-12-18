@@ -12,6 +12,7 @@ interface ContactDetails {
   telegramUsername: string;
   blueskyHandle: string;
   linkedinProfile: string;
+  country: string;
 }
 
 export default function Step11VC() {
@@ -31,8 +32,8 @@ export default function Step11VC() {
     telegramUsername: "",
     blueskyHandle: "",
     linkedinProfile: "",
+    country: "",
   });
-
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -50,12 +51,14 @@ export default function Step11VC() {
         router.replace(`/${result.currentStep}`);
       }
 
+
       setContactDetails({
-        mobileNumber: cachedData.mobileNumber || "",
+        mobileNumber: result.mobileNumber || "",
         countryCode: result.countryCode || "",
         telegramUsername: result.telegramUsername || "",
         blueskyHandle: result.blueskyHandle || "",
         linkedinProfile: result.linkedinProfile || "",
+        country: result.linkedinProfile || "US",
       });
 
       if (result.mobileNumber && result.countryCode) {
@@ -92,7 +95,7 @@ export default function Step11VC() {
           type: "sms",
           mobile: contactDetails.mobileNumber,
           countryCode: contactDetails.countryCode,
-          email: cachedData.email
+          email: cachedData.email,
         },
         {
           headers: {
@@ -100,7 +103,6 @@ export default function Step11VC() {
           },
         }
       );
-
 
       if (result.data.status) {
         localStorage.setItem(
@@ -113,6 +115,7 @@ export default function Step11VC() {
             telegramUsername: contactDetails.telegramUsername,
             blueskyHandle: contactDetails.blueskyHandle,
             linkedinProfile: contactDetails.linkedinProfile,
+            country: contactDetails.country,
             completedSteps: 23,
           })
         );
@@ -190,36 +193,31 @@ export default function Step11VC() {
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Mobile number *
               </label>
-              {/* <input
-                type="number"
-                placeholder="Mobile number"
-                value={contactDetails.mobileNumber}
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-    onChange={(e) => {
-                  if (!/^[0-9]*$/.test(e.target.value)) return;
-                  handleChange("mobileNumber", e.target.value)
-                }}              /> */}
-
               <PhoneInput
-                country="US"
-                value={contactDetails.mobileNumber}
+                country={
+                  JSON.parse(localStorage.getItem("catfawn-data") || "{}")
+                    .country || "US"
+                }
+                value={
+                  JSON.parse(localStorage.getItem("catfawn-data") || "{}")
+                    .mobileNumber || ""
+                }
                 onChange={(data) => {
+                  console.log("data", data);
                   const countryCode = data.dialCode.replace("+", "");
-                  const mobileNumber = data.valueWithoutPlus.slice(countryCode.length);
+                  const mobileNumber = data.valueWithoutPlus.slice(
+                    countryCode.length
+                  );
 
                   setContactDetails((prev) => ({
                     ...prev,
                     mobileNumber,
                     countryCode,
+                    country: data.code,
                   }));
 
                   setPhone(data.value);
                 }}
-
-                // onChange={(data: PhoneInputResponseType) => {
-                //   if (!/^[0-9]*$/.test(data.value)) return;
-                //   handleChange("mobileNumber", data.value)
-                // }}
                 placeholder="Mobile number"
                 search={true}
                 iconComponent={
@@ -233,7 +231,7 @@ export default function Step11VC() {
                     <path
                       d="M0.5 0.5L5.10217 4.81454C5.50572 5.19286 6.13974 5.1717 6.51717 4.76732L10.5 0.5"
                       stroke="white"
-                      stroke-linecap="round"
+                      strokeLinecap="round"
                     />
                   </svg>
                 }

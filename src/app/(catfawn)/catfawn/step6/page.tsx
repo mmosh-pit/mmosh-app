@@ -51,6 +51,7 @@ const Step6VC = () => {
   }, []);
 
   const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -73,7 +74,7 @@ const Step6VC = () => {
       "catfawn-data",
       JSON.stringify({
         ...cachedData,
-        challenges: selectedChallenges,
+        challenges: [...selectedChallenges],
         currentStep: "catfawn/step7",
         completedSteps: 18,
       })
@@ -92,7 +93,7 @@ const Step6VC = () => {
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
-            className="absolute left-0"
+            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
             onClick={() => {
               router.replace("/catfawn/step5/12");
             }}
@@ -115,8 +116,8 @@ const Step6VC = () => {
           </div>
           Request Early Access
         </h2>
-        <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
-          Step 6 of 14: Challenges.{" "}
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+          Step 6 of 15: Challenges.{" "}
           <span className="font-normal font-avenir">
             The CAT-FAWN Connection can help you navigate the challenges you’re
             facing—whether they relate to personal growth, professional life, or
@@ -135,6 +136,7 @@ const Step6VC = () => {
           <ChallengePills
             challenges={CHALLENGES}
             onChange={handleChange}
+            value={selectedChallenges}
             min={3}
           />
         </div>

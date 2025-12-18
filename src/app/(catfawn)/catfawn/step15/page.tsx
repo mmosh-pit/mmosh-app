@@ -7,14 +7,9 @@ import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
 import { init, uploadFile } from "@/app/lib/firebase";
 
-
 const Step15VC = () => {
   const router = useRouter();
-
-  const [cachedData, setCachedData] = useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = useState<any>({});
 
   const [avatar, setAvatar] = useState<File | null>(null);
 
@@ -22,13 +17,11 @@ const Step15VC = () => {
   const [bio, setBio] = useState("");
   const [webLink, setWebLink] = useState("");
 
-
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
   const [msgText, setMsgText] = useState("");
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
 
   const createMessage = (message: string, type: "success" | "error") => {
     setMsgText(message);
@@ -40,20 +33,18 @@ const Step15VC = () => {
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
 
     try {
       init();
       const result = JSON.parse(stored);
       setCachedData(result);
-
-      if (result.currentStep !== "catfawn/step15") {
+      if (result?.completedSteps !== undefined && result?.completedSteps < 26) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
@@ -66,11 +57,9 @@ const Step15VC = () => {
     }
   };
 
-
   const handleNext = async () => {
-
     if (!avatar && !lastName && !bio && !webLink) {
-      createMessage("Please fill all the field", "error")
+      createMessage("Please fill all the field", "error");
       return;
     }
     if (!avatar) {
@@ -106,26 +95,6 @@ const Step15VC = () => {
         cachedData.email || "user",
         "avatars"
       );
-      console.log(avatarUrl, "$$$$$$$$$$$$$$$$$$$$$$")
-      // const res = await axios.patch(
-      //   "/api/visitors/update-visitors",
-      //   {
-      //     email: cachedData.email,
-      //     currentStep: "catfawn/step16",
-
-      //     avatar: avatarUrl,
-      //     lastName: lastName,
-      //     bio: bio,
-      //     web: webLink,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-      //     },
-      //   }
-      // );
-
-      // if (res.data.status) {
       localStorage.setItem(
         "catfawn-data",
         JSON.stringify({
@@ -144,17 +113,9 @@ const Step15VC = () => {
 
       const finalData = JSON.parse(data);
 
-      const res = await axios.post(
-        "/api/visitors/save",
-        finalData,
-      );
+      const res = await axios.post("/api/visitors/save", finalData);
 
-      // // final step → redirect
-      // router.replace("/success");
-      // } else {
-      //   createMessage(res.data.message, "error");
-      // }
-      createMessage("Successfully Completed", "success")
+      createMessage("Successfully Completed", "success");
     } catch (err: any) {
       createMessage(
         err?.response?.data?.message || "Something went wrong",
@@ -165,7 +126,6 @@ const Step15VC = () => {
     }
   };
 
-
   return (
     <>
       {showMsg && (
@@ -174,7 +134,6 @@ const Step15VC = () => {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-
         <h2 className="text-center font-poppinsNew text-[1.563rem] font-bold text-white">
           Request Early Access
         </h2>
@@ -184,7 +143,6 @@ const Step15VC = () => {
         </p>
 
         <form className="mt-4">
-          {/* Avatar */}
           <span className="text-sm text-white/80">Avatar selection *</span>
 
           <label
@@ -202,7 +160,6 @@ const Step15VC = () => {
             )}
           </label>
 
-
           <input
             id="avatar-input"
             type="file"
@@ -214,12 +171,15 @@ const Step15VC = () => {
 
               const allowedTypes = ["image/jpeg", "image/png"];
               if (!allowedTypes.includes(file.type)) {
-                createMessage("Only JPEG, JPG, or PNG images are allowed.", "error");
+                createMessage(
+                  "Only JPEG, JPG, or PNG images are allowed.",
+                  "error"
+                );
                 e.target.value = "";
                 return;
               }
 
-              const maxSize = 500 * 1024; // 500 KB
+              const maxSize = 500 * 1024;
               if (file.size > maxSize) {
                 createMessage("Image size must be less than 500 KB.", "error");
                 e.target.value = "";
@@ -228,14 +188,11 @@ const Step15VC = () => {
 
               setAvatar(file);
 
-              // ✅ Create preview
               const previewUrl = URL.createObjectURL(file);
               setAvatarPreview(previewUrl);
             }}
           />
 
-
-          {/* Last Name */}
           <div className="mt-3">
             <span className="text-sm text-white/80">Last Name *</span>
             <input
@@ -247,7 +204,6 @@ const Step15VC = () => {
             />
           </div>
 
-          {/* Bio */}
           <div className="mt-3">
             <span className="text-sm text-white/80">Bio *</span>
             <input
@@ -259,7 +215,6 @@ const Step15VC = () => {
             />
           </div>
 
-          {/* Web link */}
           <div className="mt-3">
             <span className="text-sm text-white/80">Web Link *</span>
             <input

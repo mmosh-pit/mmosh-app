@@ -8,10 +8,7 @@ import Spinner from "../components/Spinner";
 export default function Step14VC() {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = React.useState({
-    email: "",
-    currentStep: "",
-  });
+  const [cachedData, setCachedData] = React.useState<any>({});
 
   const [kinshipCode, setKinshipCode] = React.useState("");
 

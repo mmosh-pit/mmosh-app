@@ -7,7 +7,6 @@ import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
 import { init, uploadFile } from "@/app/lib/firebase";
 
-
 const Step15VC = () => {
   const router = useRouter();
 
@@ -22,13 +21,11 @@ const Step15VC = () => {
   const [bio, setBio] = useState("");
   const [webLink, setWebLink] = useState("");
 
-
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
   const [msgText, setMsgText] = useState("");
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
 
   const createMessage = (message: string, type: "success" | "error") => {
     setMsgText(message);
@@ -66,11 +63,9 @@ const Step15VC = () => {
     }
   };
 
-
   const handleNext = async () => {
-
     if (!avatar && !lastName && !bio && !webLink) {
-      createMessage("Please fill all the field", "error")
+      createMessage("Please fill all the field", "error");
       return;
     }
     if (!avatar) {
@@ -106,7 +101,7 @@ const Step15VC = () => {
         cachedData.email || "user",
         "avatars"
       );
-      console.log(avatarUrl, "$$$$$$$$$$$$$$$$$$$$$$")
+      console.log(avatarUrl, "$$$$$$$$$$$$$$$$$$$$$$");
       // const res = await axios.patch(
       //   "/api/visitors/update-visitors",
       //   {
@@ -144,17 +139,14 @@ const Step15VC = () => {
 
       const finalData = JSON.parse(data);
 
-      const res = await axios.post(
-        "/api/visitors/save",
-        finalData,
-      );
+      const res = await axios.post("/api/visitors/save", finalData);
 
       // // final step → redirect
       // router.replace("/success");
       // } else {
       //   createMessage(res.data.message, "error");
       // }
-      createMessage("Successfully Completed", "success")
+      createMessage("Successfully Completed", "success");
     } catch (err: any) {
       createMessage(
         err?.response?.data?.message || "Something went wrong",
@@ -165,7 +157,6 @@ const Step15VC = () => {
     }
   };
 
-
   return (
     <>
       {showMsg && (
@@ -174,8 +165,24 @@ const Step15VC = () => {
         </div>
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
-
-        <h2 className="text-center font-poppinsNew text-[1.563rem] font-bold text-white">
+        <h2 className="relative text-center font-poppinsNew text-[1.563rem] font-bold text-white">
+          <div className="absolute top-1/2 -translate-y-1/2 left-0">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12L4 12M4 12L10 6M4 12L10 18"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           Request Early Access
         </h2>
 
@@ -202,7 +209,6 @@ const Step15VC = () => {
             )}
           </label>
 
-
           <input
             id="avatar-input"
             type="file"
@@ -214,7 +220,10 @@ const Step15VC = () => {
 
               const allowedTypes = ["image/jpeg", "image/png"];
               if (!allowedTypes.includes(file.type)) {
-                createMessage("Only JPEG, JPG, or PNG images are allowed.", "error");
+                createMessage(
+                  "Only JPEG, JPG, or PNG images are allowed.",
+                  "error"
+                );
                 e.target.value = "";
                 return;
               }
@@ -233,7 +242,6 @@ const Step15VC = () => {
               setAvatarPreview(previewUrl);
             }}
           />
-
 
           {/* Last Name */}
           <div className="mt-3">

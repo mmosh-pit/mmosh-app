@@ -183,8 +183,8 @@ export default function Step2VC() {
           </div>
           Request Early Access
         </h2>
-        <p className="text-[1rem] font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
-          Step 2 of 14: Check your email to confirm your early access request{" "}
+        <p className="max-sm:text-base font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
+          Step 2 of 15: Check your email to confirm your early access request{" "}
           <span className="text-[#FFFFFFE5] font-normal font-avenir -tracking-[0.02em]">
             {" "}
             We’ve sent a 6-digit verification code to {cachedData.email}{" "}

@@ -28,7 +28,7 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
 
   return (
     <div className="py-[0.875rem] ps-[0.5rem] pe-[0.313rem] bg-[#271114] rounded-[1.25rem] border border-[rgba(255,255,255,0.16)]">
-      <div className="max-h-[12.938rem] overflow-y-auto flex flex-wrap gap-[0.625rem] pe-[0.688rem]">
+      <div className="max-h-[12.938rem] overflow-y-scroll flex flex-wrap gap-[0.625rem] pe-[0.688rem]">
         {challenges.map((item) => {
           const isActive = selected.includes(item.label);
 

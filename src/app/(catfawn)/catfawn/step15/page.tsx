@@ -48,9 +48,16 @@ const Step15VC = () => {
   }, []);
 
   const isValidUrl = (url: string) => {
+    if (!url || typeof url !== "string") return false;
+
+    const trimmed = url.trim();
+    if (!/^https?:\/\/.+/i.test(trimmed)) return false;
+
     try {
-      const parsed = new URL(url);
-      return ["http:", "https:"].includes(parsed.protocol);
+      const parsed = new URL(trimmed);
+      if (!["http:", "https:"].includes(parsed.protocol)) return false;
+      const hostnameRegex = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z]{2,})+$/;
+      return hostnameRegex.test(parsed.hostname);
     } catch {
       return false;
     }
@@ -73,6 +80,11 @@ const Step15VC = () => {
 
     if (!bio.trim()) {
       createMessage("Bio is required.", "error");
+      return;
+    }
+
+    if (bio.trim().length < 10 || bio.trim().length > 255) {
+      createMessage("Bio must be between 10 and 255 characters.", "error");
       return;
     }
 
@@ -104,11 +116,19 @@ const Step15VC = () => {
         completedSteps: 27,
       };
 
-      localStorage.setItem("catfawn-data", JSON.stringify(updatedData));
+      const res = await axios.post("/api/visitors/save", updatedData);
 
-      await axios.post("/api/visitors/save", updatedData);
+      if (!res.data?.status) {
+        createMessage(
+          res.data?.message || "Unable to save user information",
+          "error"
+        );
+        setIsLoading(false);
+        return;
+      }
 
       createMessage("Successfully register the user information.", "success");
+      localStorage.removeItem("catfawn-data");
 
       router.replace("/join");
     } catch (err: any) {
@@ -116,7 +136,6 @@ const Step15VC = () => {
         err?.response?.data?.message || "Something went wrong",
         "error"
       );
-    } finally {
       setIsLoading(false);
     }
   };

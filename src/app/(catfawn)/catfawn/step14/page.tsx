@@ -1,11 +1,9 @@
-// step6
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-// import toast from "react-hot-toast";
 
 export default function Step14VC() {
   const router = useRouter();
@@ -25,60 +23,65 @@ export default function Step14VC() {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      router.replace("/");
-      return;
+      return router.replace("/catfawn");
     }
-
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-
-      if (result.currentStep !== "step14") {
+      if (result?.completedSteps !== undefined && result?.completedSteps < 25) {
         router.replace(`/${result.currentStep}`);
-        return;
       }
     } catch {
-      router.replace("/");
+      router.replace("/catfawn");
     }
   }, []);
 
   const submitNewKinshipCode = async () => {
-
     if (!/^[a-zA-Z0-9]+$/.test(kinshipCode)) {
-      createMessage("Kinship Code must contain only letters and numbers.", "error");
+      createMessage(
+        "Kinship Code must contain only letters and numbers.",
+        "error"
+      );
       return;
     }
 
-    if (kinshipCode.length < 3) {
-      createMessage("Kinship Code must be between 3 to 20 alphanumeric characters", "error");
+    if (kinshipCode.length < 6 || kinshipCode.length > 16) {
+      createMessage(
+        "Kinship Code must be between 6 and 16 characters.",
+        "error"
+      );
       return;
     }
 
     try {
-      setIsLoading(true)
-      // const res = await axios.patch("/api/visitors/update-visitors", {
-      //   email: cachedData.email,
-      //   currentStep: "catfawn/step15",
-      //   kinshipCode: kinshipCode,
-      // }, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem("token") || ""}`
-      //   }
-      // });
+      setIsLoading(true);
 
-      // if (res.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({ ...cachedData, currentStep: "catfawn/step15", kinshipCode: kinshipCode })
+      const response = await axios.post("/api/visitors/has-code-exist", {
+        code: kinshipCode,
+      });
+
+      if (response.data?.result?.exists) {
+        createMessage(
+          "This Kinship Code already exists. Please choose another one.",
+          "error"
         );
+        setIsLoading(false);
+        return;
+      }
 
-        router.replace("/catfawn/step15");
-      // } else {
-      //   createMessage("res.data.message", "error");
-      // }
+      localStorage.setItem(
+        "catfawn-data",
+        JSON.stringify({
+          ...cachedData,
+          kinshipCode: kinshipCode,
+          currentStep: "catfawn/step15",
+          completedSteps: 26,
+        })
+      );
+
+      router.replace("/catfawn/step15");
     } catch {
-      createMessage("Something went wrong", "error");
-    } finally {
+      createMessage("Unable to validate Kinship Code.", "error");
       setIsLoading(false);
     }
   };
@@ -99,7 +102,12 @@ export default function Step14VC() {
       )}
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div className="absolute left-0">
+          <div
+            className="absolute left-0"
+            onClick={() => {
+              router.replace("/catfawn/step13");
+            }}
+          >
             <svg
               width="24"
               height="24"
@@ -118,27 +126,26 @@ export default function Step14VC() {
           </div>
           Request Early Access
         </h2>
+
         <p className="text-[1rem] text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 14 of 14: Create Your Own Kinship Code.
           <span className="font-normal font-avenir">
-            Every person in the Kinship ecosystem carries a unique code — a way of
-            extending relationship, trust, and reciprocity. Pick something
-            meaningful, memorable, or fun — whatever seems true to you. This will
-            be the code you’ll share with people you invite.
+            Every person in the Kinship ecosystem carries a unique code — a way
+            of extending relationship, trust, and reciprocity.
           </span>
         </p>
 
         <form className="mt-[0.875rem] min-h-63.5 text-base max-md:text-sm font-normal">
           <div>
             <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Set your Kinship Code{" "}
+              Set your Kinship Code
             </label>
             <input
               type="text"
               value={kinshipCode}
               onChange={(e) => setKinshipCode(e.target.value.trim())}
-              minLength={3}
-              maxLength={20}
+              minLength={6}
+              maxLength={16}
               placeholder="Set your Kinship Code"
               className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
             />

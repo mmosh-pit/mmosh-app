@@ -242,7 +242,7 @@ export default function Home() {
             {isLoading && <Spinner size="sm" />} Join Early Access
           </button>
 
-          <label className="w-[110%] flex items-start gap-0.5  mt-1">
+          <label className="xl:w-[110%] flex items-start gap-0.5  mt-1">
             <input
               type="checkbox"
               className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem] me-0.5"

@@ -29,7 +29,10 @@ export default function Step12VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result?.completedSteps !== undefined && result?.completedSteps < 23) {
+      if (
+        result?.completedSteps !== undefined &&
+        (result?.completedSteps < 23 || result?.isMobileNumberVerified)
+      ) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {

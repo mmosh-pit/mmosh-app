@@ -149,8 +149,7 @@ const Step6VC = () => {
           className="steps_btn_submit mt-[1rem]"
           onClick={submitStep6}
         >
-          {isLoading && <Spinner size="sm" />}
-          Next
+          {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
       </div>
     </>

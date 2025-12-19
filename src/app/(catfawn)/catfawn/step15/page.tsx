@@ -276,8 +276,7 @@ const Step15VC = () => {
             className="steps_btn_submit mt-5"
             onClick={handleNext}
           >
-            {isLoading && <Spinner size="sm" />}
-            Next
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

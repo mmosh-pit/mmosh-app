@@ -209,8 +209,7 @@ const Step5VC9 = () => {
           disabled={isLoading}
           className="steps_btn_submit mt-[5.563rem]"
         >
-          {isLoading && <Spinner size="sm" />}
-          Next
+          {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
       </div>
     </>

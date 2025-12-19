@@ -101,8 +101,7 @@ const Step5VC = () => {
           router.replace("/catfawn/step5/1");
         }}
       >
-        {isLoading && <Spinner size="sm" />}
-        <span>Next</span>
+        {isLoading ? <Spinner size="sm" /> : "Next"}
       </button>
     </div>
   );

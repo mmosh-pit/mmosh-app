@@ -100,6 +100,13 @@ export default function Step3VC() {
         return;
       }
 
+      if (!/^[A-Za-z\s]+$/.test(otherRoleText)) {
+        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
+        setIsLoading(false);
+        return;
+      }
+
+
       if (otherRoleText.trim().length < 3 || otherRoleText.trim().length > 30) {
         createMessage(
           "Other role must be between 3 and 30 characters.",
@@ -306,7 +313,7 @@ export default function Step3VC() {
             className={`steps_btn_submit ${otherRoleEnabled ? "mt-[1.438rem]" : " mt-[4.375rem]"}`}
             onClick={updateRoles}
           >
-            {isLoading && <Spinner size="sm" />} Next
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

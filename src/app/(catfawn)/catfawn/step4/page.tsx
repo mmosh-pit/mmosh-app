@@ -103,18 +103,19 @@ export default function Step4VC() {
         return;
       }
 
-      if(!/^[A-Za-z]$/.test(otherIntentText)){
-        createMessage("Special characters are not allowed", "error");
+      if (!/^[A-Za-z\s]+$/.test(otherIntentText)) {
+        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
         setIsLoading(false);
         return;
       }
 
+
       if (
         otherIntentText.trim().length < 3 ||
-        otherIntentText.trim().length > 30
+        otherIntentText.trim().length > 100
       ) {
         createMessage(
-          "Other Intent must be between 3 and 30 characters.",
+          "Other Intent must be between 3 and 100 characters.",
           "error"
         );
         setIsLoading(false);
@@ -457,6 +458,7 @@ export default function Step4VC() {
               onChange={(e) => setOtherIntentText(e.target.value)}
               placeholder="Please share how you see yourself in the world."
               className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-60 placeholder:font-normal placeholder:leading-[140%] mt-[0.563rem]"
+              maxLength={100}
             />
           )}
 

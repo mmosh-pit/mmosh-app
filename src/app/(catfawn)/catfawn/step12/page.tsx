@@ -31,10 +31,11 @@ export default function Step12VC() {
 
       if (
         result?.completedSteps !== undefined &&
-        (result?.completedSteps < 23 || result?.isMobileNumberVerified)
+        (result?.completedSteps < 23 || result?.isMobileNumberVerified || result?.isMobileNumberVerified === undefined)
       ) {
         router.replace(`/${result.currentStep}`);
       }
+
     } catch {
       router.replace("/catfawn");
     }
@@ -258,8 +259,7 @@ export default function Step12VC() {
             className="mt-[10.875rem] steps_btn_submit"
             onClick={submitOTP}
           >
-            {isLoading && <Spinner size="sm" />}
-            Join Early Access
+            {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>
       </div>

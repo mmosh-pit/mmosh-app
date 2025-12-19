@@ -41,7 +41,7 @@ export default function Step11VC() {
       const stored = localStorage.getItem("catfawn-data");
 
       if (!stored) {
-        // router.replace("/catfawn");
+        router.replace("/catfawn");
         return;
       }
       const result = JSON.parse(stored);

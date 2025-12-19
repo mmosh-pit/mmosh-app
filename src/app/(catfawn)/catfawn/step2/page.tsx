@@ -29,10 +29,11 @@ export default function Step2VC() {
       setCachedData(result);
       if (
         result?.completedSteps !== undefined &&
-        (result?.completedSteps < 1 || result?.hasVerifiedEmail)
+        (result?.completedSteps < 1 || result?.hasVerifiedEmail || result?.hasVerifiedEmail === undefined)
       ) {
         router.replace(`/${result.currentStep}`);
       }
+
     } catch {
       router.replace("/catfawn");
     }

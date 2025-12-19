@@ -123,10 +123,7 @@ export default function Home() {
             firstName: formData.firstName,
             password: encryptData(formData.password),
             hasVerifiedEmail: false,
-            completedSteps:
-              cachedData.completedSteps && cachedData.completedSteps < 1
-                ? 1
-                : cachedData.completedSteps,
+            completedSteps:1,
           })
         );
         setIsLoading(false);

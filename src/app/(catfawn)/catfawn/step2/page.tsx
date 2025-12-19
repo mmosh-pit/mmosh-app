@@ -27,7 +27,10 @@ export default function Step2VC() {
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-      if (result?.completedSteps !== undefined && result?.completedSteps < 1) {
+      if (
+        result?.completedSteps !== undefined &&
+        (result?.completedSteps < 1 || result?.hasVerifiedEmail)
+      ) {
         router.replace(`/${result.currentStep}`);
       }
     } catch {

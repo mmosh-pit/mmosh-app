@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "./components/Spinner";
+import { encryptData, decryptData } from "@/utils/decryptData";
 
 export default function Home() {
   const router = useRouter();
@@ -35,8 +36,8 @@ export default function Home() {
       setFormData({
         firstName: result.firstName || "",
         email: result.email || "",
-        password: result.password || "",
-        confirmPassword: result.password || "",
+        password: decryptData(result.password || ""),
+        confirmPassword: decryptData(result.password || ""),
         hasChecked: true,
       });
     } catch {
@@ -100,7 +101,7 @@ export default function Home() {
             ...cachedData,
             email: formData.email,
             firstName: formData.firstName,
-            password: formData.password,
+            password: encryptData(formData.password),
             currentStep: "catfawn/step3",
           })
         );
@@ -117,7 +118,7 @@ export default function Home() {
             currentStep: "catfawn/step2",
             email: formData.email,
             firstName: formData.firstName,
-            password: formData.password,
+            password: encryptData(formData.password),
             hasVerifiedEmail: false,
             completedSteps: 1,
           })

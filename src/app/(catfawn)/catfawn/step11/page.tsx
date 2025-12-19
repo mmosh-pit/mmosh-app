@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
 import PhoneInput from "react-phone-input-2";
@@ -195,28 +195,6 @@ export default function Step11VC() {
     setTimeout(() => setShowMsg(false), 4000);
   };
 
-  const getDefaultValue = (type: string) => {
-    try {
-      if (type === "country") {
-        return (
-          JSON.parse(localStorage.getItem("catfawn-data") || "{}").country ||
-          "US"
-        );
-      } else {
-        return (
-          JSON.parse(localStorage.getItem("catfawn-data") || "{}")
-            .mobileNumber || ""
-        );
-      }
-    } catch (error) {
-      if (type === "country") {
-        return "US";
-      } else {
-        return "";
-      }
-    }
-  };
-
   return (
     <>
       {showMsg && (
@@ -269,55 +247,40 @@ export default function Step11VC() {
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Mobile number *
               </label>
-              {/* <PhoneInput
-                country={
-                  getDefaultValue("country")
-                }
-                value={
-                  getDefaultValue("mobileNumber")
-                }
-                onChange={(data) => {
-                  const countryCode = data.dialCode.replace("+", "");
-                  const mobileNumber = data.valueWithoutPlus.slice(
-                    countryCode.length
-                  );
+              <PhoneInput
+                country={"us"}
+                value={phone}
+                onChange={(
+                  value: string,
+                  country: {
+                    dialCode: string;
+                    countryCode: string;
+                    name: string;
+                  }
+                ) => {
+                  if (!country?.dialCode) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      country: "US",
+                      countryCode: "1",
+                      mobileNumber: "",
+                    }));
+                    setPhone("");
+                    return;
+                  }
+
+                  const countryCode = country.dialCode;
+                  const mobileNumber = value.slice(countryCode.length);
 
                   setContactDetails((prev) => ({
                     ...prev,
                     mobileNumber,
                     countryCode,
-                    country: data.code,
+                    country: country.countryCode.toUpperCase(),
                   }));
 
-                  setPhone(data.value);
+                  setPhone(value);
                 }}
-                placeholder="Mobile number"
-                search={true}
-                iconComponent={
-                  <svg
-                    width="11"
-                    height="6"
-                    viewBox="0 0 11 6"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0.5 0.5L5.10217 4.81454C5.50572 5.19286 6.13974 5.1717 6.51717 4.76732L10.5 0.5"
-                      stroke="white"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                }
-                buttonClass="phone-dropdown-btn"
-                containerClass="phone-container"
-                inputClass="phone-input"
-                dropdownClass="phone-dropdown"
-              /> */}
-
-              <PhoneInput
-                country={"us"}
-                value={phone}
-                onChange={setPhone}
                 inputClass="phone-input"
                 buttonClass="phone-dropdown-btn"
                 containerClass="phone-container"

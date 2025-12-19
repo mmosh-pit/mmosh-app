@@ -11,7 +11,8 @@ const Step5VC = () => {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      return router.replace("/catfawn");
+      // return router.replace("/catfawn");
+      return
     }
     try {
       const result = JSON.parse(stored);
@@ -61,7 +62,7 @@ const Step5VC = () => {
         </span>
       </p>
 
-      <div className="w-full max-w-[18.25rem] mx-auto text-[1rem] font-normal leading-[110%] text-[#FFFFFFE5] mt-[0.563rem] -tracking-[0.04em]">
+      <div className="w-full max-w-[18.25rem] mx-auto text-[1rem] font-normal leading-[110%] text-[#FFFFFFE5] max-md:mt-8 mt-[0.563rem] -tracking-[0.04em]">
         <ul className="flex flex-col gap-[0.25rem]">
           <li>1 = “I would rarely if ever do this”</li>
           <li>2 = “I might do this, but not often”</li>
@@ -71,7 +72,7 @@ const Step5VC = () => {
         </ul>
       </div>
 
-      <p className="text-[1rem] text-[#FFFFFFE5] max-md:text-sm font-normal leading-snug lg:leading-[94%] mt-[1.25rem] -tracking-[0.02em] px-[0.313rem]">
+      <p className="text-[1rem] text-[#FFFFFFE5] max-md:text-sm font-normal leading-snug lg:leading-[94%] max-md:mt-8 mt-[1.25rem] -tracking-[0.02em] px-[0.313rem]">
         Rate each response independent of the others; they may be the same or
         different. Some responses may seem equivalent or not applicable to you,
         and some questions may not have any responses that really fit you. Just

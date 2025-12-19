@@ -120,6 +120,7 @@ export default function Step12VC() {
         email: cachedData.email,
         otp: enteredOtp,
         currentStep: "catfawn/step13",
+        type: "sms"
       });
 
       if (res.data.status) {

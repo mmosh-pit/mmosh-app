@@ -87,6 +87,7 @@ export default function Step2VC() {
       const result = await axios.post("/api/visitors/verify-otp", {
         email: cachedData.email,
         otp: code,
+        type: "email"
       });
 
       if (result.data.status) {
@@ -269,8 +270,9 @@ export default function Step2VC() {
             type="button"
             className="steps_btn_submit mt-[5.438rem]"
             onClick={verifyOTP}
+            disabled={isLoading}
           >
-            {isLoading && <Spinner size="sm" />} Confirm My Early Access{" "}
+            {isLoading ? <Spinner size="sm" /> : "Confirm My Early Access"}
           </button>
         </form>
       </div>

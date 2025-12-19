@@ -158,8 +158,7 @@ export default function Step14VC() {
             className="steps_btn_submit mt-[11.813rem]"
             onClick={submitNewKinshipCode}
           >
-            {isLoading && <Spinner size="sm" />}
-            Join Early Access
+            {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>
       </div>

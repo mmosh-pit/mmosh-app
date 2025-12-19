@@ -459,7 +459,7 @@ export default function Step4VC() {
             className="steps_btn_submit mt-[0.625rem]"
             onClick={updateIntent}
           >
-            {isLoading && <Spinner size="sm" />} Next
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

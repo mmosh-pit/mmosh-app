@@ -126,7 +126,10 @@ export default function Step4VC() {
         ...cachedData,
         intent: finalIntents,
         currentStep: "catfawn/step5",
-        completedSteps: 4,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 4
+            ? 4
+            : cachedData.completedSteps,
       })
     );
 

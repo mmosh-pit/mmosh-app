@@ -53,93 +53,96 @@ const Step5VC5 = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const formatLikertKey = (text: string) =>
-      text
-        .trim()
-        .replace(/[^\w\s]/g, "")
-        .replace(/\s+/g, "-")
-        .toLowerCase();
-  
-    React.useEffect(() => {
-      const stored = localStorage.getItem("catfawn-data");
-      if (!stored) {
-        router.replace("/catfawn");
-        return;
+    text
+      .trim()
+      .replace(/[^\w\s]/g, "")
+      .replace(/\s+/g, "-")
+      .toLowerCase();
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem("catfawn-data");
+    if (!stored) {
+      router.replace("/catfawn");
+      return;
+    }
+
+    try {
+      const result = JSON.parse(stored);
+      setCachedData(result);
+
+      if (result.likertAnswers) {
+        const restoredForm: any = { q1: null, q2: null, q3: null, q4: null };
+
+        LIKERT_QUESTIONS.forEach((q) => {
+          const key = formatLikertKey(q.text);
+          const label = result.likertAnswers[key];
+
+          if (label) {
+            const value = Number(
+              Object.keys(LIKERT_LABELS).find(
+                (k) => LIKERT_LABELS[Number(k)] === label
+              )
+            );
+
+            restoredForm[q.id] = value ?? null;
+          }
+        });
+
+        setForm(restoredForm);
       }
-  
-      try {
-        const result = JSON.parse(stored);
-        setCachedData(result);
-  
-        if (result.likertAnswers) {
-          const restoredForm: any = { q1: null, q2: null, q3: null, q4: null };
-  
-          LIKERT_QUESTIONS.forEach((q) => {
-            const key = formatLikertKey(q.text);
-            const label = result.likertAnswers[key];
-  
-            if (label) {
-              const value = Number(
-                Object.keys(LIKERT_LABELS).find(
-                  (k) => LIKERT_LABELS[Number(k)] === label
-                )
-              );
-  
-              restoredForm[q.id] = value ?? null;
-            }
-          });
-  
-          setForm(restoredForm);
-        }
-  
-        if (result?.completedSteps !== undefined && result?.completedSteps < 9) {
-          router.replace(`/${result.currentStep}`);
-        }
-      } catch {
-        router.replace("/catfawn");
+
+      if (result?.completedSteps !== undefined && result?.completedSteps < 9) {
+        router.replace(`/${result.currentStep}`);
       }
-    }, []);
-  
-  
-    const createMessage = (message: string, type: "success" | "error") => {
-      window.scrollTo(0, 0);
-      setMsgText(message);
-      setMsgClass(type);
-      setShowMsg(true);
-      setTimeout(() => setShowMsg(false), 4000);
-    };
-  
-    const likertAnswers = LIKERT_QUESTIONS.reduce((acc, q) => {
-      const value = form[q.id as keyof typeof form];
-  
-      if (value !== null) {
-        acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
-      }
-  
-      return acc;
-    }, {} as Record<string, string>);
-  
-    const submitStep5 = async () => {
-      setIsLoading(true);
-      if (Object.values(form).some((v) => v === null)) {
-        createMessage("Please answer all questions.", "error");
-        setIsLoading(false);
-        return;
-      }
-      const existingData = cachedData
-      localStorage.setItem(
-        "catfawn-data",
-        JSON.stringify({
-          ...cachedData,
-          currentStep: "catfawn/step5/6",
-          likertAnswers: {
-            ...(existingData.likertAnswers || {}),
-            ...likertAnswers,
-          },
-          completedSteps: 10,
-        })
-      );
-      router.replace("/catfawn/step5/6");
-    };
+    } catch {
+      router.replace("/catfawn");
+    }
+  }, []);
+
+
+  const createMessage = (message: string, type: "success" | "error") => {
+    window.scrollTo(0, 0);
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+    setTimeout(() => setShowMsg(false), 4000);
+  };
+
+  const likertAnswers = LIKERT_QUESTIONS.reduce((acc, q) => {
+    const value = form[q.id as keyof typeof form];
+
+    if (value !== null) {
+      acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
+    }
+
+    return acc;
+  }, {} as Record<string, string>);
+
+  const submitStep5 = async () => {
+    setIsLoading(true);
+    if (Object.values(form).some((v) => v === null)) {
+      createMessage("Please answer all questions.", "error");
+      setIsLoading(false);
+      return;
+    }
+    const existingData = cachedData
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn/step5/6",
+        likertAnswers: {
+          ...(existingData.likertAnswers || {}),
+          ...likertAnswers,
+        },
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 10
+            ? 10
+            : cachedData.completedSteps,
+      })
+    );
+    router.replace("/catfawn/step5/6");
+  };
 
   return (
     <>

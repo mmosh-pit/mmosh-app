@@ -171,7 +171,10 @@ export default function Step11VC() {
               linkedinProfile: contactDetails.linkedinProfile,
               country: contactDetails.country,
               isMobileNumberVerified: false,
-              completedSteps: 23,
+              completedSteps:
+                cachedData.completedSteps && cachedData.completedSteps < 23
+                  ? 23
+                  : cachedData.completedSteps,
             })
           );
 

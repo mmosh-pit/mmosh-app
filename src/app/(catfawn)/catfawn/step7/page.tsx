@@ -76,7 +76,10 @@ const Step7VC = () => {
         ...cachedData,
         abilities: selectedAbilities,
         currentStep: "catfawn/step8",
-        completedSteps: 19,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 19
+            ? 19
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step8");

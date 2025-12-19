@@ -62,7 +62,10 @@ export default function Step10VC() {
         ...cachedData,
         currentStep: "catfawn/step11",
         contactPreference: contactPreferences,
-        completedSteps: 22,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 22
+            ? 22
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step11");

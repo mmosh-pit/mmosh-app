@@ -76,7 +76,10 @@ const Step6VC = () => {
         ...cachedData,
         challenges: [...selectedChallenges],
         currentStep: "catfawn/step7",
-        completedSteps: 18,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 18
+            ? 18
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step7");

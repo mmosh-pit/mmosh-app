@@ -68,7 +68,10 @@ export default function Step9VC() {
         ...cachedData,
         currentStep: "catfawn/step10",
         mobilePreference: mobilePreferences,
-        completedSteps: 21,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 21
+            ? 21
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step10");

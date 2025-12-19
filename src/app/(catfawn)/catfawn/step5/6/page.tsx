@@ -55,7 +55,7 @@ const Step5VC6 = () => {
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
   const [isLoading, setIsLoading] = useState(false);
 
-const formatLikertKey = (text: string) =>
+  const formatLikertKey = (text: string) =>
     text
       .trim()
       .replace(/[^\w\s]/g, "")
@@ -138,7 +138,10 @@ const formatLikertKey = (text: string) =>
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
-        completedSteps: 11,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 11
+            ? 11
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step5/7");

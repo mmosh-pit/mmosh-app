@@ -27,7 +27,6 @@ const step8 = () => {
     { label: "🌈 LGBTQ+ inclusion" },
   ];
 
-  /** 🔹 Load cached data */
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
 
@@ -78,7 +77,10 @@ const step8 = () => {
         ...cachedData,
         aspirations: selectedAspirations,
         currentStep: "catfawn/step9",
-        completedSteps: 20,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 20
+            ? 20
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step9");

@@ -29,9 +29,13 @@ export default function Step12VC() {
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result?.completedSteps !== undefined && result?.completedSteps < 23) {
+      if (
+        result?.completedSteps !== undefined &&
+        (result?.completedSteps < 23 || result?.isMobileNumberVerified || result?.isMobileNumberVerified === undefined)
+      ) {
         router.replace(`/${result.currentStep}`);
       }
+
     } catch {
       router.replace("/catfawn");
     }
@@ -117,6 +121,7 @@ export default function Step12VC() {
         email: cachedData.email,
         otp: enteredOtp,
         currentStep: "catfawn/step13",
+        type: "sms"
       });
 
       if (res.data.status) {
@@ -126,7 +131,10 @@ export default function Step12VC() {
             ...cachedData,
             currentStep: "catfawn/step13",
             isMobileNumberVerified: true,
-            completedSteps: 24,
+            completedSteps:
+              cachedData.completedSteps && cachedData.completedSteps < 24
+                ? 24
+                : cachedData.completedSteps,
           })
         );
 
@@ -251,8 +259,7 @@ export default function Step12VC() {
             className="mt-[10.875rem] steps_btn_submit"
             onClick={submitOTP}
           >
-            {isLoading && <Spinner size="sm" />}
-            Join Early Access
+            {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>
       </div>

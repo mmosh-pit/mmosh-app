@@ -2,9 +2,11 @@ import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
+type OTPType = "email" | "sms";
 interface VerifyOTPBody {
     email: string;
     otp: string;
+    type: OTPType;
 }
 
 export async function POST(req: NextRequest) {
@@ -24,7 +26,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { email, otp } = validation.data!;
+        const { email, otp, type } = validation.data!;
 
         const collection = db.collection("mmosh-users-email-verification");
 
@@ -82,7 +84,16 @@ export async function POST(req: NextRequest) {
                 { status: 200 }
             );
         }
-        await collection.deleteOne({ email });
+
+        let data: any = { hasVerifiedEmail: true }
+        if (type === "sms") {
+            data = { isMobileNumberVerified: true }
+        }
+
+        await collection.updateOne(
+            { email },
+            { $set: data }
+        );
 
         return NextResponse.json(
             {
@@ -148,6 +159,7 @@ function validateRequestBody(body: any): {
         data: {
             email: body.email.trim().toLowerCase(),
             otp: body.otp.trim(),
+            type: body.type,
         },
     };
 }

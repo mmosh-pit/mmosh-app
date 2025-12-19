@@ -28,8 +28,8 @@ export default function Step13VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 24) {
         router.replace(`/${result.currentStep}`);
       }
-      setKinshipCode(result.referedKinshipCode)
-      setNoCodeChecked(result.noCodeChecked)
+      setKinshipCode(result.referedKinshipCode);
+      setNoCodeChecked(result.noCodeChecked);
     } catch {
       router.replace("/catfawn");
     }
@@ -50,9 +50,13 @@ export default function Step13VC() {
         "catfawn-data",
         JSON.stringify({
           ...cachedData,
-          referedKinshipCode:"",
+          referedKinshipCode: "",
           currentStep: "catfawn/step14",
           noCodeChecked: true,
+          completedSteps:
+            cachedData.completedSteps && cachedData.completedSteps < 25
+              ? 25
+              : cachedData.completedSteps,
         })
       );
       router.replace("/catfawn/step14");
@@ -74,7 +78,7 @@ export default function Step13VC() {
         code: kinshipCode,
       });
 
-      if (!response.data?.status) {
+      if (!response.data?.status || !response.data?.result?.exists) {
         createMessage("Invalid Kinship Code. Please try again.", "error");
         setIsLoading(false);
         return;
@@ -85,9 +89,12 @@ export default function Step13VC() {
         JSON.stringify({
           ...cachedData,
           referedKinshipCode: kinshipCode,
-          noCodeChecked:false,
+          noCodeChecked: false,
           currentStep: "catfawn/step14",
-          completedSteps: 25,
+          completedSteps:
+            cachedData.completedSteps && cachedData.completedSteps < 25
+              ? 25
+              : cachedData.completedSteps,
         })
       );
 
@@ -185,8 +192,7 @@ export default function Step13VC() {
             className="steps_btn_submit mt-[11rem]"
             onClick={submitKinshipCode}
           >
-            {isLoading && <Spinner size="sm" />}
-            Join Early Access
+            {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>
       </div>

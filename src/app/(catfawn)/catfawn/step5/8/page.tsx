@@ -134,7 +134,10 @@ const Step5VC8 = () => {
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
-        completedSteps: 13,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 13
+            ? 13
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step5/9");
@@ -211,8 +214,7 @@ const Step5VC8 = () => {
           disabled={isLoading}
           className="steps_btn_submit mt-[5.563rem]"
         >
-          {isLoading && <Spinner size="sm" />}
-          Next
+          {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
       </div>
     </>

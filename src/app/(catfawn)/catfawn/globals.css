@@ -119,6 +119,50 @@ select:-webkit-autofill {
     @apply font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] max-sm:text-xs text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer;
   }
 
+  .phone-container {
+    @apply flex flex-row-reverse gap-[1.125rem];
+  }
+
+  .phone-container .special-label {
+    display: none;
+  }
+
+  .phone-container .phone-input {
+    @apply !w-full !h-[2.813rem] !px-[1.294rem] !py-[0.813rem] !rounded-lg !bg-[#402A2A] !backdrop-blur-[12.16px] !border !border-[#FFFFFF29] !text-white focus:!outline-none placeholder:!text-[#FFFFFF] placeholder:!opacity-20;
+  }
+
+  .phone-dropdown-btn {
+    @apply !static !bg-[#402a2a] !border !border-[#FFFFFF29] !rounded-lg !w-[4.5rem] !ps-[0.688rem] !pe-3;
+  }
+
+  .phone-dropdown-btn .selected-flag:hover,
+  .phone-dropdown-btn .selected-flag:focus,
+  .phone-container .flag-dropdown.open .selected-flag {
+    @apply !bg-[#402a2a];
+  }
+
+  .phone-dropdown {
+    @apply !w-full !bg-[#402A2A] text-white
+         border-r border-[#FFFFFF29]
+         pr-3 mr-3
+         text-base;
+  }
+
+  .phone-dropdown .search{
+    @apply !bg-[#402a2a] flex items-center
+  }
+   
+  .phone-dropdown .country:hover{
+    @apply !bg-[#4b3636]
+  }
+  .phone-dropdown .country.highlight{
+    @apply !bg-[#4b3636]
+  }
+
+  .phone-dropdown .search input{
+    @apply w-4/5 !bg-[#402a2a] !border !border-[#FFFFFF29] 
+  }
+
   .phone-container .simple-phone-input-sri198-main {
     @apply gap-[1.125rem] border-0;
   }
@@ -129,27 +173,12 @@ select:-webkit-autofill {
     @apply !bg-[#402A2A] rounded-lg border border-[#FFFFFF29];
   }
 
-  .phone-container .simple-phone-input-sri198-main input {
-    @apply w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-solid border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20;
-  }
-
-  .phone-dropdown {
-    @apply !bg-[#402A2A] text-white
-         border-r border-[#FFFFFF29]
-         pr-3 mr-3
-         text-base;
-  }
-
   .phone-input {
     @apply bg-transparent text-white
          placeholder:text-white
          outline-none
          text-base
          w-full;
-  }
-
-  .phone-dropdown-btn {
-    @apply bg-[#402a2a] !w-[4.5rem] !ps-[0.688rem] !pe-3;
   }
 
   .phone-dropdown-btn img {

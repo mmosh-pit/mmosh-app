@@ -134,7 +134,10 @@ const Step5VC1 = () => {
           ...likertAnswers,
         },
         currentStep: "catfawn/step5/2",
-        completedSteps: 6,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 6
+            ? 6
+            : cachedData.completedSteps,
       })
     );
 
@@ -212,8 +215,8 @@ const Step5VC1 = () => {
           disabled={isLoading}
           className="steps_btn_submit mt-20"
         >
-          {isLoading && <Spinner size="sm" />}
-          Next
+          {isLoading ? <Spinner size="sm" /> : "Next"}
+
         </button>
       </div>
     </>

@@ -68,7 +68,10 @@ export default function Step9VC() {
         ...cachedData,
         currentStep: "catfawn/step10",
         mobilePreference: mobilePreferences,
-        completedSteps: 21,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 21
+            ? 21
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step10");
@@ -143,8 +146,7 @@ export default function Step9VC() {
             className="steps_btn_submit mt-[14.563rem]"
             onClick={updateMobilePreference}
           >
-            {isLoading && <Spinner size="sm" />}
-            Next
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

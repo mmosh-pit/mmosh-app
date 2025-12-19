@@ -146,8 +146,7 @@ export default function Step9VC() {
             className="steps_btn_submit mt-[14.563rem]"
             onClick={updateMobilePreference}
           >
-            {isLoading && <Spinner size="sm" />}
-            Next
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

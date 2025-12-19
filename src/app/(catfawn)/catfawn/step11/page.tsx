@@ -136,20 +136,12 @@ export default function Step11VC() {
     if (cachedData.isMobileNumberVerified !== true || numberChanged) {
       try {
         setIsLoading(true);
-        const result = await axios.post(
-          "/api/visitors/generate-otp",
-          {
-            type: "sms",
-            mobile: contactDetails.mobileNumber,
-            countryCode: contactDetails.countryCode,
-            email: cachedData.email,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-            },
-          }
-        );
+        const result = await axios.post("/api/visitors/generate-otp", {
+          type: "sms",
+          mobile: contactDetails.mobileNumber,
+          countryCode: contactDetails.countryCode,
+          email: cachedData.email,
+        });
 
         if (result.data.status) {
           localStorage.setItem(
@@ -349,8 +341,7 @@ export default function Step11VC() {
               className="steps_btn_submit mt-[1.063rem]"
               onClick={updateContactDetails}
             >
-              {isLoading && <Spinner size="sm" />}
-              Next
+              {isLoading ? <Spinner size="sm" /> : "Next"}
             </button>
           </div>
         </form>

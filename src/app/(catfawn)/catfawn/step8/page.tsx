@@ -27,7 +27,6 @@ const step8 = () => {
     { label: "🌈 LGBTQ+ inclusion" },
   ];
 
-  /** 🔹 Load cached data */
   useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
 

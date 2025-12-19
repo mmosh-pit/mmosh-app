@@ -81,9 +81,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const collection = db.collection("mmosh-app-visitor");
+    const visitorCollection = db.collection("mmosh-app-visitor");
+    const otpCollection = db.collection("mmosh-users-email-verification");
 
-    const existingUser = await collection.findOne({
+    const hasVerified = await otpCollection.findOne({
+      email: body.email.toLowerCase().trim(),
+      hasVerifiedEmail: true,
+      isMobileNumberVerified: true,
+    });
+
+    if (!hasVerified) {
+      return NextResponse.json(
+        {
+          status: false,
+          message: "Email or Mobile number not verified",
+        },
+        { status: 200 }
+      );
+    }
+
+    const existingUser = await visitorCollection.findOne({
       email: body.email.toLowerCase(),
     });
 
@@ -109,7 +126,14 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(),
     };
 
-    const result = await collection.insertOne(doc);
+    const result = await visitorCollection.insertOne(doc);
+
+    let filter: any = { email: body.email.toLowerCase().trim() };
+    if (body.mobileNumber && body.countryCode) {
+      filter = { mobile: body.mobileNumber, countryCode: body.countryCode };
+    }
+
+    await otpCollection.deleteMany({ email: body.email.toLowerCase().trim() });
 
     return NextResponse.json(
       {

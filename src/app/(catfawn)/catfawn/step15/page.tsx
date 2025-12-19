@@ -66,7 +66,7 @@ const Step15VC = () => {
 
   const handleNext = async () => {
     if (!avatar && !lastName && !bio && !webLink) {
-      createMessage("Please fill all the field", "error");
+      createMessage("All fields are required.", "error");
       return;
     }
     if (!avatar) {
@@ -112,6 +112,12 @@ const Step15VC = () => {
         cachedData.email || "user",
         "avatars"
       );
+
+      if (!avatarUrl) {
+        createMessage("Avatar upload failed. Please try again.", "error");
+        setIsLoading(false);
+        return;
+      }
 
       const updatedData = {
         ...cachedData,

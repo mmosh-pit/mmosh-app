@@ -39,9 +39,6 @@ export const encryptData = (data: string): string => {
         const secretKey = process.env.SECRET_KEY || "F0N9ogWmYbWDc6smA94dCPkvhck5L5FQjYAaZ39ZrM";
         const encryptionMethod = process.env.ENCRYPTION_METHOD || "aes-256-cbc";
         const secretIv = process.env.SECRET_IV || "60e142d4325237a695aa95afddea8687";
-        console.log("secretKey", secretKey);
-        console.log("encryptionMethod", encryptionMethod);
-        console.log("secretIv", secretIv);
 
         const key = crypto
             .createHash("sha512")

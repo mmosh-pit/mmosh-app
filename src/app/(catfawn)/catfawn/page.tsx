@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "./components/Spinner";
+import { encryptData, decryptData } from "@/utils/decryptData";
 
 export default function Home() {
   const router = useRouter();
@@ -35,8 +36,8 @@ export default function Home() {
       setFormData({
         firstName: result.firstName || "",
         email: result.email || "",
-        password: result.password || "",
-        confirmPassword: result.password || "",
+        password: decryptData(result.password || ""),
+        confirmPassword: decryptData(result.password || ""),
         hasChecked: true,
       });
     } catch {
@@ -51,12 +52,15 @@ export default function Home() {
     } else if (formData.firstName.trim().length < 2) {
       createMessage("First name must be at least 2 characters", "error");
       return false;
+    } else if (formData.firstName.trim().length > 16) {
+      createMessage("First name can be up to 16 characters only", "error");
+      return false;
     }
 
     if (!formData.email.trim()) {
       createMessage("Email is required", "error");
       return false;
-    } else if (!/^[^\s@]+@[^\s@]+\.com$/i.test(formData.email.trim())) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(formData.email.trim())) {
       createMessage("Please enter a valid email", "error");
       return false;
     }
@@ -81,7 +85,7 @@ export default function Home() {
     }
 
     if (!formData.hasChecked) {
-      createMessage("You must agree before submitting", "error");
+      createMessage("You must agree to receive communications before submitting", "error");
       return false;
     }
 
@@ -98,9 +102,9 @@ export default function Home() {
           "catfawn-data",
           JSON.stringify({
             ...cachedData,
-            email: formData.email,
+            email: formData.email.trim(),
             firstName: formData.firstName,
-            password: formData.password,
+            password: encryptData(formData.password),
             currentStep: "catfawn/step3",
           })
         );
@@ -115,11 +119,11 @@ export default function Home() {
           "catfawn-data",
           JSON.stringify({
             currentStep: "catfawn/step2",
-            email: formData.email,
+            email: formData.email.trim(),
             firstName: formData.firstName,
-            password: formData.password,
+            password: encryptData(formData.password),
             hasVerifiedEmail: false,
-            completedSteps: 1,
+            completedSteps:1,
           })
         );
         setIsLoading(false);
@@ -239,10 +243,10 @@ export default function Home() {
             className="steps_btn_submit mt-[1.688rem]"
             onClick={createVisitorRecord}
           >
-            {isLoading && <Spinner size="sm" />} Join Early Access
+            {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
 
-          <label className="w-[110%] flex items-start gap-0.5  mt-1">
+          <label className="xl:w-[110%] flex items-start gap-0.5  mt-1">
             <input
               type="checkbox"
               className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem] me-0.5"

@@ -76,7 +76,10 @@ const Step6VC = () => {
         ...cachedData,
         challenges: [...selectedChallenges],
         currentStep: "catfawn/step7",
-        completedSteps: 18,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 18
+            ? 18
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step7");
@@ -146,8 +149,7 @@ const Step6VC = () => {
           className="steps_btn_submit mt-[1rem]"
           onClick={submitStep6}
         >
-          {isLoading && <Spinner size="sm" />}
-          Next
+          {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
       </div>
     </>

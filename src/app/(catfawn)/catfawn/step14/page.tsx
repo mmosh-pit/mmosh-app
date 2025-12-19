@@ -28,13 +28,22 @@ export default function Step14VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 25) {
         router.replace(`/${result.currentStep}`);
       }
-      setKinshipCode(result.kinshipCode)
+      setKinshipCode(result.kinshipCode || "")
     } catch {
       router.replace("/catfawn");
     }
   }, []);
 
   const submitNewKinshipCode = async () => {
+    
+    if (!kinshipCode) {
+      createMessage(
+        "Please enter the Kinship code",
+        "error"
+      );
+      return;
+    }
+
     if (!/^[a-zA-Z0-9]+$/.test(kinshipCode)) {
       createMessage(
         "Kinship Code must contain only letters and numbers.",
@@ -73,7 +82,10 @@ export default function Step14VC() {
           ...cachedData,
           kinshipCode: kinshipCode,
           currentStep: "catfawn/step15",
-          completedSteps: 26,
+          completedSteps:
+            cachedData.completedSteps && cachedData.completedSteps < 26
+              ? 26
+              : cachedData.completedSteps,
         })
       );
 
@@ -155,8 +167,7 @@ export default function Step14VC() {
             className="steps_btn_submit mt-[11.813rem]"
             onClick={submitNewKinshipCode}
           >
-            {isLoading && <Spinner size="sm" />}
-            Join Early Access
+            {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>
       </div>

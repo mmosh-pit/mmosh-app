@@ -1,11 +1,12 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-import { PhoneInput, PhoneInputResponseType } from "react-simple-phone-input";
-import "react-simple-phone-input/dist/style.css";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 interface ContactDetails {
   mobileNumber: string;
   countryCode: string;
@@ -49,7 +50,6 @@ export default function Step11VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 22) {
         router.replace(`/${result.currentStep}`);
       }
-
 
       setContactDetails({
         mobileNumber: result.mobileNumber || "",
@@ -95,8 +95,6 @@ export default function Step11VC() {
     return true;
   };
 
-
-
   const updateContactDetails = async () => {
     const telegram = contactDetails.telegramUsername.trim();
 
@@ -127,36 +125,23 @@ export default function Step11VC() {
     }
 
     if (!isValidLinkedIn(contactDetails.linkedinProfile)) {
-      createMessage(
-        "Please enter a valid LinkedIn profile URL",
-        "error"
-      );
+      createMessage("Please enter a valid LinkedIn profile URL", "error");
       return;
     }
-
 
     const numberChanged =
       cachedData.mobileNumber !== contactDetails.mobileNumber ||
       cachedData.countryCode !== contactDetails.countryCode;
 
-
-    if ((cachedData.isMobileNumberVerified !== true) || numberChanged) {
+    if (cachedData.isMobileNumberVerified !== true || numberChanged) {
       try {
         setIsLoading(true);
-        const result = await axios.post(
-          "/api/visitors/generate-otp",
-          {
-            type: "sms",
-            mobile: contactDetails.mobileNumber,
-            countryCode: contactDetails.countryCode,
-            email: cachedData.email,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
-            },
-          }
-        );
+        const result = await axios.post("/api/visitors/generate-otp", {
+          type: "sms",
+          mobile: contactDetails.mobileNumber,
+          countryCode: contactDetails.countryCode,
+          email: cachedData.email,
+        });
 
         if (result.data.status) {
           localStorage.setItem(
@@ -171,7 +156,10 @@ export default function Step11VC() {
               linkedinProfile: contactDetails.linkedinProfile,
               country: contactDetails.country,
               isMobileNumberVerified: false,
-              completedSteps: 23,
+              completedSteps:
+                cachedData.completedSteps && cachedData.completedSteps < 23
+                  ? 23
+                  : cachedData.completedSteps,
             })
           );
 
@@ -187,14 +175,14 @@ export default function Step11VC() {
       } finally {
         setIsLoading(false);
       }
-    }
-    else {
+    } else {
       localStorage.setItem(
         "catfawn-data",
         JSON.stringify({
           ...cachedData,
           currentStep: "catfawn/step13",
-        }));
+        })
+      );
       router.replace("/catfawn/step13");
     }
   };
@@ -206,22 +194,6 @@ export default function Step11VC() {
     setShowMsg(true);
     setTimeout(() => setShowMsg(false), 4000);
   };
-
-  const getDefaultValue = (type: string) => {
-    try {
-      if (type === "country") {
-        return JSON.parse(localStorage.getItem("catfawn-data") || "{}").country || "US"
-      } else {
-        return JSON.parse(localStorage.getItem("catfawn-data") || "{}").mobileNumber || ""
-      }
-    } catch (error) {
-      if (type === "country") {
-        return "US"
-      } else {
-        return ""
-      }
-    }
-  }
 
   return (
     <>
@@ -276,52 +248,52 @@ export default function Step11VC() {
                 Mobile number *
               </label>
               <PhoneInput
-                country={
-                  getDefaultValue("country")
-                }
-                value={
-                  getDefaultValue("mobileNumber")
-                }
-                onChange={(data) => {
-                  const countryCode = data.dialCode.replace("+", "");
-                  const mobileNumber = data.valueWithoutPlus.slice(
-                    countryCode.length
-                  );
+                country={"us"}
+                value={phone}
+                onChange={(
+                  value: string,
+                  country: {
+                    dialCode: string;
+                    countryCode: string;
+                    name: string;
+                  }
+                ) => {
+                  if (!country?.dialCode) {
+                    setContactDetails((prev) => ({
+                      ...prev,
+                      country: "US",
+                      countryCode: "1",
+                      mobileNumber: "",
+                    }));
+                    setPhone("");
+                    return;
+                  }
+
+                  const countryCode = country.dialCode;
+                  const mobileNumber = value.slice(countryCode.length);
 
                   setContactDetails((prev) => ({
                     ...prev,
                     mobileNumber,
                     countryCode,
-                    country: data.code,
+                    country: country.countryCode.toUpperCase(),
                   }));
 
-                  setPhone(data.value);
+                  setPhone(value);
                 }}
-                placeholder="Mobile number"
-                search={true}
-                iconComponent={
-                  <svg
-                    width="11"
-                    height="6"
-                    viewBox="0 0 11 6"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M0.5 0.5L5.10217 4.81454C5.50572 5.19286 6.13974 5.1717 6.51717 4.76732L10.5 0.5"
-                      stroke="white"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                }
+                inputClass="phone-input"
                 buttonClass="phone-dropdown-btn"
                 containerClass="phone-container"
-                inputClass="phone-input"
                 dropdownClass="phone-dropdown"
+                enableSearch={true}
+                inputProps={{
+                  placeholder: "Mobile number",
+                }}
+                specialLabel=""
               />
             </div>
 
-            <div>
+            <div className="mt-[0.25rem]">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Telegram username
               </label>
@@ -336,7 +308,7 @@ export default function Step11VC() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.25rem]">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Bluesky handle
               </label>
@@ -349,7 +321,7 @@ export default function Step11VC() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.25rem]">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 LinkedIn profile (full URL)
               </label>
@@ -369,8 +341,7 @@ export default function Step11VC() {
               className="steps_btn_submit mt-[1.063rem]"
               onClick={updateContactDetails}
             >
-              {isLoading && <Spinner size="sm" />}
-              Next
+              {isLoading ? <Spinner size="sm" /> : "Next"}
             </button>
           </div>
         </form>

@@ -63,44 +63,44 @@ const Step5VC2 = () => {
       .toLowerCase();
 
   React.useEffect(() => {
-      const stored = localStorage.getItem("catfawn-data");
-      if (!stored) {
-        router.replace("/catfawn");
-        return;
+    const stored = localStorage.getItem("catfawn-data");
+    if (!stored) {
+      router.replace("/catfawn");
+      return;
+    }
+
+    try {
+      const result = JSON.parse(stored);
+      setCachedData(result);
+
+      if (result.likertAnswers) {
+        const restoredForm: any = { q1: null, q2: null, q3: null, q4: null };
+
+        LIKERT_QUESTIONS.forEach((q) => {
+          const key = formatLikertKey(q.text);
+          const label = result.likertAnswers[key];
+
+          if (label) {
+            const value = Number(
+              Object.keys(LIKERT_LABELS).find(
+                (k) => LIKERT_LABELS[Number(k)] === label
+              )
+            );
+
+            restoredForm[q.id] = value ?? null;
+          }
+        });
+
+        setForm(restoredForm);
       }
-  
-      try {
-        const result = JSON.parse(stored);
-        setCachedData(result);
-  
-        if (result.likertAnswers) {
-          const restoredForm: any = { q1: null, q2: null, q3: null, q4: null };
-  
-          LIKERT_QUESTIONS.forEach((q) => {
-            const key = formatLikertKey(q.text);
-            const label = result.likertAnswers[key];
-  
-            if (label) {
-              const value = Number(
-                Object.keys(LIKERT_LABELS).find(
-                  (k) => LIKERT_LABELS[Number(k)] === label
-                )
-              );
-  
-              restoredForm[q.id] = value ?? null;
-            }
-          });
-  
-          setForm(restoredForm);
-        }
-  
-        if (result?.completedSteps !== undefined && result?.completedSteps < 6) {
-          router.replace(`/${result.currentStep}`);
-        }
-      } catch {
-        router.replace("/catfawn");
+
+      if (result?.completedSteps !== undefined && result?.completedSteps < 6) {
+        router.replace(`/${result.currentStep}`);
       }
-    }, []);
+    } catch {
+      router.replace("/catfawn");
+    }
+  }, []);
 
   const createMessage = (message: string, type: "success" | "error") => {
     window.scrollTo(0, 0);
@@ -137,7 +137,10 @@ const Step5VC2 = () => {
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
-        completedSteps: 7,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 7
+            ? 7
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step5/3");
@@ -213,8 +216,7 @@ const Step5VC2 = () => {
           disabled={isLoading}
           className="steps_btn_submit mt-[5.563rem]"
         >
-          {isLoading && <Spinner size="sm" />}
-          Next
+          {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
       </div>
     </>

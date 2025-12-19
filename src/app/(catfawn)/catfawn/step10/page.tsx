@@ -62,7 +62,10 @@ export default function Step10VC() {
         ...cachedData,
         currentStep: "catfawn/step11",
         contactPreference: contactPreferences,
-        completedSteps: 22,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 22
+            ? 22
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step11");
@@ -121,7 +124,7 @@ export default function Step10VC() {
             <label className="flex items-center gap-0.5">
               <input
                 type="checkbox"
-                className="sw-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
                 checked={contactPreferences.includes("text-message")}
                 onChange={(e) =>
                   handleContactPreferenceChange(
@@ -172,8 +175,7 @@ export default function Step10VC() {
             className="steps_btn_submit mt-[11.188rem]"
             onClick={updateContactPreference}
           >
-            {isLoading && <Spinner size="sm" />}
-            Next{" "}
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

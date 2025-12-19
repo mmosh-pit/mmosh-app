@@ -27,9 +27,13 @@ export default function Step2VC() {
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
-      if (result?.completedSteps !== undefined && result?.completedSteps < 1) {
+      if (
+        result?.completedSteps !== undefined &&
+        (result?.completedSteps < 1 || result?.hasVerifiedEmail || result?.hasVerifiedEmail === undefined)
+      ) {
         router.replace(`/${result.currentStep}`);
       }
+
     } catch {
       router.replace("/catfawn");
     }
@@ -84,6 +88,7 @@ export default function Step2VC() {
       const result = await axios.post("/api/visitors/verify-otp", {
         email: cachedData.email,
         otp: code,
+        type: "email"
       });
 
       if (result.data.status) {
@@ -93,7 +98,10 @@ export default function Step2VC() {
             ...cachedData,
             currentStep: "catfawn/step3",
             hasVerifiedEmail: true,
-            completedSteps: 2,
+            completedSteps:
+              cachedData.completedSteps && cachedData.completedSteps < 2
+                ? 2
+                : cachedData.completedSteps,
           })
         );
         router.replace("/catfawn/step3");
@@ -263,8 +271,9 @@ export default function Step2VC() {
             type="button"
             className="steps_btn_submit mt-[5.438rem]"
             onClick={verifyOTP}
+            disabled={isLoading}
           >
-            {isLoading && <Spinner size="sm" />} Confirm My Early Access{" "}
+            {isLoading ? <Spinner size="sm" /> : "Confirm My Early Access"}
           </button>
         </form>
       </div>

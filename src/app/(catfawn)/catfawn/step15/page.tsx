@@ -66,7 +66,7 @@ const Step15VC = () => {
 
   const handleNext = async () => {
     if (!avatar && !lastName && !bio && !webLink) {
-      createMessage("Please fill all the field", "error");
+      createMessage("All fields are required.", "error");
       return;
     }
     if (!avatar) {
@@ -76,6 +76,11 @@ const Step15VC = () => {
 
     if (!lastName.trim()) {
       createMessage("Last Name is required.", "error");
+      return;
+    }
+
+    if(lastName.length < 2 || lastName.length > 16){
+      createMessage("Last name must be between 2 and 16 characters.","error")
       return;
     }
 
@@ -107,6 +112,12 @@ const Step15VC = () => {
         cachedData.email || "user",
         "avatars"
       );
+
+      if (!avatarUrl) {
+        createMessage("Avatar upload failed. Please try again.", "error");
+        setIsLoading(false);
+        return;
+      }
 
       const updatedData = {
         ...cachedData,
@@ -234,7 +245,7 @@ const Step15VC = () => {
               value={lastName}
               placeholder="Last Name"
               className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
-              onChange={(e) => setLastName(e.target.value.trim())}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
@@ -265,8 +276,7 @@ const Step15VC = () => {
             className="steps_btn_submit mt-5"
             onClick={handleNext}
           >
-            {isLoading && <Spinner size="sm" />}
-            Next
+            {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>
       </div>

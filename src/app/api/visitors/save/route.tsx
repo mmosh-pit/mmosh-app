@@ -1,5 +1,7 @@
 import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { decryptData } from "@/utils/decryptData";
 
 const isString = (v: any) => typeof v === "string";
 const isNonEmptyString = (v: any) => isString(v) && v.trim().length > 0;
@@ -79,9 +81,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const collection = db.collection("mmosh-app-visitor");
+    const visitorCollection = db.collection("mmosh-app-visitor");
+    const otpCollection = db.collection("mmosh-users-email-verification");
 
-    const existingUser = await collection.findOne({
+    const hasVerified = await otpCollection.findOne({
+      email: body.email.toLowerCase().trim(),
+      hasVerifiedEmail: true,
+      isMobileNumberVerified: true,
+    });
+
+    if (!hasVerified) {
+      return NextResponse.json(
+        {
+          status: false,
+          message: "Email or Mobile number not verified",
+        },
+        { status: 200 }
+      );
+    }
+
+    const existingUser = await visitorCollection.findOne({
       email: body.email.toLowerCase(),
     });
 
@@ -94,17 +113,27 @@ export async function POST(req: NextRequest) {
         { status: 200 }
       );
     }
+    const decryptedPassword = decryptData(body.password);
+    const passwordHash = await bcrypt.hash(decryptedPassword, 10);
 
     const doc = {
       ...body,
       email: body.email.toLowerCase().trim(),
       firstName: body.firstName.trim(),
       lastName: isString(body.lastName) ? body.lastName.trim() : "",
+      password: passwordHash,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    const result = await collection.insertOne(doc);
+    const result = await visitorCollection.insertOne(doc);
+
+    let filter: any = { email: body.email.toLowerCase().trim() };
+    if (body.mobileNumber && body.countryCode) {
+      filter = { mobile: body.mobileNumber, countryCode: body.countryCode };
+    }
+
+    await otpCollection.deleteMany({ email: body.email.toLowerCase().trim() });
 
     return NextResponse.json(
       {

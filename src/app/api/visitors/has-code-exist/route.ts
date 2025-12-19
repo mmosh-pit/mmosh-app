@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     status: false,
-                    message: "Validation failed",
+                    message: validation.errors[0],
                     errors: validation.errors,
                     result: null,
                 },
@@ -60,8 +60,6 @@ function validateRequestBody(body: any): {
 
     if (!body.code || typeof body.code !== "string") {
         errors.push("code is required and must be a string");
-    } else if (body.code.trim().length !== 6) {
-        errors.push("code must be a 6-character string");
     }
 
     if (errors.length) {

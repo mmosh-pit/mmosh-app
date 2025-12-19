@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
-import { PhoneInput, PhoneInputResponseType } from "react-simple-phone-input";
-import "react-simple-phone-input/dist/style.css";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 interface ContactDetails {
   mobileNumber: string;
   countryCode: string;
@@ -40,7 +41,7 @@ export default function Step11VC() {
       const stored = localStorage.getItem("catfawn-data");
 
       if (!stored) {
-        router.replace("/catfawn");
+        // router.replace("/catfawn");
         return;
       }
       const result = JSON.parse(stored);
@@ -49,7 +50,6 @@ export default function Step11VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 22) {
         router.replace(`/${result.currentStep}`);
       }
-
 
       setContactDetails({
         mobileNumber: result.mobileNumber || "",
@@ -95,8 +95,6 @@ export default function Step11VC() {
     return true;
   };
 
-
-
   const updateContactDetails = async () => {
     const telegram = contactDetails.telegramUsername.trim();
 
@@ -127,20 +125,15 @@ export default function Step11VC() {
     }
 
     if (!isValidLinkedIn(contactDetails.linkedinProfile)) {
-      createMessage(
-        "Please enter a valid LinkedIn profile URL",
-        "error"
-      );
+      createMessage("Please enter a valid LinkedIn profile URL", "error");
       return;
     }
-
 
     const numberChanged =
       cachedData.mobileNumber !== contactDetails.mobileNumber ||
       cachedData.countryCode !== contactDetails.countryCode;
 
-
-    if ((cachedData.isMobileNumberVerified !== true) || numberChanged) {
+    if (cachedData.isMobileNumberVerified !== true || numberChanged) {
       try {
         setIsLoading(true);
         const result = await axios.post(
@@ -171,7 +164,10 @@ export default function Step11VC() {
               linkedinProfile: contactDetails.linkedinProfile,
               country: contactDetails.country,
               isMobileNumberVerified: false,
-              completedSteps: 23,
+              completedSteps:
+                cachedData.completedSteps && cachedData.completedSteps < 23
+                  ? 23
+                  : cachedData.completedSteps,
             })
           );
 
@@ -187,14 +183,14 @@ export default function Step11VC() {
       } finally {
         setIsLoading(false);
       }
-    }
-    else {
+    } else {
       localStorage.setItem(
         "catfawn-data",
         JSON.stringify({
           ...cachedData,
           currentStep: "catfawn/step13",
-        }));
+        })
+      );
       router.replace("/catfawn/step13");
     }
   };
@@ -210,18 +206,24 @@ export default function Step11VC() {
   const getDefaultValue = (type: string) => {
     try {
       if (type === "country") {
-        return JSON.parse(localStorage.getItem("catfawn-data") || "{}").country || "US"
+        return (
+          JSON.parse(localStorage.getItem("catfawn-data") || "{}").country ||
+          "US"
+        );
       } else {
-        return JSON.parse(localStorage.getItem("catfawn-data") || "{}").mobileNumber || ""
+        return (
+          JSON.parse(localStorage.getItem("catfawn-data") || "{}")
+            .mobileNumber || ""
+        );
       }
     } catch (error) {
       if (type === "country") {
-        return "US"
+        return "US";
       } else {
-        return ""
+        return "";
       }
     }
-  }
+  };
 
   return (
     <>
@@ -275,7 +277,7 @@ export default function Step11VC() {
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Mobile number *
               </label>
-              <PhoneInput
+              {/* <PhoneInput
                 country={
                   getDefaultValue("country")
                 }
@@ -318,10 +320,25 @@ export default function Step11VC() {
                 containerClass="phone-container"
                 inputClass="phone-input"
                 dropdownClass="phone-dropdown"
+              /> */}
+
+              <PhoneInput
+                country={"us"}
+                value={phone}
+                onChange={setPhone}
+                inputClass="phone-input"
+                buttonClass="phone-dropdown-btn"
+                containerClass="phone-container"
+                dropdownClass="phone-dropdown"
+                enableSearch={true}
+                inputProps={{
+                  placeholder: "Mobile number",
+                }}
+                specialLabel=""
               />
             </div>
 
-            <div>
+            <div className="mt-[0.25rem]">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Telegram username
               </label>
@@ -336,7 +353,7 @@ export default function Step11VC() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.25rem]">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 Bluesky handle
               </label>
@@ -349,7 +366,7 @@ export default function Step11VC() {
               />
             </div>
 
-            <div>
+            <div className="mt-[0.25rem]">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                 LinkedIn profile (full URL)
               </label>

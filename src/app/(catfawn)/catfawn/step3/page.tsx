@@ -120,7 +120,10 @@ export default function Step3VC() {
         ...cachedData,
         roles: finalRoles,
         currentStep: "catfawn/step4",
-        completedSteps: 3,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 3
+            ? 3
+            : cachedData.completedSteps,
       })
     );
 

@@ -53,6 +53,10 @@ export default function Step13VC() {
           referedKinshipCode: "",
           currentStep: "catfawn/step14",
           noCodeChecked: true,
+          completedSteps:
+            cachedData.completedSteps && cachedData.completedSteps < 25
+              ? 25
+              : cachedData.completedSteps,
         })
       );
       router.replace("/catfawn/step14");
@@ -87,7 +91,10 @@ export default function Step13VC() {
           referedKinshipCode: kinshipCode,
           noCodeChecked: false,
           currentStep: "catfawn/step14",
-          completedSteps: 25,
+          completedSteps:
+            cachedData.completedSteps && cachedData.completedSteps < 25
+              ? 25
+              : cachedData.completedSteps,
         })
       );
 

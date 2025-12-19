@@ -120,7 +120,10 @@ export default function Home() {
             firstName: formData.firstName,
             password: encryptData(formData.password),
             hasVerifiedEmail: false,
-            completedSteps: 1,
+            completedSteps:
+              cachedData.completedSteps && cachedData.completedSteps < 1
+                ? 1
+                : cachedData.completedSteps,
           })
         );
         setIsLoading(false);
@@ -133,7 +136,7 @@ export default function Home() {
       setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
-          "Unable to generate OTP. Please try again.",
+        "Unable to generate OTP. Please try again.",
         "error"
       );
     }

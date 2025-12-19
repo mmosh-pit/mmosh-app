@@ -73,7 +73,10 @@ export default function Step14VC() {
           ...cachedData,
           kinshipCode: kinshipCode,
           currentStep: "catfawn/step15",
-          completedSteps: 26,
+          completedSteps:
+            cachedData.completedSteps && cachedData.completedSteps < 26
+              ? 26
+              : cachedData.completedSteps,
         })
       );
 

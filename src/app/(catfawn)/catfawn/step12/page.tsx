@@ -129,7 +129,10 @@ export default function Step12VC() {
             ...cachedData,
             currentStep: "catfawn/step13",
             isMobileNumberVerified: true,
-            completedSteps: 24,
+            completedSteps:
+              cachedData.completedSteps && cachedData.completedSteps < 24
+                ? 24
+                : cachedData.completedSteps,
           })
         );
 

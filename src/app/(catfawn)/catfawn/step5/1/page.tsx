@@ -134,7 +134,10 @@ const Step5VC1 = () => {
           ...likertAnswers,
         },
         currentStep: "catfawn/step5/2",
-        completedSteps: 6,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 6
+            ? 6
+            : cachedData.completedSteps,
       })
     );
 

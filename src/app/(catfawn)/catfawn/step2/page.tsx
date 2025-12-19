@@ -96,7 +96,10 @@ export default function Step2VC() {
             ...cachedData,
             currentStep: "catfawn/step3",
             hasVerifiedEmail: true,
-            completedSteps: 2,
+            completedSteps:
+              cachedData.completedSteps && cachedData.completedSteps < 2
+                ? 2
+                : cachedData.completedSteps,
           })
         );
         router.replace("/catfawn/step3");

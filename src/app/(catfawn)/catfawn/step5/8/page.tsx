@@ -134,7 +134,10 @@ const Step5VC8 = () => {
           ...(existingData.likertAnswers || {}),
           ...likertAnswers,
         },
-        completedSteps: 13,
+        completedSteps:
+          cachedData.completedSteps && cachedData.completedSteps < 13
+            ? 13
+            : cachedData.completedSteps,
       })
     );
     router.replace("/catfawn/step5/9");

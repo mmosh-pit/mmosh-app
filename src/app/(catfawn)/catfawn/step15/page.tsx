@@ -79,6 +79,11 @@ const Step15VC = () => {
       return;
     }
 
+    if(lastName.length < 2 || lastName.length > 16){
+      createMessage("Last name must be between 2 and 16 characters.","error")
+      return;
+    }
+
     if (!bio.trim()) {
       createMessage("Bio is required.", "error");
       return;
@@ -234,7 +239,7 @@ const Step15VC = () => {
               value={lastName}
               placeholder="Last Name"
               className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
-              onChange={(e) => setLastName(e.target.value.trim())}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 

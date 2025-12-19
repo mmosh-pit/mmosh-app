@@ -103,6 +103,12 @@ export default function Step4VC() {
         return;
       }
 
+      if(!/^[A-Za-z]$/.test(otherIntentText)){
+        createMessage("Special characters are not allowed", "error");
+        setIsLoading(false);
+        return;
+      }
+
       if (
         otherIntentText.trim().length < 3 ||
         otherIntentText.trim().length > 30

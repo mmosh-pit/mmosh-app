@@ -28,13 +28,22 @@ export default function Step14VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 25) {
         router.replace(`/${result.currentStep}`);
       }
-      setKinshipCode(result.kinshipCode)
+      setKinshipCode(result.kinshipCode || "")
     } catch {
       router.replace("/catfawn");
     }
   }, []);
 
   const submitNewKinshipCode = async () => {
+    
+    if (!kinshipCode) {
+      createMessage(
+        "Please enter the Kinship code",
+        "error"
+      );
+      return;
+    }
+
     if (!/^[a-zA-Z0-9]+$/.test(kinshipCode)) {
       createMessage(
         "Kinship Code must contain only letters and numbers.",

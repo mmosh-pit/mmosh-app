@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from "react";
+import React, { ChangeEventHandler } from "react";
 
 type Props = {
   value: string;
@@ -16,7 +16,10 @@ type Props = {
   trailing?: React.ReactNode;
 };
 
-const Input = ({
+const Input = React.forwardRef<
+  HTMLInputElement | HTMLTextAreaElement,
+  Props
+>(({
   textarea,
   type,
   value,
@@ -30,7 +33,7 @@ const Input = ({
   onChange,
   error,
   trailing,
-}: Props) => {
+}, ref) => {
   const getTextType = () => {
     if (textarea) {
       return (
@@ -39,6 +42,7 @@ const Input = ({
           value={value}
           onChange={onChange}
           readOnly={readonly}
+          ref={ref as React.Ref<HTMLTextAreaElement>}
           rows={8}
           className="textarea textarea-bordered textarea-lg w-full bg-black bg-opacity-[0.07] placeholder-white placeholder-opacity-[0.3] h-full text-xs backdrop-container"
         ></textarea>
@@ -56,6 +60,7 @@ const Input = ({
           onChange={onChange}
           onBlur={onBlur}
           onFocus={onFocus}
+          ref={ref as React.Ref<HTMLInputElement>}
           placeholder={placeholder}
           className="grow bg-transparent"
         />
@@ -78,6 +83,8 @@ const Input = ({
       )}
     </div>
   );
-};
+});
+
+Input.displayName = "Input";
 
 export default Input;

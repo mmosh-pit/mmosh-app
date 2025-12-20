@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+label {
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  appearance: none; /* Hide default checkbox */
+  /* Add custom styling for the checkbox outline */
+  min-width: 1.438rem;
+  height: 1.438rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 5px;
+  position: relative;
+  background-color: #402a2a;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #ffffff; /* Background color when checked */
+}
+
+input[type="checkbox"]:checked::before {
+  content: "✔"; /* Custom checkmark */
+  color: #ff710f; /* Color of the checkmark */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input[type="radio"] {
+  appearance: none; /* Hide default radio */
+  min-width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%; /* Radio is circular */
+  position: relative;
+  background-color: #402a2a;
+  cursor: pointer;
+}
+
+/* When checked */
+input[type="radio"]:checked {
+  background-color: #ff710f;
+}
+
+/* Optional: add the inner dot */
+input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #402a2a inset;
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Custom vertical scrollbar */
+.custom-scroll {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #492f32 transparent;
+  border-radius: 1.125rem;
+}
+
+/* Chrome, Edge, Safari */
+.custom-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.hide-arrow-top-scroll {
+  position: absolute;
+  top: 13px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: #271114;
+}
+
+.hide-arrow-bottom-scroll {
+  position: absolute;
+  bottom: 13px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: #271114;
+}
+
+@layer components {
+  .steps_btn_submit {
+    @apply font-avenirNext h-[3.125rem] flex justify-center items-center gap-2 w-full py-[1.063rem] bg-[#FF710F] max-sm:text-xs text-[1rem] leading-[100%] text-[#2C1316] font-extrabold rounded-[0.625rem] hover:opacity-90 cursor-pointer;
+  }
+
+  .phone-container {
+    @apply flex flex-row-reverse gap-[1.125rem];
+  }
+
+  .phone-container .special-label {
+    display: none;
+  }
+
+  .phone-container .phone-input {
+    @apply !w-full !h-[2.813rem] !px-[1.294rem] !py-[0.813rem] !rounded-lg !bg-[#402A2A] !backdrop-blur-[12.16px] !border !border-[#FFFFFF29] !text-white focus:!outline-none placeholder:!text-[#FFFFFF] placeholder:!opacity-20;
+  }
+
+  .phone-dropdown-btn {
+    @apply !static !bg-[#402a2a] !border !border-[#FFFFFF29] !rounded-lg !w-[4.5rem] !ps-[0.688rem] !pe-3;
+  }
+
+  .phone-dropdown-btn .selected-flag:hover,
+  .phone-dropdown-btn .selected-flag:focus,
+  .phone-container .flag-dropdown.open .selected-flag {
+    @apply !bg-[#402a2a];
+  }
+
+  .phone-dropdown {
+    @apply !w-full !bg-[#402A2A] text-white
+         border-r border-[#FFFFFF29]
+         pr-3 mr-3
+         text-base;
+  }
+
+  .phone-dropdown .search{
+    @apply !bg-[#402a2a] flex items-center
+  }
+   
+  .phone-dropdown .country:hover{
+    @apply !bg-[#4b3636]
+  }
+  .phone-dropdown .country.highlight{
+    @apply !bg-[#4b3636]
+  }
+
+  .phone-dropdown .search input{
+    @apply w-4/5 !bg-[#402a2a] !border !border-[#FFFFFF29] 
+  }
+
+  .phone-container .simple-phone-input-sri198-main {
+    @apply gap-[1.125rem] border-0;
+  }
+
+  .phone-container
+    .simple-phone-input-sri198-main
+    .simple-phone-input-sri198-dropdown-container {
+    @apply !bg-[#402A2A] rounded-lg border border-[#FFFFFF29];
+  }
+
+  .phone-input {
+    @apply bg-transparent text-white
+         placeholder:text-white
+         outline-none
+         text-base
+         w-full;
+  }
+
+  .phone-dropdown-btn img {
+    @apply hidden;
+  }
+}
+
+.success-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.018) 0%,
+    rgba(33, 239, 0, 0.6) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.error-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 0, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.warn-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(244, 132, 0, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.info-container {
+  background: linear-gradient(
+    270deg,
+    rgba(31, 9, 0, 0.021) 0%,
+    rgba(255, 255, 255, 0.602) 49.43%,
+    rgba(45, 14, 1, 0) 100%
+  );
+}
+
+.info-container span {
+  color: #000;
+}

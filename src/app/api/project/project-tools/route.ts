@@ -24,6 +24,8 @@ export async function GET(req: NextRequest) {
           "data.handle": 1,
           "data.privacy": 1,
           "data.instructions": 1,
+          'groups': 1,
+          'data.botToken': 1,
         },
       },
     )

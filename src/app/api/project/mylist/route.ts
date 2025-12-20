@@ -125,6 +125,6 @@ export async function GET(req: NextRequest) {
     .limit(100)
     .toArray();
 
-    console.log(result,"result ========================================>>")
+    // console.log(result,"result ========================================>>")
   return NextResponse.json(result, { status: 200 });
 }

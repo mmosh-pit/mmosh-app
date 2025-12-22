@@ -23,11 +23,14 @@ const isValidUrl = (url: string) => {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const errors: string[] = [];
 
     if (!isNonEmptyString(body.firstName)) {
       errors.push("First name is required");
+    }
+
+      if (body.firstName.length < 2 || body.firstName.length > 16){
+      errors.push("First name must be between 2 and 16 characters")
     }
 
     if (!isNonEmptyString(body.email) || !isValidEmail(body.email)) {
@@ -46,71 +49,59 @@ export async function POST(req: NextRequest) {
       errors.push("Current step is required");
     }
 
-    if (!body.roles){
+    if (!body.roles) {
       errors.push("Roles is required")
-    }
-
-    if (body.roles && !isArray(body.roles)) {
+    } else if (!isArray(body.roles)) {
       errors.push("Roles must be an array");
     }
 
-    if (!body.intent){
+    if (!body.intent) {
       errors.push("Intent is required")
-    }
-
-    if (body.intent && !isArray(body.intent)) {
+    } else if (!isArray(body.intent)) {
       errors.push("Intent must be an array");
     }
 
-    if (!body.likertAnswers ||  Object.keys(body.likertAnswers).length < 48){
+    if (body.likertAnswers === undefined || (body.likertAnswers && Object.keys(body.likertAnswers).length < 48)) {
       errors.push("Please rate all the questions in step5")
     }
 
-    if (!body.challenges){
+    if (!body.challenges) {
       errors.push("Challenges is required")
-    }
-
-    if (body.challenges.length < 3){
+    } else if (body.challenges.length < 3) {
       errors.push("Please select atleast 3 challenges")
     }
 
-    if (!body.abilities){
+    if (!body.abilities) {
       errors.push("Abilities is required")
-    }
-
-    if (body.abilities.length < 3){
+    } else if (body.abilities.length < 3) {
       errors.push("Please select atleast 3 abilities")
     }
 
-    if (!body.aspirations){
+    if (!body.aspirations) {
       errors.push("Aspirations is required")
-    }
-
-    if (body.aspirations.length < 3){
+    } else if (body.aspirations.length < 3) {
       errors.push("Please select atleast 3 aspirations")
     }
 
-    if (!body.mobilePreference){
+    if (!body.mobilePreference) {
       errors.push("Mobile preference is required")
-    }
+    } 
 
-    if (!body.contactPreference){
+    if (!body.contactPreference) {
       errors.push("Contact preference is required")
     }
 
     if (body.mobileNumber && !isString(body.mobileNumber)) {
-      errors.push("Mobile number must be a string");
+      errors.push("Invalid mobile number");
     }
 
     if (body.countryCode && !isString(body.countryCode)) {
-      errors.push("Country code must be a string");
+      errors.push("Invalid country code");
     }
 
-    if (!body.avatarUrl){
+    if (!body.avatarUrl) {
       errors.push("Avater must be required")
-    }
-
-    if (body.avatarUrl && !isValidUrl(body.avatarUrl)) {
+    } else if (!isValidUrl(body.avatarUrl)) {
       errors.push("Avatar URL must be valid");
     }
 
@@ -118,14 +109,21 @@ export async function POST(req: NextRequest) {
       errors.push("Last name is required");
     }
 
-    if (!isNonEmptyString(body.firstName)) {
-      errors.push("Bio is required");
+    if (body.lastName.length < 2 || body.lastName.length > 16){
+      errors.push("Last name must be between 2 and 16 characters")
     }
 
-    if (!body.web){
-      errors.push("Website URL is required")
+    if (!isNonEmptyString(body.bio)) {
+      errors.push("Bio is required");
     }
-    if (body.web && !isValidUrl(body.web)) {
+    
+    if (body.bio.trim().length < 10 || body.bio.trim().length > 255) {
+      errors.push("Bio must be between 10 and 255 characters.");
+    }
+
+    if (!body.web) {
+      errors.push("Website URL is required")
+    } else if (!isValidUrl(body.web)) {
       errors.push("Website URL must be valid");
     }
 
@@ -185,14 +183,14 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(),
     };
 
-    // const result = await visitorCollection.insertOne(doc);
+    const result = await visitorCollection.insertOne(doc);
 
-    // let filter: any = { email: body.email.toLowerCase().trim() };
-    // if (body.mobileNumber && body.countryCode) {
-    //   filter = { mobile: body.mobileNumber, countryCode: body.countryCode };
-    // }
+    let filter: any = { email: body.email.toLowerCase().trim() };
+    if (body.mobileNumber && body.countryCode) {
+      filter = { mobile: body.mobileNumber, countryCode: body.countryCode };
+    }
 
-    // await otpCollection.deleteMany({ email: body.email.toLowerCase().trim() });
+    await otpCollection.deleteMany({ email: body.email.toLowerCase().trim() });
 
     return NextResponse.json(
       {
@@ -205,7 +203,6 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (err) {
-    console.log("Eroorrrsssss",err)
     return NextResponse.json(
       {
         status: false,

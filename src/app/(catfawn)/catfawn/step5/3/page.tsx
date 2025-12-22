@@ -158,8 +158,8 @@ const Step5VC3 = () => {
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <BackArrowVW onClick={() => router.replace("/catfawn/step5/2")} />
           Request Early Access
-          <div className="font-normal font-avenirNext absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
-            <span className="font-extrabold">3</span>/12
+          <div className="font-normal font-avenir absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+            <span className="font-avenirNext font-extrabold">3</span>/12
           </div>
         </h2>
 
@@ -167,11 +167,11 @@ const Step5VC3 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
           You have a difficult decision to make. Do you:
         </p>
 
-        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-2">
+        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-1">
           <li>Very Rarely</li>
           <li>Sometimes</li>
           <li>Very Often</li>

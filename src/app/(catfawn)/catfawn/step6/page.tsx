@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChallengesVW, { ChallengeItem } from "../components/Challenges/ChallengesVW";
+import ChallengesVW, {
+  ChallengeItem,
+} from "../components/Challenges/ChallengesVW";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
@@ -106,7 +108,10 @@ const Step6VC = () => {
         className={msgClass}
         messageText={msgText}
       />
-      <form className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8" onSubmit={submitStep6}>
+      <form
+        className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8"
+        onSubmit={submitStep6}
+      >
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <BackArrowVW onClick={() => router.replace("/catfawn/step5/12")} />
           Request Early Access
@@ -136,10 +141,7 @@ const Step6VC = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="steps_btn_submit mt-[1rem]"
-        >
+        <button type="submit" className="steps_btn_submit mt-[2.5rem]">
           {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
       </form>

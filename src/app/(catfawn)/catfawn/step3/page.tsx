@@ -21,7 +21,6 @@ export default function Step3VC() {
 
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
@@ -80,7 +79,7 @@ export default function Step3VC() {
     );
   };
 
-  const updateRoles =  (e: React.FormEvent<HTMLFormElement>) => {
+  const updateRoles = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsLoading(true);
@@ -108,7 +107,10 @@ export default function Step3VC() {
       }
 
       if (!/^[A-Za-z,&\/\s-]+$/.test(otherRoleText)) {
-        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
+        createMessage(
+          "Only letters are allowed. Special characters are not allowed.",
+          "error"
+        );
         setIsLoading(false);
         return;
       }
@@ -144,7 +146,7 @@ export default function Step3VC() {
     setIsLoading(false);
   };
 
-const createMessage = (message: string, type: "error" | "success") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
 
     setMsgText(message);
@@ -195,7 +197,7 @@ const createMessage = (message: string, type: "error" | "success") => {
           </span>
         </p>
 
-        <div className="max-sm:text-base font-bold leading-snug lg:leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
+        <div className="max-sm:text-base text-[0.875rem] font-bold leading-snug lg:leading-[100%] text-[#FFFFFFCC] mt-[0.563rem] -tracking-normal">
           How do you see yourself in the world?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply, required)
@@ -262,7 +264,7 @@ const createMessage = (message: string, type: "error" | "success") => {
               value={otherRoleText}
               onChange={(e) => setOtherRoleText(e.target.value)}
               placeholder="Please share how you see yourself in the world."
-              className="w-full xl:w-[29.688rem] mt-[0.563rem] h-[2.375rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+              className="w-full xl:w-[29.688rem] mt-[0.563rem] h-[2.375rem] px-[0.688rem] py-[0.625rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[0.813rem] placeholder:leading-[140%] placeholder:-tracking-[0.02em] placeholder:font-normal placeholder:text-[#FFFFFFE5] placeholder:opacity-60"
               maxLength={30}
             />
           )}
@@ -270,7 +272,6 @@ const createMessage = (message: string, type: "error" | "success") => {
           <button
             type="submit"
             className={`steps_btn_submit ${otherRoleEnabled ? "mt-[1.438rem]" : " mt-[4.375rem]"}`}
-
           >
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>

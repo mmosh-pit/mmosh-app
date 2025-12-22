@@ -226,3 +226,11 @@ select:-webkit-autofill {
 .info-container span {
   color: #000;
 }
+
+@media (max-width: 350px) {
+  .step12_otp_resend {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+}

@@ -225,7 +225,7 @@ export default function Step2VC() {
           </div>
         </p>
         <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal">
-          <div className=" max-sm:w-auto max-lg:w-max max-lg:mx-auto max-lg:text-center">
+          <div className="max-sm:w-auto max-lg:w-max max-lg:mx-auto max-lg:text-center">
             <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC] max-lg:mx-auto">
               Enter your 6-digit code
             </label>

@@ -176,8 +176,8 @@ const Step5VC3 = () => {
             </svg>
           </div>
           Request Early Access
-          <div className="font-normal font-avenirNext absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
-            <span className="font-extrabold">3</span>/12
+          <div className="font-normal font-avenir absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+            <span className="font-avenirNext font-extrabold">3</span>/12
           </div>
         </h2>
 
@@ -185,7 +185,7 @@ const Step5VC3 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-[110%] mt-[1.813rem] -tracking-[0.07em]">
           You have a difficult decision to make. Do you:
         </p>
 

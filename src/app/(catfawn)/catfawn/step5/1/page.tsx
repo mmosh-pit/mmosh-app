@@ -56,7 +56,6 @@ const Step5VC1 = () => {
       .replace(/\s+/g, "-")
       .toLowerCase();
 
-
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
@@ -105,16 +104,18 @@ const Step5VC1 = () => {
     setTimeout(() => setShowMsg(false), 4000);
   };
 
-  const likertAnswers = LIKERT_QUESTIONS.reduce((acc, q) => {
-    const value = form[q.id as keyof typeof form];
+  const likertAnswers = LIKERT_QUESTIONS.reduce(
+    (acc, q) => {
+      const value = form[q.id as keyof typeof form];
 
-    if (value !== null) {
-      acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
-    }
+      if (value !== null) {
+        acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
+      }
 
-    return acc;
-  }, {} as Record<string, string>);
-
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
   const submitStep5 = async () => {
     setIsLoading(true);
@@ -177,12 +178,12 @@ const Step5VC1 = () => {
             </svg>
           </div>
           Request Early Access
-          <div className="font-normal font-avenirNext absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
-            <span className="font-extrabold">1</span>/12
+          <div className="font-normal font-avenir absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+            <span className="font-avenirNext font-extrabold">1</span>/12
           </div>
         </h2>
 
-        <p className="max-sm:text-base font-avenirNext text-[#FFFFFFE5] font-bold mt-[0.375rem]">
+        <p className="max-sm:text-base font-avenirNext leading-[94%] -tracking-[0.02em] text-[#FFFFFFE5] font-bold mt-[0.375rem]">
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
@@ -216,7 +217,6 @@ const Step5VC1 = () => {
           className="steps_btn_submit mt-20"
         >
           {isLoading ? <Spinner size="sm" /> : "Next"}
-
         </button>
       </div>
     </>

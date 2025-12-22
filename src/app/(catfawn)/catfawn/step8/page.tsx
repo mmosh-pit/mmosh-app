@@ -146,7 +146,7 @@ const step8 = () => {
           type="button"
           onClick={handleSubmit}
           disabled={isLoading}
-          className="steps_btn_submit mt-[1rem]"
+          className="steps_btn_submit max-md:mt-[6.625rem] max-lg:mt-14 mt-[1rem]"
         >
           {isLoading ? <Spinner /> : "Next"}
         </button>

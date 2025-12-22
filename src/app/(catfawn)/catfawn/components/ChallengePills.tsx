@@ -35,7 +35,7 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
               key={item.label}
               type="button"
               onClick={() => toggleSelect(item.label)}
-              className={`py-2 md:py-[0.75rem] px-[0.525rem] rounded-full text-[0.75rem] md:text-[0.875rem] leading-[1rem] font-normal transition border border-[rgba(255,255,255,0.16)]
+              className={`py-2 md:py-[0.75rem] px-[0.525rem] rounded-full text-[0.625rem] sm:text-[0.75rem] md:text-[0.875rem] leading-[1rem] font-normal transition border border-[rgba(255,255,255,0.16)]
               ${
                 isActive
                   ? "bg-[#FF710F] text-black"

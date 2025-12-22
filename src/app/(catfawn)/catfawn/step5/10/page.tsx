@@ -174,16 +174,16 @@ const Step5VC10 = () => {
             </svg>
           </div>
           Request Early Access
-          <div className="font-normal font-avenirNext absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
-            <span className="font-extrabold">10</span>/12
+          <div className="font-normal font-avenir absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
+            <span className="font-avenirNext font-extrabold">10</span>/12
           </div>
         </h2>
 
-        <p className="max-sm:text-base  text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
+        <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-snug lg:leading-[110%] mt-3 lg:mt-[1.813rem] -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-snug lg:leading-[110%] mt-3 lg:mt-[1.813rem] -tracking-[0.07em]">
           You have just been seriously offended by a co-worker. Do you:{" "}
         </p>
 

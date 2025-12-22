@@ -104,11 +104,13 @@ export default function Step4VC() {
       }
 
       if (!/^[A-Za-z\s]+$/.test(otherIntentText)) {
-        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
+        createMessage(
+          "Only letters are allowed. Special characters are not allowed.",
+          "error"
+        );
         setIsLoading(false);
         return;
       }
-
 
       if (
         otherIntentText.trim().length < 3 ||

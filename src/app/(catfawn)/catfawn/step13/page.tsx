@@ -108,7 +108,7 @@ export default function Step13VC() {
     }
   };
 
- const createMessage = (message: string, type: "error" | "success") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
 
     setMsgText(message);
@@ -142,11 +142,15 @@ export default function Step13VC() {
           Step 13 of 15: Kinship Code Verification.{" "}
           <span className="font-normal font-avenir">
             Entry into the CAT FAWN Connections happens through relationship,
-            trust, and reciprocity.
+            trust, and reciprocity. A Kinship Code from an existing member
+            signals that connection. If you have one, enter it now.
           </span>
         </p>
 
-        <form className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal" onSubmit={submitKinshipCode}>
+        <form
+          className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal"
+          onSubmit={submitKinshipCode}
+        >
           <div>
             <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
               Kinship Code
@@ -178,10 +182,7 @@ export default function Step13VC() {
             </label>
           </div>
 
-          <button
-            type="submit"
-            className="steps_btn_submit mt-[11rem]"
-          >
+          <button type="submit" className="steps_btn_submit mt-[11rem]">
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>

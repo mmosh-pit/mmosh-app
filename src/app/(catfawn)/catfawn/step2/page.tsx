@@ -22,18 +22,20 @@ export default function Step2VC() {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      return router.replace("/catfawn");
+      // return router.replace("/catfawn");
+      return;
     }
     try {
       const result = JSON.parse(stored);
       setCachedData(result);
       if (
         result?.completedSteps !== undefined &&
-        (result?.completedSteps < 1 || result?.hasVerifiedEmail || result?.hasVerifiedEmail === undefined)
+        (result?.completedSteps < 1 ||
+          result?.hasVerifiedEmail ||
+          result?.hasVerifiedEmail === undefined)
       ) {
         router.replace(`/${result.currentStep}`);
       }
-
     } catch {
       router.replace("/catfawn");
     }
@@ -88,7 +90,7 @@ export default function Step2VC() {
       const result = await axios.post("/api/visitors/verify-otp", {
         email: cachedData.email,
         otp: code,
-        type: "email"
+        type: "email",
       });
 
       if (result.data.status) {
@@ -224,11 +226,11 @@ export default function Step2VC() {
           </div>
         </p>
         <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal">
-          <div className="max-lg:text-center">
-            <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC]">
+          <div className=" max-sm:w-auto max-lg:w-max max-lg:mx-auto max-lg:text-center">
+            <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC] max-lg:mx-auto">
               Enter your 6-digit code
             </label>
-            <div className="flex gap-7 max-xl:gap-4 max-lg:justify-center">
+            <div className="mt-[0.313rem] flex justify-center gap-2 sm:gap-3 xl:gap-[1.75rem]">
               {otp.map((digit, idx) => (
                 <input
                   key={idx}
@@ -241,7 +243,20 @@ export default function Step2VC() {
                   onChange={(e) => handleOtpChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   onPaste={(e) => handlePaste(e, idx)}
-                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-sm:w-8 max-sm:h-8 max-xl:h-6 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
+                  // className={`text-center w-14 h-[3.438rem] max-[410px]:w-8 max-[410px]:h-8 max-[510px]:w-12 max-[510px]:h-12 max-sm:w-[4.063rem] max-sm:h-[4.063rem] max-lg:w-20 max-lg:h-20 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
+
+                  className={`aspect-square 
+                w-[clamp(0.7rem,9vw,3.5rem)]
+                rounded-lg 
+                text-center text-lg sm:text-xl font-semibold
+                backdrop-blur 
+                border text-white
+                focus:outline-none
+                ${
+                  hasInvalid
+                    ? "bg-[#F8060624] border-[#F806068F]"
+                    : "bg-[#402A2A] border-white/20 focus:border-white"
+                }`}
                 />
               ))}
             </div>

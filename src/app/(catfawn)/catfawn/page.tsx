@@ -85,7 +85,10 @@ export default function Home() {
     }
 
     if (!formData.hasChecked) {
-      createMessage("You must agree to receive communications before submitting", "error");
+      createMessage(
+        "You must agree to receive communications before submitting",
+        "error"
+      );
       return false;
     }
 
@@ -123,7 +126,7 @@ export default function Home() {
             firstName: formData.firstName,
             password: encryptData(formData.password),
             hasVerifiedEmail: false,
-            completedSteps:1,
+            completedSteps: 1,
           })
         );
         setIsLoading(false);
@@ -261,12 +264,14 @@ export default function Home() {
             </span>
           </label>
 
-          <p
-            className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem] tracking-normal"
-            onClick={() => window.open("https://catfawn.com/privacy-policy/")}
-          >
-            Privacy Policy
-          </p>
+          <div className="text-center">
+            <span
+              className="text-center text-[0.813rem] text-white font-normal leading-[100%] underline cursor-pointer mt-[0.313rem] tracking-normal"
+              onClick={() => window.open("https://catfawn.com/privacy-policy/")}
+            >
+              Privacy Policy
+            </span>
+          </div>
         </form>
       </div>
     </>

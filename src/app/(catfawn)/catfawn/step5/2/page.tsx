@@ -193,7 +193,7 @@ const Step5VC2 = () => {
           resolve their dispute. Do you:
         </p>
 
-        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-2">
+        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-1">
           <li>Very Rarely</li>
           <li>Sometimes</li>
           <li>Very Often</li>

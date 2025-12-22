@@ -140,7 +140,7 @@ export default function CatFawnLayout({
       <body
         className={`${poppins.variable} ${avenir.variable} ${avenirLTStd.variable} ${avenirNext.variable} antialiased select-none`}
       >
-        <div className="min-h-screen flex items-center py-5 bg-[#37191D] text-[#FFFFFFE5] px-4">
+        <div className="min-h-screen flex items-center py-5 bg-[#37191D] text-[#FFFFFFE5] p-7">
           <div className="w-[73.875rem] max-lg:container mx-auto">
             <div className="font-avenir grid grid-cols-1 lg:grid-cols-2  max-lg:gap-y-8 items-center">
               <div className="flex flex-col gap-[1.875rem]">

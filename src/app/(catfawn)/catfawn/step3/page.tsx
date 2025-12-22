@@ -101,11 +101,13 @@ export default function Step3VC() {
       }
 
       if (!/^[A-Za-z\s]+$/.test(otherRoleText)) {
-        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
+        createMessage(
+          "Only letters are allowed. Special characters are not allowed.",
+          "error"
+        );
         setIsLoading(false);
         return;
       }
-
 
       if (otherRoleText.trim().length < 3 || otherRoleText.trim().length > 30) {
         createMessage(

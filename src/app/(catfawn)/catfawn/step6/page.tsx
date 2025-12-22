@@ -25,8 +25,8 @@ const Step6VC = () => {
     { label: "⌛ Manage time better" },
     { label: "🤹🏻‍♂️ Manage stress" },
     { label: "💪🏻 Build self-confidence" },
-    { label: "🚀 Start my own business" },
-    { label: "⏰ Manage time better" },
+    // { label: "🚀 Start my own business" },
+    // { label: "⏰ Manage time better" },
   ];
 
   useEffect(() => {

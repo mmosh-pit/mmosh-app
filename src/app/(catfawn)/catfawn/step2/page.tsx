@@ -19,6 +19,8 @@ export default function Step2VC() {
   const [hasLoadingResendOTP, setHasLoadingResendOTP] =
     React.useState<boolean>(false);
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
@@ -75,7 +77,8 @@ export default function Step2VC() {
     }
   };
 
-  const verifyOTP = async () => {
+  const verifyOTP = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const code = otp.join("");
 
     if (code.length !== 6) {
@@ -135,13 +138,20 @@ export default function Step2VC() {
     setHasLoadingResendOTP(false);
   };
 
-  const createMessage = (message: any, type: any) => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => {
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
+      msgTimeoutRef.current = null;
     }, 4000);
   };
 
@@ -223,7 +233,7 @@ export default function Step2VC() {
             </ul>
           </div>
         </p>
-        <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal">
+        <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal" onSubmit={verifyOTP}>
           <div className="max-lg:text-center">
             <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC]">
               Enter your 6-digit code
@@ -268,9 +278,8 @@ export default function Step2VC() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="steps_btn_submit mt-[5.438rem]"
-            onClick={verifyOTP}
             disabled={isLoading}
           >
             {isLoading ? <Spinner size="sm" /> : "Confirm My Early Access"}

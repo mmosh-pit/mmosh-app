@@ -17,6 +17,8 @@ export default function Step4VC() {
   const [otherIntentEnabled, setOtherIntentEnabled] = React.useState(false);
   const [otherIntentText, setOtherIntentText] = React.useState("");
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   const PREDEFINED_INTENTS = [
     "to-face-challenges-in-my-life-work-and-relationships-with-more-clarity-presence-and-wisdom",
     "to-turn-my-strengths-into-superpowers",
@@ -78,7 +80,9 @@ export default function Step4VC() {
     );
   };
 
-  const updateIntent = () => {
+  const updateIntent = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     setIsLoading(true);
 
     if (intents.length === 0 && !otherIntentText.trim()) {
@@ -103,7 +107,7 @@ export default function Step4VC() {
         return;
       }
 
-      if (!/^[A-Za-z\s]+$/.test(otherIntentText)) {
+      if (!/^[A-Za-z,&\/\s-]+$/.test(otherIntentText)) {
         createMessage("Only letters are allowed. Special characters are not allowed.", "error");
         setIsLoading(false);
         return;
@@ -146,13 +150,20 @@ export default function Step4VC() {
 
   const formatIntent = (value: string) => value.trim().replace(/\s+/g, "-");
 
-  const createMessage = (message: any, type: any) => {
+const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => {
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
+      msgTimeoutRef.current = null;
     }, 4000);
   };
 
@@ -203,7 +214,7 @@ export default function Step4VC() {
           </span>
         </div>
 
-        <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between">
+        <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between" onSubmit={updateIntent}>
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] font-normal leading-[110%] -tracking-[0.02em]">
             <label className="flex items-center gap-0.5">
               <input
@@ -463,9 +474,8 @@ export default function Step4VC() {
           )}
 
           <button
-            type="button"
+            type="submit"
             className="steps_btn_submit mt-[0.625rem]"
-            onClick={updateIntent}
           >
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>

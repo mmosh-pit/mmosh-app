@@ -8,6 +8,8 @@ export default function Step10VC() {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  
 
   const [contactPreferences, setContactPreferences] = React.useState<string[]>(
     []
@@ -48,7 +50,8 @@ export default function Step10VC() {
     );
   };
 
-  const updateContactPreference = async () => {
+  const updateContactPreference = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
     if (contactPreferences.length === 0) {
       createMessage("Please select at least one contact preference.", "error");
@@ -72,12 +75,21 @@ export default function Step10VC() {
     setIsLoading(false);
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
   return (
     <>
@@ -119,7 +131,7 @@ export default function Step10VC() {
           </span>
         </p>
 
-        <form className="mt-6 lg:mt-[3.438rem] text-[1rem]">
+        <form className="mt-6 lg:mt-[3.438rem] text-[1rem]" onSubmit={updateContactPreference}>
           <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <label className="flex items-center gap-0.5">
               <input
@@ -171,9 +183,8 @@ export default function Step10VC() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="steps_btn_submit mt-[11.188rem]"
-            onClick={updateContactPreference}
           >
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>

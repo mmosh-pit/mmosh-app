@@ -22,6 +22,8 @@ export default function Home() {
 
   const [cachedData, setCachedData] = React.useState<any>({});
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   React.useEffect(() => {
     try {
       const stored = localStorage.getItem("catfawn-data");
@@ -68,7 +70,12 @@ export default function Home() {
     if (!formData.password) {
       createMessage("Password is required", "error");
       return false;
-    } else if (formData.password.length < 6) {
+    } else if (/\p{Extended_Pictographic}/u.test(formData.password)) {
+      createMessage("Password should not contain emojis", "error");
+      return false;
+    }
+
+    else if (formData.password.length < 6) {
       createMessage("Password must be at least 6 characters", "error");
       return false;
     } else if (formData.password.length > 32) {
@@ -92,11 +99,14 @@ export default function Home() {
     return true;
   };
 
-  const createVisitorRecord = async () => {
+  const createVisitorRecord = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (!validateForm()) return;
 
     try {
       setIsLoading(true);
+
       if (cachedData.email === formData.email && cachedData.hasVerifiedEmail) {
         localStorage.setItem(
           "catfawn-data",
@@ -110,10 +120,12 @@ export default function Home() {
         );
         return router.replace("/catfawn/step3");
       }
+
       const result = await axios.post("/api/visitors/generate-otp", {
         type: "email",
         email: formData.email,
       });
+
       if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
@@ -123,34 +135,42 @@ export default function Home() {
             firstName: formData.firstName,
             password: encryptData(formData.password),
             hasVerifiedEmail: false,
-            completedSteps:1,
+            completedSteps: 1,
           })
         );
-        setIsLoading(false);
         router.replace("/catfawn/step2");
       } else {
-        setIsLoading(false);
         createMessage(result.data.message || "Something went wrong", "error");
       }
     } catch (err: any) {
-      setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
-          "Unable to generate OTP. Please try again.",
+        "Unable to generate OTP. Please try again.",
         "error"
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const createMessage = (message: any, type: any) => {
+
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => {
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
+      msgTimeoutRef.current = null;
     }, 4000);
   };
+
 
   return (
     <>
@@ -172,7 +192,7 @@ export default function Home() {
           </span>
         </p>
 
-        <form className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal">
+        <form className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal" onSubmit={createVisitorRecord}>
           <div className="flex flex-col gap-[0.313rem]">
             <div>
               <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
@@ -183,6 +203,7 @@ export default function Home() {
                 placeholder="First Name"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 value={formData.firstName}
+                maxLength={16}
                 onChange={(event) =>
                   setFormData({ ...formData, firstName: event.target.value })
                 }
@@ -213,6 +234,7 @@ export default function Home() {
                 placeholder="Password"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 value={formData.password}
+                maxLength={32}
                 onChange={(event) =>
                   setFormData({ ...formData, password: event.target.value })
                 }
@@ -228,6 +250,7 @@ export default function Home() {
                 placeholder="Confirm Password"
                 className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
                 value={formData.confirmPassword}
+                maxLength={32}
                 onChange={(event) =>
                   setFormData({
                     ...formData,
@@ -239,9 +262,8 @@ export default function Home() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="steps_btn_submit mt-[1.688rem]"
-            onClick={createVisitorRecord}
           >
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>

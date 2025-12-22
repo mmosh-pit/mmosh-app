@@ -13,6 +13,7 @@ export default function Step12VC() {
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -107,7 +108,8 @@ export default function Step12VC() {
     }
   };
 
-  const submitOTP = async () => {
+  const submitOTP = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const enteredOtp = otp.join("");
 
     if (enteredOtp.length !== 6) {
@@ -168,12 +170,21 @@ export default function Step12VC() {
     setHasLoadingResendOTP(false);
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+ const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   return (
@@ -220,7 +231,7 @@ export default function Step12VC() {
           </span>
         </p>
 
-        <form className="mt-[1.188rem] text-[1rem] max-md:text-sm font-normal">
+        <form className="mt-[1.188rem] text-[1rem] max-md:text-sm font-normal" onSubmit={submitOTP}>
           <div className="max-sm:w-auto max-lg:w-max mx-auto">
             <label className="block mb-[0.313rem] text-[0.75rem] md:text-[1rem] leading-[100%] text-[#FFFFFFCC]">
               Enter your 6-digit code
@@ -255,9 +266,8 @@ export default function Step12VC() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="mt-[10.875rem] steps_btn_submit"
-            onClick={submitOTP}
           >
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>

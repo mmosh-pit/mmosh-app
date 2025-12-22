@@ -20,6 +20,7 @@ export default function Step11VC() {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -76,27 +77,24 @@ export default function Step11VC() {
   };
 
   const isValidTelegram = (username: string) => {
-    // if (!username) return true;
-    // return /^@[a-zA-Z0-9_]{5}$/.test(username);
-    return true;
+    if (!username) return true;
+    return /^@?[a-zA-Z](?!.*__)[a-zA-Z0-9_]{3,30}[a-zA-Z0-9]$/.test(username);
   };
 
   const isValidBluesky = (handle: string) => {
-    // if (!handle) return true;
-    // return /^@?[a-zA-Z0-9.-]+\.bsky\.social{3,18}$/.test(handle);
-    return true;
+    if (!handle) return true;
+    return /^(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(handle);
   };
 
   const isValidLinkedIn = (url: string) => {
-    // if (!url) return true;
-    // return /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9-]{3,100}\/?$/.test(
-    //   url.trim()
-    // );
-    return true;
+    if (!url) return true;
+    return /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]{3,100}\/?$/.test(
+      url.trim()
+    );
   };
 
-  const updateContactDetails = async () => {
-    const telegram = contactDetails.telegramUsername.trim();
+  const updateContactDetails = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     if (!contactDetails.mobileNumber.trim()) {
       createMessage("Mobile number is required.", "error");
@@ -107,10 +105,11 @@ export default function Step11VC() {
       createMessage("Please enter a valid mobile number.", "error");
       return;
     }
+    const telegram = contactDetails.telegramUsername.trim();
 
     if (!isValidTelegram(telegram)) {
       createMessage(
-        "Please enter a valid Telegram username (example: @username)",
+        "Invalid Telegram username. Use 5–32 chars, letters, numbers, underscores.",
         "error"
       );
       return;
@@ -118,14 +117,14 @@ export default function Step11VC() {
 
     if (!isValidBluesky(contactDetails.blueskyHandle)) {
       createMessage(
-        "Please enter a valid Bluesky handle (example: name.bsky.social)",
+        "Invalid Bluesky handle (example: name.bsky.social)",
         "error"
       );
       return;
     }
 
     if (!isValidLinkedIn(contactDetails.linkedinProfile)) {
-      createMessage("Please enter a valid LinkedIn profile URL", "error");
+      createMessage("Invalid LinkedIn profile URL", "error");
       return;
     }
 
@@ -187,12 +186,21 @@ export default function Step11VC() {
     }
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   return (
@@ -241,7 +249,7 @@ export default function Step11VC() {
           </span>
         </p>
 
-        <form className="mt-[0.313rem] text-[1rem] max-md:text-sm font-normal leading-[100%]">
+        <form className="mt-[0.313rem] text-[1rem] max-md:text-sm font-normal leading-[100%]" onSubmit={updateContactDetails}>
           <div className="flex flex-col gap-[0.25rem]">
             <div className="z-50">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
@@ -337,9 +345,8 @@ export default function Step11VC() {
             </div>
 
             <button
-              type="button"
+              type="submit"
               className="steps_btn_submit mt-[1.063rem]"
-              onClick={updateContactDetails}
             >
               {isLoading ? <Spinner size="sm" /> : "Next"}
             </button>

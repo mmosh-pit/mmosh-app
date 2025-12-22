@@ -9,6 +9,7 @@ export default function Step14VC() {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const [kinshipCode, setKinshipCode] = React.useState("");
 
@@ -34,7 +35,8 @@ export default function Step14VC() {
     }
   }, []);
 
-  const submitNewKinshipCode = async () => {
+  const submitNewKinshipCode = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     
     if (!kinshipCode) {
       createMessage(
@@ -96,12 +98,21 @@ export default function Step14VC() {
     }
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+ const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   return (
@@ -146,7 +157,7 @@ export default function Step14VC() {
           </span>
         </p>
 
-        <form className="mt-[0.875rem] min-h-63.5 text-base max-md:text-sm font-normal">
+        <form className="mt-[0.875rem] min-h-63.5 text-base max-md:text-sm font-normal" onSubmit={submitNewKinshipCode}>
           <div>
             <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
               Set your Kinship Code
@@ -163,9 +174,8 @@ export default function Step14VC() {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="steps_btn_submit mt-[11.813rem]"
-            onClick={submitNewKinshipCode}
           >
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>

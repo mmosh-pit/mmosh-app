@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
+import ChallengesVW, { ChallengeItem } from "../components/Challenges/ChallengesVW";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
@@ -128,7 +128,7 @@ const Step6VC = () => {
         </p>
 
         <div className="mt-[0.563rem]">
-          <ChallengePills
+          <ChallengesVW
             challenges={CHALLENGES}
             onChange={handleChange}
             value={selectedChallenges}

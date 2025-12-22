@@ -205,7 +205,6 @@ const createMessage = (message: string, type: "error" | "success") => {
         <form className="mt-[0.563rem] text-[1rem]" onSubmit={updateRoles}>
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] font-normal text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <CheckBoxVW
-              step="step3"
               labelText="Change-maker/Activist/Advocate"
               hasChecked={roles.includes(
                 formatRole("change-maker/activist/advocate")
@@ -218,7 +217,6 @@ const createMessage = (message: string, type: "error" | "success") => {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Educator/Teacher"
               hasChecked={roles.includes(formatRole("educator/teacher"))}
               onChange={(e) =>
@@ -226,7 +224,6 @@ const createMessage = (message: string, type: "error" | "success") => {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Coach/Trainer/Guide"
               hasChecked={roles.includes(formatRole("coach/trainer/guide"))}
               onChange={(e) =>
@@ -234,7 +231,6 @@ const createMessage = (message: string, type: "error" | "success") => {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Healer/Therapist"
               hasChecked={roles.includes(formatRole("healer/therapist"))}
               onChange={(e) =>
@@ -242,13 +238,11 @@ const createMessage = (message: string, type: "error" | "success") => {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Leader"
               hasChecked={roles.includes(formatRole("leader"))}
               onChange={(e) => handleRoleChange("leader", e.target.checked)}
             />
             <CheckBoxVW
-              step="step3"
               labelText="Student/Learner"
               hasChecked={roles.includes(formatRole("student/learner"))}
               onChange={(e) =>
@@ -256,7 +250,6 @@ const createMessage = (message: string, type: "error" | "success") => {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Other"
               hasChecked={otherRoleEnabled}
               onChange={(e) => handleRoleChange("other", e.target.checked)}

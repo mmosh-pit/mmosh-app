@@ -4,14 +4,14 @@ export interface ChallengeItem {
   label: string;
 }
 
-interface ChallengePillsProps {
+interface ChallengesVWProps {
   challenges: ChallengeItem[];
   min?: number;
   onChange: (selected: string[]) => void;
   value?: string[];
 }
 
-const ChallengePills: React.FC<ChallengePillsProps> = ({
+const ChallengesVW: React.FC<ChallengesVWProps> = ({
   challenges,
   onChange,
   value = [],
@@ -53,4 +53,4 @@ const ChallengePills: React.FC<ChallengePillsProps> = ({
   );
 };
 
-export default ChallengePills;
+export default ChallengesVW;

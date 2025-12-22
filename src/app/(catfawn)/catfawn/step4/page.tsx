@@ -197,7 +197,6 @@ export default function Step4VC() {
         <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between" onSubmit={updateIntent}>
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] font-normal leading-[110%] -tracking-[0.02em]">
             <CheckBoxVW
-              step="step4"
               labelText="To face challenges in my life, work, and relationships with more clarity, presence, and wisdom"
               hasChecked={intents.includes(
                 formatIntent(
@@ -212,7 +211,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To turn my strengths into superpowers"
               hasChecked={intents.includes(
                 formatIntent("to-turn-my-strengths-into-superpowers")
@@ -225,7 +223,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To create meaningful change in my community or the world"
               hasChecked={intents.includes(
                 formatIntent(
@@ -240,7 +237,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To break old patterns and respond instead of react"
               hasChecked={intents.includes(
                 formatIntent(
@@ -255,7 +251,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To relate to fear differently – seeing it as a catalyst not an
               enemy"
               hasChecked={intents.includes(
@@ -271,7 +266,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To strengthen my inner authority and self-authorship"
               hasChecked={intents.includes(
                 formatIntent(
@@ -286,7 +280,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To use my words as sacred, intentional, powerful communications"
               hasChecked={intents.includes(
                 formatIntent(
@@ -301,7 +294,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To remember my inner nature and experience the wisdom of the
               natural world"
               hasChecked={intents.includes(
@@ -317,7 +309,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To bring more respect, reciprocity, and relational wisdom into my life"
               hasChecked={intents.includes(
                 formatIntent(
@@ -332,7 +323,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To support my healing, therapy, or spiritual growth"
               hasChecked={intents.includes(
                 formatIntent(
@@ -347,7 +337,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To enhance my work with clients, students, or communities"
               hasChecked={intents.includes(
                 formatIntent(
@@ -362,7 +351,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To grow into a healthier, more powerful version of myself"
               hasChecked={intents.includes(
                 formatIntent(
@@ -377,7 +365,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="To strengthen my professional skills and effectiveness at work"
               hasChecked={intents.includes(
                 formatIntent(
@@ -392,7 +379,6 @@ export default function Step4VC() {
               }
             />
             <CheckBoxVW
-              step="step4"
               labelText="Other"
               hasChecked={otherIntentEnabled}
               onChange={(e) => handleIntentChange("other", e.target.checked)}

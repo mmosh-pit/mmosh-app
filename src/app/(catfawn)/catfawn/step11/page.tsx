@@ -7,6 +7,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { InputVW } from "../components/Input/InputVW";
 
 interface ContactDetails {
   mobileNumber: string;
@@ -280,49 +281,40 @@ export default function Step11VC() {
                 specialLabel=""
               />
             </div>
+            <InputVW
+              labelText="Telegram username"
+              value={contactDetails.telegramUsername}
+              placeHolder="@handle"
+              inputType="text"
+              isRequired={false}
+              type="sms"
+              onChange={(event) =>
+                handleChange("telegramUsername", event.target.value)
+              }
+            />
 
-            <div className="mt-[0.25rem]">
-              <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                Telegram username
-              </label>
-              <input
-                type="text"
-                value={contactDetails.telegramUsername}
-                placeholder="@handle"
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) =>
-                  handleChange("telegramUsername", e.target.value)
-                }
-              />
-            </div>
-
-            <div className="mt-[0.25rem]">
-              <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                Bluesky handle
-              </label>
-              <input
-                type="text"
-                value={contactDetails.blueskyHandle}
-                placeholder="@name.bsky.social"
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem]  rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) => handleChange("blueskyHandle", e.target.value)}
-              />
-            </div>
-
-            <div className="mt-[0.25rem]">
-              <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                LinkedIn profile (full URL)
-              </label>
-              <input
-                type="text"
-                value={contactDetails.linkedinProfile}
-                placeholder="http://url.com"
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) =>
-                  handleChange("linkedinProfile", e.target.value)
-                }
-              />
-            </div>
+            <InputVW
+              labelText="Bluesky handle"
+              value={contactDetails.blueskyHandle}
+              placeHolder="@name.bsky.social"
+              inputType="text"
+              isRequired={false}
+              type="sms"
+              onChange={(event) =>
+                handleChange("blueskyHandle", event.target.value)
+              }
+            />
+            <InputVW
+              labelText="LinkedIn profile (full URL)"
+              value={contactDetails.linkedinProfile}
+              placeHolder="http://url.com"
+              inputType="text"
+              isRequired={false}
+              type="sms"
+              onChange={(event) =>
+                handleChange("linkedinProfile", event.target.value)
+              }
+            />
 
             <button
               type="submit"

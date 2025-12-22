@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
+import ChallengesVW, { ChallengeItem } from "../components/Challenges/ChallengesVW";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
@@ -126,7 +126,7 @@ const step8 = () => {
         </p>
 
         <div className="mt-7 lg:mt-[3.375rem]">
-          <ChallengePills
+          <ChallengesVW
             challenges={ASPIRATIONS}
             onChange={handleChange}
             value={selectedAspirations}

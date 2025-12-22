@@ -26,12 +26,16 @@ export async function POST(req: NextRequest) {
 
     const errors: string[] = [];
 
+    if (!isNonEmptyString(body.firstName)) {
+      errors.push("First name is required");
+    }
+
     if (!isNonEmptyString(body.email) || !isValidEmail(body.email)) {
       errors.push("Valid email is required");
     }
 
-    if (!isNonEmptyString(body.firstName)) {
-      errors.push("First name is required");
+    if (!isNonEmptyString(body.password)) {
+      errors.push("Password is required");
     }
 
     if (!isNonEmptyString(body.password) || body.password.length < 6) {
@@ -42,24 +46,56 @@ export async function POST(req: NextRequest) {
       errors.push("Current step is required");
     }
 
+    if (!body.roles){
+      errors.push("Roles is required")
+    }
+
     if (body.roles && !isArray(body.roles)) {
       errors.push("Roles must be an array");
+    }
+
+    if (!body.intent){
+      errors.push("Intent is required")
     }
 
     if (body.intent && !isArray(body.intent)) {
       errors.push("Intent must be an array");
     }
 
-    if (body.likertAnswers && !isObject(body.likertAnswers)) {
-      errors.push("Likert answers must be an object");
+    if (!body.likertAnswers ||  Object.keys(body.likertAnswers).length < 48){
+      errors.push("Please rate all the questions in step5")
     }
 
-    if (body.avatarUrl && !isValidUrl(body.avatarUrl)) {
-      errors.push("Avatar URL must be valid");
+    if (!body.challenges){
+      errors.push("Challenges is required")
     }
 
-    if (body.web && !isValidUrl(body.web)) {
-      errors.push("Website URL must be valid");
+    if (body.challenges.length < 3){
+      errors.push("Please select atleast 3 challenges")
+    }
+
+    if (!body.abilities){
+      errors.push("Abilities is required")
+    }
+
+    if (body.abilities.length < 3){
+      errors.push("Please select atleast 3 abilities")
+    }
+
+    if (!body.aspirations){
+      errors.push("Aspirations is required")
+    }
+
+    if (body.aspirations.length < 3){
+      errors.push("Please select atleast 3 aspirations")
+    }
+
+    if (!body.mobilePreference){
+      errors.push("Mobile preference is required")
+    }
+
+    if (!body.contactPreference){
+      errors.push("Contact preference is required")
     }
 
     if (body.mobileNumber && !isString(body.mobileNumber)) {
@@ -68,6 +104,29 @@ export async function POST(req: NextRequest) {
 
     if (body.countryCode && !isString(body.countryCode)) {
       errors.push("Country code must be a string");
+    }
+
+    if (!body.avatarUrl){
+      errors.push("Avater must be required")
+    }
+
+    if (body.avatarUrl && !isValidUrl(body.avatarUrl)) {
+      errors.push("Avatar URL must be valid");
+    }
+
+    if (!isNonEmptyString(body.lastName)) {
+      errors.push("Last name is required");
+    }
+
+    if (!isNonEmptyString(body.firstName)) {
+      errors.push("Bio is required");
+    }
+
+    if (!body.web){
+      errors.push("Website URL is required")
+    }
+    if (body.web && !isValidUrl(body.web)) {
+      errors.push("Website URL must be valid");
     }
 
     if (errors.length > 0) {
@@ -126,26 +185,27 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(),
     };
 
-    const result = await visitorCollection.insertOne(doc);
+    // const result = await visitorCollection.insertOne(doc);
 
-    let filter: any = { email: body.email.toLowerCase().trim() };
-    if (body.mobileNumber && body.countryCode) {
-      filter = { mobile: body.mobileNumber, countryCode: body.countryCode };
-    }
+    // let filter: any = { email: body.email.toLowerCase().trim() };
+    // if (body.mobileNumber && body.countryCode) {
+    //   filter = { mobile: body.mobileNumber, countryCode: body.countryCode };
+    // }
 
-    await otpCollection.deleteMany({ email: body.email.toLowerCase().trim() });
+    // await otpCollection.deleteMany({ email: body.email.toLowerCase().trim() });
 
     return NextResponse.json(
       {
         status: true,
         message: "Visitor saved successfully",
         result: {
-          id: result.insertedId,
+          id: "result",
         },
       },
       { status: 201 }
     );
   } catch (err) {
+    console.log("Eroorrrsssss",err)
     return NextResponse.json(
       {
         status: false,

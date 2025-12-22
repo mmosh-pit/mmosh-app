@@ -12,6 +12,7 @@ const Step5VC8 = () => {
 
   const [cachedData, setCachedData] = useState<any>({});
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [form, setForm] = useState<{
     q1: number | null;
     q2: number | null;
@@ -101,10 +102,19 @@ const Step5VC8 = () => {
 
   const createMessage = (message: string, type: "success" | "error") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   const likertAnswers = LIKERT_QUESTIONS.reduce(
@@ -120,7 +130,8 @@ const Step5VC8 = () => {
     {} as Record<string, string>
   );
 
-  const submitStep5 = async () => {
+  const submitStep5 = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
     if (Object.values(form).some((v) => v === null)) {
       createMessage("Please answer all questions.", "error");
@@ -154,7 +165,7 @@ const Step5VC8 = () => {
         messageText={msgText}
       />
 
-      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
+      <form className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8" onSubmit={submitStep5}>
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <BackArrowVW onClick={() => router.replace("/catfawn/step5/7")} />
           Request Early Access
@@ -167,12 +178,12 @@ const Step5VC8 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-snug lg:leading-[110%] mt-3 lg:mt-[1.813rem] -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-snug lg:leading-[110%] mt-3 lg:mt-[1.875rem] -tracking-[0.07em]">
           Your town’s council is having a meeting to consider some changes that
           may affect your neighborhood. Do you:{" "}
         </p>
 
-        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal mt-[0.625rem] leading-[110%] -tracking-[0.04em] pr-1">
+        <ul className="flex justify-end gap-[0.813rem] text-[0.75rem] font-normal leading-[110%] -tracking-[0.04em] pr-1">
           <li>Very Rarely</li>
           <li>Sometimes</li>
           <li>Very Often</li>
@@ -191,14 +202,13 @@ const Step5VC8 = () => {
         </div>
 
         <button
-          type="button"
-          onClick={submitStep5}
+          type="submit"
           disabled={isLoading}
           className="steps_btn_submit mt-[5.563rem]"
         >
           {isLoading ? <Spinner size="sm" /> : "Next"}
         </button>
-      </div>
+      </form>
     </>
   );
 };

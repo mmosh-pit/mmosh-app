@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { EarlyAccessCircleVW } from "./components/EarlyAccessCircleVW/EarlyAccessCircleVW";
+import { EarlyAccessCircleVW } from "./components/EarlyAccessCircle/EarlyAccessCircleVW";
 
 const poppins = Poppins({
   variable: "--font-poppins",

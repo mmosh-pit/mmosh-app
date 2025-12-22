@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Spinner from "../components/Spinner";
 import { init, uploadFile } from "@/app/lib/firebase";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
@@ -12,6 +12,7 @@ const Step15VC = () => {
   const router = useRouter();
   const [cachedData, setCachedData] = useState<any>({});
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [avatar, setAvatar] = useState<File | null>(null);
   const [lastName, setLastName] = useState("");
   const [bio, setBio] = useState("");
@@ -23,15 +24,24 @@ const Step15VC = () => {
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-  const createMessage = (message: string, type: "success" | "error") => {
+ const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
       return router.replace("/catfawn");
@@ -65,7 +75,8 @@ const Step15VC = () => {
     }
   };
 
-  const handleNext = async () => {
+  const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!avatar && !lastName && !bio && !webLink) {
       createMessage("All fields are required.", "error");
       return;
@@ -192,7 +203,7 @@ const Step15VC = () => {
           Step 15 of 15: Your Contact Details
         </p>
 
-        <form className="mt-4">
+        <form className="mt-4" onSubmit={handleNext}>
           <span className="text-sm text-white/80">Avatar selection *</span>
 
           <label
@@ -226,6 +237,7 @@ const Step15VC = () => {
               placeholder="Last Name"
               className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
               onChange={(e) => setLastName(e.target.value)}
+              maxLength={16}
             />
           </div>
 
@@ -237,6 +249,7 @@ const Step15VC = () => {
               placeholder="Bio"
               className="w-full h-[2.813rem] px-4 rounded-lg bg-[#402A2A] border border-white/20 text-white"
               onChange={(e) => setBio(e.target.value)}
+              maxLength={255}
             />
           </div>
 
@@ -252,9 +265,8 @@ const Step15VC = () => {
           </div>
 
           <button
-            type="button"
+            type="submit"
             className="steps_btn_submit mt-5"
-            onClick={handleNext}
           >
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>

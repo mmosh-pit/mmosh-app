@@ -23,6 +23,8 @@ export default function Home() {
 
   const [cachedData, setCachedData] = React.useState<any>({});
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   React.useEffect(() => {
     try {
       const stored = localStorage.getItem("catfawn-data");
@@ -69,7 +71,12 @@ export default function Home() {
     if (!formData.password) {
       createMessage("Password is required", "error");
       return false;
-    } else if (formData.password.length < 6) {
+    } else if (/\p{Extended_Pictographic}/u.test(formData.password)) {
+      createMessage("Password should not contain emojis", "error");
+      return false;
+    }
+
+    else if (formData.password.length < 6) {
       createMessage("Password must be at least 6 characters", "error");
       return false;
     } else if (formData.password.length > 32) {
@@ -104,6 +111,7 @@ export default function Home() {
 
     try {
       setIsLoading(true);
+
       if (cachedData.email === formData.email && cachedData.hasVerifiedEmail) {
         localStorage.setItem(
           "catfawn-data",
@@ -117,10 +125,12 @@ export default function Home() {
         );
         return router.replace("/catfawn/step3");
       }
+
       const result = await axios.post("/api/visitors/generate-otp", {
         type: "email",
         email: formData.email,
       });
+
       if (result.data.status) {
         localStorage.setItem(
           "catfawn-data",
@@ -133,31 +143,39 @@ export default function Home() {
             completedSteps: 1,
           })
         );
-        setIsLoading(false);
         router.replace("/catfawn/step2");
       } else {
-        setIsLoading(false);
         createMessage(result.data.message || "Something went wrong", "error");
       }
     } catch (err: any) {
-      setIsLoading(false);
       createMessage(
         err?.response?.data?.message ||
-          "Unable to generate OTP. Please try again.",
+        "Unable to generate OTP. Please try again.",
         "error"
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const createMessage = (message: any, type: any) => {
+
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => {
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
+      msgTimeoutRef.current = null;
     }, 4000);
   };
+
 
   return (
     <>

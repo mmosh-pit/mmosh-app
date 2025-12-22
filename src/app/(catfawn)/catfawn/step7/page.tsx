@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { useRouter } from "next/navigation";
 import ChallengesVW, { ChallengeItem } from "../components/Challenges/ChallengesVW";
 import Spinner from "../components/Spinner";
@@ -11,6 +11,8 @@ const Step7VC = () => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>(null);
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  
   const [selectedAbilities, setSelectedAbilities] = useState<string[]>([]);
 
   const [showMsg, setShowMsg] = useState(false);
@@ -30,7 +32,7 @@ const Step7VC = () => {
     { label: "📪 Empathy and compassion" },
   ];
 
-  useEffect(() => {
+  React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
       return router.replace("/catfawn");
@@ -51,19 +53,29 @@ const Step7VC = () => {
     }
   }, []);
 
-  const createMessage = (message: string, type: "success" | "error") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   const handleChange = (selected: string[]) => {
     setSelectedAbilities(selected);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
     if (selectedAbilities.length < 3) {
       createMessage("Please select at least 3 abilities.", "error");
@@ -94,7 +106,7 @@ const Step7VC = () => {
         className={msgClass}
         messageText={msgText}
       />
-      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
+      <form className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8" onSubmit={handleSubmit}>
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <BackArrowVW onClick={() => router.replace("/catfawn/step6")} />
           Request Early Access
@@ -123,14 +135,13 @@ const Step7VC = () => {
         </div>
 
         <button
-          type="button"
-          onClick={handleSubmit}
+          type="submit"
           disabled={isLoading}
           className="steps_btn_submit mt-[1rem]"
         >
           {isLoading ? <Spinner /> : "Next"}
         </button>
-      </div>
+      </form>
     </>
   );
 };

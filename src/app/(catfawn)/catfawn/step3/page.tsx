@@ -19,6 +19,9 @@ export default function Step3VC() {
   const [msgText, setMsgText] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
@@ -77,7 +80,9 @@ export default function Step3VC() {
     );
   };
 
-  const updateRoles = () => {
+  const updateRoles =  (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     setIsLoading(true);
 
     if (roles.length === 0 && !otherRoleText.trim()) {
@@ -102,11 +107,8 @@ export default function Step3VC() {
         return;
       }
 
-      if (!/^[A-Za-z\s]+$/.test(otherRoleText)) {
-        createMessage(
-          "Only letters are allowed. Special characters are not allowed.",
-          "error"
-        );
+      if (!/^[A-Za-z,&\/\s-]+$/.test(otherRoleText)) {
+        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
         setIsLoading(false);
         return;
       }
@@ -142,13 +144,20 @@ export default function Step3VC() {
     setIsLoading(false);
   };
 
-  const createMessage = (message: any, type: any) => {
+const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => {
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
+      msgTimeoutRef.current = null;
     }, 4000);
   };
   const handleBackNavigation = () => {
@@ -193,7 +202,7 @@ export default function Step3VC() {
           </span>
         </div>
 
-        <form className="mt-[0.563rem] text-[1rem]">
+        <form className="mt-[0.563rem] text-[1rem]" onSubmit={updateRoles}>
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] font-normal text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <CheckBoxVW
               labelText="Change-maker/Activist/Advocate"
@@ -259,9 +268,9 @@ export default function Step3VC() {
           )}
 
           <button
-            type="button"
+            type="submit"
             className={`steps_btn_submit ${otherRoleEnabled ? "mt-[1.438rem]" : " mt-[4.375rem]"}`}
-            onClick={updateRoles}
+
           >
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>

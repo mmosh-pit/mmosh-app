@@ -2,8 +2,9 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
 
 export default function Step14VC() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function Step14VC() {
       if (result?.completedSteps !== undefined && result?.completedSteps < 25) {
         router.replace(`/${result.currentStep}`);
       }
-      setKinshipCode(result.kinshipCode || "")
+      setKinshipCode(result.kinshipCode || "");
     } catch {
       router.replace("/catfawn");
     }
@@ -39,10 +40,7 @@ export default function Step14VC() {
     e.preventDefault();
     
     if (!kinshipCode) {
-      createMessage(
-        "Please enter the Kinship code",
-        "error"
-      );
+      createMessage("Please enter the Kinship code", "error");
       return;
     }
 
@@ -117,35 +115,14 @@ export default function Step14VC() {
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              router.replace("/catfawn/step13");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={() => router.replace("/catfawn/step13")} />
           Request Early Access
         </h2>
 

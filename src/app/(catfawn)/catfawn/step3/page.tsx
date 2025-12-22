@@ -196,7 +196,6 @@ export default function Step3VC() {
         <form className="mt-[0.563rem] text-[1rem]">
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] font-normal text-[0.813rem] leading-[140%] -tracking-[0.02em]">
             <CheckBoxVW
-              step="step3"
               labelText="Change-maker/Activist/Advocate"
               hasChecked={roles.includes(
                 formatRole("change-maker/activist/advocate")
@@ -209,7 +208,6 @@ export default function Step3VC() {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Educator/Teacher"
               hasChecked={roles.includes(formatRole("educator/teacher"))}
               onChange={(e) =>
@@ -217,7 +215,6 @@ export default function Step3VC() {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Coach/Trainer/Guide"
               hasChecked={roles.includes(formatRole("coach/trainer/guide"))}
               onChange={(e) =>
@@ -225,7 +222,6 @@ export default function Step3VC() {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Healer/Therapist"
               hasChecked={roles.includes(formatRole("healer/therapist"))}
               onChange={(e) =>
@@ -233,13 +229,11 @@ export default function Step3VC() {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Leader"
               hasChecked={roles.includes(formatRole("leader"))}
               onChange={(e) => handleRoleChange("leader", e.target.checked)}
             />
             <CheckBoxVW
-              step="step3"
               labelText="Student/Learner"
               hasChecked={roles.includes(formatRole("student/learner"))}
               onChange={(e) =>
@@ -247,7 +241,6 @@ export default function Step3VC() {
               }
             />
             <CheckBoxVW
-              step="step3"
               labelText="Other"
               hasChecked={otherRoleEnabled}
               onChange={(e) => handleRoleChange("other", e.target.checked)}

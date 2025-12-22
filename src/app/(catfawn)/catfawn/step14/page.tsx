@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { InputVW } from "../components/Input/InputVW";
 
 export default function Step14VC() {
   const router = useRouter();
@@ -123,18 +124,19 @@ export default function Step14VC() {
         </p>
 
         <form className="mt-[0.875rem] min-h-63.5 text-base max-md:text-sm font-normal">
-          <div>
-            <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Set your Kinship Code
-            </label>
-            <input
-              type="text"
+          <div className="text-[1rem]">
+            <InputVW
+              labelText="Set your Kinship Code"
               value={kinshipCode}
-              onChange={(e) => setKinshipCode(e.target.value.trim())}
+              placeHolder="Set your Kinship Code"
+              inputType="text"
+              isRequired={true}
+              type=""
+              onChange={(event) => {
+                setKinshipCode(event.target.value.trim());
+              }}
               minLength={6}
               maxLength={16}
-              placeholder="Set your Kinship Code"
-              className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
             />
           </div>
 

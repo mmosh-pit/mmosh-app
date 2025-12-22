@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { CheckBoxVW } from "../components/CheckBox/CheckBoxVW";
 
 export default function Step10VC() {
   const router = useRouter();
@@ -101,53 +102,34 @@ export default function Step10VC() {
 
         <form className="mt-6 lg:mt-[3.438rem] text-[1rem]">
           <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={contactPreferences.includes("text-message")}
-                onChange={(e) =>
-                  handleContactPreferenceChange(
-                    "text-message",
-                    e.target.checked
-                  )
-                }
-              />
-              Text message{" "}
-            </label>
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={contactPreferences.includes("telegram")}
-                onChange={(e) =>
-                  handleContactPreferenceChange("telegram", e.target.checked)
-                }
-              />
-              Telegram{" "}
-            </label>
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={contactPreferences.includes("whatsapp")}
-                onChange={(e) =>
-                  handleContactPreferenceChange("whatsapp", e.target.checked)
-                }
-              />
-              WhatsApp{" "}
-            </label>
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={contactPreferences.includes("email")}
-                onChange={(e) =>
-                  handleContactPreferenceChange("email", e.target.checked)
-                }
-              />
-              Email{" "}
-            </label>
+            <CheckBoxVW
+              labelText="Text message"
+              hasChecked={contactPreferences.includes("text-message")}
+              onChange={(e) =>
+                handleContactPreferenceChange("text-message", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Telegram"
+              hasChecked={contactPreferences.includes("telegram")}
+              onChange={(e) =>
+                handleContactPreferenceChange("telegram", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="WhatsApp"
+              hasChecked={contactPreferences.includes("whatsapp")}
+              onChange={(e) =>
+                handleContactPreferenceChange("whatsapp", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Email"
+              hasChecked={contactPreferences.includes("email")}
+              onChange={(e) =>
+                handleContactPreferenceChange("email", e.target.checked)
+              }
+            />
           </div>
 
           <button

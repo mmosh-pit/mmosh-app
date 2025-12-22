@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { InputVW } from "../components/Input/InputVW";
 
 export default function Step13VC() {
   const router = useRouter();
@@ -136,21 +137,20 @@ export default function Step13VC() {
         </p>
 
         <form className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal">
-          <div>
-            <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Kinship Code
-            </label>
-            <input
-              type="text"
-              placeholder="Kinship Code"
+          <div className="text-[1rem]">
+            <InputVW
+              labelText="Kinship Code"
+              value={kinshipCode}
+              placeHolder="Kinship Code"
+              inputType="text"
+              isRequired={false}
+              type="kinship-code"
+              onChange={(event) => {
+                setKinshipCode(event.target.value.trim());
+                if (event.target.value) setNoCodeChecked(false);
+              }}
               minLength={6}
               maxLength={16}
-              className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
-              value={kinshipCode}
-              onChange={(e) => {
-                setKinshipCode(e.target.value.trim());
-                if (e.target.value) setNoCodeChecked(false);
-              }}
             />
 
             <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-[0.313rem] -tracking-[0.02em]">

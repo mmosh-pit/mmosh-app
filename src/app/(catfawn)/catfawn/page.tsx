@@ -190,6 +190,7 @@ export default function Home() {
               placeHolder="First Name"
               inputType="text"
               isRequired={true}
+              type="email"
               onChange={(event) =>
                 setFormData({ ...formData, firstName: event.target.value })
               }
@@ -200,6 +201,7 @@ export default function Home() {
               placeHolder="Email address"
               inputType="email"
               isRequired={true}
+              type="email"
               onChange={(event) =>
                 setFormData({ ...formData, email: event.target.value })
               }
@@ -210,6 +212,7 @@ export default function Home() {
               placeHolder="Password"
               inputType="password"
               isRequired={true}
+              type="email"
               onChange={(event) =>
                 setFormData({ ...formData, password: event.target.value })
               }
@@ -220,6 +223,7 @@ export default function Home() {
               placeHolder="Confirm Password"
               inputType="password"
               isRequired={true}
+              type="email"
               onChange={(event) =>
                 setFormData({
                   ...formData,

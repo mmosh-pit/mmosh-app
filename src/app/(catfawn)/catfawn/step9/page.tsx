@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Spinner from "../components/Spinner";
 import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { CheckBoxVW } from "../components/CheckBox/CheckBoxVW";
 
 export default function Step9VC() {
   const router = useRouter();
@@ -97,28 +98,20 @@ export default function Step9VC() {
 
         <form className="mt-5 lg:mt-[3.438rem] text-[1rem]">
           <div className="flex flex-col gap-1 text-[rgba(255,255,255,0.9)] text-[0.813rem] leading-[140%] -tracking-[0.02em]">
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={mobilePreferences.includes("iPhone")}
-                onChange={(e) =>
-                  handleMobilePreferenceChange("iPhone", e.target.checked)
-                }
-              />
-              iPhone{" "}
-            </label>
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={mobilePreferences.includes("android")}
-                onChange={(e) =>
-                  handleMobilePreferenceChange("android", e.target.checked)
-                }
-              />
-              Android{" "}
-            </label>
+            <CheckBoxVW
+              labelText="iPhone"
+              hasChecked={mobilePreferences.includes("iPhone")}
+              onChange={(e) =>
+                handleMobilePreferenceChange("iPhone", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Android"
+              hasChecked={mobilePreferences.includes("android")}
+              onChange={(e) =>
+                handleMobilePreferenceChange("android", e.target.checked)
+              }
+            />
           </div>
 
           <button

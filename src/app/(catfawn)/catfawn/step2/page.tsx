@@ -22,8 +22,7 @@ export default function Step2VC() {
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
-      // return router.replace("/catfawn");
-      return;
+      return router.replace("/catfawn");
     }
     try {
       const result = JSON.parse(stored);

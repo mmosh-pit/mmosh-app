@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { CheckBoxVW } from "../components/CheckBox/CheckBoxVW";
 
 export default function Step3VC() {
   const router = useRouter();
@@ -149,45 +151,27 @@ export default function Step3VC() {
       setShowMsg(false);
     }, 4000);
   };
+  const handleBackNavigation = () => {
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn",
+      })
+    );
+    router.replace("/catfawn");
+  };
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              localStorage.setItem(
-                "catfawn-data",
-                JSON.stringify({
-                  ...cachedData,
-                  currentStep: "catfawn",
-                })
-              );
-              router.replace("/catfawn");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={handleBackNavigation} />
           Request Early Access
         </h2>
 
@@ -211,92 +195,63 @@ export default function Step3VC() {
 
         <form className="mt-[0.563rem] text-[1rem]">
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] font-normal text-[0.813rem] leading-[140%] -tracking-[0.02em]">
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(
-                  formatRole("change-maker/activist/advocate")
-                )}
-                onChange={(e) =>
-                  handleRoleChange(
-                    "change-maker/activist/advocate",
-                    e.target.checked
-                  )
-                }
-              />
-              Change-maker/Activist/Advocate
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("educator/teacher"))}
-                onChange={(e) =>
-                  handleRoleChange("educator/teacher", e.target.checked)
-                }
-              />
-              Educator/Teacher
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("coach/trainer/guide"))}
-                onChange={(e) =>
-                  handleRoleChange("coach/trainer/guide", e.target.checked)
-                }
-              />
-              Coach/Trainer/Guide
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("healer/therapist"))}
-                onChange={(e) =>
-                  handleRoleChange("healer/therapist", e.target.checked)
-                }
-              />
-              Healer/Therapist
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("leader"))}
-                onChange={(e) => handleRoleChange("leader", e.target.checked)}
-              />
-              Leader
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("student/learner"))}
-                onChange={(e) =>
-                  handleRoleChange("student/learner", e.target.checked)
-                }
-              />
-              Student/Learner
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="size-[1.438rem] rounded-[0.313rem]"
-                checked={otherRoleEnabled}
-                onChange={(e) => {
-                  handleRoleChange("other", e.target.checked);
-                }}
-              />
-              Other
-            </label>
+            <CheckBoxVW
+              step="step3"
+              labelText="Change-maker/Activist/Advocate"
+              hasChecked={roles.includes(
+                formatRole("change-maker/activist/advocate")
+              )}
+              onChange={(e) =>
+                handleRoleChange(
+                  "change-maker/activist/advocate",
+                  e.target.checked
+                )
+              }
+            />
+            <CheckBoxVW
+              step="step3"
+              labelText="Educator/Teacher"
+              hasChecked={roles.includes(formatRole("educator/teacher"))}
+              onChange={(e) =>
+                handleRoleChange("educator/teacher", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              step="step3"
+              labelText="Coach/Trainer/Guide"
+              hasChecked={roles.includes(formatRole("coach/trainer/guide"))}
+              onChange={(e) =>
+                handleRoleChange("coach/trainer/guide", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              step="step3"
+              labelText="Healer/Therapist"
+              hasChecked={roles.includes(formatRole("healer/therapist"))}
+              onChange={(e) =>
+                handleRoleChange("healer/therapist", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              step="step3"
+              labelText="Leader"
+              hasChecked={roles.includes(formatRole("leader"))}
+              onChange={(e) => handleRoleChange("leader", e.target.checked)}
+            />
+            <CheckBoxVW
+              step="step3"
+              labelText="Student/Learner"
+              hasChecked={roles.includes(formatRole("student/learner"))}
+              onChange={(e) =>
+                handleRoleChange("student/learner", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              step="step3"
+              labelText="Other"
+              hasChecked={otherRoleEnabled}
+              onChange={(e) => handleRoleChange("other", e.target.checked)}
+            />
           </div>
 
           {otherRoleEnabled && (

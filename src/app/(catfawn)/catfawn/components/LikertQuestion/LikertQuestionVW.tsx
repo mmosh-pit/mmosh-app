@@ -7,7 +7,7 @@ type LikertQuestionProps = {
   onChange: (value: number) => void;
 };
 
-export default function LikertQuestion({
+export default function LikertQuestionVW({
   name,
   text,
   value,

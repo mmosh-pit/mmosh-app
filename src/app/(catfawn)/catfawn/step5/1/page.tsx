@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import LikertQuestion from "../../components/LikertQuestion";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import LikertQuestionVW from "../../components/LikertQuestion/LikertQuestionVW";
 import Spinner from "../../components/Spinner";
+import { ErrorContainerVW } from "../../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../../components/BackArrow/BackArrowVW";
 
 const Step5VC1 = () => {
   const router = useRouter();
@@ -56,7 +57,6 @@ const Step5VC1 = () => {
       .replace(/\s+/g, "-")
       .toLowerCase();
 
-
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
     if (!stored) {
@@ -105,16 +105,18 @@ const Step5VC1 = () => {
     setTimeout(() => setShowMsg(false), 4000);
   };
 
-  const likertAnswers = LIKERT_QUESTIONS.reduce((acc, q) => {
-    const value = form[q.id as keyof typeof form];
+  const likertAnswers = LIKERT_QUESTIONS.reduce(
+    (acc, q) => {
+      const value = form[q.id as keyof typeof form];
 
-    if (value !== null) {
-      acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
-    }
+      if (value !== null) {
+        acc[formatLikertKey(q.text)] = LIKERT_LABELS[value];
+      }
 
-    return acc;
-  }, {} as Record<string, string>);
-
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
   const submitStep5 = async () => {
     setIsLoading(true);
@@ -146,36 +148,15 @@ const Step5VC1 = () => {
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
 
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              router.replace("/catfawn/step5");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={() => router.replace("/catfawn/step5")} />
           Request Early Access
           <div className="font-normal font-avenirNext absolute top-1/2 -translate-y-1/2 right-0 text-[#FFFFFFE5] text-[0.75rem] -tracking-[0.04em]">
             <span className="font-extrabold">1</span>/12
@@ -199,7 +180,7 @@ const Step5VC1 = () => {
 
         <div className="flex flex-col gap-[0.938rem] mt-[0.625rem]">
           {LIKERT_QUESTIONS.map((q) => (
-            <LikertQuestion
+            <LikertQuestionVW
               key={q.id}
               name={q.id}
               text={q.text}
@@ -216,7 +197,6 @@ const Step5VC1 = () => {
           className="steps_btn_submit mt-20"
         >
           {isLoading ? <Spinner size="sm" /> : "Next"}
-
         </button>
       </div>
     </>

@@ -2,9 +2,10 @@
 import React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "./components/Spinner";
 import { encryptData, decryptData } from "@/utils/decryptData";
+import { InputVW } from "./components/Input/InputVW";
+import { ErrorContainerVW } from "./components/ErrorContainer/ErrorContainerVW";
 
 export default function Home() {
   const router = useRouter();
@@ -85,14 +86,20 @@ export default function Home() {
     }
 
     if (!formData.hasChecked) {
-      createMessage("You must agree to receive communications before submitting", "error");
+      createMessage(
+        "You must agree to receive communications before submitting",
+        "error"
+      );
       return false;
     }
 
     return true;
   };
 
-  const createVisitorRecord = async () => {
+  const createVisitorRecord = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
     if (!validateForm()) return;
 
     try {
@@ -123,7 +130,7 @@ export default function Home() {
             firstName: formData.firstName,
             password: encryptData(formData.password),
             hasVerifiedEmail: false,
-            completedSteps:1,
+            completedSteps: 1,
           })
         );
         setIsLoading(false);
@@ -154,11 +161,11 @@ export default function Home() {
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-135.5 xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] ps-[3.25em] pe-[3.063em] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-xl leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           Request Early Access
@@ -172,77 +179,57 @@ export default function Home() {
           </span>
         </p>
 
-        <form className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal">
+        <form
+          className="mt-[0.625rem] text-[1rem] max-md:text-sm font-normal"
+          onSubmit={(e) => createVisitorRecord(e)}
+        >
           <div className="flex flex-col gap-[0.313rem]">
-            <div>
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                First Name*
-              </label>
-              <input
-                type="text"
-                placeholder="First Name"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                value={formData.firstName}
-                onChange={(event) =>
-                  setFormData({ ...formData, firstName: event.target.value })
-                }
-              />
-            </div>
-
-            <div className="mt-[0.313rem]">
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Email address*
-              </label>
-              <input
-                type="email"
-                placeholder="Email address"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                value={formData.email}
-                onChange={(event) =>
-                  setFormData({ ...formData, email: event.target.value })
-                }
-              />
-            </div>
-
-            <div className="mt-[0.313rem]">
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Password*
-              </label>
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                value={formData.password}
-                onChange={(event) =>
-                  setFormData({ ...formData, password: event.target.value })
-                }
-              />
-            </div>
-
-            <div className="mt-[0.313rem]">
-              <label className="block text-[#FFFFFFCC] mb-[0.313rem] leading-[100%]">
-                Confirm Password*
-              </label>
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                className="w-full h-[2.813rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                value={formData.confirmPassword}
-                onChange={(event) =>
-                  setFormData({
-                    ...formData,
-                    confirmPassword: event.target.value,
-                  })
-                }
-              />
-            </div>
+            <InputVW
+              labelText="First Name"
+              value={formData.firstName}
+              placeHolder="First Name"
+              inputType="text"
+              isRequired={true}
+              onChange={(event) =>
+                setFormData({ ...formData, firstName: event.target.value })
+              }
+            />
+            <InputVW
+              labelText="Email address"
+              value={formData.email}
+              placeHolder="Email address"
+              inputType="email"
+              isRequired={true}
+              onChange={(event) =>
+                setFormData({ ...formData, email: event.target.value })
+              }
+            />
+            <InputVW
+              labelText="Password"
+              value={formData.password}
+              placeHolder="Password"
+              inputType="password"
+              isRequired={true}
+              onChange={(event) =>
+                setFormData({ ...formData, password: event.target.value })
+              }
+            />
+            <InputVW
+              labelText="Confirm Password"
+              value={formData.confirmPassword}
+              placeHolder="Confirm Password"
+              inputType="password"
+              isRequired={true}
+              onChange={(event) =>
+                setFormData({
+                  ...formData,
+                  confirmPassword: event.target.value,
+                })
+              }
+            />
           </div>
 
-          <button
-            type="button"
-            className="steps_btn_submit mt-[1.688rem]"
-            onClick={createVisitorRecord}
-          >
+          <button type="submit" className="steps_btn_submit mt-[1.688rem]">
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
 

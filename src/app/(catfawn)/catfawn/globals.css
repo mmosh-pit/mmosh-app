@@ -2,9 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-label {
-  /* cursor: pointer; */
-  /* width: max-content; */
+label:has(input[type="checkbox"]) {
+  cursor: pointer;
 }
 
 input[type="checkbox"] {

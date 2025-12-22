@@ -143,7 +143,8 @@ export default function Step13VC() {
           Step 13 of 15: Kinship Code Verification.{" "}
           <span className="font-normal font-avenir">
             Entry into the CAT FAWN Connections happens through relationship,
-            trust, and reciprocity.
+            trust, and reciprocity. A Kinship Code from an existing member
+            signals that connection. If you have one, enter it now.
           </span>
         </p>
 

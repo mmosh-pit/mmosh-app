@@ -176,7 +176,7 @@ const Step5VC10 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-snug lg:leading-[110%] mt-3 lg:mt-[1.813rem] -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-snug lg:leading-[110%] mt-3 lg:mt-[1.875rem] -tracking-[0.07em]">
           You have just been seriously offended by a co-worker. Do you:{" "}
         </p>
 

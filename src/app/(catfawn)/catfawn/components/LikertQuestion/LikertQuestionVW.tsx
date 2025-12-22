@@ -14,7 +14,7 @@ export default function LikertQuestionVW({
   onChange,
 }: LikertQuestionProps) {
   return (
-    <div className="flex items-center justify-between gap-[0.625rem] text-[#FFFFFFE5]">
+    <div className="flex items-center justify-between gap-[0.563rem] text-[#FFFFFFE5]">
       <p className="text-[0.75rem] leading-snug lg:leading-[110%] font-normal -tracking-[0.04em]">
         {text}
       </p>

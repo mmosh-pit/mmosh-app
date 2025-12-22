@@ -170,7 +170,7 @@ const Step5VC2 = () => {
         messageText={msgText}
       />
 
-      <form className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8" onSubmit={submitStep5}>
+      <form className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.188rem] max-md:px-5 max-md:py-8" onSubmit={submitStep5}>
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <BackArrowVW onClick={() => router.replace("/catfawn/step5/1")} />
           Request Early Access

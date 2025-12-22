@@ -110,7 +110,10 @@ export default function Step4VC() {
       }
 
       if (!/^[A-Za-z,&\/\s-]+$/.test(otherIntentText)) {
-        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
+        createMessage(
+          "Only letters are allowed. Special characters are not allowed.",
+          "error"
+        );
         setIsLoading(false);
         return;
       }
@@ -194,7 +197,10 @@ export default function Step4VC() {
           </span>
         </div>
 
-        <form className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between" onSubmit={updateIntent}>
+        <form
+          className="min-h-[313px] mt-[0.875rem] text-[1rem] flex flex-col justify-between"
+          onSubmit={updateIntent}
+        >
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] font-normal leading-[110%] -tracking-[0.02em]">
             <CheckBoxVW
               labelText="To face challenges in my life, work, and relationships with more clarity, presence, and wisdom"
@@ -389,16 +395,13 @@ export default function Step4VC() {
               type="text"
               value={otherIntentText}
               onChange={(e) => setOtherIntentText(e.target.value)}
-              placeholder="Please share how you see yourself in the world."
-              className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-60 placeholder:font-normal placeholder:leading-[140%] mt-[0.563rem]"
+              placeholder="Please share what you’re looking for"
+              className="text-[0.813rem] w-full h-[2.375rem] pl-[0.688rem] pe-[0.625rem] py-[0.625rem] rounded-[0.313rem] bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[0.813rem] placeholder:leading-[140%] placeholder:-tracking-[0.02em] placeholder:font-normal placeholder:text-[#FFFFFFE5] placeholder:opacity-60 mt-[0.563rem]"
               maxLength={100}
             />
           )}
 
-          <button
-            type="submit"
-            className="steps_btn_submit mt-[0.625rem]"
-          >
+          <button type="submit" className="steps_btn_submit mt-[0.625rem]">
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>
         </form>

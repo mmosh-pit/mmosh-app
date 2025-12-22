@@ -4,6 +4,7 @@
 
 label:has(input[type="checkbox"]) {
   cursor: pointer;
+  width: fit-content;
 }
 
 input[type="checkbox"] {

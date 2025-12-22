@@ -143,7 +143,7 @@ const Step5VC7 = () => {
         </div>
       )}
 
-      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
+      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
           <div
             className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
@@ -177,7 +177,7 @@ const Step5VC7 = () => {
           Step 5 of 14: Your CAT FAWN Source Code.
         </p>
 
-        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-[110%] mt-3 lg:mt-[1.813rem] -tracking-[0.07em]">
+        <p className="max-sm:text-base text-[0.938rem] text-[#FFFFFFE5] font-avenirLtStd max-md:text-sm font-bold leading-[110%] mt-3 lg:mt-[1.875rem] -tracking-[0.07em]">
           You’re at a big sporting event. Are you:{" "}
         </p>
 

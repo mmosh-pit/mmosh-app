@@ -212,6 +212,8 @@ export default function Home() {
               onChange={(event) =>
                 setFormData({ ...formData, firstName: event.target.value })
               }
+              minLength={2}
+              maxLength={16}
             />
             <InputVW
               labelText="Email address"
@@ -234,6 +236,8 @@ export default function Home() {
               onChange={(event) =>
                 setFormData({ ...formData, password: event.target.value })
               }
+              minLength={6}
+              maxLength={32}
             />
             <InputVW
               labelText="Confirm Password"
@@ -248,6 +252,8 @@ export default function Home() {
                   confirmPassword: event.target.value,
                 })
               }
+              minLength={6}
+              maxLength={32}
             />
           </div>
 

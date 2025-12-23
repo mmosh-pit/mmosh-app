@@ -31,16 +31,18 @@ const SignUp = () => {
     return String(email)
       .toLowerCase()
       .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
   };
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await client.get("/is-auth");
+    try {
+      const result = await client.get("/is-auth");
 
-    if (result.data) {
-      router.replace("/");
-    }
+      if (result.data) {
+        router.replace("/");
+      }
+    } catch (error) {}
   }, []);
 
   React.useEffect(() => {
@@ -69,7 +71,7 @@ const SignUp = () => {
         email: form.email,
       });
       router.push("/sign-up/code");
-    } catch (_) { }
+    } catch (_) {}
     setIsLoading(false);
   };
 
@@ -196,7 +198,7 @@ const SignUp = () => {
           <div className="w-[60%] md:w-[50%] lg:w-[40%] mb-4 mt-8">
             <Button
               title="Next"
-              action={() => { }}
+              action={() => {}}
               size="large"
               type="submit"
               isPrimary

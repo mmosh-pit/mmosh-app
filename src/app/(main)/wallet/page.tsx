@@ -63,8 +63,7 @@ export default function MyWalley() {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [historyLoading, setHistoryLoading] = React.useState<boolean>(false);
   const [nextLoading, setNextLoading] = useState(false);
-    const [PreviousLoading, setPreviousLoading] = useState(false);
-
+  const [PreviousLoading, setPreviousLoading] = useState(false);
 
   const [transactionHistory, setTransactionHistory] = React.useState<{
     transactions: any[];
@@ -98,17 +97,17 @@ export default function MyWalley() {
     setTransactionHistory(result.data.result);
     setHistoryLoading(false);
     setNextLoading(false);
-    setPreviousLoading(false)
+    setPreviousLoading(false);
   };
 
   const handleNext = () => {
-     setNextLoading(true)
+    setNextLoading(true);
     setPage(page + 1);
     getTransactionHistory(page + 1);
   };
 
   const handlePrev = () => {
-    setPreviousLoading(true)
+    setPreviousLoading(true);
     setPage(page - 1);
     getTransactionHistory(page - 1);
   };
@@ -237,10 +236,13 @@ export default function MyWalley() {
     setStakedTokens(stakedTokens);
   };
   const formatAmount = (amount: number) => {
+    if (amount === 0) return "$0.00";
+
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-      maximumFractionDigits: 2,
+      minimumFractionDigits: amount < 1 ? 4 : 2,
+      maximumFractionDigits: amount < 1 ? 6 : 2,
     }).format(amount);
   };
 
@@ -709,9 +711,9 @@ export default function MyWalley() {
                           {(data.currency === "USDT" ||
                             data.currency === "USDC") && (
                             <>
-                              {data.amount < 1
-                                ? `$ ${data.amount.toString().length > 6 ? data.amount.toFixed(6) : data.amount}`
-                                : formatAmount(data.amount / 10 ** 6)}
+                              {data.transactionType !== "transfer"
+                                ? formatAmount(data.amount / 10 ** 6)
+                                : data.amount}
                             </>
                           )}
                           {data.currency !== "USDT" &&
@@ -753,25 +755,23 @@ export default function MyWalley() {
               )}
             </div>
             {transactionHistory.transactions.length > 0 && (
+              <div className="flex justify-center items-center gap-4 mt-4">
+                <button
+                  onClick={() => handlePrev()}
+                  disabled={!transactionHistory.pagination.hasPrev}
+                  className="px-4 py-2 bg-[#FFFFFF14] border border-[#FFFFFF38] rounded-lg text-white disabled:opacity-50"
+                >
+                  {PreviousLoading ? "Loading" : "Previous"}
+                </button>
 
-            <div className="flex justify-center items-center gap-4 mt-4">
-              <button
-                onClick={() => handlePrev()}
-                disabled={!transactionHistory.pagination.hasPrev}
-                className="px-4 py-2 bg-[#FFFFFF14] border border-[#FFFFFF38] rounded-lg text-white disabled:opacity-50"
-              >
-                
-                {PreviousLoading ? "Loading" : "Previous"}
-              </button>
-
-              <button
-                onClick={() => handleNext()}
-                disabled={!transactionHistory.pagination.hasNext}
-                className="px-4 py-2 bg-[#FFFFFF14] border border-[#FFFFFF38] rounded-lg text-white disabled:opacity-50"
-              >
-                {nextLoading ? "Loading" : "Next"}
-              </button>
-            </div>
+                <button
+                  onClick={() => handleNext()}
+                  disabled={!transactionHistory.pagination.hasNext}
+                  className="px-4 py-2 bg-[#FFFFFF14] border border-[#FFFFFF38] rounded-lg text-white disabled:opacity-50"
+                >
+                  {nextLoading ? "Loading" : "Next"}
+                </button>
+              </div>
             )}
           </>
         )}

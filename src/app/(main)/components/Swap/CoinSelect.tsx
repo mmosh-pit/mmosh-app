@@ -55,7 +55,7 @@ const CoinSelect = ({
     );
     const coinData = listResult.data;
     const uniqueArray = Array.from(new Set
-      (coinData.map((obj:CoinDetail) => obj.base.token)));
+      (coinData.map((obj:CoinDetail) => obj.base)));
 
     let coinFinalList:any = []
     for (let index = 0; index < uniqueArray.length; index++) {

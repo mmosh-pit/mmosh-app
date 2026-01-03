@@ -23,6 +23,11 @@ export default function LandingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [initialModalStep, setInitialModalStep] = useState(0);
 
+  const originStoryRef = useRef<HTMLDivElement>(null);
+  const kinshipIntelligenceRef = useRef<HTMLDivElement>(null);
+  const collectiveEconomicsRef = useRef<HTMLDivElement>(null);
+  const foundingCreatorsRef = useRef<HTMLDivElement>(null);
+
   const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
   const homeSection = useRef<HTMLDivElement>(null);
@@ -55,13 +60,40 @@ export default function LandingPage() {
   const isMobileScreen = screenSize < 1200;
 
   const openSignUpModal = () => {
-    setInitialModalStep(0);
-    setIsModalOpen(true);
+    window.open("https://www.kinshipbots.com/catfawn", "_blank");
   };
 
   const openSignInModal = () => {
     setInitialModalStep(2);
     setIsModalOpen(true);
+  };
+
+  const scrollToOriginStory = () => {
+    originStoryRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const scrollToKinshipIntelligence = () => {
+    kinshipIntelligenceRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const scrollToCollectiveEconomics = () => {
+    collectiveEconomicsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const scrollToFoundingCreators = () => {
+    foundingCreatorsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   return (
@@ -86,7 +118,7 @@ export default function LandingPage() {
             <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() => {}}
+                onClick={scrollToOriginStory}
               >
                 Origin Story
               </a>
@@ -95,7 +127,7 @@ export default function LandingPage() {
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() => {}}
+                onClick={scrollToKinshipIntelligence}
               >
                 Kinship Intelligence
               </a>
@@ -104,55 +136,38 @@ export default function LandingPage() {
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() => {}}
+                onClick={scrollToCollectiveEconomics}
               >
-                Collective Economics
+                Co-op Economics
               </a>
 
               <div className="lg:mx-4 md:mx-2" />
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() => {}}
+                onClick={scrollToFoundingCreators}
               >
                 Founding Creators
               </a>
               <div className="lg:mx-4 md:mx-2" />
 
               <a
+                href="https://deeper.kinshipbots.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-base text-white cursor-pointer"
-                onClick={() => {}}
-              >
-                Contact Us
-              </a>
-              <div className="lg:mx-4 md:mx-2" />
-
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => {}}
               >
                 Go Deeper
               </a>
             </div>
           )}
 
-          <div className="flex">
-            <Button
-              action={openSignInModal}
-              size="small"
-              isPrimary
-              title="Log In"
-              color="bg-transparent"
-              isLoading={false}
-            />
-
-            <div className="mx-2" />
-
+          <div className="font-bold">
             <Button
               action={openSignUpModal}
               size="small"
               isPrimary
-              title="Sign Up"
+              title="Join Early Access"
               isLoading={false}
             />
           </div>
@@ -193,7 +208,7 @@ export default function LandingPage() {
                 className="m-auto md:max-w-[45%] max-w-[85%] lg:w-[50rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] p-[10px]"
                 ref={homeSection}
               >
-                <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppins bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2 ">
+                <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppins bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2 ">
                   Change Yourself. Change <br />
                   Your Life. Change The World.{" "}
                 </h1>
@@ -226,7 +241,7 @@ export default function LandingPage() {
                     className="btn bg-[#FF00AE] text-white border-none hover:bg-[#FF00AE] w-[12rem]  "
                     onClick={openSignUpModal}
                   >
-                    Join Now!
+                   Join Early Access
                   </button>
                 </div>
               </div>
@@ -239,9 +254,11 @@ export default function LandingPage() {
           ref={belowHeroRef}
         >
           <div className="">
-            <h1 className="text-center font-bold lg:px-5 leading-[1] lg:w-[65.063rem] lg:text-[3.75rem] text-2xl m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
-              I went to make a film. <br />I returned with a mission.
-            </h1>
+            <div ref={originStoryRef}>
+              <h1 className="text-center font-bold lg:px-5 leading-[1] lg:w-[65.063rem] lg:text-[3.75rem] text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+                I went to make a film. <br />I returned with a mission.
+              </h1>
+            </div>
 
             <p className="text-center text-[#FFFFFFC7] mt-[1rem] ">
               A journey to Mexico, a conversation with Four Arrows, and the
@@ -284,11 +301,14 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
+
           <div className="mt-24">
-            <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
-              Kinship Intelligence is <br /> living infrastructure for
-              collective evolution.
-            </h1>
+            <div ref={kinshipIntelligenceRef}>
+              <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+                Kinship Intelligence is <br /> living infrastructure for
+                collective evolution.
+              </h1>
+            </div>
             <p className="text-center text-lg text-[#FFFFFFC7] mt-5 mb-2">
               Kinship Intelligence is for creators who change lives.
             </p>
@@ -372,7 +392,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="mt-40">
-          <h1 className="text-center font-bold lg:px-10 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold lg:px-10 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Your work changes lives. Now it’s time to change yours.
           </h1>
           <div className="lg:w-[52.188rem] m-auto">
@@ -392,7 +412,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="mt-20">
-          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] text-3xl m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] text-3xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Right now, your work is spread across too many surfaces.{" "}
           </h1>
           <div className="lg:w-[52.188rem] m-auto">
@@ -442,7 +462,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="my-20">
-          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] text-3xl m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] text-3xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             You don’t need another platform.{" "}
           </h1>
           <div className="lg:w-[52.188rem] m-auto">
@@ -458,7 +478,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="mt-24">
-          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             A living system of intelligence, relationship, and action.
           </h1>
           <p className="text-center text-lg text-[#FFFFFFC7]  mt-5 mb-2">
@@ -554,102 +574,231 @@ export default function LandingPage() {
             className="btn bg-[#FF00AE] text-white border-none hover:bg-[#FF00AE] w-full"
             onClick={openSignUpModal}
           >
-            Join Now!
+            Join Early Access
           </button>
         </div>
         <div className="mt-24">
-          <h1 className="text-center font-bold px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
-            Get Paid Three Ways{" "}
-          </h1>
-          <p className="text-center text-lg text-[#FFFFFFC7]  mt-5 mb-2">
-            A collective economy built on reciprocity, where everyone
-            contributes and everyone prospers.
-          </p>
-          <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[60rem] m-auto">
-            Kinship Bots Club powers a relational economy with a simple, flat,
-            affordable membership at its core. Members earn through the
-            relationships they initiate, the bots they create and steward, and
-            the premium goods and services they offer into the collective.
-          </p>
+          <div ref={collectiveEconomicsRef}>
+            <h1 className="text-center font-bold px-12 leading-[1]  text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+              Member Managed, Member Owned
+            </h1>
+            <p className="text-center text-lg text-white font-medium font-Avenir  mt-5 mb-2">
+              Kinship is built on reciprocity, where everyone contributes and
+              everyone prospers.
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[65rem] m-auto">
+              Kinship Intelligence is owned and governed by its members. There
+              are no advertisers, no extractive algorithms, and no outside
+              stakeholders optimizing for attention or growth at any cost.
+              Instead, value circulates through the members who show up,
+              contribute, create, and care for the whole. Every member is a
+              co-owner, holding one share of Class A Stock. As Kinship grows,
+              members share in the value of the whole according to clear,
+              transparent rules designed to reward real contribution—through
+              participation, promotion, and creation—not hype.
+            </p>
+
+            <h1 className="text-center font-bold px-12 leading-[1]  text-[30px] m-auto font-PoppinsNew  text-[#FFFFFFC7] mt-20">
+              Three Ways to Belong — Three Ways to Earn
+            </h1>
+            <p className="text-center text-lg text-[#FFFFFFC7] lg:w-[60rem] mx-auto font-medium font-Avenir  mt-5 mb-2">
+              Big tech platforms are built on extraction. They pretend you’re
+              getting something for “free,” but you’re really the product that
+              they sell… your data, your creativity, your relationships. And in
+              return, you get anxiety, doom, and despair.
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] my-5">
+              Kinship is different.
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[55rem] mx-auto my-5">
+              Here, the people who participate, contribute, and create own the
+              system and share in all the benefits, including profits!
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] px-[3rem] lg:w-[65rem] my-5 mx-auto">
+              You’ll get paid immediately when your friends join, a member
+              engages with your creations, or someone accepts an offer. And then
+              you’ll share in the profit pools at the end of the year.
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[65rem] m-auto">
+              Software is a great business… Let's take it back from big tech and
+              put it in the hands of the people!
+            </p>
+          </div>
         </div>
         <div className=" lg:flex justify-around lg:my-10 lg:w-[80rem] mx-auto ">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
-                Membership <br /> Revenue Share{" "}
+                Member — The Civic <br /> Foundation
               </p>
               <p className="text-white font-bold text-lg text-center mt-3">
-                Invite-only keeps it high-signal, low noise, for people who are
-                here to grow.
+                Participate. Belong. Share in the commons.
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center">
-                KTransformation requires trust. You don’t join Kinship by
-                clicking an ad. You enter through a relationship with a member
-                who brings you along and knows you belong.
+                Members are the heart of Kinship. As a member, you’ll learn,
+                grow, and prosper, join ecosystems and gatherings, put the tools
+                and apps to good use, and hold the relational field that makes
+                everything possible.
               </p>
-              <p className="text-[#FFFFFFE5] font-bold text-lg text-center mt-5">
-                Membership dues: $20/mo or $100/yr
-              </p>
-              <p className="text-[#CDCDCDE5] text-xs text-center">
-                20% of dues reward relationship marketing
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  Membership: $15/month or $120/year
+                </li>
+                <li>One member, one vote</li>
+                <li>
+                  Access to the platform, gatherings, apps, tools, and bots
+                </li>
+                <li>
+                  Share in the{" "}
+                  <span className=" text-white font-bold">
+                    {" "}
+                    Membership Pool,
+                  </span>{" "}
+                  distributed based on participation and patronage
+                </li>
+                <li>
+                  No pressure to sell or create, just experience everything.
+                  Belonging comes first
+                </li>
+              </ul>
+              <p className="text-[#CDCDCDE5] text-xs text-center mt-5 px-10">
+                This is the base civic layer, where you explore, learn, and
+                grow.
               </p>
             </div>
           </div>
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
-                Engagement With The <br /> Bots You Create{" "}
+                Promoter — <br /> Relationship Builders
               </p>
               <p className="text-white font-bold text-lg text-center mt-3">
-                IEarn as your work makes a real difference in peoples’ lives.
+                Invite your friends. Share what you love. Earn through trust.{" "}
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center">
-                Your Kinship Bots will measure growth and deliver results –
-                guiding, teaching and taking action – and you’ll earn royalties
-                as your members learn and grow.{" "}
+                Promoters are Members who help Kinship grow by introducing
+                others to the community and its offerings—through relationships,
+                not ads or funnels.
               </p>
-              <p className="text-[#FFFFFFE5] font-bold text-lg text-center mt-5">
-                20% of dues reward creators
-              </p>
-              <p className="text-[#CDCDCDE5] text-xs text-center">
-                Creator pool royalty distribution based on bot usage
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  Membership: $35/month or $300/year
+                </li>
+                <li>Everything included in Member status</li>
+                <li>
+                  Immediate payments on referrals for memberships and sales –
+                  for several generations!
+                </li>
+                <li>
+                  Earn from the Promoter Bonus Pool, where we share profits at
+                  the end of the year
+                </li>
+                <li>
+                  No cold outreach, no hype—promote through genuine connection,
+                  where you offer only what serves
+                </li>
+              </ul>
+              <p className="text-[#CDCDCDE5] text-xs text-center mt-5 ">
+                Promoters help Kinship grow by keeping the value created in the
+                collective. Our model supports promoters with integrity by
+                avoiding expensive advertising campaigns that only serve Big
+                Tech.
               </p>
             </div>
           </div>
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
-                Make Offers People Want
+                Creator — Masters of <br />
+                Living Intelligence{" "}
               </p>
               <p className="text-white font-bold text-lg text-center mt-3">
-                Let your members go deeper—without pressure or hustle.
+                Create bots. Build apps. Encode wisdom. Share in deeper value.{" "}
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center">
-                Your Kinship Bots can recommend a range of offerings — live
-                sessions, workshops, programs, and retreats. Members can join
-                and pay right in the app!
+                Creators share and carry living practices by designing and
+                tending bots, apps, and experiences on the Kinship
+                platform—turning lived wisdom into practices others can master.
               </p>
-              <p className="text-[#FFFFFFE5] font-bold text-lg text-center mt-5">
-                30% of digital offerings go to platform and relationship
-                marketing
-              </p>
-              <p className="text-[#CDCDCDE5] text-xs text-center">
-                15% of real-world offerings go to platform and relationship
-                marketing
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  Membership: $85/month or $650/year
+                </li>
+                <li>Everything included in Member and Promoter plans</li>
+                <li>
+                  Earn immediately from the purchase of any goods and services
+                  you offer to the community
+                </li>
+                <li>
+                  Get paid monthly from the Creator Royalty Pool based on
+                  engagement with your bots and apps
+                </li>
+                <li>
+                  Earn from the Creator Profit Pool at the end of the year
+                </li>
+              </ul>
+              <p className="text-[#CDCDCDE5] text-xs text-center mt-5 ">
+                On Kinship, Creators don’t chase attention, influence or cloud.
+                They earn royalties from the living systems they create, that
+                serve their communities when they need them most.{" "}
               </p>
             </div>
           </div>
         </div>
+        <div className="lg:w-[60rem] m-auto my-5">
+          <div ref={foundingCreatorsRef}>
+            <h1 className="text-center font-bold px-12 leading-[1]  text-[30px] m-auto font-PoppinsNew  text-[#FFFFFFC7] mt-20">
+              How Ownership Actually Works{" "}
+            </h1>
+            <ul className="text-lg text-[#FFFFFFC7] list-disc mt-2 mx-auto font-avenir">
+              <li>Kinship is a cooperative, not a marketplace.</li>
+              <li>
+                Members hold Class A membership shares and govern the system
+                together.
+              </li>
+              <li>
+                Revenue is pooled and distributed according to contribution—not
+                captured by the platform.
+              </li>
+              <li>
+                Decisions are made to balance sustainability, care for members,
+                and the long-term public benefit.
+              </li>
+            </ul>
+            <p className="text-[#FFFFFFC7]">
+              Software is a great business… Let's take it back from big tech and
+              put it in the hands of the people!
+            </p>
+            <p className="text-[#FFFFFFC7] text-center">
+              As Kinship grows, value circulates within the collective, where it
+              can benefit you the most.
+            </p>
+            <p className="text-[#FFFFFFC7] font-extrabold text-center text-lg my-2">
+              We’re showing that human–AI alignment isn’t just a technical
+              problem. It’s a governance problem.
+            </p>
+            <p className="text-[#FFFFFFC7] font-extrabold text-lg text-center">
+              Until the systems we build are owned and guided by those whose
+              lives and livelihoods they shape, we’ll keep escalating the same
+              destructive patterns—faster, deeper, and at planetary scale.
+            </p>
+            <p className="text-[#FFFFFFC7] font-extrabold text-center my-2">
+              Kinship is what alignment looks like when the systems serve the
+              people, not the other way around.
+            </p>
+          </div>
+        </div>
+
         <div className="w-[15rem] m-auto ">
           <button
             className="btn bg-[#FF00AE] text-white border-none hover:bg-[#FF00AE] w-full  "
             onClick={openSignUpModal}
           >
-            Join Now!
+            Join Early Access
           </button>
         </div>
         <div className="mt-24">
-          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Our founding creators are putting their heart and soul into Kinship
             Intelligence.
           </h1>
@@ -904,7 +1053,7 @@ export default function LandingPage() {
         </section>
         <div className="lg:flex my-10 mx-auto justify-between lg:w-[90rem]">
           <div className="mt-24">
-            <h1 className="lg:text-left text-center font-bold leading-[1] text-[3.75rem]  font-goudy  bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
+            <h1 className="lg:text-left text-center font-bold leading-[1] text-[3.75rem]  font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Contact Us
             </h1>
             <p className="lg:text-left text-center lg:text-lg text-sm text-[#FFFFFFC7]  mt-5 mb-2">
@@ -914,7 +1063,7 @@ export default function LandingPage() {
             </p>
           </div>
           <div className="bg-[#05022C] p-5 lg:w-[38rem] rounded-3xl">
-            <p className="font-poppins font-bold text-[1.8rem] text-center bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent">
+            <p className="font-poppins font-bold text-[1.8rem] text-center bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent">
               Request Early Access
             </p>
             <p className="text-[#FFFFFFE5] text-base">

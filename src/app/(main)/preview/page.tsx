@@ -1043,13 +1043,13 @@ export default function LandingPage() {
             <div className="flex flex-col">
               <div className="flex">
                 <div className="rounded-full w-8 h-8 flex justify-center items-center border-[1px] border-[#FFFFFF15] bg-[#FFFFFF10] mx-2">
-                  <LinkedinIcon />
+                  <LinkedinIcon width={13} height={13}/>
                 </div>
                 <div className="rounded-full w-8 h-8 flex justify-center items-center border-[1px] border-[#FFFFFF15] bg-[#FFFFFF10] mx-2">
-                  <InstagramIcon />
+                <InstagramIcon  width={14} height={15}/>,
                 </div>
                 <div className="rounded-full w-8 h-8 flex justify-center items-center border-[1px] border-[#FFFFFF15] bg-[#FFFFFF10] mx-2">
-                  <YoutubeIcon />
+                 <YoutubeIcon width={16} height={11} />
                 </div>
                 <div className="rounded-full w-8 h-8 flex justify-center items-center border-[1px] border-[#FFFFFF15] bg-[#FFFFFF10] mx-2">
                   <XIcon />

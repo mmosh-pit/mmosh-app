@@ -60,7 +60,7 @@ const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
             className={getClassNameForItem(2)}
             onClick={() => setSelectedOption(2)}
           >
-            <BlueskyIcon />{" "}
+            <BlueskyIcon  width={13} height={12} />{" "}
             <p className="text-base text-white ml-1"> Bluesky</p>
           </div>
 
@@ -70,7 +70,7 @@ const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
             className={getClassNameForItem(3)}
             onClick={() => setSelectedOption(3)}
           >
-            <LinkedinIcon />{" "}
+            <LinkedinIcon  width={13} height={13}/>{" "}
             <p className="text-base text-white ml-1"> LinkedIn</p>
           </div>
         </div>

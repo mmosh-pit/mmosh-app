@@ -2,10 +2,12 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { InputVW } from "../components/Input/InputVW";
 
 interface ContactDetails {
   mobileNumber: string;
@@ -20,6 +22,7 @@ export default function Step11VC() {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -76,27 +79,24 @@ export default function Step11VC() {
   };
 
   const isValidTelegram = (username: string) => {
-    // if (!username) return true;
-    // return /^@[a-zA-Z0-9_]{5}$/.test(username);
-    return true;
+    if (!username) return true;
+    return /^@?[a-zA-Z](?!.*__)[a-zA-Z0-9_]{3,30}[a-zA-Z0-9]$/.test(username);
   };
 
   const isValidBluesky = (handle: string) => {
-    // if (!handle) return true;
-    // return /^@?[a-zA-Z0-9.-]+\.bsky\.social{3,18}$/.test(handle);
-    return true;
+    if (!handle) return true;
+    return /^(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(handle);
   };
 
   const isValidLinkedIn = (url: string) => {
-    // if (!url) return true;
-    // return /^https?:\/\/(www\.)?linkedin\.com\/(in|company)\/[a-zA-Z0-9-]{3,100}\/?$/.test(
-    //   url.trim()
-    // );
-    return true;
+    if (!url) return true;
+    return /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]{3,100}\/?$/.test(
+      url.trim()
+    );
   };
 
-  const updateContactDetails = async () => {
-    const telegram = contactDetails.telegramUsername.trim();
+  const updateContactDetails = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     if (!contactDetails.mobileNumber.trim()) {
       createMessage("Mobile number is required.", "error");
@@ -107,10 +107,11 @@ export default function Step11VC() {
       createMessage("Please enter a valid mobile number.", "error");
       return;
     }
+    const telegram = contactDetails.telegramUsername.trim();
 
     if (!isValidTelegram(telegram)) {
       createMessage(
-        "Please enter a valid Telegram username (example: @username)",
+        "Invalid Telegram username. Use 5–32 chars, letters, numbers, underscores.",
         "error"
       );
       return;
@@ -118,14 +119,14 @@ export default function Step11VC() {
 
     if (!isValidBluesky(contactDetails.blueskyHandle)) {
       createMessage(
-        "Please enter a valid Bluesky handle (example: name.bsky.social)",
+        "Invalid Bluesky handle (example: name.bsky.social)",
         "error"
       );
       return;
     }
 
     if (!isValidLinkedIn(contactDetails.linkedinProfile)) {
-      createMessage("Please enter a valid LinkedIn profile URL", "error");
+      createMessage("Invalid LinkedIn profile URL", "error");
       return;
     }
 
@@ -187,45 +188,33 @@ export default function Step11VC() {
     }
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              router.replace("/catfawn/step10");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={() => router.replace("/catfawn/step10")} />
           Request Early Access
         </h2>
 
@@ -241,7 +230,7 @@ export default function Step11VC() {
           </span>
         </p>
 
-        <form className="mt-[0.313rem] text-[1rem] max-md:text-sm font-normal leading-[100%]">
+        <form className="mt-[0.313rem] text-[1rem] max-md:text-sm font-normal leading-[100%]" onSubmit={updateContactDetails}>
           <div className="flex flex-col gap-[0.25rem]">
             <div className="z-50">
               <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
@@ -292,54 +281,44 @@ export default function Step11VC() {
                 specialLabel=""
               />
             </div>
+            <InputVW
+              labelText="Telegram username"
+              value={contactDetails.telegramUsername}
+              placeHolder="@handle"
+              inputType="text"
+              isRequired={false}
+              type="sms"
+              onChange={(event) =>
+                handleChange("telegramUsername", event.target.value)
+              }
+            />
 
-            <div className="mt-[0.25rem]">
-              <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                Telegram username
-              </label>
-              <input
-                type="text"
-                value={contactDetails.telegramUsername}
-                placeholder="@handle"
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) =>
-                  handleChange("telegramUsername", e.target.value)
-                }
-              />
-            </div>
-
-            <div className="mt-[0.25rem]">
-              <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                Bluesky handle
-              </label>
-              <input
-                type="text"
-                value={contactDetails.blueskyHandle}
-                placeholder="@name.bsky.social"
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem]  rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) => handleChange("blueskyHandle", e.target.value)}
-              />
-            </div>
-
-            <div className="mt-[0.25rem]">
-              <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-                LinkedIn profile (full URL)
-              </label>
-              <input
-                type="text"
-                value={contactDetails.linkedinProfile}
-                placeholder="http://url.com"
-                className="w-full h-[2.813rem] px-[1.294rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
-                onChange={(e) =>
-                  handleChange("linkedinProfile", e.target.value)
-                }
-              />
-            </div>
+            <InputVW
+              labelText="Bluesky handle"
+              value={contactDetails.blueskyHandle}
+              placeHolder="@name.bsky.social"
+              inputType="text"
+              isRequired={false}
+              type="sms"
+              onChange={(event) =>
+                handleChange("blueskyHandle", event.target.value)
+              }
+            />
+            <InputVW
+              labelText="LinkedIn profile (full URL)"
+              value={contactDetails.linkedinProfile}
+              placeHolder="http://url.com"
+              inputType="text"
+              isRequired={false}
+              type="sms"
+              onChange={(event) =>
+                handleChange("linkedinProfile", event.target.value)
+              }
+            />
 
             <button
-              type="button"
+              type="submit"
               className="steps_btn_submit mt-[1.063rem]"
-              onClick={updateContactDetails}
             >
               {isLoading ? <Spinner size="sm" /> : "Next"}
             </button>

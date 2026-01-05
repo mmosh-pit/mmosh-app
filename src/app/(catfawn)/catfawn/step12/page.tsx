@@ -3,8 +3,9 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
 
 export default function Step12VC() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function Step12VC() {
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
@@ -31,11 +33,12 @@ export default function Step12VC() {
 
       if (
         result?.completedSteps !== undefined &&
-        (result?.completedSteps < 23 || result?.isMobileNumberVerified || result?.isMobileNumberVerified === undefined)
+        (result?.completedSteps < 23 ||
+          result?.isMobileNumberVerified ||
+          result?.isMobileNumberVerified === undefined)
       ) {
         router.replace(`/${result.currentStep}`);
       }
-
     } catch {
       router.replace("/catfawn");
     }
@@ -107,7 +110,8 @@ export default function Step12VC() {
     }
   };
 
-  const submitOTP = async () => {
+  const submitOTP = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const enteredOtp = otp.join("");
 
     if (enteredOtp.length !== 6) {
@@ -121,7 +125,7 @@ export default function Step12VC() {
         email: cachedData.email,
         otp: enteredOtp,
         currentStep: "catfawn/step13",
-        type: "sms"
+        type: "sms",
       });
 
       if (res.data.status) {
@@ -168,45 +172,33 @@ export default function Step12VC() {
     setHasLoadingResendOTP(false);
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+ const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              router.replace("/catfawn/step11");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={() => router.replace("/catfawn/step11")} />
           Request Early Access
         </h2>
 
@@ -220,12 +212,12 @@ export default function Step12VC() {
           </span>
         </p>
 
-        <form className="mt-[1.188rem] text-[1rem] max-md:text-sm font-normal">
-          <div className="max-sm:w-auto max-lg:w-max mx-auto">
+        <form className="mt-[1.188rem] text-[1rem] max-md:text-sm font-normal" onSubmit={submitOTP}>
+          <div className="max-lg:w-max max-lg:mx-auto max-lg:text-center">
             <label className="block mb-[0.313rem] text-[0.75rem] md:text-[1rem] leading-[100%] text-[#FFFFFFCC]">
               Enter your 6-digit code
             </label>
-            <div className="lg:w-[29.75rem] mx-auto flex gap-7 max-sm:gap-[0.525rem] max-xl:gap-4 max-lg:justify-center">
+            <div className="lg:w-[29.75rem] mx-auto flex gap-7 max-sm:gap-[0.525rem] max-xl:gap-4">
               {otp.map((digit, idx) => (
                 <input
                   key={idx}
@@ -238,12 +230,25 @@ export default function Step12VC() {
                   onChange={(e) => handleOtpChange(e.target.value, idx)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   onPaste={(e) => handlePaste(e, idx)}
-                  className={`w-14 h-[3.438rem] max-lg:w-14 max-lg:h-[3.438rem] max-[400px]:w-6 max-[400px]:h-6 max-sm:w-8 max-sm:h-8 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
+                  // className={`text-center w-14 h-[3.438rem] max-[410px]:w-8 max-[410px]:h-8 max-[510px]:w-12 max-[510px]:h-12 max-sm:w-[4.063rem] max-sm:h-[4.063rem] max-lg:w-20 max-lg:h-20 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
+
+                  className={`aspect-square 
+                w-[clamp(0.7rem,9vw,3.5rem)]
+                rounded-lg 
+                text-center text-lg sm:text-xl font-semibold
+                backdrop-blur 
+                border text-white
+                focus:outline-none
+                ${
+                  hasInvalid
+                    ? "bg-[#F8060624] border-[#F806068F]"
+                    : "bg-[#402A2A] border-white/20 focus:border-white"
+                }`}
                 />
               ))}
             </div>
 
-            <div className="text-[0.625rem] md:text-[1rem] leading-[100%] font-normal text-[#FFFFFFCC] flex items-center justify-between mt-[0.313rem]">
+            <div className="text-[0.625rem] md:text-[1rem] leading-[100%] font-normal text-[#FFFFFFCC] flex items-center justify-between mt-[0.313rem] step12_otp_resend">
               <p>Valid for 15 minutes.</p>
               <p>
                 Need a new code?{" "}
@@ -255,9 +260,8 @@ export default function Step12VC() {
           </div>
 
           <button
-            type="button"
-            className="mt-[10.875rem] steps_btn_submit"
-            onClick={submitOTP}
+            type="submit"
+            className="max-md:mt-[11.5rem] mt-[10.875rem] steps_btn_submit"
           >
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>

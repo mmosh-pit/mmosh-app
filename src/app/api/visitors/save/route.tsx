@@ -23,15 +23,22 @@ const isValidUrl = (url: string) => {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const errors: string[] = [];
+
+    if (!isNonEmptyString(body.firstName)) {
+      errors.push("First name is required");
+    }
+
+      if (body.firstName.length < 2 || body.firstName.length > 16){
+      errors.push("First name must be between 2 and 16 characters")
+    }
 
     if (!isNonEmptyString(body.email) || !isValidEmail(body.email)) {
       errors.push("Valid email is required");
     }
 
-    if (!isNonEmptyString(body.firstName)) {
-      errors.push("First name is required");
+    if (!isNonEmptyString(body.password)) {
+      errors.push("Password is required");
     }
 
     if (!isNonEmptyString(body.password) || body.password.length < 6) {
@@ -42,32 +49,82 @@ export async function POST(req: NextRequest) {
       errors.push("Current step is required");
     }
 
-    if (body.roles && !isArray(body.roles)) {
+    if (!body.roles) {
+      errors.push("Roles is required")
+    } else if (!isArray(body.roles)) {
       errors.push("Roles must be an array");
     }
 
-    if (body.intent && !isArray(body.intent)) {
+    if (!body.intent) {
+      errors.push("Intent is required")
+    } else if (!isArray(body.intent)) {
       errors.push("Intent must be an array");
     }
 
-    if (body.likertAnswers && !isObject(body.likertAnswers)) {
-      errors.push("Likert answers must be an object");
+    if (body.likertAnswers === undefined || (body.likertAnswers && Object.keys(body.likertAnswers).length < 48)) {
+      errors.push("Please rate all the questions in step5")
     }
 
-    if (body.avatarUrl && !isValidUrl(body.avatarUrl)) {
-      errors.push("Avatar URL must be valid");
+    if (!body.challenges) {
+      errors.push("Challenges is required")
+    } else if (body.challenges.length < 3) {
+      errors.push("Please select atleast 3 challenges")
     }
 
-    if (body.web && !isValidUrl(body.web)) {
-      errors.push("Website URL must be valid");
+    if (!body.abilities) {
+      errors.push("Abilities is required")
+    } else if (body.abilities.length < 3) {
+      errors.push("Please select atleast 3 abilities")
+    }
+
+    if (!body.aspirations) {
+      errors.push("Aspirations is required")
+    } else if (body.aspirations.length < 3) {
+      errors.push("Please select atleast 3 aspirations")
+    }
+
+    if (!body.mobilePreference) {
+      errors.push("Mobile preference is required")
+    } 
+
+    if (!body.contactPreference) {
+      errors.push("Contact preference is required")
     }
 
     if (body.mobileNumber && !isString(body.mobileNumber)) {
-      errors.push("Mobile number must be a string");
+      errors.push("Invalid mobile number");
     }
 
     if (body.countryCode && !isString(body.countryCode)) {
-      errors.push("Country code must be a string");
+      errors.push("Invalid country code");
+    }
+
+    if (!body.avatarUrl) {
+      errors.push("Avater must be required")
+    } else if (!isValidUrl(body.avatarUrl)) {
+      errors.push("Avatar URL must be valid");
+    }
+
+    if (!isNonEmptyString(body.lastName)) {
+      errors.push("Last name is required");
+    }
+
+    if (body.lastName.length < 2 || body.lastName.length > 16){
+      errors.push("Last name must be between 2 and 16 characters")
+    }
+
+    if (!isNonEmptyString(body.bio)) {
+      errors.push("Bio is required");
+    }
+    
+    if (body.bio.trim().length < 10 || body.bio.trim().length > 255) {
+      errors.push("Bio must be between 10 and 255 characters.");
+    }
+
+    if (!body.web) {
+      errors.push("Website URL is required")
+    } else if (!isValidUrl(body.web)) {
+      errors.push("Website URL must be valid");
     }
 
     if (errors.length > 0) {
@@ -140,7 +197,7 @@ export async function POST(req: NextRequest) {
         status: true,
         message: "Visitor saved successfully",
         result: {
-          id: result.insertedId,
+          id: "result",
         },
       },
       { status: 201 }

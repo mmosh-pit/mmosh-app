@@ -27,16 +27,18 @@ const Login = () => {
   const [___, setUser] = useAtom(data);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await client.get("/is-auth");
+    try {
+      const result = await client.get("/is-auth");
 
-    if (result.data) {
-      router.replace("/");
-      const user = result.data?.data?.user;
+      if (result.data) {
+        router.replace("/");
+        const user = result.data?.data?.user;
 
-      setShowAuthOverlay(!user);
-      setIsUserAuthenticated(!!user);
-      setUser(user);
-    }
+        setShowAuthOverlay(!user);
+        setIsUserAuthenticated(!!user);
+        setUser(user);
+      }
+    } catch (error) {}
   }, []);
 
   const submit = React.useCallback(
@@ -64,7 +66,7 @@ const Login = () => {
 
       setIsLoading(false);
     },
-    [email, password],
+    [email, password]
   );
 
   React.useEffect(() => {

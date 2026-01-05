@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
 import Spinner from "../components/Spinner";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { CheckBoxVW } from "../components/CheckBox/CheckBoxVW";
 
 export default function Step3VC() {
   const router = useRouter();
@@ -16,6 +18,8 @@ export default function Step3VC() {
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
@@ -75,7 +79,9 @@ export default function Step3VC() {
     );
   };
 
-  const updateRoles = () => {
+  const updateRoles = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     setIsLoading(true);
 
     if (roles.length === 0 && !otherRoleText.trim()) {
@@ -100,12 +106,14 @@ export default function Step3VC() {
         return;
       }
 
-      if (!/^[A-Za-z\s]+$/.test(otherRoleText)) {
-        createMessage("Only letters are allowed. Special characters are not allowed.", "error");
+      if (!/^[A-Za-z,&\/\s-]+$/.test(otherRoleText)) {
+        createMessage(
+          "Only letters are allowed. Special characters are not allowed.",
+          "error"
+        );
         setIsLoading(false);
         return;
       }
-
 
       if (otherRoleText.trim().length < 3 || otherRoleText.trim().length > 30) {
         createMessage(
@@ -138,54 +146,43 @@ export default function Step3VC() {
     setIsLoading(false);
   };
 
-  const createMessage = (message: any, type: any) => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => {
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
+      msgTimeoutRef.current = null;
     }, 4000);
+  };
+  const handleBackNavigation = () => {
+    localStorage.setItem(
+      "catfawn-data",
+      JSON.stringify({
+        ...cachedData,
+        currentStep: "catfawn",
+      })
+    );
+    router.replace("/catfawn");
   };
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              localStorage.setItem(
-                "catfawn-data",
-                JSON.stringify({
-                  ...cachedData,
-                  currentStep: "catfawn",
-                })
-              );
-              router.replace("/catfawn");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={handleBackNavigation} />
           Request Early Access
         </h2>
 
@@ -200,101 +197,65 @@ export default function Step3VC() {
           </span>
         </p>
 
-        <div className="max-sm:text-base font-bold leading-snug lg:leading-[100%] text-[#FFFFFFCC] mt-[0.563rem]">
+        <div className="max-sm:text-base text-[0.875rem] font-bold leading-snug lg:leading-[100%] text-[#FFFFFFCC] mt-[0.563rem] -tracking-normal">
           How do you see yourself in the world?{" "}
           <span className="text-[0.6885rem] font-normal">
             (select all that apply, required)
           </span>
         </div>
 
-        <form className="mt-[0.563rem] text-[1rem]">
+        <form className="mt-[0.563rem] text-[1rem]" onSubmit={updateRoles}>
           <div className="flex flex-col gap-1 text-[#FFFFFFE5] font-normal text-[0.813rem] leading-[140%] -tracking-[0.02em]">
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(
-                  formatRole("change-maker/activist/advocate")
-                )}
-                onChange={(e) =>
-                  handleRoleChange(
-                    "change-maker/activist/advocate",
-                    e.target.checked
-                  )
-                }
-              />
-              Change-maker/Activist/Advocate
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("educator/teacher"))}
-                onChange={(e) =>
-                  handleRoleChange("educator/teacher", e.target.checked)
-                }
-              />
-              Educator/Teacher
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("coach/trainer/guide"))}
-                onChange={(e) =>
-                  handleRoleChange("coach/trainer/guide", e.target.checked)
-                }
-              />
-              Coach/Trainer/Guide
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("healer/therapist"))}
-                onChange={(e) =>
-                  handleRoleChange("healer/therapist", e.target.checked)
-                }
-              />
-              Healer/Therapist
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("leader"))}
-                onChange={(e) => handleRoleChange("leader", e.target.checked)}
-              />
-              Leader
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                checked={roles.includes(formatRole("student/learner"))}
-                onChange={(e) =>
-                  handleRoleChange("student/learner", e.target.checked)
-                }
-              />
-              Student/Learner
-            </label>
-
-            <label className="flex items-center gap-0.5">
-              <input
-                type="checkbox"
-                className="size-[1.438rem] rounded-[0.313rem]"
-                checked={otherRoleEnabled}
-                onChange={(e) => {
-                  handleRoleChange("other", e.target.checked);
-                }}
-              />
-              Other
-            </label>
+            <CheckBoxVW
+              labelText="Change-maker/Activist/Advocate"
+              hasChecked={roles.includes(
+                formatRole("change-maker/activist/advocate")
+              )}
+              onChange={(e) =>
+                handleRoleChange(
+                  "change-maker/activist/advocate",
+                  e.target.checked
+                )
+              }
+            />
+            <CheckBoxVW
+              labelText="Educator/Teacher"
+              hasChecked={roles.includes(formatRole("educator/teacher"))}
+              onChange={(e) =>
+                handleRoleChange("educator/teacher", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Coach/Trainer/Guide"
+              hasChecked={roles.includes(formatRole("coach/trainer/guide"))}
+              onChange={(e) =>
+                handleRoleChange("coach/trainer/guide", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Healer/Therapist"
+              hasChecked={roles.includes(formatRole("healer/therapist"))}
+              onChange={(e) =>
+                handleRoleChange("healer/therapist", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Leader"
+              hasChecked={roles.includes(formatRole("leader"))}
+              onChange={(e) => handleRoleChange("leader", e.target.checked)}
+            />
+            <CheckBoxVW
+              labelText="Student/Learner"
+              hasChecked={roles.includes(formatRole("student/learner"))}
+              onChange={(e) =>
+                handleRoleChange("student/learner", e.target.checked)
+              }
+            />
+            <CheckBoxVW
+              labelText="Other"
+              hasChecked={otherRoleEnabled}
+              onChange={(e) => handleRoleChange("other", e.target.checked)}
+            />
           </div>
 
           {otherRoleEnabled && (
@@ -303,15 +264,14 @@ export default function Step3VC() {
               value={otherRoleText}
               onChange={(e) => setOtherRoleText(e.target.value)}
               placeholder="Please share how you see yourself in the world."
-              className="w-full xl:w-[29.688rem] mt-[0.563rem] h-[2.375rem] px-[1.25rem] py-[0.813rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-20"
+              className="w-full xl:w-[29.688rem] mt-[0.563rem] h-[2.375rem] px-[0.688rem] py-[0.625rem] rounded-lg bg-[#402A2A] backdrop-blur-[20.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[0.813rem] placeholder:leading-[140%] placeholder:-tracking-[0.02em] placeholder:font-normal placeholder:text-[#FFFFFFE5] placeholder:opacity-60"
               maxLength={30}
             />
           )}
 
           <button
-            type="button"
+            type="submit"
             className={`steps_btn_submit ${otherRoleEnabled ? "mt-[1.438rem]" : " mt-[4.375rem]"}`}
-            onClick={updateRoles}
           >
             {isLoading ? <Spinner size="sm" /> : "Next"}
           </button>

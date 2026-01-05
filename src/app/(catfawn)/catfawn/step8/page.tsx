@@ -1,15 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChallengePills, { ChallengeItem } from "../components/ChallengePills";
+import ChallengesVW, { ChallengeItem } from "../components/Challenges/ChallengesVW";
 import Spinner from "../components/Spinner";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
 
 const step8 = () => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>({});
+
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [selectedAspirations, setSelectedAspirations] = useState<string[]>([]);
 
   const [showMsg, setShowMsg] = useState(false);
@@ -27,7 +30,7 @@ const step8 = () => {
     { label: "🌈 LGBTQ+ inclusion" },
   ];
 
-  useEffect(() => {
+  React.useEffect(() => {
     const stored = localStorage.getItem("catfawn-data");
 
     if (!stored) {
@@ -55,15 +58,25 @@ const step8 = () => {
     console.log("Selected:", selected);
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
     if (selectedAspirations.length < 3) {
       createMessage("Please select at least 3 aspirations.", "error");
@@ -89,35 +102,14 @@ const step8 = () => {
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
-      <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8">
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
+      <form className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.25rem] pe-[3.063rem] max-md:px-5 max-md:py-8" onSubmit={handleSubmit}>
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              router.replace("/catfawn/step7");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={() => router.replace("/catfawn/step7")} />
           Request Early Access
         </h2>
         <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[0.313rem] -tracking-[0.02em]">
@@ -134,7 +126,7 @@ const step8 = () => {
         </p>
 
         <div className="mt-7 lg:mt-[3.375rem]">
-          <ChallengePills
+          <ChallengesVW
             challenges={ASPIRATIONS}
             onChange={handleChange}
             value={selectedAspirations}
@@ -143,14 +135,13 @@ const step8 = () => {
         </div>
 
         <button
-          type="button"
-          onClick={handleSubmit}
+          type="submit"
           disabled={isLoading}
-          className="steps_btn_submit mt-[1rem]"
+          className="steps_btn_submit max-md:mt-[6.625rem] max-lg:mt-14 mt-[1rem]"
         >
           {isLoading ? <Spinner /> : "Next"}
         </button>
-      </div>
+      </form>
     </>
   );
 };

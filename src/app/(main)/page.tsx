@@ -121,7 +121,7 @@ export default function LandingPage() {
               </a>
 
               <div className="lg:mx-4 md:mx-2" />
-
+              
               <a
                 className="text-base text-white cursor-pointer"
                 onClick={() =>

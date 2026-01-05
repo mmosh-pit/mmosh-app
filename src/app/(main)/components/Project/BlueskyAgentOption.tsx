@@ -149,7 +149,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
       )}
       <div className="flex flex-col items-start">
         <div className="flex items-center bg-[#D9D9D938] border-[1px] border-[#FFFFFFEB] rounded-2xl px-3 py-1 mb-2">
-          <BlueskyIcon /> <p className="ml-2 text-white text-sm">Bluesky</p>
+          <BlueskyIcon  width={13} height={12} /> <p className="ml-2 text-white text-sm">Bluesky</p>
         </div>
 
         <div

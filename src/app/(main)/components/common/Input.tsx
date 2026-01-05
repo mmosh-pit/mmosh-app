@@ -7,6 +7,7 @@ type Props = {
   placeholder: string;
   title: string;
   required: boolean;
+  maxLength?:number;
   helperText?: string;
   textarea?: boolean;
   readonly?: boolean;
@@ -23,6 +24,7 @@ const Input = ({
   onBlur,
   onFocus,
   required,
+  maxLength,
   title,
   placeholder,
   helperText,
@@ -54,6 +56,7 @@ const Input = ({
           value={value}
           readOnly={readonly}
           onChange={onChange}
+          maxLength={maxLength}
           onBlur={onBlur}
           onFocus={onFocus}
           placeholder={placeholder}

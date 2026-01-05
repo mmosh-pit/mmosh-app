@@ -66,6 +66,7 @@
     "recharts": "2.12.7",
     "remark-gfm": "^4.0.1",
     "stripe": "18.1.1",
+    "telegram": "^2.26.22",
     "twilio": "^5.10.7",
     "uuid": "^9.0.1"
   },

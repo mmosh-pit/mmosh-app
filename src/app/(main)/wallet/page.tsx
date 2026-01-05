@@ -711,7 +711,7 @@ export default function MyWalley() {
                           {(data.currency === "USDT" ||
                             data.currency === "USDC") && (
                             <>
-                              {data.transactionType !== "transfer"
+                              {data.transactionType !== "transfer" && data.transactionType !== "token_exchange"
                                 ? formatAmount(data.amount / 10 ** 6)
                                 : data.amount}
                             </>

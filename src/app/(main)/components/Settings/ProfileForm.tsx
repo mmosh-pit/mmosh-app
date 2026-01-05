@@ -23,13 +23,14 @@ import * as anchor from "@coral-xyz/anchor";
 import { updateUserData } from "@/app/lib/forge/updateUserData";
 import Radio from "../common/Radio";
 import useConnection from "@/utils/connection";
+import { ProfileLineage } from "@/app/models/profileInfo";
 
 const ProfileForm = () => {
   const connection = useConnection()
   const wallet = useWallet();
   const navigate = useRouter();
   const searchParams = useSearchParams();
-  const [profileInfo] = useAtom(userWeb3Info);
+  const [profileInfo, setProfileInfo] = useAtom(userWeb3Info);
   const [currentUser, setCurrentUser] = useAtom(data);
   const [image, setImage] = React.useState<File | null>(null);
   const [preview, setPreview] = React.useState(
@@ -110,7 +111,6 @@ const ProfileForm = () => {
       const response = await fetch(objectURL);
       const blob = await response.blob();
       const imageFile = new File([blob], filename, { type: blob.type });
-      console.log("imageFile", imageFile);
       setImage(imageFile);
     } catch (error) {
       setImage(null);
@@ -142,7 +142,6 @@ const ProfileForm = () => {
   const lookupReferer = async (username: any) => {
     try {
       const res = await axios.get(`/api/get-user-data?username=${username}`);
-      console.log("lookupReferer ", res.data);
       if (res.data) {
         setReferer(res.data.wallet);
       } else {
@@ -191,7 +190,7 @@ const ProfileForm = () => {
   }, [form.username, currentUser]);
 
   const createMessage = React.useCallback((text: string, type: string) => {
-    window.scroll(0,0)
+    window.scroll(0, 0);
     setMessage({ message: text, type });
     setShowMsg(true)
     setTimeout(() => {
@@ -263,7 +262,6 @@ const ProfileForm = () => {
     let parentProfile;
     if (referer == "") {
       const res = await axios.get(`/api/get-user-data?username=${form.host}`);
-      console.log("lookupHost ", res.data);
       if (res.data) {
         parentProfile = res.data.wallet;
       } else {
@@ -354,6 +352,9 @@ const ProfileForm = () => {
     let interval: any = null;
 
     if (wallet) {
+      if (!profileInfo) {
+        getProfileInfo();
+      }
       interval = setInterval(() => {
         initiateBalanceChecking();
       }, 5000);
@@ -540,91 +541,142 @@ const ProfileForm = () => {
     }
   }
 
-  const mintMembership = React.useCallback(async (membership: any, membershipType: any, price: any) => {
-    if (!wallet || !profileInfo || !validateFields(false)) {
-      return;
-    }
-    if (membershipStatus === "active" && membershipInfo.membership === membership && membershipInfo.membershiptype === membershipType) {
-      createMessage("You already have this membership", "error");
-      return;
-    }
+  const mintMembership = React.useCallback(
+    async (membership: any, membershipType: any, price: any) => {
+      if (!wallet || !profileInfo) {
+        createMessage("Please connect your wallet to continue", "error");
+        return;
+      }
 
-    setIsLoading(true);
-    if (membershipStatus == "expired" || membershipStatus == "active") {
-      const result = await buyMembership({
+      if (
+        membershipStatus === "active" &&
+        membershipInfo.membership === membership &&
+        membershipInfo.membershiptype === membershipType
+      ) {
+        createMessage("You already have this membership", "error");
+        return;
+      }
+
+      if (!validateFields(false)) {
+        return;
+      }
+
+      setIsLoading(true);
+      if (membershipStatus == "expired" || membershipStatus == "active") {
+        const result = await buyMembership({
+          wallet,
+          profileInfo,
+          image,
+          form,
+          preview,
+          parentProfile: new PublicKey(referer),
+          membership,
+          membershipType,
+          price,
+          banner: "",
+          previousMembership: membershipInfo.membership,
+          connection,
+        });
+        console.log("----- UPGRADE PROFILE RESULT -----", result);
+        setIsLoading(false);
+        if (result.type === "error") {
+          createMessage(result.message, "error");
+          return;
+        }
+        checkMembershipStatus();
+        createMessage("Your membership is updated", "success");
+        setTimeout(() => {
+          checkMembershipStatus();
+        }, 5000);
+        return;
+      }
+      createMessage("", "");
+
+      let parentProfile;
+      if (referer == "") {
+        const res = await axios.get(`/api/get-user-data?username=${form.host}`);
+        console.log("lookupHost ", res.data);
+        if (res.data) {
+          parentProfile = res.data.wallet;
+        } else {
+          createMessage("Host is invalid", "error");
+          return;
+        }
+      } else {
+        parentProfile = referer;
+      }
+
+      const result = await createProfile({
         wallet,
         profileInfo,
         image,
         form,
         preview,
         parentProfile: new PublicKey(referer),
+        banner: "",
         membership,
         membershipType,
         price,
-        banner: "",
         previousMembership: membershipInfo.membership,
         connection,
       });
-      console.log("----- UPGRADE PROFILE RESULT -----", result);
-      setIsLoading(false);
-      if (result.type === "error") {
-        createMessage(result.message, "error");
-        return;
-      }
+      console.log("----- BUY MEMBERSHIP RESULT -----", result);
+
       checkMembershipStatus();
-      createMessage("Your membership is updated", "success");
-      setTimeout(() => {
-        checkMembershipStatus();
-      }, 5000);
-      return
-    }
-    createMessage("", "");
+      createMessage(result.message, result.type);
 
-    let parentProfile;
-    if (referer == "") {
-      const res = await axios.get(`/api/get-user-data?username=${form.host}`);
-      console.log("lookupHost ", res.data);
-      if (res.data) {
-        parentProfile = res.data.wallet;
-      } else {
-        createMessage("Host is invalid", "error");
-        return;
+      if (result.type === "success") {
+        setCurrentUser((prev) => {
+          return { ...prev!, profile: result.data };
+        });
+
+        setTimeout(() => {
+          checkMembershipStatus();
+        }, 5000);
       }
-    } else {
-      parentProfile = referer;
-    }
+      setIsLoading(false);
+    },
+    [wallet, profileInfo, image, form]
+  );
 
-    const result = await createProfile({
-      wallet,
-      profileInfo,
-      image,
-      form,
-      preview,
-      parentProfile: new PublicKey(referer),
-      banner: "",
-      membership,
-      membershipType,
-      price,
-      previousMembership: membershipInfo.membership,
-      connection,
-    });
-    console.log("----- BUY MEMBERSHIP RESULT -----", result);
-    
-
-    checkMembershipStatus();
-    createMessage(result.message, result.type);
-
-    if (result.type === "success") {
-      setCurrentUser((prev) => {
-        return { ...prev!, profile: result.data };
+  const getProfileInfo = async () => {
+    try {
+      const connection = new Connection(
+        process.env.NEXT_PUBLIC_SOLANA_CLUSTER!,
+        {
+          confirmTransactionInitialTimeout: 120000,
+        }
+      );
+      const env = new anchor.AnchorProvider(connection, wallet!, {
+        preflightCommitment: "processed",
       });
 
-      setTimeout(() => {
-        checkMembershipStatus();
-      }, 5000);
+      let userConn: UserConn = new UserConn(env, web3Consts.programID);
+
+      const profileInfo = await userConn.getUserInfo();
+
+      const user = await axios.get(
+        `/api/get-wallet-data?wallet=${wallet?.publicKey.toBase58()}`
+      );
+
+      const username = user.data?.profile?.username;
+
+      let profileLineage = profileInfo.profilelineage as ProfileLineage;
+      setProfileInfo({
+        profileLineage,
+        solBalance: profileInfo.solBalance,
+        mmoshBalance: profileInfo.oposTokenBalance,
+        usdcBalance: profileInfo.usdcTokenBalance,
+        profile: {
+          name: username,
+          address: wallet?.publicKey.toBase58()!,
+          image: user.data?.profile?.image,
+        },
+      });
+    } catch (err) {
+      console.error("getProfileInfo error: ", err);
     }
-    setIsLoading(false);
-  }, [wallet, profileInfo, image, form]);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -766,7 +818,9 @@ const ProfileForm = () => {
         </div>
         <div className="w-full h-full flex flex-col sm:p-6 md:p-8">
           <div className="mb-4">
-            <p className="text-lg text-white text-center font-bold">About You</p>
+            <p className="text-lg text-white text-center font-bold">
+              About You
+            </p>
           </div>
           <div className="flex flex-col mb-4">
             <p className="text-sm mb-2">Banner Image</p>

@@ -23,7 +23,7 @@ const Apps = () => {
           className={`flex items-center bg-[#D9D9D938] ${selectedOption === 0 && "border-[1px] border-[#FFFFFFEB]"} rounded-2xl px-3 py-2 mb-2 min-w-[100px] justify-center`}
           onClick={() => setSelectedOption(0)}
         >
-          <BlueskyIcon />
+          <BlueskyIcon  width={13} height={12}/>
           <div className="mx-2" />
           <p className="text-sm text-white">{" Bluesky"}</p>
         </button>

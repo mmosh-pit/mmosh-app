@@ -2,8 +2,7 @@ type Props = React.SVGProps<SVGSVGElement>;
 
 const FacebookIcon = (props: Props) => (
   <svg
-    width="17"
-    height="17"
+ 
     viewBox="0 0 17 17"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

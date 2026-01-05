@@ -27,11 +27,13 @@ const ResetPassword = () => {
   const [error, setError] = React.useState(false);
 
   const checkIfIsAuthenticated = React.useCallback(async () => {
-    const result = await client.get("/is-auth");
+    try {
+      const result = await client.get("/is-auth");
 
-    if (result.data) {
-      router.replace("/");
-    }
+      if (result.data) {
+        router.replace("/");
+      }
+    } catch (error) {}
   }, []);
 
   const submit = React.useCallback(
@@ -54,7 +56,7 @@ const ResetPassword = () => {
 
       setIsLoading(false);
     },
-    [passwordConfirmation, password],
+    [passwordConfirmation, password]
   );
 
   React.useEffect(() => {
@@ -130,7 +132,7 @@ const ResetPassword = () => {
       <div className="w-[60%] md:w-[35%] lg:w-[20%] mb-4 mt-8">
         <Button
           title="Reset your Password"
-          action={() => { }}
+          action={() => {}}
           size="large"
           isPrimary
           type="submit"

@@ -25,7 +25,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
 
   const getBskyConnections = React.useCallback(async () => {
     const response = await axios.get(
-      `/api/project/project-tools?project=${project}&type=bsky`,
+      `/api/project/project-tools?project=${project}&type=bsky`
     );
 
     setBlueskyConnections(
@@ -33,7 +33,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
         handle: val.data.handle,
         password: "",
         instructions: val.data.instructions,
-      })),
+      }))
     );
   }, [project]);
 
@@ -44,15 +44,23 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
   const addTool = React.useCallback(() => {
     setIsLoading(true);
     axios
-      .post("/api/project/save-project-tool", {
-        type: "bsky",
-        project,
-        data: {
-          handle: blueskyHandle,
-          password: blueskyPassword,
-          instructions,
+      .post(
+        "/api/project/save-project-tool",
+        {
+          type: "bsky",
+          project,
+          data: {
+            handle: blueskyHandle,
+            password: blueskyPassword,
+            instructions,
+          },
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          },
+        }
+      )
       .catch((err: AxiosError) => {
         if (err.response?.data === "invalid-bsky") {
           createMessage("Invalid Bluesky Credentials", "danger-container");
@@ -60,13 +68,13 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
         } else if (err.response?.data === "bsky-exists") {
           createMessage(
             "Bluesky Handle has already been saved",
-            "danger-container",
+            "danger-container"
           );
           return;
         } else {
           createMessage(
             "Unknown error ocurred, please try again",
-            "danger-container",
+            "danger-container"
           );
         }
         return;
@@ -91,7 +99,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
 
         createMessage(
           "Successfully added bluesky account to your Agent",
-          "success-container",
+          "success-container"
         );
       });
   }, [project, blueskyHandle, blueskyPassword, instructions]);
@@ -99,7 +107,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
   const removeBskyAcc = React.useCallback(
     async (handle: string) => {
       await internalClient.delete(
-        `/api/project/disconnect-bsky?project=${project}&handle=${handle}`,
+        `/api/project/disconnect-bsky?project=${project}&handle=${handle}`
       );
 
       setBlueskyConnections((prev) => {
@@ -108,7 +116,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
         return newConns;
       });
     },
-    [project],
+    [project]
   );
 
   const createMessage = React.useCallback((message: any, type: any) => {
@@ -141,7 +149,7 @@ const BlueskyAgentOption = ({ project }: { project: string }) => {
       )}
       <div className="flex flex-col items-start">
         <div className="flex items-center bg-[#D9D9D938] border-[1px] border-[#FFFFFFEB] rounded-2xl px-3 py-1 mb-2">
-          <BlueskyIcon /> <p className="ml-2 text-white text-sm">Bluesky</p>
+          <BlueskyIcon  width={13} height={12} /> <p className="ml-2 text-white text-sm">Bluesky</p>
         </div>
 
         <div

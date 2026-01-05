@@ -1,14 +1,17 @@
 "use client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import MessageBanner from "@/app/(main)/components/common/MessageBanner";
+import React, { useState } from "react";
 import Spinner from "../components/Spinner";
+import { ErrorContainerVW } from "../components/ErrorContainer/ErrorContainerVW";
+import { BackArrowVW } from "../components/BackArrow/BackArrowVW";
+import { InputVW } from "../components/Input/InputVW";
 
 export default function Step13VC() {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
+  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const [noCodeChecked, setNoCodeChecked] = React.useState(false);
   const [kinshipCode, setKinshipCode] = React.useState("");
 
@@ -35,7 +38,8 @@ export default function Step13VC() {
     }
   }, []);
 
-  const submitKinshipCode = async () => {
+  const submitKinshipCode = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!kinshipCode && !noCodeChecked) {
       createMessage(
         "Please enter a Kinship Code or confirm that you don’t have one.",
@@ -105,45 +109,33 @@ export default function Step13VC() {
     }
   };
 
-  const createMessage = (message: string, type: "success" | "error") => {
+  const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo(0, 0);
+
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 4000);
+
+    if (msgTimeoutRef.current) {
+      clearTimeout(msgTimeoutRef.current);
+    }
+
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
   };
 
   return (
     <>
-      {showMsg && (
-        <div className="w-full absolute top-0 left-1/2 -translate-x-1/2">
-          <MessageBanner type={msgClass} message={msgText} />
-        </div>
-      )}
+      <ErrorContainerVW
+        showMessage={showMsg}
+        className={msgClass}
+        messageText={msgText}
+      />
       <div className="min-h-[29.875rem] xl:w-[36.188rem] bg-[#271114] rounded-[1.25rem] pt-[1.563rem] pb-[1.25rem] px-[3.125rem] max-md:px-5 max-md:py-8">
         <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-          <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 cursor-pointer"
-            onClick={() => {
-              router.replace("/catfawn/step11");
-            }}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 12L4 12M4 12L10 6M4 12L10 18"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
+          <BackArrowVW onClick={() => router.replace("/catfawn/step11")} />
           Request Early Access
         </h2>
 
@@ -151,26 +143,31 @@ export default function Step13VC() {
           Step 13 of 15: Kinship Code Verification.{" "}
           <span className="font-normal font-avenir">
             Entry into the CAT FAWN Connections happens through relationship,
-            trust, and reciprocity.
+            trust, and reciprocity <br className="max-2xl:hidden" />. A Kinship
+            Code from an existing member signals that connection.{" "}
+            <br className="max-2xl:hidden" />
+            If you have one, enter it now.
           </span>
         </p>
 
-        <form className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal">
-          <div>
-            <label className="block text-[1rem] mb-[0.313rem] font-normal leading-[100%] text-[#FFFFFFCC]">
-              Kinship Code
-            </label>
-            <input
-              type="text"
-              placeholder="Kinship Code"
+        <form
+          className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal"
+          onSubmit={submitKinshipCode}
+        >
+          <div className="text-[1rem]">
+            <InputVW
+              labelText="Kinship Code"
+              value={kinshipCode}
+              placeHolder="Kinship Code"
+              inputType="text"
+              isRequired={false}
+              type="kinship-code"
+              onChange={(event) => {
+                setKinshipCode(event.target.value.trim());
+                if (event.target.value) setNoCodeChecked(false);
+              }}
               minLength={6}
               maxLength={16}
-              className="w-full h-[3.438rem] px-[1.25rem] py-[1.125rem] rounded-lg bg-[#402A2A] backdrop-blur-[12.16px] border border-[#FFFFFF29] text-white focus:outline-none placeholder:text-[#FFFFFF] placeholder:opacity-40 text-[1rem]"
-              value={kinshipCode}
-              onChange={(e) => {
-                setKinshipCode(e.target.value.trim());
-                if (e.target.value) setNoCodeChecked(false);
-              }}
             />
 
             <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-[0.313rem] -tracking-[0.02em]">
@@ -187,11 +184,7 @@ export default function Step13VC() {
             </label>
           </div>
 
-          <button
-            type="button"
-            className="steps_btn_submit mt-[11rem]"
-            onClick={submitKinshipCode}
-          >
+          <button type="submit" className="steps_btn_submit mt-[11rem]">
             {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
           </button>
         </form>

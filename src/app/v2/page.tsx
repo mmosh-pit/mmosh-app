@@ -193,7 +193,7 @@ export default function LandingPage() {
         initialStep={initialModalStep}
       />
       <div
-        className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full px-4"
+        className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full "
         ref={mainSection}
       >
         <div className="text-center relative">
@@ -217,10 +217,10 @@ export default function LandingPage() {
             <div className=" absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
             <div className=" absolute w-full h-full top-0 left-0 flex justify-center items-center">
               <div
-                className="m-auto md:max-w-[45%] max-w-[85%] lg:w-[50rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] p-[10px]"
+                className="m-auto md:max-w-[45%] max-w-[85%] lg:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] lg:p-[20px] p-[10px] "
                 ref={homeSection}
               >
-                <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppins bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2 ">
+                <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2 ">
                   Change Yourself. Change <br />
                   Your Life. Change The World.{" "}
                 </h1>
@@ -999,7 +999,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className=" px-4  mx-auto" ref={testimonialsSection}>
+        <section className=" px-4 my-10 mx-auto" ref={testimonialsSection}>
           <div className="w-full  px-4">
             <div className="relative max-w-[90rem] mx-auto">
               {/* Navigation Arrows */}
@@ -1064,7 +1064,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <div className="lg:flex my-10 mx-auto justify-between lg:w-[90rem]">
+        {/* <div className="lg:flex my-10 mx-auto justify-between lg:w-[90rem]">
           <div className="mt-24">
             <h1 className="lg:text-left text-center font-bold leading-[1] text-[3.75rem]  font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Contact Us
@@ -1190,7 +1190,7 @@ export default function LandingPage() {
               </label>
             </form>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       data.push({
         transactionType: transactionType,
         wallet: tokenExchange.wallet,
-        currency: tokenExchange.fromCurrency,
+        currency: tokenExchange.currency,
         description: formatTransactionDescription({ transactionType: transactionType, amount: formatAmount(tokenExchange.amount), fromCurrency: tokenExchange.fromCurrency, exchangedAmount: formatAmount(tokenExchange.exchangedAmount), toCurrency: tokenExchange.currency }),
         isSend: false,
         amount: tokenExchange.exchangedAmount,

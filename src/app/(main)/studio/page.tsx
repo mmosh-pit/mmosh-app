@@ -282,7 +282,7 @@ export default function ProjectCreate() {
           </div>
         </div>
 
-        <div className="py-5 px-5 xl:px-32 lg:px-16 md:px-8">
+        <div className="py-6 px-5 xl:px-32 lg:px-16 md:px-8 max-w-7xl mx-auto">
           <div className="mb-10">
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 gap-4">
               {/* <div>

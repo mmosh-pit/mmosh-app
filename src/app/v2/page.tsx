@@ -68,6 +68,17 @@ export default function LandingPage() {
     setIsModalOpen(true);
   };
 
+  const scrollWithOffset = (ref: React.RefObject<HTMLDivElement>) => {
+  const yOffset = -120; // header height
+  const y =
+    ref.current!.getBoundingClientRect().top +
+    window.pageYOffset +
+    yOffset;
+
+  window.scrollTo({ top: y, behavior: "smooth" });
+};
+
+
   const scrollToOriginStory = () => {
     originStoryRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -118,7 +129,8 @@ export default function LandingPage() {
             <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={scrollToOriginStory}
+                onClick={() => scrollWithOffset(originStoryRef)}
+
               >
                 Origin Story
               </a>
@@ -254,7 +266,8 @@ export default function LandingPage() {
           ref={belowHeroRef}
         >
           <div className="">
-            <div ref={originStoryRef}>
+            <div ref={originStoryRef} className="scroll-mt-[120px]">
+
               <h1 className="text-center font-bold lg:px-5 leading-[1] lg:w-[65.063rem] lg:text-[3.75rem] text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 I went to make a film. <br />I returned with a mission.
               </h1>
@@ -303,7 +316,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-24">
-            <div ref={kinshipIntelligenceRef}>
+            <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]">
               <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 Kinship Intelligence is <br /> living infrastructure for
                 collective evolution.
@@ -578,7 +591,7 @@ export default function LandingPage() {
           </button>
         </div>
         <div className="mt-24">
-          <div ref={collectiveEconomicsRef}>
+          <div ref={collectiveEconomicsRef} className="scroll-mt-[120px]">
             <h1 className="text-center font-bold px-12 leading-[1]  text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Member Managed, Member Owned
             </h1>
@@ -746,7 +759,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="lg:w-[60rem] m-auto my-5">
-          <div ref={foundingCreatorsRef}>
+          <div ref={foundingCreatorsRef} className="scroll-mt-[120px]">
             <h1 className="text-center font-bold px-12 leading-[1]  text-[30px] m-auto font-PoppinsNew  text-[#FFFFFFC7] mt-20">
               How Ownership Actually Works{" "}
             </h1>

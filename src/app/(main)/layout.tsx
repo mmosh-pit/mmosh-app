@@ -23,9 +23,18 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Kinship Bots",
-  description: "where AI Belongs",
+  description:
+    "Kinship Intelligence is a creator co-op that serves as a calm, relational alternative to big tech—where AI supports wisdom, care, and collective action through living systems, shared spaces, and real human connection.",
   openGraph: {
-    images: ["https://storage.googleapis.com/mmosh-assets/kinship_bots.png"],
+    images: [
+      "https://storage.googleapis.com/mmosh-assets/Kinship%20Meta%20OG.png",
+    ],
+    siteName: "Kinship Bots",
+    title: "Kinship Intelligence — Where AI Belongs",
+    description:
+      "The creator cooperative for people shaping the world together. Kinship Intelligence supports and coordinates purposeful, creative, and powerful work without attention farming, value extraction or psychological manipulation.",
+    url: "https://kinshipbots.com",
+    type: "website",
   },
 };
 

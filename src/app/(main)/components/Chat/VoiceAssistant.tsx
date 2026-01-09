@@ -36,6 +36,7 @@ const VoiceAssistant = (props: any) => {
   const isRecordingRef = useRef<boolean>(false);
 
   const [isMicOn, setIsMicOn] = React.useState(false);
+  const [isInitiated, setIsInitiated] = React.useState(false);
 
   // VAD settings & counter
   const VAD_THRESHOLD = 0.02;
@@ -190,11 +191,12 @@ const VoiceAssistant = (props: any) => {
 
   // ---------- Start / Stop Recording ----------
   async function startRecording() {
-    if (isRecordingRef.current) return;
+    if (isRecordingRef.current || isInitiated) return;
     isRecordingRef.current = true;
     setIsMicOn(true);
     userInitiatedStopRef.current = false;
     updateButtonState("connecting");
+    setIsInitiated(true);
 
     try {
       // Get user media
@@ -226,6 +228,7 @@ const VoiceAssistant = (props: any) => {
           await setupTTSPlayback();
           updateButtonState("recording");
         } catch (error: any) {
+          setIsInitiated(false);
           console.error("Error setting up audio:", error);
           showError(
             `Failed to initialize audio processing: ${error?.message ?? error}`
@@ -236,12 +239,14 @@ const VoiceAssistant = (props: any) => {
 
       ws.onmessage = handleMessages;
       ws.onerror = (err) => {
+        setIsInitiated(false);
         console.error("WebSocket Error:", err);
         showError("Connection error. Please try again.");
         stopRecording();
       };
 
       ws.onclose = (event) => {
+        setIsInitiated(false);
         console.log(
           `WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`
         );
@@ -251,6 +256,7 @@ const VoiceAssistant = (props: any) => {
         stopRecording();
       };
     } catch (err) {
+      setIsInitiated(false);
       console.error("Error getting user media:", err);
       showError(
         "Could not access microphone. Please grant permission and try again."
@@ -268,14 +274,14 @@ const VoiceAssistant = (props: any) => {
     if (micWorkletNodeRef.current) {
       try {
         micWorkletNodeRef.current.disconnect();
-      } catch (e) {}
+      } catch (e) { }
       micWorkletNodeRef.current = null;
     }
 
     if (ttsWorkletNodeRef.current) {
       try {
         ttsWorkletNodeRef.current.disconnect();
-      } catch (e) {}
+      } catch (e) { }
       ttsWorkletNodeRef.current = null;
     }
 
@@ -292,11 +298,11 @@ const VoiceAssistant = (props: any) => {
     // stop visualization audio context via hook stop()
     try {
       stop();
-    } catch (e) {}
+    } catch (e) { }
 
     // close audioContext if exists
     if (audioContextRef.current) {
-      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current.close().catch(() => { });
       audioContextRef.current = null;
     }
 
@@ -317,9 +323,9 @@ const VoiceAssistant = (props: any) => {
 
     micWorkletNodeRef.current = new (window.AudioWorkletNode ||
       (audioContextRef.current as any).AudioWorkletNode)(
-      audioContextRef.current,
-      "pcm-worklet-processor"
-    );
+        audioContextRef.current,
+        "pcm-worklet-processor"
+      );
 
     // Buffer logic
     let audioBufferChunks: Int16Array[] = [];
@@ -423,9 +429,9 @@ const VoiceAssistant = (props: any) => {
 
     ttsWorkletNodeRef.current = new (window.AudioWorkletNode ||
       (audioContextRef.current as any).AudioWorkletNode)(
-      audioContextRef.current,
-      "tts-playback-processor"
-    );
+        audioContextRef.current,
+        "tts-playback-processor"
+      );
 
     ttsWorkletNodeRef.current.port.onmessage = (event: any) => {
       const { type } = event.data;

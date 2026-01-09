@@ -841,7 +841,7 @@ const ProfileForm = () => {
                 />
               )}
               <div className="relative z-20 h-full flex items-end">
-                <ImageAccountPicker changeImage={setBannerImage} image={imagePreview} accept="image/png, image/jpeg"/>
+                <ImageAccountPicker changeImage={setBannerImage} image={imagePreview}/>
               </div>
             </div>
           </div>

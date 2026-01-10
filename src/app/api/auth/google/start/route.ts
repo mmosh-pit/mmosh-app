@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("user");
+  const agentId = req.nextUrl.searchParams.get("agentId");
   console.log("Starting Google OAuth2 flow for user:", userId);
   const state = Buffer.from(
   JSON.stringify({
     userId,
+    agentId,
     source: "google_oauth"
   })
 ).toString("base64");

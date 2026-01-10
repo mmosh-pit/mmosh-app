@@ -33,21 +33,24 @@ export async function GET(req: NextRequest) {
   );
   console.log("Decoded State:", decodedState);
   await saveGoogleTokens({
+    agentId: decodedState.agentId,
     userId: decodedState.userId,
     accessToken: tokens.access_token!,
     refreshToken: tokens.refresh_token!,
     expiresAt: tokens.expiry_date!
   });
 
-  return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/settings?google_auth=success`);
+  return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_MAIN_URL}/studio`);
 }
 
 async function saveGoogleTokens({
+  agentId,
   userId,
   accessToken,
   refreshToken,
   expiresAt
 }: {
+  agentId: string;
   userId: string;
   accessToken: string;
   refreshToken: string;
@@ -61,7 +64,7 @@ async function saveGoogleTokens({
   // Implement actual DB logic here
 
   let result = await db.collection("googleTokens").updateOne(
-    { userId },
+    { userId, agentId},
     {
       $set: {
         accessToken,

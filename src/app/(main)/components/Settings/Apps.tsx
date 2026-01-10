@@ -11,7 +11,7 @@ const Apps = () => {
   const getPage = React.useCallback(() => {
     if (selectedOption === 0) return <BlueskyApp />;
     if (selectedOption === 1) return <TelegramApp />;
-    if (selectedOption === 2) return <GoogleAgentOption />;
+    if (selectedOption === 2) return <GoogleAgentOption type="settings"/>;
 
     return <></>;
   }, [selectedOption]);

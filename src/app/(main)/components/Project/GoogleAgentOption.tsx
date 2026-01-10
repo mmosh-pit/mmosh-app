@@ -16,13 +16,15 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
   const [currentUser, setCurrentUser] = React.useState<any>(null);
   const [userData, setUserData] = useAtom(data);
   const connectGoogleAccount = React.useCallback(() => {
-    // Implement Google OAuth flow here
+    if (currentUser?.google?.id) return; // already connected
+
     if (props.agentId) {
       window.location.href = `/api/auth/google/start?user=&agentId=${props.agentId}&type=${props.type}`;
     } else {
       window.location.href = `/api/auth/google/start?user=${(userData as any).ID}&type=${props.type}`;
     }
-  }, []);
+  }, [props.agentId, props.type, userData, currentUser]);
+
   React.useEffect(() => {
     setIsLoading(true);
     fetchGoogleStatus();
@@ -61,15 +63,23 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
 
 
   const removeGoogleAccount = React.useCallback(() => {
-    // Implement Google account removal logic here
-    internalClient.delete('/api/google/status').then(() => {
-      setCurrentUser((prev: any) => ({
-        ...prev,
-        google: null,
-      }));
-    }).catch((error) => {
-    });
-  }, []);
+    const params = props.agentId
+      ? `?agentId=${props.agentId}`
+      : `?user=${(userData as any).ID}`;
+
+    internalClient
+      .delete(`/api/google/status${params}`)
+      .then(() => {
+        setCurrentUser((prev: any) => ({
+          ...prev,
+          google: null,
+        }));
+      })
+      .catch((error) => {
+        console.error("Failed to remove google account:", error);
+      });
+  }, [props.agentId, userData]);
+
 
 
   return (

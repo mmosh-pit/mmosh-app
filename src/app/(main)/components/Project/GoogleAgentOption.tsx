@@ -7,31 +7,31 @@ import { set } from '@coral-xyz/anchor/dist/cjs/utils/features';
 // import { getGoogleClient, listEmails } from '@/app/lib/google';
 // import { getGoogleToken } from '@/app/lib/googleMongo';
 
-const GoogleAgentOption = ({ agentId }: { agentId: string }) => {
+interface GoogleAppProps {
+  agentId?: string | undefined
+}
+const GoogleAgentOption = (props: GoogleAppProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [emails, setEmails] = React.useState<any[]>([]);
   const [currentUser, setCurrentUser] = React.useState<any>(null);
   const [userData, setUserData] = useAtom(data);
   const connectGoogleAccount = React.useCallback(() => {
-    window.location.href =
-      `/api/auth/google/start?user=${(userData as any).ID}&agentId=${agentId}`;
-    console.log("AgentId",agentId)
-  }, [userData]);
-
+    // Implement Google OAuth flow here
+    if (props.agentId) {
+      window.location.href = `/api/auth/google/start?user= + ${(userData as any).ID}&agentId=${props.agentId}`;
+    } else {
+      window.location.href = `/api/auth/google/start?user= + ${(userData as any).ID}`;
+    }
+  }, []);
   React.useEffect(() => {
-    console.log("Fetching Google account status...");
-    console.log(" User Data:", userData);
-    console.log("@@@@@@@@@@@@@@@@@@@@@AGent###########",agentId);
     setIsLoading(true);
     fetchGoogleStatus();
   }, []);
 
   const fetchGoogleStatus = async () => {
     try {
-      const res = await internalClient(
-        `/api/google/status?user=${(userData as any).ID}&bot=${agentId}`
-      );
-
-      const data = res.data;
+      const res = await internalClient("/api/google/status?user=" + (userData as any).ID);
+      const data: any = await res.data;
 
       if (data.error) {
         setCurrentUser((prev: any) => ({ ...prev, google: null }));
@@ -45,29 +45,29 @@ const GoogleAgentOption = ({ agentId }: { agentId: string }) => {
           email: data.data.email,
         },
       }));
-    } catch (err) {
-      console.log("Error fetching google status:", err);
-    } finally {
+      setIsLoading(false);
+    } catch (error) {
       setIsLoading(false);
     }
+
   };
 
-
   const removeGoogleAccount = React.useCallback(() => {
-    internalClient
-      .delete(`/api/google/status?user=${(userData as any).ID}&bot=${agentId}`)
-      .then(() => {
-        setCurrentUser((prev: any) => ({ ...prev, google: null }));
-      })
-      .catch((err) => console.log("Error removing Google account:", err));
-  }, [agentId, userData]);
-
+    // Implement Google account removal logic here
+    internalClient.delete('/api/google/status').then(() => {
+      setCurrentUser((prev: any) => ({
+        ...prev,
+        google: null,
+      }));
+    }).catch((error) => {
+    });
+  }, []);
 
 
   return (
     <>
       <div
-        className={`flex flex-col justify-center items-center md:min-w-[40%] min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] rounded-lg p-6 min-h-[200px] mt-12 ${currentUser?.google?.id && "border-[1px] border-[#FF00AE59]"}`}
+        className={`flex flex-col justify-center items-center md:min-w-[${props.agentId ? '40%' : '60%'}] min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] rounded-lg p-6 min-h-[200px] mt-12 ${currentUser?.telegram?.id && "border-[1px] border-[#FF00AE59]"}`}
       >
         {isLoading && <p className="text-white">Loading...</p>}
         {!isLoading && !currentUser?.google?.id && (
@@ -104,3 +104,4 @@ const GoogleAgentOption = ({ agentId }: { agentId: string }) => {
 }
 
 export default GoogleAgentOption;
+

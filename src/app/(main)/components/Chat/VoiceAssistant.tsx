@@ -214,6 +214,11 @@ const VoiceAssistant = (props: any) => {
       ws.onopen = async () => {
         console.log("WebSocket connection established.");
         try {
+          setInterval(() => {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: "ping" }));
+            }
+          }, 25000);
           ws.send(
             JSON.stringify({
               type: "system_prompt",
@@ -264,6 +269,16 @@ const VoiceAssistant = (props: any) => {
     setIsMicOn(false);
     userInitiatedStopRef.current = true;
 
+    // Send disconnect message to server BEFORE closing
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      try {
+        wsRef.current.send(JSON.stringify({ type: "disconnect" }));
+        console.log("Disconnect message sent to server");
+      } catch (e) {
+        console.error("Error sending disconnect message:", e);
+      }
+    }
+
     // Disconnect and clean up worklets
     if (micWorkletNodeRef.current) {
       try {
@@ -284,9 +299,15 @@ const VoiceAssistant = (props: any) => {
       micStreamRef.current = null;
     }
 
+    // Close WebSocket connection AFTER sending disconnect
     if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
+      // Give a small delay to ensure message is sent
+      setTimeout(() => {
+        if (wsRef.current) {
+          wsRef.current.close(1000, "User initiated disconnect");
+          wsRef.current = null;
+        }
+      }, 100);
     }
 
     // stop visualization audio context via hook stop()
@@ -540,6 +561,10 @@ const VoiceAssistant = (props: any) => {
       const { type, content, timestamp } = message;
 
       switch (type) {
+        case "keepalive":
+          console.log("Connection alive");
+        case "pong":
+          console.log("Connection alive");
         case "user.transcript.start":
           handleUserTranscriptStart();
           break;
@@ -778,8 +803,10 @@ const VoiceAssistant = (props: any) => {
     updateButtonState("idle");
 
     return () => {
-      // cleanup on unmount
-      stopRecording();
+      // cleanup on unmount - ensure proper disconnect
+      if (isRecordingRef.current) {
+        stopRecording();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

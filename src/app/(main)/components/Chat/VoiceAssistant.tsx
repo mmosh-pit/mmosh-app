@@ -216,6 +216,11 @@ const VoiceAssistant = (props: any) => {
       ws.onopen = async () => {
         console.log("WebSocket connection established.");
         try {
+          setInterval(() => {
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: "ping" }));
+            }
+          }, 25000);
           ws.send(
             JSON.stringify({
               type: "system_prompt",
@@ -270,18 +275,28 @@ const VoiceAssistant = (props: any) => {
     setIsMicOn(false);
     userInitiatedStopRef.current = true;
 
+    // Send disconnect message to server BEFORE closing
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      try {
+        wsRef.current.send(JSON.stringify({ type: "disconnect" }));
+        console.log("Disconnect message sent to server");
+      } catch (e) {
+        console.error("Error sending disconnect message:", e);
+      }
+    }
+
     // Disconnect and clean up worklets
     if (micWorkletNodeRef.current) {
       try {
         micWorkletNodeRef.current.disconnect();
-      } catch (e) { }
+      } catch (e) {}
       micWorkletNodeRef.current = null;
     }
 
     if (ttsWorkletNodeRef.current) {
       try {
         ttsWorkletNodeRef.current.disconnect();
-      } catch (e) { }
+      } catch (e) {}
       ttsWorkletNodeRef.current = null;
     }
 
@@ -293,16 +308,22 @@ const VoiceAssistant = (props: any) => {
     if (wsRef.current) {
       wsRef.current.close();
       wsRef.current = null;
+      setTimeout(() => {
+        if (wsRef.current) {
+          wsRef.current.close(1000, "User initiated disconnect");
+          wsRef.current = null;
+        }
+      }, 100);
     }
 
     // stop visualization audio context via hook stop()
     try {
       stop();
-    } catch (e) { }
+    } catch (e) {}
 
     // close audioContext if exists
     if (audioContextRef.current) {
-      audioContextRef.current.close().catch(() => { });
+      audioContextRef.current.close().catch(() => {});
       audioContextRef.current = null;
     }
 
@@ -323,9 +344,9 @@ const VoiceAssistant = (props: any) => {
 
     micWorkletNodeRef.current = new (window.AudioWorkletNode ||
       (audioContextRef.current as any).AudioWorkletNode)(
-        audioContextRef.current,
-        "pcm-worklet-processor"
-      );
+      audioContextRef.current,
+      "pcm-worklet-processor"
+    );
 
     // Buffer logic
     let audioBufferChunks: Int16Array[] = [];
@@ -429,9 +450,9 @@ const VoiceAssistant = (props: any) => {
 
     ttsWorkletNodeRef.current = new (window.AudioWorkletNode ||
       (audioContextRef.current as any).AudioWorkletNode)(
-        audioContextRef.current,
-        "tts-playback-processor"
-      );
+      audioContextRef.current,
+      "tts-playback-processor"
+    );
 
     ttsWorkletNodeRef.current.port.onmessage = (event: any) => {
       const { type } = event.data;
@@ -546,6 +567,10 @@ const VoiceAssistant = (props: any) => {
       const { type, content, timestamp } = message;
 
       switch (type) {
+        case "keepalive":
+          console.log("Connection alive");
+        case "pong":
+          console.log("Connection alive");
         case "user.transcript.start":
           handleUserTranscriptStart();
           break;
@@ -784,8 +809,10 @@ const VoiceAssistant = (props: any) => {
     updateButtonState("idle");
 
     return () => {
-      // cleanup on unmount
-      stopRecording();
+      // cleanup on unmount - ensure proper disconnect
+      if (isRecordingRef.current) {
+        stopRecording();
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

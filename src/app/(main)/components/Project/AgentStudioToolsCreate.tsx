@@ -96,7 +96,7 @@ const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
           <LinkedInAgentOption project={projectDetail?.project.key} />
         )}
         {selectedOption === 4 && (
-          <GoogleAgentOption agentId={projectDetail?.project.key} />
+          <GoogleAgentOption agentId={projectDetail?.project.key} type="studio"/>
         )}
       </div>
     </div>

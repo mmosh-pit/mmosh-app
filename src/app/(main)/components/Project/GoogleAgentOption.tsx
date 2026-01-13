@@ -8,21 +8,23 @@ import { set } from '@coral-xyz/anchor/dist/cjs/utils/features';
 // import { getGoogleToken } from '@/app/lib/googleMongo';
 
 interface GoogleAppProps {
+  type?: string | undefined,
   agentId?: string | undefined
 }
 const GoogleAgentOption = (props: GoogleAppProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [emails, setEmails] = React.useState<any[]>([]);
   const [currentUser, setCurrentUser] = React.useState<any>(null);
   const [userData, setUserData] = useAtom(data);
   const connectGoogleAccount = React.useCallback(() => {
-    // Implement Google OAuth flow here
+    if (currentUser?.google?.id) return; // already connected
+
     if (props.agentId) {
-      window.location.href = `/api/auth/google/start?user= + ${(userData as any).ID}&agentId=${props.agentId}`;
+      window.location.href = `/api/auth/google/start?user=&agentId=${props.agentId}&type=${props.type}`;
     } else {
-      window.location.href = `/api/auth/google/start?user= + ${(userData as any).ID}`;
+      window.location.href = `/api/auth/google/start?user=${(userData as any).ID}&type=${props.type}`;
     }
-  }, []);
+  }, [props.agentId, props.type, userData, currentUser]);
+
   React.useEffect(() => {
     setIsLoading(true);
     fetchGoogleStatus();
@@ -30,8 +32,15 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
 
   const fetchGoogleStatus = async () => {
     try {
-      const res = await internalClient("/api/google/status?user=" + (userData as any).ID);
-      const data: any = await res.data;
+      let res: any = null;
+
+      if (props.agentId) {
+        res = await internalClient("/api/google/status?agentId=" + props.agentId);
+      } else {
+        res = await internalClient("/api/google/status?user=" + (userData as any).ID);
+      }
+
+      const data: any = res.data;
 
       if (data.error) {
         setCurrentUser((prev: any) => ({ ...prev, google: null }));
@@ -45,30 +54,44 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
           email: data.data.email,
         },
       }));
-      setIsLoading(false);
     } catch (error) {
+      console.error("Failed to fetch google status:", error);
+    } finally {
       setIsLoading(false);
     }
-
   };
 
+
   const removeGoogleAccount = React.useCallback(() => {
-    // Implement Google account removal logic here
-    internalClient.delete('/api/google/status').then(() => {
-      setCurrentUser((prev: any) => ({
-        ...prev,
-        google: null,
-      }));
-    }).catch((error) => {
-    });
-  }, []);
+    const params = props.agentId
+      ? `?agentId=${props.agentId}`
+      : `?user=${(userData as any).ID}`;
+
+    internalClient
+      .delete(`/api/google/status${params}`)
+      .then(() => {
+        setCurrentUser((prev: any) => ({
+          ...prev,
+          google: null,
+        }));
+      })
+      .catch((error) => {
+        console.error("Failed to remove google account:", error);
+      });
+  }, [props.agentId, userData]);
+
 
 
   return (
     <>
       <div
-        className={`flex flex-col justify-center items-center md:min-w-[${props.agentId ? '40%' : '60%'}] min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] rounded-lg p-6 min-h-[200px] mt-12 ${currentUser?.telegram?.id && "border-[1px] border-[#FF00AE59]"}`}
+        className={`flex flex-col justify-center items-center 
+    ${props.type == "studio" ? "md:min-w-[40%]" : "md:min-w-[60%]"} 
+    min-w-[80%] my-2 bg-[#03000754] backdrop-filter backdrop-blur-[8px] 
+    rounded-lg p-6 min-h-[200px] mt-12 
+    ${currentUser?.telegram?.id && "border-[1px] border-[#FF00AE59]"}`}
       >
+
         {isLoading && <p className="text-white">Loading...</p>}
         {!isLoading && !currentUser?.google?.id && (
           <Button

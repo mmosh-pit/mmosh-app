@@ -4,15 +4,14 @@ import TelegramIcon from "@/assets/icons/TelegramIcon";
 import BlueskyApp from "./BlueskyApp";
 import TelegramApp from "./TelegramApp";
 import GoogleIcon from "@/assets/icons/GoogleIcon";
-import GoogleAgentOption from "./GoogleAgentOption";
-
+import GoogleAgentOption from "../Project/GoogleAgentOption";
 const Apps = () => {
   const [selectedOption, setSelectedOption] = React.useState(-1);
 
   const getPage = React.useCallback(() => {
     if (selectedOption === 0) return <BlueskyApp />;
     if (selectedOption === 1) return <TelegramApp />;
-    if (selectedOption === 2) return <GoogleAgentOption />;
+    if (selectedOption === 2) return <GoogleAgentOption type="settings"/>;
 
     return <></>;
   }, [selectedOption]);

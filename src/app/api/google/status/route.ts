@@ -3,42 +3,44 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/lib/mongoClient";
 import { getGoogleAccountInfo, listEmails } from "@/app/lib/google";
 export async function GET(req: NextRequest) {
-    console.log(req.headers.get("user"), "Headers User ID");
-    console.log(req.headers, "Headers");
   const userId = req.headers.get("user") || req.nextUrl.searchParams.get("user");
-  console.log("Fetching Google OAuth2 status for user:", userId);
-  
-  const token: any = await db.collection("googleTokens").findOne({userId});
-  if (!token) {
-    return NextResponse.json({ error: "No tokens found for user" }, { status: 404 });
+  const agentId = req.headers.get("agentId") || req.nextUrl.searchParams.get("agentId");
+
+  if (!userId && !agentId) {
+    return NextResponse.json({ error: "user or agentId required" }, { status: 400 });
   }
-  console.log("Found tokens for user:", token);
+
+  const query = agentId ? { agentId } : { userId };
+  const token = await db.collection("googleTokens").findOne(query);
+
+  if (!token) {
+    return NextResponse.json({ error: "No tokens found" }, { status: 404 });
+  }
+
   const accountInfo = await getGoogleAccountInfo({
     accessToken: token.accessToken,
     refreshToken: token.refreshToken,
-    expiresAt: token.expiresAt
+    expiresAt: token.expiresAt,
   });
-// const accountInfo = null;
-//   const emails = await listEmails({
-//     accessToken: token.accessToken,
-//     refreshToken: token.refreshToken,
-//     expiresAt: token.expiresAt,
-//   });
-  console.log("Fetched account info and emails for user:", userId, accountInfo);
 
   return NextResponse.json({ error: null, data: accountInfo });
 }
 
-
 export async function DELETE(req: NextRequest) {
   const userId = req.headers.get("user") || req.nextUrl.searchParams.get("user");
-  console.log("Removing Google OAuth2 tokens for user:", userId);
+  const agentId = req.headers.get("agentId") || req.nextUrl.searchParams.get("agentId");
 
-  const result = await db.collection("googleTokens").deleteOne({ userId });
+  if (!userId && !agentId) {
+    return NextResponse.json({ error: "user or agentId required" }, { status: 400 });
+  }
+
+  const query = agentId ? { agentId } : { userId };
+
+  const result = await db.collection("googleTokens").deleteOne(query);
+
   if (result.deletedCount === 0) {
     return NextResponse.json({ error: "No tokens found to delete" }, { status: 404 });
   }
 
-  console.log("Successfully removed Google OAuth2 tokens for user:", userId);
   return NextResponse.json({ error: null, message: "Tokens removed successfully" });
 }

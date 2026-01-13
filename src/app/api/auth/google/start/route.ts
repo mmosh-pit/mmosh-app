@@ -3,11 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("user");
   const agentId = req.nextUrl.searchParams.get("agentId");
+  const type = req.nextUrl.searchParams.get("type");
   console.log("Starting Google OAuth2 flow for user:", userId);
   const state = Buffer.from(
   JSON.stringify({
     userId,
     agentId,
+    type,
     source: "google_oauth"
   })
 ).toString("base64");
@@ -24,7 +26,8 @@ export async function GET(req: NextRequest) {
       "https://www.googleapis.com/auth/calendar.events",
       "https://www.googleapis.com/auth/drive.file",
       "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/userinfo.profile"
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/calendar.readonly",
     ].join(" "),
     state
   });

@@ -69,15 +69,12 @@ export default function LandingPage() {
   };
 
   const scrollWithOffset = (ref: React.RefObject<HTMLDivElement>) => {
-  const yOffset = -120; // header height
-  const y =
-    ref.current!.getBoundingClientRect().top +
-    window.pageYOffset +
-    yOffset;
+    const yOffset = -120; // header height
+    const y =
+      ref.current!.getBoundingClientRect().top + window.pageYOffset + yOffset;
 
-  window.scrollTo({ top: y, behavior: "smooth" });
-};
-
+    window.scrollTo({ top: y, behavior: "smooth" });
+  };
 
   const scrollToOriginStory = () => {
     originStoryRef.current?.scrollIntoView({
@@ -130,7 +127,6 @@ export default function LandingPage() {
               <a
                 className="text-base text-white cursor-pointer"
                 onClick={() => scrollWithOffset(originStoryRef)}
-
               >
                 Origin Story
               </a>
@@ -220,40 +216,48 @@ export default function LandingPage() {
                 className="m-auto md:max-w-[45%] max-w-[85%] lg:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] lg:p-[20px] p-[10px] "
                 ref={homeSection}
               >
-                <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2 ">
-                  Change Yourself. Change <br />
-                  Your Life. Change The World.{" "}
+                <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
+                  Where AI Belongs
+                </h1>
+                <h1 className="w-auto lg:text-[1.813rem] text-[0.75rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
+                  Welcome home
                 </h1>
                 <div className="">
-                  <p className="text-base text-[#FFFFFF] font-Avenir text-opacity-90">
-                    You already have the following. The audience. The courses.
-                    The funnels. The podcasts. The programs. Your work changes
-                    lives.{" "}
+                  <p className="text-base text-[#FFFFFF] font-Avenir text-opacity-90 lg:px-12">
+                    Kinship Intelligence is a creator cooperative, a refuge from
+                    extractive tech, attention farming, and endless feeds—a
+                    place at the cutting edge of culture, where AI serves{" "}
+                    <span className="font-bold text-white">
+                      connection, care, and collective engagement,
+                    </span>{" "}
+                    not manipulation or control. <br />
+                    Here, wisdom isn’t content.
                   </p>
                 </div>
                 <p className="mb-2  text-base text-[#ffffff]/90 lg:px-12">
-                  Kinship Intelligence is how you turn that into a{" "}
-                  <span className="font-semibold text-white">
-                    living collective{" "}
-                  </span>
-                  — where your wisdom becomes a{" "}
-                  <span className="font-semibold text-white">
-                    practice people use every day, in the moment, when it
-                    matters most.
-                  </span>{" "}
-                  Your work becomes experiential, moving powerfully between
-                  sessions, while you earn a substantial livelihood through{" "}
-                  <span className="font-semibold text-white">
-                    reciprocity and relationships.
-                  </span>
+                  It’s a{" "}
+                  <span className="font-bold text-white">living system</span>
+                  —something you return to in moments that matter, with people
+                  who matter, supported by Kinship Intelligence that listens,
+                  guides, and clarifies.
+                </p>
+                <p className="text-base text-center text-white font-bold lg:px-12">
+                  This is a place to slow down.{" "}
+                </p>
+                <p className="text-base text-center text-white font-bold lg:px-12 my-2">
+                  To think, feel, learn, and grow.{" "}
+                </p>
+                <p className="text-base text-center text-white font-bold lg:px-12 mb-2">
+                  To plan, practice, and build together—without pressure,
+                  posturing, or polarization.{" "}
                 </p>
 
                 <div className="w-full ">
                   <button
-                    className="btn bg-[#FF00AE] text-white border-none hover:bg-[#FF00AE] w-[12rem]  "
+                    className="btn bg-[#EB8000] text-white border-none hover:bg-[#FF00AE] w-[12rem]  "
                     onClick={openSignUpModal}
                   >
-                   Join Early Access
+                    Join Early Access
                   </button>
                 </div>
               </div>
@@ -267,7 +271,6 @@ export default function LandingPage() {
         >
           <div className="">
             <div ref={originStoryRef} className="scroll-mt-[120px]">
-
               <h1 className="text-center font-bold lg:px-5 leading-[1] lg:w-[65.063rem] lg:text-[3.75rem] text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 I went to make a film. <br />I returned with a mission.
               </h1>
@@ -277,33 +280,56 @@ export default function LandingPage() {
               A journey to Mexico, a conversation with Four Arrows, and the
               moment Kinship Intelligence was born.
             </p>
+            <div className="my-5">
+              <iframe
+                className=" w-[100%] lg:h-[35rem] h-64 rounded-lg"
+                src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
 
-            <img
-              src="../images/Previewimg.png"
-              alt="Image"
-              className="w-[70%] m-auto"
-            />
             <div className="lg:w-[64.313rem] m-auto">
               <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem]">
-                In December 2019 I went to Mexico to film Four Arrows for a
-                feature documentary I hoped would get to the heart of our
-                planetary-scale interconnected crises of poverty, war, disease,
-                mass migration, mental health, and ecosystem collapse. Four
-                Arrows has been a friend and mentor for over two decades. He’s
-                an activist, hypnotherapist, Indigenous worldview scholar, and
-                performance coach to elite athletes and powerful executives. I
-                went to interview him about the CAT FAWN Connection, a
-                dehypnotizing practice that allows the world to be experienced
-                as it is: a living web of kin sustained by reciprocity,
-                ceremony, kindness, and care.
+                In December 2019, I traveled to Mexico to film Four Arrows for a
+                documentary exploring the deeper roots of our interconnected
+                crises—poverty, war, displacement, mental health, and ecological
+                collapse. What I found was something more subtle: the{" "}
+                <span className="text-white font-bold text-lg">
+                  {" "}
+                  trance of civilization
+                </span>{" "}
+                that shapes how we experience the world, ourselves, and one
+                another.
+                <br />
+                Four Arrows shared the{" "}
+                <span className="text-white font-bold text-lg">
+                  {" "}
+                  CAT-FAWN Connection,
+                </span>{" "}
+                a dehypnotizing practice that helps people step out of that
+                trance and experience reality as it is: a living web of kinship
+                sustained by reciprocity, ceremony, kindness, and care.I
+                realized that no amount of content, lectures, workshops, or
+                media could carry this kind of work into everyday life.
+                Dehypnotizing doesn’t happen in theory—it happens{" "}
+                <span className="text-white font-bold text-lg">
+                  in the moment,
+                </span>{" "}
+                when challenges are faced and patterns activated.{" "}
               </p>
-              <p className="text-center text-lg text-[#FFFFFFC7] px-[3rem]">
-                During my visit I realized that no amount of content could
-                convey the power of his work. So I created Kinship Intelligence
-                to take the work into the world as a living guide, available to
-                anyone and everyone, in the moments when it’s needed most, just
-                as Four Arrows had always been available to me. Now it’s your
-                turn. Let’s see what Kinship Intelligence can do for you.
+              <p className="text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+                I built Kinship Intelligence to support creators like Four
+                Arrows, whose work doesn’t fit within the constraints of
+                documents, videos or audio files, and to support the people who
+                can benefit from his work by making it more accessible. AI is
+                being used everywhere to reinforce and exploit the trance. As
+                one of our Founding Stewards of the Field, Four Arrows showed me
+                how Kinship Intelligence can help interrupt the trance, offer
+                gentle, relational guidance, and turn wisdom into a living
+                practice you can return to again and again, together.
               </p>
               <p
                 className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5
@@ -318,30 +344,26 @@ export default function LandingPage() {
           <div className="mt-24">
             <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]">
               <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-                Kinship Intelligence is <br /> living infrastructure for
-                collective evolution.
+                Kinship Intelligence is a creator cooperative, living
+                infrastructure for collective evolution.
               </h1>
             </div>
-            <p className="text-center text-lg text-[#FFFFFFC7] mt-5 mb-2">
-              Kinship Intelligence is for creators who change lives.
-            </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[60rem] m-auto">
-              Most programs are built from content to consume, tasks to
+
+            <p className="text-center text-lg text-[#FFFFFFC7] lg:px-[2rem] lg:w-[60rem] m-auto">
+              Most platforms are built from content to consume, tasks to
               complete, files to open, and feeds to refresh. Kinship
-              Intelligence is different. It’s a continuous process for learning
-              and growth—where members stay in relationship, practice together,
-              and evolve as a collective—intellectually, emotionally,
-              spiritually, and materially. We’ve created a living, dynamic,
-              relational field where you can swap your dead media for powerfully
-              engaging processes. So you can stop broadcasting ideas and start
-              creating the conditions for people to engage, reflect, practice,
-              change, and grow—together. Your process evolves with your people;
-              your people evolve with your process. Most “AI tools” help you
-              produce more content, while the world is full of content nobody
-              will ever touch. Kinship Intelligence helps you serve your clients
-              with less stress and more success — because the system is grounded
-              in how people really, at a very deep level, change, grow, and
-              thrive.
+              Intelligence is different. It’s a continuous process for guiding,
+              sharing, learning and growth—where members stay in relationship,
+              practice together, and evolve as a collective—intellectually,
+              emotionally, spiritually, and materially. We’ve created a living,
+              dynamic, relational field where you can swap dead media for
+              powerfully engaging processes. So you can stop broadcasting ideas
+              and start creating the conditions for engagement, reflection, and
+              growth—together. Most “AI tools” help you produce more content,
+              while the world is full of content nobody will ever touch. Kinship
+              Intelligence helps you co-create with less stress and more success
+              — because the system is grounded in how people are designed to
+              change, grow, and thrive.
             </p>
           </div>
         </section>
@@ -350,7 +372,7 @@ export default function LandingPage() {
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">Health</p>
               <p className="text-white font-bold text-lg text-center ">
-                Real vitality. Real capacity. Real resilience.
+                Vitality, capacity, resilience.
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center mt-2">
                 Kinship supports the whole human – mental, emotional, physical,
@@ -406,21 +428,49 @@ export default function LandingPage() {
         </div>
         <div className="mt-40">
           <h1 className="text-center font-bold lg:px-10 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            Your work changes lives. Now it’s time to change yours.
+            When they need it most. Change Yourself, Change Your Life, Change
+            The World.
           </h1>
-          <div className="lg:w-[52.188rem] m-auto">
+          <div className="lg:w-[70.188rem] m-auto">
             <p className="text-center text-lg text-[#FFFFFFC7] mt-5">
-              You care about results for your clients, sometimes at the expense
-              of results for your business. Now, for the first time ever, your
-              transformational work doesn’t have to be explained or consumed –
-              it can be experienced! That’s where the power is.
+              You didn’t choose this work casually.
             </p>
             <p className="text-center text-lg text-[#FFFFFFC7] mb-2">
-              Kinship encodes your core methods—how you think, guide, coach,
-              train, and respond—into a living, intelligent, always-on system.
-              Your clients don’t just watch, listen, or read; they engage in a
-              way that works for them, between sessions, in the moment, in the
-              flow of life, when it matters the most.
+              It chose you.
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] mb-2">
+              You carry a vision you’re meant to bring into the world—something
+              you’ve lived, practiced, and tested long enough to know it
+              matters. Not as content. Not as a brand. But as a way of seeing,
+              responding, and relating that actually changes lives. And yet,
+              holding that work has often been draining as you carry it alone,
+              across too many surfaces, fighting the algorithms for audience,
+              attention, and engagement. Being everywhere. Explaining
+              everything. Repeating what you know in pieces, on podcasts, across
+              platforms that were never designed to hold depth, continuity, or
+              care. Kinship Intelligence was designed for you. It allows your
+              work to breathe, live, and evolve. It carries your way of
+              thinking, guiding, sensing, and responding into the moments where
+              real change happens. Not as instruction to be followed, but as
+              experience to be lived. Not dependent on performance or presence,
+              but grounded, available, and responsive in the flow of life. Here,
+              your work doesn’t get diluted, fragmented, or flattened. It gets
+              <span className="text-white font-bold text-lg"> encoded</span>—as
+              a practice people can return to, again and again, supported by AI
+              that listens, engages, and meets them where they are. This isn’t
+              about scaling yourself or amplifying your brand. It’s about
+              coherence.
+            </p>
+            <p className="text-center text-lg text-[#FFFFFFC7] mb-2">
+              A single place where your work can reside. Where the deepest parts
+              of your work remain intact, relational, and alive. You don’t need
+              more tools. You don’t need more hype. You don’t need another
+              platform. You need a system that can{" "}
+              <span className="text-white font-bold text-lg">
+                hold what you’re here
+              </span>
+              for—faithfully, with integrity, for the ages. Kinship Intelligence
+              is here for you.
             </p>
           </div>
         </div>
@@ -539,7 +589,7 @@ export default function LandingPage() {
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[20.938rem] mb-5 lg:mb-0 rounded-xl ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
-                Gathering Bot
+                Gathering Bots
               </p>
               <p className="text-white font-bold text-lg text-center mt-5">
                 People and Purpose
@@ -584,7 +634,7 @@ export default function LandingPage() {
         </div>
         <div className="w-[15rem] m-auto ">
           <button
-            className="btn bg-[#FF00AE] text-white border-none hover:bg-[#FF00AE] w-full"
+            className="btn bg-[#EB8000] text-white border-none hover:bg-[#FF00AE] w-full"
             onClick={openSignUpModal}
           >
             Join Early Access
@@ -642,13 +692,13 @@ export default function LandingPage() {
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
-                Member — The Civic <br /> Foundation
+                Patron — The Civic <br /> Foundation
               </p>
               <p className="text-white font-bold text-lg text-center mt-3">
                 Participate. Belong. Share in the commons.
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center">
-                Members are the heart of Kinship. As a member, you’ll learn,
+                Patrons are the heart of Kinship. As a member, you’ll learn,
                 grow, and prosper, join ecosystems and gatherings, put the tools
                 and apps to good use, and hold the relational field that makes
                 everything possible.
@@ -663,10 +713,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   Share in the{" "}
-                  <span className=" text-white font-bold">
-                    {" "}
-                    Membership Pool,
-                  </span>{" "}
+                  <span className=" text-white font-bold"> Patron Pool,</span>{" "}
                   distributed based on participation and patronage
                 </li>
                 <li>
@@ -722,14 +769,14 @@ export default function LandingPage() {
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
-                Creator — Masters of <br />
+                Provider — Masters of <br />
                 Living Intelligence{" "}
               </p>
               <p className="text-white font-bold text-lg text-center mt-3">
                 Create bots. Build apps. Encode wisdom. Share in deeper value.{" "}
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center">
-                Creators share and carry living practices by designing and
+                Providers share and carry living practices by designing and
                 tending bots, apps, and experiences on the Kinship
                 platform—turning lived wisdom into practices others can master.
               </p>
@@ -743,7 +790,7 @@ export default function LandingPage() {
                   you offer to the community
                 </li>
                 <li>
-                  Get paid monthly from the Creator Royalty Pool based on
+                  Get paid monthly from the Provider Royalty Pool based on
                   engagement with your bots and apps
                 </li>
                 <li>
@@ -763,7 +810,7 @@ export default function LandingPage() {
             <h1 className="text-center font-bold px-12 leading-[1]  text-[30px] m-auto font-PoppinsNew  text-[#FFFFFFC7] mt-20">
               How Ownership Actually Works{" "}
             </h1>
-            <ul className="text-lg text-[#FFFFFFC7] list-disc mt-2 mx-auto font-avenir">
+            <ul className="text-lg text-[#FFFFFFC7] list-disc mt-5 mx-auto font-avenir w-[50rem]">
               <li>Kinship is a cooperative, not a marketplace.</li>
               <li>
                 Members hold Class A membership shares and govern the system
@@ -778,7 +825,7 @@ export default function LandingPage() {
                 and the long-term public benefit.
               </li>
             </ul>
-            <p className="text-[#FFFFFFC7]">
+            <p className="text-[#FFFFFFC7] mt-2 text-center">
               Software is a great business… Let's take it back from big tech and
               put it in the hands of the people!
             </p>
@@ -804,7 +851,7 @@ export default function LandingPage() {
 
         <div className="w-[15rem] m-auto ">
           <button
-            className="btn bg-[#FF00AE] text-white border-none hover:bg-[#FF00AE] w-full  "
+            className="btn bg-[#EB8000] text-white border-none hover:bg-[#FF00AE] w-full  "
             onClick={openSignUpModal}
           >
             Join Early Access
@@ -812,8 +859,8 @@ export default function LandingPage() {
         </div>
         <div className="mt-24">
           <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            Our founding creators are putting their heart and soul into Kinship
-            Intelligence.
+            Our Founding Stewards of the Field are Putting their Heart and Soul
+            into Kinship Intelligence.
           </h1>
           <p className="text-center text-lg text-[#FFFFFFC7]  mt-5 mb-2">
             Go beyond “content and courses to consume” with these practices to
@@ -855,7 +902,7 @@ export default function LandingPage() {
                 Renée Smith
               </p>
               <p className="text-white font-bold text-lg text-center ">
-                Loving Leaders
+                The Nature of Work
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center mt-2">
                 Transforming fear into love at work—for stronger teams across
@@ -885,11 +932,11 @@ export default function LandingPage() {
                 Hephzibah Light
               </p>
               <p className="text-white font-bold text-lg text-center ">
-                Cosmic Humanity
+                The Feathered Nest
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Archetypal depth psychology and alchemy—integrating shadow into
-                wholeness, liberation, and complementary consciousness.
+                For home, family and a life that’s purposeful, meaningful, and
+                filled with joy.
               </p>
             </div>
           </div>
@@ -928,16 +975,16 @@ export default function LandingPage() {
                 Warren Kahn
               </p>
               <p className="text-white font-bold text-lg text-center ">
-                Master Navigator of Love and Life
+                Navigating Love and Life
               </p>
               <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Navigating life and relationships with flow—steering without
-                struggle, control, or force.
+                Experiencing life and relationships in flow—steering without
+                struggle, force, or control.
               </p>
             </div>
           </div>
         </div>
-        <div className="lg:flex justify-around lg:my-10 lg:mx-[33rem] mx-auto ">
+        {/* <div className="lg:flex justify-around lg:my-10 lg:mx-[35rem] mx-auto ">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
@@ -967,7 +1014,7 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
         <section className="py-16 max-w-[1144px] mx-auto">
           <div>
             <h3 className="  transition duration-300 place-self-center sm:text-left text-2xl sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
@@ -1064,6 +1111,67 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+        <div className="bg-[#09073A] py-10 my-10">
+          <div className="flex my-5 mx-auto items-center lg:w-[80rem] justify-between">
+            <div>
+              <h3 className="  transition duration-300 sm:text-left text-[2.25rem] font-poppinsNew font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+                Join the Kinship Intelligence
+              </h3>
+              <p className="text-justify  text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                Be among the first to use Kinship Intelligence to change <br />{" "}
+                yourself, change your life, and change the world.
+              </p>
+              <p className="text-justify  text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                As an early access member, you’ll:
+              </p>
+              <ul className="text-[#FFFFFFE5] text-base  font-avenir list-disc  ml-5">
+                <li>Experience the app before public launch</li>
+                <li>Share insights that will shape the product</li>
+                <li>
+                  Join live sessions + private groups with Four Arrows & Kinship
+                </li>
+              </ul>
+            </div>
+            <div>
+              <div className="w-[36.188rem] bg-[#100E59] px-10 py-5 rounded-3xl ml-10">
+                <h3 className="  transition duration-300 text-[1.95rem] text-center font-poppinsNew font-bold  tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+                  Request Early Access
+                </h3>
+                <p className="text-[#FFFFFFE5] text-base  my-2">
+                  {" "}
+                  <span className="text-white font-bold text-base">
+                    Step 1 of 8: Enter your name and email address.
+                  </span>{" "}
+                  We’ll send a <br />
+                  link to verify it’s really you.
+                </p>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Firstname*</legend>
+                  <input
+                    type="text"
+                    className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                    placeholder="First Name"
+                  />
+                </fieldset>
+                <fieldset className="fieldset">
+                  <legend className="fieldset-legend">Email</legend>
+                  <input
+                    type="text"
+                    className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29] "
+                    placeholder="Email"
+                  />
+                </fieldset>
+                 <label className="label">
+    <input type="checkbox" defaultChecked className="checkbox bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]" />
+   <span className="ml-5"> By continuing, I agree to receive communications about the Kinship Bots early access program and launch updates.</span>
+  </label>
+                <button className="btn bg-[#EB8000] hover:bg-[#EB8000] w-full text-white font-bold mt-[2rem] border-[#FF710F33] hover:border-none">
+                  Sends the security verification code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         {/* <div className="lg:flex my-10 mx-auto justify-between lg:w-[90rem]">
           <div className="mt-24">
             <h1 className="lg:text-left text-center font-bold leading-[1] text-[3.75rem]  font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">

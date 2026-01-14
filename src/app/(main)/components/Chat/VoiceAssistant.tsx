@@ -221,10 +221,13 @@ const VoiceAssistant = (props: any) => {
               ws.send(JSON.stringify({ type: "ping" }));
             }
           }, 25000);
+          const systemPrompt =
+            selectedChat!.chatAgent!.system_prompt +
+            `agentId: ${selectedChat!.chatAgent!.key}, authorization: ${localStorage.getItem("token")}`;
           ws.send(
             JSON.stringify({
               type: "system_prompt",
-              content: selectedChat!.chatAgent!.system_prompt,
+              content: systemPrompt,
             })
           );
           await initAudioContext();

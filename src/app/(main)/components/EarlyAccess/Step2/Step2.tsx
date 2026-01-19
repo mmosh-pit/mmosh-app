@@ -9,15 +9,23 @@ import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAcc
 interface Step2Props {
   onSuccess?: () => void;
   onBack?: () => void;
+  earlyAccessRef: any;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
 }
 
-export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
+export const Step2: React.FC<Step2Props> = ({
+  onSuccess,
+  onBack,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+  earlyAccessRef
+}) => {
   const [cachedData, setCachedData] = React.useState<any>({});
   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
-  const [showMsg, setShowMsg] = React.useState(true);
-  const [msgClass, setMsgClass] = React.useState("success");
-  const [msgText, setMsgText] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [hasInvalid, setHasInvalid] = React.useState(false);
   const [hasLoadingResendOTP, setHasLoadingResendOTP] = React.useState(false);
@@ -61,7 +69,10 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
     if (value && index < 5) inputRefs.current[index + 1]?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     setHasInvalid(false);
 
     if (e.key === "Backspace") {
@@ -79,7 +90,10 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+  const handlePaste = (
+    e: React.ClipboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     e.preventDefault();
     setHasInvalid(false);
 
@@ -129,7 +143,10 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
         }
       } else {
         setHasInvalid(true);
-        createMessage(result.data.message || "Invalid verification code.", "error");
+        createMessage(
+          result.data.message || "Invalid verification code.",
+          "error"
+        );
       }
     } catch {
       createMessage("Something went wrong. Please try again.", "error");
@@ -170,11 +187,9 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
     if (onBack) onBack();
   };
 
-
   return (
     <>
-      <ErrorContainerVW showMessage={showMsg} className={msgClass} messageText={msgText} />
-      <div className="bg-[#09073A] p-10 my-10">
+      <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
           <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
@@ -185,7 +200,10 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
             <p className="max-sm:text-base font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
               Step 2 of 8: Enter your name and email address.
               <span className="text-[#FFFFFFE5] font-normal font-avenir -tracking-[0.02em]">
-                {" "}We’ll send a link to verify it’s really you. {cachedData.email}{" "}
+                {" "}
+                We’ll send a link to verify it’s really you. {
+                  cachedData.email
+                }{" "}
               </span>
               <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-relaxed lg:leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
                 <ul className="ml-6 list-disc font-avenir">
@@ -195,7 +213,10 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
                 </ul>
               </div>
             </p>
-            <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal" onSubmit={verifyOTP}>
+            <form
+              className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal"
+              onSubmit={verifyOTP}
+            >
               <div className="max-sm:w-auto max-lg:w-max max-lg:mx-auto max-lg:text-center">
                 <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC] max-lg:mx-auto">
                   Enter your 6-digit code
@@ -207,7 +228,9 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
                       type="text"
                       maxLength={1}
                       value={digit}
-                      ref={(el) => { inputRefs.current[idx] = el; }}
+                      ref={(el) => {
+                        inputRefs.current[idx] = el;
+                      }}
                       onChange={(e) => handleOtpChange(e.target.value, idx)}
                       onKeyDown={(e) => handleKeyDown(e, idx)}
                       onPaste={(e) => handlePaste(e, idx)}
@@ -218,18 +241,23 @@ export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
 
                 {!hasInvalid && (
                   <span className="text-[0.75rem] inline-block text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em] mt-[0.313rem]">
-                    The code expires in 15 minutes. Didn’t get it? Check your spam folder or request a new code.
+                    The code expires in 15 minutes. Didn’t get it? Check your
+                    spam folder or request a new code.
                   </span>
                 )}
                 {hasInvalid && (
                   <span className="text-[0.75rem] inline-block text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em] mt-[0.313rem]">
-                    That code doesn’t look right. Please check your email and try again.
+                    That code doesn’t look right. Please check your email and
+                    try again.
                   </span>
                 )}
 
                 <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
                   Didn’t get a code?{" "}
-                  <span onClick={resendOTP} className="cursor-pointer underline">
+                  <span
+                    onClick={resendOTP}
+                    className="cursor-pointer underline"
+                  >
                     {hasLoadingResendOTP ? "Sending..." : " Resend code"}
                   </span>
                 </div>

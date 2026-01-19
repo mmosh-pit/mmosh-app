@@ -25,11 +25,14 @@ import { Step5 } from "../(main)/components/EarlyAccess/Step5/Step5";
 import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
 import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
 import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
+import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
+// import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
+// import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
+// import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 
 const STORAGE_KEY = "early-access-data";
 
 export default function LandingPage() {
-  
   const screenSize = useCheckDeviceScreenSize();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,6 +42,7 @@ export default function LandingPage() {
   const kinshipIntelligenceRef = useRef<HTMLDivElement>(null);
   const collectiveEconomicsRef = useRef<HTMLDivElement>(null);
   const foundingCreatorsRef = useRef<HTMLDivElement>(null);
+  const earlyAccessRef = useRef<HTMLDivElement>(null);
 
   const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
@@ -50,7 +54,7 @@ export default function LandingPage() {
 
   const totalSlides = Math.ceil((testimonials?.length || 0) / itemsPerSlide);
 
-    React.useEffect(() => {
+  React.useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -116,6 +120,12 @@ export default function LandingPage() {
       block: "start",
     });
   };
+  const scrollToEarlyAccess = () => {
+    earlyAccessRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   const scrollToCollectiveEconomics = () => {
     collectiveEconomicsRef.current?.scrollIntoView({
@@ -130,6 +140,9 @@ export default function LandingPage() {
       block: "start",
     });
   };
+  const [showMsg, setShowMsg] = React.useState(true);
+  const [msgClass, setMsgClass] = React.useState("success");
+  const [msgText, setMsgText] = React.useState("");
 
   return (
     <div className="relative h-full">
@@ -199,7 +212,7 @@ export default function LandingPage() {
 
           <div className="font-bold">
             <Button
-              action={openSignUpModal}
+              action={scrollToEarlyAccess}
               size="small"
               isPrimary
               title="Join Early Access"
@@ -207,6 +220,11 @@ export default function LandingPage() {
             />
           </div>
         </div>
+        <ErrorContainerVW
+          showMessage={showMsg}
+          className={msgClass}
+          messageText={msgText}
+        />
       </header>
 
       <AlertModal
@@ -281,8 +299,8 @@ export default function LandingPage() {
 
                 <div className="w-full ">
                   <button
-                    className="btn bg-[#EB8000] text-white border-none hover:bg-[#FF00AE] w-[12rem]  "
-                    onClick={openSignUpModal}
+                    className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-[12rem]  "
+                    onClick={scrollToEarlyAccess}
                   >
                     Join Early Access
                   </button>
@@ -661,8 +679,8 @@ export default function LandingPage() {
         </div>
         <div className="w-[15rem] m-auto ">
           <button
-            className="btn bg-[#EB8000] text-white border-none hover:bg-[#FF00AE] w-full"
-            onClick={openSignUpModal}
+            className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full"
+            onClick={scrollToEarlyAccess}
           >
             Join Early Access
           </button>
@@ -878,8 +896,8 @@ export default function LandingPage() {
 
         <div className="w-[15rem] m-auto ">
           <button
-            className="btn bg-[#EB8000] text-white border-none hover:bg-[#FF00AE] w-full  "
-            onClick={openSignUpModal}
+            className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full  "
+            onClick={scrollToEarlyAccess}
           >
             Join Early Access
           </button>
@@ -1138,14 +1156,84 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        {currentStep === 1 && <Step1 onSuccess={() => setCurrentStep(2)} />}
-        {currentStep === 2 && <Step2 onSuccess={() => setCurrentStep(3)} onBack={() => setCurrentStep(1)} />}
-        {currentStep === 3 && <Step3 onSuccess={() => setCurrentStep(4)} onBack={() => setCurrentStep(2)} />}
-        {currentStep === 4 && <Step4 onSuccess={() => setCurrentStep(5)} onBack={() => setCurrentStep(3)} />}
-        {currentStep === 5 && <Step5 onSuccess={() => setCurrentStep(6)} onBack={() => setCurrentStep(4)}/>}
-        {currentStep === 6 && <Step6 onSuccess={() => setCurrentStep(7)} onBack={() => setCurrentStep(5)} />}
-        {currentStep === 7 && <Step7 onSuccess={() => setCurrentStep(8)} onBack={() => setCurrentStep(6)} />}
-        {currentStep === 8 && <Step8 onBack={() => setCurrentStep(7)} />}
+        {currentStep === 1 && (
+          <Step1
+            onSuccess={() => setCurrentStep(2)}
+            earlyAccessRef={earlyAccessRef}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 2 && (
+          <Step2
+            onSuccess={() => setCurrentStep(3)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(1)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 3 && (
+          <Step3
+            onSuccess={() => setCurrentStep(4)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(2)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 4 && (
+          <Step4
+            onSuccess={() => setCurrentStep(5)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(3)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 5 && (
+          <Step5
+            onSuccess={() => setCurrentStep(6)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(4)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 6 && (
+          <Step6
+            onSuccess={() => setCurrentStep(7)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(5)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 7 && (
+          <Step7
+            onSuccess={() => setCurrentStep(8)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(6)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 8 && (
+          <Step8
+            onBack={() => setCurrentStep(7)}
+            earlyAccessRef={earlyAccessRef}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
       </div>
     </div>
   );

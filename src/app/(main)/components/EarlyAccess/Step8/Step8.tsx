@@ -9,18 +9,25 @@ import React, { useEffect, useRef, useState } from "react";
 
 interface Step8Props {
   onBack?: () => void;
+  earlyAccessRef: any;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
 }
 
-export const Step8: React.FC<Step8Props> = ({ onBack }) => {
+export const Step8 = ({
+  onBack,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+  earlyAccessRef,
+}: Step8Props) => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>({});
   const [aboutYou, setAboutYou] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showMsg, setShowMsg] = useState(false);
-  const [msgText, setMsgText] = useState("");
-  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
   const msgTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -58,17 +65,14 @@ export const Step8: React.FC<Step8Props> = ({ onBack }) => {
     e.preventDefault();
 
     if (!aboutYou.trim()) {
-      console.log("Hisss")
+      console.log("Hisss");
       createMessage("Please tell us about yourself.", "error");
       return;
     }
 
     if (aboutYou.trim().length < 50) {
-      console.log("Hi")
-      createMessage(
-        "Please enter at least 50 characters.",
-        "error"
-      );
+      console.log("Hi");
+      createMessage("Please enter at least 50 characters.", "error");
       return;
     }
 
@@ -82,10 +86,13 @@ export const Step8: React.FC<Step8Props> = ({ onBack }) => {
         currentStep: "complete",
       };
 
-      const res = await axios.post("/api/visitors/save-early-access", updatedData);
+      const res = await axios.post(
+        "/api/visitors/save-early-access",
+        updatedData
+      );
 
       if (!res.data?.status) {
-        console.log("Hissss111")
+        console.log("Hissss111");
         createMessage(
           res.data?.message || "Unable to save information",
           "error"
@@ -98,7 +105,7 @@ export const Step8: React.FC<Step8Props> = ({ onBack }) => {
       createMessage("Successfully submitted.", "success");
       router.replace("/join");
     } catch {
-              console.log("Hissss1qqq11")
+      console.log("Hissss1qqq11");
       createMessage("Something went wrong", "error");
     } finally {
       setIsLoading(false);
@@ -113,13 +120,7 @@ export const Step8: React.FC<Step8Props> = ({ onBack }) => {
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
-
-      <div className="bg-[#09073A] p-10 my-10">
+      <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
           <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">

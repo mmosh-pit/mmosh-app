@@ -11,15 +11,23 @@ import { encryptData } from "@/utils/decryptData";
 interface Step3Props {
   onSuccess?: () => void;
   onBack?: () => void;
+  earlyAccessRef: any;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
 }
 
-export const Step3: React.FC<Step3Props> = ({ onSuccess, onBack }) => {
+export const Step3: React.FC<Step3Props> = ({
+  onSuccess,
+  onBack,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+  earlyAccessRef
+}) => {
   const [cachedData, setCachedData] = React.useState<any>({});
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [showMsg, setShowMsg] = React.useState(true);
-  const [msgClass, setMsgClass] = React.useState("success");
-  const [msgText, setMsgText] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
@@ -105,12 +113,7 @@ export const Step3: React.FC<Step3Props> = ({ onSuccess, onBack }) => {
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
-      <div className="bg-[#09073A] p-10 my-10">
+      <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
           <form

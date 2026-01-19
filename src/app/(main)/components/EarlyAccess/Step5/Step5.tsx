@@ -10,9 +10,20 @@ import React, { useEffect, useRef, useState } from "react";
 interface Step5Props {
   onSuccess?: () => void;
   onBack?: () => void;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
+  earlyAccessRef: any;
 }
 
-export const Step5: React.FC<Step5Props> = ({ onSuccess, onBack }) => {
+export const Step5: React.FC<Step5Props> = ({
+  onSuccess,
+  onBack,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+  earlyAccessRef
+}) => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>({});
@@ -22,10 +33,6 @@ export const Step5: React.FC<Step5Props> = ({ onSuccess, onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadingResendOTP, setHasLoadingResendOTP] = useState(false);
   const [hasInvalid, setHasInvalid] = useState(false);
-
-  const [showMsg, setShowMsg] = useState(false);
-  const [msgText, setMsgText] = useState("");
-  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
   const msgTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -182,13 +189,7 @@ export const Step5: React.FC<Step5Props> = ({ onSuccess, onBack }) => {
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
-
-      <div className="bg-[#09073A] p-10 my-10">
+      <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
 
@@ -218,20 +219,18 @@ export const Step5: React.FC<Step5Props> = ({ onSuccess, onBack }) => {
                     onChange={(e) => handleOtpChange(e.target.value, idx)}
                     onKeyDown={(e) => handleKeyDown(e, idx)}
                     onPaste={(e) => handlePaste(e, idx)}
-                    className={`w-12 h-12 rounded-lg text-center text-lg font-semibold text-white border focus:outline-none ${hasInvalid
+                    className={`w-12 h-12 rounded-lg text-center text-lg font-semibold text-white border focus:outline-none ${
+                      hasInvalid
                         ? "bg-red-500/20 border-red-400"
                         : "bg-white/10 border-white/30"
-                      }`}
+                    }`}
                   />
                 ))}
               </div>
 
               <div className="text-center mt-3 text-sm text-white/80">
                 Didn’t get a code?{" "}
-                <span
-                  onClick={resendOTP}
-                  className="underline cursor-pointer"
-                >
+                <span onClick={resendOTP} className="underline cursor-pointer">
                   {hasLoadingResendOTP ? "Sending..." : "Resend"}
                 </span>
               </div>

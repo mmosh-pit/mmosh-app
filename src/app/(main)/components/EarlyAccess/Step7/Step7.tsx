@@ -11,9 +11,20 @@ import React, { useState } from "react";
 interface Step7Props {
   onSuccess?: () => void;
   onBack?: () => void;
+  earlyAccessRef: any;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
 }
 
-export const Step7: React.FC<Step7Props> = ({ onSuccess, onBack }) => {
+export const Step7 = ({
+  onSuccess,
+  onBack,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+  earlyAccessRef,
+}: Step7Props) => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
@@ -22,9 +33,6 @@ export const Step7: React.FC<Step7Props> = ({ onSuccess, onBack }) => {
   const [kinshipCode, setKinshipCode] = React.useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showMsg, setShowMsg] = useState(false);
-  const [msgText, setMsgText] = useState("");
-  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
   React.useEffect(() => {
     const stored = localStorage.getItem("early-access-data");
@@ -132,12 +140,7 @@ export const Step7: React.FC<Step7Props> = ({ onSuccess, onBack }) => {
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
-      <div className="bg-[#09073A] p-10 my-10">
+      <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
           <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
@@ -171,15 +174,17 @@ export const Step7: React.FC<Step7Props> = ({ onSuccess, onBack }) => {
                 />
 
                 <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-2 -tracking-[0.02em]">
-                  { <input
-                    type="checkbox"
-                    className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
-                    checked={noCodeChecked}
-                    onChange={(e) => {
-                      setNoCodeChecked(e.target.checked);
-                      if (e.target.checked) setKinshipCode("");
-                    }}
-                  /> }
+                  {
+                    <input
+                      type="checkbox"
+                      className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                      checked={noCodeChecked}
+                      onChange={(e) => {
+                        setNoCodeChecked(e.target.checked);
+                        if (e.target.checked) setKinshipCode("");
+                      }}
+                    />
+                  }
                   I don’t have a code yet — I’ll provide one later.
                 </label>
               </div>
@@ -196,4 +201,4 @@ export const Step7: React.FC<Step7Props> = ({ onSuccess, onBack }) => {
       </div>
     </>
   );
-}
+};

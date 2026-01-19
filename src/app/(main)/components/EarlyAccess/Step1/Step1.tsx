@@ -2,14 +2,25 @@ import React from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
+import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
 
 const STORAGE_KEY = "early-access-data";
 
 interface Step1Props {
   onSuccess?: () => void;
+  earlyAccessRef: any;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
 }
 
-export const Step1: React.FC<Step1Props> = ({ onSuccess }) => {
+export const Step1: React.FC<Step1Props> = ({
+  onSuccess,
+  earlyAccessRef,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+}) => {
   const router = useRouter();
 
   const [firstName, setFirstName] = React.useState("");
@@ -17,12 +28,7 @@ export const Step1: React.FC<Step1Props> = ({ onSuccess }) => {
   const [hasChecked, setHasChecked] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const [showMsg, setShowMsg] = React.useState(true);
-  const [msgClass, setMsgClass] = React.useState("success");
-  const [msgText, setMsgText] = React.useState("");
-
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
 
   // Restore from localStorage
   React.useEffect(() => {
@@ -41,25 +47,31 @@ export const Step1: React.FC<Step1Props> = ({ onSuccess }) => {
 
   const validateForm = () => {
     if (!firstName.trim()) {
+      console.log("=================CHECK1==================");
       createMessage("First name is required", "error");
       return false;
     } else if (firstName.trim().length < 2) {
+      console.log("=================CHECK2==================");
       createMessage("First name must be at least 2 characters", "error");
       return false;
     } else if (firstName.trim().length > 16) {
+      console.log("=================CHECK3==================");
       createMessage("First name can be up to 16 characters only", "error");
       return false;
     }
 
     if (!email.trim()) {
+      console.log("=================CHECK4==================");
       createMessage("Email is required", "error");
       return false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email.trim())) {
+      console.log("=================CHECK5==================");
       createMessage("Please enter a valid email address", "error");
       return false;
     }
 
     if (!hasChecked) {
+      console.log("=================CHECK6==================");
       createMessage(
         "You must agree to receive communications before continuing",
         "error"
@@ -70,12 +82,8 @@ export const Step1: React.FC<Step1Props> = ({ onSuccess }) => {
     return true;
   };
 
-
-
   // Submit handler (createVisitorRecord)
-  const createVisitorRecord = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const createVisitorRecord = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) return;
@@ -103,22 +111,29 @@ export const Step1: React.FC<Step1Props> = ({ onSuccess }) => {
           onSuccess();
         }
       } else {
+        console.log(
+          "=================CHECK7==================",
+          response.data?.message
+        );
         createMessage(
           response.data?.message || "Something went wrong",
           "error"
         );
       }
     } catch (err: any) {
+      console.log(
+        "=================CHECK8==================",
+        err?.response?.data?.message
+      );
       createMessage(
         err?.response?.data?.message ||
-        "Unable to generate OTP. Please try again.",
+          "Unable to generate OTP. Please try again.",
         "error"
       );
     } finally {
       setIsLoading(false);
     }
   };
-
 
   const createMessage = (message: string, type: "error" | "success") => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -139,22 +154,9 @@ export const Step1: React.FC<Step1Props> = ({ onSuccess }) => {
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
-      <div className="bg-[#09073A] py-10 my-10">
-        <div className="flex my-5 mx-auto items-center lg:w-[80rem] justify-between">
-          <div>
-            <h3 className="  transition duration-300 sm:text-left text-[2.25rem] font-poppinsNew font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Join the Kinship Intelligence
-            </h3>
-            <p className="text-justify  text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-              Be among the first to use Kinship Intelligence to change <br />
-              yourself, change your life, and change the world.
-            </p>
-          </div>
+      <div ref={earlyAccessRef} className="bg-[#09073A] py-10 my-10">
+        <div className="flex items-center justify-center">
+          <EarlyAccessCircleVW />
 
           <div>
             <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">

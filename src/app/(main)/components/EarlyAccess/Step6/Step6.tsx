@@ -10,18 +10,25 @@ import React, { useState, useEffect, useRef } from "react";
 interface Step6Props {
   onSuccess?: () => void;
   onBack?: () => void;
+  earlyAccessRef: any;
+  setShowMsg: (data: any) => void;
+  setMsgText: (data: any) => void;
+  setMsgClass: (data: any) => void;
 }
 
-export const Step6: React.FC<Step6Props> = ({ onSuccess, onBack }) => {
+export const Step6 = ({
+  onSuccess,
+  onBack,
+  setShowMsg,
+  setMsgText,
+  setMsgClass,
+  earlyAccessRef
+}: Step6Props) => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = useState<any>({});
   const [mobilePreferences, setMobilePreferences] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [showMsg, setShowMsg] = useState(false);
-  const [msgText, setMsgText] = useState("");
-  const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
   const msgTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -99,12 +106,7 @@ export const Step6: React.FC<Step6Props> = ({ onSuccess, onBack }) => {
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
-      <div className="bg-[#09073A] p-10 my-10">
+      <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
           <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
@@ -123,13 +125,21 @@ export const Step6: React.FC<Step6Props> = ({ onSuccess, onBack }) => {
               <div className="flex flex-col gap-1 text-[#FFFFFFE5] text-[0.813rem] font-normal leading-[110%] -tracking-[0.02em]">
                 <CheckBoxVW
                   labelText="iPhone"
-                  hasChecked={mobilePreferences.includes(formatPreference("iphone"))}
-                  onChange={(e) => handlePreferenceChange("iphone", e.target.checked)}
+                  hasChecked={mobilePreferences.includes(
+                    formatPreference("iphone")
+                  )}
+                  onChange={(e) =>
+                    handlePreferenceChange("iphone", e.target.checked)
+                  }
                 />
                 <CheckBoxVW
                   labelText="Android"
-                  hasChecked={mobilePreferences.includes(formatPreference("android"))}
-                  onChange={(e) => handlePreferenceChange("android", e.target.checked)}
+                  hasChecked={mobilePreferences.includes(
+                    formatPreference("android")
+                  )}
+                  onChange={(e) =>
+                    handlePreferenceChange("android", e.target.checked)
+                  }
                 />
               </div>
 

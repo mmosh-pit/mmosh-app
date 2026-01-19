@@ -114,10 +114,10 @@ export const Step3: React.FC<Step3Props> = ({
   return (
     <>
       <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
-        <div className="flex items-center justify-center">
+        <div className="lg:flex items-center justify-center">
           <EarlyAccessCircleVW />
           <form
-            className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8"
+            className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8"
             onSubmit={handleSubmit}
           >
             <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">

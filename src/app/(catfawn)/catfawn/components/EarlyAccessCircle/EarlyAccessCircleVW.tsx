@@ -2,8 +2,7 @@ export const EarlyAccessCircleVW = () => {
   return (
     <div className="flex flex-col gap-[1.875rem]">
       <h1 className="font-poppinsNew text-[2.188rem] max-md:text-2xl font-bold leading-[110%] max-lg:text-center bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-        Join the CAT FAWN Connection <br className="max-md:hidden" />
-        Early Access Circle
+        Join the Kinship Intelligence
       </h1>
 
       <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">

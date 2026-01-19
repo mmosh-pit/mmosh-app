@@ -9,7 +9,7 @@ export const CheckBoxVW = (props: CheckBoxVWProps) => {
     <label className="flex items-center gap-0.5 cursor-pointer">
       <input
         type="checkbox"
-        className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+        className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem] bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
         checked={hasChecked}
         onChange={onChange}
       />

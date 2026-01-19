@@ -23,13 +23,13 @@ const Footer = () => {
 
   return (
     <footer className="items-start pb-12 md:px-16 lg:px-32 px-8 pt-8">
-      <div className=" items-center flex">
+      <div className=" items-center lg:flex place-self-center">
         <div className="">
           <KinshipMainIcon />
         </div>
 
-        <div className=" ml-[20rem] w-[50.063rem]">
-          <ul className="flex justify-between font-normal">
+        <div className=" lg:ml-[20rem] lg:w-[50.063rem] place-self-center mt-8 lg:mt-0">
+          <ul className="lg:flex lg:justify-between font-normal">
             <li>
               <a href="#">Bots</a>
             </li>
@@ -49,18 +49,19 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-12">
+      <div className="lg:flex justify-between items-center mt-12 place-self-center">
         <div>
           <p className="text-sm">
-            © 2025 Kinship Bots Club. All Rights Reserved.
+            © 2025 Kinship Intelligence Cooperative, PBC. All Rights Reserved.
+
           </p>
           <p className="text-sm">
-            Kinship Bots™ and Where AI Belongs™ are trademarks of
+            Kinship Intelligence™ Kinship Bots™ and Where AI Belongs™ are trademarks of
           </p>
-          <p className="text-sm">Kinship Bots Club.</p>
+          <p className="text-sm">Kinship Intelligence, a Colorado Cooperative and Public Benefit Corporation.</p>
         </div>
         <div>
-          <ul className="flex ml-96 space-x-6 items-center ">
+          <ul className="flex lg:ml-96 space-x-6 items-center mt-6 lg:mt-0">
             <li>
               <a href="#">
                 <YoutubeIcon width={24} height={24} />

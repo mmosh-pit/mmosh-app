@@ -20,6 +20,10 @@ import { Step1 } from "../(main)/components/EarlyAccess/Step1/Step1";
 import { Step2 } from "../(main)/components/EarlyAccess/Step2/Step2";
 import Step3 from "../(main)/components/EarlyAccess/Step3/Step3";
 import Step4 from "../(main)/components/EarlyAccess/Step4/Step4";
+import Step5 from "../(main)/components/EarlyAccess/Step5/Step5";
+import Step6 from "../(main)/components/EarlyAccess/Step6/Step6";
+import Step7 from "../(main)/components/EarlyAccess/Step7/Step7";
+import Step8 from "../(main)/components/EarlyAccess/Step8/Step8";
 
 export default function LandingPage() {
   const screenSize = useCheckDeviceScreenSize();
@@ -63,7 +67,7 @@ export default function LandingPage() {
 
   const isMobileScreen = screenSize < 1200;
 
-  const [currentStep, setCurrentStep] = useState<number>(4);
+  const [currentStep, setCurrentStep] = useState<number>(8);
 
   const openSignUpModal = () => {
     window.open("https://www.kinshipbots.com/catfawn", "_blank");
@@ -1121,6 +1125,10 @@ export default function LandingPage() {
         {currentStep === 2 && <Step2 />}
         {currentStep === 3 && <Step3 />}
         {currentStep === 4 && <Step4 />}
+        {currentStep === 5 && <Step5 />}
+        {currentStep === 6 && <Step6 />}
+        {currentStep === 7 && <Step7 />}
+        {currentStep === 8 && <Step8/>}
       </div>
     </div>
   );

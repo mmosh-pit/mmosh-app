@@ -1,48 +1,54 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
 
-export const Step2 = () => {
-  const router = useRouter();
-  const [cachedData, setCachedData] = React.useState<any>({});
+interface Step2Props {
+  onSuccess?: () => void;
+  onBack?: () => void;
+}
 
+export const Step2: React.FC<Step2Props> = ({ onSuccess, onBack }) => {
+  const [cachedData, setCachedData] = React.useState<any>({});
   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
   const [showMsg, setShowMsg] = React.useState(true);
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [hasInvalid, setHasInvalid] = React.useState<boolean>(false);
-  const [hasLoadingResendOTP, setHasLoadingResendOTP] =
-    React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [hasInvalid, setHasInvalid] = React.useState(false);
+  const [hasLoadingResendOTP, setHasLoadingResendOTP] = React.useState(false);
 
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  //   React.useEffect(() => {
-  //     const stored = localStorage.getItem("catfawn-data");
-  //     if (!stored) {
-  //       return router.replace("/catfawn");
-  //     }
-  //     try {
-  //       const result = JSON.parse(stored);
-  //       setCachedData(result);
-  //       if (
-  //         result?.completedSteps !== undefined &&
-  //         (result?.completedSteps < 1 ||
-  //           result?.hasVerifiedEmail ||
-  //           result?.hasVerifiedEmail === undefined)
-  //       ) {
-  //         router.replace(`/${result.currentStep}`);
-  //       }
-  //     } catch {
-  //       router.replace("/catfawn");
-  //     }
-  //   }, []);
+  // ✅ Load cachedData from localStorage on mount
+  React.useEffect(() => {
+    const stored = localStorage.getItem("early-access-data");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setCachedData(parsed);
+      } catch {
+        setCachedData({});
+      }
+    }
+  }, []);
+
+  const createMessage = (message: string, type: "error" | "success") => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMsgText(message);
+    setMsgClass(type);
+    setShowMsg(true);
+
+    if (msgTimeoutRef.current) clearTimeout(msgTimeoutRef.current);
+    msgTimeoutRef.current = setTimeout(() => {
+      setShowMsg(false);
+      msgTimeoutRef.current = null;
+    }, 4000);
+  };
 
   const handleOtpChange = (value: string, index: number) => {
     if (!/^[0-9]?$/.test(value)) return;
@@ -52,22 +58,15 @@ export const Step2 = () => {
     updated[index] = value;
     setOtp(updated);
 
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) inputRefs.current[index + 1]?.focus();
   };
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     setHasInvalid(false);
 
     if (e.key === "Backspace") {
       e.preventDefault();
-
       const updated = [...otp];
-
       if (otp[index]) {
         updated[index] = "";
         setOtp(updated);
@@ -80,10 +79,27 @@ export const Step2 = () => {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+    e.preventDefault();
+    setHasInvalid(false);
+
+    const pasteData = e.clipboardData.getData("text").trim();
+    if (!/^\d+$/.test(pasteData)) return;
+
+    const digits = pasteData.split("").slice(0, 6);
+    const updated = [...otp];
+    digits.forEach((digit, i) => {
+      if (index + i < 6) updated[index + i] = digit;
+    });
+
+    setOtp(updated);
+    const nextPos = Math.min(index + digits.length - 1, 5);
+    inputRefs.current[nextPos]?.focus();
+  };
+
   const verifyOTP = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const code = otp.join("");
-
     if (code.length !== 6) {
       createMessage("Please enter all 6 digits", "error");
       return;
@@ -98,108 +114,66 @@ export const Step2 = () => {
       });
 
       if (result.data.status) {
-        localStorage.setItem(
-          "catfawn-data",
-          JSON.stringify({
-            ...cachedData,
-            currentStep: "catfawn/step3",
-            hasVerifiedEmail: true,
-            completedSteps:
-              cachedData.completedSteps && cachedData.completedSteps < 2
-                ? 2
-                : cachedData.completedSteps,
-          })
-        );
-        router.replace("/catfawn/step3");
+        // ✅ Update localStorage with currentStep: step3
+        const updatedData = {
+          ...cachedData,
+          hasVerifiedEmail: true,
+          currentStep: "3",
+        };
+
+        localStorage.setItem("early-access-data", JSON.stringify(updatedData));
+        setCachedData(updatedData);
+
+        if (onSuccess) {
+          onSuccess();
+        }
       } else {
         setHasInvalid(true);
-        setIsLoading(false);
-        createMessage(
-          result.data.message || "Invalid verification code.",
-          "error"
-        );
+        createMessage(result.data.message || "Invalid verification code.", "error");
       }
-    } catch (err) {
+    } catch {
+      createMessage("Something went wrong. Please try again.", "error");
+    } finally {
       setIsLoading(false);
-      createMessage("Something went wrong. Try again.", "error");
     }
   };
 
   const resendOTP = async () => {
     setHasInvalid(false);
     setHasLoadingResendOTP(true);
-    const result = await axios.post("/api/visitors/resend-otp", {
-      email: cachedData.email,
-      type: "email",
-    });
-    if (result.data.status) {
-      setOtp(["", "", "", "", "", ""]);
-      createMessage(result.data.message, "success");
-    } else {
-      createMessage(result.data.message, "error");
-    }
-    setHasLoadingResendOTP(false);
-  };
 
-  const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo(0, 0);
+    try {
+      const result = await axios.post("/api/visitors/resend-otp", {
+        email: cachedData.email,
+        type: "email",
+      });
 
-    setMsgText(message);
-    setMsgClass(type);
-    setShowMsg(true);
-
-    if (msgTimeoutRef.current) {
-      clearTimeout(msgTimeoutRef.current);
-    }
-
-    msgTimeoutRef.current = setTimeout(() => {
-      setShowMsg(false);
-      msgTimeoutRef.current = null;
-    }, 4000);
-  };
-
-  const handlePaste = (
-    e: React.ClipboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    e.preventDefault();
-    setHasInvalid(false);
-    const pasteData = e.clipboardData.getData("text").trim();
-
-    if (!/^\d+$/.test(pasteData)) return;
-
-    const digits = pasteData.split("").slice(0, 6);
-    const updated = [...otp];
-
-    digits.forEach((digit, i) => {
-      if (index + i < 6) {
-        updated[index + i] = digit;
+      if (result.data.status) {
+        setOtp(["", "", "", "", "", ""]);
+        createMessage(result.data.message, "success");
+      } else {
+        createMessage(result.data.message, "error");
       }
-    });
-
-    setOtp(updated);
-    const nextPos = Math.min(index + digits.length - 1, 5);
-    inputRefs.current[nextPos]?.focus();
+    } finally {
+      setHasLoadingResendOTP(false);
+    }
   };
 
   const handleBackNavigation = () => {
-    localStorage.setItem(
-      "catfawn-data",
-      JSON.stringify({
-        ...cachedData,
-        currentStep: "catfawn",
-      })
-    );
-    router.replace("/catfawn");
+    const updatedData = {
+      ...cachedData,
+      currentStep: "1",
+    };
+    localStorage.setItem("early-access-data", JSON.stringify(updatedData));
+    setCachedData(updatedData);
+
+    if (onBack) onBack();
   };
+
 
   return (
     <>
-      <ErrorContainerVW
-        showMessage={showMsg}
-        className={msgClass}
-        messageText={msgText}
-      />
+      <ErrorContainerVW showMessage={showMsg} className={msgClass} messageText={msgText} />
       <div className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
@@ -211,10 +185,7 @@ export const Step2 = () => {
             <p className="max-sm:text-base font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
               Step 2 of 8: Enter your name and email address.
               <span className="text-[#FFFFFFE5] font-normal font-avenir -tracking-[0.02em]">
-                {" "}
-                We’ll send a link to verify it’s really you. {
-                  cachedData.email
-                }{" "}
+                {" "}We’ll send a link to verify it’s really you. {cachedData.email}{" "}
               </span>
               <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-relaxed lg:leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
                 <ul className="ml-6 list-disc font-avenir">
@@ -224,10 +195,7 @@ export const Step2 = () => {
                 </ul>
               </div>
             </p>
-            <form
-              className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal"
-              onSubmit={verifyOTP}
-            >
+            <form className="mt-[1.25rem] text-[1rem] max-md:text-sm font-normal" onSubmit={verifyOTP}>
               <div className="max-sm:w-auto max-lg:w-max max-lg:mx-auto max-lg:text-center">
                 <label className="block mb-[0.313rem] text-[1rem] leading-[100%] text-[#FFFFFFCC] max-lg:mx-auto">
                   Enter your 6-digit code
@@ -239,51 +207,29 @@ export const Step2 = () => {
                       type="text"
                       maxLength={1}
                       value={digit}
-                      ref={(el) => {
-                        inputRefs.current[idx] = el;
-                      }}
+                      ref={(el) => { inputRefs.current[idx] = el; }}
                       onChange={(e) => handleOtpChange(e.target.value, idx)}
                       onKeyDown={(e) => handleKeyDown(e, idx)}
                       onPaste={(e) => handlePaste(e, idx)}
-                      // className={`text-center w-14 h-[3.438rem] max-[410px]:w-8 max-[410px]:h-8 max-[510px]:w-12 max-[510px]:h-12 max-sm:w-[4.063rem] max-sm:h-[4.063rem] max-lg:w-20 max-lg:h-20 p-5 rounded-lg backdrop-blur-[12.16px] border text-white focus:outline-none ${hasInvalid ? "bg-[#F8060624] border-[#F806068F]" : "bg-[#402A2A] border-[#FFFFFF29] focus:border-white"}`}
-
-                      className={`aspect-square 
-                w-[clamp(0.7rem,9vw,3.5rem)]
-                rounded-lg 
-                text-center text-lg sm:text-xl font-semibold
-                backdrop-blur 
-                border text-white
-                focus:outline-none
-                bg-[#FFFFFF14]
-                border-[#FFFFFF29]
-                ${
-                  hasInvalid
-                    ? ""
-                    : ""
-                }`}
+                      className={`aspect-square w-[clamp(0.7rem,9vw,3.5rem)] rounded-lg text-center text-lg sm:text-xl font-semibold backdrop-blur border text-white focus:outline-none bg-[#FFFFFF14] border-[#FFFFFF29]`}
                     />
                   ))}
                 </div>
 
                 {!hasInvalid && (
                   <span className="text-[0.75rem] inline-block text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em] mt-[0.313rem]">
-                    The code expires in 15 minutes. Didn’t get it? Check your
-                    spam folder or request a new code.
+                    The code expires in 15 minutes. Didn’t get it? Check your spam folder or request a new code.
                   </span>
                 )}
                 {hasInvalid && (
                   <span className="text-[0.75rem] inline-block text-[rgba(255,255,255,0.9)] opacity-70 leading-[140%] font-normal -tracking-[0.02em] mt-[0.313rem]">
-                    That code doesn’t look right. Please check your email and
-                    try again.
+                    That code doesn’t look right. Please check your email and try again.
                   </span>
                 )}
 
                 <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
                   Didn’t get a code?{" "}
-                  <span
-                    onClick={resendOTP}
-                    className="cursor-pointer underline"
-                  >
+                  <span onClick={resendOTP} className="cursor-pointer underline">
                     {hasLoadingResendOTP ? "Sending..." : " Resend code"}
                   </span>
                 </div>

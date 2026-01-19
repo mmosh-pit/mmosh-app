@@ -14,13 +14,17 @@ import "react-phone-input-2/lib/style.css";
 interface ContactDetails {
   mobileNumber: string;
   countryCode: string;
-  telegramUsername: string;
-  blueskyHandle: string;
-  linkedinProfile: string;
   country: string;
+  onSuccess?: () => void;
+  onBack?: () => void;
 }
 
-export default function Step4() {
+interface Step4Props{
+  onSuccess?: () => void;
+  onBack?: () => void;
+}
+
+export const Step4: React.FC<Step4Props> = ({ onSuccess, onBack }) => {
   const router = useRouter();
 
   const [cachedData, setCachedData] = React.useState<any>({});
@@ -35,33 +39,23 @@ export default function Step4() {
   const [contactDetails, setContactDetails] = React.useState<ContactDetails>({
     mobileNumber: "",
     countryCode: "",
-    telegramUsername: "",
-    blueskyHandle: "",
-    linkedinProfile: "",
     country: "",
   });
 
   React.useEffect(() => {
     try {
-      const stored = localStorage.getItem("catfawn-data");
+      const stored = localStorage.getItem("early-access-data");
 
       if (!stored) {
-        router.replace("/catfawn");
+        router.replace("/home_test");
         return;
       }
       const result = JSON.parse(stored);
       setCachedData(result);
 
-      if (result?.completedSteps !== undefined && result?.completedSteps < 22) {
-        router.replace(`/${result.currentStep}`);
-      }
-
       setContactDetails({
         mobileNumber: result.mobileNumber || "",
         countryCode: result.countryCode || "",
-        telegramUsername: result.telegramUsername || "",
-        blueskyHandle: result.blueskyHandle || "",
-        linkedinProfile: result.linkedinProfile || "",
         country: result.country || "",
       });
 
@@ -69,35 +63,10 @@ export default function Step4() {
         setPhone(`+${result.countryCode}${result.mobileNumber}`);
       }
     } catch {
-      router.replace("/catfawn");
+      router.replace("/home_test");
     }
   }, []);
 
-  const handleChange = (field: keyof ContactDetails, value: string) => {
-    setContactDetails((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const isValidTelegram = (username: string) => {
-    if (!username) return true;
-    return /^@?[a-zA-Z](?!.*__)[a-zA-Z0-9_]{3,30}[a-zA-Z0-9]$/.test(username);
-  };
-
-  const isValidBluesky = (handle: string) => {
-    if (!handle) return true;
-    return /^(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(
-      handle
-    );
-  };
-
-  const isValidLinkedIn = (url: string) => {
-    if (!url) return true;
-    return /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]{3,100}\/?$/.test(
-      url.trim()
-    );
-  };
 
   const updateContactDetails = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -109,28 +78,6 @@ export default function Step4() {
 
     if (contactDetails.mobileNumber.trim().length < 8) {
       createMessage("Please enter a valid mobile number.", "error");
-      return;
-    }
-    const telegram = contactDetails.telegramUsername.trim();
-
-    if (!isValidTelegram(telegram)) {
-      createMessage(
-        "Invalid Telegram username. Use 5–32 chars, letters, numbers, underscores.",
-        "error"
-      );
-      return;
-    }
-
-    if (!isValidBluesky(contactDetails.blueskyHandle)) {
-      createMessage(
-        "Invalid Bluesky handle (example: name.bsky.social)",
-        "error"
-      );
-      return;
-    }
-
-    if (!isValidLinkedIn(contactDetails.linkedinProfile)) {
-      createMessage("Invalid LinkedIn profile URL", "error");
       return;
     }
 
@@ -150,25 +97,17 @@ export default function Step4() {
 
         if (result.data.status) {
           localStorage.setItem(
-            "catfawn-data",
+            "early-access-data",
             JSON.stringify({
               ...cachedData,
-              currentStep: "catfawn/step12",
+              currentStep: "5",
               mobileNumber: contactDetails.mobileNumber,
               countryCode: contactDetails.countryCode,
-              telegramUsername: telegram,
-              blueskyHandle: contactDetails.blueskyHandle,
-              linkedinProfile: contactDetails.linkedinProfile,
               country: contactDetails.country,
               isMobileNumberVerified: false,
-              completedSteps:
-                cachedData.completedSteps && cachedData.completedSteps < 23
-                  ? 23
-                  : cachedData.completedSteps,
             })
           );
-
-          router.replace("/catfawn/step12");
+          if (onSuccess) onSuccess();
         } else {
           createMessage(
             result.data.message || "Please check the mobile number",
@@ -182,19 +121,17 @@ export default function Step4() {
       }
     } else {
       localStorage.setItem(
-        "catfawn-data",
+        "early-access-data",
         JSON.stringify({
           ...cachedData,
-          currentStep: "catfawn/step13",
+          currentStep: "6",
         })
       );
-      router.replace("/catfawn/step13");
     }
   };
 
   const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo(0, 0);
-
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -209,6 +146,17 @@ export default function Step4() {
     }, 4000);
   };
 
+  const handleBackNavigation = () => {
+    const updatedData = {
+      ...cachedData,
+      currentStep: "3",
+    };
+    localStorage.setItem("early-access-data", JSON.stringify(updatedData));
+    setCachedData(updatedData);
+
+    if (onBack) onBack();
+  };
+
   return (
     <>
       <ErrorContainerVW
@@ -221,7 +169,7 @@ export default function Step4() {
           <EarlyAccessCircleVW />
           <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
             <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-              <BackArrowVW onClick={() => router.replace("/catfawn/step10")} />
+              <BackArrowVW onClick={handleBackNavigation} />
               Request Early Access
             </h2>
 
@@ -286,9 +234,9 @@ export default function Step4() {
                     }}
                     specialLabel=""
                   />
-                   <span>You’ll get a verification link</span>
+                  <span>You’ll get a verification link</span>
                 </div>
-               
+
 
                 <button
                   type="submit"

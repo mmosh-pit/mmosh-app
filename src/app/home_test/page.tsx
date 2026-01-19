@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useRef, useState } from "react";
 import AlertModal from "../(main)/components/Modal";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
@@ -18,14 +19,17 @@ import XIcon from "@/assets/icons/XIcon";
 import { testimonials } from "@/constants/testimonials";
 import { Step1 } from "../(main)/components/EarlyAccess/Step1/Step1";
 import { Step2 } from "../(main)/components/EarlyAccess/Step2/Step2";
-import Step3 from "../(main)/components/EarlyAccess/Step3/Step3";
-import Step4 from "../(main)/components/EarlyAccess/Step4/Step4";
-import Step5 from "../(main)/components/EarlyAccess/Step5/Step5";
-import Step6 from "../(main)/components/EarlyAccess/Step6/Step6";
-import Step7 from "../(main)/components/EarlyAccess/Step7/Step7";
-import Step8 from "../(main)/components/EarlyAccess/Step8/Step8";
+import { Step3 } from "../(main)/components/EarlyAccess/Step3/Step3";
+import { Step4 } from "../(main)/components/EarlyAccess/Step4/Step4";
+import { Step5 } from "../(main)/components/EarlyAccess/Step5/Step5";
+import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
+import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
+import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
+
+const STORAGE_KEY = "early-access-data";
 
 export default function LandingPage() {
+  
   const screenSize = useCheckDeviceScreenSize();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +49,19 @@ export default function LandingPage() {
   const itemsPerSlide = 3;
 
   const totalSlides = Math.ceil((testimonials?.length || 0) / itemsPerSlide);
+
+    React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setCurrentStep(Number(parsed.currentStep) || 1);
+      }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      setCurrentStep(1);
+    }
+  }, []);
 
   const prevSlide = () => {
     if (!totalSlides) return;
@@ -67,7 +84,7 @@ export default function LandingPage() {
 
   const isMobileScreen = screenSize < 1200;
 
-  const [currentStep, setCurrentStep] = useState<number>(8);
+  const [currentStep, setCurrentStep] = useState<number>(1);
 
   const openSignUpModal = () => {
     window.open("https://www.kinshipbots.com/catfawn", "_blank");
@@ -1121,14 +1138,14 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        {currentStep === 1 && <Step1 />}
-        {currentStep === 2 && <Step2 />}
-        {currentStep === 3 && <Step3 />}
-        {currentStep === 4 && <Step4 />}
-        {currentStep === 5 && <Step5 />}
-        {currentStep === 6 && <Step6 />}
-        {currentStep === 7 && <Step7 />}
-        {currentStep === 8 && <Step8/>}
+        {currentStep === 1 && <Step1 onSuccess={() => setCurrentStep(2)} />}
+        {currentStep === 2 && <Step2 onSuccess={() => setCurrentStep(3)} onBack={() => setCurrentStep(1)} />}
+        {currentStep === 3 && <Step3 onSuccess={() => setCurrentStep(4)} onBack={() => setCurrentStep(2)} />}
+        {currentStep === 4 && <Step4 onSuccess={() => setCurrentStep(5)} onBack={() => setCurrentStep(3)} />}
+        {currentStep === 5 && <Step5 onSuccess={() => setCurrentStep(6)} onBack={() => setCurrentStep(4)}/>}
+        {currentStep === 6 && <Step6 onSuccess={() => setCurrentStep(7)} onBack={() => setCurrentStep(5)} />}
+        {currentStep === 7 && <Step7 onSuccess={() => setCurrentStep(8)} onBack={() => setCurrentStep(6)} />}
+        {currentStep === 8 && <Step8 onBack={() => setCurrentStep(7)} />}
       </div>
     </div>
   );

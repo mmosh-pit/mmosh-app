@@ -2,129 +2,113 @@
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
 import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
-import { InputVW } from "@/app/(catfawn)/catfawn/components/Input/InputVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-export default function Step8() {
+interface Step8Props {
+  onBack?: () => void;
+}
+
+export const Step8: React.FC<Step8Props> = ({ onBack }) => {
   const router = useRouter();
 
-  const [cachedData, setCachedData] = React.useState<any>({});
-  const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const [noCodeChecked, setNoCodeChecked] = React.useState(false);
-  const [kinshipCode, setKinshipCode] = React.useState("");
+  const [cachedData, setCachedData] = useState<any>({});
+  const [aboutYou, setAboutYou] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   const [showMsg, setShowMsg] = useState(false);
   const [msgText, setMsgText] = useState("");
   const [msgClass, setMsgClass] = useState<"success" | "error">("success");
 
-  React.useEffect(() => {
-    const stored = localStorage.getItem("catfawn-data");
-    if (!stored) {
-      return router.replace("/catfawn");
-    }
+  const msgTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("early-access-data");
+    if (!stored) return router.replace("/home_test");
+
     try {
-      const result = JSON.parse(stored);
-      setCachedData(result);
-      if (result?.completedSteps !== undefined && result?.completedSteps < 24) {
-        router.replace(`/${result.currentStep}`);
+      const parsed = JSON.parse(stored);
+      setCachedData(parsed);
+      setAboutYou(parsed.aboutYou || "");
+
+      if (parsed?.completedSteps !== undefined && parsed.completedSteps < 7) {
+        router.replace(`/${parsed.currentStep}`);
       }
-      setKinshipCode(result.referedKinshipCode);
-      setNoCodeChecked(result.noCodeChecked);
     } catch {
-      router.replace("/catfawn");
+      router.replace("/home_test");
     }
   }, []);
 
-  const submitKinshipCode = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!kinshipCode && !noCodeChecked) {
-      createMessage(
-        "Please enter a Kinship Code or confirm that you don’t have one.",
-        "error"
-      );
-      return;
-    }
-
-    if (noCodeChecked && !kinshipCode) {
-      setIsLoading(true);
-      localStorage.setItem(
-        "catfawn-data",
-        JSON.stringify({
-          ...cachedData,
-          referedKinshipCode: "",
-          currentStep: "catfawn/step14",
-          noCodeChecked: true,
-          completedSteps:
-            cachedData.completedSteps && cachedData.completedSteps < 25
-              ? 25
-              : cachedData.completedSteps,
-        })
-      );
-      router.replace("/catfawn/step14");
-      return;
-    }
-
-    if (kinshipCode.length < 6 || kinshipCode.length > 16) {
-      createMessage(
-        "Kinship Code must be between 6 and 16 characters.",
-        "error"
-      );
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      const response = await axios.post("/api/visitors/has-code-exist", {
-        code: kinshipCode,
-      });
-
-      if (!response.data?.status || !response.data?.result?.exists) {
-        createMessage("Invalid Kinship Code. Please try again.", "error");
-        setIsLoading(false);
-        return;
-      }
-
-      localStorage.setItem(
-        "catfawn-data",
-        JSON.stringify({
-          ...cachedData,
-          referedKinshipCode: kinshipCode,
-          noCodeChecked: false,
-          currentStep: "catfawn/step14",
-          completedSteps:
-            cachedData.completedSteps && cachedData.completedSteps < 25
-              ? 25
-              : cachedData.completedSteps,
-        })
-      );
-
-      router.replace("/catfawn/step14");
-    } catch {
-      createMessage("Unable to verify Kinship Code.", "error");
-      setIsLoading(false);
-    }
-  };
-
   const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo(0, 0);
-
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
 
-    if (msgTimeoutRef.current) {
-      clearTimeout(msgTimeoutRef.current);
-    }
-
+    if (msgTimeoutRef.current) clearTimeout(msgTimeoutRef.current);
     msgTimeoutRef.current = setTimeout(() => {
       setShowMsg(false);
       msgTimeoutRef.current = null;
     }, 4000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!aboutYou.trim()) {
+      console.log("Hisss")
+      createMessage("Please tell us about yourself.", "error");
+      return;
+    }
+
+    if (aboutYou.trim().length < 50) {
+      console.log("Hi")
+      createMessage(
+        "Please enter at least 50 characters.",
+        "error"
+      );
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const updatedData = {
+        ...cachedData,
+        about: aboutYou.trim(),
+        completedSteps: 8,
+        currentStep: "complete",
+      };
+
+      const res = await axios.post("/api/visitors/save-early-access", updatedData);
+
+      if (!res.data?.status) {
+        console.log("Hissss111")
+        createMessage(
+          res.data?.message || "Unable to save information",
+          "error"
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      localStorage.removeItem("early-access-data");
+      createMessage("Successfully submitted.", "success");
+      router.replace("/join");
+    } catch {
+              console.log("Hissss1qqq11")
+      createMessage("Something went wrong", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    const updated = { ...cachedData, currentStep: "7" };
+    localStorage.setItem("early-access-data", JSON.stringify(updated));
+    if (onBack) onBack();
   };
 
   return (
@@ -134,12 +118,13 @@ export default function Step8() {
         className={msgClass}
         messageText={msgText}
       />
+
       <div className="bg-[#09073A] p-10 my-10">
         <div className="flex items-center justify-center">
           <EarlyAccessCircleVW />
           <div className="min-h-[29.875rem] ml-[5rem] xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
             <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
-              <BackArrowVW onClick={() => router.replace("/catfawn/step11")} />
+              <BackArrowVW onClick={handleBack} />
               Request Early Access
             </h2>
 
@@ -155,10 +140,16 @@ export default function Step8() {
 
             <form
               className="mt-[1.188rem] min-h-63.5 text-base max-md:text-sm font-normal"
-              onSubmit={submitKinshipCode}
+              onSubmit={handleSubmit}
             >
               <div className="text-[1rem]">
-              <textarea placeholder="5,000 characters" className="textarea textarea-xs w-full min-h-[12rem] bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"></textarea>
+                <textarea
+                  value={aboutYou}
+                  onChange={(e) => setAboutYou(e.target.value)}
+                  placeholder="5,000 characters"
+                  maxLength={5000}
+                  className="textarea textarea-xs w-full min-h-[12rem] bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                ></textarea>
               </div>
 
               <button
@@ -173,4 +164,4 @@ export default function Step8() {
       </div>
     </>
   );
-}
+};

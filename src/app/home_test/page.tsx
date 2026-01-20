@@ -33,6 +33,12 @@ import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer
 const STORAGE_KEY = "early-access-data";
 
 export default function LandingPage() {
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const screenSize = useCheckDeviceScreenSize();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,7 +92,7 @@ export default function LandingPage() {
     belowHeroRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const isMobileScreen = screenSize < 1200;
+  const isMobileScreen = mounted ? screenSize < 1200 : false;
 
   const [currentStep, setCurrentStep] = useState<number>(1);
 
@@ -120,12 +126,20 @@ export default function LandingPage() {
       block: "start",
     });
   };
+
   const scrollToEarlyAccess = () => {
-    earlyAccessRef.current?.scrollIntoView({
+    if (!earlyAccessRef.current) return;
+
+    const offset = 80;
+    const elementTop =
+      earlyAccessRef.current.getBoundingClientRect().top + window.pageYOffset;
+
+    window.scrollTo({
+      top: elementTop - offset,
       behavior: "smooth",
-      block: "start",
     });
   };
+
 
   const scrollToCollectiveEconomics = () => {
     collectiveEconomicsRef.current?.scrollIntoView({
@@ -1029,37 +1043,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        {/* <div className="lg:flex justify-around lg:my-10 lg:mx-[35rem] mx-auto ">
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl  ">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Drago Reid
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                The Starseed Channel
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Quantum healing, ascension, and cosmic remembrance across time,
-                space, and the space-memory network
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                David Levine
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                Mapshifting
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Building meaningful businesses—mission-driven work,
-                integrity-led growth, and discovering your true role in life.
-              </p>
-            </div>
-          </div>
-        </div> */}
+       
         <section className="py-16 max-w-[1144px] mx-auto">
           <div>
             <h3 className="  transition duration-300 place-self-center sm:text-left text-2xl sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
@@ -1179,7 +1163,7 @@ export default function LandingPage() {
           <Step3
             onSuccess={() => setCurrentStep(4)}
             earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(2)}
+            onBack={() => setCurrentStep(1)}
             setShowMsg={setShowMsg}
             setMsgClass={setMsgClass}
             setMsgText={setMsgText}
@@ -1238,6 +1222,4 @@ export default function LandingPage() {
     </div>
   );
 }
-function setCurrentSlide(arg0: (prev: any) => number) {
-  throw new Error("Function not implemented.");
-}
+

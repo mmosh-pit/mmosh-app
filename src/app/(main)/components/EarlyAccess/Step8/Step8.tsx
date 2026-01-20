@@ -49,7 +49,6 @@ export const Step8 = ({
   }, []);
 
   const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -65,13 +64,11 @@ export const Step8 = ({
     e.preventDefault();
 
     if (!aboutYou.trim()) {
-      console.log("Hisss");
       createMessage("Please tell us about yourself.", "error");
       return;
     }
 
     if (aboutYou.trim().length < 50) {
-      console.log("Hi");
       createMessage("Please enter at least 50 characters.", "error");
       return;
     }
@@ -92,7 +89,6 @@ export const Step8 = ({
       );
 
       if (!res.data?.status) {
-        console.log("Hissss111");
         createMessage(
           res.data?.message || "Unable to save information",
           "error"
@@ -105,7 +101,6 @@ export const Step8 = ({
       createMessage("Successfully submitted.", "success");
       router.replace("/join");
     } catch {
-      console.log("Hissss1qqq11");
       createMessage("Something went wrong", "error");
     } finally {
       setIsLoading(false);

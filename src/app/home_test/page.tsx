@@ -120,12 +120,20 @@ export default function LandingPage() {
       block: "start",
     });
   };
+
   const scrollToEarlyAccess = () => {
-    earlyAccessRef.current?.scrollIntoView({
+    if (!earlyAccessRef.current) return;
+
+    const offset = 80;
+    const elementTop =
+      earlyAccessRef.current.getBoundingClientRect().top + window.pageYOffset;
+
+    window.scrollTo({
+      top: elementTop - offset,
       behavior: "smooth",
-      block: "start",
     });
   };
+
 
   const scrollToCollectiveEconomics = () => {
     collectiveEconomicsRef.current?.scrollIntoView({
@@ -1238,6 +1246,4 @@ export default function LandingPage() {
     </div>
   );
 }
-function setCurrentSlide(arg0: (prev: any) => number) {
-  throw new Error("Function not implemented.");
-}
+

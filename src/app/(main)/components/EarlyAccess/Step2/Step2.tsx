@@ -46,7 +46,6 @@ export const Step2: React.FC<Step2Props> = ({
   }, []);
 
   const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);

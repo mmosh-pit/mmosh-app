@@ -1029,37 +1029,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        {/* <div className="lg:flex justify-around lg:my-10 lg:mx-[35rem] mx-auto ">
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl  ">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Drago Reid
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                The Starseed Channel
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Quantum healing, ascension, and cosmic remembrance across time,
-                space, and the space-memory network
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                David Levine
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                Mapshifting
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Building meaningful businesses—mission-driven work,
-                integrity-led growth, and discovering your true role in life.
-              </p>
-            </div>
-          </div>
-        </div> */}
+       
         <section className="py-16 max-w-[1144px] mx-auto">
           <div>
             <h3 className="  transition duration-300 place-self-center sm:text-left text-2xl sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">

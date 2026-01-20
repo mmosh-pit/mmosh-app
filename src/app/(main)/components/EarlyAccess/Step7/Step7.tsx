@@ -56,7 +56,7 @@ export const Step7 = ({
     e.preventDefault();
     if (!kinshipCode && !noCodeChecked) {
       createMessage(
-        "Please enter a Kinship Code or confirm that you don’t have one.",
+        "Please enter a Kinship Code or confirm that you don’t have code.",
         "error"
       );
       return;
@@ -77,7 +77,7 @@ export const Step7 = ({
       return;
     }
 
-    if (kinshipCode.length < 6 || kinshipCode.length > 16) {
+    if (kinshipCode.length < 6) {
       createMessage(
         "Kinship Code must be between 6 and 16 characters.",
         "error"
@@ -116,7 +116,6 @@ export const Step7 = ({
   };
 
   const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -169,7 +168,6 @@ export const Step7 = ({
                     setKinshipCode(event.target.value.trim());
                     if (event.target.value) setNoCodeChecked(false);
                   }}
-                  minLength={6}
                   maxLength={16}
                 />
 

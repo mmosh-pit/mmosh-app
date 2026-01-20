@@ -47,31 +47,25 @@ export const Step1: React.FC<Step1Props> = ({
 
   const validateForm = () => {
     if (!firstName.trim()) {
-      console.log("=================CHECK1==================");
       createMessage("First name is required", "error");
       return false;
     } else if (firstName.trim().length < 2) {
-      console.log("=================CHECK2==================");
       createMessage("First name must be at least 2 characters", "error");
       return false;
     } else if (firstName.trim().length > 16) {
-      console.log("=================CHECK3==================");
       createMessage("First name can be up to 16 characters only", "error");
       return false;
     }
 
     if (!email.trim()) {
-      console.log("=================CHECK4==================");
       createMessage("Email is required", "error");
       return false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email.trim())) {
-      console.log("=================CHECK5==================");
       createMessage("Please enter a valid email address", "error");
       return false;
     }
 
     if (!hasChecked) {
-      console.log("=================CHECK6==================");
       createMessage(
         "You must agree to receive communications before continuing",
         "error"
@@ -111,20 +105,12 @@ export const Step1: React.FC<Step1Props> = ({
           onSuccess();
         }
       } else {
-        console.log(
-          "=================CHECK7==================",
-          response.data?.message
-        );
         createMessage(
           response.data?.message || "Something went wrong",
           "error"
         );
       }
     } catch (err: any) {
-      console.log(
-        "=================CHECK8==================",
-        err?.response?.data?.message
-      );
       createMessage(
         err?.response?.data?.message ||
           "Unable to generate OTP. Please try again.",
@@ -136,8 +122,6 @@ export const Step1: React.FC<Step1Props> = ({
   };
 
   const createMessage = (message: string, type: "error" | "success") => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -181,6 +165,7 @@ export const Step1: React.FC<Step1Props> = ({
                     placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    maxLength={16}
                   />
                 </fieldset>
 

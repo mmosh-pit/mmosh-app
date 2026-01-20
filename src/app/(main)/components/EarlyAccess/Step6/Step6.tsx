@@ -98,7 +98,7 @@ export const Step6 = ({
   };
 
   const handleBackNavigation = () => {
-    const updatedData = { ...cachedData, currentStep: "5" };
+    const updatedData = { ...cachedData, currentStep: "4" };
     localStorage.setItem("early-access-data", JSON.stringify(updatedData));
     setCachedData(updatedData);
     if (onBack) onBack();

@@ -33,6 +33,12 @@ import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer
 const STORAGE_KEY = "early-access-data";
 
 export default function LandingPage() {
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const screenSize = useCheckDeviceScreenSize();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,7 +92,7 @@ export default function LandingPage() {
     belowHeroRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const isMobileScreen = screenSize < 1200;
+  const isMobileScreen = mounted ? screenSize < 1200 : false;
 
   const [currentStep, setCurrentStep] = useState<number>(1);
 

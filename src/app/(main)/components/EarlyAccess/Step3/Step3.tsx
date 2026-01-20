@@ -138,6 +138,7 @@ export const Step3: React.FC<Step3Props> = ({
                 <input
                   type="password"
                   className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                  maxLength={32}
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -148,6 +149,7 @@ export const Step3: React.FC<Step3Props> = ({
                 <input
                   type="password"
                   className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                  maxLength={32}
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}

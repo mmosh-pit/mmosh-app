@@ -175,7 +175,7 @@ export const Step4: React.FC<Step4Props> = ({
             </h2>
 
             <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-5 -tracking-[0.04em]">
-              Step 4 of 8: Enter your name and email address.{" "}
+              Step 4 of 8: Enter your mobile number.{" "}
               <span className="font-normal font-avenir">
                 {" "}
                 We’ll send a link to verify it’s really you.
@@ -187,7 +187,7 @@ export const Step4: React.FC<Step4Props> = ({
               onSubmit={updateContactDetails}
             >
               <div className="flex flex-col gap-[0.25rem]">
-                <div className="z-50">
+                <div>
                   <label className="block text-[0.813rem] mb-[0.125rem] font-normal leading-[100%] text-[#FFFFFFCC]">
                     Mobile number *
                   </label>

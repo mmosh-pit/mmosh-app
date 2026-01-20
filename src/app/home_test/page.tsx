@@ -1187,7 +1187,7 @@ export default function LandingPage() {
           <Step3
             onSuccess={() => setCurrentStep(4)}
             earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(2)}
+            onBack={() => setCurrentStep(1)}
             setShowMsg={setShowMsg}
             setMsgClass={setMsgClass}
             setMsgText={setMsgText}

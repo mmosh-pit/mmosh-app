@@ -179,6 +179,7 @@ export const Step1: React.FC<Step1Props> = ({
                     placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    maxLength={16}
                   />
                 </fieldset>
 

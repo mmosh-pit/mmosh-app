@@ -45,7 +45,7 @@ export const Step2: React.FC<Step2Props> = ({
     }
   }, []);
 
-  const createMessage = (message: string, type: "error" | "success") => {
+  const createMessage = (message: string, type: "error" | "success" | "warn") => {
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -165,8 +165,7 @@ export const Step2: React.FC<Step2Props> = ({
       });
 
       if (result.data.status) {
-        setOtp(["", "", "", "", "", ""]);
-        createMessage(result.data.message, "success");
+        createMessage(result.data.message, "warn");
       } else {
         createMessage(result.data.message, "error");
       }

@@ -5,7 +5,7 @@ export const EarlyAccessCircleVW = () => {
         Join the Kinship Intelligence
       </h1>
 
-      <div className="text-[1rem] text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap">
+      <div className="text-[1rem] max-md:px-5 text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap max-lg:mb-3">
         <p>
           Be among the first to use CAT FAWN Connection
           <br />

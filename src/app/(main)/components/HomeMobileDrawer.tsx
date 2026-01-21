@@ -27,8 +27,8 @@ const HomeMobileDrawer = () => {
           className="drawer-overlay"
           onClick={() => setIsDrawerOpen(false)}
         ></label>
-        <div className="flex flex-col menu p-4 w-80 min-h-full bg-[#09073A] text-base-content">
-          <div className="flex flex-col">
+        <div className="flex flex-col menu p-8 w-80 min-h-full bg-[#09073A] text-base-content">
+          <div className="flex flex-col gap-8">
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => { }}
@@ -36,7 +36,6 @@ const HomeMobileDrawer = () => {
               Training
             </a>
 
-            <div className=" my-6" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -45,16 +44,12 @@ const HomeMobileDrawer = () => {
               Docs
             </a>
 
-            <div className=" my-6" />
-
             <a
               className="text-base text-white cursor-pointer"
               onClick={() => { }}
             >
               Pricing
             </a>
-
-            <div className=" my-6" />
 
             <a
               className="text-base text-white cursor-pointer"
@@ -64,7 +59,7 @@ const HomeMobileDrawer = () => {
             </a>
           </div>
 
-          <div className="h-[1px] w-[90%] bg-white mt-4" />
+          <div className="h-[1px] w-[90%] bg-white mt-8" />
         </div>
       </div>
     </div>

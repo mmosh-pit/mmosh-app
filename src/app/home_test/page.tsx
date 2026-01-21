@@ -26,9 +26,6 @@ import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
 import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
 import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
-// import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
-// import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
-// import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 
 const STORAGE_KEY = "early-access-data";
 
@@ -161,7 +158,7 @@ export default function LandingPage() {
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
-        <div className="flex justify-between items-center md:px-16 px-4 py-8 bg-[#32323212] md:backdrop-filter md:backdrop-blur-[13px] md:rounded-full w-full lg:w-[80%] self-center">
+        <div className="flex justify-between items-center md:px-16 px-4 max-md:py-4 py-8 bg-[#32323212] md:backdrop-filter md:backdrop-blur-[13px] md:rounded-full w-full lg:w-[80%] self-center">
           {!isMobileScreen && (
             <button
               onClick={() =>
@@ -248,13 +245,13 @@ export default function LandingPage() {
         initialStep={initialModalStep}
       />
       <div
-        className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full "
+        className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"
         ref={mainSection}
       >
-        <div className="text-center relative">
+        <div className="text-center relative max-md:mt-20">
           <div className="relative">
             <video
-              className="w-full h-auto mx-auto rounded-lg"
+              className="w-full h-auto mx-auto rounded-lg "
               autoPlay
               muted
               loop={false}
@@ -266,11 +263,11 @@ export default function LandingPage() {
               />
               Your browser does not support the video tag.
             </video>
-            <div className=" absolute top-0 w-full h-[13px] bg-[linear-gradient(0deg,rgba(3,1,27,0)_0%,#03011B_100%)] backdrop-blur-[5px]"></div>
-            <div className=" absolute bottom-0 w-full h-44 bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
-            <div className=" absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
-            <div className=" absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
-            <div className=" absolute w-full h-full top-0 left-0 flex justify-center items-center">
+            <div className="max-md:hidden absolute top-0 w-full h-[13px] bg-[linear-gradient(0deg,rgba(3,1,27,0)_0%,#03011B_100%)] backdrop-blur-[5px]"></div>
+            <div className="max-md:hidden absolute bottom-0 w-full h-44 bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+            <div className="max-md:hidden absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
+            <div className="max-md:hidden absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
+            <div className=" max-md:static max-md:mt-6 absolute w-full h-full top-0 left-0 flex justify-center items-center">
               <div
                 className="m-auto md:max-w-[45%] max-w-[85%] lg:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] lg:p-[20px] p-[10px] "
                 ref={homeSection}
@@ -330,12 +327,12 @@ export default function LandingPage() {
         >
           <div className="">
             <div ref={originStoryRef} className="scroll-mt-[120px]">
-              <h1 className="text-center font-bold lg:px-5 leading-[1] lg:w-[65.063rem] lg:text-[3.75rem] text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+              <h1 className="text-center font-bold lg:px-5 leading-[1] lg:w-[65.063rem] lg:text-[3.75rem] text-xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 I went to make a film. <br />I returned with a mission.
               </h1>
             </div>
 
-            <p className="text-center text-[#FFFFFFC7] mt-[1rem] ">
+            <p className="max-md:text-sm text-center text-[#FFFFFFC7] mt-[1rem] ">
               A journey to Mexico, a conversation with Four Arrows, and the
               moment Kinship Intelligence was born.
             </p>
@@ -351,7 +348,7 @@ export default function LandingPage() {
             </div>
 
             <div className="lg:w-[64.313rem] m-auto">
-              <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem]">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem]">
                 In December 2019, I traveled to Mexico to film Four Arrows for a
                 documentary exploring the deeper roots of our interconnected
                 crises—poverty, war, displacement, mental health, and ecological
@@ -379,7 +376,7 @@ export default function LandingPage() {
                 </span>{" "}
                 when challenges are faced and patterns activated.{" "}
               </p>
-              <p className="text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
                 I built Kinship Intelligence to support creators like Four
                 Arrows, whose work doesn’t fit within the constraints of
                 documents, videos or audio files, and to support the people who
@@ -400,15 +397,15 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-24">
+          <div className="mt-24 max-md:mt-12">
             <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]">
-              <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+              <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 Kinship Intelligence is a creator cooperative, living
                 infrastructure for collective evolution.
               </h1>
             </div>
 
-            <p className="text-center text-lg text-[#FFFFFFC7] lg:px-[2rem] lg:w-[60rem] m-auto">
+            <p className="max-md:text-sm max-md:px-2 max-md:mt-4 text-center text-lg text-[#FFFFFFC7] lg:px-[2rem] lg:w-[60rem] m-auto">
               Most platforms are built from content to consume, tasks to
               complete, files to open, and feeds to refresh. Kinship
               Intelligence is different. It’s a continuous process for guiding,
@@ -426,7 +423,7 @@ export default function LandingPage() {
             </p>
           </div>
         </section>
-        <div className="lg:flex justify-around lg:my-10 lg:mx-20 mx-auto ">
+        <div className="lg:flex justify-around max-md:px-3 lg:my-10 lg:mx-20 mx-auto ">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">Health</p>
@@ -485,19 +482,19 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        <div className="mt-40">
-          <h1 className="text-center font-bold lg:px-10 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div className="mt-40 max-md:mt-12 max-md:px-3">
+          <h1 className="text-center font-bold lg:px-10 leading-[1] lg:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             When they need it most. Change Yourself, Change Your Life, Change
             The World.
           </h1>
           <div className="lg:w-[70.188rem] m-auto">
-            <p className="text-center text-lg text-[#FFFFFFC7] mt-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mt-5">
               You didn’t choose this work casually.
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] mb-2">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mb-2">
               It chose you.
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] mb-2">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mb-2">
               You carry a vision you’re meant to bring into the world—something
               you’ve lived, practiced, and tested long enough to know it
               matters. Not as content. Not as a brand. But as a way of seeing,
@@ -527,23 +524,22 @@ export default function LandingPage() {
               platform. You need a system that can{" "}
               <span className="text-white font-bold text-lg">
                 hold what you’re here
-              </span>
-              for—faithfully, with integrity, for the ages. Kinship Intelligence
+              </span>{" "}for—faithfully, with integrity, for the ages. Kinship Intelligence
               is here for you.
             </p>
           </div>
         </div>
-        <div className="mt-20">
-          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] text-3xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div className="mt-20 max-md:mt-12 max-md:px-3">
+          <h1 className="text-center font-bold leading-[1] lg:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Right now, your work is spread across too many surfaces.{" "}
           </h1>
           <div className="lg:w-[52.188rem] m-auto">
-            <p className="text-center text-lg text-[#FFFFFFC7] mt-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mt-5">
               Adding more content, marketing, tools, programs, and offers won’t
               help, because the tools you’ve had were never designed to carry
               transformational work. You see it for yourself:
             </p>
-            <ul className="text-lg text-[#FFFFFFC7] list-disc space-y-3 mt-8 mx-auto">
+            <ul className="max-md:text-sm text-lg text-[#FFFFFFC7] list-disc space-y-3 mt-8 mx-auto max-md:px-4">
               <li>
                 Creating content just to please the algorithms and stay visible,
                 instead of making every word count
@@ -576,19 +572,19 @@ export default function LandingPage() {
                 when you’re not there to support
               </li>
             </ul>
-            <p className="text-lg text-[#FFFFFFC7] my-5">
+            <p className="text-lg max-md:text-sm text-[#FFFFFFC7] my-5">
               Knowing your deepest, most powerful work doesn’t scale—because it
               still depends on your presence – everywhere – with everyone – all
               the time
             </p>
           </div>
         </div>
-        <div className="my-20">
-          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] text-3xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div className="my-20 max-md:mt-12 max-md:mb-0 max-md:px-3">
+          <h1 className="text-center font-bold  leading-[1] lg:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             You don’t need another platform.{" "}
           </h1>
           <div className="lg:w-[52.188rem] m-auto">
-            <p className="text-center text-lg text-[#FFFFFFC7] mt-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mt-5">
               You need a living system that holds your blueprint, your personal
               algorithm, your source code—so your work stays present, available,
               and powerful with or without you in the room or on the Zoom.
@@ -599,15 +595,15 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
-        <div className="mt-24">
-          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div className="mt-24 max-md:mt-12 max-md:px-3">
+          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             A living system of intelligence, relationship, and action.
           </h1>
-          <p className="text-center text-lg text-[#FFFFFFC7]  mt-5 mb-2">
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mt-5 mb-2">
             Kinship Intelligence is a coherent field where autonomous agents
             work together, continuously, <br /> in service of human evolution.
           </p>
-          <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[60rem] m-auto">
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] lg:w-[60rem] m-auto">
             Every aspect of Kinship is a bot that carries a specific
             responsibility, awareness, and scope of action. Together, they stay
             present, responsive and supportive for members in the moment and
@@ -616,7 +612,7 @@ export default function LandingPage() {
             and deep integration.
           </p>
         </div>
-        <div className="lg:flex justify-between lg:my-10 lg:w-[70rem] mx-auto">
+        <div className="max-md:px-3 max-md:mt-5 lg:flex justify-between lg:my-10 lg:w-[70rem] mx-auto">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[20.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
@@ -660,7 +656,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        <div className="lg:flex justify-between lg:my-10 lg:w-[45rem] mx-auto">
+        <div className="max-md:px-3 lg:flex justify-between lg:my-10 lg:w-[45rem] mx-auto">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[20.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
@@ -691,7 +687,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        <div className="w-[15rem] m-auto ">
+        <div className="w-[15rem] m-auto">
           <button
             className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full"
             onClick={scrollToEarlyAccess}
@@ -699,16 +695,16 @@ export default function LandingPage() {
             Join Early Access
           </button>
         </div>
-        <div className="mt-24">
+        <div className="mt-24 max-md:mt-12 max-md:px-3">
           <div ref={collectiveEconomicsRef} className="scroll-mt-[120px]">
-            <h1 className="text-center font-bold px-12 leading-[1]  text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            <h1 className="text-center font-bold px-12 leading-[1]  md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Member Managed, Member Owned
             </h1>
-            <p className="text-center text-lg text-white font-medium font-Avenir  mt-5 mb-2">
+            <p className="text-center max-md:text-sm text-lg text-white font-medium font-Avenir  mt-5 mb-2">
               Kinship is built on reciprocity, where everyone contributes and
               everyone prospers.
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[65rem] m-auto">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] lg:w-[65rem] m-auto">
               Kinship Intelligence is owned and governed by its members. There
               are no advertisers, no extractive algorithms, and no outside
               stakeholders optimizing for attention or growth at any cost.
@@ -720,34 +716,34 @@ export default function LandingPage() {
               participation, promotion, and creation—not hype.
             </p>
 
-            <h1 className="text-center font-bold px-12 leading-[1]  text-[30px] m-auto font-PoppinsNew  text-[#FFFFFFC7] mt-20">
+            <h1 className="text-center font-bold max-md:px-3 px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7] max-md:mt-12 mt-20">
               Three Ways to Belong — Three Ways to Earn
             </h1>
-            <p className="text-center text-lg text-[#FFFFFFC7] lg:w-[60rem] mx-auto font-medium font-Avenir  mt-5 mb-2">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] lg:w-[60rem] mx-auto font-medium font-Avenir  mt-5 mb-2">
               Big tech platforms are built on extraction. They pretend you’re
               getting something for “free,” but you’re really the product that
               they sell… your data, your creativity, your relationships. And in
               return, you get anxiety, doom, and despair.
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] my-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] my-5">
               Kinship is different.
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[55rem] mx-auto my-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] lg:w-[55rem] mx-auto my-5">
               Here, the people who participate, contribute, and create own the
               system and share in all the benefits, including profits!
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] px-[3rem] lg:w-[65rem] my-5 mx-auto">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] lg:w-[65rem] my-5 mx-auto">
               You’ll get paid immediately when your friends join, a member
               engages with your creations, or someone accepts an offer. And then
               you’ll share in the profit pools at the end of the year.
             </p>
-            <p className="text-center text-lg text-[#FFFFFFC7] px-[2rem] lg:w-[65rem] m-auto">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] lg:w-[65rem] m-auto">
               Software is a great business… Let's take it back from big tech and
               put it in the hands of the people!
             </p>
           </div>
         </div>
-        <div className=" lg:flex justify-around lg:my-10 lg:w-[80rem] mx-auto ">
+        <div className=" lg:flex justify-around lg:my-10 lg:w-[80rem] mx-auto max-md:mt-12 max-md:px-3">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[23.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
@@ -864,12 +860,12 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        <div className="lg:w-[60rem] m-auto my-5">
+        <div className="lg:w-[60rem] m-auto my-5 max-md:mt-12 max-md:mb-0">
           <div ref={foundingCreatorsRef} className="scroll-mt-[120px]">
-            <h1 className="text-center font-bold px-12 leading-[1]  text-[30px] m-auto font-PoppinsNew  text-[#FFFFFFC7] mt-20">
+            <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7] max-md:mt-0 mt-20">
               How Ownership Actually Works{" "}
             </h1>
-            <ul className="text-lg text-[#FFFFFFC7] list-disc mt-5 mx-auto font-avenir w-[50rem]">
+            <ul className="max-md:text-sm text-lg text-[#FFFFFFC7] list-disc mt-5 mx-auto font-avenir md:w-[50rem] max-md:px-6">
               <li>Kinship is a cooperative, not a marketplace.</li>
               <li>
                 Members hold Class A membership shares and govern the system
@@ -884,27 +880,29 @@ export default function LandingPage() {
                 and the long-term public benefit.
               </li>
             </ul>
-            <p className="text-[#FFFFFFC7] mt-2 text-center">
+            <div className="px-3">
+            <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center">
               Software is a great business… Let's take it back from big tech and
               put it in the hands of the people!
             </p>
-            <p className="text-[#FFFFFFC7] text-center">
+            <p className="text-[#FFFFFFC7] max-md:text-sm text-center">
               As Kinship grows, value circulates within the collective, where it
               can benefit you the most.
             </p>
-            <p className="text-[#FFFFFFC7] font-extrabold text-center text-lg my-2">
+            <p className="text-[#FFFFFFC7] font-extrabold max-md:text-sm text-center text-lg my-2">
               We’re showing that human–AI alignment isn’t just a technical
               problem. It’s a governance problem.
             </p>
-            <p className="text-[#FFFFFFC7] font-extrabold text-lg text-center">
+            <p className="text-[#FFFFFFC7] max-md:text-sm font-extrabold text-lg text-center">
               Until the systems we build are owned and guided by those whose
               lives and livelihoods they shape, we’ll keep escalating the same
               destructive patterns—faster, deeper, and at planetary scale.
             </p>
-            <p className="text-[#FFFFFFC7] font-extrabold text-center my-2">
+            <p className="text-[#FFFFFFC7] max-md:text-sm font-extrabold text-center my-2">
               Kinship is what alignment looks like when the systems serve the
               people, not the other way around.
             </p>
+            </div>
           </div>
         </div>
 
@@ -916,17 +914,17 @@ export default function LandingPage() {
             Join Early Access
           </button>
         </div>
-        <div className="mt-24">
-          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] text-[3.75rem] m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div className="mt-24 max-md:mt-12 max-md:px-3">
+          <h1 className="text-center font-bold lg:px-12 leading-[1] lg:w-[65.063rem] md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Our Founding Stewards of the Field are Putting their Heart and Soul
             into Kinship Intelligence.
           </h1>
-          <p className="text-center text-lg text-[#FFFFFFC7]  mt-5 mb-2">
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] mt-5 mb-2">
             Go beyond “content and courses to consume” with these practices to
             experience, embody and live.
           </p>
         </div>
-        <div className="lg:flex justify-around lg:my-10 lg:mx-40 mx-auto ">
+        <div className="lg:flex justify-around max-md:mt-8 lg:my-10 lg:mx-40 mx-auto max-md:px-3">
           <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl  ">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
@@ -984,8 +982,8 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-        <div className="lg:flex justify-around lg:my-10 lg:mx-40  mx-auot">
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl  ">
+        <div className="lg:flex justify-around lg:my-10 lg:mx-40  mx-auto max-md:px-3">
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] lg:w-[18.938rem] mb-5 lg:mb-0 rounded-xl">
             <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
               <p className="text-white font-bold text-xl text-center">
                 Hephzibah Light
@@ -1044,22 +1042,22 @@ export default function LandingPage() {
           </div>
         </div>
        
-        <section className="py-16 max-w-[1144px] mx-auto">
+        <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
           <div>
-            <h3 className="  transition duration-300 place-self-center sm:text-left text-2xl sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+            <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
               Testimonials
             </h3>
           </div>
           <div className="lg:flex items-start">
             <div className="lg:w-[433px] lg:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] lg:mr-4 "></div>
             <div className="flex flex-col  p-4">
-              <p className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 As a tech entrepreneur, executive, and coach, I've worked to
                 share my gifts at every opportunity. Some of this has been
                 one-on-one work with individual clients, some has been group
                 programs.
               </p>
-              <p className="text-justify my-5 text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Kinship Intelligence is designed to offer the same level of
                 care, empathy, insight, precision and power I bring to my
                 consulting and coaching practice. Together, let’s build bots
@@ -1075,7 +1073,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className=" px-4 my-10 mx-auto" ref={testimonialsSection}>
+        <section className="px-4 max-md:my-6 my-10 mx-auto" ref={testimonialsSection}>
           <div className="w-full  px-4">
             <div className="relative max-w-[90rem] mx-auto">
               {/* Navigation Arrows */}

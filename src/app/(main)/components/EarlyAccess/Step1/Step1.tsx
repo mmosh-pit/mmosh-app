@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const STORAGE_KEY = "early-access-data";
 

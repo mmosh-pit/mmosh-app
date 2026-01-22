@@ -7,6 +7,7 @@ import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import Button from "../(main)/components/common/Button";
 import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
+import LandingPageDrawer from "../(main)/components/LandingPageDrawer";
 import HomeMobileDrawer from "../(main)/components/HomeMobileDrawer";
 import AppleIcon from "@/assets/icons/AppleIcon";
 import PlayStoreIcon from "@/assets/icons/PlayStoreIcon";
@@ -171,7 +172,13 @@ export default function LandingPage() {
 
           {isMobileScreen ? (
             <div className="flex flex-col items-center justify-center">
-              <HomeMobileDrawer />
+              <LandingPageDrawer
+                scrollWithOffset={scrollWithOffset}
+                originStoryRef={originStoryRef}
+                scrollToKinshipIntelligence={scrollToKinshipIntelligence}
+                scrollToCollectiveEconomics={scrollToCollectiveEconomics}
+                scrollToFoundingCreators={scrollToFoundingCreators}
+              />
             </div>
           ) : (
             <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
@@ -881,27 +888,27 @@ export default function LandingPage() {
               </li>
             </ul>
             <div className="px-3">
-            <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center">
-              Software is a great business… Let's take it back from big tech and
-              put it in the hands of the people!
-            </p>
-            <p className="text-[#FFFFFFC7] max-md:text-sm text-center">
-              As Kinship grows, value circulates within the collective, where it
-              can benefit you the most.
-            </p>
-            <p className="text-[#FFFFFFC7] font-extrabold max-md:text-sm text-center text-lg my-2">
-              We’re showing that human–AI alignment isn’t just a technical
-              problem. It’s a governance problem.
-            </p>
-            <p className="text-[#FFFFFFC7] max-md:text-sm font-extrabold text-lg text-center">
-              Until the systems we build are owned and guided by those whose
-              lives and livelihoods they shape, we’ll keep escalating the same
-              destructive patterns—faster, deeper, and at planetary scale.
-            </p>
-            <p className="text-[#FFFFFFC7] max-md:text-sm font-extrabold text-center my-2">
-              Kinship is what alignment looks like when the systems serve the
-              people, not the other way around.
-            </p>
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center">
+                Software is a great business… Let's take it back from big tech and
+                put it in the hands of the people!
+              </p>
+              <p className="text-[#FFFFFFC7] max-md:text-sm text-center">
+                As Kinship grows, value circulates within the collective, where it
+                can benefit you the most.
+              </p>
+              <p className="text-[#FFFFFFC7] font-extrabold max-md:text-sm text-center text-lg my-2">
+                We’re showing that human–AI alignment isn’t just a technical
+                problem. It’s a governance problem.
+              </p>
+              <p className="text-[#FFFFFFC7] max-md:text-sm font-extrabold text-lg text-center">
+                Until the systems we build are owned and guided by those whose
+                lives and livelihoods they shape, we’ll keep escalating the same
+                destructive patterns—faster, deeper, and at planetary scale.
+              </p>
+              <p className="text-[#FFFFFFC7] max-md:text-sm font-extrabold text-center my-2">
+                Kinship is what alignment looks like when the systems serve the
+                people, not the other way around.
+              </p>
             </div>
           </div>
         </div>
@@ -1041,7 +1048,7 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-       
+
         <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
           <div>
             <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">

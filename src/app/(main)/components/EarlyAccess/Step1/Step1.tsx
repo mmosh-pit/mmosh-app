@@ -1,8 +1,7 @@
 import React from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
+import { useRouter } from "next/router";
 
 const STORAGE_KEY = "early-access-data";
 
@@ -21,16 +20,16 @@ export const Step1: React.FC<Step1Props> = ({
   setMsgText,
   setMsgClass,
 }) => {
-  const router = useRouter();
 
   const [firstName, setFirstName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [hasChecked, setHasChecked] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const router = useRouter();
+
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Restore from localStorage
   React.useEffect(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -41,7 +40,7 @@ export const Step1: React.FC<Step1Props> = ({
       setEmail(parsed.email || "");
       setHasChecked(parsed.hasChecked ?? true);
     } catch {
-      localStorage.removeItem(STORAGE_KEY);
+      router.replace("/home_test");
     }
   }, []);
 
@@ -76,7 +75,6 @@ export const Step1: React.FC<Step1Props> = ({
     return true;
   };
 
-  // Submit handler (createVisitorRecord)
   const createVisitorRecord = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -113,7 +111,7 @@ export const Step1: React.FC<Step1Props> = ({
     } catch (err: any) {
       createMessage(
         err?.response?.data?.message ||
-          "Unable to generate OTP. Please try again.",
+        "Unable to generate OTP. Please try again.",
         "error"
       );
     } finally {

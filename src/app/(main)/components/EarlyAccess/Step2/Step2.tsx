@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
-import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
 
@@ -30,18 +31,21 @@ export const Step2: React.FC<Step2Props> = ({
   const [hasInvalid, setHasInvalid] = React.useState(false);
   const [hasLoadingResendOTP, setHasLoadingResendOTP] = React.useState(false);
 
+  const router = useRouter();
+
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // ✅ Load cachedData from localStorage on mount
   React.useEffect(() => {
-    const stored = localStorage.getItem("early-access-data");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setCachedData(parsed);
-      } catch {
-        setCachedData({});
+    try {
+      const stored = localStorage.getItem("early-access-data");
+      if (!stored) {
+        router.replace("/home_test");
+        return;
       }
+      const parsed = JSON.parse(stored);
+      setCachedData(parsed);
+    } catch {
+      router.replace("/home_test");
     }
   }, []);
 

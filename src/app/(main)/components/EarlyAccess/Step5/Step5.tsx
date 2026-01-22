@@ -1,7 +1,6 @@
 "use client";
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
-import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import axios from "axios";
 import { useRouter } from "next/navigation";

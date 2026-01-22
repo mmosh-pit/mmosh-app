@@ -1102,7 +1102,7 @@ export default function LandingPage() {
           <Step6
             onSuccess={() => setCurrentStep(7)}
             earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(5)}
+            onBack={() => setCurrentStep(4)}
             setShowMsg={setShowMsg}
             setMsgClass={setMsgClass}
             setMsgText={setMsgText}
@@ -1173,12 +1173,10 @@ export default function LandingPage() {
         >
           <div className="w-full  px-4">
             <div className="relative max-w-[80rem] mx-auto">
-              {/* Navigation Arrows */}
               <button
                 onClick={prevSlide}
                 className="absolute top-1/2 left-[-2%] xl:left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
               >
-                {/* Left Arrow SVG */}
                 <svg
                   className="w-6 h-6"
                   fill="none"

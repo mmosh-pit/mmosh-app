@@ -41,7 +41,7 @@ const LandingPageDrawer = ({
                 </label>
             </div>
 
-            <div className="drawer-side z-10">
+            <div className="drawer-side z-50">
                 <label
                     htmlFor="my-drawer"
                     className="drawer-overlay"

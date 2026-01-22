@@ -159,7 +159,7 @@ export default function LandingPage() {
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
-        <div className="flex justify-between items-center md:px-16 px-4 max-md:py-4 py-8 bg-[#32323212] md:backdrop-filter md:backdrop-blur-[13px] md:rounded-full w-full lg:w-[80%] self-center">
+        <div className="flex justify-between items-center md:px-16 px-4 max-md:py-4 py-8 lg:bg-[#32323212] lg:backdrop-filter lg:backdrop-blur-[13px] md:rounded-full w-full xl:mx-40  self-center">
           {!isMobileScreen && (
             <button
               onClick={() =>
@@ -270,13 +270,13 @@ export default function LandingPage() {
               />
               Your browser does not support the video tag.
             </video>
-            <div className="max-md:hidden absolute top-0 w-full h-[13px] bg-[linear-gradient(0deg,rgba(3,1,27,0)_0%,#03011B_100%)] backdrop-blur-[5px]"></div>
+            {/* <div className="max-md:hidden absolute top-0 w-full h-[13px] bg-[linear-gradient(0deg,rgba(3,1,27,0)_0%,#03011B_100%)] backdrop-blur-[5px]"></div>
             <div className="max-md:hidden absolute bottom-0 w-full h-44 bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
             <div className="max-md:hidden absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
-            <div className="max-md:hidden absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
-            <div className=" max-md:static max-md:mt-6 absolute w-full h-full top-0 left-0 flex justify-center items-center">
+            <div className="max-md:hidden absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div> */}
+            <div className="  w-full h-full top-0 left-0 flex justify-center items-center">
               <div
-                className="m-auto md:max-w-[45%] max-w-[85%] lg:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] lg:p-[20px] p-[10px] "
+                className="m-auto  max-w-[85%] lg:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[3rem] lg:p-[20px] p-[10px] lg:md:absolute lg:top-[25%] top-[10%] "
                 ref={homeSection}
               >
                 <h1 className="w-auto lg:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
@@ -286,7 +286,7 @@ export default function LandingPage() {
                   Welcome home
                 </h1>
                 <div className="">
-                  <p className="text-base text-[#FFFFFF] font-Avenir text-opacity-90 lg:px-12">
+                  <p className="lg:text-base text-xs text-[#FFFFFF] font-Avenir text-opacity-90 lg:px-12">
                     Kinship Intelligence is a creator cooperative, a refuge from
                     extractive tech, attention farming, and endless feeds—a
                     place at the cutting edge of culture, where AI serves{" "}
@@ -297,20 +297,20 @@ export default function LandingPage() {
                     Here, wisdom isn’t content.
                   </p>
                 </div>
-                <p className="mb-2  text-base text-[#ffffff]/90 lg:px-12">
+                <p className="mb-2  lg:text-base text-xs text-[#ffffff]/90 lg:px-12">
                   It’s a{" "}
                   <span className="font-bold text-white">living system</span>
                   —something you return to in moments that matter, with people
                   who matter, supported by Kinship Intelligence that listens,
                   guides, and clarifies.
                 </p>
-                <p className="text-base text-center text-white font-bold lg:px-12">
+                <p className="lg:text-base text-xs text-center text-white font-bold lg:px-12">
                   This is a place to slow down.{" "}
                 </p>
-                <p className="text-base text-center text-white font-bold lg:px-12 my-2">
+                <p className="lg:text-base text-xs text-center text-white font-bold lg:px-12 my-2">
                   To think, feel, learn, and grow.{" "}
                 </p>
-                <p className="text-base text-center text-white font-bold lg:px-12 mb-2">
+                <p className="lg:text-base text-xs text-center text-white font-bold lg:px-12 mb-2">
                   To plan, practice, and build together—without pressure,
                   posturing, or polarization.{" "}
                 </p>

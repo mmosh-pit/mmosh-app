@@ -115,6 +115,7 @@ export const Step2: React.FC<Step2Props> = ({
     const code = otp.join("");
     if (code.length !== 6) {
       createMessage("Please enter all 6 digits", "error");
+      setHasInvalid(true);
       return;
     }
 
@@ -127,7 +128,6 @@ export const Step2: React.FC<Step2Props> = ({
       });
 
       if (result.data.status) {
-        // ✅ Update localStorage with currentStep: step3
         const updatedData = {
           ...cachedData,
           hasVerifiedEmail: true,
@@ -149,6 +149,7 @@ export const Step2: React.FC<Step2Props> = ({
       }
     } catch {
       createMessage("Something went wrong. Please try again.", "error");
+      setHasInvalid(true);
     } finally {
       setIsLoading(false);
     }
@@ -165,13 +166,20 @@ export const Step2: React.FC<Step2Props> = ({
       });
 
       if (result.data.status) {
-        createMessage(result.data.message, "warn");
+        setOtp(["", "", "", "", "", ""]);
+        if (result.data.code === "OTP_ALREADY_SENT") {
+          createMessage(result.data.message, "warn");
+        } else if (result.data.code === "OTP_SENT") {
+          createMessage(result.data.message, "success");
+        }
       } else {
         createMessage(result.data.message, "error");
+        setHasInvalid(true);
       }
     } finally {
       setHasLoadingResendOTP(false);
     }
+
   };
 
   const handleBackNavigation = () => {
@@ -190,7 +198,7 @@ export const Step2: React.FC<Step2Props> = ({
       <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="lg:flex items-center justify-center">
           <EarlyAccessCircleVW />
-            <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
+          <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
             <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
               <BackArrowVW onClick={handleBackNavigation} />
               Request Early Access
@@ -232,8 +240,17 @@ export const Step2: React.FC<Step2Props> = ({
                       onChange={(e) => handleOtpChange(e.target.value, idx)}
                       onKeyDown={(e) => handleKeyDown(e, idx)}
                       onPaste={(e) => handlePaste(e, idx)}
-                      className={`aspect-square w-[clamp(0.7rem,9vw,3.5rem)] rounded-lg text-center text-lg sm:text-xl font-semibold backdrop-blur border text-white focus:outline-none bg-[#FFFFFF14] border-[#FFFFFF29]`}
-                    />
+                      className={`aspect-square 
+                w-[clamp(0.7rem,9vw,3.5rem)]
+                rounded-lg 
+                text-center text-lg sm:text-xl font-semibold
+                backdrop-blur 
+                border text-white
+                focus:outline-none
+                ${hasInvalid
+                          ? "bg-[#F8060624] border-[#F806068F]"
+                          : "bg-[#FFFFFF14] border-white/20 focus:border-white"
+                        }`} />
                   ))}
                 </div>
 

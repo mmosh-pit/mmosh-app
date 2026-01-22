@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
           {
             status: true,
+            code: "OTP_ALREADY_SENT",
             message:
               type === "email"
                 ? "OTP already sent. Please check your email."
@@ -89,7 +90,6 @@ export async function POST(req: NextRequest) {
         },
         { upsert: true }
       );
-
       await sendOTPEmail(email!, otp);
     }
 
@@ -110,7 +110,6 @@ export async function POST(req: NextRequest) {
         },
         { upsert: true }
       );
-
       const sent = await sendOTPSMS(mobile!, otp, countryCode!);
       if (!sent) {
         return NextResponse.json(
@@ -127,6 +126,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         status: true,
+        code: "OTP_SENT",
         message: `OTP resent successfully via ${type}`,
         result: {
           destination: type === "email" ? email : mobile,

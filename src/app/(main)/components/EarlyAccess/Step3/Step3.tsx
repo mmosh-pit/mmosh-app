@@ -3,10 +3,10 @@ import React from "react";
 import { useRouter } from "next/navigation";
 
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
-import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import { encryptData } from "@/utils/decryptData";
+import { decryptData } from "@/utils/decryptData";
 
 interface Step3Props {
   onSuccess?: () => void;
@@ -30,19 +30,22 @@ export const Step3: React.FC<Step3Props> = ({
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const router = useRouter();
+
   const msgTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Load cached data on mount
   React.useEffect(() => {
-    const stored = localStorage.getItem("early-access-data");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setCachedData(parsed);
-        if (parsed.password) setPassword(parsed.password); // optionally prefill encrypted password
-      } catch {
-        localStorage.removeItem("early-access-data");
+    try {
+      const stored = localStorage.getItem("early-access-data");
+      if (!stored) {
+        router.replace("/home_test");
+        return;
       }
+      const parsed = JSON.parse(stored);
+      setCachedData(parsed);
+      if (parsed.password) setPassword(decryptData(parsed.password)); setConfirmPassword(decryptData(parsed.password)); // prefill password
+    } catch {
+      router.replace("/home_test");
     }
   }, []);
 
@@ -98,7 +101,6 @@ export const Step3: React.FC<Step3Props> = ({
       return;
     }
 
-    // Save to localStorage
     const updatedData = {
       ...cachedData,
       password: encryptData(password),

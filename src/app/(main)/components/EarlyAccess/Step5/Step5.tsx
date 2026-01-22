@@ -1,7 +1,6 @@
 "use client";
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
-import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -121,6 +120,7 @@ export const Step5: React.FC<Step5Props> = ({
 
     if (enteredOtp.length !== 6) {
       createMessage("Please enter the full 6-digit code.", "error");
+      setHasInvalid(true);
       return;
     }
 
@@ -150,6 +150,7 @@ export const Step5: React.FC<Step5Props> = ({
       }
     } catch {
       createMessage("Something went wrong", "error");
+      setHasInvalid(true);
     } finally {
       setIsLoading(false);
     }
@@ -160,20 +161,24 @@ export const Step5: React.FC<Step5Props> = ({
     setHasLoadingResendOTP(true);
 
     try {
-      const res = await axios.post("/api/visitors/resend-otp", {
+      const result = await axios.post("/api/visitors/resend-otp", {
         type: "sms",
         mobile: cachedData.mobileNumber,
         countryCode: cachedData.countryCode,
         email: cachedData.email,
       });
 
-      if (res.data.status) {
-        createMessage(res.data.message, "warn");
+      if (result.data.status) {
+        setOtp(["", "", "", "", "", ""]);
+        if (result.data.code === "OTP_ALREADY_SENT") {
+          createMessage(result.data.message, "warn");
+        } else if (result.data.code === "OTP_SENT") {
+          createMessage(result.data.message, "success");
+        }
       } else {
-        createMessage(res.data.message, "error");
+        createMessage(result.data.message, "error");
+        setHasInvalid(true);
       }
-    } catch {
-      createMessage("Unable to resend code", "error");
     } finally {
       setHasLoadingResendOTP(false);
     }
@@ -191,7 +196,7 @@ export const Step5: React.FC<Step5Props> = ({
         <div className="lg:flex items-center justify-center">
           <EarlyAccessCircleVW />
 
-            <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
+          <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
             <h2 className="relative text-center text-xl font-bold text-white">
               <BackArrowVW onClick={handleBackNavigation} />
               Request Early Access
@@ -217,12 +222,17 @@ export const Step5: React.FC<Step5Props> = ({
                     onChange={(e) => handleOtpChange(e.target.value, idx)}
                     onKeyDown={(e) => handleKeyDown(e, idx)}
                     onPaste={(e) => handlePaste(e, idx)}
-                    className={`w-12 h-12 rounded-lg text-center text-lg font-semibold text-white border focus:outline-none ${
-                      hasInvalid
-                        ? "bg-red-500/20 border-red-400"
-                        : "bg-white/10 border-white/30"
-                    }`}
-                  />
+                    className={`aspect-square 
+                w-[clamp(0.7rem,9vw,3.5rem)]
+                rounded-lg 
+                text-center text-lg sm:text-xl font-semibold
+                backdrop-blur 
+                border text-white
+                focus:outline-none
+                ${hasInvalid
+                        ? "bg-[#F8060624] border-[#F806068F]"
+                        : "bg-[#FFFFFF14] border-white/20 focus:border-white"
+                      }`} />
                 ))}
               </div>
 

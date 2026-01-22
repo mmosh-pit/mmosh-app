@@ -1,8 +1,6 @@
 "use client";
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
-import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
-import { InputVW } from "@/app/(catfawn)/catfawn/components/Input/InputVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -168,7 +166,7 @@ export const Step4: React.FC<Step4Props> = ({
       <div ref={earlyAccessRef} className="bg-[#09073A] p-10 my-10">
         <div className="lg:flex items-center justify-center">
           <EarlyAccessCircleVW />
-            <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
+          <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
             <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
               <BackArrowVW onClick={handleBackNavigation} />
               Request Early Access

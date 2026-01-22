@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(
                 {
                     status: false,
-                    message: "OTP not found",
+                    message: "Invalid OTP",
                     result: null,
                 },
                 { status: 200 }

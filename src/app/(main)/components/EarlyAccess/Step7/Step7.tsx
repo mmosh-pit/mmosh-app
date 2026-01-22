@@ -171,11 +171,11 @@ export const Step7 = ({
                   maxLength={16}
                 />
 
-                <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-2 -tracking-[0.02em]">
+                <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-2 -tracking-[0.02em] cursor-pointer">
                   {
                     <input
                       type="checkbox"
-                      className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem]"
+                      className="w-[1.438rem] h-[1.438rem] rounded-[0.313rem] cursor-pointer"
                       checked={noCodeChecked}
                       onChange={(e) => {
                         setNoCodeChecked(e.target.checked);

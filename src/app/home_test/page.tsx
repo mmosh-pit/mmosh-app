@@ -1049,6 +1049,84 @@ export default function LandingPage() {
           </div>
         </div>
 
+        {currentStep === 1 && (
+          <Step1
+            onSuccess={() => setCurrentStep(2)}
+            earlyAccessRef={earlyAccessRef}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 2 && (
+          <Step2
+            onSuccess={() => setCurrentStep(3)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(1)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 3 && (
+          <Step3
+            onSuccess={() => setCurrentStep(4)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(1)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 4 && (
+          <Step4
+            onSuccess={() => setCurrentStep(5)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(3)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 5 && (
+          <Step5
+            onSuccess={() => setCurrentStep(6)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(4)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 6 && (
+          <Step6
+            onSuccess={() => setCurrentStep(7)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(5)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 7 && (
+          <Step7
+            onSuccess={() => setCurrentStep(8)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(6)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 8 && (
+          <Step8
+            onBack={() => setCurrentStep(7)}
+            earlyAccessRef={earlyAccessRef}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
         <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
           <div>
             <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
@@ -1145,84 +1223,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        {currentStep === 1 && (
-          <Step1
-            onSuccess={() => setCurrentStep(2)}
-            earlyAccessRef={earlyAccessRef}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 2 && (
-          <Step2
-            onSuccess={() => setCurrentStep(3)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(1)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 3 && (
-          <Step3
-            onSuccess={() => setCurrentStep(4)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(1)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 4 && (
-          <Step4
-            onSuccess={() => setCurrentStep(5)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(3)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 5 && (
-          <Step5
-            onSuccess={() => setCurrentStep(6)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(4)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 6 && (
-          <Step6
-            onSuccess={() => setCurrentStep(7)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(5)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 7 && (
-          <Step7
-            onSuccess={() => setCurrentStep(8)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(6)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 8 && (
-          <Step8
-            onBack={() => setCurrentStep(7)}
-            earlyAccessRef={earlyAccessRef}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
       </div>
     </div>
   );

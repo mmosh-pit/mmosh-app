@@ -1042,102 +1042,8 @@ export default function LandingPage() {
           </div>
         </div>
        
-        <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
-          <div>
-            <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Testimonials
-            </h3>
-          </div>
-          <div className="lg:flex items-start">
-            <div className="lg:w-[433px] lg:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] lg:mr-4 "></div>
-            <div className="flex flex-col  p-4">
-              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                As a tech entrepreneur, executive, and coach, I've worked to
-                share my gifts at every opportunity. Some of this has been
-                one-on-one work with individual clients, some has been group
-                programs.
-              </p>
-              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                Kinship Intelligence is designed to offer the same level of
-                care, empathy, insight, precision and power I bring to my
-                consulting and coaching practice. Together, let’s build bots
-                that can guide, heal, comfort, fortify, strengthen, empower and
-                change the world, one beautiful soul at a time.
-              </p>
-
-              <div className="text-[16px] italic font-semibold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display']">
-                – David Levine, Founder
-                <br />
-                Kinship Systems
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="px-4 max-md:my-6 my-10 mx-auto" ref={testimonialsSection}>
-          <div className="w-full  px-4">
-            <div className="relative max-w-[90rem] mx-auto">
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevSlide}
-                className="absolute top-1/2 left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
-              >
-                {/* Left Arrow SVG */}
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-
-              <button
-                onClick={nextSlide}
-                className="absolute top-1/2 right-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
-              >
-                {/* Right Arrow SVG */}
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-
-              {/* Grid Layout */}
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-                {visibleTestimonials.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] text-white rounded-xl p-6 shadow-xl text-center border border-[#FFFFFF42]"
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="mx-auto mb-4 w-16 h-16 rounded-full object-cover border-2 border-white"
-                    />
-                    <p className="text-base italic mb-4">"{item.text}"</p>
-                    <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-sm text-gray-300">{item.title}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+       
+       
         {currentStep === 1 && (
           <Step1
             onSuccess={() => setCurrentStep(2)}
@@ -1216,6 +1122,102 @@ export default function LandingPage() {
             setMsgText={setMsgText}
           />
         )}
+         <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
+          <div>
+            <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+              Testimonials
+            </h3>
+          </div>
+          <div className="lg:flex items-start">
+            <div className="lg:w-[433px] lg:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] lg:mr-4 "></div>
+            <div className="flex flex-col  p-4">
+              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                As a tech entrepreneur, executive, and coach, I've worked to
+                share my gifts at every opportunity. Some of this has been
+                one-on-one work with individual clients, some has been group
+                programs.
+              </p>
+              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                Kinship Intelligence is designed to offer the same level of
+                care, empathy, insight, precision and power I bring to my
+                consulting and coaching practice. Together, let’s build bots
+                that can guide, heal, comfort, fortify, strengthen, empower and
+                change the world, one beautiful soul at a time.
+              </p>
+
+              <div className="text-[16px] italic font-semibold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display']">
+                – David Levine, Founder
+                <br />
+                Kinship Systems
+              </div>
+            </div>
+          </div>
+        </section>
+         <section className="px-4 max-md:my-6 my-10 mx-auto" ref={testimonialsSection}>
+          <div className="w-full  px-4">
+            <div className="relative max-w-[90rem] mx-auto">
+              {/* Navigation Arrows */}
+              <button
+                onClick={prevSlide}
+                className="absolute top-1/2 left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
+              >
+                {/* Left Arrow SVG */}
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              <button
+                onClick={nextSlide}
+                className="absolute top-1/2 right-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
+              >
+                {/* Right Arrow SVG */}
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+
+              {/* Grid Layout */}
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+                {visibleTestimonials.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] text-white rounded-xl p-6 shadow-xl text-center border border-[#FFFFFF42]"
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="mx-auto mb-4 w-16 h-16 rounded-full object-cover border-2 border-white"
+                    />
+                    <p className="text-base italic mb-4">"{item.text}"</p>
+                    <h3 className="font-semibold text-lg">{item.name}</h3>
+                    <p className="text-sm text-gray-300">{item.title}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

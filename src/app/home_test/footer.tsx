@@ -22,14 +22,14 @@ const Footer = () => {
   }
 
   return (
-    <footer className="items-start pb-12 md:px-16 lg:px-32 px-8 pt-8">
-      <div className=" items-center lg:flex md:place-self-center">
+    <footer className="items-start pb-12 md:px-16 xl:px-32 px-8 pt-8">
+      <div className=" items-center xl:flex md:place-self-center">
         <div className="">
           <KinshipMainIcon />
         </div>
 
-        <div className=" lg:ml-[20rem] lg:w-[50.063rem] md:place-self-center mt-8 lg:mt-0">
-          <ul className="lg:flex lg:justify-between font-normal">
+        <div className=" xl:ml-[20rem] xl:w-[50.063rem] md:place-self-center mt-8 xl:mt-0">
+          <ul className="xl:flex xl:justify-between font-normal">
             <li>
               <a href="#">Bots</a>
             </li>
@@ -49,7 +49,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="lg:flex justify-between items-center mt-12 place-self-center">
+      <div className="xl:flex justify-between items-center mt-12 place-self-center">
         <div>
           <p className="text-sm">
             © 2025 Kinship Intelligence Cooperative, PBC. All Rights Reserved.
@@ -61,7 +61,7 @@ const Footer = () => {
           <p className="text-sm">Kinship Intelligence, a Colorado Cooperative and Public Benefit Corporation.</p>
         </div>
         <div>
-          <ul className="flex max-md:flex-wrap max-md:justify-center max-md:gap-3 lg:ml-96 space-x-6 items-center mt-6 lg:mt-0">
+          <ul className="flex max-md:flex-wrap max-md:justify-center max-md:gap-3 xl:ml-96 space-x-6 items-center mt-6 xl:mt-0">
             <li>
               <a href="#">
                 <YoutubeIcon width={24} height={24} />

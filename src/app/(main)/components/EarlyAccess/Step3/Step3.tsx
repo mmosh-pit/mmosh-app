@@ -7,6 +7,7 @@ import { ErrorContainerVW } from "@/app/(catfawn)/catfawn/components/ErrorContai
 import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackArrowVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import { encryptData } from "@/utils/decryptData";
+import { decryptData } from "@/utils/decryptData";
 
 interface Step3Props {
   onSuccess?: () => void;
@@ -39,7 +40,7 @@ export const Step3: React.FC<Step3Props> = ({
       try {
         const parsed = JSON.parse(stored);
         setCachedData(parsed);
-        if (parsed.password) setPassword(parsed.password); // optionally prefill encrypted password
+        if (parsed.password) setPassword(decryptData(parsed.password)); setConfirmPassword(decryptData(parsed.password)); // prefill password
       } catch {
         localStorage.removeItem("early-access-data");
       }

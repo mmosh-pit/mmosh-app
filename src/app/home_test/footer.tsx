@@ -11,6 +11,7 @@ import FacebookIcon from "@/assets/icons/FacebookIcon";
 import SubstackIcon from "@/assets/icons/SubstackIcon";
 import BlueskyIcon from "@/assets/icons/BlueskyIcon";
 import LinkedinIcon from "@/assets/icons/LinkedinIcon";
+import KinshipBots from "@/assets/icons/KinshipBots";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -25,25 +26,33 @@ const Footer = () => {
     <footer className="items-start pb-12 md:px-16 xl:px-32 px-8 pt-8">
       <div className=" items-center xl:flex md:place-self-center">
         <div className="">
-          <KinshipMainIcon />
+          <KinshipBots />
         </div>
 
         <div className=" xl:ml-[20rem] xl:w-[50.063rem] md:place-self-center mt-8 xl:mt-0">
           <ul className="xl:flex xl:justify-between font-normal">
             <li>
-              <a href="#">Bots</a>
+              <a className="cursor-pointer"> Origin Story</a>
             </li>
             <li>
-              <a href="#">Coins</a>
+              <a className="cursor-pointer"> Kinship Intelligence</a>
             </li>
             <li>
-              <a href="#">Offers</a>
+              <a className="cursor-pointer"> Co-op Economics</a>
             </li>
             <li>
-              <a href="#">Launchpad</a>
+              <a className="cursor-pointer"> Founding Sages </a>
             </li>
             <li>
-              <a href="#">Members</a>
+              <a
+                href="https://deeper.kinshipbots.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cursor-pointer"
+              >
+                {" "}
+                Go Deeper
+              </a>
             </li>{" "}
           </ul>
         </div>
@@ -53,12 +62,14 @@ const Footer = () => {
         <div>
           <p className="text-sm">
             © 2025 Kinship Intelligence Cooperative, PBC. All Rights Reserved.
-
           </p>
           <p className="text-sm">
-            Kinship Intelligence™ Kinship Bots™ and Where AI Belongs™ are trademarks of
+            Kinship Intelligence™ and Kinship Bots™ are trademarks of
           </p>
-          <p className="text-sm">Kinship Intelligence, a Colorado Cooperative and Public Benefit Corporation.</p>
+          <p className="text-sm">
+            Kinship Intelligence, a Colorado Cooperative and Public Benefit
+            Corporation.
+          </p>
         </div>
         <div>
           <ul className="flex max-md:flex-wrap max-md:justify-center max-md:gap-3 xl:ml-96 space-x-6 items-center mt-6 xl:mt-0">
@@ -74,7 +85,7 @@ const Footer = () => {
             </li>
             <li>
               <a href="#">
-                <TwitterIcon width={24} height={24}/>
+                <TwitterIcon width={24} height={24} />
               </a>
             </li>
             <li>
@@ -89,22 +100,22 @@ const Footer = () => {
             </li>
             <li>
               <a href="#">
-                <FacebookIcon width={24} height={24}/>
+                <FacebookIcon width={24} height={24} />
               </a>
             </li>
             <li>
               <a href="#">
-                <SubstackIcon width={24} height={24}/>
+                <SubstackIcon width={24} height={24} />
               </a>
             </li>
             <li>
               <a href="#">
-                <BlueskyIcon width={24} height={24}/>
+                <BlueskyIcon width={24} height={24} />
               </a>
             </li>
             <li>
               <a href="#">
-                <LinkedinIcon  width={24} height={24}/>
+                <LinkedinIcon width={24} height={24} />
               </a>
             </li>
           </ul>

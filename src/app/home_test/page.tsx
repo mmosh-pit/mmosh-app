@@ -3,20 +3,10 @@
 import React from "react";
 import { useRef, useState } from "react";
 import AlertModal from "../(main)/components/Modal";
-import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import Button from "../(main)/components/common/Button";
 import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
 import LandingPageDrawer from "../(main)/components/LandingPageDrawer";
-import HomeMobileDrawer from "../(main)/components/HomeMobileDrawer";
-import AppleIcon from "@/assets/icons/AppleIcon";
-import PlayStoreIcon from "@/assets/icons/PlayStoreIcon";
-import FeaturedBot from "../(main)/components/Preview/FeaturedBot";
-import Bot from "../(main)/components/Preview/Bot";
-import LinkedinIcon from "@/assets/icons/LinkedinIcon";
-import InstagramIcon from "@/assets/icons/InstagramIcon";
-import YoutubeIcon from "@/assets/icons/YoutubeIcon";
-import XIcon from "@/assets/icons/XIcon";
 import { testimonials } from "@/constants/testimonials";
 import { Step1 } from "../(main)/components/EarlyAccess/Step1/Step1";
 import { Step2 } from "../(main)/components/EarlyAccess/Step2/Step2";
@@ -51,7 +41,6 @@ export default function LandingPage() {
   const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
   const homeSection = useRef<HTMLDivElement>(null);
-  const howItWorksSection = useRef<HTMLDivElement>(null);
   const testimonialsSection = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const itemsPerSlide = 3;
@@ -86,51 +75,18 @@ export default function LandingPage() {
     currentSlide * itemsPerSlide + itemsPerSlide,
   );
 
-  const scrollToHero = () => {
-    belowHeroRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const isMobileScreen = mounted ? screenSize < 1200 : false;
 
   const [currentStep, setCurrentStep] = useState<number>(1);
 
-  const openSignUpModal = () => {
-    window.open("https://www.kinshipbots.com/catfawn", "_blank");
-  };
+  const scrollWithOffset = (
+    ref: React.RefObject<HTMLElement>,
+    offset = 120,
+  ) => {
+    if (!ref.current) return;
 
-  const openSignInModal = () => {
-    setInitialModalStep(2);
-    setIsModalOpen(true);
-  };
-
-  const scrollWithOffset = (ref: React.RefObject<HTMLDivElement>) => {
-    const yOffset = -120; // header height
-    const y =
-      ref.current!.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-    window.scrollTo({ top: y, behavior: "smooth" });
-  };
-
-  const scrollToOriginStory = () => {
-    originStoryRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  const scrollToKinshipIntelligence = () => {
-    kinshipIntelligenceRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  const scrollToEarlyAccess = () => {
-    if (!earlyAccessRef.current) return;
-
-    const offset = 80;
     const elementTop =
-      earlyAccessRef.current.getBoundingClientRect().top + window.pageYOffset;
+      ref.current.getBoundingClientRect().top + window.pageYOffset;
 
     window.scrollTo({
       top: elementTop - offset,
@@ -138,19 +94,6 @@ export default function LandingPage() {
     });
   };
 
-  const scrollToCollectiveEconomics = () => {
-    collectiveEconomicsRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
-
-  const scrollToFoundingCreators = () => {
-    foundingCreatorsRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  };
   const [showMsg, setShowMsg] = React.useState(true);
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
@@ -174,9 +117,9 @@ export default function LandingPage() {
               <LandingPageDrawer
                 scrollWithOffset={scrollWithOffset}
                 originStoryRef={originStoryRef}
-                scrollToKinshipIntelligence={scrollToKinshipIntelligence}
-                scrollToCollectiveEconomics={scrollToCollectiveEconomics}
-                scrollToFoundingCreators={scrollToFoundingCreators}
+                kinshipIntelligenceRef={kinshipIntelligenceRef}
+                collectiveEconomicsRef={collectiveEconomicsRef}
+                foundingCreatorsRef={foundingCreatorsRef}
               />
             </div>
           ) : (
@@ -192,7 +135,7 @@ export default function LandingPage() {
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={scrollToKinshipIntelligence}
+                onClick={() => scrollWithOffset(kinshipIntelligenceRef)}
               >
                 Kinship Intelligence
               </a>
@@ -201,7 +144,7 @@ export default function LandingPage() {
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={scrollToCollectiveEconomics}
+                onClick={() => scrollWithOffset(collectiveEconomicsRef)}
               >
                 Co-op Economics
               </a>
@@ -210,7 +153,7 @@ export default function LandingPage() {
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={scrollToFoundingCreators}
+                onClick={() => scrollWithOffset(foundingCreatorsRef)}
               >
                 Founding Sages{" "}
               </a>
@@ -229,7 +172,7 @@ export default function LandingPage() {
 
           <div className="font-bold">
             <Button
-              action={scrollToEarlyAccess}
+              action={() => scrollWithOffset(earlyAccessRef)}
               size="small"
               isPrimary
               title="Join Early Access"
@@ -312,7 +255,7 @@ export default function LandingPage() {
             <div className="w-full ">
               <button
                 className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-[12rem]  "
-                onClick={scrollToEarlyAccess}
+                onClick={() => scrollWithOffset(earlyAccessRef)}
               >
                 Join Early Access
               </button>
@@ -693,7 +636,7 @@ export default function LandingPage() {
         <div className="w-[15rem] m-auto">
           <button
             className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full"
-            onClick={scrollToEarlyAccess}
+            onClick={() => scrollWithOffset(earlyAccessRef)}
           >
             Join Early Access
           </button>
@@ -874,7 +817,7 @@ export default function LandingPage() {
         <div className="w-[15rem] m-auto ">
           <button
             className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full  "
-            onClick={scrollToEarlyAccess}
+            onClick={() => scrollWithOffset(earlyAccessRef)}
           >
             Join Early Access
           </button>
@@ -1059,7 +1002,7 @@ export default function LandingPage() {
           <Step6
             onSuccess={() => setCurrentStep(7)}
             earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(5)}
+            onBack={() => setCurrentStep(4)}
             setShowMsg={setShowMsg}
             setMsgClass={setMsgClass}
             setMsgText={setMsgText}
@@ -1137,12 +1080,10 @@ export default function LandingPage() {
         >
           <div className="w-full  px-4">
             <div className="relative max-w-[80rem] mx-auto">
-              {/* Navigation Arrows */}
               <button
                 onClick={prevSlide}
                 className="absolute top-1/2 left-[-2%] xl:left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
               >
-                {/* Left Arrow SVG */}
                 <svg
                   className="w-6 h-6"
                   fill="none"

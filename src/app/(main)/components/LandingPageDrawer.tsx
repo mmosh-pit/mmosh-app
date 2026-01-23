@@ -7,17 +7,17 @@ import { isDrawerOpen } from "@/app/store";
 interface Props {
     scrollWithOffset: (ref: any) => void;
     originStoryRef: any;
-    scrollToKinshipIntelligence: () => void;
-    scrollToCollectiveEconomics: () => void;
-    scrollToFoundingCreators: () => void;
+    kinshipIntelligenceRef: any;
+    collectiveEconomicsRef: any;
+    foundingCreatorsRef: any;
 }
 
 const LandingPageDrawer = ({
     scrollWithOffset,
     originStoryRef,
-    scrollToKinshipIntelligence,
-    scrollToCollectiveEconomics,
-    scrollToFoundingCreators,
+    kinshipIntelligenceRef,
+    collectiveEconomicsRef,
+    foundingCreatorsRef,
 }: Props) => {
     const [, setIsDrawerOpen] = useAtom(isDrawerOpen);
 
@@ -64,7 +64,7 @@ const LandingPageDrawer = ({
                         <label
                             htmlFor="my-drawer"
                             className="text-base text-white cursor-pointer"
-                            onClick={() => handleClick(scrollToKinshipIntelligence)}
+                            onClick={() => handleClick(() => scrollWithOffset(kinshipIntelligenceRef))}
                         >
                             Kinship Intelligence
                         </label>
@@ -72,7 +72,7 @@ const LandingPageDrawer = ({
                         <label
                             htmlFor="my-drawer"
                             className="text-base text-white cursor-pointer"
-                            onClick={() => handleClick(scrollToCollectiveEconomics)}
+                            onClick={() => handleClick(() => scrollWithOffset(collectiveEconomicsRef))}
                         >
                             Co-op Economics
                         </label>
@@ -80,7 +80,7 @@ const LandingPageDrawer = ({
                         <label
                             htmlFor="my-drawer"
                             className="text-base text-white cursor-pointer"
-                            onClick={() => handleClick(scrollToFoundingCreators)}
+                            onClick={() => handleClick(() => scrollWithOffset(foundingCreatorsRef))}
                         >
                             Founding Creators
                         </label>

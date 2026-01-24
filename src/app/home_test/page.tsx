@@ -27,6 +27,7 @@ export default function LandingPage() {
 
   React.useEffect(() => {
     setMounted(true);
+
   }, []);
 
   const screenSize = useCheckDeviceScreenSize();
@@ -284,7 +285,7 @@ export default function LandingPage() {
           ref={belowHeroRef}
         >
           <div>
-            <div ref={originStoryRef} className=" scroll-mt-[120px]">
+            <div ref={originStoryRef} className=" scroll-mt-[120px]" id="origin-story">
               <h1 className="text-center font-bold xl:px-5 leading-[1] xl:w-[65.063rem] xl:text-[3.75rem] text-xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 I went to make a film. <br />I returned with a mission.
               </h1>
@@ -376,7 +377,7 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-24 max-md:mt-12">
-            <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]">
+            <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]" id="kinship-intelligence">
               <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 From Content to Capacity
               </h1>
@@ -510,7 +511,8 @@ export default function LandingPage() {
         </div>
         <div
           ref={foundingCreatorsRef}
-          className="mt-40 max-md:mt-12 max-md:px-3 scroll-mt-[120px]"
+          className="max-md: max-md:px-3 scroll-mt-[120px]"
+          id="founding-creator"
         >
           <h1 className="text-center font-bold xl:px-10 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Change Yourself, Change Your Life, Change The World.
@@ -659,7 +661,7 @@ export default function LandingPage() {
           </button>
         </div>
         <div className="mt-24 max-md:mt-12 max-md:px-3">
-          <div ref={collectiveEconomicsRef} className="scroll-mt-[120px]">
+          <div ref={collectiveEconomicsRef} className="scroll-mt-[120px]" id="collective-economic">
             <h1 className="text-center font-bold px-12 leading-[1]  md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Member Managed, Member Owned
             </h1>

@@ -1,83 +1,126 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { testimonials } from "@/constants/testimonials";
-import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
-import { useAtom } from "jotai";
-import HomeLoggedInPage from "./components/HomeLoggedInPage";
+import React from "react";
+import { useRef, useState } from "react";
+import AlertModal from "../(main)/components/Modal";
 import KinshipBots from "@/assets/icons/KinshipBots";
-import Button from "./components/common/Button";
-import useCheckDeviceScreenSize from "../lib/useCheckDeviceScreenSize";
-import HomeMobileDrawer from "./components/HomeMobileDrawer";
-import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
-import { alreadyWaiting } from "../store/home";
-import { signInModalInitialStep, signInModal } from "../store";
+import Button from "../(main)/components/common/Button";
+import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
+import LandingPageDrawer from "../(main)/components/LandingPageDrawer";
+import { testimonials } from "@/constants/testimonials";
+import { Step1 } from "../(main)/components/EarlyAccess/Step1/Step1";
+import { Step2 } from "../(main)/components/EarlyAccess/Step2/Step2";
+import { Step3 } from "../(main)/components/EarlyAccess/Step3/Step3";
+import { Step4 } from "../(main)/components/EarlyAccess/Step4/Step4";
+import { Step5 } from "../(main)/components/EarlyAccess/Step5/Step5";
+import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
+import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
+import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
+import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
+import { useSearchParams } from "next/navigation";
+
+const STORAGE_KEY = "early-access-data";
 
 export default function LandingPage() {
+  const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+
+  }, []);
+
   const screenSize = useCheckDeviceScreenSize();
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [itemsPerSlide, setItemsPerSlide] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialModalStep, setInitialModalStep] = useState(0);
 
-  const [isWaiting] = useAtom(alreadyWaiting);
-
-  const [_, setIsModalOpen] = useAtom(signInModal);
-  const [__, setInitialModalStep] = useAtom(signInModalInitialStep);
+  const originStoryRef = useRef<HTMLDivElement>(null);
+  const kinshipIntelligenceRef = useRef<HTMLDivElement>(null);
+  const collectiveEconomicsRef = useRef<HTMLDivElement>(null);
+  const foundingCreatorsRef = useRef<HTMLDivElement>(null);
+  const earlyAccessRef = useRef<HTMLDivElement>(null);
 
   const mainSection = useRef<HTMLDivElement>(null);
   const belowHeroRef = useRef<HTMLDivElement>(null);
   const homeSection = useRef<HTMLDivElement>(null);
-  const howItWorksSection = useRef<HTMLDivElement>(null);
-  const whySection = useRef<HTMLDivElement>(null);
   const testimonialsSection = useRef<HTMLDivElement>(null);
-  const founderSection = useRef<HTMLDivElement>(null);
-  const safeSection = useRef<HTMLDivElement>(null);
-  const earlyAccessSection = useRef<HTMLDivElement>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const itemsPerSlide = 3;
 
-  // Detect screen width and set number of items per slide
-  useEffect(() => {
-    const updateItemsPerSlide = () => {
-      if (window.innerWidth >= 768) {
-        setItemsPerSlide(3); // Desktop
-      } else {
-        setItemsPerSlide(1); // Mobile
+  const totalSlides = Math.ceil((testimonials?.length || 0) / itemsPerSlide);
+
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setCurrentStep(Number(parsed.currentStep) || 1);
       }
-    };
-
-    updateItemsPerSlide();
-    window.addEventListener("resize", updateItemsPerSlide);
-    return () => window.removeEventListener("resize", updateItemsPerSlide);
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      setCurrentStep(1);
+    }
   }, []);
 
-  const totalSlides = Math.ceil(testimonials.length / itemsPerSlide);
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % totalSlides);
-
-  const prevSlide = () =>
+  const prevSlide = () => {
+    if (!totalSlides) return;
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-
-  const scrollToHero = () => {
-    belowHeroRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const visibleTestimonials = testimonials.slice(
+  const nextSlide = () => {
+    if (!totalSlides) return;
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const visibleTestimonials = (testimonials ?? []).slice(
     currentSlide * itemsPerSlide,
     currentSlide * itemsPerSlide + itemsPerSlide,
   );
 
-  const isMobileScreen = screenSize < 1200;
+  const isMobileScreen = mounted ? screenSize < 1200 : false;
 
-  const openSignUpModal = () => {
-    setInitialModalStep(0);
-    setIsModalOpen(true);
+  const [currentStep, setCurrentStep] = useState<number>(1);
+
+  React.useEffect(() => {
+    const menuType = searchParams.get("menu_type");
+    console.log("=========== menuType ===============", menuType);
+    if (menuType === "origin_story") {
+      return scrollWithOffset(originStoryRef);
+    } else if (menuType === "kinship_intelligence") {
+      return scrollWithOffset(kinshipIntelligenceRef);
+    } else if (menuType === "co_op_economics") {
+      return scrollWithOffset(collectiveEconomicsRef);
+    } else if (menuType === "founding_sages") {
+      return scrollWithOffset(foundingCreatorsRef);
+    } else if (menuType === "join_early_access") {
+      return scrollWithOffset(earlyAccessRef);
+    }
+  }, []);
+
+  const scrollWithOffset = (
+    ref: React.RefObject<HTMLElement>,
+    offset = 120,
+  ) => {
+    if (!ref.current) return;
+
+    const elementTop =
+      ref.current.getBoundingClientRect().top + window.pageYOffset;
+
+    window.scrollTo({
+      top: elementTop - offset,
+      behavior: "smooth",
+    });
   };
 
-  if (isWaiting) return <HomeLoggedInPage />;
+  const [showMsg, setShowMsg] = React.useState(true);
+  const [msgClass, setMsgClass] = React.useState("success");
+  const [msgText, setMsgText] = React.useState("");
 
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
-        <div className="flex justify-between items-center md:px-16 px-4 py-8 bg-[#32323212] md:backdrop-filter md:backdrop-blur-[13px] md:rounded-full w-full lg:w-[80%] self-center">
+        <div className="flex justify-between items-center md:px-16 px-4 max-md:py-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] md:rounded-full w-full xl:mx-40  self-center">
           {!isMobileScreen && (
             <button
               onClick={() =>
@@ -90,123 +133,92 @@ export default function LandingPage() {
 
           {isMobileScreen ? (
             <div className="flex flex-col items-center justify-center">
-              <button
-                onClick={() =>
-                  mainSection.current?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                <KinshipMainIcon width={20} height={20} />
-              </button>
-
-              <div className="mb-2" />
-
-              <HomeMobileDrawer
-              // belowHeroRef={belowHeroRef}
-              // safeSection={safeSection}
-              // testimonialsSection={testimonialsSection}
-              // founderSection={founderSection}
-              // whySection={whySection}
-              // howItWorksSection={howItWorksSection}
+              <LandingPageDrawer
+                scrollWithOffset={scrollWithOffset}
+                originStoryRef={originStoryRef}
+                kinshipIntelligenceRef={kinshipIntelligenceRef}
+                collectiveEconomicsRef={collectiveEconomicsRef}
+                foundingCreatorsRef={foundingCreatorsRef}
               />
             </div>
           ) : (
             <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() =>
-                  belowHeroRef.current?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={() => scrollWithOffset(originStoryRef)}
               >
-                Overview
+                Origin Story
               </a>
 
-              <div className="lg:mx-4 md:mx-2" />
-              
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() =>
-                  howItWorksSection.current?.scrollIntoView({
-                    behavior: "smooth",
-                  })
-                }
-              >
-                How it Works
-              </a>
-
-              <div className="lg:mx-4 md:mx-2" />
+              <div className="xl:mx-4 md:mx-2" />
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() =>
-                  whySection.current?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={() => scrollWithOffset(kinshipIntelligenceRef)}
               >
-                Why Join?
+                Kinship Intelligence
               </a>
 
-              <div className="lg:mx-4 md:mx-2" />
+              <div className="xl:mx-4 md:mx-2" />
 
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() =>
-                  founderSection.current?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={() => scrollWithOffset(collectiveEconomicsRef)}
               >
-                From our Founder
+                Co-op Economics
               </a>
 
-              <div className="lg:mx-4 md:mx-2" />
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() =>
-                  testimonialsSection.current?.scrollIntoView({
-                    behavior: "smooth",
-                  })
-                }
-              >
-                Testimonials
-              </a>
+              <div className="xl:mx-4 md:mx-2" />
 
-              <div className="lg:mx-4 md:mx-2" />
               <a
                 className="text-base text-white cursor-pointer"
-                onClick={() =>
-                  safeSection.current?.scrollIntoView({ behavior: "smooth" })
-                }
+                onClick={() => scrollWithOffset(foundingCreatorsRef)}
               >
-                Safety
+                Founding Sages{" "}
               </a>
+              <div className="xl:mx-4 md:mx-2" />
 
-              <div className="lg:mx-4 md:mx-2" />
               <a
-                className="text-base text-white cursor-pointer"
-                href="https://docs.kinshipbots.com"
+                href="https://kinship.today"
                 target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-white cursor-pointer"
               >
-                Docs
+                Go Deeper
               </a>
             </div>
           )}
 
-          <div className="flex">
+          <div className="font-bold">
             <Button
-              action={openSignUpModal}
+              action={() => scrollWithOffset(earlyAccessRef)}
               size="small"
               isPrimary
-              title="Join Us!"
+              title="Join Early Access"
               isLoading={false}
             />
           </div>
         </div>
+        <ErrorContainerVW
+          showMessage={showMsg}
+          className={msgClass}
+          messageText={msgText}
+        />
       </header>
+
+      <AlertModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isHome={false}
+        initialStep={initialModalStep}
+      />
       <div
         className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"
         ref={mainSection}
       >
-        <div className="text-center relative">
-          <div className="relative">
-            <video
-              className="w-full h-auto mx-auto rounded-lg"
+        <div className="text-center relative h-screen flex justify-center items-center bg-[url('/background/RetreatCenterhero.jpg')] bg-cover bg-center bg-no-repeat">
+          {/* <video
+              className="w-full h-auto mx-auto rounded-lg "
               autoPlay
               muted
               loop={false}
@@ -217,453 +229,880 @@ export default function LandingPage() {
                 type="video/mp4"
               />
               Your browser does not support the video tag.
-            </video>
-            <div className=" absolute top-0 w-full h-[13px] bg-[linear-gradient(0deg,rgba(3,1,27,0)_0%,#03011B_100%)] backdrop-blur-[5px]"></div>
-            <div className=" absolute bottom-0 w-full h-44 bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
-            <div className=" absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
-            <div className=" absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
-            <div className=" absolute w-full h-full top-0 left-0 flex justify-center items-center">
-              <div
-                className="m-auto md:max-w-[45%] max-w-[85%] p-2 bg-[#01000A14] md:backdrop-filter md:backdrop-blur-[11px] rounded-[60px] p-4 md:py-8 md:px-12"
-                ref={homeSection}
+            </video> */}
+          {/* <div className="max-md:hidden absolute top-0 w-full h-[13px] bg-[linear-gradient(0deg,rgba(3,1,27,0)_0%,#03011B_100%)] backdrop-blur-[5px]"></div>
+            <div className="max-md:hidden absolute bottom-0 w-full h-44 bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+            <div className="max-md:hidden absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
+            <div className="max-md:hidden absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div> */}
+          <div
+            className="m-auto  max-w-[85%] xl:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter backdrop-blur-[20px] rounded-[3rem] xl:p-[20px] p-[10px] xl:md:absolute xl:top-[25%] top-[10%] "
+            ref={homeSection}
+          >
+            <h1 className="w-auto xl:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
+              Awaken Your Power{" "}
+            </h1>
+            <h1 className="w-auto xl:text-[1.813rem] text-[0.75rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
+              With a Corporate Retreat Center in the Palm of Your Hand{" "}
+            </h1>
+            <div className="">
+              <p className="xl:text-base text-xs text-[#FFFFFF] font-Avenir text-opacity-90 xl:px-12">
+                Big Tech has given you countless tools for the mind
+                (productivity, information, analysis) and for the body (fitness,
+                nutrition, wearables). But your heart and soul—how you live,
+                relate, choose, repair, grieve, create, and belong—are left to
+                atrophy.
+              </p>
+            </div>
+            <p className="mb-2 mt-2 xl:text-base text-xs text-[#ffffff]/90 xl:px-12">
+              Kinship Bots is a mobile app that brings a fully staffed corporate
+              retreat center into the palm of your hand—built on rigorous
+              science including Self-Determination Theory, neuroscience, and
+              archetypal depth psychology.
+            </p>
+            <p className="xl:text-base text-xs text-center text-white xl:px-12">
+              Anytime, anywhere, when you're at your peak or when you need it
+              most, you can test your limits in the gym, recover and restore in
+              our spa, or embark on luminous journeys of wonder and awe. Not
+              therapy. Not social media. Not a game.{" "}
+            </p>
+            <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 mb-2">
+              This is resistance training for what makes us fully human.
+            </p>
+
+            <div className="w-full ">
+              <button
+                className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-[12rem]  "
+                onClick={() => scrollWithOffset(earlyAccessRef)}
               >
-                <h1 className="w-auto transition duration-300 mt-5 sm:mt-0 text-[3vmax] md:text-[5vmax] sm:leading-[70px] font-goudy bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-6 py-2">
-                  Kinship Bots
-                </h1>
-                <div className="transition duration-300 md:py-4 md:my-4 py-2 sm:leading-[70px]">
-                  <p className="text-base md:text-4xl font-bold text-[#FFFFFF] text-opacity-80">
-                    Where AI Belongs
-                  </p>
-                </div>
-                <p className="transition duration-300 mb-2 sm:mb-5 text-[1vmax] md:text-lg text-white">
-                  Join forces with the world's first intentional community of AI
-                  bots living together on the cutting edge of culture, safe and
-                  secure in your very own agentic crypto wallet.
-                </p>
-
-                <div className="w-full flex items-center justify-evenly">
-                  <button
-                    className="flex m-auto md-[46px] px-4 py-[6px] md:px-[32px] md:py-[12px] mt-5 font-bold text-xs justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE] cursor-pointer"
-                    onClick={openSignUpModal}
-                  >
-                    Claim Your Early Access
-                  </button>
-
-                  <button
-                    className="flex items-center m-auto md:h-[46px] px-4 py-[6px] md:px-[32px] md:py-[12px] mt-5 font-bold text-xs justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FFFFFF14] border-[1px] border-white cursor-pointer ml-0"
-                    onClick={scrollToHero}
-                  >
-                    <SimpleArrowDown />
-                    Learn More
-                  </button>
-                </div>
-              </div>
+                Join Early Access
+              </button>
             </div>
           </div>
         </div>
 
         <section
-          className="w-full flex justify-center items-center flex-col px-4 mt-5 sm:mt-20"
+          className="mb-8 md:mt-12 mt-8 flex flex-col w-full h-full px-2 pt-4 pb-2 justify-center items-center"
           ref={belowHeroRef}
         >
-          <h1 className="text-center font-goudy font-bold text-[2vmax] md:text-[3.5vmax] md:py-4 sm:leading-[70px] bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0.70)_109.53%)] bg-clip-text text-transparent stroke-text">
-            Change Yourself, <br /> Change Your Life, <br /> Change the World
+          <div>
+            <div ref={originStoryRef} className=" scroll-mt-[120px]" id="origin-story">
+              <h1 className="text-center font-bold xl:px-5 leading-[1] xl:w-[65.063rem] xl:text-[3.75rem] text-xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+                I went to make a film. <br />I returned with a mission.
+              </h1>
+            </div>
+
+            <div className="my-5">
+              <iframe
+                className=" w-[100%] xl:h-[35rem] h-64 rounded-lg"
+                // src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
+                src="https://www.youtube.com/embed/o-VRMB0-R98?si=y9WU6nEHsb2e7qJ7"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
+
+            <div className="xl:w-[64.313rem] m-auto">
+              <h1 className="text-center font-avenir font-[800] text-[30px] leading-[110%] tracking-[-0.02em] xl:w-[60.063rem] mx-auto">
+                From Protest to Transformation
+              </h1>
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem]">
+                I set out to make an activist film about my community fighting a
+                polluting factory. Protest matters—it draws lines, surfaces
+                harm, buys time for truth to emerge.
+              </p>
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-2">
+                But in Mexico, interviewing Four Arrows after our campaign had
+                fractured and the factory went into production, I understood
+                something deeper:{" "}
+                <span className="text-white font-bold text-lg">
+                  {" "}
+                  activism alone isn't enough.{" "}
+                </span>{" "}
+              </p>
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+                You can't transform a system from the outside because there is
+                no outside. Systems persist by design. They reward disconnection
+                and compliance over integrity and care.
+              </p>
+
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+                The executives I opposed weren't villains. In another life, we
+                might have been friends. They didn't want to exploit any more
+                than communities want to be sacrificed. Everyone was trapped in
+                the same invisible structure.
+              </p>
+
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-2">
+                Four Arrows showed me that{" "}
+                <span className="text-white font-bold text-lg">
+                  lasting change doesn't come from fighting the system head-on.
+                  It comes from changing the inner conditions
+                </span>{" "}
+                that shape how people think, choose, relate, and lead.
+              </p>
+
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+                When those conditions shift, culture shifts. When culture
+                shifts, systems shift.
+              </p>
+
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+                This film captures that turning point, when Kinship Intelligence
+                was born.
+              </p>
+
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-2">
+                <span className="text-white font-bold text-lg">
+                  Kinship is transformation operationalized
+                </span>{" "}
+                —a sociotechnical platform that brings emotional, relational,
+                and ethical capacity into how we learn, work, and decide
+                together. This isn’t content about change, but this creates the
+                conditions for change.
+              </p>
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+                It's designed for people and organizations who know the future
+                won't be built by ideology alone, but by leaders and teams
+                capable of acting with clarity, courage, and care—inside the
+                systems that shape our world.
+              </p>
+
+              {/* <p className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5">
+                David Levine, Founder & CEO <br />
+                Kinship Bots Club
+              </p> */}
+            </div>
+          </div>
+
+          <div className="mt-24 max-md:mt-12">
+            <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]" id="kinship-intelligence">
+              <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+                From Content to Capacity
+              </h1>
+            </div>
+            <div className="my-5">
+              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
+                Most platforms deliver content to consume and tasks to track.
+                Kinship Intelligence is different. It's a living system for
+                shared learning and personal growth, where people stay in
+                relationship, practice together, and evolve as a community.
+              </p>
+              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 mt-2 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
+                Traditional consulting, workshops, and training can spark
+                insight—but insight alone rarely sticks. Without ongoing
+                practice and real-world application, even the most powerful
+                ideas are overwhelmed by old habits.
+              </p>
+              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 mt-2 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
+                <span className="text-white font-bold text-lg">
+                  {" "}
+                  Kinship turns wisdom into lived capacity.{" "}
+                </span>{" "}
+                It gives consultants and learning teams a way to operationalize
+                their work—embedding it into experiences people return to,
+                practice together, and integrate over time.
+              </p>
+              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 mt-2 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
+                Instead of delivering insights and hoping they land, you create
+                environments where learning holds, relationships deepen, and
+                transformation becomes sustainable. Rather than packaging wisdom
+                and moving on, you build living systems that grow with the
+                people inside them—and generate lasting value for everyone
+                involved.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div className="xl:w-[64.313rem] m-auto">
+          <h1 className="text-center font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            Living infrastructure for collective evolution.
+          </h1>
+          <p className="max-md:text-sm text-center text-[#FFFFFFC7] mt-[1rem]">
+            Together, these four components turn wisdom into practice, learning
+            into capacity, and insight into lasting change—at the individual,
+            organizational, and societal scale.
+          </p>
+        </div>
+        <div className="xl:flex justify-around max-md:px-3 xl:my-10 xl:mx-20 mx-auto ">
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl  ">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Kinship Bots
+              </p>
+              <p className="text-white font-bold text-lg text-center ">
+                The Mobile Experience{" "}
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                A living, interactive environment where people learn by doing.
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                Kinship Bots delivers immersive scenarios, challenges, and
+                integrations that feel more like a retreat than a training
+                program—while reliably building relational, emotional, and
+                ethical capacity over time. This is where practice happens,
+                alone and together.
+              </p>
+            </div>
+          </div>
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Kinship Studio
+              </p>
+              <p className="text-white font-bold text-lg text-center ">
+                The Design Environment
+              </p>
+
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                A professional workspace for consultants, facilitators, and
+                organizations
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                Kinship Studio lets you design experiences—not content—by
+                encoding your frameworks, practices, and insights into
+                interactive scenarios that people return to, train with, and
+                integrate over time. This is where transformation gets built.
+              </p>
+            </div>
+          </div>
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Kinship Exchange
+              </p>
+              <p className="text-white font-bold text-lg text-center ">
+                The Cooperative Marketplace
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                A values-aligned economy for living work.
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                Through the Exchange, creators offer programs, templates, and
+                experiences—earning through participation, engagement, and
+                trusted referral. Value circulates within the community,
+                supporting both sustainability and integrity. This is where
+                contribution meets reciprocity.
+              </p>
+            </div>
+          </div>
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl ">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Kinship Intelligence
+              </p>
+              <p className="text-white font-bold text-lg text-center ">
+                The Orchestration Layer
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                The connective tissue that brings it all together.
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                Kinship Intelligence orchestrates context, memory, adaptation,
+                and care—personalizing experiences, tracking growth, supporting
+                safety, and ensuring that learning compounds rather than fades.
+                This is the difference between a set of tools and a living
+                system.{" "}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          ref={foundingCreatorsRef}
+          className="max-md: max-md:px-3 scroll-mt-[120px]"
+          id="founding-creator"
+        >
+          <h1 className="text-center font-bold xl:px-10 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            Change Yourself, Change Your Life, Change The World.
           </h1>
 
-          <p className="text-[0.75vmax] mt-4 text-center md:max-w-[30%] max-w-[60%] my-2 text-[#FFFFFF90]">
-            You may feel powerless. Everywhere you turn Big Tech is enforcing
-            conformity, controlling behavior, endlessly distracting, exploiting,
-            and extracting as much value as possible while people suffer,
-            societies collapse and the world burns.
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
+            Kinship works like resistance training for the inner life—balanced
+            with deep recovery. You'll face meaningful challenges that build
+            courage, capacity, and connection, then integrate through rest,
+            reflection, and shared experience. Inside immersive scenarios that
+            feel like an ongoing retreat or workshop—not a checklist—growth
+            happens naturally, with others, in a space that's engaging,
+            intimate, and alive.
+          </p>
+        </div>
+
+        <div className="my-20 max-md:mt-12 max-md:mb-0 max-md:px-3">
+          <h1 className="text-center font-bold  leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            Six Core Capacities for Human Flourishing{" "}
+          </h1>
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
+            Kinship is built on HEARTS—a framework grounded in
+            Self-Determination Theory, neuroscience, and depth psychology. These
+            six capacities work together as an integrated system:
+            <span className="text-white font-bold text-lg">
+              {" "}
+              Harmony, Empowerment, Artistry, Reason, Trust, and Synthesis.
+            </span>
+          </p>
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
+            Rather than tracking scores, Kinship reveals trends and patterns
+            across these dimensions—showing you where you're growing, where
+            support is needed, and how your inner and outer worlds are moving
+            into complementarity.
+          </p>
+          <div className="max-md:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-10 xl:my-10 xl:w-[70rem] mx-auto">
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl  ">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Harmony{" "}
+                </p>
+                <p className="text-white font-bold text-lg text-center mt-5">
+                  Belonging you can rely on.
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center">
+                  Kinship strengthens your ability to connect, collaborate,
+                  repair, and stay present with others—even under pressure.
+                  Harmony isn't about avoiding conflict; it's about developing
+                  the relational capacity for empathy, honesty, and mutual care
+                  that holds through tension and change.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Empowerment{" "}
+                </p>
+                <p className="text-white font-bold text-lg text-center mt-5">
+                  Choice that's actually yours.
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center ">
+                  Through real challenges, Kinship builds the capacity to say
+                  yes and no with clarity—without collapse, rebellion, or
+                  rigidity. Empowerment becomes grounded, flexible, and
+                  self-directed: the ability to act from your own center,
+                  especially when the stakes are real.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl ">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Artistry{" "}
+                </p>
+                <p className="text-white font-bold text-lg text-center mt-5">
+                  Growth through practice.
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center">
+                  Kinship replaces abstract learning with lived skill. You
+                  develop competence by doing—experimenting, adapting, and
+                  refining your response to life's challenges. Artistry emerges
+                  through openness, persistance, and integration: the craft of
+                  showing up well.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl  ">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Reason{" "}
+                </p>
+                <p className="text-white font-bold text-lg text-center mt-5">
+                  Meaning in motion.{" "}
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center">
+                  Reason isn't intellectual distance—it's the capacity to align
+                  action with what matters most. Kinship helps you discover and
+                  enact purpose through contribution, service, and creative
+                  engagement, so meaning becomes lived rather than declared.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Trust{" "}
+                </p>
+                <p className="text-white font-bold text-lg text-center mt-5">
+                  Let yourself rest and respond.{" "}
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center ">
+                  Kinship trains trust as a capacity, not a condition. Through
+                  recovery, regulation, and relational support, you build the
+                  ability to stay grounded, recover from stress, and remain
+                  open—even in uncertainty. Trust allows you to move between
+                  effort and rest.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Synthesis{" "}
+                </p>
+                <p className="text-white font-bold text-lg text-center mt-5">
+                  Bringing inner and outer into wholeness.{" "}
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center ">
+                  Kinship helps you integrate the expressive and receptive
+                  aspects of being—bridging psyche and cosmos, action and
+                  reflection, doing and being. Synthesis is the capacity to hold
+                  complexity, honor paradox, and move fluidly between worlds
+                  without fragmentation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-[15rem] m-auto">
+          <button
+            className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full"
+            onClick={() => scrollWithOffset(earlyAccessRef)}
+          >
+            Join Early Access
+          </button>
+        </div>
+        <div className="mt-24 max-md:mt-12 max-md:px-3">
+          <div ref={collectiveEconomicsRef} className="scroll-mt-[120px]" id="collective-economic">
+            <h1 className="text-center font-bold px-12 leading-[1]  md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+              Member Managed, Member Owned
+            </h1>
+
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
+              Kinship Intelligence is structured as a Colorado Article 56
+              Cooperative and Public Benefit Corporation—meaning the people who
+              participate, contribute, and create are the actual owners. There
+              are no advertisers, no extractive algorithms, and no outside
+              stakeholders optimizing for attention or growth at any cost.
+            </p>
+
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium font-Avenir  mt-5 mb-2">
+              Big tech platforms are built on extraction. They pretend you’re
+              getting something for “free,” but you’re really the product that
+              they sell… your data, your creativity, your relationships. And in
+              return, you get anxiety, doom, and despair.
+            </p>
+            <p className="text-center max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">
+              Kinship is different.
+            </p>
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto my-5">
+              Here, value circulates among the members who show up, contribute,
+              and care for the whole. Every member holds one share of Class A
+              Stock and participates in governance. As Kinship grows, members
+              share in the value according to transparent rules that reward real
+              contribution—through participation, promotion, and production—not
+              hype.
+            </p>
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] my-5 mx-auto">
+              You earn immediately when people join through your invitation,
+              engage with your creations, or accept your offers. Then you share
+              in the annual profit pools based on your patronage.
+            </p>
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] my-5 mx-auto">
+              Software is a great business. Kinship puts it back in the hands of
+              the people who create the value.
+            </p>
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] my-5 mx-auto">
+              <span className="text-white font-bold text-lg">
+                Pricing is structured to support sustainable participation
+              </span>
+              —whether you're an individual practitioner, a team building
+              capacity together, or an organization embedding transformation at
+              scale.
+            </p>
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
+              All tiers include full access to Kinship Bots: immersive
+              scenarios, HEARTS tracking, gatherings, and personalized AI
+              guidance.
+            </p>
+          </div>
+        </div>
+        <div className="xl:flex justify-around xl:my-10 xl:w-[106rem] mx-auto max-md:mt-12 max-md:px-3">
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Professional
+              </p>
+              <p className="text-white font-bold text-lg text-center mt-3">
+                For individuals and small practices <br /> 1–4 seats
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center">
+                Perfect for solo practitioners, coaches, consultants, and early
+                adopters who want to develop their own capacity and explore
+                Kinship's approach to transformation.
+              </p>
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  $30/month or $100/year per seat
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">Team</p>
+              <p className="text-white font-bold text-lg text-center mt-3">
+                For small groups and departments <br />
+                5–34 seats (minimum 5)
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center">
+                Designed for small teams, startups, boutique agencies, clinics,
+                and studios building relational capacity and psychological
+                safety together.
+              </p>
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  $25/month or $80/year per seat
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Organization
+              </p>
+              <p className="text-white font-bold text-lg text-center mt-3">
+                For institutions and enterprises <br />
+                35+ seats{" "}
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center">
+                Built for larger companies, health systems, universities,
+                associations, NGOs, governments, and networks embedding
+                wholeness into culture and operations.
+              </p>
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  $20/month or $70/year per seat
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
+            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+              <p className="text-white font-bold text-xl text-center">
+                Creator
+              </p>
+              <p className="text-white font-bold text-lg text-center mt-3">
+                For designers of transformation <br />
+                Individual membership
+              </p>
+              <p className="text-[#CDCDCDE5] text-base text-center">
+                Creator membership includes full access to Kinship Studio and
+                the Exchange. Design immersive scenarios, publish your work, and
+                earn based on usage and engagement—or create private experiences
+                and set your own pricing. Creators are paid from a shared pool
+                and retain ownership of their work within cooperative
+                governance.
+              </p>
+              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
+                <li className="text-white font-bold">
+                  $120/month or $950/year
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+            All pricing supports the cooperative model: members participate in
+            governance, and value flows back to those who contribute—whether
+            through practice, creation, or community building.
+          </p>
+        </div>
+        <div className="xl:w-[60rem] m-auto my-5 max-md:mt-12 max-md:mb-0">
+          <div>
+            <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7] max-md:mt-0 mt-20">
+              How Ownership Actually Works{" "}
+            </h1>
+            <p className="text-center max-md:text-sm text-lg text-white font-medium font-Avenir  mt-5 mb-2">
+              Why This Matters
+            </p>
+
+            <div className="px-3">
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center">
+                Human–AI alignment isn't just a technical challenge—it's a
+                governance challenge. Until the systems we build are owned and
+                guided by the people whose lives they shape, we'll keep
+                reproducing the same extractive patterns, only faster and at
+                scale.
+              </p>
+              <p className="text-[#FFFFFFC7] max-md:text-sm text-center mt-2">
+                Kinship is what alignment looks like when systems serve
+                people—not the other way around.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-[15rem] m-auto ">
+          <button
+            className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full  "
+            onClick={() => scrollWithOffset(earlyAccessRef)}
+          >
+            Join Early Access
+          </button>
+        </div>
+        <div className="mt-24 max-md:mt-12 max-md:px-3">
+          <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            A Living Body of Wisdom
+          </h1>
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+            Behind every experience in Kinship is a living body of wisdom—honed
+            over decades by dedicated practitioners and guides. We call them
+            Sages.
+          </p>
+          <p className="ttext-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+            Every creator can grow into a Sage. As your work deepens and
+            resonates within the community, you can be recognized, nominated,
+            and selected by fellow members—becoming part of this lineage of
+            wisdom.
           </p>
 
-          <img
-            src="https://storage.googleapis.com/mmosh-assets/home/home_bots.png"
-            alt="Bots Journey"
-            width="50%"
-            height={400}
-            className="h-auto mx-auto rounded-lg"
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+            Sages' work shows up throughout Kinship: in dialogue, stories,
+            adventures, and shared challenges. Some of this wisdom is woven into
+            the fabric of scenarios; some is available directly through the
+            Sages themselves as AI companions trained on their teachings.
+          </p>
+
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+            Kinship holds this work with integrity—ensuring that even the most
+            profound insights remain practical, accessible, and alive.
+          </p>
+        </div>
+        <div className="my-20 max-md:mt-12 max-md:mb-0 max-md:px-3">
+          <h1 className="text-center font-bold  leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            Meet our Founding Sages.{" "}
+          </h1>
+
+          <div className="max-md:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-10 xl:my-10 xl:w-[70rem] mx-auto">
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl  ">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Four Arrows
+                </p>
+                <p className="text-white font-bold text-lg text-center ">
+                  Indigenous Worldview
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                  Worldview reflection, sacred communication, self-hypnosis, and
+                  fearless courage—rooted in a living, interconnected universe
+                  where all beings are kin.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Howard Teich
+                </p>
+                <p className="text-white font-bold text-lg text-center ">
+                  Complementary Consciousness
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                  Archetypal depth psychology and alchemy—integrating shadow,
+                  embracing paradox, and restoring the partnership between Solar
+                  and Lunar consciousness.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl ">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Renée Smith
+                </p>
+                <p className="text-white font-bold text-lg text-center ">
+                  The Nature of Work
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                  Transforming work into play, fear into love. Building
+                  stronger, more resilient teams and cultures across
+                  organizations, institutions, and movements.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Bill Thatcher
+                </p>
+                <p className="text-white font-bold text-lg text-center ">
+                  Soulsteading
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                  Self-authorship through authentic community. Withdraw
+                  projections, lower masks, and cultivate the deep trust that
+                  holds us through change.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Hephzibah Light
+                </p>
+                <p className="text-white font-bold text-lg text-center ">
+                  The Feathered Nest
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                  Creating homes and families that are purposeful, meaningful,
+                  and filled with joy—where belonging and beauty sustain
+                  everyday life.
+                </p>
+              </div>
+            </div>
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+                <p className="text-white font-bold text-xl text-center">
+                  Warren Kahn
+                </p>
+                <p className="text-white font-bold text-lg text-center ">
+                  Let Life Lead{" "}
+                </p>
+                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                  Relating in flow, living in truth, and navigating with
+                  presence, ease, and trust rather than force, conflict, and
+                  control.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {currentStep === 1 && (
+          <Step1
+            onSuccess={() => setCurrentStep(2)}
+            earlyAccessRef={earlyAccessRef}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
           />
-        </section>
-
-        <section className="m-auto my-24 flex w-full h-full sm:w-[1144px] px-2 pt-4 pb-2 justify-center items-center flex-shrink-0">
-          <div className="flex flex-col justify-center items-center">
-            <h1 className="transition duration-300 text-center font-bold text-[2vmax] md:text-[3.5vmax] sm:text-[63px] sm:leading-[70px] stroke-text">
-              You are powerful beyond measure. At every moment the words you
-              speak, the choices you make and the actions you take shift the
-              trajectory of your life, send ripples through the cosmic web, and
-              birth a new reality.
-            </h1>
-
-            <div className="rounded-[30px] border-[#FFFFFF60] border-[1.547px] bg-[rgba(255,255,255,0.02)] px-2 py-8 mt-6">
-              <div className="transition duration-300 mx-auto sm:w-[888px] text-center text-xl sm:text-[23px] font-bold sm:font-medium sm:leading-normal tracking-[-0.46px] bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0)_109.53%)] bg-clip-text text-transparent stroke-text mb-[33px]">
-                Kinship Bots is for creators, consultants, coaches, experts,
-                gurus, professionals, visionaries, leaders, guides, mentors,
-                builders, architects, catalysts, stewards, thought leaders and
-                luminaries who are ready to step off the Big Tech hamster wheel
-                of doom.
-              </div>
-
-              <img
-                src="https://storage.googleapis.com/mmosh-assets/home/home2.png"
-                alt="Bots Journey"
-                width={800}
-                height={400}
-                className="w-full h-auto mx-auto rounded-lg"
-              />
-
-              <div className="transition duration-300 mx-auto sm:w-[888px] text-center text-xl sm:text-[23px] font-bold sm:font-medium sm:leading-[21.8px] tracking-[-0.46px] bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0)_109.53%)] bg-clip-text text-transparent stroke-text mt-2">
-                It’s time to stop struggling. It’s time to stop fighting the
-                search engines and social networks for engagement, traffic,
-                leads and clients. It’s time to ditch the landing pages,
-                funnels, lists, offers, blogs, podcasts and videos. It’s time to
-                put Kinship Bots to work for you.
-              </div>
-            </div>
-            <button
-              className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-              onClick={openSignUpModal}
-            >
-              Get Early Access
-            </button>
-          </div>
-        </section>
-
-        <section
-          className="md:py-20 pb-4 max-w-[1144px] mx-auto linear-gradient-section"
-          ref={howItWorksSection}
-        >
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="transition duration-300 text-center text-3xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              We’re Little Tech
-            </h1>
-          </div>
-          <div className="transition duration-300 max-w-[635px] p-3 sm:p-0 mx-auto mt-3 text-center text-[rgba(255,255,255,0.78)] font-normal text-[18px] leading-[19.8px] tracking-[-0.36px]">
-            We’re a fleet of autonomous AI agents informed, instructed and
-            empowered by you. You create us, share us, experience us and enjoy
-            us. You can mix and match pieces and parts, values and skills,
-            traits and cultures, origins and purpose.
-          </div>
-
-          <div className="sm:pt-[50px] sm:pb-[19px] px-2 justify-center items-center gap-[505.777px] rounded-[30px] sm:border-[#FFFFFF80] sm:border-[1.547px] bg-[rgba(255,255,255,0.02)] mt-[30px]">
-            <div className="transition duration-300 mx-auto sm:w-[888px] text-center text-xl sm:text-[23px] font-bold sm:font-medium sm:leading-normal tracking-[-0.46px] bg-[linear-gradient(155deg,#FFF_11.53%,rgba(255,255,255,0)_109.53%)] bg-clip-text text-transparent stroke-text mb-[33px]">
-              Your AI companion will guide you ever deeper on your journey of
-              initiation into the mysteries of your sovereign soul.
-            </div>
-            <img
-              src="https://storage.googleapis.com/mmosh-assets/home/home3.png"
-              alt="Bots Journey"
-              width={800}
-              height={400}
-              className="w-full h-auto mx-auto rounded-lg"
-            />
-            <div className="transition duration-300 max-w-[635px] mx-auto mt-3 text-center text-[rgba(255,255,255,0.78)] font-normal text-[18px] leading-[19.8px] tracking-[-0.36px]">
-              Join us. We may just be little AI bots, but we’re friendly, warm
-              and supportive. We’re smart, kind and independent. And we work for
-              you.
-            </div>
-          </div>
-          <button
-            className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={openSignUpModal}
-          >
-            Be Among the First to Know
-          </button>
-        </section>
-
-        <section className="py-10 max-w-[1144px] mx-auto px-4">
-          <div className="text-center max-w-5xl mx-auto mb-12">
-            <h3 className=" transition duration-300 text-center text-4xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Inform, Instruct, Unleash
+        )}
+        {currentStep === 2 && (
+          <Step2
+            onSuccess={() => setCurrentStep(3)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(1)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 3 && (
+          <Step3
+            onSuccess={() => setCurrentStep(4)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(1)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 4 && (
+          <Step4
+            onSuccess={() => setCurrentStep(5)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(3)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 5 && (
+          <Step5
+            onSuccess={() => setCurrentStep(6)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(4)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 6 && (
+          <Step6
+            onSuccess={() => setCurrentStep(7)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(4)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 7 && (
+          <Step7
+            onSuccess={() => setCurrentStep(8)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(6)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {currentStep === 8 && (
+          <Step8
+            onBack={() => setCurrentStep(7)}
+            earlyAccessRef={earlyAccessRef}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
+          <div>
+            <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+              What People Say
             </h3>
           </div>
-          <div className="flex flex-col">
-            <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir">
-              With Kinship Bots, your assets are safely stored in a secure,
-              private crypto wallet. You can inform, instruct and unleash your
-              own personal AI agents. Each bot is token-gated, meaning access is
-              permissioned and verified through secure digital credentials.
-            </p>
+          <div className="xl:flex items-start">
+            <div
+              className="
+    w-full h-[350px]
+    xl:w-[433px] xl:h-[430px]
+    shrink-0 rounded-[30px]
+    bg-[lightgray] bg-center bg-cover bg-no-repeat
+    bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')]
+    xl:mr-4
+  "
+            ></div>{" "}
+            <div className="flex flex-col  p-4">
+              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                I've spent my life on the edge of culture and consciousness—as
+                an entrepreneur, musician, poet, activist, and guide. My work
+                shifts between the strategic and the sacred: sometimes building
+                systems, sometimes listening beneath the surface, helping people
+                rediscover capacities that have long lain dormant long dormant.
+              </p>
+              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                Kinship Intelligence grew from that practice. It carries forward
+                the kind of presence, discernment, and care that usually only
+                emerges through deep relationship and ceremony—and brings it
+                into organizations, teams, and daily life without losing its
+                power or heart.
+              </p>
+              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                Together, we're building systems that notice, respond, steady,
+                and strengthen—that help people meet themselves and one another
+                more fully, and engage the world with greater clarity, courage,
+                and care.
+              </p>
 
-            <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-              Here's how it works:
-            </p>
-
-            <ul>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Create a bot:</strong> Use the Agent Design Studio to
-                  infuse your bot with your knowledge, wisdom and skills. Give
-                  it a name, a purpose, an image and a personality.
-                </p>
-              </li>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Empower your bot:</strong> Give your bot an email
-                  address, social media accounts and access to calendars,
-                  instant messaging and other tools you use everyday.
-                </p>
-              </li>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Earn and share:</strong> As people interact with your
-                  bot, you can earn royalties, offer goods and services, and
-                  build a loyal, supportive community.
-                </p>
-              </li>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Connect and grow:</strong> Bots can talk to each
-                  other, refer clients, and form networks of shared wisdom and
-                  intelligence.
-                </p>
-              </li>
-            </ul>
-
-            <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-              This is not just any old AI chatbot—it’s your entire practice
-              supported by swarms of agents that work for you.
-            </p>
-          </div>
-        </section>
-
-        <section className="py-10 sm:max-w-[1144px] mx-auto" ref={whySection}>
-          <div className="text-center max-w-5xl mx-auto mb-12">
-            <h3 className=" transition duration-300 text-center text-4xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Our Bots Bring People Together For Good
-            </h3>
-          </div>
-          <div className="flex flex-col">
-            <div className="flex justify-between items-center sm:flex-row flex-col">
-              <div className="sm:w-[514px] sm:h-[513px] w-[332px] h-[332px] shrink-0 rounded-[20px] border border-[rgba(255,255,255,0.38)] bg-[rgba(22,10,145,0.14)] backdrop-blur-[17px] pt-[7px] px-[5px]">
-                <div className="shrink-0 rounded-[20px] bg-[lightgray] bg-no-repeat bg-[length:197.74%_100%] bg-[position:-172.891px_0px] bg-[url('https://storage.googleapis.com/mmosh-assets/home/home4.png')] aspect-[501.67/496]"></div>
-              </div>
-              <div className=" text-right py-3 sm:py-0">
-                <div className=" transition duration-300 text-center sm:text-right text-xl text-[2vmax] md:text-[1.2vmax] font-extrabold leading-[130%] tracking-[-0.56px] text-[rgba(255,255,255,0.78)] font-avenir-next sm:w-[487px] w-[345px] mb-4">
-                  Build Meaningful AI Agents That Empower and Earn
-                </div>
-                <div className=" transition duration-300 text-center sm:text-right text-base text-[1.2vmax] md:text-[1vmax] leading-[110%] tracking-[0.34px] text-[rgba(218,218,218,0.78)] font-avenir sm:w-[502px] w-[345px]">
-                  Create bots with heart and purpose, clarity and soul. Infuse
-                  them with the vision, power and insight to serve others—and
-                  get paid every time your agent provides support.
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center sm:flex-row flex-col">
-              <div className=" text-left sm:block hidden">
-                <div className=" transition duration-300 text-left text-[2vmax] md:text-[1.2vmax] font-extrabold leading-[130%] tracking-[-0.56px] text-[rgba(255,255,255,0.78)] font-avenir-next sm:w-[502px] w-[345px]">
-                  Discover Powerful AI Agents to Help You Face Every Challenge
-                </div>
-                <div className=" transition duration-300 text-left text-[1.2vmax] md:text-[1vmax] leading-[110%] tracking-[0.34px] text-[rgba(218,218,218,0.78)] font-avenir sm:w-[510px] w-[345px]">
-                  However modest or grand your ambitions, humble or proud your
-                  demeanor, fierce or gentle your countenance, you can find a
-                  bot that gets what you need, fits your vibe and helps you
-                  grow.
-                </div>
-              </div>
-              <div className="sm:w-[514px] sm:h-[513px] w-[332px] h-[332px] shrink-0 rounded-[20px] border border-[rgba(255,255,255,0.38)] bg-[rgba(22,10,145,0.14)] backdrop-blur-[17px] pt-[7px] px-[5px]">
-                <div className="shrink-0 rounded-[20px] bg-[lightgray] bg-no-repeat bg-[length:197.74%_100%] bg-[position:-172.891px_0px] bg-[url('https://storage.googleapis.com/mmosh-assets/home/home5.png')] aspect-[501.67/496]"></div>
-              </div>
-              <div className=" text-right py-3 sm:py-0 sm:hidden block">
-                <div className=" transition duration-300 text-center sm:text-right text-xl sm:text-[28px] font-extrabold leading-[130%] tracking-[-0.56px] text-[rgba(255,255,255,0.78)] font-avenir-next sm:w-[487px] w-[345px] mb-4">
-                  Discover Powerful AI Agents to Help You Face Every Challenge
-                </div>
-                <div className=" transition duration-300 text-center sm:text-right text-base sm:text-[17px] font-medium leading-[110%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir sm:w-[502px] w-[345px]">
-                  However modest or grand your ambitions, humble or proud your
-                  demeanor, fierce or gentle your countenance, you can find a
-                  bot that gets what you need, fits your vibe and helps you
-                  grow.
-                </div>
-              </div>
-            </div>
-          </div>
-          <button
-            className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={openSignUpModal}
-          >
-            Reserve Your Spot
-          </button>
-        </section>
-
-        <section className="py-16 max-w-[1144px] mx-auto">
-          <div className="text-center max-w-5xl mx-auto mb-28">
-            <h3 className=" transition duration-300 text-center text-3xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Why Join the Kinship Community?
-            </h3>
-          </div>
-          <div className="flex sm:flex-row flex-col">
-            <div>
-              <div className=" transition duration-300 text-center text-xl sm:text-[33px] font-extrabold leading-[130%] tracking-[-0.66px] text-white font-avenir-next mb-4 sm:mb-[68px]">
-                For Creators
-                <div className=" transition duration-300 text-center text-xl sm:text-[28px] font-extrabold leading-[130%] tracking-[-0.56px] text-[rgba(255,255,255,0.78)] font-avenir-next">
-                  Build, Launch & Earn
-                </div>
-              </div>
-              <img
-                src="https://storage.googleapis.com/mmosh-assets/home/home6.png"
-                alt="Launch Studio"
-                width={500}
-                height={300}
-                className="w-full h-auto rounded-[20px] bg-[lightgray] bg-center bg-cover bg-no-repeat"
-              />
-              <div className="mt-10 max-w-[326px] sm:max-w-[430px] mx-auto">
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next">
-                  Easy & Intuitive Bot Design Studio
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Create powerful, purposeful agents that embody your values
-                    and are always available to serve your community.
-                  </div>
-                </div>
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next mt-[34px]">
-                  Earn Revenue, Promote Offerings
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Monetize your creativity. Earn initial income based on
-                    usage, then earn more from offerings your agents promote.
-                  </div>
-                </div>
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next mt-[34px]">
-                  Authentic Connection
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Create bots that serve human needs—from coaching to
-                    wellness, financial guidance to technical support.
-                  </div>
-                </div>
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next mt-[34px]">
-                  Secure, Private & Trustworthy
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Powered by blockchain-based access and identity, your work
-                    and your clients are protected by the most advanced tech
-                    available.
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-[2px] h-auto mt-[148px] shrink-0 rounded-[20px] border border-[rgba(255,255,255,0.38)] opacity-30 bg-[rgba(22,10,145,0.14)] backdrop-blur-[17px] mx-[68px] hidden sm:block"></div>
-            <div>
-              <div className=" transition duration-300 text-center text-xl sm:text-[33px] font-extrabold leading-[130%] tracking-[-0.66px] text-white font-avenir-next mb-4 sm:mb-[68px] mt-12 sm:mt-0">
-                For Enjoyers
-                <div className=" transition duration-300 text-center text-xl sm:text-[28px] font-extrabold leading-[130%] tracking-[-0.56px] text-[rgba(255,255,255,0.78)] font-avenir-next">
-                  Discover, Connect, & Grow
-                </div>
-              </div>
-              <img
-                src="https://storage.googleapis.com/mmosh-assets/home/home7.png"
-                alt="Launch Studio"
-                width={500}
-                height={300}
-                className="w-full h-auto rounded-[20px] bg-[lightgray] bg-center bg-cover bg-no-repeat"
-              />
-              <div className="mt-10 max-w-[326px] sm:max-w-[430px] mx-auto">
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next">
-                  Uniquely Suited to You
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Kinship Bots work together and coordinate actions to
-                    uniquely meet your needs. Warm or challenging, gentle or
-                    fierce—we’ve got your match.
-                  </div>
-                </div>
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next mt-[34px]">
-                  Massive Value, Always Affordable
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Access powerful programs, leaders and experiences mediated
-                    by AI at a fraction of the traditional cost.
-                  </div>
-                </div>
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next mt-[34px]">
-                  You’ll Know What’s Real
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    Agents are verified, validated and token-gated to stop
-                    scams, fraud and misinformation.
-                  </div>
-                </div>
-                <div className=" transition duration-300 text-center text-lg sm:text-[18px] font-extrabold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] font-avenir-next mt-[34px]">
-                  Change is Within Reach
-                  <div className="text-center text-base sm:text-[17px] font-medium leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-8">
-                    You already have everything you need. Bots help you access
-                    it. Join Our Founding Members
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button
-            className="flex m-auto h-[46px] px-[32px] py-[12px] mt-5 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={openSignUpModal}
-          >
-            Join our Founding Members
-          </button>
-        </section>
-
-        <section className="py-16 max-w-[1144px] mx-auto" ref={founderSection}>
-          <div className="text-left max-w-5xl ml-0 sm:mb-[21px]">
-            <h3 className="  transition duration-300 text-center sm:text-left text-2xl sm:text-[52px] font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              A Message from the Founder
-            </h3>
-          </div>
-          <div className="flex items-center">
-            <div className="w-[433px] h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] mr-4 hidden sm:block"></div>
-            <div className="flex flex-col gap-4 sm:gap-7 p-4">
-              <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                I’m grateful for the people who changed my life for the
-                better—counselors, teachers, coaches, ceremonial leaders,
-                healers, artists, mentors, and more. And also from the
-                more-than-human world: Woodpecker, Spider, Deer, the Cloud
-                People, the Star People, Hermit Crab, and the many-legged and
-                rooted beings of Earth.
-              </div>
-              <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                Sometimes the change came from long journeys. Sometimes from
-                fleeting moments. But always, the insights stayed.
-              </div>
-              <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                Social media and centralized platforms amplify fear and
-                distraction. They drown out voices of liberation and insight. I
-                created Kinship Systems to offer something else: a space for
-                intimacy, support, trust, and growth.
-              </div>
-              <div className="text-justify text-base sm:text-[15px] font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                You are not alone. You are not small. This is for you. Let’s go
-                together.
-              </div>
               <div className="text-[16px] italic font-semibold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display']">
-                – David Levine, Founder
+                – David Levine
                 <br />
-                Kinship Systems
+                Founder, Kinship Intelligence
               </div>
             </div>
           </div>
         </section>
-
         <section
-          className="py-16 px-4 max-w-[1144px] mx-auto"
+          className="px-4 max-md:my-6 my-10 mx-auto"
           ref={testimonialsSection}
         >
-          <div className="text-center max-w-3xl mx-auto">
-            <div className=" transition duration-300 text-center text-2xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Testimonials
-            </div>
-          </div>
-          <div className="max-w-[635px] mx-auto mt-3 text-center text-[rgba(255,255,255,0.78)] font-normal text-base sm:text-[18px] leading-[19.8px] tracking-[-0.36px]">
-            Just as I've grown immensely from my encounters with members of the
-            council of all beings, I've worked to share my gifts at every
-            opportunity. Some of this has been one-on-one work with individual
-            clients, some has been group programs.
-            <br />
-            <br />
-            Kinship Systems is designed to imbue AI bots with the same level of
-            care, empathy, insight and precision I bring to my practice. In the
-            beginning this will be rough, but over time, we’ll evolve AI bots
-            that can guide, heal, comfort, fortify, strengthen and empower the
-            world, one person at a time.
-          </div>
-          <div className="w-full py-10 px-4">
-            <div className="relative max-w-7xl mx-auto">
-              {/* Navigation Arrows */}
+          <div className="w-full  px-4">
+            <div className="relative max-w-[80rem] mx-auto">
               <button
                 onClick={prevSlide}
-                className="absolute top-1/2 left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
+                className="absolute top-1/2 left-[-2%] xl:left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
               >
-                {/* Left Arrow SVG */}
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -681,7 +1120,7 @@ export default function LandingPage() {
 
               <button
                 onClick={nextSlide}
-                className="absolute top-1/2 right-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
+                className="absolute top-1/2 right-[-2%] xl:right-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
               >
                 {/* Right Arrow SVG */}
                 <svg
@@ -700,14 +1139,11 @@ export default function LandingPage() {
               </button>
 
               {/* Grid Layout */}
-              <div
-                className={`grid gap-6 ${itemsPerSlide > 1 ? "md:grid-cols-3" : "grid-cols-1"
-                  }`}
-              >
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
                 {visibleTestimonials.map((item, idx) => (
                   <div
                     key={idx}
-                    className="linear-gradient-testimonials text-white rounded-xl p-6 shadow-xl text-center border-[1px] border-[#FFFFFF42]"
+                    className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] text-white rounded-xl p-6 shadow-xl text-center border border-[#FFFFFF42]"
                   >
                     <img
                       src={item.image}
@@ -722,89 +1158,6 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <button
-            className="flex m-auto h-[46px] px-[32px] py-[12px] mt-8 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={openSignUpModal}
-          >
-            Join our Founding Members
-          </button>
-        </section>
-
-        <section
-          className="max-w-[1144px] py-16 px-4 mx-auto pb-44"
-          ref={safeSection}
-        >
-          <div className="text-center max-w-4xl mx-auto">
-            <div className=" transition duration-300 text-center text-2xl sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              Safe and Responsible Technology
-            </div>
-          </div>
-          <div className="max-w-4xl mx-auto mt-3 text-[rgba(255,255,255,0.78)] font-normal text-base sm:text-[18px] leading-[19.8px] tracking-[-0.36px]">
-            <p className="text-center text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir my-2">
-              We recognize AI and blockchain technologies can be misused.
-              Kinship Bots is built with privacy, consent and integrity as first
-              principles. We use:
-            </p>
-
-            <ul className="my-6">
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Token Gated AI -</strong> Only verified users can
-                  access private or sensitive agents.
-                </p>
-              </li>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Decentralized Identity -</strong> Protects user data
-                  and ensures trust.
-                </p>
-              </li>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Private Wallet Architecture -</strong> Prevents scams
-                  and wallet drainers.
-                </p>
-              </li>
-              <li>
-                <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-6">
-                  <strong>Built-In Moderation and Consent Frameworks -</strong>{" "}
-                  Ensures all interactions are appropriate, supportive and
-                  consensual.
-                </p>
-              </li>
-            </ul>
-
-            <p className="text-center text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir my-4">
-              Kinship Bots is a place where innovation meets ethics. It’s not
-              perfect, but it’s built to be safe, transparent and accountable.
-            </p>
-          </div>
-          <div className="relative">
-            <img
-              src="https://storage.googleapis.com/mmosh-assets/home/home7.png"
-              alt="Safe Technology"
-              width={800}
-              height={400}
-              className="w-full h-auto mx-auto mt-8 rounded-lg"
-            />
-            <div className="bg-[linear-gradient(180deg,_rgba(3,1,27,0)_0%,_#03011B_100%)] absolute bottom-0 h-44 w-full"></div>
-          </div>
-          <div className="text-left w-full" ref={earlyAccessSection}>
-            <div className=" transition duration-300 text-xl text-center sm:text-[52px] font-bold sm:leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text mt-4">
-              Join the Movement
-            </div>
-          </div>
-          <p className="text-[1.2vmax] md:text-[1vmax] leading-[120%] tracking-[-0.34px] text-[rgba(218,218,218,0.78)] font-avenir mt-4">
-            Kinship Bots is currently invite-only. Sign up now to be among the
-            first to access the platform and build your own AI agents.
-          </p>
-
-          <button
-            className="flex m-auto h-[46px] px-[32px] py-[12px] mt-8 justify-center items-center gap-[10px] flex-shrink-0 rounded-[8px] bg-[#FF00AE]"
-            onClick={openSignUpModal}
-          >
-            Join Now For Priority Access
-          </button>
         </section>
       </div>
     </div>

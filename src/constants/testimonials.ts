@@ -64,4 +64,16 @@ export const testimonials = [
     text: "David is an incredible human being! His passion for unlocking the gifts inside of others is profound, and he has an incredible vision for making this world a better place for everyone.",
     image: "https://storage.googleapis.com/mmosh-assets/home/mayaan.png",
   },
+   {
+    name: "Roberto Blain",
+    title: "HR Executive, Consultant & Executive Coach",
+    text: "David’s program was a game-changing experience that transformed my relationship to my work and my own value and self worth... He and his team were impeccable in the delivery of the program... that I can only describe as truly magical.",
+    image: "https://storage.googleapis.com/mmosh-assets/testimonial_2.jpg",
+  },
+   {
+    name: "Marianne Williamson",
+    title: "Author, spiritual teacher, and political activist",
+    text: "We need to redraw the patterns of deep civilization within the virtual space... I have no doubt but that all kinds of invisible forces will be with you. The heart is yearning for this. People want to be good, want to be decent. I can see where that's what your work is doing.",
+    image: "https://storage.googleapis.com/mmosh-assets/testimonial_1.jpg",
+  },
 ];

@@ -3,8 +3,9 @@ import localFont from "next/font/local";
 import { Inter, Poppins } from "next/font/google";
 import Header from "./components/Header";
 import "../globals.css";
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 import ConfigHOC from "./components/ConfigHOC";
+import Footer from "./footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -55,7 +56,6 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ConfigHOC>
-          <Header />
           <main className="grow">{children}</main>
           <Footer />
         </ConfigHOC>

@@ -16,6 +16,23 @@ import KinshipBots from "@/assets/icons/KinshipBots";
 const Footer = () => {
   const pathname = usePathname();
 
+  const scrollTo = (id: string, offset = 120) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const top =
+      element.getBoundingClientRect().top +
+      window.pageYOffset -
+      offset;
+
+    window.scrollTo({
+      top,
+      behavior: "smooth",
+    });
+  };
+
+
+
   if (
     ["/login", "/sign-up", "/forgot-password", "/preview"].includes(pathname)
   ) {
@@ -32,16 +49,16 @@ const Footer = () => {
         <div className=" xl:ml-[20rem] xl:w-[50.063rem] md:place-self-center mt-8 xl:mt-0">
           <ul className="xl:flex xl:justify-between font-normal">
             <li>
-              <a className="cursor-pointer"> Origin Story</a>
+              <a className="cursor-pointer" onClick={() => scrollTo("origin-story")}> Origin Story</a>
             </li>
             <li>
-              <a className="cursor-pointer"> Kinship Intelligence</a>
+              <a className="cursor-pointer" onClick={() => scrollTo("kinship-intelligence")}> Kinship Intelligence</a>
             </li>
             <li>
-              <a className="cursor-pointer"> Co-op Economics</a>
+              <a className="cursor-pointer" onClick={() => scrollTo("collective-economic")}> Co-op Economics</a>
             </li>
             <li>
-              <a className="cursor-pointer"> Founding Sages </a>
+              <a className="cursor-pointer" onClick={() => scrollTo("founding-creator")}> Founding Sages </a>
             </li>
             <li>
               <a

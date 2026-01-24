@@ -17,10 +17,12 @@ import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
 import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
 import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
+import { useSearchParams } from "next/navigation";
 
 const STORAGE_KEY = "early-access-data";
 
 export default function LandingPage() {
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
 
   React.useEffect(() => {
@@ -78,6 +80,22 @@ export default function LandingPage() {
   const isMobileScreen = mounted ? screenSize < 1200 : false;
 
   const [currentStep, setCurrentStep] = useState<number>(1);
+
+  React.useEffect(() => {
+    const menuType = searchParams.get("menu_type");
+    console.log("=========== menuType ===============", menuType);
+    if (menuType === "origin_story") {
+      return scrollWithOffset(originStoryRef);
+    } else if (menuType === "kinship_intelligence") {
+      return scrollWithOffset(kinshipIntelligenceRef);
+    } else if (menuType === "co_op_economics") {
+      return scrollWithOffset(collectiveEconomicsRef);
+    } else if (menuType === "founding_sages") {
+      return scrollWithOffset(foundingCreatorsRef);
+    } else if (menuType === "join_early_access") {
+      return scrollWithOffset(earlyAccessRef);
+    }
+  }, []);
 
   const scrollWithOffset = (
     ref: React.RefObject<HTMLElement>,
@@ -240,13 +258,11 @@ export default function LandingPage() {
               science including Self-Determination Theory, neuroscience, and
               archetypal depth psychology.
             </p>
-            <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12">
+            <p className="xl:text-base text-xs text-center text-white xl:px-12">
               Anytime, anywhere, when you're at your peak or when you need it
               most, you can test your limits in the gym, recover and restore in
-              our spa, or embark on luminous journeys of wonder and awe.{" "}
-            </p>
-            <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 my-2">
-              Not therapy. Not social media. Not a game.
+              our spa, or embark on luminous journeys of wonder and awe. Not
+              therapy. Not social media. Not a game.{" "}
             </p>
             <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 mb-2">
               This is resistance training for what makes us fully human.
@@ -274,13 +290,11 @@ export default function LandingPage() {
               </h1>
             </div>
 
-            <p className="max-md:text-sm text-center text-[#FFFFFFC7] mt-[1rem] ">
-              From Protest to Transformation
-            </p>
             <div className="my-5">
               <iframe
                 className=" w-[100%] xl:h-[35rem] h-64 rounded-lg"
-                src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
+                // src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
+                src="https://www.youtube.com/embed/o-VRMB0-R98?si=y9WU6nEHsb2e7qJ7"
                 title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
@@ -289,6 +303,9 @@ export default function LandingPage() {
             </div>
 
             <div className="xl:w-[64.313rem] m-auto">
+              <h1 className="text-center font-avenir font-[800] text-[30px] leading-[110%] tracking-[-0.02em] xl:w-[60.063rem] mx-auto">
+                From Protest to Transformation
+              </h1>
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem]">
                 I set out to make an activist film about my community fighting a
                 polluting factory. Protest matters—it draws lines, surfaces
@@ -351,10 +368,10 @@ export default function LandingPage() {
                 systems that shape our world.
               </p>
 
-              <p className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5">
+              {/* <p className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5">
                 David Levine, Founder & CEO <br />
                 Kinship Bots Club
-              </p>
+              </p> */}
             </div>
           </div>
 
@@ -712,7 +729,7 @@ export default function LandingPage() {
               </p>
               <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
                 <li className="text-white font-bold">
-                  Membership: $30/month or $100/year per seat
+                  $30/month or $100/year per seat
                 </li>
               </ul>
             </div>
@@ -731,7 +748,7 @@ export default function LandingPage() {
               </p>
               <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
                 <li className="text-white font-bold">
-                  Membership: $25/month or $80/year per seat
+                  $25/month or $80/year per seat
                 </li>
               </ul>
             </div>
@@ -752,7 +769,7 @@ export default function LandingPage() {
               </p>
               <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
                 <li className="text-white font-bold">
-                  Membership: $20/month or $70/year per seat
+                  $20/month or $70/year per seat
                 </li>
               </ul>
             </div>
@@ -776,7 +793,7 @@ export default function LandingPage() {
               </p>
               <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
                 <li className="text-white font-bold">
-                  Membership: $120/month or $950/year
+                  $120/month or $950/year
                 </li>
               </ul>
             </div>

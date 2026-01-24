@@ -73,7 +73,7 @@ export const testimonials = [
    {
     name: "Marianne Williamson",
     title: "Author, spiritual teacher, and political activist",
-    text: "DWe need to redraw the patterns of deep civilization within the virtual space... I have no doubt but that all kinds of invisible forces will be with you. The heart is yearning for this. People want to be good, want to be decent. I can see where that's what your work is doing.",
+    text: "We need to redraw the patterns of deep civilization within the virtual space... I have no doubt but that all kinds of invisible forces will be with you. The heart is yearning for this. People want to be good, want to be decent. I can see where that's what your work is doing.",
     image: "https://storage.googleapis.com/mmosh-assets/testimonial_1.jpg",
   },
 ];

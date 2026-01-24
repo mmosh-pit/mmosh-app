@@ -86,7 +86,8 @@ const LandingPageDrawer = ({
                         </label>
 
                         <a
-                            href="https://deeper.kinshipbots.com"
+                            // href="https://deeper.kinshipbots.com"
+                            href="https://kinship.today"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-base text-white cursor-pointer"

@@ -179,7 +179,7 @@ export default function LandingPage() {
               <div className="xl:mx-4 md:mx-2" />
 
               <a
-                href="https://deeper.kinshipbots.com"
+                href="https://kinship.today"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-white cursor-pointer"

@@ -62,7 +62,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="https://deeper.kinshipbots.com"
+                href="https://Kinship.today"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="cursor-pointer"

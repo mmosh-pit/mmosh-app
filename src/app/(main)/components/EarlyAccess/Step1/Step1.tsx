@@ -20,7 +20,6 @@ export const Step1: React.FC<Step1Props> = ({
   setMsgText,
   setMsgClass,
 }) => {
-
   const [firstName, setFirstName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [hasChecked, setHasChecked] = React.useState(false);
@@ -67,7 +66,7 @@ export const Step1: React.FC<Step1Props> = ({
     if (!hasChecked) {
       createMessage(
         "You must agree to receive communications before continuing",
-        "error"
+        "error",
       );
       return false;
     }
@@ -97,7 +96,7 @@ export const Step1: React.FC<Step1Props> = ({
             hasChecked,
             hasVerifiedEmail: false,
             currentStep: "2",
-          })
+          }),
         );
         if (onSuccess) {
           onSuccess();
@@ -105,14 +104,14 @@ export const Step1: React.FC<Step1Props> = ({
       } else {
         createMessage(
           response.data?.message || "Something went wrong",
-          "error"
+          "error",
         );
       }
     } catch (err: any) {
       createMessage(
         err?.response?.data?.message ||
         "Unable to generate OTP. Please try again.",
-        "error"
+        "error",
       );
     } finally {
       setIsLoading(false);
@@ -198,7 +197,7 @@ export const Step1: React.FC<Step1Props> = ({
                 >
                   {isLoading
                     ? "Sending..."
-                    : "Sends the security verification code"}
+                    : "Send the security verification code"}
                 </button>
               </form>
             </div>

@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 const twilioClient = twilio(
   process.env.TWILIO_ACCOUNT_SID!,
-  process.env.TWILIO_AUTH_TOKEN!
+  process.env.TWILIO_AUTH_TOKEN!,
 );
 
 type OTPType = "email" | "sms";
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
           errors: validation.errors,
           result: null,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
             message: "Email already exists",
             result: null,
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
     }
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
             message: "Mobile number already exists",
             result: null,
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
     }
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     const otpCollection = db.collection("mmosh-users-email-verification");
 
     const existingOTP = await otpCollection.findOne(
-      type === "email" ? { email } : { mobile }
+      type === "email" ? { email } : { mobile },
     );
 
     if (existingOTP?.expiresAt) {
@@ -97,11 +97,11 @@ export async function POST(req: NextRequest) {
             result: {
               destination: type === "email" ? email : mobile,
               expiresInMinutes: Math.ceil(
-                (expiresAt.getTime() - now.getTime()) / (60 * 1000)
+                (expiresAt.getTime() - now.getTime()) / (60 * 1000),
               ),
             },
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
     }
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
             createdAt: new Date(),
           },
         },
-        { upsert: true }
+        { upsert: true },
       );
     }
 
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
             message: "Failed to send OTP via SMS",
             result: null,
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
 
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
             createdAt: new Date(),
           },
         },
-        { upsert: true }
+        { upsert: true },
       );
     }
 
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
           expiresInMinutes: 15,
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
@@ -175,7 +175,7 @@ export async function POST(req: NextRequest) {
         message: "Internal server error",
         result: null,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -185,7 +185,7 @@ async function sendOTPEmail(email: string, otp: string) {
     to: email,
     from: {
       email: "security@kinshipbots.com",
-      name: "CatFawn Connection",
+      name: "Kinship Intelligence",
     },
     subject: "Your Verification Code",
     html: `
@@ -193,7 +193,7 @@ async function sendOTPEmail(email: string, otp: string) {
       Your verification code is:<br /><br />
       <strong style="font-size:22px;letter-spacing:3px;">${otp}</strong><br /><br />
       This code is valid for 15 minutes.<br /><br />
-      — CatFawn Team
+      — Kinship Team
     `,
   });
 }
@@ -201,7 +201,7 @@ async function sendOTPEmail(email: string, otp: string) {
 async function sendOTPSMS(mobile: string, otp: string, countryCode: string) {
   try {
     await twilioClient.messages.create({
-      body: `Your CatFawn Connection verification code is ${otp}. It expires in 15 minutes.`,
+      body: `Your Kinship Intelligence verification code is ${otp}. It expires in 15 minutes.`,
       from: process.env.TWILIO_PHONE_NUMBER!,
       to: `+${countryCode}${mobile}`,
     });
@@ -219,7 +219,7 @@ function generateSecureOTP(): string {
 }
 
 function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.com$/i.test(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function isValidCountryCode(code: string): boolean {

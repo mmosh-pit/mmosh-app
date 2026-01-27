@@ -55,7 +55,7 @@ export async function PATCH(req: NextRequest) {
           errors: validation.errors,
           result: null,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,7 +79,7 @@ export async function PATCH(req: NextRequest) {
       avatar,
       lastName,
       bio,
-      web
+      web,
     } = validation.data!;
 
     const collection = db.collection("mmosh-app-visitor");
@@ -88,7 +88,7 @@ export async function PATCH(req: NextRequest) {
     if (!existingUser) {
       return NextResponse.json(
         { status: false, message: "User not found", result: null },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -106,7 +106,7 @@ export async function PATCH(req: NextRequest) {
               "This Kinship Code is already taken. Please choose another.",
             result: null,
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
     }
@@ -169,7 +169,6 @@ export async function PATCH(req: NextRequest) {
       updateFields.avatar = body.avatar;
     }
 
-
     if (body.lastName !== undefined) {
       updateFields.lastName = body.lastName.trim();
     }
@@ -181,7 +180,6 @@ export async function PATCH(req: NextRequest) {
     if (body.web !== undefined) {
       updateFields.web = body.web.trim();
     }
-
 
     // Step 4 mobile verification logic — Generate OTP + Send SMS via Twilio
     let otp: string | null = null;
@@ -195,7 +193,7 @@ export async function PATCH(req: NextRequest) {
       updateFields.expiresAt = expiresAt;
       updateFields.status = "pending_mobile_verification";
 
-      console.log(mobileNumber, "###################")
+      console.log(mobileNumber, "###################");
       await sendSMS(mobileNumber!, otp);
     }
 
@@ -207,13 +205,13 @@ export async function PATCH(req: NextRequest) {
         message: "User updated successfully",
         result: { email, updatedFields: updateFields, otp },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error updating visitor:", error);
     return NextResponse.json(
       { status: false, message: "Internal server error", result: null },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -278,7 +276,7 @@ function validateRequestBody(body: any) {
           !ALLOWED_LIKERT_VALUES.includes(answer.toLowerCase())
         ) {
           errors.push(
-            "Each Likert answer must be a valid label (very rarely → very often)"
+            "Each Likert answer must be a valid label (very rarely → very often)",
           );
           break;
         }
@@ -289,14 +287,16 @@ function validateRequestBody(body: any) {
   if (body.referedKinshipCode !== undefined) {
     if (!/^[A-Za-z0-9]{6}$/.test(body.referedKinshipCode)) {
       errors.push(
-        "Refered Kinship Code must be exactly 6 alphanumeric characters"
+        "Refered Kinship Code must be exactly 6 alphanumeric characters",
       );
     }
   }
 
   if (body.kinshipCode !== undefined) {
     if (!/^[A-Za-z0-9]{3,20}$/.test(body.kinshipCode)) {
-      errors.push("Kinship Code must be between 3 to 20 alphanumeric characters.");
+      errors.push(
+        "Kinship Code must be between 3 to 20 alphanumeric characters.",
+      );
     }
   }
 
@@ -314,9 +314,12 @@ function validateRequestBody(body: any) {
       }
     }
 
-
     // Last name
-    if (!body.lastName || typeof body.lastName !== "string" || !body.lastName.trim()) {
+    if (
+      !body.lastName ||
+      typeof body.lastName !== "string" ||
+      !body.lastName.trim()
+    ) {
       errors.push("Last name is required");
     }
 
@@ -338,15 +341,12 @@ function validateRequestBody(body: any) {
         errors.push("Web link must be a valid URL");
       }
     }
-
   }
-
 
   return errors.length
     ? { isValid: false, errors }
     : { isValid: true, data: body as UpdateVisitorBody };
 }
-
 
 function generateSecureOTP(): string {
   const buffer = crypto.randomBytes(4);
@@ -357,7 +357,7 @@ function generateSecureOTP(): string {
 const sendSMS = async (to: string, otp: string) => {
   try {
     const message = await client.messages.create({
-      body: `Your CatFawn Connection verification code is: ${otp}. It expires in 15 minutes.`,
+      body: `Your Kinship Intelligence verification code is: ${otp}. It expires in 15 minutes.`,
       from: twilioNumber,
       to: `+91${to}`,
     });

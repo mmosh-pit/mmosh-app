@@ -1,15 +1,15 @@
-import * as React from 'react';
-import Button from '../common/Button';
-import { data } from '@/app/store';
-import { useAtom } from 'jotai';
-import internalClient from '@/app/lib/internalHttpClient';
-import { set } from '@coral-xyz/anchor/dist/cjs/utils/features';
+import * as React from "react";
+import Button from "../common/Button";
+import { data } from "@/app/store";
+import { useAtom } from "jotai";
+import internalClient from "@/app/lib/internalHttpClient";
+import { set } from "@coral-xyz/anchor/dist/cjs/utils/features";
 // import { getGoogleClient, listEmails } from '@/app/lib/google';
 // import { getGoogleToken } from '@/app/lib/googleMongo';
 
 interface GoogleAppProps {
-  type?: string | undefined,
-  agentId?: string | undefined
+  type?: string | undefined;
+  agentId?: string | undefined;
 }
 const GoogleAgentOption = (props: GoogleAppProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -21,7 +21,7 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
     if (props.agentId) {
       window.location.href = `/api/auth/google/start?user=&agentId=${props.agentId}&type=${props.type}`;
     } else {
-      window.location.href = `/api/auth/google/start?user=${(userData as any).ID}&type=${props.type}`;
+      window.location.href = `/api/auth/google/start?user=${(userData as any).wallet}&type=${props.type}`;
     }
   }, [props.agentId, props.type, userData, currentUser]);
 
@@ -33,11 +33,14 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
   const fetchGoogleStatus = async () => {
     try {
       let res: any = null;
-
       if (props.agentId) {
-        res = await internalClient("/api/google/status?agentId=" + props.agentId);
+        res = await internalClient(
+          "/api/google/status?agentId=" + props.agentId,
+        );
       } else {
-        res = await internalClient("/api/google/status?user=" + (userData as any).ID);
+        res = await internalClient(
+          `/api/google/status?user=${(userData as any).wallet}`,
+        );
       }
 
       const data: any = res.data;
@@ -61,11 +64,10 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
     }
   };
 
-
   const removeGoogleAccount = React.useCallback(() => {
     const params = props.agentId
       ? `?agentId=${props.agentId}`
-      : `?user=${(userData as any).ID}`;
+      : `?user=${userData?.wallet}`;
 
     internalClient
       .delete(`/api/google/status${params}`)
@@ -80,8 +82,6 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
       });
   }, [props.agentId, userData]);
 
-
-
   return (
     <>
       <div
@@ -91,7 +91,6 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
     rounded-lg p-6 min-h-[200px] mt-12 
     ${currentUser?.telegram?.id && "border-[1px] border-[#FF00AE59]"}`}
       >
-
         {isLoading && <p className="text-white">Loading...</p>}
         {!isLoading && !currentUser?.google?.id && (
           <Button
@@ -124,7 +123,6 @@ const GoogleAgentOption = (props: GoogleAppProps) => {
       </div>
     </>
   );
-}
+};
 
 export default GoogleAgentOption;
-

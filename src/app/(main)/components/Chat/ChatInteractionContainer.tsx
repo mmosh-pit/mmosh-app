@@ -24,6 +24,7 @@ import Select from "../common/Select";
 import VoiceAssistant from "./VoiceAssistant";
 
 const ChatInteractionContainer = (props: any) => {
+  const wallet = useWallet();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
   const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
@@ -288,7 +289,7 @@ const ChatInteractionContainer = (props: any) => {
       // };
       const systemPrompt =
         selectedChat!.chatAgent!.system_prompt +
-        `agentId: ${selectedChat.chatAgent!.key}, authorization: ${localStorage.getItem("token")}`;
+        `agentId: ${selectedChat.chatAgent!.key}, authorization: ${localStorage.getItem("token")} wallet: ${wallet?.publicKey.toBase58()}`;
 
       try {
         const queryData = {

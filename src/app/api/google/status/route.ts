@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/app/lib/mongoClient";
 import { getGoogleAccountInfo, listEmails } from "@/app/lib/google";
 export async function GET(req: NextRequest) {
-  const userId = req.headers.get("user") || req.nextUrl.searchParams.get("user");
+  const userId = req.nextUrl.searchParams.get("user");
   const agentId = req.headers.get("agentId") || req.nextUrl.searchParams.get("agentId");
 
   if (!userId && !agentId) {
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const userId = req.headers.get("user") || req.nextUrl.searchParams.get("user");
+  const userId = req.nextUrl.searchParams.get("user");
   const agentId = req.headers.get("agentId") || req.nextUrl.searchParams.get("agentId");
 
   if (!userId && !agentId) {

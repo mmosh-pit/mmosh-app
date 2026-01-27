@@ -21,13 +21,208 @@ import { useSearchParams } from "next/navigation";
 
 const STORAGE_KEY = "early-access-data";
 
+type PricingPlan = {
+  id: string;
+  title: string;
+  subtitle: string;
+  seats: string;
+  description: string;
+  pricing: string;
+};
+
+type Pathway = {
+  id: string;
+  name: string;
+  theme: string;
+  description: string;
+};
+
+type Principle = {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+};
+
+type PlatformItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  intro: string;
+  description: string;
+};
+
+const pricingPlans: PricingPlan[] = [
+  {
+    id: "professional",
+    title: "Professional",
+    subtitle: "For individuals and small practices",
+    seats: "1–4 seats",
+    description:
+      "Perfect for solo practitioners, coaches, consultants, and early adopters who want to develop their own capacity and explore Kinship's approach to transformation.",
+    pricing: "$30/month or $100/year per seat",
+  },
+  {
+    id: "team",
+    title: "Team",
+    subtitle: "For small groups and departments",
+    seats: "5–34 seats (minimum 5)",
+    description:
+      "Designed for small teams, startups, boutique agencies, clinics, and studios building relational capacity and psychological safety together.",
+    pricing: "$25/month or $80/year per seat",
+  },
+  {
+    id: "organization",
+    title: "Organization",
+    subtitle: "For institutions and enterprises",
+    seats: "35+ seats",
+    description:
+      "Built for larger companies, health systems, universities, associations, NGOs, governments, and networks embedding wholeness into culture and operations.",
+    pricing: "$20/month or $70/year per seat",
+  },
+  {
+    id: "creator",
+    title: "Creator",
+    subtitle: "For designers of transformation",
+    seats: "Individual membership",
+    description:
+      "Creator membership includes full access to Kinship Studio and the Exchange. Design immersive scenarios, publish your work, and earn based on usage and engagement—or create private experiences and set your own pricing. Creators are paid from a shared pool and retain ownership of their work within cooperative governance.",
+    pricing: "$120/month or $950/year",
+  },
+];
+
+const pathways: Pathway[] = [
+  {
+    id: "four-arrows",
+    name: "Four Arrows",
+    theme: "Indigenous Worldview",
+    description:
+      "Worldview reflection, sacred communication, self-hypnosis, and fearless courage—rooted in a living, interconnected universe where all beings are kin.",
+  },
+  {
+    id: "howard-teich",
+    name: "Howard Teich",
+    theme: "Complementary Consciousness",
+    description:
+      "Archetypal depth psychology and alchemy—integrating shadow, embracing paradox, and restoring the partnership between Solar and Lunar consciousness.",
+  },
+  {
+    id: "renee-smith",
+    name: "Renée Smith",
+    theme: "The Nature of Work",
+    description:
+      "Transforming work into play, fear into love. Building stronger, more resilient teams and cultures across organizations, institutions, and movements.",
+  },
+  {
+    id: "bill-thatcher",
+    name: "Bill Thatcher",
+    theme: "Soulsteading",
+    description:
+      "Self-authorship through authentic community. Withdraw projections, lower masks, and cultivate the deep trust that holds us through change.",
+  },
+  {
+    id: "hephzibah-light",
+    name: "Hephzibah Light",
+    theme: "The Feathered Nest",
+    description:
+      "Creating homes and families that are purposeful, meaningful, and filled with joy—where belonging and beauty sustain everyday life.",
+  },
+  {
+    id: "warren-kahn",
+    name: "Warren Kahn",
+    theme: "Let Life Lead",
+    description:
+      "Relating in flow, living in truth, and navigating with presence, ease, and trust rather than force, conflict, and control.",
+  },
+];
+
+const principles: Principle[] = [
+  {
+    id: "harmony",
+    title: "Harmony",
+    subtitle: "Belonging you can rely on.",
+    description:
+      "Kinship strengthens your ability to connect, collaborate, repair, and stay present with others—even under pressure. Harmony isn't about avoiding conflict; it's about developing the relational capacity for empathy, honesty, and mutual care that holds through tension and change.",
+  },
+  {
+    id: "empowerment",
+    title: "Empowerment",
+    subtitle: "Choice that's actually yours.",
+    description:
+      "Through real challenges, Kinship builds the capacity to say yes and no with clarity—without collapse, rebellion, or rigidity. Empowerment becomes grounded, flexible, and self-directed: the ability to act from your own center, especially when the stakes are real.",
+  },
+  {
+    id: "artistry",
+    title: "Artistry",
+    subtitle: "Growth through practice.",
+    description:
+      "Kinship replaces abstract learning with lived skill. You develop competence by doing—experimenting, adapting, and refining your response to life's challenges. Artistry emerges through openness, persistence, and integration: the craft of showing up well.",
+  },
+  {
+    id: "reason",
+    title: "Reason",
+    subtitle: "Meaning in motion.",
+    description:
+      "Reason isn't intellectual distance—it's the capacity to align action with what matters most. Kinship helps you discover and enact purpose through contribution, service, and creative engagement, so meaning becomes lived rather than declared.",
+  },
+  {
+    id: "trust",
+    title: "Trust",
+    subtitle: "Let yourself rest and respond.",
+    description:
+      "Kinship trains trust as a capacity, not a condition. Through recovery, regulation, and relational support, you build the ability to stay grounded, recover from stress, and remain open—even in uncertainty. Trust allows you to move between effort and rest.",
+  },
+  {
+    id: "synthesis",
+    title: "Synthesis",
+    subtitle: "Bringing inner and outer into wholeness.",
+    description:
+      "Kinship helps you integrate the expressive and receptive aspects of being—bridging psyche and cosmos, action and reflection, doing and being. Synthesis is the capacity to hold complexity, honor paradox, and move fluidly between worlds without fragmentation.",
+  },
+];
+
+const platformItems: PlatformItem[] = [
+  {
+    id: "bots",
+    title: "Kinship Bots",
+    subtitle: "The Mobile Experience",
+    intro: "A living, interactive environment where people learn by doing.",
+    description:
+      "Kinship Bots delivers immersive scenarios, challenges, and integrations that feel more like a retreat than a training program—while reliably building relational, emotional, and ethical capacity over time. This is where practice happens, alone and together.",
+  },
+  {
+    id: "studio",
+    title: "Kinship Studio",
+    subtitle: "The Design Environment",
+    intro:
+      "A professional workspace for consultants, facilitators, and organizations",
+    description:
+      "Kinship Studio lets you design experiences—not content—by encoding your frameworks, practices, and insights into interactive scenarios that people return to, train with, and integrate over time. This is where transformation gets built.",
+  },
+  {
+    id: "exchange",
+    title: "Kinship Exchange",
+    subtitle: "The Cooperative Marketplace",
+    intro: "A values-aligned economy for living work.",
+    description:
+      "Through the Exchange, creators offer programs, templates, and experiences—earning through participation, engagement, and trusted referral. Value circulates within the community, supporting both sustainability and integrity. This is where contribution meets reciprocity.",
+  },
+  {
+    id: "intelligence",
+    title: "Kinship Intelligence",
+    subtitle: "The Orchestration Layer",
+    intro: "The connective tissue that brings it all together.",
+    description:
+      "Kinship Intelligence orchestrates context, memory, adaptation, and care—personalizing experiences, tracking growth, supporting safety, and ensuring that learning compounds rather than fades. This is the difference between a set of tools and a living system.",
+  },
+];
+
 export default function LandingPage() {
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
-
   }, []);
 
   const screenSize = useCheckDeviceScreenSize();
@@ -120,7 +315,7 @@ export default function LandingPage() {
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
-        <div className="flex justify-between items-center md:px-16 px-4 max-md:py-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] md:rounded-full w-full xl:mx-40  self-center">
+        <div className="flex justify-between items-center max-2xl:container px-4 max-xl:py-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] sm:rounded-full w-full 2xl:mx-40 self-center">
           {!isMobileScreen && (
             <button
               onClick={() =>
@@ -216,7 +411,7 @@ export default function LandingPage() {
         className="bg-[#050824] text-white min-h-screen mx-auto overflow-hidden top-0 w-full"
         ref={mainSection}
       >
-        <div className="text-center relative h-screen flex justify-center items-center bg-[url('/background/RetreatCenterhero.jpg')] bg-cover bg-center bg-no-repeat">
+        <div className="text-center relative min-h-screen flex justify-center items-center bg-[url('/background/RetreatCenterhero.jpg')] bg-cover bg-center bg-no-repeat py-[6.875rem]">
           {/* <video
               className="w-full h-auto mx-auto rounded-lg "
               autoPlay
@@ -235,17 +430,17 @@ export default function LandingPage() {
             <div className="max-md:hidden absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
             <div className="max-md:hidden absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div> */}
           <div
-            className="m-auto  max-w-[85%] xl:w-[50.063rem] border-[0.031rem] border-[#FFFFFF]  bg-[#01000A14] md:backdrop-filter backdrop-blur-[20px] rounded-[3rem] xl:p-[20px] p-[10px] xl:md:absolute xl:top-[25%] top-[10%] "
+            className="m-auto max-w-[85%] xl:w-[50.063rem] border-[0.031rem] border-[#FFFFFF] bg-[#01000A14] md:backdrop-filter backdrop-blur-[20px] rounded-[3rem] xl:p-[20px] p-[10px]"
             ref={homeSection}
           >
-            <h1 className="w-auto xl:text-[2.813rem] text-[1.25rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
+            <h1 className="w-auto md:text-[2.813rem] text-4xl leading-relaxed xl:leading-[2.813rem] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
               Awaken Your Power{" "}
             </h1>
-            <h1 className="w-auto xl:text-[1.813rem] text-[0.75rem] leading-[1] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text md:py-3 py-2 ">
-              With a Corporate Retreat Center in the Palm of Your Hand{" "}
+            <h1 className="w-auto xl:text-[1.375rem] text-[0.75rem] leading-[110%] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
+              With a Retreat Center in the Palm of Your Hand{" "}
             </h1>
-            <div className="">
-              <p className="xl:text-base text-xs text-[#FFFFFF] font-Avenir text-opacity-90 xl:px-12">
+            <div className="mt-3.5">
+              <p className="xl:text-base text-xs text-[#FFFFFF] font-avenir text-opacity-90 xl:px-12">
                 Big Tech has given you countless tools for the mind
                 (productivity, information, analysis) and for the body (fitness,
                 nutrition, wearables). But your heart and soul—how you live,
@@ -253,25 +448,25 @@ export default function LandingPage() {
                 atrophy.
               </p>
             </div>
-            <p className="mb-2 mt-2 xl:text-base text-xs text-[#ffffff]/90 xl:px-12">
-              Kinship Bots is a mobile app that brings a fully staffed corporate
-              retreat center into the palm of your hand—built on rigorous
-              science including Self-Determination Theory, neuroscience, and
-              archetypal depth psychology.
+            <p className="xl:text-base text-xs text-[#ffffff]/90 xl:px-12 font-avenir">
+              Kinship Bots is a mobile app that brings a fully staffed retreat
+              center into the palm of your hand—built on rigorous science
+              including Self-Determination Theory, neuroscience, and archetypal
+              depth psychology.
             </p>
-            <p className="xl:text-base text-xs text-center text-white xl:px-12">
+            <p className="xl:text-base text-xs text-center text-white xl:px-12 font-avenir">
               Anytime, anywhere, when you're at your peak or when you need it
               most, you can test your limits in the gym, recover and restore in
               our spa, or embark on luminous journeys of wonder and awe. Not
               therapy. Not social media. Not a game.{" "}
             </p>
-            <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 mb-2">
+            <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 font-avenir">
               This is resistance training for what makes us fully human.
             </p>
 
-            <div className="w-full ">
+            <div className="w-full mt-6">
               <button
-                className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-[12rem]  "
+                className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-[12rem]"
                 onClick={() => scrollWithOffset(earlyAccessRef)}
               >
                 Join Early Access
@@ -285,10 +480,18 @@ export default function LandingPage() {
           ref={belowHeroRef}
         >
           <div>
-            <div ref={originStoryRef} className=" scroll-mt-[120px]" id="origin-story">
-              <h1 className="text-center font-bold xl:px-5 leading-[1] xl:w-[65.063rem] xl:text-[3.75rem] text-xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            <div
+              ref={originStoryRef}
+              className=" scroll-mt-[120px]"
+              id="origin-story"
+            >
+              <h1 className="text-center font-bold xl:px-5 leading-[1] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy ">
                 I went to make a film. <br />I returned with a mission.
               </h1>
+              <p className="max-md:text-sm text-center text-lg text-[#FFFFFFC7] mt-2.5 mb-5 px-3 leading-[110%] font-avenir">
+                A journey to Mexico, a conversation with Four Arrows, and the
+                moment Kinship Intelligence was born.
+              </p>
             </div>
 
             <div className="my-5">
@@ -307,54 +510,54 @@ export default function LandingPage() {
               <h1 className="text-center font-avenir font-[800] text-[30px] leading-[110%] tracking-[-0.02em] xl:w-[60.063rem] mx-auto">
                 From Protest to Transformation
               </h1>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem]">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-5 font-avenir">
                 I set out to make an activist film about my community fighting a
                 polluting factory. Protest matters—it draws lines, surfaces
                 harm, buys time for truth to emerge.
               </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-2">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
                 But in Mexico, interviewing Four Arrows after our campaign had
                 fractured and the factory went into production, I understood
                 something deeper:{" "}
-                <span className="text-white font-bold text-lg">
+                <span className="text-white font-bold text-lg font-avenirNext">
                   {" "}
                   activism alone isn't enough.{" "}
                 </span>{" "}
               </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 You can't transform a system from the outside because there is
                 no outside. Systems persist by design. They reward disconnection
                 and compliance over integrity and care.
               </p>
 
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 The executives I opposed weren't villains. In another life, we
                 might have been friends. They didn't want to exploit any more
                 than communities want to be sacrificed. Everyone was trapped in
                 the same invisible structure.
               </p>
 
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-2">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
                 Four Arrows showed me that{" "}
-                <span className="text-white font-bold text-lg">
+                <span className="text-white font-bold text-lg font-avenirNext">
                   lasting change doesn't come from fighting the system head-on.
                   It comes from changing the inner conditions
                 </span>{" "}
                 that shape how people think, choose, relate, and lead.
               </p>
 
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 When those conditions shift, culture shifts. When culture
                 shifts, systems shift.
               </p>
 
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 This film captures that turning point, when Kinship Intelligence
                 was born.
               </p>
 
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-2">
-                <span className="text-white font-bold text-lg">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
+                <span className="text-white font-bold text-lg font-avenirNext">
                   Kinship is transformation operationalized
                 </span>{" "}
                 —a sociotechnical platform that brings emotional, relational,
@@ -362,7 +565,7 @@ export default function LandingPage() {
                 together. This isn’t content about change, but this creates the
                 conditions for change.
               </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] mt-2 ">
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 It's designed for people and organizations who know the future
                 won't be built by ideology alone, but by leaders and teams
                 capable of acting with clarity, courage, and care—inside the
@@ -377,10 +580,17 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-24 max-md:mt-12">
-            <div ref={kinshipIntelligenceRef} className="scroll-mt-[120px]" id="kinship-intelligence">
-              <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            <div
+              ref={kinshipIntelligenceRef}
+              className="scroll-mt-[120px]"
+              id="kinship-intelligence"
+            >
+              <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 From Content to Capacity
               </h1>
+              <p className="text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2.5 mb-5">
+                From Content to Capacity
+              </p>
             </div>
             <div className="my-5">
               <p className="max-md:text-sm max-md:px-2 max-md:mt-4 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
@@ -417,7 +627,7 @@ export default function LandingPage() {
         </section>
 
         <div className="xl:w-[64.313rem] m-auto">
-          <h1 className="text-center font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Living infrastructure for collective evolution.
           </h1>
           <p className="max-md:text-sm text-center text-[#FFFFFFC7] mt-[1rem]">
@@ -426,95 +636,30 @@ export default function LandingPage() {
             organizational, and societal scale.
           </p>
         </div>
-        <div className="xl:flex justify-around max-md:px-3 xl:my-10 xl:mx-20 mx-auto ">
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl  ">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Kinship Bots
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                The Mobile Experience{" "}
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                A living, interactive environment where people learn by doing.
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Kinship Bots delivers immersive scenarios, challenges, and
-                integrations that feel more like a retreat than a training
-                program—while reliably building relational, emotional, and
-                ethical capacity over time. This is where practice happens,
-                alone and together.
-              </p>
+        <div className="container xl:max-w-[79.5rem] mx-auto grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-5 px-3 max-xl:my-5 xl:my-10">
+          {platformItems.map((item) => (
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl py-6 px-3 h-full">
+                <p className="text-white font-bold text-[1.375rem] text-center font-avenirNext">
+                  {item.title}
+                </p>
+                <p className="text-white font-bold text-lg text-center font-avenirNext">
+                  {item.subtitle}
+                </p>
+                <div className="text-[0.938rem] font-avenir leading-[100%] text-center mt-2">
+                  <p className="text-[#CDCDCDE5] font-avenir">{item.intro} </p>
+                  <p className="text-[#CDCDCDE5] font-avenir">{item.description}</p>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Kinship Studio
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                The Design Environment
-              </p>
-
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                A professional workspace for consultants, facilitators, and
-                organizations
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Kinship Studio lets you design experiences—not content—by
-                encoding your frameworks, practices, and insights into
-                interactive scenarios that people return to, train with, and
-                integrate over time. This is where transformation gets built.
-              </p>
-            </div>
-          </div>
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Kinship Exchange
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                The Cooperative Marketplace
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                A values-aligned economy for living work.
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Through the Exchange, creators offer programs, templates, and
-                experiences—earning through participation, engagement, and
-                trusted referral. Value circulates within the community,
-                supporting both sustainability and integrity. This is where
-                contribution meets reciprocity.
-              </p>
-            </div>
-          </div>
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl ">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Kinship Intelligence
-              </p>
-              <p className="text-white font-bold text-lg text-center ">
-                The Orchestration Layer
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                The connective tissue that brings it all together.
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                Kinship Intelligence orchestrates context, memory, adaptation,
-                and care—personalizing experiences, tracking growth, supporting
-                safety, and ensuring that learning compounds rather than fades.
-                This is the difference between a set of tools and a living
-                system.{" "}
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
         <div
           ref={foundingCreatorsRef}
-          className="max-md: max-md:px-3 scroll-mt-[120px]"
+          className="px-3 scroll-mt-[120px]"
           id="founding-creator"
         >
-          <h1 className="text-center font-bold xl:px-10 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold xl:px-10 leading-tight xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Change Yourself, Change Your Life, Change The World.
           </h1>
 
@@ -529,8 +674,8 @@ export default function LandingPage() {
           </p>
         </div>
 
-        <div className="my-20 max-md:mt-12 max-md:mb-0 max-md:px-3">
-          <h1 className="text-center font-bold  leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div className="mt-9 px-3">
+          <h1 className="text-center text-[#FFFFFFC7] font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl tracking-[-0.02em] max-md:leading-relaxed m-auto">
             Six Core Capacities for Human Flourishing{" "}
           </h1>
           <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
@@ -548,125 +693,44 @@ export default function LandingPage() {
             support is needed, and how your inner and outer worlds are moving
             into complementarity.
           </p>
-          <div className="max-md:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-10 xl:my-10 xl:w-[70rem] mx-auto">
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl  ">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Harmony{" "}
-                </p>
-                <p className="text-white font-bold text-lg text-center mt-5">
-                  Belonging you can rely on.
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center">
-                  Kinship strengthens your ability to connect, collaborate,
-                  repair, and stay present with others—even under pressure.
-                  Harmony isn't about avoiding conflict; it's about developing
-                  the relational capacity for empathy, honesty, and mutual care
-                  that holds through tension and change.
-                </p>
+          <div className="max-md:px-3 max-w-[58.063rem] max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-[1.875rem] mt-[7rem] px-3 mx-auto">
+            {principles.map((item) => (
+              <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] w-full min-h-[12.313rem] rounded-xl  ">
+                <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl ps-[0.375rem] pe-[0.313rem] pt-5 pb-[1.125rem] h-full">
+                  <p className="text-white font-bold text-xl text-center font-avenirNext">
+                    {item.title}
+                  </p>
+                  <p className="text-white font-bold text-[0.875rem] leading-[100%] -tracking-[1% text-center my-2.5 font-avenirNext">
+                    {item.subtitle}
+                  </p>
+                  <p className="text-[#CDCDCDE5] text-[0.875rem] leading-[100%] font-avenir -tracking-[1%] text-center">
+                    {item.description}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Empowerment{" "}
-                </p>
-                <p className="text-white font-bold text-lg text-center mt-5">
-                  Choice that's actually yours.
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center ">
-                  Through real challenges, Kinship builds the capacity to say
-                  yes and no with clarity—without collapse, rebellion, or
-                  rigidity. Empowerment becomes grounded, flexible, and
-                  self-directed: the ability to act from your own center,
-                  especially when the stakes are real.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl ">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Artistry{" "}
-                </p>
-                <p className="text-white font-bold text-lg text-center mt-5">
-                  Growth through practice.
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center">
-                  Kinship replaces abstract learning with lived skill. You
-                  develop competence by doing—experimenting, adapting, and
-                  refining your response to life's challenges. Artistry emerges
-                  through openness, persistance, and integration: the craft of
-                  showing up well.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl  ">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Reason{" "}
-                </p>
-                <p className="text-white font-bold text-lg text-center mt-5">
-                  Meaning in motion.{" "}
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center">
-                  Reason isn't intellectual distance—it's the capacity to align
-                  action with what matters most. Kinship helps you discover and
-                  enact purpose through contribution, service, and creative
-                  engagement, so meaning becomes lived rather than declared.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Trust{" "}
-                </p>
-                <p className="text-white font-bold text-lg text-center mt-5">
-                  Let yourself rest and respond.{" "}
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center ">
-                  Kinship trains trust as a capacity, not a condition. Through
-                  recovery, regulation, and relational support, you build the
-                  ability to stay grounded, recover from stress, and remain
-                  open—even in uncertainty. Trust allows you to move between
-                  effort and rest.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[20.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Synthesis{" "}
-                </p>
-                <p className="text-white font-bold text-lg text-center mt-5">
-                  Bringing inner and outer into wholeness.{" "}
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center ">
-                  Kinship helps you integrate the expressive and receptive
-                  aspects of being—bridging psyche and cosmos, action and
-                  reflection, doing and being. Synthesis is the capacity to hold
-                  complexity, honor paradox, and move fluidly between worlds
-                  without fragmentation.
-                </p>
-              </div>
-            </div>
+            ))}
+          </div>
+          <div className="w-[15rem] m-auto mt-10">
+            <button
+              className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full"
+              onClick={() => scrollWithOffset(earlyAccessRef)}
+            >
+              Join Early Access
+            </button>
           </div>
         </div>
-        <div className="w-[15rem] m-auto">
-          <button
-            className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full"
-            onClick={() => scrollWithOffset(earlyAccessRef)}
-          >
-            Join Early Access
-          </button>
-        </div>
+
         <div className="mt-24 max-md:mt-12 max-md:px-3">
-          <div ref={collectiveEconomicsRef} className="scroll-mt-[120px]" id="collective-economic">
-            <h1 className="text-center font-bold px-12 leading-[1]  md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+          <div
+            ref={collectiveEconomicsRef}
+            className="scroll-mt-[120px]"
+            id="collective-economic"
+          >
+            <h1 className="text-center font-bold px-12 text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-tight m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Member Managed, Member Owned
             </h1>
 
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-2.5">
               Kinship Intelligence is structured as a Colorado Article 56
               Cooperative and Public Benefit Corporation—meaning the people who
               participate, contribute, and create are the actual owners. There
@@ -674,7 +738,7 @@ export default function LandingPage() {
               stakeholders optimizing for attention or growth at any cost.
             </p>
 
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium font-Avenir  mt-5 mb-2">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium font-Avenir">
               Big tech platforms are built on extraction. They pretend you’re
               getting something for “free,” but you’re really the product that
               they sell… your data, your creativity, your relationships. And in
@@ -683,7 +747,7 @@ export default function LandingPage() {
             <p className="text-center max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">
               Kinship is different.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto my-5">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto">
               Here, value circulates among the members who show up, contribute,
               and care for the whole. Every member holds one share of Class A
               Stock and participates in governance. As Kinship grows, members
@@ -691,19 +755,19 @@ export default function LandingPage() {
               contribution—through participation, promotion, and production—not
               hype.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] my-5 mx-auto">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               You earn immediately when people join through your invitation,
               engage with your creations, or accept your offers. Then you share
               in the annual profit pools based on your patronage.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] my-5 mx-auto">
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               Software is a great business. Kinship puts it back in the hands of
               the people who create the value.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] my-5 mx-auto">
-              <span className="text-white font-bold text-lg">
-                Pricing is structured to support sustainable participation
-              </span>
+            <p className="text-center text-white font-bold text-[1.313rem] leading-[100%] font-avenirNext mt-5">
+              Pricing is structured to support sustainable participation
+            </p>
+            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               —whether you're an individual practitioner, a team building
               capacity together, or an organization embedding transformation at
               scale.
@@ -715,91 +779,34 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
-        <div className="xl:flex justify-around xl:my-10 xl:w-[106rem] mx-auto max-md:mt-12 max-md:px-3">
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Professional
-              </p>
-              <p className="text-white font-bold text-lg text-center mt-3">
-                For individuals and small practices <br /> 1–4 seats
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center">
-                Perfect for solo practitioners, coaches, consultants, and early
-                adopters who want to develop their own capacity and explore
-                Kinship's approach to transformation.
-              </p>
-              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
-                <li className="text-white font-bold">
-                  $30/month or $100/year per seat
-                </li>
-              </ul>
+        <div className="max-xl:container grid grid-cols-4 gap-[1.875rem] max-xl:grid-cols-2 max-md:grid-cols-1 xl:my-10 xl:w-[78.125rem] mx-auto mt-12 px-3">
+          {pricingPlans.map((plan) => (
+            <div
+              key={plan.id}
+              className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.125rem] rounded-xl"
+            >
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] text-center rounded-xl pt-5 pb-[1.688rem] ps-1.5 pe-[0.313rem] flex flex-col justify-between max-lg:min-h-[19.688rem] max-xl:min-h-[17.5rem] max-md:min-h-[16.688rem] h-full">
+                <div>
+                  <p className="text-white font-bold text-xl leading-[110%] font-avenirNext">
+                    {plan.title}
+                  </p>
+                  <p className="text-white font-bold text-[0.938rem] mt-[1.375rem] font-avenirNext">
+                    {plan.subtitle}
+                  </p>
+                  <div className="text-[#CDCDCDE5] mt-2 font-avenir text-[0.938rem] leading-[110%] tracking-[-0.02em]">
+                    {plan.seats}
+                  </div>
+                  <p className="text-[#CDCDCDE5] font-avenir text-[0.938rem] leading-[110%] tracking-[-0.02em]">
+                    {plan.description}
+                  </p>
+                </div>
+
+                <ul className="w-max mx-auto font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] mt-5 font-normal">
+                  <li className="font-bold">{plan.pricing}</li>
+                </ul>
+              </div>
             </div>
-          </div>
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">Team</p>
-              <p className="text-white font-bold text-lg text-center mt-3">
-                For small groups and departments <br />
-                5–34 seats (minimum 5)
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center">
-                Designed for small teams, startups, boutique agencies, clinics,
-                and studios building relational capacity and psychological
-                safety together.
-              </p>
-              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
-                <li className="text-white font-bold">
-                  $25/month or $80/year per seat
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Organization
-              </p>
-              <p className="text-white font-bold text-lg text-center mt-3">
-                For institutions and enterprises <br />
-                35+ seats{" "}
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center">
-                Built for larger companies, health systems, universities,
-                associations, NGOs, governments, and networks embedding
-                wholeness into culture and operations.
-              </p>
-              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
-                <li className="text-white font-bold">
-                  $20/month or $70/year per seat
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[23.938rem] mb-5 xl:mb-0 rounded-xl">
-            <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-              <p className="text-white font-bold text-xl text-center">
-                Creator
-              </p>
-              <p className="text-white font-bold text-lg text-center mt-3">
-                For designers of transformation <br />
-                Individual membership
-              </p>
-              <p className="text-[#CDCDCDE5] text-base text-center">
-                Creator membership includes full access to Kinship Studio and
-                the Exchange. Design immersive scenarios, publish your work, and
-                earn based on usage and engagement—or create private experiences
-                and set your own pricing. Creators are paid from a shared pool
-                and retain ownership of their work within cooperative
-                governance.
-              </p>
-              <ul className="text-[#FFFFFFE5] text-base list-disc mt-5 ml-5">
-                <li className="text-white font-bold">
-                  $120/month or $950/year
-                </li>
-              </ul>
-            </div>
-          </div>
+          ))}
         </div>
         <div>
           <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
@@ -842,130 +849,53 @@ export default function LandingPage() {
           </button>
         </div>
         <div className="mt-24 max-md:mt-12 max-md:px-3">
-          <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] md:text-[3.75rem] max-md:text-xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+          <h1 className="text-center font-bold xl:px-12 leading-tight xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             A Living Body of Wisdom
           </h1>
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
             Behind every experience in Kinship is a living body of wisdom—honed
             over decades by dedicated practitioners and guides. We call them
             Sages.
           </p>
-          <p className="ttext-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+          <p className="ttext-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Every creator can grow into a Sage. As your work deepens and
             resonates within the community, you can be recognized, nominated,
             and selected by fellow members—becoming part of this lineage of
             wisdom.
           </p>
 
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Sages' work shows up throughout Kinship: in dialogue, stories,
             adventures, and shared challenges. Some of this wisdom is woven into
             the fabric of scenarios; some is available directly through the
             Sages themselves as AI companions trained on their teachings.
           </p>
 
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Kinship holds this work with integrity—ensuring that even the most
             profound insights remain practical, accessible, and alive.
           </p>
         </div>
-        <div className="my-20 max-md:mt-12 max-md:mb-0 max-md:px-3">
-          <h1 className="text-center font-bold  leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            Meet our Founding Sages.{" "}
-          </h1>
+        <p className="text-center text-[1.188rem] font-bold leading-[110%] tracking-[-0.02em]">
+          Meet our Founding Sages.{" "}
+        </p>
 
-          <div className="max-md:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-10 xl:my-10 xl:w-[70rem] mx-auto">
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl  ">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
+        <div className="max-xl:container max-xl:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-x-[1.625rem] gap-y-[1.875rem] my-[2.563rem] xl:w-[57.625rem] mx-auto">
+          {pathways.map((pathway) => (
+            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.125rem] max-md:min-h-[6rem] min-h-[13.063rem] rounded-xl">
+              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl py-[1.438rem] ps-[0.375rem] pe-[0.313rem] h-full">
                 <p className="text-white font-bold text-xl text-center">
-                  Four Arrows
+                  {pathway.name}
                 </p>
                 <p className="text-white font-bold text-lg text-center ">
-                  Indigenous Worldview
+                  {pathway.theme}
                 </p>
                 <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                  Worldview reflection, sacred communication, self-hypnosis, and
-                  fearless courage—rooted in a living, interconnected universe
-                  where all beings are kin.
+                  {pathway.description}
                 </p>
               </div>
             </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Howard Teich
-                </p>
-                <p className="text-white font-bold text-lg text-center ">
-                  Complementary Consciousness
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                  Archetypal depth psychology and alchemy—integrating shadow,
-                  embracing paradox, and restoring the partnership between Solar
-                  and Lunar consciousness.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl ">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Renée Smith
-                </p>
-                <p className="text-white font-bold text-lg text-center ">
-                  The Nature of Work
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                  Transforming work into play, fear into love. Building
-                  stronger, more resilient teams and cultures across
-                  organizations, institutions, and movements.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Bill Thatcher
-                </p>
-                <p className="text-white font-bold text-lg text-center ">
-                  Soulsteading
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                  Self-authorship through authentic community. Withdraw
-                  projections, lower masks, and cultivate the deep trust that
-                  holds us through change.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Hephzibah Light
-                </p>
-                <p className="text-white font-bold text-lg text-center ">
-                  The Feathered Nest
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                  Creating homes and families that are purposeful, meaningful,
-                  and filled with joy—where belonging and beauty sustain
-                  everyday life.
-                </p>
-              </div>
-            </div>
-            <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] mb-5 xl:mb-0 rounded-xl">
-              <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl p-6 h-full">
-                <p className="text-white font-bold text-xl text-center">
-                  Warren Kahn
-                </p>
-                <p className="text-white font-bold text-lg text-center ">
-                  Let Life Lead{" "}
-                </p>
-                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
-                  Relating in flow, living in truth, and navigating with
-                  presence, ease, and trust rather than force, conflict, and
-                  control.
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {currentStep === 1 && (
@@ -1047,23 +977,12 @@ export default function LandingPage() {
           />
         )}
         <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
-          <div>
-            <h3 className="transition duration-300 place-self-center sm:text-left md:text-2xl max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[77px] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-              What People Say
-            </h3>
-          </div>
-          <div className="xl:flex items-start">
-            <div
-              className="
-    w-full h-[350px]
-    xl:w-[433px] xl:h-[430px]
-    shrink-0 rounded-[30px]
-    bg-[lightgray] bg-center bg-cover bg-no-repeat
-    bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')]
-    xl:mr-4
-  "
-            ></div>{" "}
-            <div className="flex flex-col  p-4">
+          <h3 className="transition duration-300 place-self-center sm:text-left md:text-[3.125rem] max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[3.75rem] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+            What People Say
+          </h3>
+          <div className="xl:flex items-start mt-2.5">
+            <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}
+            <div className="flex flex-col p-4">
               <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 I've spent my life on the edge of culture and consciousness—as
                 an entrepreneur, musician, poet, activist, and guide. My work
@@ -1071,21 +990,21 @@ export default function LandingPage() {
                 systems, sometimes listening beneath the surface, helping people
                 rediscover capacities that have long lain dormant long dormant.
               </p>
-              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Kinship Intelligence grew from that practice. It carries forward
                 the kind of presence, discernment, and care that usually only
                 emerges through deep relationship and ceremony—and brings it
                 into organizations, teams, and daily life without losing its
                 power or heart.
               </p>
-              <p className="text-justify my-5 text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Together, we're building systems that notice, respond, steady,
                 and strengthen—that help people meet themselves and one another
                 more fully, and engage the world with greater clarity, courage,
                 and care.
               </p>
 
-              <div className="text-[16px] italic font-semibold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display']">
+              <div className="text-[16px] italic font-semibold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
                 – David Levine
                 <br />
                 Founder, Kinship Intelligence
@@ -1097,11 +1016,11 @@ export default function LandingPage() {
           className="px-4 max-md:my-6 my-10 mx-auto"
           ref={testimonialsSection}
         >
-          <div className="w-full  px-4">
+          <div className="w-full px-4">
             <div className="relative max-w-[80rem] mx-auto">
               <button
                 onClick={prevSlide}
-                className="absolute top-1/2 left-[-2%] xl:left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
+                className="absolute top-1/2 left-[-2%] 2xl:left-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
               >
                 <svg
                   className="w-6 h-6"
@@ -1120,7 +1039,7 @@ export default function LandingPage() {
 
               <button
                 onClick={nextSlide}
-                className="absolute top-1/2 right-[-2%] xl:right-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
+                className="absolute top-1/2 right-[-2%] 2xl:right-[-5%] transform -translate-y-1/2 bg-white/10 hover:bg-white/20 p-2 rounded-full text-white z-10"
               >
                 {/* Right Arrow SVG */}
                 <svg

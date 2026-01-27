@@ -473,6 +473,8 @@ export default function LandingPage() {
               </button>
             </div>
           </div>
+
+          <div className=" absolute bottom-0 w-full h-[8.25rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)] "></div>
         </div>
 
         <section

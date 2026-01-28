@@ -494,18 +494,22 @@ export default function LandingPage() {
                 A journey to Mexico, a conversation with Four Arrows, and the
                 moment Kinship Intelligence was born.
               </p>
-            </div>
 
-            <div className="my-5">
-              <iframe
-                className=" w-[100%] xl:h-[35rem] h-64 rounded-lg"
-                // src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
-                src="https://www.youtube.com/embed/o-VRMB0-R98?si=y9WU6nEHsb2e7qJ7"
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              ></iframe>
+              <div className="my-5 relative">
+                <iframe
+                  className=" w-[100%] xl:h-[35rem] h-64 rounded-lg"
+                  // src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
+                  src="https://www.youtube.com/embed/o-VRMB0-R98?si=y9WU6nEHsb2e7qJ7"
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                ></iframe>
+
+                <div className="absolute bottom-0 w-full h-[10.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                <div className="absolute top-0 right-0 w-[8.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                <div className="absolute top-0 left-0 w-[8.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+              </div>
             </div>
 
             <div className="xl:w-[64.313rem] m-auto">
@@ -650,7 +654,9 @@ export default function LandingPage() {
                 </p>
                 <div className="text-[0.938rem] font-avenir leading-[100%] text-center mt-2">
                   <p className="text-[#CDCDCDE5] font-avenir">{item.intro} </p>
-                  <p className="text-[#CDCDCDE5] font-avenir">{item.description}</p>
+                  <p className="text-[#CDCDCDE5] font-avenir">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             </div>

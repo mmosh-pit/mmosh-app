@@ -594,34 +594,28 @@ export default function LandingPage() {
               <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 From Content to Capacity
               </h1>
-              <p className="text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2.5 mb-5">
+              <p className="max-sm:text-xl text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2.5 mb-5">
                 From Content to Capacity
               </p>
             </div>
             <div className="my-5">
-              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
+              <p className="font-avenir max-md:text-sm max-md:px-2 max-md:mt-4 text-[1.188rem] leading-[110%] font-normal text-center text-[#FFFFFFC7] xl:px-[2rem] xl:w-[64.313rem] m-auto">
                 Most platforms deliver content to consume and tasks to track.
                 Kinship Intelligence is different. It's a living system for
                 shared learning and personal growth, where people stay in
                 relationship, practice together, and evolve as a community.
-              </p>
-              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 mt-2 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
                 Traditional consulting, workshops, and training can spark
                 insight—but insight alone rarely sticks. Without ongoing
                 practice and real-world application, even the most powerful
-                ideas are overwhelmed by old habits.
-              </p>
-              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 mt-2 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
-                <span className="text-white font-bold text-lg">
+                ideas are overwhelmed by old habits.{" "}
+                <span className="text-white font-bold text-lg font-avenirNext">
                   {" "}
                   Kinship turns wisdom into lived capacity.{" "}
                 </span>{" "}
                 It gives consultants and learning teams a way to operationalize
                 their work—embedding it into experiences people return to,
-                practice together, and integrate over time.
-              </p>
-              <p className="max-md:text-sm max-md:px-2 max-md:mt-4 mt-2 text-center text-lg text-[#FFFFFFC7] xl:px-[2rem] xl:w-[60rem] m-auto">
-                Instead of delivering insights and hoping they land, you create
+                practice together, and integrate over time. Instead of
+                delivering insights and hoping they land, you create
                 environments where learning holds, relationships deepen, and
                 transformation becomes sustainable. Rather than packaging wisdom
                 and moving on, you build living systems that grow with the
@@ -636,7 +630,7 @@ export default function LandingPage() {
           <h1 className="text-center font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Living infrastructure for collective evolution.
           </h1>
-          <p className="max-md:text-sm text-center text-[#FFFFFFC7] mt-[1rem]">
+          <p className="max-md:text-sm font-avenir text-center text-[#FFFFFFC7] mt-[1rem]">
             Together, these four components turn wisdom into practice, learning
             into capacity, and insight into lasting change—at the individual,
             organizational, and societal scale.
@@ -671,7 +665,7 @@ export default function LandingPage() {
             Change Yourself, Change Your Life, Change The World.
           </h1>
 
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
+          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
             Kinship works like resistance training for the inner life—balanced
             with deep recovery. You'll face meaningful challenges that build
             courage, capacity, and connection, then integrate through rest,
@@ -683,19 +677,19 @@ export default function LandingPage() {
         </div>
 
         <div className="mt-9 px-3">
-          <h1 className="text-center text-[#FFFFFFC7] font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl tracking-[-0.02em] max-md:leading-relaxed m-auto">
+          <h1 className="text-center text-[#FFFFFFC7] font-avenirNext font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl tracking-[-0.02em] max-md:leading-relaxed m-auto">
             Six Core Capacities for Human Flourishing{" "}
           </h1>
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
+          <p className="text-center max-md:text-sm text-lg font-avenir text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[68.25rem] mt-5 mb-2 m-auto">
             Kinship is built on HEARTS—a framework grounded in
             Self-Determination Theory, neuroscience, and depth psychology. These
             six capacities work together as an integrated system:
-            <span className="text-white font-bold text-lg">
+            <span className="text-white font-bold text-lg font-avenirNext">
               {" "}
               Harmony, Empowerment, Artistry, Reason, Trust, and Synthesis.
             </span>
           </p>
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
+          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[68.25rem] mt-5 mb-2 m-auto">
             Rather than tracking scores, Kinship reveals trends and patterns
             across these dimensions—showing you where you're growing, where
             support is needed, and how your inner and outer worlds are moving
@@ -738,7 +732,7 @@ export default function LandingPage() {
               Member Managed, Member Owned
             </h1>
 
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-2.5">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-2.5">
               Kinship Intelligence is structured as a Colorado Article 56
               Cooperative and Public Benefit Corporation—meaning the people who
               participate, contribute, and create are the actual owners. There
@@ -746,16 +740,16 @@ export default function LandingPage() {
               stakeholders optimizing for attention or growth at any cost.
             </p>
 
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium font-Avenir">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
               Big tech platforms are built on extraction. They pretend you’re
               getting something for “free,” but you’re really the product that
               they sell… your data, your creativity, your relationships. And in
               return, you get anxiety, doom, and despair.
             </p>
-            <p className="text-center max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">
+            <p className="text-center font-avenirNext max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">
               Kinship is different.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto">
               Here, value circulates among the members who show up, contribute,
               and care for the whole. Every member holds one share of Class A
               Stock and participates in governance. As Kinship grows, members
@@ -763,24 +757,24 @@ export default function LandingPage() {
               contribution—through participation, promotion, and production—not
               hype.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               You earn immediately when people join through your invitation,
               engage with your creations, or accept your offers. Then you share
               in the annual profit pools based on your patronage.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               Software is a great business. Kinship puts it back in the hands of
               the people who create the value.
             </p>
             <p className="text-center text-white font-bold text-[1.313rem] leading-[100%] font-avenirNext mt-5">
               Pricing is structured to support sustainable participation
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               —whether you're an individual practitioner, a team building
               capacity together, or an organization embedding transformation at
               scale.
             </p>
-            <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
               All tiers include full access to Kinship Bots: immersive
               scenarios, HEARTS tracking, gatherings, and personalized AI
               guidance.
@@ -817,30 +811,27 @@ export default function LandingPage() {
           ))}
         </div>
         <div>
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
+          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
             All pricing supports the cooperative model: members participate in
             governance, and value flows back to those who contribute—whether
             through practice, creation, or community building.
           </p>
         </div>
-        <div className="xl:w-[60rem] m-auto my-5 max-md:mt-12 max-md:mb-0">
+        <div className="xl:w-[60rem] m-auto mt-5 mb-[0.938rem] max-md:mt-12 max-md:mb-0">
           <div>
             <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7] max-md:mt-0 mt-20">
-              How Ownership Actually Works{" "}
-            </h1>
-            <p className="text-center max-md:text-sm text-lg text-white font-medium font-Avenir  mt-5 mb-2">
               Why This Matters
-            </p>
+            </h1>
 
-            <div className="px-3">
-              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center">
+            <div className="max-w-[49.813rem] mx-auto px-3">
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
                 Human–AI alignment isn't just a technical challenge—it's a
                 governance challenge. Until the systems we build are owned and
                 guided by the people whose lives they shape, we'll keep
                 reproducing the same extractive patterns, only faster and at
                 scale.
               </p>
-              <p className="text-[#FFFFFFC7] max-md:text-sm text-center mt-2">
+              <p className="text-[#FFFFFFC7] max-md:text-sm text-center font-avenir">
                 Kinship is what alignment looks like when systems serve
                 people—not the other way around.
               </p>
@@ -848,43 +839,44 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="w-[15rem] m-auto ">
+        <div className="text-center">
           <button
-            className="btn bg-[#EB8000] text-white border-none hover:bg-[#EB8000] w-full  "
+            className="btn bg-[#EB8000] font-avenirNext py-[1.063rem] ps-[1.875rem] pe-[1.813rem] text-lg font-extrabold leading-[100%] text-white border-none hover:bg-[#EB8000]"
             onClick={() => scrollWithOffset(earlyAccessRef)}
           >
             Join Early Access
           </button>
         </div>
-        <div className="mt-24 max-md:mt-12 max-md:px-3">
+
+        <div className="mt-[2.875rem] max-md:mt-12 max-md:px-3">
           <h1 className="text-center font-bold xl:px-12 leading-tight xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             A Living Body of Wisdom
           </h1>
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
+          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
             Behind every experience in Kinship is a living body of wisdom—honed
             over decades by dedicated practitioners and guides. We call them
             Sages.
           </p>
-          <p className="ttext-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
+          <p className="ttext-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Every creator can grow into a Sage. As your work deepens and
             resonates within the community, you can be recognized, nominated,
             and selected by fellow members—becoming part of this lineage of
             wisdom.
           </p>
 
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
+          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Sages' work shows up throughout Kinship: in dialogue, stories,
             adventures, and shared challenges. Some of this wisdom is woven into
             the fabric of scenarios; some is available directly through the
             Sages themselves as AI companions trained on their teachings.
           </p>
 
-          <p className="text-center max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
+          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Kinship holds this work with integrity—ensuring that even the most
             profound insights remain practical, accessible, and alive.
           </p>
         </div>
-        <p className="text-center text-[1.188rem] font-bold leading-[110%] tracking-[-0.02em]">
+        <p className="text-center font-avenirNext text-[1.188rem] font-bold leading-[110%] tracking-[-0.02em]">
           Meet our Founding Sages.{" "}
         </p>
 
@@ -892,13 +884,13 @@ export default function LandingPage() {
           {pathways.map((pathway) => (
             <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.125rem] max-md:min-h-[6rem] min-h-[13.063rem] rounded-xl">
               <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl py-[1.438rem] ps-[0.375rem] pe-[0.313rem] h-full">
-                <p className="text-white font-bold text-xl text-center">
+                <p className="text-white font-avenirNext font-bold text-xl text-center">
                   {pathway.name}
                 </p>
-                <p className="text-white font-bold text-lg text-center ">
+                <p className="text-white font-avenirNext font-bold text-lg text-center ">
                   {pathway.theme}
                 </p>
-                <p className="text-[#CDCDCDE5] text-base text-center mt-2">
+                <p className="text-[#CDCDCDE5] font-avenir text-base text-center mt-2">
                   {pathway.description}
                 </p>
               </div>
@@ -990,29 +982,29 @@ export default function LandingPage() {
           </h3>
           <div className="xl:flex items-start mt-2.5">
             <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}
-            <div className="flex flex-col p-4">
-              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+            <div className="flex flex-col p-4 xl:w-[695px] mt-5">
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 I've spent my life on the edge of culture and consciousness—as
                 an entrepreneur, musician, poet, activist, and guide. My work
                 shifts between the strategic and the sacred: sometimes building
                 systems, sometimes listening beneath the surface, helping people
                 rediscover capacities that have long lain dormant long dormant.
               </p>
-              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Kinship Intelligence grew from that practice. It carries forward
                 the kind of presence, discernment, and care that usually only
                 emerges through deep relationship and ceremony—and brings it
                 into organizations, teams, and daily life without losing its
                 power or heart.
               </p>
-              <p className="text-justify text-base sm:text-[15px] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.34px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Together, we're building systems that notice, respond, steady,
                 and strengthen—that help people meet themselves and one another
                 more fully, and engage the world with greater clarity, courage,
                 and care.
               </p>
 
-              <div className="text-[16px] italic font-semibold leading-[110%] tracking-[-0.36px] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
+              <div className="text-[16px] italic font-semibold leading-[110%] ttracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
                 – David Levine
                 <br />
                 Founder, Kinship Intelligence
@@ -1077,9 +1069,15 @@ export default function LandingPage() {
                       alt={item.name}
                       className="mx-auto mb-4 w-16 h-16 rounded-full object-cover border-2 border-white"
                     />
-                    <p className="text-base italic mb-4">"{item.text}"</p>
-                    <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-sm text-gray-300">{item.title}</p>
+                    <p className="text-base italic mb-4 font-avenir">
+                      "{item.text}"
+                    </p>
+                    <h3 className="font-extrabold text-lg font-avenirLtStd">
+                      {item.name}
+                    </h3>
+                    <p className="text-sm text-gray-300 font-avenirLtStd">
+                      {item.title}
+                    </p>
                   </div>
                 ))}
               </div>

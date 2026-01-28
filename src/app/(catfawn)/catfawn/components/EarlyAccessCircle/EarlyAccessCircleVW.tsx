@@ -5,13 +5,13 @@ export const EarlyAccessCircleVW = () => {
         Join Kinship Intelligence Early Access
       </h1>
 
-      <div className="text-[1rem] max-md:px-5 text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:text-start text-wrap max-lg:mb-3">
-        <p>
+      <div className="text-[1rem] font-avenir max-md:px-5 text-[#FFFFFFE5] leading-[130%] max-md:text-sm font-normal max-lg:text-start text-wrap max-lg:mb-3">
+        <p className="font-avenir">
           Be among the first to experience Kinship Intelligence as it comes to
           life.
         </p>
 
-        <p>As an early access member, you&apos;ll:</p>
+        <p className="font-avenir">As an early access member, you&apos;ll:</p>
 
         <ul className="list-disc pl-6">
           <li>
@@ -30,7 +30,7 @@ export const EarlyAccessCircleVW = () => {
             the Kinship team, and fellow early adopters
           </li>
         </ul>
-        <p>
+        <p className="font-avenir">
           Early Access is limited and by application. We're looking for people{" "}
           who want
           <br className="max-lg:hidden" />

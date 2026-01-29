@@ -841,7 +841,7 @@ const ProfileForm = () => {
                 />
               )}
               <div className="relative z-20 h-full flex items-end">
-                <ImageAccountPicker changeImage={setBannerImage} image={imagePreview} />
+                <ImageAccountPicker changeImage={setBannerImage} image={imagePreview}/>
               </div>
             </div>
           </div>
@@ -858,6 +858,7 @@ const ProfileForm = () => {
                 type="text"
                 title="Display Name"
                 required
+                maxLength={50}
                 helperText="Up to 50 characters, can have spaces."
                 placeholder="Display Name"
                 value={form.displayName}
@@ -872,6 +873,7 @@ const ProfileForm = () => {
                 type="text"
                 title="First Name or Alias"
                 required
+                maxLength={50}
                 helperText="Up to 50 characters, can have spaces."
                 placeholder="Name"
                 value={form.name}
@@ -884,6 +886,7 @@ const ProfileForm = () => {
                 type="text"
                 title="Last Name"
                 required={false}
+                maxLength={15}
                 helperText="Up to 15 characters"
                 placeholder="Last Name"
                 value={form.lastName}
@@ -898,6 +901,7 @@ const ProfileForm = () => {
                 type="text"
                 title="Username"
                 required
+                maxLength={15}
                 helperText={error.error ? error.message : "15 characters"}
                 error={error.error}
                 value={form.username}

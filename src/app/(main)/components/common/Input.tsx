@@ -7,6 +7,7 @@ type Props = {
   placeholder: string;
   title: string;
   required: boolean;
+  maxLength?:number;
   helperText?: string;
   textarea?: boolean;
   readonly?: boolean;
@@ -26,6 +27,7 @@ const Input = React.forwardRef<
   onBlur,
   onFocus,
   required,
+  maxLength,
   title,
   placeholder,
   helperText,
@@ -58,6 +60,7 @@ const Input = React.forwardRef<
           value={value}
           readOnly={readonly}
           onChange={onChange}
+          maxLength={maxLength}
           onBlur={onBlur}
           onFocus={onFocus}
           ref={ref as React.Ref<HTMLInputElement>}

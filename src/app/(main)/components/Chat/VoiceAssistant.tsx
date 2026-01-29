@@ -36,6 +36,7 @@ const VoiceAssistant = (props: any) => {
   const isRecordingRef = useRef<boolean>(false);
 
   const [isMicOn, setIsMicOn] = React.useState(false);
+  const [isInitiated, setIsInitiated] = React.useState(false);
 
   // VAD settings & counter
   const VAD_THRESHOLD = 0.02;
@@ -190,11 +191,12 @@ const VoiceAssistant = (props: any) => {
 
   // ---------- Start / Stop Recording ----------
   async function startRecording() {
-    if (isRecordingRef.current) return;
+    if (isRecordingRef.current || isInitiated) return;
     isRecordingRef.current = true;
     setIsMicOn(true);
     userInitiatedStopRef.current = false;
     updateButtonState("connecting");
+    setIsInitiated(true);
 
     try {
       // Get user media
@@ -235,6 +237,7 @@ const VoiceAssistant = (props: any) => {
           await setupTTSPlayback();
           updateButtonState("recording");
         } catch (error: any) {
+          setIsInitiated(false);
           console.error("Error setting up audio:", error);
           showError(
             `Failed to initialize audio processing: ${error?.message ?? error}`
@@ -245,12 +248,14 @@ const VoiceAssistant = (props: any) => {
 
       ws.onmessage = handleMessages;
       ws.onerror = (err) => {
+        setIsInitiated(false);
         console.error("WebSocket Error:", err);
         showError("Connection error. Please try again.");
         stopRecording();
       };
 
       ws.onclose = (event) => {
+        setIsInitiated(false);
         console.log(
           `WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`
         );
@@ -260,6 +265,7 @@ const VoiceAssistant = (props: any) => {
         stopRecording();
       };
     } catch (err) {
+      setIsInitiated(false);
       console.error("Error getting user media:", err);
       showError(
         "Could not access microphone. Please grant permission and try again."
@@ -305,7 +311,8 @@ const VoiceAssistant = (props: any) => {
 
     // Close WebSocket connection AFTER sending disconnect
     if (wsRef.current) {
-      // Give a small delay to ensure message is sent
+      wsRef.current.close();
+      wsRef.current = null;
       setTimeout(() => {
         if (wsRef.current) {
           wsRef.current.close(1000, "User initiated disconnect");

@@ -590,7 +590,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-24 max-md:mt-12">
+          <div className="mt-[3.5rem] max-md:mt-10">
             <div
               ref={kinshipIntelligenceRef}
               className="scroll-mt-[120px]"

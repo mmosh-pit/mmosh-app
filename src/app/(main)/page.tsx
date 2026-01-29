@@ -490,10 +490,10 @@ export default function LandingPage() {
               <h1 className="text-center font-bold xl:px-5 leading-[1] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy ">
                 I went to make a film. <br />I returned with a mission.
               </h1>
-              <p className="max-md:text-sm text-center text-lg text-[#FFFFFFC7] mt-2.5 mb-5 px-3 leading-[110%] font-avenir">
+              {/* <p className="max-md:text-sm text-center text-lg text-[#FFFFFFC7] mt-2.5 mb-5 px-3 leading-[110%] font-avenir">
                 A journey to Mexico, a conversation with Four Arrows, and the
                 moment Kinship Intelligence was born.
-              </p>
+              </p> */}
 
               <div className="my-5 relative">
                 <iframe
@@ -506,9 +506,14 @@ export default function LandingPage() {
                   allowFullScreen
                 ></iframe>
 
-                <div className="absolute bottom-0 w-full h-[10.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
-                <div className="absolute top-0 right-0 w-[8.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
-                <div className="absolute top-0 left-0 w-[8.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                 {/* Bottom shadow */}
+  <div className="pointer-events-none absolute bottom-0 w-full h-[10.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+
+  {/* Right shadow */}
+  <div className="pointer-events-none absolute top-0 right-0 w-[8.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+
+  {/* Left shadow */}
+  <div className="pointer-events-none absolute top-0 left-0 w-[8.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
               </div>
             </div>
 

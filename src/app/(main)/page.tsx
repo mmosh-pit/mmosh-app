@@ -273,8 +273,6 @@ export default function LandingPage() {
     currentSlide * itemsPerSlide + itemsPerSlide,
   );
 
-  const isMobileScreen = mounted ? screenSize < 1200 : false;
-
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   React.useEffect(() => {
@@ -316,73 +314,69 @@ export default function LandingPage() {
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
         <div className="flex justify-between items-center max-2xl:container px-4 max-xl:py-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] sm:rounded-full w-full 2xl:mx-40 self-center">
-          {!isMobileScreen && (
-            <button
-              onClick={() =>
-                mainSection.current?.scrollIntoView({ behavior: "smooth" })
-              }
+          <button
+            className="hidden xl:block"
+            onClick={() =>
+              mainSection.current?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            <KinshipBots />
+          </button>
+
+          <div className="flex xl:hidden flex-col items-center justify-center">
+            <LandingPageDrawer
+              scrollWithOffset={scrollWithOffset}
+              originStoryRef={originStoryRef}
+              kinshipIntelligenceRef={kinshipIntelligenceRef}
+              collectiveEconomicsRef={collectiveEconomicsRef}
+              foundingCreatorsRef={foundingCreatorsRef}
+            />
+          </div>
+          <div className="hidden xl:flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => scrollWithOffset(originStoryRef)}
             >
-              <KinshipBots />
-            </button>
-          )}
+              Origin Story
+            </a>
 
-          {isMobileScreen ? (
-            <div className="flex flex-col items-center justify-center">
-              <LandingPageDrawer
-                scrollWithOffset={scrollWithOffset}
-                originStoryRef={originStoryRef}
-                kinshipIntelligenceRef={kinshipIntelligenceRef}
-                collectiveEconomicsRef={collectiveEconomicsRef}
-                foundingCreatorsRef={foundingCreatorsRef}
-              />
-            </div>
-          ) : (
-            <div className="flex justify-center items-center rounded-full border-[#FFFFFF47] border-[1px] bg-[#FFFFFF0F] px-4 py-2">
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => scrollWithOffset(originStoryRef)}
-              >
-                Origin Story
-              </a>
+            <div className="xl:mx-4 md:mx-2" />
 
-              <div className="xl:mx-4 md:mx-2" />
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => scrollWithOffset(kinshipIntelligenceRef)}
+            >
+              Kinship Intelligence
+            </a>
 
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => scrollWithOffset(kinshipIntelligenceRef)}
-              >
-                Kinship Intelligence
-              </a>
+            <div className="xl:mx-4 md:mx-2" />
 
-              <div className="xl:mx-4 md:mx-2" />
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => scrollWithOffset(collectiveEconomicsRef)}
+            >
+              Co-op Economics
+            </a>
 
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => scrollWithOffset(collectiveEconomicsRef)}
-              >
-                Co-op Economics
-              </a>
+            <div className="xl:mx-4 md:mx-2" />
 
-              <div className="xl:mx-4 md:mx-2" />
+            <a
+              className="text-base text-white cursor-pointer"
+              onClick={() => scrollWithOffset(foundingCreatorsRef)}
+            >
+              Founding Sages{" "}
+            </a>
+            <div className="xl:mx-4 md:mx-2" />
 
-              <a
-                className="text-base text-white cursor-pointer"
-                onClick={() => scrollWithOffset(foundingCreatorsRef)}
-              >
-                Founding Sages{" "}
-              </a>
-              <div className="xl:mx-4 md:mx-2" />
-
-              <a
-                href="https://kinship.today"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-base text-white cursor-pointer"
-              >
-                Go Deeper
-              </a>
-            </div>
-          )}
+            <a
+              href="https://kinship.today"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-base text-white cursor-pointer"
+            >
+              Go Deeper
+            </a>
+          </div>
 
           <div className="font-bold">
             <Button
@@ -506,14 +500,14 @@ export default function LandingPage() {
                   allowFullScreen
                 ></iframe>
 
-                 {/* Bottom shadow */}
-  <div className="pointer-events-none absolute bottom-0 w-full h-[10.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                {/* Bottom shadow */}
+                <div className="pointer-events-none absolute bottom-0 w-full h-[10.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
 
-  {/* Right shadow */}
-  <div className="pointer-events-none absolute top-0 right-0 w-[8.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                {/* Right shadow */}
+                <div className="pointer-events-none absolute top-0 right-0 w-[8.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
 
-  {/* Left shadow */}
-  <div className="pointer-events-none absolute top-0 left-0 w-[8.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                {/* Left shadow */}
+                <div className="pointer-events-none absolute top-0 left-0 w-[8.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
               </div>
             </div>
 

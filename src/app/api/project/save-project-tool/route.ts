@@ -273,6 +273,7 @@ export async function POST(req: NextRequest) {
       await axios.post(`${process.env.NODE_BOT_PUBLIC_URL}/register-bot`, {
         id: docId,
         token: data.data.botToken,
+        projectId: data.project
       }, {
         headers: {
           "Content-Type": "application/json",
@@ -319,6 +320,16 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       console.log("Got err telegram: ", err);
       return NextResponse.json("invalid-telegram", { status: 400 });
+    }
+  }
+
+  if (data.type == "google") {
+    const existing = await collection.findOne({
+      "project": data.project,
+      "type": "google"
+    })
+    if (existing) {
+      return NextResponse.json("google-exist", { status: 400 })
     }
   }
 

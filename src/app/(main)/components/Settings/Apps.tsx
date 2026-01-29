@@ -3,13 +3,15 @@ import BlueskyIcon from "@/assets/icons/BlueskyIcon";
 import TelegramIcon from "@/assets/icons/TelegramIcon";
 import BlueskyApp from "./BlueskyApp";
 import TelegramApp from "./TelegramApp";
-
+import GoogleIcon from "@/assets/icons/GoogleIcon";
+import GoogleAgentOption from "../Project/GoogleAgentOption";
 const Apps = () => {
   const [selectedOption, setSelectedOption] = React.useState(-1);
 
   const getPage = React.useCallback(() => {
     if (selectedOption === 0) return <BlueskyApp />;
     if (selectedOption === 1) return <TelegramApp />;
+    if (selectedOption === 2) return <GoogleAgentOption type="settings"/>;
 
     return <></>;
   }, [selectedOption]);
@@ -36,6 +38,16 @@ const Apps = () => {
           <div className="mx-2" />
           <p className="text-sm text-white">{" Telegram"}</p>
         </button>
+
+        <button
+          className={`flex items-center bg-[#D9D9D938] ${selectedOption === 2 && "border-[1px] border-[#FFFFFFEB]"} rounded-2xl px-3 py-2 mb-2 min-w-[100px] justify-center`}
+          onClick={() => setSelectedOption(2)}
+        >
+          <GoogleIcon />
+          <div className="mx-2" />
+          <p className="text-sm text-white">{" Google"}</p>
+        </button>
+
       </div>
 
       {getPage()}

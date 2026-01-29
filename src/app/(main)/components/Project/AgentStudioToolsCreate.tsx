@@ -6,6 +6,8 @@ import LinkedinIcon from "@/assets/icons/LinkedinIcon";
 import BlueskyAgentOption from "./BlueskyAgentOption";
 import TelegramAgentOption from "./TelegramAgentOption";
 import LinkedInAgentOption from "./LinkedInAgentOption";
+import GoogleAgentOption from "./GoogleAgentOption";
+import GoogleIcon from "@/assets/icons/GoogleIcon";
 
 const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
   const [selectedOption, setSelectedOption] = React.useState(0);
@@ -73,6 +75,16 @@ const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
             <LinkedinIcon  width={13} height={13}/>{" "}
             <p className="text-base text-white ml-1"> LinkedIn</p>
           </div>
+
+          <div className="px-6" />
+
+          <div
+            className={getClassNameForItem(4)}
+            onClick={() => setSelectedOption(4)}
+          >
+            <GoogleIcon  width={13} height={12} />{" "}
+            <p className="text-base text-white ml-1"> Google</p>
+          </div>
         </div>
         {selectedOption === 1 && (
           <TelegramAgentOption project={projectDetail?.project.key} />
@@ -82,6 +94,9 @@ const AgentStudioToolsCreate = ({ symbol }: { symbol: string }) => {
         )}
         {selectedOption === 3 && (
           <LinkedInAgentOption project={projectDetail?.project.key} />
+        )}
+        {selectedOption === 4 && (
+          <GoogleAgentOption agentId={projectDetail?.project.key} type="studio"/>
         )}
       </div>
     </div>

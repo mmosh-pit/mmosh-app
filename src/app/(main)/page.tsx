@@ -635,7 +635,7 @@ export default function LandingPage() {
             organizational, and societal scale.
           </p>
         </div>
-        <div className="container xl:max-w-[79.5rem] mx-auto grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-5 px-3 max-xl:my-5 xl:my-10">
+        <div className="container xl:max-w-[79.5rem] mx-auto grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-5 px-3 max-xl:mt-5 xl:mt-10 mb-4">
           {platformItems.map((item) => (
             <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.938rem] rounded-xl">
               <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl py-6 px-3 h-full">
@@ -721,7 +721,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="mt-24 max-md:mt-12 max-md:px-3">
+        <div className="mt-9 max-md:mt-6 max-md:px-3">
           <div
             ref={collectiveEconomicsRef}
             className="scroll-mt-[120px]"
@@ -816,9 +816,9 @@ export default function LandingPage() {
             through practice, creation, or community building.
           </p>
         </div>
-        <div className="xl:w-[60rem] m-auto mt-5 mb-[0.938rem] max-md:mt-12 max-md:mb-0">
+        <div className="xl:w-[60rem] m-auto mt-10 mb-[0.938rem] max-md:mt-8 max-md:mb-0">
           <div>
-            <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7] max-md:mt-0 mt-20">
+            <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7]">
               Why This Matters
             </h1>
 
@@ -975,7 +975,7 @@ export default function LandingPage() {
             setMsgText={setMsgText}
           />
         )}
-        <section className="max-md:pt-7 max-md:pb-0 py-16 max-w-[1144px] mx-auto">
+        <section className="max-md:pt-7 max-md:pb-0 pb-16 max-w-[1144px] mx-auto">
           <h3 className="transition duration-300 place-self-center sm:text-left md:text-[3.125rem] max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[3.75rem] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
             What People Say
           </h3>

@@ -202,12 +202,12 @@ export const Step5: React.FC<Step5Props> = ({
               Request Early Access
             </h2>
 
-            <p className="mt-2 text-sm text-white/90">
+            <p className="mt-2 text-sm text-white/90 text-center">
               Step 5 of 8: Verify your mobile number.
             </p>
 
             <form className="mt-6" onSubmit={verifyOTP}>
-              <label className="block mb-2 text-white/80">
+              <label className="block mb-2 text-white/80 text-center">
                 Enter your 6-digit code
               </label>
 

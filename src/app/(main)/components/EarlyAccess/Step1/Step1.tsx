@@ -137,12 +137,11 @@ export const Step1: React.FC<Step1Props> = ({
   return (
     <>
       <div ref={earlyAccessRef} className="bg-[#09073A] py-10 my-10">
-        <div className="lg:flex items-center justify-center">
+        <div className="lg:flex items-center justify-center px-3">
           <EarlyAccessCircleVW />
 
-          <div>
             <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
-              <h3 className="  transition duration-300 text-[1.95rem] text-center font-poppinsNew font-bold  tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+              <h3 className="transition duration-300 text-[1.95rem] text-center font-poppinsNew font-bold  tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
                 Request Early Access
               </h3>
 
@@ -156,7 +155,7 @@ export const Step1: React.FC<Step1Props> = ({
 
               <form onSubmit={createVisitorRecord}>
                 <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Firstname*</legend>
+                  <legend className="fieldset-legend">First Name*</legend>
                   <input
                     type="text"
                     className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
@@ -168,7 +167,7 @@ export const Step1: React.FC<Step1Props> = ({
                 </fieldset>
 
                 <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Email</legend>
+                  <legend className="fieldset-legend">Email address</legend>
                   <input
                     type="text"
                     className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
@@ -202,7 +201,6 @@ export const Step1: React.FC<Step1Props> = ({
                 </button>
               </form>
             </div>
-          </div>
         </div>
       </div>
     </>

@@ -21,17 +21,13 @@ const Footer = () => {
     if (!element) return;
 
     const top =
-      element.getBoundingClientRect().top +
-      window.pageYOffset -
-      offset;
+      element.getBoundingClientRect().top + window.pageYOffset - offset;
 
     window.scrollTo({
       top,
       behavior: "smooth",
     });
   };
-
-
 
   if (
     ["/login", "/sign-up", "/forgot-password", "/preview"].includes(pathname)
@@ -40,39 +36,61 @@ const Footer = () => {
   }
 
   return (
-    <footer className="items-start pb-12 md:px-16 xl:px-32 px-8 pt-8">
-      <div className=" items-center xl:flex md:place-self-center">
+    <footer className="items-start pb-12 max-w-[82.625rem] mx-auto px-8 pt-8">
+      <div className="items-center flex max-xl:flex-col justify-between">
         <div className="">
           <KinshipBots />
         </div>
 
-        <div className=" xl:ml-[20rem] xl:w-[50.063rem] md:place-self-center mt-8 xl:mt-0">
-          <ul className="xl:flex xl:justify-between font-normal">
-            <li>
-              <a className="cursor-pointer" onClick={() => scrollTo("origin-story")}> Origin Story</a>
-            </li>
-            <li>
-              <a className="cursor-pointer" onClick={() => scrollTo("kinship-intelligence")}> Kinship Intelligence</a>
-            </li>
-            <li>
-              <a className="cursor-pointer" onClick={() => scrollTo("collective-economic")}> Co-op Economics</a>
-            </li>
-            <li>
-              <a className="cursor-pointer" onClick={() => scrollTo("founding-creator")}> Founding Sages </a>
-            </li>
-            <li>
-              <a
-                href="https://Kinship.today"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cursor-pointer"
-              >
-                {" "}
-                Go Deeper
-              </a>
-            </li>{" "}
-          </ul>
-        </div>
+        <ul className="flex max-xl:flex-col max-xl:gap-2 gap-8 xl:justify-between font-normal mt-8 xl:mt-0">
+          <li>
+            <a
+              className="cursor-pointer"
+              onClick={() => scrollTo("origin-story")}
+            >
+              {" "}
+              Origin Story
+            </a>
+          </li>
+          <li>
+            <a
+              className="cursor-pointer"
+              onClick={() => scrollTo("kinship-intelligence")}
+            >
+              {" "}
+              Kinship Intelligence
+            </a>
+          </li>
+          <li>
+            <a
+              className="cursor-pointer"
+              onClick={() => scrollTo("collective-economic")}
+            >
+              {" "}
+              Co-op Economics
+            </a>
+          </li>
+          <li>
+            <a
+              className="cursor-pointer"
+              onClick={() => scrollTo("founding-creator")}
+            >
+              {" "}
+              Founding Sages{" "}
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://Kinship.today"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cursor-pointer"
+            >
+              {" "}
+              Go Deeper
+            </a>
+          </li>{" "}
+        </ul>
       </div>
 
       <div className="xl:flex justify-between items-center mt-12 place-self-center">

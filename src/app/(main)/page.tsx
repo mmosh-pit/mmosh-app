@@ -175,20 +175,20 @@ const principles: Principle[] = [
   {
     id: "synthesis",
     title: "Synthesis",
-    subtitle: "Bringing inner and outer into wholeness.",
+    subtitle: "Complementary consciousness.",
     description:
-      "Kinship helps you integrate the expressive and receptive aspects of being—bridging psyche and cosmos, action and reflection, doing and being. Synthesis is the capacity to hold complexity, honor paradox, and move fluidly between worlds without fragmentation.",
+      "Kinship helps you integrate the expressive and receptive, outward and inward aspects of being—bridging psyche and cosmos, action and reflection, doing and being. Synthesis is the capacity to hold complexity, honor paradox, and move fluidly between worlds without fragmentation.",
   },
 ];
 
 const platformItems: PlatformItem[] = [
   {
     id: "bots",
-    title: "Kinship Bots",
+    title: "Kinship Codes",
     subtitle: "The Mobile Experience",
     intro: "A living, interactive environment where people learn by doing.",
     description:
-      "Kinship Bots delivers immersive scenarios, challenges, and integrations that feel more like a retreat than a training program—while reliably building relational, emotional, and ethical capacity over time. This is where practice happens, alone and together.",
+      "Kinship Codes delivers immersive scenarios, challenges, and integrations that unfold as an an epic adventure rather than a training program—while reliably building relational, emotional, and ethical capacity over time. This is where practice happens, alone and together.",
   },
   {
     id: "studio",
@@ -224,8 +224,6 @@ export default function LandingPage() {
   React.useEffect(() => {
     setMounted(true);
   }, []);
-
-  const screenSize = useCheckDeviceScreenSize();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [initialModalStep, setInitialModalStep] = useState(0);
@@ -424,14 +422,14 @@ export default function LandingPage() {
             <div className="max-md:hidden absolute top-0 left-0 bg-[linear-gradient(270deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div>
             <div className="max-md:hidden absolute top-0 right-0 bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)] h-full w-[132px] flex-shrink-0"></div> */}
           <div
-            className="m-auto max-w-[85%] xl:w-[50.063rem] border-[0.031rem] border-[#FFFFFF] bg-[#01000A14] md:backdrop-filter backdrop-blur-[20px] rounded-[3rem] xl:p-[20px] p-[10px]"
+            className="m-auto max-w-[85%] xl:w-[50.063rem] border-[0.031rem] border-[#FFFFFF] bg-[#3F3E3E54] md:backdrop-filter backdrop-blur-[30px] rounded-[3rem] xl:p-[20px] p-[10px]"
             ref={homeSection}
           >
             <h1 className="w-auto md:text-[2.813rem] text-4xl leading-relaxed xl:leading-[2.813rem] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
               Awaken Your Power{" "}
             </h1>
-            <h1 className="w-auto xl:text-[1.375rem] text-[0.75rem] leading-[110%] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
-              With a Retreat Center in the Palm of Your Hand{" "}
+            <h1 className="w-auto xl:text-[1.375rem] text-[0.75rem] leading-[1.2] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
+              A Fitness App for the Heart and Soul.{" "}
             </h1>
             <div className="mt-3.5">
               <p className="xl:text-base text-xs text-[#FFFFFF] font-avenir text-opacity-90 xl:px-12">
@@ -454,6 +452,7 @@ export default function LandingPage() {
               our spa, or embark on luminous journeys of wonder and awe. Not
               therapy. Not social media. Not a game.{" "}
             </p>
+            <br />
             <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 font-avenir">
               This is resistance training for what makes us fully human.
             </p>
@@ -584,16 +583,16 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-[3.5rem] max-md:mt-10">
+          <div className="mt-[3rem] max-md:mt-8">
             <div
               ref={kinshipIntelligenceRef}
               className="scroll-mt-[120px]"
               id="kinship-intelligence"
             >
-              <h1 className="text-center font-bold xl:px-12 leading-[1] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+              <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
                 From Content to Capacity
               </h1>
-              <p className="max-sm:text-xl text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2.5 mb-5">
+              <p className="max-sm:text-xl text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2 mb-5">
                 From Content to Capacity
               </p>
             </div>
@@ -655,11 +654,7 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
-        <div
-          ref={foundingCreatorsRef}
-          className="px-3 scroll-mt-[120px]"
-          id="founding-creator"
-        >
+        <div className="px-3 scroll-mt-[120px]" id="founding-creator">
           <h1 className="text-center font-bold xl:px-10 leading-tight xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Change Yourself, Change Your Life, Change The World.
           </h1>
@@ -668,10 +663,9 @@ export default function LandingPage() {
             Kinship works like resistance training for the inner life—balanced
             with deep recovery. You'll face meaningful challenges that build
             courage, capacity, and connection, then integrate through rest,
-            reflection, and shared experience. Inside immersive scenarios that
-            feel like an ongoing retreat or workshop—not a checklist—growth
-            happens naturally, with others, in a space that's engaging,
-            intimate, and alive.
+            reflection, and shared experience. Inside immersive scenarios and
+            epic adventures growth happens naturally, with others, in a space
+            that's engaging, intimate, and alive.
           </p>
         </div>
 
@@ -727,7 +721,7 @@ export default function LandingPage() {
             className="scroll-mt-[120px]"
             id="collective-economic"
           >
-            <h1 className="text-center font-bold px-12 text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-tight m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            <h1 className="text-center font-bold px-12 text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
               Member Managed, Member Owned
             </h1>
 
@@ -759,7 +753,9 @@ export default function LandingPage() {
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               You earn immediately when people join through your invitation,
               engage with your creations, or accept your offers. Then you share
-              in the annual profit pools based on your patronage.
+              in the annual profit pools based on your patronage. Software is a
+              great business. Kinship puts it back in the hands of the people
+              who create the value.
             </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
               Software is a great business. Kinship puts it back in the hands of
@@ -769,14 +765,15 @@ export default function LandingPage() {
               Pricing is structured to support sustainable participation
             </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
-              —whether you're an individual practitioner, a team building
-              capacity together, or an organization embedding transformation at
-              scale.
+              —whether you're solo practitioner, a team building capacity
+              together, or an organization embedding transformation at scale.
+              Through our robust API and MCP servers, resellers and integrators
+              can offer flexibility on contracts, deployments and platform
+              governance to enterprise customers.
             </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
-              All tiers include full access to Kinship Bots: immersive
-              scenarios, HEARTS tracking, gatherings, and personalized AI
-              guidance.
+              All tiers include full access to Kinship Codes, Kinship Studio,
+              Kinship Exchange and Kinship Intelligence.
             </p>
           </div>
         </div>
@@ -847,8 +844,11 @@ export default function LandingPage() {
           </button>
         </div>
 
-        <div className="mt-[2.875rem] max-md:mt-12 max-md:px-3">
-          <h1 className="text-center font-bold xl:px-12 leading-tight xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+        <div
+          className="mt-[2.875rem] max-md:mt-12 max-md:px-3"
+          ref={foundingCreatorsRef}
+        >
+          <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             A Living Body of Wisdom
           </h1>
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">

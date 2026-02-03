@@ -230,6 +230,7 @@ const VoiceAssistant = (props: any) => {
               content: systemPrompt,
             })
           );
+
           await initAudioContext();
           await setupAudioWorklet(micStream);
           setupAudioVisualization(micStream);
@@ -292,14 +293,14 @@ const VoiceAssistant = (props: any) => {
     if (micWorkletNodeRef.current) {
       try {
         micWorkletNodeRef.current.disconnect();
-      } catch (e) {}
+      } catch (e) { }
       micWorkletNodeRef.current = null;
     }
 
     if (ttsWorkletNodeRef.current) {
       try {
         ttsWorkletNodeRef.current.disconnect();
-      } catch (e) {}
+      } catch (e) { }
       ttsWorkletNodeRef.current = null;
     }
 
@@ -308,6 +309,7 @@ const VoiceAssistant = (props: any) => {
       micStreamRef.current = null;
     }
 
+    // Close WebSocket connection AFTER sending disconnect
     if (wsRef.current) {
       wsRef.current.close();
       wsRef.current = null;
@@ -322,11 +324,11 @@ const VoiceAssistant = (props: any) => {
     // stop visualization audio context via hook stop()
     try {
       stop();
-    } catch (e) {}
+    } catch (e) { }
 
     // close audioContext if exists
     if (audioContextRef.current) {
-      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current.close().catch(() => { });
       audioContextRef.current = null;
     }
 
@@ -347,9 +349,9 @@ const VoiceAssistant = (props: any) => {
 
     micWorkletNodeRef.current = new (window.AudioWorkletNode ||
       (audioContextRef.current as any).AudioWorkletNode)(
-      audioContextRef.current,
-      "pcm-worklet-processor"
-    );
+        audioContextRef.current,
+        "pcm-worklet-processor"
+      );
 
     // Buffer logic
     let audioBufferChunks: Int16Array[] = [];
@@ -453,9 +455,9 @@ const VoiceAssistant = (props: any) => {
 
     ttsWorkletNodeRef.current = new (window.AudioWorkletNode ||
       (audioContextRef.current as any).AudioWorkletNode)(
-      audioContextRef.current,
-      "tts-playback-processor"
-    );
+        audioContextRef.current,
+        "tts-playback-processor"
+      );
 
     ttsWorkletNodeRef.current.port.onmessage = (event: any) => {
       const { type } = event.data;

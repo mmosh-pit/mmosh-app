@@ -24,6 +24,7 @@ import Select from "../common/Select";
 import VoiceAssistant from "./VoiceAssistant";
 
 const ChatInteractionContainer = (props: any) => {
+  const wallet = useWallet();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
   const chatBaseUrl = "https://ai.kinshipbots.com/"; // "https://react-mcp-auth-api-1094217356440.us-central1.run.app"
@@ -33,7 +34,7 @@ const ChatInteractionContainer = (props: any) => {
     startSession,
     isSpeaking,
     stopSession,
-    isLoadingSession
+    isLoadingSession,
   } = useVoiceSession();
 
   const [currentUser] = useAtom(data);
@@ -45,7 +46,7 @@ const ChatInteractionContainer = (props: any) => {
   const [disambiguationData, setDisambiguationData] =
     React.useState<DisambiguationResponse | null>(null);
   const [pendingMessage, setPendingMessage] = React.useState<string | null>(
-    null
+    null,
   );
 
   const [isSessionActive, setIsSessionActive] = React.useState<boolean>(false);
@@ -84,7 +85,7 @@ const ChatInteractionContainer = (props: any) => {
         },
         body: JSON.stringify({
           recipient_wallets: Object.values(selected).flatMap((recipients) =>
-            recipients.map((r) => r.wallet)
+            recipients.map((r) => r.wallet),
           ),
           message: pendingMessage,
           agentId: selectedChat.chatAgent!.id,
@@ -131,7 +132,7 @@ const ChatInteractionContainer = (props: any) => {
         setSelectedChat(updatedSelectedChat);
 
         const updatedChats = chats.map((chat) =>
-          chat.id === selectedChat!.id ? updatedSelectedChat : chat
+          chat.id === selectedChat!.id ? updatedSelectedChat : chat,
         );
         setChats(updatedChats);
         // Save the chat conversation to the database
@@ -158,7 +159,7 @@ const ChatInteractionContainer = (props: any) => {
 
           if (!saveResponse.ok) {
             console.warn(
-              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
+              `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
             );
           } else {
             console.log("Chat saved successfully to database");
@@ -200,7 +201,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return "https://storage.googleapis.com/mmosh-assets/aunt-bea.png";
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
 
   const getMessageUsername = React.useCallback(
@@ -219,7 +220,7 @@ const ChatInteractionContainer = (props: any) => {
 
       return selectedChat?.chatAgent?.name;
     },
-    [currentUser, selectedChat]
+    [currentUser, selectedChat],
   );
 
   const formatChatHistory = (messages: Message[]) => {
@@ -272,7 +273,7 @@ const ChatInteractionContainer = (props: any) => {
 
       // Update the chats array
       const updatedChats = chats.map((chat) =>
-        chat.id === selectedChat.id ? updatedSelectedChat : chat
+        chat.id === selectedChat.id ? updatedSelectedChat : chat,
       );
       setChats(updatedChats);
 
@@ -288,7 +289,7 @@ const ChatInteractionContainer = (props: any) => {
       // };
       const systemPrompt =
         selectedChat!.chatAgent!.system_prompt +
-        `agentId: ${selectedChat.chatAgent!.key}, authorization: ${localStorage.getItem("token")}`;
+        `agentId: ${selectedChat.chatAgent!.key}, authorization: ${localStorage.getItem("token")} wallet: ${wallet?.publicKey.toBase58()}`;
 
       try {
         const queryData = {
@@ -369,7 +370,7 @@ const ChatInteractionContainer = (props: any) => {
                     const disambiguationChats = chats.map((chat) =>
                       chat.id === selectedChat.id
                         ? disambiguationSelectedChat
-                        : chat
+                        : chat,
                     );
                     setChats(disambiguationChats);
 
@@ -397,7 +398,9 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const streamingChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? streamingSelectedChat : chat
+                      chat.id === selectedChat.id
+                        ? streamingSelectedChat
+                        : chat,
                     );
                     setChats(streamingChats);
                   } else if (data.type === "complete") {
@@ -420,7 +423,7 @@ const ChatInteractionContainer = (props: any) => {
 
                     // Update the chats array
                     const finalChats = chats.map((chat) =>
-                      chat.id === selectedChat.id ? finalSelectedChat : chat
+                      chat.id === selectedChat.id ? finalSelectedChat : chat,
                     );
                     setChats(finalChats);
 
@@ -446,13 +449,13 @@ const ChatInteractionContainer = (props: any) => {
                             Authorization: `Bearer ${window.localStorage.getItem("token")}`,
                           },
                           body: JSON.stringify(saveChatData),
-                        }
+                        },
                       );
                       await props.checkUsage();
 
                       if (!saveResponse.ok) {
                         console.warn(
-                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`
+                          `Failed to save chat: ${saveResponse.status} ${saveResponse.statusText}`,
                         );
                       } else {
                         console.log("Chat saved successfully to database");
@@ -460,7 +463,7 @@ const ChatInteractionContainer = (props: any) => {
                     } catch (saveError) {
                       console.error(
                         "Error saving chat to database:",
-                        saveError
+                        saveError,
                       );
                       // Note: We don't want to show this error to the user as the main functionality (chat) worked
                     }
@@ -505,7 +508,7 @@ const ChatInteractionContainer = (props: any) => {
 
         // Update the chats array
         const finalChats = chats.map((chat) =>
-          chat.id === selectedChat.id ? finalSelectedChat : chat
+          chat.id === selectedChat.id ? finalSelectedChat : chat,
         );
         setChats(finalChats);
       }
@@ -517,7 +520,7 @@ const ChatInteractionContainer = (props: any) => {
       setChats,
       setSelectedChat,
       props.selectedModel,
-    ]
+    ],
   );
 
   const handleEnter = (evt: any) => {
@@ -556,7 +559,11 @@ const ChatInteractionContainer = (props: any) => {
 
   if (isSessionActive || isLoadingSession)
     return (
-      <VoiceAssistant setIsSessionActive={setIsSessionActive} isSessionActive={isSessionActive} selectedModel={props.selectedModel}/>
+      <VoiceAssistant
+        setIsSessionActive={setIsSessionActive}
+        isSessionActive={isSessionActive}
+        selectedModel={props.selectedModel}
+      />
       // <AudioInteraction
       //   isSpeaking={isSpeaking}
       //   stopSession={stopSession}
@@ -695,7 +702,7 @@ const ChatInteractionContainer = (props: any) => {
                               {
                                 hour: "2-digit",
                                 minute: "2-digit",
-                              }
+                              },
                             )}
                           </span>
                         </div>
@@ -728,22 +735,109 @@ const ChatInteractionContainer = (props: any) => {
                             </div>
                           ) : (
                             <div className="text-base leading-relaxed prose prose-invert max-w-none">
-                              <Markdown remarkPlugins={[remarkGfm]}>
+                              <Markdown
+                                remarkPlugins={[remarkGfm]}
+                                urlTransform={(url) => url}
+                                components={{
+                                  a: (props: any) => {
+                                    const { href, children } = props;
+
+                                    if (!href) {
+                                      return (
+                                        <span className="text-blue-400 underline cursor-pointer">
+                                          {children}
+                                        </span>
+                                      );
+                                    }
+
+                                    if (
+                                      href.startsWith("data:") &&
+                                      href.includes(";base64,")
+                                    ) {
+                                      return (
+                                        <span
+                                          className="text-blue-400 underline cursor-pointer"
+                                          onClick={() => {
+                                            try {
+                                              const match = href.match(
+                                                /^data:(.*?);base64,(.*)$/,
+                                              );
+                                              if (!match) return;
+
+                                              const mimeType = match[1];
+                                              const base64Data = match[2];
+
+                                              const byteCharacters =
+                                                atob(base64Data);
+                                              const byteNumbers = new Array(
+                                                byteCharacters.length,
+                                              );
+                                              for (
+                                                let i = 0;
+                                                i < byteCharacters.length;
+                                                i++
+                                              ) {
+                                                byteNumbers[i] =
+                                                  byteCharacters.charCodeAt(i);
+                                              }
+
+                                              const blob = new Blob(
+                                                [new Uint8Array(byteNumbers)],
+                                                { type: mimeType },
+                                              );
+
+                                              const url =
+                                                URL.createObjectURL(blob);
+                                              const a =
+                                                document.createElement("a");
+
+                                              a.href = url;
+                                              a.download = String(children);
+                                              document.body.appendChild(a);
+                                              a.click();
+
+                                              document.body.removeChild(a);
+                                              URL.revokeObjectURL(url);
+                                            } catch (err) {
+                                              console.error(
+                                                "Attachment download failed:",
+                                                err,
+                                              );
+                                            }
+                                          }}
+                                        >
+                                          {children}
+                                        </span>
+                                      );
+                                    }
+
+                                    return (
+                                      <a
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-400 underline"
+                                      >
+                                        {children}
+                                      </a>
+                                    );
+                                  },
+                                }}
+                              >
                                 {message.type === "bot" &&
                                 message.content.includes("Thought:")
                                   ? message.content
                                       .replace(
                                         /Thought:/g,
-                                        "\n\n> *Thought:*\n"
+                                        "\n\n> *Thought:*\n",
                                       )
                                       .replace(/Action:/g, "\n\n> *Action:*\n")
                                       .replace(
                                         /^((?!Thought:|Action:).+)/gm,
-                                        (match) => {
-                                          return match.startsWith(">")
+                                        (match) =>
+                                          match.startsWith(">")
                                             ? match
-                                            : `**${match}**`;
-                                        }
+                                            : `**${match}**`,
                                       )
                                       .trim()
                                   : message.content}
@@ -753,7 +847,7 @@ const ChatInteractionContainer = (props: any) => {
                         </div>
                       </div>
                     </div>
-                  )
+                  ),
               )
             )}
           </div>

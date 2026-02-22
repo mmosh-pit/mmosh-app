@@ -54,41 +54,41 @@ type PlatformItem = {
 
 const pricingPlans: PricingPlan[] = [
   {
-    id: "professional",
-    title: "Professional",
-    subtitle: "For individuals and small practices",
-    seats: "1–4 seats",
+    id: "citizens",
+    title: "Citizens",
+    subtitle: "The Foundation",
+    seats: "",
     description:
-      "Perfect for solo practitioners, coaches, consultants, and early adopters who want to develop their own capacity and explore Kinship's approach to transformation.",
-    pricing: "$30/month or $100/year per seat",
+      "Every member starts here. You use the platform, you earn loyalty rewards for participation, you own a stake in the cooperative, and you can earn royalties from the agents you create and earn commissions based on members you enroll. Your data, agents, creations, and relationships belong to you. Your vote counts. Your progress funds the system and the system funds your progress.",
+    pricing: "",
   },
   {
-    id: "team",
-    title: "Team",
-    subtitle: "For small groups and departments",
-    seats: "5–34 seats (minimum 5)",
+    id: "champions",
+    title: "Champions",
+    subtitle: "The Network",
+    seats: "",
     description:
-      "Designed for small teams, startups, boutique agencies, clinics, and studios building relational capacity and psychological safety together.",
-    pricing: "$25/month or $80/year per seat",
+      "When twelve people you've invited become active members, you become a Champion. It's an ongoing threshold — you maintain your community, not just launch it. Champions earn commissions on membership revenue distributed across four levels of relationships. This structure rewards the deep work of building and supporting real networks, not just collecting sign-ups. Champions who enroll Creators also earn curator royalties — a direct cut of what their Creators earn. The incentive is clear: find talented builders, bring them in, and grow together.",
+    pricing: "",
   },
   {
-    id: "organization",
-    title: "Organization",
-    subtitle: "For institutions and enterprises",
-    seats: "35+ seats",
+    id: "creators",
+    title: "Creators",
+    subtitle: "The Builders",
+    seats: "",
     description:
-      "Built for larger companies, health systems, universities, associations, NGOs, governments, and networks embedding wholeness into culture and operations.",
-    pricing: "$20/month or $70/year per seat",
+      "When at least one of your agents is voted into public listing by the cooperative membership, you become a Creator. Until then, your agents can be listed as secret or private. Creators earn monthly royalties from the Creator pool based on engagement with their agents. But that's the floor, not the ceiling. Creators can  also sell directly — premium agents, goods, services, experiences — and keep what they earn. This can be a real business built on a platform that wants you to succeed.",
+    pricing: "",
   },
-  {
-    id: "creator",
-    title: "Creator",
-    subtitle: "For designers of transformation",
-    seats: "Individual membership",
-    description:
-      "Creator membership includes full access to Kinship Studio and the Exchange. Design immersive scenarios, publish your work, and earn based on usage and engagement—or create private experiences and set your own pricing. Creators are paid from a shared pool and retain ownership of their work within cooperative governance.",
-    pricing: "$120/month or $950/year",
-  },
+  // {
+  //   id: "creator",
+  //   title: "Creator",
+  //   subtitle: "For designers of transformation",
+  //   seats: "Individual membership",
+  //   description:
+  //     "Creator membership includes full access to Kinship Studio and the Exchange. Design immersive scenarios, publish your work, and earn based on usage and engagement—or create private experiences and set your own pricing. Creators are paid from a shared pool and retain ownership of their work within cooperative governance.",
+  //   pricing: "$120/month or $950/year",
+  // },
 ];
 
 const pathways: Pathway[] = [
@@ -97,7 +97,7 @@ const pathways: Pathway[] = [
     name: "Four Arrows",
     theme: "Indigenous Worldview",
     description:
-      "Worldview reflection, sacred communication, self-hypnosis, and fearless courage—rooted in a living, interconnected universe where all beings are kin.",
+      "Worldview reflection, sacred communication, self- hypnosis, and fearless courage—rooted in a living, interconnected universe where all beings are kin.",
   },
   {
     id: "howard-teich",
@@ -140,80 +140,79 @@ const principles: Principle[] = [
   {
     id: "harmony",
     title: "Harmony",
-    subtitle: "Belonging you can rely on.",
+    subtitle: "",
     description:
-      "Kinship strengthens your ability to connect, collaborate, repair, and stay present with others—even under pressure. Harmony isn't about avoiding conflict; it's about developing the relational capacity for empathy, honesty, and mutual care that holds through tension and change.",
+      "Connection that holds under pressure. The capacity to stay present, repair what breaks, and build deep, honest relationships of love and mutual care.",
   },
   {
     id: "empowerment",
     title: "Empowerment",
-    subtitle: "Choice that's actually yours.",
+    subtitle: "",
     description:
-      "Through real challenges, Kinship builds the capacity to say yes and no with clarity—without collapse, rebellion, or rigidity. Empowerment becomes grounded, flexible, and self-directed: the ability to act from your own center, especially when the stakes are real.",
+      "Agency that comes from your center, with confidence, clarity, conviction, and the courage to show up in your full power.",
   },
   {
     id: "artistry",
     title: "Artistry",
-    subtitle: "Growth through practice.",
+    subtitle: "",
     description:
-      "Kinship replaces abstract learning with lived skill. You develop competence by doing—experimenting, adapting, and refining your response to life's challenges. Artistry emerges through openness, persistence, and integration: the craft of showing up well.",
+      "Openness, versatility, and craft. The capacity to adapt, experiment, and refine your way through everything life has on offer.",
   },
   {
     id: "reason",
     title: "Reason",
-    subtitle: "Meaning in motion.",
+    subtitle: "",
     description:
-      "Reason isn't intellectual distance—it's the capacity to align action with what matters most. Kinship helps you discover and enact purpose through contribution, service, and creative engagement, so meaning becomes lived rather than declared.",
+      "Purpose in motion. The capacity to align what you do with what matters the most — so meaning can be lived rather than declared.",
   },
   {
     id: "trust",
     title: "Trust",
-    subtitle: "Let yourself rest and respond.",
+    subtitle: "",
     description:
-      "Kinship trains trust as a capacity, not a condition. Through recovery, regulation, and relational support, you build the ability to stay grounded, recover from stress, and remain open—even in uncertainty. Trust allows you to move between effort and rest.",
+      "The deep capacity to feel safe in relationships and trust the process. Vulnerability, reliability and the sense that the world you inhabit is fundamentally sound.",
   },
   {
     id: "synthesis",
     title: "Synthesis",
-    subtitle: "Complementary consciousness.",
+    subtitle: "",
     description:
-      "Kinship helps you integrate the expressive and receptive, outward and inward aspects of being—bridging psyche and cosmos, action and reflection, doing and being. Synthesis is the capacity to hold complexity, honor paradox, and move fluidly between worlds without fragmentation.",
+      "Complementary consciousness. Reflection and direction. Inward and outward. Reception and expression. The capacity to move between worlds without losing yourself.",
   },
 ];
 
 const platformItems: PlatformItem[] = [
   {
-    id: "bots",
-    title: "Kinship Codes",
-    subtitle: "The Mobile Experience",
-    intro: "A living, interactive environment where people learn by doing.",
+    id: "today",
+    title: "Kinship Today",
+    subtitle: "The Experience",
+    intro: "",
     description:
-      "Kinship Codes delivers immersive scenarios, challenges, and integrations that unfold as an an epic adventure rather than a training program—while reliably building relational, emotional, and ethical capacity over time. This is where practice happens, alone and together.",
+      "Where members live, work, and play in an environment populated by caring, capable, and supportive Kinship Agents",
   },
   {
     id: "studio",
     title: "Kinship Studio",
-    subtitle: "The Design Environment",
-    intro:
-      "A professional workspace for consultants, facilitators, and organizations",
+    subtitle: "The Workshop",
+    intro: "",
     description:
-      "Kinship Studio lets you design experiences—not content—by encoding your frameworks, practices, and insights into interactive scenarios that people return to, train with, and integrate over time. This is where transformation gets built.",
+      "Where creators build the agents that care, the adventures that transform, the tools that connect, and the experiences that matter. ",
   },
   {
     id: "exchange",
     title: "Kinship Exchange",
-    subtitle: "The Cooperative Marketplace",
-    intro: "A values-aligned economy for living work.",
+    subtitle: "The Economy",
+    intro: "",
     description:
-      "Through the Exchange, creators offer programs, templates, and experiences—earning through participation, engagement, and trusted referral. Value circulates within the community, supporting both sustainability and integrity. This is where contribution meets reciprocity.",
+      "A member-owned marketplace where value circulates. Creators earn royalties. Champions earn commissions. Citizens earn rewards.",
   },
   {
     id: "intelligence",
     title: "Kinship Intelligence",
-    subtitle: "The Orchestration Layer",
-    intro: "The connective tissue that brings it all together.",
+    subtitle: "The Heart and Soul",
+    intro: "",
     description:
-      "Kinship Intelligence orchestrates context, memory, adaptation, and care—personalizing experiences, tracking growth, supporting safety, and ensuring that learning compounds rather than fades. This is the difference between a set of tools and a living system.",
+      "The orchestration layer that ensures every agent is aligned with the individual member, all the other members, and the context as a whole.",
   },
 ];
 
@@ -516,17 +515,13 @@ export default function LandingPage() {
               </h1>
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-5 font-avenir">
                 I set out to make an activist film about my community fighting a
-                polluting factory. Protest matters—it draws lines, surfaces
+                polluting factory. Protest matters. It draws lines, surfaces
                 harm, buys time for truth to emerge.
               </p>
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
                 But in Mexico, interviewing Four Arrows after our campaign had
-                fractured and the factory went into production, I understood
-                something deeper:{" "}
-                <span className="text-white font-bold text-lg font-avenirNext">
-                  {" "}
-                  activism alone isn't enough.{" "}
-                </span>{" "}
+                fractured and the factory went into production, I realized that
+                protest was only half the work.
               </p>
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 You can't transform a system from the outside because there is
@@ -536,44 +531,45 @@ export default function LandingPage() {
 
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
                 The executives I opposed weren't villains. In another life, we
-                might have been friends. They didn't want to exploit any more
-                than communities want to be sacrificed. Everyone was trapped in
-                the same invisible structure.
+                might have been friends. They didn't want to exploit us any more
+                than our community wanted to be sacrificed. Everyone was trapped
+                in the same pervasive structure.
               </p>
 
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
-                Four Arrows showed me that{" "}
+                Four Arrows helped me see that{" "}
                 <span className="text-white font-bold text-lg font-avenirNext">
-                  lasting change doesn't come from fighting the system head-on.
-                  It comes from changing the inner conditions
+                  the structure holds because of what's happening inside the
+                  people who inhabit it — how we think, how we relate, how we
+                  lead, what we allow ourselves to feel. Change those conditions
+                  and you change what people are capable of thinking, saying,
+                  feeling, choosing, and doing.
                 </span>{" "}
-                that shape how people think, choose, relate, and lead.
+                When those conditions shift, culture shifts. When culture shifts
+                society follows.
               </p>
 
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                When those conditions shift, culture shifts. When culture
-                shifts, systems shift.
+                This brief documentary captured a turning point in my life, from
+                frustration, fear, and resistance to clarity, purpose, and
+                power.
               </p>
 
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                This film captures that turning point, when Kinship Intelligence
-                was born.
+                The result is Kinship, an AI-powered platform for human and
+                organizational development built on a specific anthropological,
+                psychological, and sociological premise: that kinship, the
+                structure of mutual care, reciprocity, and relatedness, is a
+                technology.
               </p>
 
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
-                <span className="text-white font-bold text-lg font-avenirNext">
-                  Kinship is transformation operationalized
-                </span>{" "}
-                —a sociotechnical platform that brings emotional, relational,
-                and ethical capacity into how we learn, work, and decide
-                together. This isn’t content about change, but this creates the
-                conditions for change.
+                Kinship is for individuals and organizations ready to do the
+                hard, necessary work of changing the way we live, work, play,
+                learn, and relate.
               </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                It's designed for people and organizations who know the future
-                won't be built by ideology alone, but by leaders and teams
-                capable of acting with clarity, courage, and care—inside the
-                systems that shape our world.
+              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir font-bold">
+                There are no more half measures. It's time.
               </p>
 
               {/* <p className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5">
@@ -590,35 +586,33 @@ export default function LandingPage() {
               id="kinship-intelligence"
             >
               <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-                From Content to Capacity
+                AI Is the Most Powerful Infrastructure Ever Built.
               </h1>
               <p className="max-sm:text-xl text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2 mb-5">
-                From Content to Capacity
+                And It’s Pointed in the Wrong Direction.
               </p>
             </div>
             <div className="my-5">
               <p className="font-avenir max-md:text-sm max-md:px-2 max-md:mt-4 text-[1.188rem] leading-[110%] font-normal text-center text-[#FFFFFFC7] xl:px-[2rem] xl:w-[64.313rem] m-auto">
-                Most platforms deliver content to consume and tasks to track.
-                Kinship Intelligence is different. It's a living system for
-                shared learning and personal growth, where people stay in
-                relationship, practice together, and evolve as a community.
-                Traditional consulting, workshops, and training can spark
-                insight—but insight alone rarely sticks. Without ongoing
-                practice and real-world application, even the most powerful
-                ideas are overwhelmed by old habits.{" "}
-                <span className="text-white font-bold text-lg font-avenirNext">
-                  {" "}
-                  Kinship turns wisdom into lived capacity.{" "}
-                </span>{" "}
-                It gives consultants and learning teams a way to operationalize
-                their work—embedding it into experiences people return to,
-                practice together, and integrate over time. Instead of
-                delivering insights and hoping they land, you create
-                environments where learning holds, relationships deepen, and
-                transformation becomes sustainable. Rather than packaging wisdom
-                and moving on, you build living systems that grow with the
-                people inside them—and generate lasting value for everyone
-                involved.
+                AI systems around the world are being optimized for engagement,
+                efficiency, productivity, and profit. <br />
+                The result: we’re massively accelerating the velocity of a
+                civilization already headed toward a cliff. Authoritarianism,
+                poverty, mass displacement, disease, war, the mental health
+                crisis, and planetary ecosystem collapse are the major symptoms
+                of a society that is out of control and running on autopilot.
+                <br />
+                The only two options on the table are accelerate or regulate.
+                <br />
+                Until now.
+                <br />
+                Kinship is a new choice. A member-owned platform that points AI
+                at human and organizational development, relational depth, and
+                social change. Not faster. Not slower. In a fundamentally
+                different direction.
+                <br />
+                And what’s even better… you’ll be more engaged, more efficient,
+                more productive, and more profitable than ever.
               </p>
             </div>
           </div>
@@ -626,12 +620,13 @@ export default function LandingPage() {
 
         <div className="xl:w-[64.313rem] m-auto">
           <h1 className="text-center font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl max-md:leading-relaxed m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            Living infrastructure for collective evolution.
+            Infrastructure for what comes next.
           </h1>
           <p className="max-md:text-sm font-avenir text-center text-[#FFFFFFC7] mt-[1rem]">
-            Together, these four components turn wisdom into practice, learning
-            into capacity, and insight into lasting change—at the individual,
-            organizational, and societal scale.
+            Four integrated systems that make transformation structural, not
+            aspirational, for individuals, organizations, and society as a
+            whole. Engagement, efficiency, productivity, and profitability
+            without compromise.
           </p>
         </div>
         <div className="container xl:max-w-[79.5rem] mx-auto grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-5 px-3 max-xl:mt-5 xl:mt-10 mb-4">
@@ -656,39 +651,32 @@ export default function LandingPage() {
         </div>
         <div className="px-3 scroll-mt-[120px]" id="founding-creator">
           <h1 className="text-center font-bold xl:px-10 leading-tight xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            Change Yourself, Change Your Life, Change The World.
+            The Six Signals
           </h1>
 
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
-            Kinship works like resistance training for the inner life—balanced
-            with deep recovery. You'll face meaningful challenges that build
-            courage, capacity, and connection, then integrate through rest,
-            reflection, and shared experience. Inside immersive scenarios and
-            epic adventures growth happens naturally, with others, in a space
-            that's engaging, intimate, and alive.
+            Kinship is built on HEARTS (Harmony, Empowerment, Artistry, Reason,
+            Trust, and Synthesis), our scientific architecture that applies a
+            convergent body of evidence from neuroscience, developmental
+            psychology, motivation science, depth psychology, organizational
+            development, and systems theory to arrive at a single claim: the
+            conditions for human, organizational, and ecosystem flourishing are
+            well-understood, measurable, trainable, and buildable into software.
+            <br />
+            <br />
+            No matter what you build or how you deploy it, every agent on the
+            platform is tuned to these six core capacities.
+            <br />
+            <br />
+            They're not metrics. They're not objectives. They're the pulse of
+            the place — the qualities that every agent embodies, that every
+            experience cultivates, and that every interaction quietly supports
+            for you, others, and the community as a whole.
           </p>
         </div>
 
-        <div className="mt-9 px-3">
-          <h1 className="text-center text-[#FFFFFFC7] font-avenirNext font-bold leading-[1] xl:w-[60.063rem] md:text-3xl max-md:text-xl tracking-[-0.02em] max-md:leading-relaxed m-auto">
-            Six Core Capacities for Human Flourishing{" "}
-          </h1>
-          <p className="text-center max-md:text-sm text-lg font-avenir text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[68.25rem] mt-5 mb-2 m-auto">
-            Kinship is built on HEARTS—a framework grounded in
-            Self-Determination Theory, neuroscience, and depth psychology. These
-            six capacities work together as an integrated system:
-            <span className="text-white font-bold text-lg font-avenirNext">
-              {" "}
-              Harmony, Empowerment, Artistry, Reason, Trust, and Synthesis.
-            </span>
-          </p>
-          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[68.25rem] mt-5 mb-2 m-auto">
-            Rather than tracking scores, Kinship reveals trends and patterns
-            across these dimensions—showing you where you're growing, where
-            support is needed, and how your inner and outer worlds are moving
-            into complementarity.
-          </p>
-          <div className="max-md:px-3 max-w-[58.063rem] max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-[1.875rem] mt-[7rem] px-3 mx-auto">
+        <div className="px-3">
+          <div className="max-md:px-3 max-w-[58.063rem] max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-[1.875rem] mt-[3rem] px-3 mx-auto">
             {principles.map((item) => (
               <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] w-full min-h-[12.313rem] rounded-xl  ">
                 <div className="bg-[linear-gradient(155deg,#070a38_0%,#07052e_109.53%)] rounded-xl ps-[0.375rem] pe-[0.313rem] pt-5 pb-[1.125rem] h-full">
@@ -722,62 +710,56 @@ export default function LandingPage() {
             id="collective-economic"
           >
             <h1 className="text-center font-bold px-12 text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-              Member Managed, Member Owned
+              Member Governed, Member Owned
             </h1>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-2.5">
-              Kinship Intelligence is structured as a Colorado Article 56
-              Cooperative and Public Benefit Corporation—meaning the people who
-              participate, contribute, and create are the actual owners. There
-              are no advertisers, no extractive algorithms, and no outside
-              stakeholders optimizing for attention or growth at any cost.
+              Kinship Today, the public-facing platform, is owned and operated
+              by a Colorado Article 56 Cooperative and Public Benefit
+              Corporation. The people who participate, contribute, and create
+              are the actual owners. No advertisers. No extractive algorithms.
+              No outside shareholders optimizing for attention or growth at any
+              cost. Every dollar that enters the platform is distributed to the
+              people who build it, grow it, and use it.
+            </p>
+
+            <h3 className="my-4 text-center font-bold px-12 text-[2.5rem] max-xl:text-3xl max-md:text-2xl max-sm:text-lg leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+              How the Money and Power Moves
+            </h3>
+
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
+              Membership in the coop is $10/month or $100/year. Only individual
+              people can be members, not organizations. Organizations can
+              sponsor the memberships of individuals and groups (we call these
+              organizations “Sponsors”), but the voting rights and ownership of
+              the data and agents created belong to the individual members
+              unless they are explicitly licensed to the Sponsor by the member.
             </p>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
-              Big tech platforms are built on extraction. They pretend you’re
-              getting something for “free,” but you’re really the product that
-              they sell… your data, your creativity, your relationships. And in
-              return, you get anxiety, doom, and despair.
+              Sponsors will control access to any of their systems and resources
+              connected to Kinship, and they can revoke access at any time.
             </p>
+
             <p className="text-center font-avenirNext max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">
-              Kinship is different.
+              One Member, One Vote
             </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto">
-              Here, value circulates among the members who show up, contribute,
-              and care for the whole. Every member holds one share of Class A
-              Stock and participates in governance. As Kinship grows, members
-              share in the value according to transparent rules that reward real
-              contribution—through participation, promotion, and production—not
-              hype.
-            </p>
-            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
-              You earn immediately when people join through your invitation,
-              engage with your creations, or accept your offers. Then you share
-              in the annual profit pools based on your patronage. Software is a
-              great business. Kinship puts it back in the hands of the people
-              who create the value.
-            </p>
-            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
-              Software is a great business. Kinship puts it back in the hands of
-              the people who create the value.
-            </p>
-            <p className="text-center text-white font-bold text-[1.313rem] leading-[100%] font-avenirNext mt-5">
-              Pricing is structured to support sustainable participation
-            </p>
-            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[3rem] xl:w-[65rem] mx-auto">
-              —whether you're solo practitioner, a team building capacity
-              together, or an organization embedding transformation at scale.
-              Through our robust API and MCP servers, resellers and integrators
-              can offer flexibility on contracts, deployments and platform
-              governance to enterprise customers.
-            </p>
-            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
-              All tiers include full access to Kinship Codes, Kinship Studio,
-              Kinship Exchange and Kinship Intelligence.
+              One member, one vote — regardless of stock class. Citizens (Class
+              A Shares), Champions (Class B Shares), and Creators (Class C
+              Shares) all vote equally on how the platform operates. There is no
+              difference between the classes of stock except for profit
+              distribution at the end of the year. Under Colorado Article 56,
+              the membership considers pricing, policies, community standards,
+              data governance, agent alignment and guardrails, profit
+              distribution, and how resources are allocated. The board is
+              elected by the members and answers to the members, not to
+              investors. If you're on the platform, you have an equal voice in
+              how it runs.
             </p>
           </div>
         </div>
-        <div className="max-xl:container grid grid-cols-4 gap-[1.875rem] max-xl:grid-cols-2 max-md:grid-cols-1 xl:my-10 xl:w-[78.125rem] mx-auto mt-12 px-3">
+        <div className="max-xl:container grid grid-cols-3 gap-[1.875rem] max-xl:grid-cols-2 max-md:grid-cols-1 xl:my-10 xl:w-[78.125rem] mx-auto mt-12 px-3">
           {pricingPlans.map((plan) => (
             <div
               key={plan.id}
@@ -799,20 +781,77 @@ export default function LandingPage() {
                   </p>
                 </div>
 
+                {/* 
                 <ul className="w-max mx-auto font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] mt-5 font-normal">
                   <li className="font-bold">{plan.pricing}</li>
-                </ul>
+                </ul>  
+                  */}
               </div>
             </div>
           ))}
         </div>
-        <div>
-          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5 mb-2">
-            All pricing supports the cooperative model: members participate in
-            governance, and value flows back to those who contribute—whether
-            through practice, creation, or community building.
-          </p>
+
+        <div className="xl:w-[60rem] m-auto mt-10 mb-[0.938rem] max-md:mt-8 max-md:mb-0">
+          <div>
+            <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7]">
+              Distribution of funds
+            </h1>
+            <div className="max-w-[49.813rem] mx-auto px-3">
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
+                Every penny of membership dues goes back into the ecosystem,
+                creating a truly circular economy. No extraction, no
+                exploitation, just wholesome goodness.
+              </p>
+
+              <ul className="w-max font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] mt-5 font-normal m-auto">
+                <li>
+                  <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                    <b>35%</b> pays for software development, moderation,
+                    systems, and support.*
+                  </p>
+                </li>
+
+                <li>
+                  <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                    <b>30%</b> goes to commissions for enrollment, distributed
+                    across 4 levels of the lineage
+                  </p>
+
+                  <ul className="w-max ml-8 font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] font-normal">
+                    <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                      <b>20%</b> goes to Level 1, <b>5%</b> to goes to Level 2,{" "}
+                      <b>3%</b> to Level 3, <b>2%</b> to Level 4
+                    </li>
+                  </ul>
+                </li>
+
+                <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                  <b>25%</b> goes to creator royalties, distributed according to
+                  agent usage
+                </li>
+
+                <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                  <b>5%</b> goes to curators,
+                  <ul className="w-max ml-8 font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] font-normal">
+                    <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                      <b>5%</b> is distributed as loyalty rewards, with{" "}
+                      <b>4%</b> going to back to the member and <b>1%</b> going
+                      to the Champion who enrolled the member
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+
+              <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir mt-4">
+                Payments for offerings, which include premium agents, goods,
+                services, and experiences, go directly to the creators, with
+                transaction fees paid to the platform and to the four levels of
+                relationships of the purchaser.
+              </p>
+            </div>
+          </div>
         </div>
+
         <div className="xl:w-[60rem] m-auto mt-10 mb-[0.938rem] max-md:mt-8 max-md:mb-0">
           <div>
             <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7]">
@@ -821,15 +860,41 @@ export default function LandingPage() {
 
             <div className="max-w-[49.813rem] mx-auto px-3">
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Human–AI alignment isn't just a technical challenge—it's a
-                governance challenge. Until the systems we build are owned and
-                guided by the people whose lives they shape, we'll keep
-                reproducing the same extractive patterns, only faster and at
-                scale.
+                Platforms are organized around the purpose of whoever owns it.
               </p>
               <p className="text-[#FFFFFFC7] max-md:text-sm text-center font-avenir">
-                Kinship is what alignment looks like when systems serve
-                people—not the other way around.
+                Social platforms are organized around attention — yours, sold to
+                advertisers. Business platforms are organized around workflow —
+                you're a node in a pipeline. Entertainment platforms are
+                organized around consumption — keep watching, keep subscribing.
+              </p>
+
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
+                Kinship is organized around your life and your work — because
+                you own it.
+              </p>
+
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
+                When the members are the owners, the software serves the
+                members. The incentives, the economics, the governance, and the
+                AI all point in the same direction: toward the people on the
+                platform.
+              </p>
+
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
+                *The cooperative licenses its software from Kinship Intelligent
+                Software Syndicate (KISS), a Delaware C Corporation that handles
+                engineering, infrastructure, and platform development. The
+                license is irrevocable and includes full source code — the
+                cooperative can operate independently even if KISS is acquired
+                or dissolved. Kinship DAO SPC, a Cayman Islands Segregated
+                Portfolio Company, manages the on-chain economic infrastructure.
+                Kinship Intelligence Institute, a nonprofit public charity,
+                advances research and the global mission. Kinship Systems, LLC
+                provides consulting and enterprise integration. The cooperative
+                runs the public platform, owns the member relationship, and
+                governs itself. The 35% funds the development that makes
+                everything else possible.
               </p>
             </div>
           </div>
@@ -854,29 +919,22 @@ export default function LandingPage() {
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
             Behind every experience in Kinship is a living body of wisdom—honed
             over decades by dedicated practitioners and guides. We call them
-            Sages.
-          </p>
-          <p className="ttext-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
-            Every creator can grow into a Sage. As your work deepens and
+            Sages. Every creator can grow into a Sage. As your work deepens and
             resonates within the community, you can be recognized, nominated,
             and selected by fellow members—becoming part of this lineage of
             wisdom.
           </p>
-
-          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
+          <p className="ttext-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Sages' work shows up throughout Kinship: in dialogue, stories,
             adventures, and shared challenges. Some of this wisdom is woven into
             the fabric of scenarios; some is available directly through the
             Sages themselves as AI companions trained on their teachings.
-          </p>
-
-          <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
             Kinship holds this work with integrity—ensuring that even the most
             profound insights remain practical, accessible, and alive.
           </p>
         </div>
-        <p className="text-center font-avenirNext text-[1.188rem] font-bold leading-[110%] tracking-[-0.02em]">
-          Meet our Founding Sages.{" "}
+        <p className="text-center font-avenirNext text-[1.188rem] font-bold leading-[110%] tracking-[-0.02em] mt-6">
+          Meet a Few of our Founding Sages.{" "}
         </p>
 
         <div className="max-xl:container max-xl:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-x-[1.625rem] gap-y-[1.875rem] my-[2.563rem] xl:w-[57.625rem] mx-auto">
@@ -977,24 +1035,26 @@ export default function LandingPage() {
         )}
         <section className="max-md:pt-7 max-md:pb-0 pb-16 max-w-[1144px] mx-auto">
           <h3 className="transition duration-300 place-self-center sm:text-left md:text-[3.125rem] max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[3.75rem] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-            What People Say
+            A Message from Moto
           </h3>
           <div className="xl:flex items-start mt-2.5">
             <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}
             <div className="flex flex-col p-4 xl:w-[695px] mt-5">
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                I've spent my life on the edge of culture and consciousness—as
-                an entrepreneur, musician, poet, activist, and guide. My work
-                shifts between the strategic and the sacred: sometimes building
-                systems, sometimes listening beneath the surface, helping people
-                rediscover capacities that have long lain dormant long dormant.
+                For as long as I can remember, I've lived two lives. One
+                directed — a family member, a scholar, an entrepreneur building
+                systems and running companies. The other reflective — a poet, a
+                ceremonial leader, a trickster, a seer, someone drawn to the
+                edges of consciousness and the deep inner work that doesn’t fit
+                on a resume.
               </p>
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                Kinship Intelligence grew from that practice. It carries forward
-                the kind of presence, discernment, and care that usually only
-                emerges through deep relationship and ceremony—and brings it
-                into organizations, teams, and daily life without losing its
-                power or heart.
+                For most of my life I kept them separate, because I thought I
+                had to. Maybe you can relate. You know how to perform in the
+                world. You also know there's something deeper running underneath
+                — something the culture doesn't have a name for. So you
+                compartmentalize. The strategic mind goes to work. The deeper
+                self lays dormant.
               </p>
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Together, we're building systems that notice, respond, steady,
@@ -1003,10 +1063,35 @@ export default function LandingPage() {
                 and care.
               </p>
 
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                A few years ago that split became untenable — for me personally,
+                and by my reckoning, for much of the world at large. So I went
+                looking for integration. I worked with hypnotherapists, depth
+                psychologists, intuitives, activists, and energy healers. I
+                joined retreats, stargate activations, plant medicine
+                ceremonies, and communities experiencing radically divergent
+                models of reality. And I came back each time faced with the same
+                challenge: carrying the value of the insights and experiences
+                gained into my so-called “ordinary” daily life.
+              </p>
+
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                I built Kinship to solve that. A platform where the inner work
+                and the outer work run on the same infrastructure. Where you
+                don't have to choose between being effective and being whole.
+                Where the community holds what you can't hold alone, and the AI
+                agents hold space for you to become whole again.
+              </p>
+
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                If that split is something you recognize, and want to heal in
+                yourself, come join us.
+              </p>
+
               <div className="text-[16px] italic font-semibold leading-[110%] ttracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
-                – David Levine
+                – David "Moto" Levine
                 <br />
-                Founder, Kinship Intelligence
+                Founder
               </div>
             </div>
           </div>

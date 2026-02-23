@@ -12,43 +12,42 @@ import KinshipBots from "@/assets/icons/KinshipBots";
 const buttons = [
   {
     label: "Bluesky",
-    image: <BlueskyIcon  width={13} height={12}/>,
+    image: <BlueskyIcon width={13} height={12} />,
     link: "",
   },
   {
     label: "LinkedIn",
-    image: <LinkedinIcon  width={13} height={13}/>,
+    image: <LinkedinIcon width={13} height={13} />,
     link: "",
   },
   {
     label: "Substack",
-    image: <SubstackIcon  width={14} height={15}/>,
+    image: <SubstackIcon width={14} height={15} />,
     link: "",
   },
   {
     label: "Instagram",
-    image: <InstagramIcon  width={14} height={15}/>,
+    image: <InstagramIcon width={14} height={15} />,
     link: "",
   },
   {
     label: "Facebook",
-    image: <FacebookIcon width={17} height={17}/>,
+    image: <FacebookIcon width={17} height={17} />,
     link: "",
   },
   {
     label: "Threads",
-    image: <ThreadsIcon width={14} height={15}/>,
+    image: <ThreadsIcon width={14} height={15} />,
     link: "",
   },
   {
     label: "Youtube",
-    image: <YoutubeIcon width={16} height={11} />
-,
+    image: <YoutubeIcon width={16} height={11} />,
     link: "",
   },
   {
     label: "TikTok",
-    image:  <TiktokIcon width={12} height={13} />,
+    image: <TiktokIcon width={12} height={13} />,
     link: "",
   },
   {

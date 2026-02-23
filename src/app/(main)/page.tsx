@@ -17,6 +17,9 @@ import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
 import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { useSearchParams } from "next/navigation";
+import { useAtom } from "jotai";
+import { isAuth } from "../store";
+import HomeLoggedInPage from "./components/HomeLoggedInPage";
 
 const STORAGE_KEY = "early-access-data";
 
@@ -217,6 +220,8 @@ const platformItems: PlatformItem[] = [
 
 export default function LandingPage() {
   const searchParams = useSearchParams();
+  const [isUserAuthenticated] = useAtom(isAuth);
+
   const [mounted, setMounted] = useState(false);
 
   React.useEffect(() => {
@@ -305,6 +310,8 @@ export default function LandingPage() {
   const [showMsg, setShowMsg] = React.useState(true);
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
+
+  if (isUserAuthenticated) return <HomeLoggedInPage />;
 
   return (
     <div className="relative h-full">

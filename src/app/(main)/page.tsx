@@ -5,7 +5,6 @@ import { useRef, useState } from "react";
 import AlertModal from "../(main)/components/Modal";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import Button from "../(main)/components/common/Button";
-import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
 import LandingPageDrawer from "../(main)/components/LandingPageDrawer";
 import { testimonials } from "@/constants/testimonials";
 import { Step1 } from "../(main)/components/EarlyAccess/Step1/Step1";
@@ -794,42 +793,31 @@ export default function LandingPage() {
               </p>
 
               <ul className="w-max font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] mt-5 font-normal m-auto">
-                <li>
-                  <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                    <b>35%</b> pays for software development, moderation,
-                    systems, and support.*
-                  </p>
-                </li>
+                <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                  <b>35%</b> pays for software development, moderation, systems,
+                  and support.*
+                </p>
 
-                <li>
-                  <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                    <b>30%</b> goes to commissions for enrollment, distributed
-                    across 4 levels of the lineage
-                  </p>
+                <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                  <b>30%</b> goes to commissions for enrollment, distributed
+                  across 4 levels of the lineage (<b>20%</b> goes to Level 1,{" "}
+                  <b>5%</b> to goes to Level 2, <b>3%</b> to Level 3, <b>2%</b>{" "}
+                  to Level 4)
+                </p>
 
-                  <ul className="w-max ml-8 font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] font-normal">
-                    <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                      <b>20%</b> goes to Level 1, <b>5%</b> to goes to Level 2,{" "}
-                      <b>3%</b> to Level 3, <b>2%</b> to Level 4
-                    </li>
-                  </ul>
-                </li>
-
-                <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
                   <b>25%</b> goes to creator royalties, distributed according to
                   agent usage
-                </li>
+                </p>
 
-                <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
                   <b>5%</b> goes to curators,
-                  <ul className="w-max ml-8 font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] font-normal">
-                    <li className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                      <b>5%</b> is distributed as loyalty rewards, with{" "}
-                      <b>4%</b> going to back to the member and <b>1%</b> going
-                      to the Champion who enrolled the member
-                    </li>
-                  </ul>
-                </li>
+                  <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
+                    <b>5%</b> is distributed as loyalty rewards (with <b>4%</b>{" "}
+                    going to back to the member and <b>1%</b> going to the
+                    Champion who enrolled the member)
+                  </p>
+                </p>
               </ul>
 
               <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir mt-4">
@@ -837,6 +825,22 @@ export default function LandingPage() {
                 services, and experiences, go directly to the creators, with
                 transaction fees paid to the platform and to the four levels of
                 relationships of the purchaser.
+              </p>
+
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 font-avenir">
+                *The cooperative licenses its software from Kinship Intelligent
+                Software Syndicate (KISS), a Delaware C Corporation that handles
+                engineering, infrastructure, and platform development. The
+                license is irrevocable and includes full source code — the
+                cooperative can operate independently even if KISS is acquired
+                or dissolved. Kinship DAO SPC, a Cayman Islands Segregated
+                Portfolio Company, manages the on-chain economic infrastructure.
+                Kinship Intelligence Institute, a nonprofit public charity,
+                advances research and the global mission. Kinship Systems, LLC
+                provides consulting and enterprise integration. The cooperative
+                runs the public platform, owns the member relationship, and
+                governs itself. The 35% funds the development that makes
+                everything else possible.
               </p>
             </div>
           </div>
@@ -869,22 +873,6 @@ export default function LandingPage() {
                 members. The incentives, the economics, the governance, and the
                 AI all point in the same direction: toward the people on the
                 platform.
-              </p>
-
-              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                *The cooperative licenses its software from Kinship Intelligent
-                Software Syndicate (KISS), a Delaware C Corporation that handles
-                engineering, infrastructure, and platform development. The
-                license is irrevocable and includes full source code — the
-                cooperative can operate independently even if KISS is acquired
-                or dissolved. Kinship DAO SPC, a Cayman Islands Segregated
-                Portfolio Company, manages the on-chain economic infrastructure.
-                Kinship Intelligence Institute, a nonprofit public charity,
-                advances research and the global mission. Kinship Systems, LLC
-                provides consulting and enterprise integration. The cooperative
-                runs the public platform, owns the member relationship, and
-                governs itself. The 35% funds the development that makes
-                everything else possible.
               </p>
             </div>
           </div>

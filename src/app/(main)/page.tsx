@@ -571,7 +571,7 @@ export default function LandingPage() {
               id="kinship-intelligence"
             >
               <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl max-md:leading-relaxed m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-                AI Is the Most Powerful Infrastructure Ever Built.
+                AI is the Most Powerful Infrastructure Ever Built.
               </h1>
               <p className="max-sm:text-xl text-3xl leading-[110%] tracking-[-0.02em] font-bold text-center text-[#FFFFFFC7] font-avenirNext mt-2 mb-5">
                 And It’s Pointed in the Wrong Direction.
@@ -581,20 +581,25 @@ export default function LandingPage() {
               <p className="font-avenir max-md:text-sm max-md:px-2 max-md:mt-4 text-[1.188rem] leading-[110%] font-normal text-center text-[#FFFFFFC7] xl:px-[2rem] xl:w-[64.313rem] m-auto">
                 AI systems around the world are being optimized for engagement,
                 efficiency, productivity, and profit. <br />
+                <br />
                 The result: we’re massively accelerating the velocity of a
                 civilization already headed toward a cliff. Authoritarianism,
                 poverty, mass displacement, disease, war, the mental health
                 crisis, and planetary ecosystem collapse are the major symptoms
                 of a society that is out of control and running on autopilot.
                 <br />
+                <br />
                 The only two options on the table are accelerate or regulate.
                 <br />
+                <br />
                 Until now.
+                <br />
                 <br />
                 Kinship is a new choice. A member-owned platform that points AI
                 at human and organizational development, relational depth, and
                 social change. Not faster. Not slower. In a fundamentally
                 different direction.
+                <br />
                 <br />
                 And what’s even better… you’ll be more engaged, more efficient,
                 more productive, and more profitable than ever.

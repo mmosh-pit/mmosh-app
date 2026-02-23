@@ -430,9 +430,9 @@ export default function LandingPage() {
 
             <div className="mt-3.5">
               <p className="xl:text-base text-xs text-[#FFFFFF] font-avenir text-opacity-90 xl:px-12">
-                Kinship is the member-owned platform where AI agents and our
-                community of human beings work together to transform ourselves,
-                our organizations, our culture, and our society while
+                Kinship Today is the member-owned platform where AI agents and
+                our community of human beings work together to transform
+                ourselves, our organizations, our culture, and our society while
                 revitalizing the planetary ecosystem we gratefully inhabit.
               </p>
             </div>

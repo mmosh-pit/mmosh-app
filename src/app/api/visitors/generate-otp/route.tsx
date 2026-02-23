@@ -184,7 +184,7 @@ async function sendOTPEmail(email: string, otp: string) {
   await sgMail.send({
     to: email,
     from: {
-      email: "security@kinshipbots.com",
+      email: "security@kinship.today",
       name: "Kinship Intelligence",
     },
     subject: "Your Verification Code",

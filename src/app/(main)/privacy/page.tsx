@@ -10,8 +10,8 @@ const Privacy = () => (
       This privacy policy ("Privacy Policy") explains how Kinship Bots Club
       (“KBC,” "our," "we," or "us") collects, uses, and discloses information
       about you. This Privacy Policy applies when you{" "}
-      <a href="https://kinshipbots.com" target="_blank">
-        https://kinshipbots.com
+      <a href="https://kinship.today" target="_blank">
+        https://kinship.today
       </a>{" "}
       (the "Website"), use our mobile app, contact our team by email or
       Telegram, engage with us on social media, or otherwise interact with us.

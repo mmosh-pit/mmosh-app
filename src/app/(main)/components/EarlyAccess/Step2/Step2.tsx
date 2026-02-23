@@ -218,7 +218,7 @@ export const Step2: React.FC<Step2Props> = ({
               <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-relaxed lg:leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
                 <ul className="ml-6 list-disc font-avenir">
                   <li>Open your email</li>
-                  <li>Look for a message from security@kinshipbots.com</li>
+                  <li>Look for a message from security@kinship.today</li>
                   <li>Enter the code below to confirm it’s you</li>
                 </ul>
               </div>

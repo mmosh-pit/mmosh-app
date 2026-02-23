@@ -32,8 +32,8 @@ const TOS = () => {
         whether personally or on behalf of an entity (“user,” “you,” “your”) and
         Kinship Bots Club (“KBC,” “we,” “us” or “our”) concerning use of the our
         services (the “Service”), including this website{" "}
-        <a href="https://kinshipbots.com" target="_blank">
-          https://kinshipbots.com
+        <a href="https://kinship.today" target="_blank">
+          https://kinship.today
         </a>{" "}
         as well as any other media form, media channel, bot, app or mobile
         website related, linked, or otherwise connected thereto (collectively,
@@ -300,7 +300,7 @@ const TOS = () => {
         slogans and the look and feel of the Service are trademarks of KBC and
         may not be copied, imitated or used, in whole or in part, without our
         prior written permission, which may be obtained by emailing Kinship Bots
-        Club, our technical partners, at support@kinshipbots.com. All other
+        Club, our technical partners, at support@kinship.today. All other
         trademarks, registered trademarks, product names and company names or
         logos mentioned on the Service are the property of their respective
         owners. Reference to any products, services, processes or other
@@ -336,7 +336,7 @@ const TOS = () => {
         security, (collectively, “Disputes”) resolved in court. Instead, for any
         Dispute that you have against KBC you agree to first contact KBC and
         attempt to resolve the claim informally by sending a written notice of
-        your claim (“Notice”) to KBC by email at support@kinshipbots.com or by
+        your claim (“Notice”) to KBC by email at support@kinship.today or by
         US mail addressed to Kinship Bots Club, P.O. Box 2085, Shepherdstown, WV
         25443. The Notice must (a) include your name, residence address, email
         address, and telephone number; (b) describe the nature and basis of the
@@ -611,7 +611,7 @@ const TOS = () => {
 
       <p>
         You may request that we mail a paper copy of any electronic
-        Communication by contacting us at support@kinshipbots.com. We may charge
+        Communication by contacting us at support@kinship.today. We may charge
         you fees associated with processing and mailing your request. We will
         send a copy of the Communication to you within a reasonable timeframe.
       </p>
@@ -663,7 +663,7 @@ const TOS = () => {
       <p>
         In order to resolve a complaint regarding the Site or to receive further
         information regarding use of the Service, please contact us at:
-        support@kinshipbots.com.
+        support@kinship.today.
       </p>
     </div>
   );

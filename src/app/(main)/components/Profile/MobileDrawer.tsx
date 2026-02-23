@@ -107,7 +107,7 @@ const MobileDrawer = () => {
 
             <a
               className="text-base text-white cursor-pointer"
-              href="https://docs.kinshipbots.com"
+              href="https://docs.kinship.today"
               target="_blank"
             >
               Docs

@@ -146,7 +146,7 @@ export const metadata: Metadata = {
     siteName: "Kinship Codes",
     title: "Kinship Codes — The Fitness App for the Heart and Soul.",
     description: "The Fitness App for the Heart and Soul.",
-    url: "https://kinshipbots.com",
+    url: "https://kinship.today",
     type: "website",
   },
 };

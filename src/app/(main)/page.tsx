@@ -1015,9 +1015,9 @@ export default function LandingPage() {
           <h3 className="transition duration-300 place-self-center sm:text-left md:text-[3.125rem] max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[3.75rem] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
             A Message from Moto
           </h3>
-          <div className="xl:flex items-start mt-2.5">
+          <div className="xl:flex items-start mt-5">
             <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}
-            <div className="flex flex-col p-4 xl:w-[695px] mt-5">
+            <div className="flex flex-col px-4 xl:w-[695px]">
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 For as long as I can remember, I've lived two lives. One
                 directed — a family member, a scholar, an entrepreneur building

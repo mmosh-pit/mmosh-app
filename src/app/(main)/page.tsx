@@ -425,36 +425,21 @@ export default function LandingPage() {
             ref={homeSection}
           >
             <h1 className="w-auto md:text-[2.813rem] text-4xl leading-relaxed xl:leading-[2.813rem] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
-              Awaken Your Power{" "}
+              Welcome Home
             </h1>
-            <h1 className="w-auto xl:text-[1.375rem] text-[0.75rem] leading-[1.2] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
-              A Fitness App for the Heart and Soul.{" "}
-            </h1>
+
             <div className="mt-3.5">
               <p className="xl:text-base text-xs text-[#FFFFFF] font-avenir text-opacity-90 xl:px-12">
-                Big Tech has given you countless tools for the mind
-                (productivity, information, analysis) and for the body (fitness,
-                nutrition, wearables). But your heart and soul—how you live,
-                relate, choose, repair, grieve, create, and belong—are left to
-                atrophy.
+                Kinship is the member-owned platform where AI agents and our
+                community of human beings work together to transform ourselves,
+                our organizations, our culture, and our society while
+                revitalizing the planetary ecosystem we gratefully inhabit.
               </p>
             </div>
-            <p className="xl:text-base text-xs text-[#ffffff]/90 xl:px-12 font-avenir">
-              Kinship Bots is a mobile app that brings a fully staffed retreat
-              center into the palm of your hand—built on rigorous science
-              including Self-Determination Theory, neuroscience, and archetypal
-              depth psychology.
-            </p>
-            <p className="xl:text-base text-xs text-center text-white xl:px-12 font-avenir">
-              Anytime, anywhere, when you're at your peak or when you need it
-              most, you can test your limits in the gym, recover and restore in
-              our spa, or embark on luminous journeys of wonder and awe. Not
-              therapy. Not social media. Not a game.{" "}
-            </p>
-            <br />
-            <p className="xl:text-base text-xs text-center text-white font-bold xl:px-12 font-avenir">
-              This is resistance training for what makes us fully human.
-            </p>
+
+            <h1 className="w-auto xl:text-[1.375rem] text-[0.75rem] leading-[1.2] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text mt-4">
+              Change Yourself. Change Your Life. Change The World.{" "}
+            </h1>
 
             <div className="w-full mt-6">
               <button

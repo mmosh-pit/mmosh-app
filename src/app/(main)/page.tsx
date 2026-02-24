@@ -18,8 +18,9 @@ import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
-import { isAuth } from "../store";
+import { data, isAuth, isAuthModalOpen, isAuthOverlayOpen } from "../store";
 import HomeLoggedInPage from "./components/HomeLoggedInPage";
+import client from "../lib/httpClient";
 
 const STORAGE_KEY = "early-access-data";
 
@@ -220,7 +221,10 @@ const platformItems: PlatformItem[] = [
 
 export default function LandingPage() {
   const searchParams = useSearchParams();
-  const [isUserAuthenticated] = useAtom(isAuth);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
+  const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
+  const [__, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
+  const [___, setCurrentUser] = useAtom(data);
 
   const [mounted, setMounted] = useState(false);
 
@@ -259,6 +263,23 @@ export default function LandingPage() {
     }
   }, []);
 
+  const checkIfIsAuthenticated = React.useCallback(async () => {
+    const url = `/is-auth`;
+
+    try {
+      const result = await client.get(url);
+
+      const user = result.data?.data?.user;
+
+      setShowAuthOverlay(!user);
+      setIsAuthModalOpen(!user);
+      setIsUserAuthenticated(!!user);
+      setCurrentUser(user);
+    } catch (err) {
+      // router.replace("/");
+    }
+  }, [STORAGE_KEY]);
+
   const prevSlide = () => {
     if (!totalSlides) return;
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
@@ -275,6 +296,10 @@ export default function LandingPage() {
   );
 
   const [currentStep, setCurrentStep] = useState<number>(1);
+
+  React.useEffect(() => {
+    checkIfIsAuthenticated();
+  }, []);
 
   React.useEffect(() => {
     const menuType = searchParams.get("menu_type");

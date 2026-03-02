@@ -1,15 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import Select from "../components/common/Select";
 import moment from "moment";
 import useWallet from "@/utils/wallet";
 import axios from "axios";
 import internalClient from "@/app/lib/internalHttpClient";
 import { useRouter } from "next/navigation";
-import { Connection } from "@solana/web3.js";
-import * as anchor from "@coral-xyz/anchor";
-import { Connectivity as UserConn } from "@/anchor/user";
-import { web3Consts } from "@/anchor/web3Consts";
 import MessageBanner from "../components/common/MessageBanner";
 import { useAtom } from "jotai";
 import { bagsBalance } from "@/app/store/bags";
@@ -17,9 +12,7 @@ import USDCIcon from "@/assets/icons/UsdcIcon";
 import KinshipTransactionIcon from "@/assets/icons/KinshipTransactionIcon";
 import SolanaIcon from "@/assets/icons/SolanaIcon";
 import Coins from "../components/Bags/Coins";
-import SearchBar from "../components/Project/Candidates/SearchBar";
 import VaultSearchBar from "../components/Project/Candidates/vaultSearchbar";
-import SwapIcon from "@/assets/icons/SwapIcon";
 
 export default function MyWalley() {
   const wallet = useWallet();
@@ -87,12 +80,12 @@ export default function MyWalley() {
   const getTransactionHistory = async (page = 1, limit = 10) => {
     console.log(selectedCategory.value, "value ==========================>>");
     const result = await internalClient.get(
-      `api/history/get?wallet=${wallet?.publicKey.toBase58()}&page=${page}&limit=${limit}&category=${selectedCategory.value}&isDescending=${selectedSortingOptions.value}`
+      `api/history/get?wallet=${wallet?.publicKey.toBase58()}&page=${page}&limit=${limit}&category=${selectedCategory.value}&isDescending=${selectedSortingOptions.value}`,
     );
 
     console.log(
       "----- TRANSACTION HISTORY -----",
-      result.data.result.transactions
+      result.data.result.transactions,
     );
     setTransactionHistory(result.data.result);
     setHistoryLoading(false);
@@ -126,9 +119,8 @@ export default function MyWalley() {
 
   const getHistory = async () => {
     const result = await internalClient.get(
-      `api/get-staked-history?wallet=${wallet?.publicKey.toBase58()}`
+      `api/get-staked-history?wallet=${wallet?.publicKey.toBase58()}`,
     );
-    const history = [];
     console.log("result.data", result.data);
     for (let i = 0; i < result.data.length; i++) {
       const element = result.data[i];
@@ -200,12 +192,12 @@ export default function MyWalley() {
     }
     console.log(
       "transactionHistory.transactions",
-      transactionHistory.transactions
+      transactionHistory.transactions,
     );
     const result = transactionHistory.transactions.filter(
       (history) =>
         history.transactionType.toLowerCase() ===
-        selectedCategory.value.toLowerCase()
+        selectedCategory.value.toLowerCase(),
     );
     setFilteredHistory(result);
   };
@@ -254,7 +246,7 @@ export default function MyWalley() {
       if (!wallet) {
         createMessage(
           "Wallet info not found; please try again later.",
-          "error"
+          "error",
         );
         return;
       }
@@ -271,14 +263,14 @@ export default function MyWalley() {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
-          }
+          },
         );
         isValidReceipt = result.data.data === "completed";
       } catch (error: any) {
         createMessage(
           error.response.data.error ||
-            "Something went wrong, please try again later",
-          "error"
+          "Something went wrong, please try again later",
+          "error",
         );
         return;
       }
@@ -307,11 +299,11 @@ export default function MyWalley() {
           purchaseId: history.purchaseId,
           historyId: history._id,
           royaltyLevel: history.royaltyLevel,
-        }
+        },
       );
       createMessage(
         updateResult.data.message,
-        updateResult.data.status ? "success" : "error"
+        updateResult.data.status ? "success" : "error",
       );
       setIsLoading(false);
       await getHistory();
@@ -364,8 +356,8 @@ export default function MyWalley() {
             <p className="mr-2">
               {wallet?.publicKey
                 ? `${wallet.publicKey.toBase58().substring(0, 10)}...${wallet.publicKey
-                    .toBase58()
-                    .slice(-5)}`
+                  .toBase58()
+                  .slice(-5)}`
                 : ""}
             </p>
             <button
@@ -437,7 +429,7 @@ export default function MyWalley() {
           </div>
           <div
             className={`${selectedTab === 3 ? "bg-[#FFFFFF29] border-[#FFFFFF]" : "bg-[#FFFFFF14] border-[#FFFFFF38]"} border-2 lg:w-24 w-full p-2 rounded-lg lg:mr-5 my-2 lg:my-0 hover:bg-[#FFFFFF29] hover:border-[#FFFFFF] cursor-pointer`}
-            // onClick={() => setSelectedTab(2)}
+          // onClick={() => setSelectedTab(2)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -552,11 +544,10 @@ export default function MyWalley() {
                               setSelectedCategory(option);
                               setIsOpen(false);
                             }}
-                            className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
-                              selectedCategory.value === option.value
+                            className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${selectedCategory.value === option.value
                                 ? "font-semibold"
                                 : "font-normal"
-                            }`}
+                              }`}
                           >
                             {option.label}
                           </button>
@@ -601,11 +592,10 @@ export default function MyWalley() {
                               setSelectedSortingOptions(option);
                               setOpenSortingFilter(false);
                             }}
-                            className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${
-                              selectedSortingOptions.value === option.value
+                            className={`w-full px-4 py-2 text-left text-white hover:bg-[#FFFFFF29] ${selectedSortingOptions.value === option.value
                                 ? "font-semibold"
                                 : "font-normal"
-                            }`}
+                              }`}
                           >
                             {option.label}
                           </button>
@@ -710,12 +700,13 @@ export default function MyWalley() {
                         <p className="text-xl font-bold ml-2">
                           {(data.currency === "USDT" ||
                             data.currency === "USDC") && (
-                            <>
-                              {data.transactionType !== "transfer" && data.transactionType !== "token_exchange"
-                                ? formatAmount(data.amount / 10 ** 6)
-                                : data.amount}
-                            </>
-                          )}
+                              <>
+                                {data.transactionType !== "transfer" &&
+                                  data.transactionType !== "token_exchange"
+                                  ? formatAmount(data.amount / 10 ** 6)
+                                  : data.amount}
+                              </>
+                            )}
                           {data.currency !== "USDT" &&
                             data.currency !== "USDC" && (
                               <>{`${data.amount} ${data.currency.toUpperCase()}`}</>

@@ -27,7 +27,8 @@ export default async function middleware(req: NextRequest) {
     !req.url.includes("/api/visitors/resend-otp") &&
     !req.url.includes("/api/visitors/verify-otp") &&
     !req.url.includes("/api/visitors/save") &&
-    !req.url.includes("/api/visitors/has-code-exist")
+    !req.url.includes("/api/visitors/has-code-exist") &&
+    !req.url.includes("landing-page-editor")
   ) {
     if (!authorization) {
       return NextResponse.json("", { status: 401 });

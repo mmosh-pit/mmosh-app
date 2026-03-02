@@ -7,7 +7,7 @@ import axios from "axios";
 */
 const internalClient = axios.create({
   baseURL: "/",
-  timeout: 20000,
+  timeout: 500000,
   headers: {
     "content-type": "application/json",
   },

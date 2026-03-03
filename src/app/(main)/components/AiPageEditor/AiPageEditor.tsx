@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useAtom } from "jotai";
 import { isAiEditorOpen } from "@/app/store";
 import client from "@/app/lib/internalHttpClient";
@@ -8,11 +8,13 @@ import client from "@/app/lib/internalHttpClient";
 type EditorState =
   | "idle"
   | "generating"
-  | "preview-ready"
+  | "previewing"
   | "committing"
   | "deployed"
   | "merging"
   | "error";
+
+type TextChange = { find: string; replace: string };
 
 const AiPageEditor = () => {
   const [isOpen, setIsOpen] = useAtom(isAiEditorOpen);
@@ -20,9 +22,13 @@ const AiPageEditor = () => {
   const [prompt, setPrompt] = useState("");
   const [commitMessage, setCommitMessage] = useState("");
   const [modifiedContent, setModifiedContent] = useState("");
+  const [changes, setChanges] = useState<TextChange[]>([]);
   const [originalSha, setOriginalSha] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Check for pending preview on mount
   useEffect(() => {
@@ -43,21 +49,69 @@ const AiPageEditor = () => {
     }
   };
 
+  /**
+   * Apply text changes to the iframe's DOM.
+   * This gives a pixel-perfect preview because we're modifying the REAL page.
+   */
+  const applyChangesToIframe = useCallback(() => {
+    const iframe = iframeRef.current;
+    if (!iframe || !changes.length) return;
+
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!doc || !doc.body) return;
+
+      // Hide the editor UI inside the iframe (prevent inception)
+      const editorOverlay = doc.querySelector('[class*="fixed inset-0 z-[100]"]');
+      if (editorOverlay) editorOverlay.remove();
+
+      // Apply each text/class replacement to the DOM
+      let html = doc.body.innerHTML;
+      for (const change of changes) {
+        if (!change.find) continue;
+        // Use a global replacement
+        html = html.split(change.find).join(change.replace);
+      }
+      doc.body.innerHTML = html;
+
+      // Add a subtle preview banner at the top
+      const banner = doc.createElement("div");
+      banner.style.cssText =
+        "position:fixed;top:0;left:0;right:0;z-index:9999;background:#EB8000;color:white;text-align:center;padding:6px;font-size:12px;font-family:sans-serif;";
+      banner.textContent = "👁️ PREVIEW — This is how the page will look after your changes";
+      doc.body.prepend(banner);
+    } catch (err) {
+      console.warn("Could not apply changes to iframe:", err);
+    }
+  }, [changes]);
+
+  // Apply changes whenever the iframe loads or changes update
+  useEffect(() => {
+    if (iframeLoaded && state === "previewing" && changes.length > 0) {
+      // Small delay to ensure React has finished rendering inside the iframe
+      const timer = setTimeout(applyChangesToIframe, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [iframeLoaded, state, changes, applyChangesToIframe]);
+
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setState("generating");
     setErrorText("");
+    setIframeLoaded(false);
 
     try {
       const res = await client.post("/api/landing-page-editor/generate", {
         prompt: prompt.trim(),
       });
       setModifiedContent(res.data.modifiedContent);
+      setChanges(res.data.changes || []);
       setOriginalSha(res.data.originalSha);
       setCommitMessage(`AI edit: ${prompt.trim().slice(0, 80)}`);
-      setState("preview-ready");
+      setState("previewing");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to generate";
+      const message =
+        err instanceof Error ? err.message : "Failed to generate";
       setErrorText(message);
       setState("error");
     }
@@ -75,7 +129,8 @@ const AiPageEditor = () => {
       setGithubUrl(res.data.githubUrl || "");
       setState("deployed");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to commit";
+      const message =
+        err instanceof Error ? err.message : "Failed to commit";
       setErrorText(message);
       setState("error");
     }
@@ -90,37 +145,96 @@ const AiPageEditor = () => {
       setState("idle");
       setPrompt("");
       setModifiedContent("");
+      setChanges([]);
       setGithubUrl("");
       alert("✅ Changes merged to production! Vercel will deploy shortly.");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to merge";
+      const message =
+        err instanceof Error ? err.message : "Failed to merge";
       setErrorText(message);
       setState("error");
     }
   };
 
   const handleDiscard = async () => {
-    // Attempt to delete the preview branch if it exists
     try {
       await client.post("/api/landing-page-editor/merge", {
         discard: true,
       });
     } catch {
-      // Ignore — branch may not exist
+      // Ignore
     }
     setState("idle");
     setPrompt("");
     setModifiedContent("");
+    setChanges([]);
     setGithubUrl("");
     setErrorText("");
+    setIsPreviewFullscreen(false);
+    setIframeLoaded(false);
+  };
+
+  const handleBackToPrompt = () => {
+    setState("idle");
+    setChanges([]);
+    setIframeLoaded(false);
+    // Keep prompt so the wizard can refine it
+  };
+
+  const handleIframeLoad = () => {
+    setIframeLoaded(true);
   };
 
   const handleClose = () => {
     setIsOpen(false);
+    setIsPreviewFullscreen(false);
   };
 
   if (!isOpen) return null;
 
+  // The URL for the preview iframe — loads the actual landing page
+  // The _wizard_preview param tells the page to hide editor UI
+  const previewUrl = "/?_wizard_preview=1";
+
+  // ─── Fullscreen preview mode ──────────────────────────────────
+  if (isPreviewFullscreen && state === "previewing") {
+    return (
+      <div className="fixed inset-0 z-[200] bg-[#050824] flex flex-col">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-4 py-2 bg-[#0a0d2e] border-b border-[#FFFFFF1A]">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-white/60 font-avenir">
+              🔍 Full Preview
+            </span>
+            {changes.length > 0 && (
+              <span className="text-xs text-[#EB8000] font-avenir">
+                {changes.length} change{changes.length !== 1 ? "s" : ""}{" "}
+                applied
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsPreviewFullscreen(false)}
+              className="px-3 py-1.5 text-xs rounded-lg bg-[#FFFFFF0A] border border-[#FFFFFF1A] text-white/70 hover:text-white hover:bg-[#FFFFFF15] transition-all font-avenir"
+            >
+              ← Back to Editor
+            </button>
+          </div>
+        </div>
+        {/* Iframe — loads the REAL page */}
+        <iframe
+          ref={iframeRef}
+          src={previewUrl}
+          className="flex-1 w-full"
+          onLoad={handleIframeLoad}
+          title="Landing page preview"
+        />
+      </div>
+    );
+  }
+
+  // ─── Normal drawer ────────────────────────────────────────────
   return (
     <div className="fixed inset-0 z-[100] flex justify-end">
       {/* Backdrop */}
@@ -130,9 +244,9 @@ const AiPageEditor = () => {
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-[480px] h-full bg-[#0a0d2e] border-l border-[#FFFFFF1A] shadow-2xl overflow-y-auto animate-slide-in-right">
+      <div className="relative w-full max-w-[480px] h-full bg-[#0a0d2e] border-l border-[#FFFFFF1A] shadow-2xl overflow-y-auto animate-slide-in-right flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 bg-[#0a0d2e] border-b border-[#FFFFFF1A] px-6 py-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-[#0a0d2e] border-b border-[#FFFFFF1A] px-6 py-4 flex items-center justify-between z-10 shrink-0">
           <div className="flex items-center gap-3">
             <span className="text-xl">✏️</span>
             <h2 className="text-white font-bold text-lg font-poppinsNew">
@@ -160,7 +274,7 @@ const AiPageEditor = () => {
           </button>
         </div>
 
-        <div className="px-6 py-5 space-y-5">
+        <div className="px-6 py-5 space-y-5 flex-1 overflow-y-auto">
           {/* Status badge */}
           <div className="flex items-center gap-2">
             <div
@@ -170,17 +284,19 @@ const AiPageEditor = () => {
                     state === "committing" ||
                     state === "merging"
                     ? "bg-yellow-400 animate-pulse"
-                    : state === "deployed"
-                      ? "bg-blue-400"
-                      : state === "error"
-                        ? "bg-red-400"
-                        : "bg-orange-400"
+                    : state === "previewing"
+                      ? "bg-purple-400"
+                      : state === "deployed"
+                        ? "bg-blue-400"
+                        : state === "error"
+                          ? "bg-red-400"
+                          : "bg-orange-400"
                 }`}
             />
             <span className="text-white/60 text-sm font-avenir">
               {state === "idle" && "Ready"}
               {state === "generating" && "Generating with AI…"}
-              {state === "preview-ready" && "Preview ready"}
+              {state === "previewing" && "Preview ready — review below"}
               {state === "committing" && "Committing to GitHub…"}
               {state === "deployed" && "Preview branch deployed"}
               {state === "merging" && "Merging to production…"}
@@ -204,7 +320,7 @@ const AiPageEditor = () => {
             </div>
           )}
 
-          {/* IDLE: Prompt input */}
+          {/* ─── IDLE: Prompt input ────────────────────── */}
           {(state === "idle" || state === "generating") && (
             <div className="space-y-4">
               <div>
@@ -214,7 +330,7 @@ const AiPageEditor = () => {
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder='e.g. "Change the hero heading to Welcome to Kinship" or "Add a new section about our team below the origin story"'
+                  placeholder='e.g. "Change the hero heading to Welcome to Kinship" or "Remove the origin story section"'
                   className="w-full h-40 bg-[#FFFFFF0A] border border-[#FFFFFF1A] rounded-xl px-4 py-3 text-white text-sm font-avenir placeholder:text-white/30 resize-none focus:outline-none focus:border-[#EB8000] transition-colors"
                   disabled={state === "generating"}
                 />
@@ -226,7 +342,10 @@ const AiPageEditor = () => {
               >
                 {state === "generating" ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <svg
+                      className="animate-spin h-4 w-4"
+                      viewBox="0 0 24 24"
+                    >
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -251,74 +370,128 @@ const AiPageEditor = () => {
             </div>
           )}
 
-          {/* PREVIEW READY: Review and commit */}
-          {(state === "preview-ready" || state === "committing") && (
+          {/* ─── PREVIEWING: Live preview via real page iframe ── */}
+          {state === "previewing" && (
             <div className="space-y-4">
-              <div className="bg-[#FFFFFF08] border border-[#FFFFFF1A] rounded-xl p-4">
-                <p className="text-green-400 text-sm font-avenir font-semibold mb-2">
-                  ✅ AI generated changes successfully
-                </p>
-                <p className="text-white/60 text-xs font-avenir">
-                  Review the commit message below, then deploy a preview to
-                  Vercel.
-                </p>
-              </div>
+              {/* Changes summary */}
+              {changes.length > 0 && (
+                <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-3">
+                  <p className="text-purple-300 text-xs font-avenir font-semibold mb-2">
+                    {changes.length} change{changes.length !== 1 ? "s" : ""}{" "}
+                    detected:
+                  </p>
+                  <div className="space-y-1.5 max-h-[120px] overflow-y-auto">
+                    {changes.map((c, i) => (
+                      <div
+                        key={i}
+                        className="text-xs font-avenir flex gap-2 items-start"
+                      >
+                        <span className="text-red-400 line-through shrink-0 max-w-[45%] truncate">
+                          {c.find}
+                        </span>
+                        <span className="text-white/30">→</span>
+                        <span className="text-green-400 shrink-0 max-w-[45%] truncate">
+                          {c.replace || "(removed)"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              <div>
-                <label className="text-white/80 text-sm font-semibold font-avenir block mb-2">
-                  Commit message
-                </label>
-                <input
-                  type="text"
-                  value={commitMessage}
-                  onChange={(e) => setCommitMessage(e.target.value)}
-                  className="w-full bg-[#FFFFFF0A] border border-[#FFFFFF1A] rounded-xl px-4 py-3 text-white text-sm font-avenir focus:outline-none focus:border-[#EB8000] transition-colors"
-                  disabled={state === "committing"}
+              {/* Preview iframe — loads the REAL page */}
+              <div className="rounded-xl overflow-hidden border border-[#FFFFFF1A] bg-[#050824]">
+                <div className="flex items-center justify-between px-3 py-2 bg-[#FFFFFF08] border-b border-[#FFFFFF0A]">
+                  <span className="text-white/40 text-xs font-avenir">
+                    {iframeLoaded ? "✅ Live Preview" : "⏳ Loading page…"}
+                  </span>
+                  <button
+                    onClick={() => setIsPreviewFullscreen(true)}
+                    className="text-white/40 hover:text-white/70 text-xs font-avenir transition-colors"
+                  >
+                    ⛶ Fullscreen
+                  </button>
+                </div>
+                <iframe
+                  ref={iframeRef}
+                  src={previewUrl}
+                  className="w-full h-[350px] bg-[#050824]"
+                  onLoad={handleIframeLoad}
+                  title="Landing page preview"
                 />
               </div>
 
-              <div className="flex gap-3">
+              {/* Action buttons */}
+              <div className="bg-[#FFFFFF08] border border-[#FFFFFF1A] rounded-xl p-4 space-y-3">
+                <p className="text-white/60 text-xs font-avenir">
+                  Happy with the preview? Deploy to GitHub, or refine your
+                  prompt and try again.
+                </p>
+                <div>
+                  <label className="text-white/60 text-xs font-avenir block mb-1">
+                    Commit message
+                  </label>
+                  <input
+                    type="text"
+                    value={commitMessage}
+                    onChange={(e) => setCommitMessage(e.target.value)}
+                    className="w-full bg-[#FFFFFF0A] border border-[#FFFFFF0A] rounded-lg px-3 py-2 text-white text-xs font-avenir focus:outline-none focus:border-[#EB8000] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={handleBackToPrompt}
+                  className="py-2.5 rounded-xl font-bold text-white/70 text-xs font-avenir border border-[#FFFFFF1A] hover:bg-[#FFFFFF0A] transition-all"
+                >
+                  ← Refine
+                </button>
                 <button
                   onClick={handleDiscard}
-                  disabled={state === "committing"}
-                  className="flex-1 py-3 rounded-xl font-bold text-white/70 text-sm font-avenir border border-[#FFFFFF1A] hover:bg-[#FFFFFF0A] transition-all disabled:opacity-40"
+                  className="py-2.5 rounded-xl font-bold text-red-400/70 text-xs font-avenir border border-red-500/20 hover:bg-red-500/10 transition-all"
                 >
                   Discard
                 </button>
                 <button
                   onClick={handleCommit}
-                  disabled={state === "committing"}
-                  className="flex-1 py-3 rounded-xl font-bold text-white text-sm font-avenir bg-[#EB8000] hover:bg-[#d47200] transition-all disabled:opacity-40"
+                  className="py-2.5 rounded-xl font-bold text-white text-xs font-avenir bg-[#EB8000] hover:bg-[#d47200] transition-all"
                 >
-                  {state === "committing" ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                        />
-                      </svg>
-                      Deploying…
-                    </span>
-                  ) : (
-                    "🚀 Deploy Preview"
-                  )}
+                  🚀 Deploy
                 </button>
               </div>
             </div>
           )}
 
-          {/* DEPLOYED: Preview link + merge */}
+          {/* ─── COMMITTING ──────────────────────────────── */}
+          {state === "committing" && (
+            <div className="flex flex-col items-center justify-center py-12 gap-4">
+              <svg
+                className="animate-spin h-8 w-8 text-[#EB8000]"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              <p className="text-white/60 text-sm font-avenir">
+                Committing to GitHub…
+              </p>
+            </div>
+          )}
+
+          {/* ─── DEPLOYED: Preview link + merge ────────── */}
           {(state === "deployed" || state === "merging") && (
             <div className="space-y-4">
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
@@ -357,7 +530,10 @@ const AiPageEditor = () => {
                 >
                   {state === "merging" ? (
                     <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <svg
+                        className="animate-spin h-4 w-4"
+                        viewBox="0 0 24 24"
+                      >
                         <circle
                           className="opacity-25"
                           cx="12"
@@ -386,10 +562,8 @@ const AiPageEditor = () => {
           {/* Info footer */}
           <div className="pt-4 border-t border-[#FFFFFF0A]">
             <p className="text-white/30 text-xs font-avenir leading-relaxed">
-              Changes are committed to the{" "}
-              <code className="text-white/50">landing-page-preview</code>{" "}
-              branch. Vercel will deploy a preview automatically. Merging pushes
-              changes to production.
+              Preview loads the real page and applies your changes to the DOM.
+              Deploy to GitHub for a full Vercel build preview.
             </p>
           </div>
         </div>

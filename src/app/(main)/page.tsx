@@ -338,12 +338,15 @@ export default function LandingPage() {
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
 
+  // When loaded in the preview iframe, hide editor UI
+  const isPreviewMode = searchParams.get("_wizard_preview") === "1";
+
   if (isUserAuthenticated && currentUser?.role !== "wizard")
     return <HomeLoggedInPage />;
 
   return (
     <div className="relative h-full">
-      <AiPageEditor />
+      {!isPreviewMode && <AiPageEditor />}
       <header className="w-full fixed flex justify-center z-10">
         <div className="flex justify-between items-center max-2xl:container px-4 max-xl:py-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] sm:rounded-full w-full 2xl:mx-40 self-center">
           <button
@@ -411,7 +414,7 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <WizardEditButton />
+            {!isPreviewMode && <WizardEditButton />}
             <div className="font-bold">
               <Button
                 action={() => scrollWithOffset(earlyAccessRef)}

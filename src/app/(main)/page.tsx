@@ -21,6 +21,8 @@ import { useAtom } from "jotai";
 import { data, isAuth, isAuthModalOpen, isAuthOverlayOpen } from "../store";
 import HomeLoggedInPage from "./components/HomeLoggedInPage";
 import client from "../lib/httpClient";
+import WizardEditButton from "./components/AiPageEditor/WizardEditButton";
+import AiPageEditor from "./components/AiPageEditor/AiPageEditor";
 
 const STORAGE_KEY = "early-access-data";
 
@@ -224,7 +226,7 @@ export default function LandingPage() {
   const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
   const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [__, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
-  const [___, setCurrentUser] = useAtom(data);
+  const [currentUser, setCurrentUser] = useAtom(data);
 
   const [mounted, setMounted] = useState(false);
 
@@ -336,10 +338,15 @@ export default function LandingPage() {
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
 
-  if (isUserAuthenticated) return <HomeLoggedInPage />;
+  // When loaded in the preview iframe, hide editor UI
+  const isPreviewMode = searchParams.get("_wizard_preview") === "1";
+
+  if (isUserAuthenticated && currentUser?.role !== "wizard")
+    return <HomeLoggedInPage />;
 
   return (
     <div className="relative h-full">
+      {!isPreviewMode && <AiPageEditor />}
       <header className="w-full fixed flex justify-center z-10">
         <div className="flex justify-between items-center max-2xl:container px-4 max-xl:py-4 py-8 bg-[#32323212] backdrop-filter backdrop-blur-[13px] sm:rounded-full w-full 2xl:mx-40 self-center">
           <button
@@ -406,14 +413,17 @@ export default function LandingPage() {
             </a>
           </div>
 
-          <div className="font-bold">
-            <Button
-              action={() => scrollWithOffset(earlyAccessRef)}
-              size="small"
-              isPrimary
-              title="Join Early Access"
-              isLoading={false}
-            />
+          <div className="flex items-center gap-3">
+            {!isPreviewMode && <WizardEditButton />}
+            <div className="font-bold">
+              <Button
+                action={() => scrollWithOffset(earlyAccessRef)}
+                size="small"
+                isPrimary
+                title="Join Early Access"
+                isLoading={false}
+              />
+            </div>
           </div>
         </div>
         <ErrorContainerVW

@@ -59,3 +59,5 @@ export const appPublicKey = atom("");
 export const signInModal = atom(false);
 export const signInModalInitialStep = atom(0);
 export const signInCurrentBot = atom("");
+
+export const isAiEditorOpen = atom(false);

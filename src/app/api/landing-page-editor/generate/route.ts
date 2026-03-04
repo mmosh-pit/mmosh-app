@@ -9,27 +9,24 @@ const LANDING_PAGE_PATH = "src/app/(main)/page.tsx";
 
 const SYSTEM_PROMPT = `You are an expert React/Next.js developer. You will be given the current source code of a landing page component (a .tsx file) and a user instruction describing what to change.
 
-You MUST return a valid JSON object with exactly two keys:
+Do NOT output the full file. Do NOT output a JSON format. JSON strings require too much escaping and easily break.
 
-1. "tsx" — the COMPLETE modified .tsx file (from the first import to the last line). This will be committed to GitHub.
-2. "changes" — an array of objects describing EVERY text change you made, in the format: { "find": "exact original text", "replace": "new text" }. These are used for a live preview.
+Instead, output a sequence of text replacements in the exact custom text format below.
 
-CRITICAL RULES:
-1. Be EXTREMELY conservative. Only change EXACTLY what the user asks for. Do NOT touch anything else.
-2. Preserve EVERY import, type definition, constant, variable, component, section, paragraph, and line of code that the user did not ask to change.
-3. Keep ALL existing functionality (scroll behavior, state management, refs, event handlers, etc.) intact.
-4. The "tsx" output must be valid TypeScript JSX that compiles without errors.
-5. Do NOT remove or modify the Early Access step components (Step1 through Step8).
-6. Do NOT remove or modify the HomeLoggedInPage conditional rendering.
-7. Do NOT remove or modify the WizardEditButton or AiPageEditor imports/rendering.
-8. Do NOT remove or modify the header navigation, KinshipBots logo, or LandingPageDrawer.
-9. Do NOT change colors, fonts, spacing, or CSS classes unless the user explicitly asks for it.
-10. Do NOT remove or shorten any paragraphs or sections unless the user explicitly asks for it.
-11. The "changes" array must list ONLY the actual text differences. Each "find" value must be an exact substring of the original file that you changed, and "replace" must be what you changed it to. For example, if changing a heading: { "find": "Welcome Home", "replace": "Welcome to Kinship" }.
-12. For color changes, include the class change: { "find": "bg-[#EB8000]", "replace": "bg-[#FF0000]" }.
-13. For section removal, set "replace" to "" and "find" to the key identifying text of that section.
+Format each replacement block exactly like this:
+<<<<< SEARCH
+exact lines to find and replace
+=====
+new lines to replace them with
+>>>>>
 
-IMPORTANT: Return ONLY the JSON object. No markdown fences, no explanation. The response must start with { and end with }.`;
+Rules:
+1. "SEARCH" lines must EXACTLY match a contiguous block of text from the source code, including spaces, tabs, and line breaks. Copy it exactly as it appears.
+2. Be EXTREMELY conservative. Only change EXACTLY what the user asks for. Do NOT touch anything else.
+3. Be EXTREMELY accurate. Provide enough context lines in your "SEARCH" block to uniquely target the area in the file. (Usually 3-4 lines is enough context).
+4. Do NOT output markdown ticks \`\`\` around your output.
+5. If changing colors, just target the class strings.
+6. Only output your search/replace blocks. No other text.`;
 
 export async function POST(request: NextRequest) {
   const auth = await verifyWizard(request);
@@ -62,37 +59,60 @@ export async function POST(request: NextRequest) {
 
     const rawResponse = result.response.text();
 
-    // Strip any accidental markdown fences
-    const cleaned = rawResponse
-      .replace(/^```(?:json|tsx?|javascript|jsx)?\n?/i, "")
-      .replace(/\n?```$/i, "")
-      .trim();
+    console.log("Raw AI response:");
+    console.log(rawResponse);
 
-    // Parse the JSON response
-    let parsed: {
-      tsx: string;
-      changes: Array<{ find: string; replace: string }>;
-    };
-    try {
-      parsed = JSON.parse(cleaned);
-    } catch {
-      // If JSON parsing fails, treat the whole response as TSX (backward compat)
-      console.warn(
-        "AI did not return valid JSON. Falling back to raw TSX mode.",
-      );
-      parsed = { tsx: cleaned, changes: [] };
+    // Parse the custom <<<<< SEARCH format
+    const changeRegex = /<<<<< SEARCH\n([\s\S]*?)\n=====\n([\s\S]*?)\n>>>>>/g;
+    const changes: Array<{ find: string; replace: string }> = [];
+
+    let match;
+    while ((match = changeRegex.exec(rawResponse)) !== null) {
+      if (match[1] && typeof match[2] === "string") {
+        changes.push({
+          find: match[1], // exact whitespace is needed
+          replace: match[2],
+        });
+      }
     }
 
-    if (!parsed.tsx || typeof parsed.tsx !== "string") {
+    if (changes.length === 0) {
       return NextResponse.json(
-        { error: "AI response missing 'tsx' field" },
+        { error: "AI couldn't format the response properly or found no matches to change." },
+        { status: 400 },
+      );
+    }
+
+    // Apply the changes to the original file
+    let modifiedTsx = file.content;
+    let appliedCount = 0;
+
+    for (const change of changes) {
+      if (modifiedTsx.includes(change.find)) {
+        // String replace only replaces the first instance it finds
+        modifiedTsx = modifiedTsx.replace(change.find, change.replace);
+        appliedCount++;
+      } else {
+        console.warn("Could not find exact text match to replace:\n", JSON.stringify(change.find));
+        // let's try a fallback: trim both and try
+        const fallbackFind = change.find.trim();
+        if (modifiedTsx.includes(fallbackFind)) {
+          modifiedTsx = modifiedTsx.replace(fallbackFind, change.replace.trim());
+          appliedCount++;
+        }
+      }
+    }
+
+    if (appliedCount === 0) {
+      return NextResponse.json(
+        { error: "AI generated changes but they did not match the source file exactly. Please try again or provide smaller context." },
         { status: 500 },
       );
     }
 
     return NextResponse.json({
-      modifiedContent: parsed.tsx,
-      changes: parsed.changes || [],
+      modifiedContent: modifiedTsx,
+      changes: changes,
       originalSha: file.sha,
     });
   } catch (error) {

@@ -62,7 +62,9 @@ const AiPageEditor = () => {
       if (!doc || !doc.body) return;
 
       // Hide the editor UI inside the iframe (prevent inception)
-      const editorOverlay = doc.querySelector('[class*="fixed inset-0 z-[100]"]');
+      const editorOverlay = doc.querySelector(
+        '[class*="fixed inset-0 z-[100]"]',
+      );
       if (editorOverlay) editorOverlay.remove();
 
       // Apply each text/class replacement to the DOM
@@ -78,7 +80,8 @@ const AiPageEditor = () => {
       const banner = doc.createElement("div");
       banner.style.cssText =
         "position:fixed;top:0;left:0;right:0;z-index:9999;background:#EB8000;color:white;text-align:center;padding:6px;font-size:12px;font-family:sans-serif;";
-      banner.textContent = "👁️ PREVIEW — This is how the page will look after your changes";
+      banner.textContent =
+        "👁️ PREVIEW — This is how the page will look after your changes";
       doc.body.prepend(banner);
     } catch (err) {
       console.warn("Could not apply changes to iframe:", err);
@@ -110,8 +113,7 @@ const AiPageEditor = () => {
       setCommitMessage(`AI edit: ${prompt.trim().slice(0, 80)}`);
       setState("previewing");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to generate";
+      const message = err instanceof Error ? err.message : "Failed to generate";
       setErrorText(message);
       setState("error");
     }
@@ -129,8 +131,7 @@ const AiPageEditor = () => {
       setGithubUrl(res.data.githubUrl || "");
       setState("deployed");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to commit";
+      const message = err instanceof Error ? err.message : "Failed to commit";
       setErrorText(message);
       setState("error");
     }
@@ -149,8 +150,7 @@ const AiPageEditor = () => {
       setGithubUrl("");
       alert("✅ Changes merged to production! Vercel will deploy shortly.");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to merge";
+      const message = err instanceof Error ? err.message : "Failed to merge";
       setErrorText(message);
       setState("error");
     }
@@ -208,8 +208,7 @@ const AiPageEditor = () => {
             </span>
             {changes.length > 0 && (
               <span className="text-xs text-[#EB8000] font-avenir">
-                {changes.length} change{changes.length !== 1 ? "s" : ""}{" "}
-                applied
+                {changes.length} change{changes.length !== 1 ? "s" : ""} applied
               </span>
             )}
           </div>
@@ -238,10 +237,7 @@ const AiPageEditor = () => {
   return (
     <div className="fixed inset-0 z-[100] flex justify-end">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={handleClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Drawer */}
       <div className="relative w-full max-w-[480px] h-full bg-[#0a0d2e] border-l border-[#FFFFFF1A] shadow-2xl overflow-y-auto animate-slide-in-right flex flex-col">
@@ -342,10 +338,7 @@ const AiPageEditor = () => {
               >
                 {state === "generating" ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin h-4 w-4"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
                         cx="12"
@@ -530,10 +523,7 @@ const AiPageEditor = () => {
                 >
                   {state === "merging" ? (
                     <span className="flex items-center justify-center gap-2">
-                      <svg
-                        className="animate-spin h-4 w-4"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
                           cx="12"

@@ -9,6 +9,22 @@ export async function POST(request: NextRequest) {
     if (auth.error) return auth.error;
 
     try {
+        const body = await request.json().catch(() => ({}));
+        const { discard } = body;
+
+        if (discard) {
+            // Just clean up: delete the preview branch without merging
+            try {
+                await deleteBranch(PREVIEW_BRANCH);
+            } catch (cleanupError) {
+                console.warn("Failed to delete preview branch on discard:", cleanupError);
+            }
+            return NextResponse.json({
+                success: true,
+                discarded: true,
+            });
+        }
+
         // 1. Merge the preview branch into main
         const result = await mergeBranch(
             PREVIEW_BRANCH,

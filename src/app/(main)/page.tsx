@@ -16,7 +16,7 @@ import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
 import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
 import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
 import { data, isAuth, isAuthModalOpen, isAuthOverlayOpen } from "../store";
 import HomeLoggedInPage from "./components/HomeLoggedInPage";
@@ -224,6 +224,7 @@ const platformItems: PlatformItem[] = [
 export default function LandingPage() {
   const searchParams = useSearchParams();
   const [isUserAuthenticated, setIsUserAuthenticated] = useAtom(isAuth);
+  const router = useRouter();
   const [_, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
   const [__, setIsAuthModalOpen] = useAtom(isAuthModalOpen);
   const [currentUser, setCurrentUser] = useAtom(data);
@@ -414,6 +415,18 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            {currentUser == null && (
+              <div className="font-bold">
+                <Button
+                  action={() => router.push("/login")}
+                  size="small"
+                  isPrimary
+                  title="Login"
+                  isLoading={false}
+                />
+              </div>
+            )}
+
             {!isPreviewMode && <WizardEditButton />}
             <div className="font-bold">
               <Button

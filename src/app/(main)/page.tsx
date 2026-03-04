@@ -342,6 +342,8 @@ export default function LandingPage() {
   // When loaded in the preview iframe, hide editor UI
   const isPreviewMode = searchParams.get("_wizard_preview") === "1";
 
+  console.log("CURRENT USER: ", currentUser);
+
   if (isUserAuthenticated && currentUser?.role !== "wizard")
     return <HomeLoggedInPage />;
 

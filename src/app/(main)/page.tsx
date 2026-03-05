@@ -230,6 +230,7 @@ export default function LandingPage() {
   const [currentUser, setCurrentUser] = useAtom(data);
 
   const [mounted, setMounted] = useState(false);
+  const [isLoadingLogout, setIsLoadingLogout] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -335,14 +336,26 @@ export default function LandingPage() {
     });
   };
 
+  const logout = async () => {
+    if (isLoadingLogout) return;
+
+    setIsLoadingLogout(true);
+    await client.delete("/logout", {});
+    window.localStorage.removeItem("token");
+    setIsLoadingLogout(false);
+
+    setIsUserAuthenticated(false);
+    setCurrentUser(null);
+    setIsAuthModalOpen(false);
+    setShowAuthOverlay(true);
+  };
+
   const [showMsg, setShowMsg] = React.useState(true);
   const [msgClass, setMsgClass] = React.useState("success");
   const [msgText, setMsgText] = React.useState("");
 
   // When loaded in the preview iframe, hide editor UI
   const isPreviewMode = searchParams.get("_wizard_preview") === "1";
-
-  console.log("CURRENT USER: ", currentUser);
 
   if (isUserAuthenticated && currentUser?.role !== "wizard")
     return <HomeLoggedInPage />;
@@ -424,6 +437,18 @@ export default function LandingPage() {
                   size="small"
                   isPrimary
                   title="Login"
+                  isLoading={false}
+                />
+              </div>
+            )}
+
+            {currentUser != null && (
+              <div className="font-bold">
+                <Button
+                  action={logout}
+                  size="small"
+                  isPrimary
+                  title="Logout"
                   isLoading={false}
                 />
               </div>

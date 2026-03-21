@@ -639,10 +639,7 @@ export default function LandingPage() {
             Infrastructure for what comes next.
           </h1>
           <p className="max-md:text-sm font-avenir text-center text-[#FFFFFFC7] mt-[1rem]">
-            Four integrated systems that make transformation structural, not
-            aspirational, for individuals, organizations, and society as a
-            whole. Engagement, efficiency, productivity, and profitability
-            without compromise.
+            A cooperative agent network, built on four integrated systems. Every Kinship agent is aware of the others — sharing context, coordinating with creators, cooperating on behalf of members. The result is a living ecosystem that compounds in value: for creators who build, for members who engage, and for the network as a whole.
           </p>
         </div>
         <div className="container xl:max-w-[79.5rem] mx-auto grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-5 px-3 max-xl:mt-5 xl:mt-10 mb-4">

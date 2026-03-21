@@ -615,14 +615,20 @@ export default function LandingPage() {
                 Until now.
                 <br />
                 <br />
-                Kinship is a new choice. A member-owned platform that points AI
-                at human and organizational development, relational depth, and
-                social change. Not faster. Not slower. In a fundamentally
-                different direction.
+                Kinship is a new choice. A network where creators turn their
+                deepest wisdom into living AI agents — and where those agents
+                reach people everywhere, through an exchange and affiliate
+                network that rewards real impact.
                 <br />
                 <br />
-                And what’s even better… you’ll be more engaged, more efficient,
-                more productive, and more profitable than ever.
+                We're not standing outside the system pointing at what's broken.
+                We're building inside it, with creators who know what it takes
+                to create real change.
+                <br />
+                <br />
+                And here's the thing… when you point AI agents at the deepest,
+                most critical issues facing our society, then engagement,
+                efficiency, productivity, and profit all follow.
               </p>
             </div>
           </div>

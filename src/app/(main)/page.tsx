@@ -554,7 +554,7 @@ export default function LandingPage() {
                 <iframe
                   className=" w-[100%] xl:h-[35rem] h-64 rounded-lg"
                   // src="https://www.youtube.com/embed/Njj2c3BFDps?si=3NnN-km0Ggo35le6"
-                  src="https://www.youtube.com/embed/o-VRMB0-R98?si=y9WU6nEHsb2e7qJ7"
+                  src="https://www.youtube.com/embed/OM5V7DlLa74"
                   title="YouTube video player"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"

@@ -573,66 +573,8 @@ export default function LandingPage() {
             </div>
 
             <div className="xl:w-[64.313rem] m-auto">
-              <h1 className="text-center font-avenir font-[800] text-[30px] leading-[110%] tracking-[-0.02em] xl:w-[60.063rem] mx-auto">
-                From Protest to Transformation
-              </h1>
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-5 font-avenir">
-                I set out to make an activist film about my community fighting a
-                polluting factory. Protest matters. It draws lines, surfaces
-                harm, buys time for truth to emerge.
-              </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
-                But in Mexico, interviewing Four Arrows after our campaign had
-                fractured and the factory went into production, I realized that
-                protest was only half the work.
-              </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                You can't transform a system from the outside because there is
-                no outside. Systems persist by design. They reward disconnection
-                and compliance over integrity and care.
-              </p>
-
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                The executives I opposed weren't villains. In another life, we
-                might have been friends. They didn't want to exploit us any more
-                than our community wanted to be sacrificed. Everyone was trapped
-                in the same pervasive structure.
-              </p>
-
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
-                Four Arrows helped me see that{" "}
-                <span className="text-white font-bold text-lg font-avenirNext">
-                  the structure holds because of what's happening inside the
-                  people who inhabit it — how we think, how we relate, how we
-                  lead, what we allow ourselves to feel. Change those conditions
-                  and you change what people are capable of thinking, saying,
-                  feeling, choosing, and doing.
-                </span>{" "}
-                When those conditions shift, culture shifts. When culture shifts
-                society follows.
-              </p>
-
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                This brief documentary captured a turning point in my life, from
-                frustration, fear, and resistance to clarity, purpose, and
-                power.
-              </p>
-
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir">
-                The result is Kinship, an AI-powered platform for human and
-                organizational development built on a specific anthropological,
-                psychological, and sociological premise: that kinship, the
-                structure of mutual care, reciprocity, and relatedness, is a
-                technology.
-              </p>
-
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] font-avenir">
-                Kinship is for individuals and organizations ready to do the
-                hard, necessary work of changing the way we live, work, play,
-                learn, and relate.
-              </p>
-              <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[3rem] font-avenir font-bold">
-                There are no more half measures. It's time.
+                Creators have always had platforms for their content. Kinship Agents is something different — a marketplace for living AI agents that carry forward the full depth of who you are. In this short film, our founder shares the unlikely path that led here, and what it means for creators, communities, and the people they serve.
               </p>
 
               {/* <p className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5">

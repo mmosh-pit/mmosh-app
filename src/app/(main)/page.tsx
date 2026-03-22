@@ -664,27 +664,33 @@ export default function LandingPage() {
         </div>
         <div className="px-3 scroll-mt-[120px]" id="founding-creator">
           <h1 className="text-center font-bold xl:px-10 leading-tight xl:w-[65.063rem] text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy  bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            The Six Signals
+            The Vibes Are Immaculate
           </h1>
 
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
-            Kinship is built on HEARTS (Harmony, Empowerment, Artistry, Reason,
-            Trust, and Synthesis), our scientific architecture that applies a
-            convergent body of evidence from neuroscience, developmental
+            Creators set the Vibes, the tone, personality, style, and emotional
+            texture of their agents, which are always, underneath it all, attuned
+            to the Harmony, Empowerment, Artistry, Reason, Trust, and Synthesis
+            (HEARTS) of the members.
+            <br />
+            <br />
+            HEARTS is a scientific framework rooted in neuroscience, developmental
             psychology, motivation science, depth psychology, organizational
-            development, and systems theory to arrive at a single claim: the
-            conditions for human, organizational, and ecosystem flourishing are
-            well-understood, measurable, trainable, and buildable into software.
+            development, and systems theory.
             <br />
             <br />
-            No matter what you build or how you deploy it, every agent on the
-            platform is tuned to these six core capacities.
+            The conditions for individual, organizational, and ecosystem
+            flourishing are well-understood, measurable, and now, for the first
+            time, available throughout an agentic AI network.
             <br />
             <br />
-            They're not metrics. They're not objectives. They're the pulse of
-            the place — the qualities that every agent embodies, that every
-            experience cultivates, and that every interaction quietly supports
-            for you, others, and the community as a whole.
+            These capacities aren't metrics or objectives. They are qualities that
+            every agent monitors, every experience cultivates, and every
+            interaction quietly supports.
+            <br />
+            <br />
+            They ensure coherence over chaos, cohesion over coercion, and
+            cooperation over competition.
           </p>
         </div>
 

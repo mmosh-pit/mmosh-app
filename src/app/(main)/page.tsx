@@ -751,17 +751,15 @@ export default function LandingPage() {
             </h3>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
-              Membership in the coop is $10/month or $100/year. Only individual
-              people can be members, not organizations. Organizations can
-              sponsor the memberships of individuals and groups (we call these
-              organizations “Sponsors”), but the voting rights and ownership of
-              the data and agents created belong to the individual members
-              unless they are explicitly licensed to the Sponsor by the member.
+              Kinship membership is nested. Individuals have a Presence. Teams and studios run Projects. Organizations and institutions operate Platforms. All three layers run on the same cooperative network, and all agents across every layer cooperate through Kinship Intelligence.
             </p>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
-              Sponsors will control access to any of their systems and resources
-              connected to Kinship, and they can revoke access at any time.
+              A single member can participate in multiple Projects and Platforms, each with different agents representing them in a particular context. Your work Presence might be focused, formal, and task-oriented. Your creative community Presence might be open, exploratory, and warm. Your family Presence might be something else entirely. Each one operates independently, with its own Vibes and its own Actors, but all of them serve you, are guided by you, and are aligned to your HEARTS.
+            </p>
+
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
+              The network holds it all together. The agents know each other, respect your privacy, and ensure you’re supported in each and every context. Signals flow. Nothing is siloed. Everyone cooperates. Everything is cohesive. Coherence is maintained.
             </p>
 
             <p className="text-center font-avenirNext max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">

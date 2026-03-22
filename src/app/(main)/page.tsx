@@ -759,7 +759,7 @@ export default function LandingPage() {
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
               A single member can participate in multiple Projects and Platforms, each with different agents representing them in a particular context. Your work Presence might be focused, formal, and task-oriented. Your creative community Presence might be open, exploratory, and warm. Your family Presence might be something else entirely. Each one operates independently, with its own Vibes and its own Actors, but all of them serve you, are guided by you, and are aligned to your HEARTS.
             </p>
-
+            <br />
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
               The network holds it all together. The agents know each other, respect your privacy, and ensure you’re supported in each and every context. Signals flow. Nothing is siloed. Everyone cooperates. Everything is cohesive. Coherence is maintained.
             </p>

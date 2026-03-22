@@ -69,11 +69,11 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     id: "champions",
-    title: "Champions",
-    subtitle: "The Network",
+    title: "Project",
+    subtitle: "The Purposeful Agents",
     seats: "",
     description:
-      "When twelve people you've invited become active members, you become a Champion. It's an ongoing threshold — you maintain your community, not just launch it. Champions earn commissions on membership revenue distributed across four levels of relationships. This structure rewards the deep work of building and supporting real networks, not just collecting sign-ups. Champions who enroll Creators also earn curator royalties — a direct cut of what their Creators earn. The incentive is clear: find talented builders, bring them in, and grow together.",
+      "Projects coordinate people around shared purpose. A team, a studio, a cohort, a creative collaboration — any group working toward something together. Projects have their own agents, their own tools, and their own shared context. They coordinate the Presences of their members, align effort, and keep the work moving. A Project knows what its members need and what the work requires.",
     pricing: "",
   },
   {

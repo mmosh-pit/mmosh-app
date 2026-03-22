@@ -729,17 +729,21 @@ export default function LandingPage() {
             id="collective-economic"
           >
             <h1 className="text-center font-bold px-12 text-[3.75rem] max-xl:text-5xl max-md:text-4xl max-sm:text-2xl leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-              Member Governed, Member Owned
+              A Creator Economy that Works for You
             </h1>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-2.5">
-              Kinship Today, the public-facing platform, is owned and operated
-              by a Colorado Article 56 Cooperative and Public Benefit
-              Corporation. The people who participate, contribute, and create
-              are the actual owners. No advertisers. No extractive algorithms.
-              No outside shareholders optimizing for attention or growth at any
-              cost. Every dollar that enters the platform is distributed to the
-              people who build it, grow it, and use it.
+              On YouTube, you need a million views to make rent. On Spotify, a million streams pays less than a shift at a coffee shop. On Substack, readers are drowning in subscriptions and no longer willing to pay. TikTok and Instagram can change the algorithm tomorrow and erase your reach overnight. Facebook monetizes your audience and sells their attention to the highest bidder. Across all of these platforms, creators build on rented land, subject to rules they didn't write, optimized for engagement patterns that have nothing to do with the benefits of their work.
+              <br />
+              <br />
+              Kinship is different.
+              <br />
+              <br />
+              When you create an agent on Kinship, you own it. You inform it. You instruct it. You empower it. You align it. And you reap the rewards.
+              You earn royalties every time a member engages with your agents. You can stock your online store with offerings, premium agents, goods and services delivered digitally or IRL. You have a built-in affiliate network of Champions who earn commissions by promoting your work. 
+              <br />
+              <br />
+              The economics are transparent, the payouts are direct, and income scales with impact, not impressions.
             </p>
 
             <h3 className="my-4 text-center font-bold px-12 text-[2.5rem] max-xl:text-3xl max-md:text-2xl max-sm:text-lg leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">

@@ -60,11 +60,11 @@ type PlatformItem = {
 const pricingPlans: PricingPlan[] = [
   {
     id: "citizens",
-    title: "Citizens",
-    subtitle: "The Foundation",
+    title: "Presence",
+    subtitle: "The Personal Agent",
     seats: "",
     description:
-      "Every member starts here. You use the platform, you earn loyalty rewards for participation, you own a stake in the cooperative, and you can earn royalties from the agents you create and earn commissions based on members you enroll. Your data, agents, creations, and relationships belong to you. Your vote counts. Your progress funds the system and the system funds your progress.",
+      "Your Presence is the agent that represents you — you set the tone, style, boundaries, and preferences. It supervises your Actors: worker agents that handle email, participate on social media, shop, schedule, and manage the practical details of your family life, social life, and work life. You can have a different Presence in every Project and Platform you join, each one tuned to the context, all of them working for you.",
     pricing: "",
   },
   {

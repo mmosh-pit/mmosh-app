@@ -801,7 +801,7 @@ export default function LandingPage() {
         <div className="xl:w-[60rem] m-auto mt-10 mb-[0.938rem] max-md:mt-8 max-md:mb-0">
           <div>
             <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7]">
-              Distribution of funds
+              The Circular Economy
             </h1>
             <div className="max-w-[49.813rem] mx-auto px-3">
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">

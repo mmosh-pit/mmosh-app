@@ -753,7 +753,9 @@ export default function LandingPage() {
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
               Kinship membership is nested. Individuals have a Presence. Teams and studios run Projects. Organizations and institutions operate Platforms. All three layers run on the same cooperative network, and all agents across every layer cooperate through Kinship Intelligence.
             </p>
-
+            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
+              &nbsp;
+            </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
               A single member can participate in multiple Projects and Platforms, each with different agents representing them in a particular context. Your work Presence might be focused, formal, and task-oriented. Your creative community Presence might be open, exploratory, and warm. Your family Presence might be something else entirely. Each one operates independently, with its own Vibes and its own Actors, but all of them serve you, are guided by you, and are aligned to your HEARTS.
             </p>

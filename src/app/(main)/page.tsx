@@ -762,22 +762,6 @@ export default function LandingPage() {
               The network holds it all together. The agents know each other, respect your privacy, and ensure you’re supported in each and every context. Signals flow. Nothing is siloed. Everyone cooperates. Everything is cohesive. Coherence is maintained.
             </p>
 
-            <p className="text-center font-avenirNext max-md:text-sm text-lg font-bold text-[#FFFFFFC7] my-5">
-              One Member, One Vote
-            </p>
-            <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[55rem] mx-auto">
-              One member, one vote — regardless of stock class. Citizens (Class
-              A Shares), Champions (Class B Shares), and Creators (Class C
-              Shares) all vote equally on how the platform operates. There is no
-              difference between the classes of stock except for profit
-              distribution at the end of the year. Under Colorado Article 56,
-              the membership considers pricing, policies, community standards,
-              data governance, agent alignment and guardrails, profit
-              distribution, and how resources are allocated. The board is
-              elected by the members and answers to the members, not to
-              investors. If you're on the platform, you have an equal voice in
-              how it runs.
-            </p>
           </div>
         </div>
         <div className="max-xl:container grid grid-cols-3 gap-[1.875rem] max-xl:grid-cols-2 max-md:grid-cols-1 xl:my-10 xl:w-[78.125rem] mx-auto mt-12 px-3">

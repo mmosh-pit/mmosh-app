@@ -78,11 +78,11 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     id: "creators",
-    title: "Creators",
-    subtitle: "The Builders",
+    title: "Platform",
+    subtitle: "The Organizational Agents",
     seats: "",
     description:
-      "When at least one of your agents is voted into public listing by the cooperative membership, you become a Creator. Until then, your agents can be listed as secret or private. Creators earn monthly royalties from the Creator pool based on engagement with their agents. But that's the floor, not the ceiling. Creators can  also sell directly — premium agents, goods, services, experiences — and keep what they earn. This can be a real business built on a platform that wants you to succeed.",
+      "Platforms span multiple Projects and can embrace entire organizations, networks, associations, and ecosystems. A Platform agent coordinates across Projects, maintains organizational context, and ensures alignment at scale — while honoring the unique missions of the Projects and Presences it supports. This is how Kinship works for a company, a movement, a professional network, or a large-scale community of practice.",
     pricing: "",
   },
   // {

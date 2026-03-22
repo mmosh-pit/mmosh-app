@@ -189,7 +189,7 @@ const principles: Principle[] = [
 const platformItems: PlatformItem[] = [
   {
     id: "today",
-    title: "Kinship Today",
+    title: "Kinship Agents",
     subtitle: "The Experience",
     intro: "",
     description:

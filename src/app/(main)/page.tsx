@@ -511,7 +511,7 @@ export default function LandingPage() {
 
             <div className="mt-3.5">
               <p className="xl:text-base text-xs text-[#FFFFFF] font-avenir text-opacity-90 xl:px-12">
-                Kinship Agents is where creators turn their life's work into living AI agents — and where their people can find them. A platform and affiliate network governed by members and dedicated to transforming how we grow, connect, live, and work together.
+                Kinship Agents is where creators turn their life's work into living AI agents — and where their people can find them. A cooperative ecosystem governed by members and dedicated to transforming how we grow, connect, live, and work together.
               </p>
             </div>
 

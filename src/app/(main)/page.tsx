@@ -209,7 +209,7 @@ const platformItems: PlatformItem[] = [
     subtitle: "The Economy",
     intro: "",
     description:
-      "A member-owned marketplace where value circulates. Creators earn royalties. Champions earn commissions. Citizens earn rewards.",
+      "An agent marketplace where value circulates. Creators earn royalties. Champions earn commissions. Citizens earn rewards.",
   },
   {
     id: "intelligence",

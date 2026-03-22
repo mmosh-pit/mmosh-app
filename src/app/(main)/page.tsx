@@ -885,29 +885,12 @@ export default function LandingPage() {
           ref={foundingCreatorsRef}
         >
           <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            A Living Body of Wisdom
+            The Starting Six
           </h1>
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
-            Behind every experience in Kinship is a living body of wisdom—honed
-            over decades by dedicated practitioners and guides. We call them
-            Sages. Every creator can grow into a Sage. As your work deepens and
-            resonates within the community, you can be recognized, nominated,
-            and selected by fellow members—becoming part of this lineage of
-            wisdom.
-          </p>
-          <p className="ttext-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto">
-            Sages' work shows up throughout Kinship: in dialogue, stories,
-            adventures, and shared challenges. Some of this wisdom is woven into
-            the fabric of scenarios; some is available directly through the
-            Sages themselves as AI companions trained on their teachings.
-            Kinship holds this work with integrity—ensuring that even the most
-            profound insights remain practical, accessible, and alive.
+            These are the first six platforms on the Kinship network — each one a living ecosystem of creators, agents, projects, and members organized around a shared domain. They're here to seed the network and show what's possible. But they're just the beginning. Any member can build projects and agents within these platforms, and any creator or organization can launch an entirely new platform of their own.
           </p>
         </div>
-        <p className="text-center font-avenirNext text-[1.188rem] font-bold leading-[110%] tracking-[-0.02em] mt-6">
-          Meet a Few of our Founding Sages.{" "}
-        </p>
-
         <div className="max-xl:container max-xl:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-x-[1.625rem] gap-y-[1.875rem] my-[2.563rem] xl:w-[57.625rem] mx-auto">
           {pathways.map((pathway) => (
             <div className="bg-[linear-gradient(155deg,#9091a6_11.53%,rgba(255,255,255,0.30)_109.53%)] p-[1px] xl:w-[18.125rem] max-md:min-h-[6rem] min-h-[13.063rem] rounded-xl">

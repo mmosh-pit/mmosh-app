@@ -846,30 +846,26 @@ export default function LandingPage() {
         <div className="xl:w-[60rem] m-auto mt-10 mb-[0.938rem] max-md:mt-8 max-md:mb-0">
           <div>
             <h1 className="text-center font-bold px-12 leading-[1] md:text-[30px] max-md:text-xl max-md:leading-relaxed m-auto font-PoppinsNew  text-[#FFFFFFC7]">
-              Why This Matters
+              Governance Matters
             </h1>
 
             <div className="max-w-[49.813rem] mx-auto px-3">
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Platforms are organized around the purpose of whoever owns it.
+                Kinship is governed by three organizations, each with a distinct role.
               </p>
-              <p className="text-[#FFFFFFC7] max-md:text-sm text-center font-avenir">
-                Social platforms are organized around attention — yours, sold to
-                advertisers. Business platforms are organized around workflow —
-                you're a node in a pipeline. Entertainment platforms are
-                organized around consumption — keep watching, keep subscribing.
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
+                Kinship Media Syndicate (Delaware C Corp) owns, maintains, and advances the core technology and intellectual property. This is the engineering and infrastructure layer — the team that builds and improves the platform.
               </p>
 
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Kinship is organized around your life and your work — because
-                you own it.
+                Kinship Intelligence Institute (501c3 Non-Profit) handles policy, ethics, research, and action. It exists to ensure the network develops responsibly and that the science behind the Vibes and HEARTS stays rigorous, independent, and publicly accountable.
               </p>
 
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                When the members are the owners, the software serves the
-                members. The incentives, the economics, the governance, and the
-                AI all point in the same direction: toward the people on the
-                platform.
+                Kinship Agents DAO LLC (Marshall Islands) governs the network itself. Members vote on critical decisions — community standards, data governance, agent alignment, resource allocation. Every vote is recorded on-chain. Every agent you create is verifiably yours, secured by a built-in multi-signature wallet. Ownership isn't a metaphor. It's cryptographic.
+              </p>
+              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
+                Your data is private. Your agents are sovereign. Your voice in governance is equal. And the three-body structure means no single entity can unilaterally control the direction of the network.
               </p>
             </div>
           </div>

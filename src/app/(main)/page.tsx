@@ -217,7 +217,7 @@ const platformItems: PlatformItem[] = [
     subtitle: "The Heart and Soul",
     intro: "",
     description:
-      "The orchestration layer that ensures every agent is aligned with the individual member, all the other members, and the context as a whole.",
+      "The orchestration layer that ensures every agent cooperates, all context is shared, and every member is honored across the entire network.",
   },
 ];
 

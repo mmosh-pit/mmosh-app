@@ -99,45 +99,45 @@ const pricingPlans: PricingPlan[] = [
 const pathways: Pathway[] = [
   {
     id: "four-arrows",
-    name: "Four Arrows",
-    theme: "Indigenous Worldview",
+    name: "Mapshifting",
+    theme: "Personal, Professional & Organizational Development",
     description:
-      "Worldview reflection, sacred communication, self- hypnosis, and fearless courage—rooted in a living, interconnected universe where all beings are kin.",
+      "Coaches, consultants, mentors, and executives bringing their work to life — not as books or seminars or videos that sit on a shelf, but as agents that live with you. Training programs, workshops, and facilitated experiences guided by agents who carry the real wisdom of the creators behind them, available when you need it most.",
   },
   {
     id: "howard-teich",
-    name: "Howard Teich",
-    theme: "Complementary Consciousness",
+    name: "Inner Clinic",
+    theme: "Health and Wellbeing for the Whole Human",
     description:
-      "Archetypal depth psychology and alchemy—integrating shadow, embracing paradox, and restoring the partnership between Solar and Lunar consciousness.",
+      "Patient-centered wellness that connects you to the latest research, medical professionals, referral networks, and integrative practitioners across the full spectrum — mind, body, and spirit alongside the best of modern medicine. Your health agents know your needs and coordinate your care.",
   },
   {
     id: "renee-smith",
-    name: "Renée Smith",
-    theme: "The Nature of Work",
+    name: "Service Alliance",
+    theme: "Serving Those Who Serve",
     description:
-      "Transforming work into play, fear into love. Building stronger, more resilient teams and cultures across organizations, institutions, and movements.",
+      "A network for active duty military, veterans, firefighters, law enforcement, EMTs, and social workers — the people our communities depend on every day. Connecting them to each other, to support services, to training, to resources, and to the stories and wisdom of those who've walked the path before.",
   },
   {
     id: "bill-thatcher",
-    name: "Bill Thatcher",
-    theme: "Soulsteading",
+    name: "Disclosure Codes",
+    theme: "The Game That Plays You Back",
     description:
-      "Self-authorship through authentic community. Withdraw projections, lower masks, and cultivate the deep trust that holds us through change.",
+      "Bringing to life the world of starseeds, ascension, UFOs, extraterrestrials, intergalactic councils, time travel, and secret space programs. Real disclosure, real conspiracies, explored through a lens of experience, not belief. Follow the rabbit holes as deep as you're willing to go.",
   },
   {
     id: "hephzibah-light",
-    name: "Hephzibah Light",
-    theme: "The Feathered Nest",
+    name: "Feathered Nest",
+    theme: "Family, Home & Community Life",
     description:
-      "Creating homes and families that are purposeful, meaningful, and filled with joy—where belonging and beauty sustain everyday life.",
+      "Everything for a family under one roof — activities, games, creative adventures, and support for parents navigating every stage of a child’s life. Plus the practical side: financial guidance, real estate, mortgages, and the everyday decisions that shape a household and make it click.",
   },
   {
     id: "warren-kahn",
-    name: "Warren Kahn",
-    theme: "Let Life Lead",
+    name: "Activation Center",
+    theme: "Where Tech Finds Its Tribe",
     description:
-      "Relating in flow, living in truth, and navigating with presence, ease, and trust rather than force, conflict, and control.",
+      "Entrepreneurs, startups, and established tech companies can connect with the people who want to go first — early access testers, power users, and enthusiasts who want to learn about the hottest products, systems, and platforms before anyone else. Your launch community is ready, willing and able.",
   },
 ];
 

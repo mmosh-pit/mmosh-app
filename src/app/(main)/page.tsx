@@ -812,26 +812,23 @@ export default function LandingPage() {
 
               <ul className="w-max font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] mt-5 font-normal m-auto">
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>35%</b> pays for software development, moderation, systems,
-                  and support.*
+                  <b>35%</b> goes to Kinship for software development, moderation, systems, maintenance, and support.
                 </p>
 
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>30%</b> goes to commissions for enrollment, distributed
-                  across 4 levels of the lineage (<b>20%</b> goes to Level 1,{" "}
+                  <b>30%</b> goes directly to Champions as commissions for enrollment, distributed across 4 levels of the lineage (<b>20%</b> goes to Level 1,{" "}
                   <b>5%</b> to goes to Level 2, <b>3%</b> to Level 3, <b>2%</b>{" "}
                   to Level 4)
                 </p>
 
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>25%</b> goes to creator royalties, distributed according to
-                  agent usage
+                  <b>25%</b> goes to Creators from a royalty pool, distributed according to agent usage on a monthly basis
                 </p>
 
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>5%</b> goes to curators,
+                  <b>5%</b> goes to Curators, the Champions who enrolled the Creators,
                   <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                    <b>5%</b> is distributed as loyalty rewards (with <b>4%</b>{" "}
+                    <b>5%</b> is distributed to Citizens as loyalty rewards (with <b>4%</b>{" "}
                     going to back to the member and <b>1%</b> going to the
                     Champion who enrolled the member)
                   </p>
@@ -840,25 +837,7 @@ export default function LandingPage() {
 
               <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir mt-4">
                 Payments for offerings, which include premium agents, goods,
-                services, and experiences, go directly to the creators, with
-                transaction fees paid to the platform and to the four levels of
-                relationships of the purchaser.
-              </p>
-
-              <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 font-avenir">
-                *The cooperative licenses its software from Kinship Intelligent
-                Software Syndicate (KISS), a Delaware C Corporation that handles
-                engineering, infrastructure, and platform development. The
-                license is irrevocable and includes full source code — the
-                cooperative can operate independently even if KISS is acquired
-                or dissolved. Kinship DAO SPC, a Cayman Islands Segregated
-                Portfolio Company, manages the on-chain economic infrastructure.
-                Kinship Intelligence Institute, a nonprofit public charity,
-                advances research and the global mission. Kinship Systems, LLC
-                provides consulting and enterprise integration. The cooperative
-                runs the public platform, owns the member relationship, and
-                governs itself. The 35% funds the development that makes
-                everything else possible.
+                services, and experiences (digital and real-world), go directly to the Creators, with transaction fees paid to Kinship, Curators, and the four levels Champions.
               </p>
             </div>
           </div>

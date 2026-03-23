@@ -139,13 +139,15 @@ const avenirLTStd = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kinship Codes",
-  description: "The Fitness App for the Heart and Soul.",
+  title: "Kinship Agents — The Marketplace for Cooperative AI",
+  description:
+    "Design, develop, and deploy intelligent agents that listen, learn, and cooperate. A decentralized marketplace for coherent, cohesive agents that care.",
   openGraph: {
     images: ["https://storage.googleapis.com/mmosh-assets/kinship_meta.png"],
-    siteName: "Kinship Codes",
-    title: "Kinship Codes — The Fitness App for the Heart and Soul.",
-    description: "The Fitness App for the Heart and Soul.",
+    siteName: "Kinship Agents",
+    title: "Build Agents. Not Apps.",
+    description:
+      "Design, develop, and deploy intelligent agents that listen, learn, and cooperate. A decentralized marketplace for coherent, cohesive agents that care.",
     url: "https://kinship.today",
     type: "website",
   },

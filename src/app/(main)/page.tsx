@@ -496,7 +496,7 @@ export default function LandingPage() {
             ref={homeSection}
           >
             <h1 className="w-auto md:text-[2.813rem] text-4xl leading-relaxed xl:leading-[2.813rem] font-bold font-poppinsNew bg-[linear-gradient(135deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent stroke-text">
-              Welcome Home
+              Where AI Belongs
             </h1>
 
             <div className="mt-3.5">
@@ -937,7 +937,7 @@ export default function LandingPage() {
 
         <div className="mt-[2.875rem] max-md:mt-12 max-md:px-3">
           <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            Where AI Belongs
+            The Activation Center
           </h1>
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
             These are the first six platforms on the Kinship network — each one

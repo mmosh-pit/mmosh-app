@@ -555,13 +555,13 @@ export default function LandingPage() {
                 ></iframe>
 
                 {/* Bottom shadow */}
-                <div className="pointer-events-none absolute bottom-0 w-full h-[10.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                <div className="pointer-events-none absolute bottom-0 w-full h-[5.75rem] bg-[linear-gradient(180deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
 
                 {/* Right shadow */}
-                <div className="pointer-events-none absolute top-0 right-0 w-[8.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                <div className="pointer-events-none absolute top-0 right-0 w-[4.25rem] h-full bg-[linear-gradient(90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
 
                 {/* Left shadow */}
-                <div className="pointer-events-none absolute top-0 left-0 w-[8.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
+                <div className="pointer-events-none absolute top-0 left-0 w-[4.25rem] h-full bg-[linear-gradient(-90deg,rgba(3,1,27,0)_0%,#03011B_100%)]"></div>
               </div>
             </div>
 

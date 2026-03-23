@@ -1057,7 +1057,7 @@ export default function LandingPage() {
         )}
         <section className="max-md:pt-7 max-md:pb-0 pb-16 max-w-[1144px] mx-auto">
           <h3 className="transition duration-300 place-self-center sm:text-left md:text-[3.125rem] max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[3.75rem] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-            Where AI Belongs
+            A Message from Moto
           </h3>
           <div className="xl:flex items-start mt-5">
             <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}

@@ -885,7 +885,7 @@ export default function LandingPage() {
           ref={foundingCreatorsRef}
         >
           <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
-            The Starting Six
+            Where AI Belongs
           </h1>
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
             These are the first six platforms on the Kinship network — each one a living ecosystem of creators, agents, projects, and members organized around a shared domain. They're here to seed the network and show what's possible. But they're just the beginning. Any member can build projects and agents within these platforms, and any creator or organization can launch an entirely new platform of their own.

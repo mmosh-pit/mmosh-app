@@ -4,10 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { testimonials } from "@/constants/testimonials";
 import SimpleArrowDown from "@/assets/icons/SimpleArrowDown";
 import { useAtom } from "jotai";
-// import HomeLoggedInPage from "./components/HomeLoggedInPage";
 import KinshipBots from "@/assets/icons/KinshipBots";
 import KinshipMainIcon from "@/assets/icons/KinshipMainIcon";
-import HomeLoggedInPage from "../components/HomeLoggedInPage";
 import Button from "../components/common/Button";
 import useCheckDeviceScreenSize from "@/app/lib/useCheckDeviceScreenSize";
 import HomeMobileDrawer from "../components/HomeMobileDrawer";
@@ -73,8 +71,6 @@ export default function LandingPage() {
     setIsModalOpen(true);
   };
 
-  if (isWaiting) return <HomeLoggedInPage />;
-
   return (
     <div className="relative h-full">
       <header className="w-full fixed flex justify-center z-10">
@@ -122,7 +118,7 @@ export default function LandingPage() {
               </a>
 
               <div className="lg:mx-4 md:mx-2" />
-              
+
               <a
                 className="text-base text-white cursor-pointer"
                 onClick={() =>

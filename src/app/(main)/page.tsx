@@ -19,7 +19,6 @@ import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";
 import { data, isAuth, isAuthModalOpen, isAuthOverlayOpen } from "../store";
-import HomeLoggedInPage from "./components/HomeLoggedInPage";
 import client from "../lib/httpClient";
 import WizardEditButton from "./components/AiPageEditor/WizardEditButton";
 import AiPageEditor from "./components/AiPageEditor/AiPageEditor";
@@ -279,6 +278,10 @@ export default function LandingPage() {
       setIsAuthModalOpen(!user);
       setIsUserAuthenticated(!!user);
       setCurrentUser(user);
+
+      if (!!user) {
+        router.replace("/social");
+      }
     } catch (err) {
       // router.replace("/");
     }
@@ -356,9 +359,6 @@ export default function LandingPage() {
 
   // When loaded in the preview iframe, hide editor UI
   const isPreviewMode = searchParams.get("_wizard_preview") === "1";
-
-  if (isUserAuthenticated && currentUser?.role !== "wizard")
-    return <HomeLoggedInPage />;
 
   return (
     <div className="relative h-full">
@@ -511,7 +511,10 @@ export default function LandingPage() {
 
             <div className="mt-3.5">
               <p className="xl:text-base text-xs text-[#FFFFFF] font-avenir text-opacity-90 xl:px-12">
-                Kinship Agents is where creators turn their life's work into living AI agents — and where their people can find them. A cooperative ecosystem governed by members and dedicated to transforming how we grow, connect, live, and work together.
+                Kinship Agents is where creators turn their life's work into
+                living AI agents — and where their people can find them. A
+                cooperative ecosystem governed by members and dedicated to
+                transforming how we grow, connect, live, and work together.
               </p>
             </div>
 
@@ -574,7 +577,12 @@ export default function LandingPage() {
 
             <div className="xl:w-[64.313rem] m-auto">
               <p className="max-md:text-sm max-md:px-2 text-center text-lg text-[#FFFFFFC7] px-[2rem] mt-5 font-avenir">
-                Creators have always had platforms for their content. Kinship Agents is something different — a marketplace for living AI agents that carry forward the full depth of who you are. In this short film, our founder shares the unlikely path that led here, and what it means for creators, communities, and the people they serve.
+                Creators have always had platforms for their content. Kinship
+                Agents is something different — a marketplace for living AI
+                agents that carry forward the full depth of who you are. In this
+                short film, our founder shares the unlikely path that led here,
+                and what it means for creators, communities, and the people they
+                serve.
               </p>
 
               {/* <p className="bg-[linear-gradient(180deg,#FFF_11.53%,rgba(255,255,255,0.30)_109.53%)] bg-clip-text text-transparent text-xl text-center font-bold mt-5">
@@ -639,7 +647,11 @@ export default function LandingPage() {
             Infrastructure for what comes next.
           </h1>
           <p className="max-md:text-sm font-avenir text-center text-[#FFFFFFC7] mt-[1rem]">
-            A cooperative agent network, built on four integrated systems. Every Kinship agent is aware of the others — sharing context, coordinating with creators, cooperating on behalf of members. The result is a living ecosystem that compounds in value: for creators who build, for members who engage, and for the network as a whole.
+            A cooperative agent network, built on four integrated systems. Every
+            Kinship agent is aware of the others — sharing context, coordinating
+            with creators, cooperating on behalf of members. The result is a
+            living ecosystem that compounds in value: for creators who build,
+            for members who engage, and for the network as a whole.
           </p>
         </div>
         <div className="container xl:max-w-[79.5rem] mx-auto grid grid-cols-4 max-xl:grid-cols-2 max-md:grid-cols-1 gap-5 px-3 max-xl:mt-5 xl:mt-10 mb-4">
@@ -669,14 +681,14 @@ export default function LandingPage() {
 
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[60rem] mt-5 mb-2 m-auto">
             Creators set the Vibes, the tone, personality, style, and emotional
-            texture of their agents, which are always, underneath it all, attuned
-            to the Harmony, Empowerment, Artistry, Reason, Trust, and Synthesis
-            (HEARTS) of the members.
+            texture of their agents, which are always, underneath it all,
+            attuned to the Harmony, Empowerment, Artistry, Reason, Trust, and
+            Synthesis (HEARTS) of the members.
             <br />
             <br />
-            HEARTS is a scientific framework rooted in neuroscience, developmental
-            psychology, motivation science, depth psychology, organizational
-            development, and systems theory.
+            HEARTS is a scientific framework rooted in neuroscience,
+            developmental psychology, motivation science, depth psychology,
+            organizational development, and systems theory.
             <br />
             <br />
             The conditions for individual, organizational, and ecosystem
@@ -684,8 +696,8 @@ export default function LandingPage() {
             time, available throughout an agentic AI network.
             <br />
             <br />
-            These capacities aren't metrics or objectives. They are qualities that
-            every agent monitors, every experience cultivates, and every
+            These capacities aren't metrics or objectives. They are qualities
+            that every agent monitors, every experience cultivates, and every
             interaction quietly supports.
             <br />
             <br />
@@ -733,17 +745,31 @@ export default function LandingPage() {
             </h1>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-2.5">
-              On YouTube, you need a million views to make rent. On Spotify, a million streams pays less than a shift at a coffee shop. On Substack, readers are drowning in subscriptions and no longer willing to pay. TikTok and Instagram can change the algorithm tomorrow and erase your reach overnight. Facebook monetizes your audience and sells their attention to the highest bidder. Across all of these platforms, creators build on rented land, subject to rules they didn't write, optimized for engagement patterns that have nothing to do with the benefits of their work.
+              On YouTube, you need a million views to make rent. On Spotify, a
+              million streams pays less than a shift at a coffee shop. On
+              Substack, readers are drowning in subscriptions and no longer
+              willing to pay. TikTok and Instagram can change the algorithm
+              tomorrow and erase your reach overnight. Facebook monetizes your
+              audience and sells their attention to the highest bidder. Across
+              all of these platforms, creators build on rented land, subject to
+              rules they didn't write, optimized for engagement patterns that
+              have nothing to do with the benefits of their work.
               <br />
               <br />
               Kinship is different.
               <br />
               <br />
-              When you create an agent on Kinship, you own it. You inform it. You instruct it. You empower it. You align it. And you reap the rewards.
-              You earn royalties every time a member engages with your agents. You can stock your online store with offerings, premium agents, goods and services delivered digitally or IRL. You have a built-in affiliate network of Champions who earn commissions by promoting your work. 
+              When you create an agent on Kinship, you own it. You inform it.
+              You instruct it. You empower it. You align it. And you reap the
+              rewards. You earn royalties every time a member engages with your
+              agents. You can stock your online store with offerings, premium
+              agents, goods and services delivered digitally or IRL. You have a
+              built-in affiliate network of Champions who earn commissions by
+              promoting your work.
               <br />
               <br />
-              The economics are transparent, the payouts are direct, and income scales with impact, not impressions.
+              The economics are transparent, the payouts are direct, and income
+              scales with impact, not impressions.
             </p>
 
             <h3 className="my-4 text-center font-bold px-12 text-[2.5rem] max-xl:text-3xl max-md:text-2xl max-sm:text-lg leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
@@ -751,19 +777,32 @@ export default function LandingPage() {
             </h3>
 
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
-              Kinship membership is nested. Individuals have a Presence. Teams and studios run Projects. Organizations and institutions operate Platforms. All three layers run on the same cooperative network, and all agents across every layer cooperate through Kinship Intelligence.
+              Kinship membership is nested. Individuals have a Presence. Teams
+              and studios run Projects. Organizations and institutions operate
+              Platforms. All three layers run on the same cooperative network,
+              and all agents across every layer cooperate through Kinship
+              Intelligence.
             </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
               &nbsp;
             </p>
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
-              A single member can participate in multiple Projects and Platforms, each with different agents representing them in a particular context. Your work Presence might be focused, formal, and task-oriented. Your creative community Presence might be open, exploratory, and warm. Your family Presence might be something else entirely. Each one operates independently, with its own Vibes and its own Actors, but all of them serve you, are guided by you, and are aligned to your HEARTS.
+              A single member can participate in multiple Projects and
+              Platforms, each with different agents representing them in a
+              particular context. Your work Presence might be focused, formal,
+              and task-oriented. Your creative community Presence might be open,
+              exploratory, and warm. Your family Presence might be something
+              else entirely. Each one operates independently, with its own Vibes
+              and its own Actors, but all of them serve you, are guided by you,
+              and are aligned to your HEARTS.
             </p>
             <br />
             <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] xl:w-[60rem] mx-auto font-medium">
-              The network holds it all together. The agents know each other, respect your privacy, and ensure you’re supported in each and every context. Signals flow. Nothing is siloed. Everyone cooperates. Everything is cohesive. Coherence is maintained.
+              The network holds it all together. The agents know each other,
+              respect your privacy, and ensure you’re supported in each and
+              every context. Signals flow. Nothing is siloed. Everyone
+              cooperates. Everything is cohesive. Coherence is maintained.
             </p>
-
           </div>
         </div>
         <div className="max-xl:container grid grid-cols-3 gap-[1.875rem] max-xl:grid-cols-2 max-md:grid-cols-1 xl:my-10 xl:w-[78.125rem] mx-auto mt-12 px-3">
@@ -812,32 +851,38 @@ export default function LandingPage() {
 
               <ul className="w-max font-avenirNext text-[#FFFFFFE5] list-disc text-[0.875rem] leading-[110%] mt-5 font-normal m-auto">
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>35%</b> goes to Kinship for software development, moderation, systems, maintenance, and support.
+                  <b>35%</b> goes to Kinship for software development,
+                  moderation, systems, maintenance, and support.
                 </p>
 
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>30%</b> goes directly to Champions as commissions for enrollment, distributed across 4 levels of the lineage (<b>20%</b> goes to Level 1,{" "}
-                  <b>5%</b> to goes to Level 2, <b>3%</b> to Level 3, <b>2%</b>{" "}
-                  to Level 4)
+                  <b>30%</b> goes directly to Champions as commissions for
+                  enrollment, distributed across 4 levels of the lineage (
+                  <b>20%</b> goes to Level 1, <b>5%</b> to goes to Level 2,{" "}
+                  <b>3%</b> to Level 3, <b>2%</b> to Level 4)
                 </p>
 
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>25%</b> goes to Creators from a royalty pool, distributed according to agent usage on a monthly basis
+                  <b>25%</b> goes to Creators from a royalty pool, distributed
+                  according to agent usage on a monthly basis
                 </p>
 
                 <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                  <b>5%</b> goes to Curators, the Champions who enrolled the Creators,
+                  <b>5%</b> goes to Curators, the Champions who enrolled the
+                  Creators,
                   <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir my-2">
-                    <b>5%</b> is distributed to Citizens as loyalty rewards (with <b>4%</b>{" "}
-                    going to back to the member and <b>1%</b> going to the
-                    Champion who enrolled the member)
+                    <b>5%</b> is distributed to Citizens as loyalty rewards
+                    (with <b>4%</b> going to back to the member and <b>1%</b>{" "}
+                    going to the Champion who enrolled the member)
                   </p>
                 </p>
               </ul>
 
               <p className="text-[#FFFFFFC7] max-md:text-sm font-avenir mt-4">
                 Payments for offerings, which include premium agents, goods,
-                services, and experiences (digital and real-world), go directly to the Creators, with transaction fees paid to Kinship, Curators, and the four levels Champions.
+                services, and experiences (digital and real-world), go directly
+                to the Creators, with transaction fees paid to Kinship,
+                Curators, and the four levels Champions.
               </p>
             </div>
           </div>
@@ -851,21 +896,38 @@ export default function LandingPage() {
 
             <div className="max-w-[49.813rem] mx-auto px-3">
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Kinship is governed by three organizations, each with a distinct role.
+                Kinship is governed by three organizations, each with a distinct
+                role.
               </p>
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Kinship Media Syndicate (Delaware C Corp) owns, maintains, and advances the core technology and intellectual property. This is the engineering and infrastructure layer — the team that builds and improves the platform.
+                Kinship Media Syndicate (Delaware C Corp) owns, maintains, and
+                advances the core technology and intellectual property. This is
+                the engineering and infrastructure layer — the team that builds
+                and improves the platform.
               </p>
 
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Kinship Intelligence Institute (501c3 Non-Profit) handles policy, ethics, research, and action. It exists to ensure the network develops responsibly and that the science behind the Vibes and HEARTS stays rigorous, independent, and publicly accountable.
+                Kinship Intelligence Institute (501c3 Non-Profit) handles
+                policy, ethics, research, and action. It exists to ensure the
+                network develops responsibly and that the science behind the
+                Vibes and HEARTS stays rigorous, independent, and publicly
+                accountable.
               </p>
 
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Kinship Agents DAO LLC (Marshall Islands) governs the network itself. Members vote on critical decisions — community standards, data governance, agent alignment, resource allocation. Every vote is recorded on-chain. Every agent you create is verifiably yours, secured by a built-in multi-signature wallet. Ownership isn't a metaphor. It's cryptographic.
+                Kinship Agents DAO LLC (Marshall Islands) governs the network
+                itself. Members vote on critical decisions — community
+                standards, data governance, agent alignment, resource
+                allocation. Every vote is recorded on-chain. Every agent you
+                create is verifiably yours, secured by a built-in
+                multi-signature wallet. Ownership isn't a metaphor. It's
+                cryptographic.
               </p>
               <p className="text-[#FFFFFFC7] max-md:text-sm mt-2 text-center font-avenir">
-                Your data is private. Your agents are sovereign. Your voice in governance is equal. And the three-body structure means no single entity can unilaterally control the direction of the network.
+                Your data is private. Your agents are sovereign. Your voice in
+                governance is equal. And the three-body structure means no
+                single entity can unilaterally control the direction of the
+                network.
               </p>
             </div>
           </div>
@@ -888,7 +950,13 @@ export default function LandingPage() {
             Where AI Belongs
           </h1>
           <p className="text-center font-avenir max-md:text-sm text-lg text-[#FFFFFFC7] max-md:px-3 px-[2rem] xl:w-[65rem] m-auto mt-5">
-            These are the first six platforms on the Kinship network — each one a living ecosystem of creators, agents, projects, and members organized around a shared domain. They're here to seed the network and show what's possible. But they're just the beginning. Any member can build projects and agents within these platforms, and any creator or organization can launch an entirely new platform of their own.
+            These are the first six platforms on the Kinship network — each one
+            a living ecosystem of creators, agents, projects, and members
+            organized around a shared domain. They're here to seed the network
+            and show what's possible. But they're just the beginning. Any member
+            can build projects and agents within these platforms, and any
+            creator or organization can launch an entirely new platform of their
+            own.
           </p>
         </div>
         <div className="max-xl:container max-xl:px-3 max-md:mt-5 grid max-md:grid-cols-1 max-lg:grid-cols-2 grid-cols-3 gap-x-[1.625rem] gap-y-[1.875rem] my-[2.563rem] xl:w-[57.625rem] mx-auto">
@@ -995,17 +1063,36 @@ export default function LandingPage() {
             <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}
             <div className="flex flex-col px-4 xl:w-[695px]">
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                I've spent my career building technology, and I've never been more concerned about where it's headed.
+                I've spent my career building technology, and I've never been
+                more concerned about where it's headed.
               </p>
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                The biggest AI labs in the world are in an arms race to build agents that serve platforms, not people. OpenAI’s ChatGPT, Google's Gemini, Anthropic’s Claude — they're all optimized for the same thing: get more users, keep them engaged, get them to spend. Social media becomes more addictive. Ecommerce becomes more extractive. The surveillance gets broader and the manipulation more subtle. The lines between artificial and real get ever more blurred. And now, with frameworks like Open Claw putting agentic power onto every device with minimal guardrails, we're watching the same pattern accelerate without anyone questioning who these agents actually serve.
+                The biggest AI labs in the world are in an arms race to build
+                agents that serve platforms, not people. OpenAI’s ChatGPT,
+                Google's Gemini, Anthropic’s Claude — they're all optimized for
+                the same thing: get more users, keep them engaged, get them to
+                spend. Social media becomes more addictive. Ecommerce becomes
+                more extractive. The surveillance gets broader and the
+                manipulation more subtle. The lines between artificial and real
+                get ever more blurred. And now, with frameworks like Open Claw
+                putting agentic power onto every device with minimal guardrails,
+                we're watching the same pattern accelerate without anyone
+                questioning who these agents actually serve.
               </p>
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 I built Kinship because I know there’s a better way.
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                We are, all of us, related. Not in some abstract metaphorical sense — in the deepest biological, ecological, and social sense. We share ancestry with every living thing on this planet. We're embedded in systems of mutual dependence that our culture has spent centuries pretending don't exist. The trees are our relatives. The rivers are our relatives. The person across the table from you, and people around the world, are your relatives. This isn't sentiment. It's the basic operating condition of life on Earth.
+                We are, all of us, related. Not in some abstract metaphorical
+                sense — in the deepest biological, ecological, and social sense.
+                We share ancestry with every living thing on this planet. We're
+                embedded in systems of mutual dependence that our culture has
+                spent centuries pretending don't exist. The trees are our
+                relatives. The rivers are our relatives. The person across the
+                table from you, and people around the world, are your relatives.
+                This isn't sentiment. It's the basic operating condition of life
+                on Earth.
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
@@ -1013,7 +1100,9 @@ export default function LandingPage() {
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                I can't promise this will be easy. Building something genuinely different never is. But I can promise you that the architecture is sound, the community is real, and the door is open.
+                I can't promise this will be easy. Building something genuinely
+                different never is. But I can promise you that the architecture
+                is sound, the community is real, and the door is open.
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
@@ -1021,7 +1110,7 @@ export default function LandingPage() {
               </p>
 
               <div className="text-[16px] italic font-semibold leading-[110%] ttracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
-                — David “Moto” Levine, 
+                — David “Moto” Levine,
                 <br />
                 Founder
               </div>

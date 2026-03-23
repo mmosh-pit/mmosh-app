@@ -63,7 +63,7 @@ const HomeLoggedInPage = () => {
       <header className="w-full flex justify-center">
         <div className="flex justify-between items-center md:px-16 px-4 py-8 bg-[#32323212] md:backdrop-filter md:backdrop-blur-[13px] md:rounded-full w-full lg:w-[80%] self-center">
           <div className="w-[25%]">
-            <KinshipBots />
+            <KinshipBots width={201} height={46} />
           </div>
 
           <div className="w-[25%]" />

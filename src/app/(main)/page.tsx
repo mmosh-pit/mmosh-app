@@ -1066,6 +1066,7 @@ export default function LandingPage() {
                 I've spent my career building technology, and I've never been
                 more concerned about where it's headed.
               </p>
+              <br />
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 The biggest AI labs in the world are in an arms race to build
                 agents that serve platforms, not people. OpenAI’s ChatGPT,
@@ -1079,10 +1080,11 @@ export default function LandingPage() {
                 we're watching the same pattern accelerate without anyone
                 questioning who these agents actually serve.
               </p>
+              <br />
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 I built Kinship because I know there’s a better way.
               </p>
-
+              <br />
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 We are, all of us, related. Not in some abstract metaphorical
                 sense — in the deepest biological, ecological, and social sense.
@@ -1098,7 +1100,7 @@ export default function LandingPage() {
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Technology must honor this truth.
               </p>
-
+              <br />
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 I can't promise this will be easy. Building something genuinely
                 different never is. But I can promise you that the architecture
@@ -1108,7 +1110,7 @@ export default function LandingPage() {
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
                 Come build with us.
               </p>
-
+              <br />
               <div className="text-[16px] italic font-semibold leading-[110%] ttracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
                 — David “Moto” Levine,
                 <br />

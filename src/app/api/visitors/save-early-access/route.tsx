@@ -16,28 +16,28 @@ export async function POST(req: NextRequest) {
     if (!isNonEmptyString(body.firstName)) {
       return NextResponse.json(
         { status: false, message: "First name is required" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     if (!isNonEmptyString(body.email) || !isValidEmail(body.email)) {
       return NextResponse.json(
         { status: false, message: "Valid email is required" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     if (!isNonEmptyString(body.password)) {
       return NextResponse.json(
         { status: false, message: "Password is required" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     if (!isNonEmptyString(body.currentStep)) {
       return NextResponse.json(
         { status: false, message: "Current step is required" },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
           status: false,
           message: "User with this email already exists",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         status: true,
         message: "Visitor saved successfully",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Visitor save error:", error);
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
         status: false,
         message: "Failed to save visitor",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

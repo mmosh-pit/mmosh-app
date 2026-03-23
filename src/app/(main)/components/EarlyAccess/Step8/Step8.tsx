@@ -84,13 +84,13 @@ export const Step8 = ({
 
       const res = await axios.post(
         "/api/visitors/save-early-access",
-        updatedData
+        updatedData,
       );
 
       if (!res.data?.status) {
         createMessage(
           res.data?.message || "Unable to save information",
-          "error"
+          "error",
         );
         setIsLoading(false);
         return;
@@ -98,7 +98,7 @@ export const Step8 = ({
 
       localStorage.removeItem("early-access-data");
       createMessage("Successfully submitted.", "success");
-      router.replace("/join");
+      router.replace("/early");
     } catch {
       createMessage("Something went wrong", "error");
     } finally {

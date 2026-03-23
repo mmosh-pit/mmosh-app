@@ -38,7 +38,7 @@ const Login = () => {
         setIsUserAuthenticated(!!user);
         setUser(user);
       }
-    } catch (error) {}
+    } catch (error) { }
   }, []);
 
   const submit = React.useCallback(
@@ -57,7 +57,7 @@ const Login = () => {
         setIsUserAuthenticated(true);
         setShowAuthOverlay(false);
         setUser(res.data.data.user);
-        router.replace("/chat");
+        router.replace("/early");
       } catch (err: any) {
         const error = err?.response?.data?.error;
 
@@ -66,7 +66,7 @@ const Login = () => {
 
       setIsLoading(false);
     },
-    [email, password]
+    [email, password],
   );
 
   React.useEffect(() => {

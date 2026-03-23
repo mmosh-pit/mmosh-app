@@ -274,18 +274,18 @@ export default function LandingPage() {
 
       const user = result.data?.data?.user;
 
+      if (!!user && !isUserAuthenticated) {
+        router.replace("/early");
+      }
+
       setShowAuthOverlay(!user);
       setIsAuthModalOpen(!user);
       setIsUserAuthenticated(!!user);
       setCurrentUser(user);
-
-      if (!!user) {
-        router.replace("/social");
-      }
     } catch (err) {
       // router.replace("/");
     }
-  }, [STORAGE_KEY]);
+  }, [STORAGE_KEY, isUserAuthenticated]);
 
   const prevSlide = () => {
     if (!totalSlides) return;

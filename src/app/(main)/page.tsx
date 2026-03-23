@@ -989,61 +989,39 @@ export default function LandingPage() {
         )}
         <section className="max-md:pt-7 max-md:pb-0 pb-16 max-w-[1144px] mx-auto">
           <h3 className="transition duration-300 place-self-center sm:text-left md:text-[3.125rem] max-md:text-xl max-md:leading-relaxed sm:text-[52px] font-goudy font-bold leading-[3.75rem] tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-            A Message from Moto
+            Where AI Belongs
           </h3>
           <div className="xl:flex items-start mt-5">
             <div className="w-full h-[350px] xl:w-[433px] xl:h-[430px] shrink-0 rounded-[30px] bg-[lightgray] bg-center bg-cover bg-no-repeat bg-[url('https://storage.googleapis.com/mmosh-assets/home/home9.png')] xl:mr-4"></div>{" "}
             <div className="flex flex-col px-4 xl:w-[695px]">
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                For as long as I can remember, I've lived two lives. One
-                directed — a family member, a scholar, an entrepreneur building
-                systems and running companies. The other reflective — a poet, a
-                ceremonial leader, a trickster, a seer, someone drawn to the
-                edges of consciousness and the deep inner work that doesn’t fit
-                on a resume.
+                I've spent my career building technology, and I've never been more concerned about where it's headed.
               </p>
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                For most of my life I kept them separate, because I thought I
-                had to. Maybe you can relate. You know how to perform in the
-                world. You also know there's something deeper running underneath
-                — something the culture doesn't have a name for. So you
-                compartmentalize. The strategic mind goes to work. The deeper
-                self lays dormant.
+                The biggest AI labs in the world are in an arms race to build agents that serve platforms, not people. OpenAI’s ChatGPT, Google's Gemini, Anthropic’s Claude — they're all optimized for the same thing: get more users, keep them engaged, get them to spend. Social media becomes more addictive. Ecommerce becomes more extractive. The surveillance gets broader and the manipulation more subtle. The lines between artificial and real get ever more blurred. And now, with frameworks like Open Claw putting agentic power onto every device with minimal guardrails, we're watching the same pattern accelerate without anyone questioning who these agents actually serve.
               </p>
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                Together, we're building systems that notice, respond, steady,
-                and strengthen—that help people meet themselves and one another
-                more fully, and engage the world with greater clarity, courage,
-                and care.
+                I built Kinship because I know there’s a better way.
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                A few years ago that split became untenable — for me personally,
-                and by my reckoning, for much of the world at large. So I went
-                looking for integration. I worked with hypnotherapists, depth
-                psychologists, intuitives, activists, and energy healers. I
-                joined retreats, stargate activations, plant medicine
-                ceremonies, and communities experiencing radically divergent
-                models of reality. And I came back each time faced with the same
-                challenge: carrying the value of the insights and experiences
-                gained into my so-called “ordinary” daily life.
+                We are, all of us, related. Not in some abstract metaphorical sense — in the deepest biological, ecological, and social sense. We share ancestry with every living thing on this planet. We're embedded in systems of mutual dependence that our culture has spent centuries pretending don't exist. The trees are our relatives. The rivers are our relatives. The person across the table from you, and people around the world, are your relatives. This isn't sentiment. It's the basic operating condition of life on Earth.
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                I built Kinship to solve that. A platform where the inner work
-                and the outer work run on the same infrastructure. Where you
-                don't have to choose between being effective and being whole.
-                Where the community holds what you can't hold alone, and the AI
-                agents hold space for you to become whole again.
+                Technology must honor this truth.
               </p>
 
               <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
-                If that split is something you recognize, and want to heal in
-                yourself, come join us.
+                I can't promise this will be easy. Building something genuinely different never is. But I can promise you that the architecture is sound, the community is real, and the door is open.
+              </p>
+
+              <p className="text-justify font-avenir text-base sm:text-[1.063rem] max-md:leading-relaxed font-normal leading-[100%] tracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] font-light">
+                Come build with us.
               </p>
 
               <div className="text-[16px] italic font-semibold leading-[110%] ttracking-[-0.02em] text-[rgba(255,255,255,0.78)] [font-family:'SF Pro Display'] mt-2.5">
-                – David "Moto" Levine
+                — David “Moto” Levine, 
                 <br />
                 Founder
               </div>

@@ -139,67 +139,75 @@ export const Step1: React.FC<Step1Props> = ({
         <div className="lg:flex items-center justify-center px-3">
           <EarlyAccessCircleVW />
 
-            <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
-              <h3 className="transition duration-300 text-[1.95rem] text-center font-poppinsNew font-bold  tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
-                Request Early Access
-              </h3>
+          <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
+            <h3 className="transition duration-300 text-[1.95rem] text-center font-poppinsNew font-bold  tracking-[-1.04px] bg-[linear-gradient(143deg,#FFF_18.17%,rgba(255,255,255,0)_152.61%)] bg-clip-text text-transparent stroke-text">
+              Request Early Access
+            </h3>
 
-              <p className="text-[#FFFFFFE5] text-base  my-2">
-                <span className="text-white font-bold text-base">
-                  Step 1 of 8: Enter your name and email address.
+            <p className="text-[#FFFFFFE5] text-base  my-2">
+              <span className="text-white font-bold text-base">
+                Step 1 of 6: Enter your name and email address.
+              </span>
+              We’ll send a 6-digit code by email to verify your address.
+            </p>
+
+            <form onSubmit={createVisitorRecord}>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">First Name*</legend>
+                <input
+                  type="text"
+                  className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  maxLength={16}
+                />
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">Email address*</legend>
+                <input
+                  type="text"
+                  className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </fieldset>
+
+              <label className="label">
+                <input
+                  type="checkbox"
+                  className="checkbox bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
+                  checked={hasChecked}
+                  onChange={(e) => setHasChecked(e.target.checked)}
+                />
+                <span className="ml-5">
+                  By continuing, I agree to receive communications from Kinship
+                  Agents, with the understanding that I can unsubscribe at any
+                  time. I have reviewed the{" "}
+                  <a href="/privacy" target="_blank">
+                    Privacy Policy
+                  </a>{" "}
+                  and accept the{" "}
+                  <a href="/tos" target="_blank">
+                    Terms of Service
+                  </a>
+                  .
                 </span>
-                We’ll send a <br />
-                link to verify it’s really you.
-              </p>
+              </label>
 
-              <form onSubmit={createVisitorRecord}>
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">First Name*</legend>
-                  <input
-                    type="text"
-                    className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    maxLength={16}
-                  />
-                </fieldset>
-
-                <fieldset className="fieldset">
-                  <legend className="fieldset-legend">Email address</legend>
-                  <input
-                    type="text"
-                    className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </fieldset>
-
-                <label className="label">
-                  <input
-                    type="checkbox"
-                    className="checkbox bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
-                    checked={hasChecked}
-                    onChange={(e) => setHasChecked(e.target.checked)}
-                  />
-                  <span className="ml-5">
-                    By continuing, I agree to receive communications about the
-                    Kinship Bots early access program and launch updates.
-                  </span>
-                </label>
-
-                <button
-                  type="submit"
-                  className="btn bg-[#EB8000] hover:bg-[#EB8000] w-full text-white font-bold mt-[2rem] border-[#FF710F33] hover:border-none"
-                  disabled={isLoading}
-                >
-                  {isLoading
-                    ? "Sending..."
-                    : "Send the security verification code"}
-                </button>
-              </form>
-            </div>
+              <button
+                type="submit"
+                className="btn bg-[#EB8000] hover:bg-[#EB8000] w-full text-white font-bold mt-[2rem] border-[#FF710F33] hover:border-none"
+                disabled={isLoading}
+              >
+                {isLoading
+                  ? "Sending..."
+                  : "Send the security verification code"}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </>

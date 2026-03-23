@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface Step7Props {
-  onSuccess?: () => void;
   onBack?: () => void;
   earlyAccessRef: any;
   setShowMsg: (data: any) => void;
@@ -17,7 +16,6 @@ interface Step7Props {
 }
 
 export const Step7 = ({
-  onSuccess,
   onBack,
   setShowMsg,
   setMsgText,
@@ -51,12 +49,46 @@ export const Step7 = ({
     }
   }, []);
 
+  const onSuccess = async () => {
+    try {
+      setIsLoading(true);
+
+      const updatedData = {
+        ...cachedData,
+        completedSteps: 8,
+        currentStep: "complete",
+      };
+
+      const res = await axios.post(
+        "/api/visitors/save-early-access",
+        updatedData,
+      );
+
+      if (!res.data?.status) {
+        createMessage(
+          res.data?.message || "Unable to save information",
+          "error",
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      localStorage.removeItem("early-access-data");
+      createMessage("Successfully submitted.", "success");
+      router.replace("/early");
+    } catch {
+      createMessage("Something went wrong", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const submitKinshipCode = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!kinshipCode && !noCodeChecked) {
       createMessage(
         "Please enter a Kinship Code or confirm that you don’t have code.",
-        "error"
+        "error",
       );
       return;
     }
@@ -70,7 +102,7 @@ export const Step7 = ({
           referedKinshipCode: "",
           currentStep: "8",
           noCodeChecked: true,
-        })
+        }),
       );
       if (onSuccess) onSuccess();
       return;
@@ -79,7 +111,7 @@ export const Step7 = ({
     if (kinshipCode.length < 6) {
       createMessage(
         "Kinship Code must be between 6 and 16 characters.",
-        "error"
+        "error",
       );
       return;
     }
@@ -104,7 +136,7 @@ export const Step7 = ({
           referedKinshipCode: kinshipCode,
           noCodeChecked: false,
           currentStep: "8",
-        })
+        }),
       );
 
       if (onSuccess) onSuccess();
@@ -147,8 +179,12 @@ export const Step7 = ({
               Request Early Access
             </h2>
 
-            <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[88%] mt-5 -tracking-[0.04em]">
-              Step 7 of 8: Enter a Kinship Code from your Referrer{" "}
+            <p className="mt-2 text-sm text-white/90">
+              <span className="font-bold">
+                Step 6 of 6: Enter your Kinship Code
+              </span>{" "}
+              Kinship is currently invite-only. Enter a code from a member,
+              organization, or agent to join early access.
             </p>
 
             <form
@@ -159,7 +195,7 @@ export const Step7 = ({
                 <InputVW
                   labelText="Kinship Code"
                   value={kinshipCode}
-                  placeHolder="Kinship Code"
+                  placeHolder="Enter code"
                   inputType="text"
                   isRequired={false}
                   type="kinship-code"
@@ -182,7 +218,7 @@ export const Step7 = ({
                       }}
                     />
                   }
-                  I don’t have a code yet — I’ll provide one later.
+                  I don’t have a code yet — I’ll add one later
                 </label>
               </div>
 

@@ -7,14 +7,15 @@ const Privacy = () => (
     <p>Last modified date: May 5, 2025</p>
 
     <p>
-      This privacy policy ("Privacy Policy") explains how Kinship Bots Club
-      (“KBC,” "our," "we," or "us") collects, uses, and discloses information
-      about you. This Privacy Policy applies when you{" "}
+      This privacy policy ("Privacy Policy") explains how Kinship Media
+      Syndicate (“KMS,” "our," "we," or "us") collects, uses, and discloses
+      information about you. This Privacy Policy applies when you{" "}
       <a href="https://kinship.today" target="_blank">
         https://kinship.today
       </a>{" "}
-      (the "Website"), use our mobile app, contact our team by email or
-      Telegram, engage with us on social media, or otherwise interact with us.
+      (the "Website"), use our mobile app, interact with any of our AI agents,
+      contact our team by email or Telegram, engage with us on social media, or
+      otherwise interact with us.
     </p>
 
     <p>
@@ -163,7 +164,7 @@ const Privacy = () => (
         We may share personal information if we believe that your actions are
         inconsistent with our user agreements or policies, if we believe that
         you have violated the law, or if we believe it is necessary to protect
-        the rights, property, and safety of KBC, our users, the public, or
+        the rights, property, and safety of KMS, our users, the public, or
         others.
       </li>
       <li>
@@ -191,7 +192,7 @@ const Privacy = () => (
     <p>
       your IP address, web browser, mobile network information, pages viewed,
       time spent on pages or in mobile apps, links clicked, and conversion
-      information. This information may be used by KBC and others to, among
+      information. This information may be used by KMS and others to, among
       other things, research, analyze and track data, determine the popularity
       of certain content, and better understand your online activity. However,
       if you have deleted and disabled cookies, these uses will not be possible

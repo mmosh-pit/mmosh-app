@@ -32,7 +32,7 @@ export const Step4: React.FC<Step4Props> = ({
   setShowMsg,
   setMsgText,
   setMsgClass,
-  earlyAccessRef
+  earlyAccessRef,
 }) => {
   const router = useRouter();
 
@@ -110,13 +110,13 @@ export const Step4: React.FC<Step4Props> = ({
               countryCode: contactDetails.countryCode,
               country: contactDetails.country,
               isMobileNumberVerified: false,
-            })
+            }),
           );
           if (onSuccess) onSuccess();
         } else {
           createMessage(
             result.data.message || "Please check the mobile number",
-            "error"
+            "error",
           );
         }
       } catch {
@@ -130,7 +130,7 @@ export const Step4: React.FC<Step4Props> = ({
         JSON.stringify({
           ...cachedData,
           currentStep: "6",
-        })
+        }),
       );
     }
   };
@@ -173,10 +173,10 @@ export const Step4: React.FC<Step4Props> = ({
             </h2>
 
             <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-5 -tracking-[0.04em]">
-              Step 4 of 8: Enter your mobile number.{" "}
+              Step 4 of 6: Enter your mobile number.{" "}
               <span className="font-normal font-avenir">
                 {" "}
-                We’ll send a link to verify it’s really you.
+                We’ll send a 6-digit code by text to verify and continue.
               </span>
             </p>
 
@@ -198,7 +198,7 @@ export const Step4: React.FC<Step4Props> = ({
                         dialCode: string;
                         countryCode: string;
                         name: string;
-                      }
+                      },
                     ) => {
                       if (!country?.dialCode) {
                         setContactDetails((prev) => ({
@@ -233,14 +233,13 @@ export const Step4: React.FC<Step4Props> = ({
                     }}
                     specialLabel=""
                   />
-                  <span>You’ll get a verification link</span>
                 </div>
 
                 <button
                   type="submit"
                   className="steps_btn_submit mt-[10.438rem] text-white font-bold btn bg-[#EB8000] border-[#FF710F33] w-full hover:bg-[#EB8000] hover:border-[#FF710F33]"
                 >
-                  {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
+                  {isLoading ? <Spinner size="sm" /> : "Send Code"}
                 </button>
               </div>
             </form>

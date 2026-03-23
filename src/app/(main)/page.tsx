@@ -388,7 +388,7 @@ export default function LandingPage() {
               className="text-base text-white cursor-pointer"
               onClick={() => scrollWithOffset(originStoryRef)}
             >
-              Origin Story
+              Launch Video
             </a>
 
             <div className="xl:mx-4 md:mx-2" />
@@ -397,7 +397,7 @@ export default function LandingPage() {
               className="text-base text-white cursor-pointer"
               onClick={() => scrollWithOffset(kinshipIntelligenceRef)}
             >
-              Kinship Intelligence
+              A New Choice
             </a>
 
             <div className="xl:mx-4 md:mx-2" />
@@ -406,7 +406,7 @@ export default function LandingPage() {
               className="text-base text-white cursor-pointer"
               onClick={() => scrollWithOffset(collectiveEconomicsRef)}
             >
-              Co-op Economics
+              Circular Economy
             </a>
 
             <div className="xl:mx-4 md:mx-2" />
@@ -415,17 +415,7 @@ export default function LandingPage() {
               className="text-base text-white cursor-pointer"
               onClick={() => scrollWithOffset(foundingCreatorsRef)}
             >
-              Founding Sages{" "}
-            </a>
-            <div className="xl:mx-4 md:mx-2" />
-
-            <a
-              href="https://kinship.systems"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-base text-white cursor-pointer"
-            >
-              Go Deeper
+              Service Tiers{" "}
             </a>
           </div>
 
@@ -772,7 +762,10 @@ export default function LandingPage() {
               scales with impact, not impressions.
             </p>
 
-            <h3 className="my-4 text-center font-bold px-12 text-[2.5rem] max-xl:text-3xl max-md:text-2xl max-sm:text-lg leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
+            <h3
+              className="my-4 text-center font-bold px-12 text-[2.5rem] max-xl:text-3xl max-md:text-2xl max-sm:text-lg leading-[1.2] m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text"
+              ref={foundingCreatorsRef}
+            >
               Your Life Has Many Facets. Your Agents Should Too.
             </h3>
 
@@ -942,10 +935,7 @@ export default function LandingPage() {
           </button>
         </div>
 
-        <div
-          className="mt-[2.875rem] max-md:mt-12 max-md:px-3"
-          ref={foundingCreatorsRef}
-        >
+        <div className="mt-[2.875rem] max-md:mt-12 max-md:px-3">
           <h1 className="text-center font-bold xl:px-12 leading-[1.2] xl:w-[65.063rem] text-[3.75rem]  max-xl:text-5xl max-md:text-4xl max-sm:text-2xl m-auto font-goudy bg-[linear-gradient(to_bottom,#FFFFFF,#FFFFFF64)] bg-clip-text text-transparent stroke-text">
             Where AI Belongs
           </h1>
@@ -1027,29 +1017,9 @@ export default function LandingPage() {
           />
         )}
         {currentStep === 6 && (
-          <Step6
-            onSuccess={() => setCurrentStep(7)}
-            earlyAccessRef={earlyAccessRef}
-            onBack={() => setCurrentStep(4)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 7 && (
           <Step7
-            onSuccess={() => setCurrentStep(8)}
             earlyAccessRef={earlyAccessRef}
             onBack={() => setCurrentStep(6)}
-            setShowMsg={setShowMsg}
-            setMsgClass={setMsgClass}
-            setMsgText={setMsgText}
-          />
-        )}
-        {currentStep === 8 && (
-          <Step8
-            onBack={() => setCurrentStep(7)}
-            earlyAccessRef={earlyAccessRef}
             setShowMsg={setShowMsg}
             setMsgClass={setMsgClass}
             setMsgText={setMsgText}

@@ -96,14 +96,17 @@ const Footer = () => {
       <div className="xl:flex justify-between items-center mt-12 place-self-center">
         <div>
           <p className="text-sm">
-            © 2025 Kinship Intelligence Cooperative, PBC. All Rights Reserved.
+            © 2025 Kinship Media Syndicate. All Rights Reserved.
           </p>
           <p className="text-sm">
-            Kinship Intelligence™ and Kinship Bots™ are trademarks of
-          </p>
-          <p className="text-sm">
-            Kinship Intelligence, a Colorado Cooperative and Public Benefit
-            Corporation.
+            Read our{" "}
+            <a href="/tos" target="_blank">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="/privacy" target="_blank">
+              Privacy Policy
+            </a>
           </p>
         </div>
         <div>

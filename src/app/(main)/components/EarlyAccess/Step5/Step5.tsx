@@ -21,7 +21,7 @@ export const Step5: React.FC<Step5Props> = ({
   setShowMsg,
   setMsgText,
   setMsgClass,
-  earlyAccessRef
+  earlyAccessRef,
 }) => {
   const router = useRouter();
 
@@ -47,7 +47,10 @@ export const Step5: React.FC<Step5Props> = ({
     }
   }, []);
 
-  const createMessage = (message: string, type: "error" | "success" | "warn") => {
+  const createMessage = (
+    message: string,
+    type: "error" | "success" | "warn",
+  ) => {
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -61,7 +64,7 @@ export const Step5: React.FC<Step5Props> = ({
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     setHasInvalid(false);
 
@@ -82,7 +85,7 @@ export const Step5: React.FC<Step5Props> = ({
 
   const handlePaste = (
     e: React.ClipboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     e.preventDefault();
     setHasInvalid(false);
@@ -141,7 +144,7 @@ export const Step5: React.FC<Step5Props> = ({
             ...cachedData,
             isMobileNumberVerified: true,
             currentStep: "6",
-          })
+          }),
         );
         onSuccess?.();
       } else {
@@ -197,13 +200,16 @@ export const Step5: React.FC<Step5Props> = ({
           <EarlyAccessCircleVW />
 
           <div className="min-h-[29.875rem] lg:ml-[5rem] m-2  xl:w-[36.188rem] bg-[#100E59] rounded-[1.25rem] pt-[1.563rem] pb-[0.938rem] pl-[3.125rem] pe-[3.313rem] max-md:px-5 max-md:py-8">
-            <h2 className="relative text-center text-xl font-bold text-white">
+            <h2 className="relative font-poppinsNew text-center text-[1.563rem] max-md:text-lg leading-[100%] font-bold bg-gradient-to-r from-[#FFFFFF] to-[#FFFFFF88] bg-clip-text text-transparent">
               <BackArrowVW onClick={handleBackNavigation} />
               Request Early Access
             </h2>
 
-            <p className="mt-2 text-sm text-white/90 text-center">
-              Step 5 of 8: Verify your mobile number.
+            <p className="mt-2 text-sm text-white/90">
+              <span className="font-bold">
+                Step 5 of 6: Verify your mobile number.
+              </span>{" "}
+              We sent a six digit code to {cachedData.mobileNumber}
             </p>
 
             <form className="mt-6" onSubmit={verifyOTP}>
@@ -232,7 +238,8 @@ export const Step5: React.FC<Step5Props> = ({
                 ${hasInvalid
                         ? "bg-[#F8060624] border-[#F806068F]"
                         : "bg-[#FFFFFF14] border-white/20 focus:border-white"
-                      }`} />
+                      }`}
+                  />
                 ))}
               </div>
 
@@ -247,7 +254,7 @@ export const Step5: React.FC<Step5Props> = ({
                 type="submit"
                 className="steps_btn_submit mt-[10.438rem] text-white font-bold btn bg-[#EB8000] border-[#FF710F33] w-full hover:bg-[#EB8000] hover:border-[#FF710F33]"
               >
-                {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
+                {isLoading ? <Spinner size="sm" /> : "Confirm Mobile Code"}
               </button>
             </form>
           </div>

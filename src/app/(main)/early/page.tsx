@@ -84,11 +84,23 @@ const Social = () => {
 
         <p className="text-xl text-white md:max-w-[40%] max-w-[60%] text-center">
           We're still building out our platform, and we'll let you know as soon
-          as we're ready to greet you. Until then, feel free to poke around
-          using the menu up top. You’ll see most of this is broken, but still
-          pretty exciting. Please come join us on your favorite social networks.
-          We’ll be adding the links as we set up accounts.
+          as we're ready to greet you. Until then, please enjoy our Origin Story
+          video and come join us on your favorite social networks. We’ll be
+          adding the links below as we set up accounts.
         </p>
+
+        <div className="my-6" />
+
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/o-VRMB0-R98?si=8oxsdk9dn3fsP8aO"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
 
         <div className="my-6" />
 

@@ -30,26 +30,28 @@ const TOS = () => {
         This End User License Agreement and Terms of Service (“EULA” or “Terms”)
         is a binding contract between you, an individual user or site visitor,
         whether personally or on behalf of an entity (“user,” “you,” “your”) and
-        Kinship Bots Club (“KBC,” “we,” “us” or “our”) concerning use of the our
-        services (the “Service”), including this website{" "}
+        Kinship Media Syndicate (“Kinship,” “KMS,” “we,” “us” or “our”)
+        concerning use of the our services (the “Service”), including this
+        website{" "}
         <a href="https://kinship.today" target="_blank">
           https://kinship.today
         </a>{" "}
-        as well as any other media form, media channel, bot, app or mobile
+        as well as any other media form, media channel, agent, app or mobile
         website related, linked, or otherwise connected thereto (collectively,
-        the “Site”). Currently, KBC maintains and operates the Site as an opt-in
-        service for creating, promoting and enjoying token-gated agentic AI
-        “bots”. For the avoidance of doubt, KBC does not control the Massively
-        Multiplayer On-chain Shared Hallucination (“MMOSH”) protocol on which we
-        operate, Telegram or any other systems, networks, apps, protocols,
-        devices or platforms on which we might appear. KBC cannot control
-        activity and data on MMOSH, the activities of persons who develop and
-        use applications on MMOSH, the distribution of royalties on MMOSH, or
-        use of MMOSH. MMOSH is an open-source protocol that was developed and is
-        maintained by KBC. The genesis ecosystem for the MMOSH Protocol is MMOSH
-        DAO. Any third party may develop applications, protocols, networks and
-        services that use MMOSH, so our tokens and other materials may appear in
-        various contexts outside our control.
+        the “Site”). Currently, KMS maintains and operates the Site as an opt-in
+        service for creating, promoting and enjoying token-gated AI “agents”.
+        For the avoidance of doubt, KMS does not control the Kinship Agency
+        Protocol (“KAP”) protocol on which we operate, Kinship Agents DAO, LLC,
+        Kinship Intelligence Institute, Telegram, Gmail, Bluesky or any other
+        systems, networks, apps, protocols, devices or platforms on which we
+        might appear. KMS cannot control activity and data on KAP, the
+        activities of persons who develop and use applications on KAP, the
+        distribution of royalties on KAP, or use of KAP. KAP is an open-source
+        protocol that was developed and is maintained by KMS. The genesis
+        ecosystem for the KAP is Kinship Today. Any third party may develop
+        applications, protocols, networks and services that use KAP, so our
+        tokens and other materials may appear in various contexts outside our
+        control.
       </p>
 
       <p>
@@ -103,7 +105,7 @@ const TOS = () => {
             PLEASE NOTE: THE “DISPUTE RESOLUTION” SECTION OF THIS EULA CONTAINS
             AN ARBITRATION CLAUSE THAT REQUIRES DISPUTES TO BE ARBITRATED ON AN
             INDIVIDUAL BASIS, AND PROHIBITS CLASS ACTION CLAIMS. IT AFFECTS HOW
-            DISPUTES BETWEEN YOU AND KBC ARE RESOLVED. BY ACCEPTING THIS EULA,
+            DISPUTES BETWEEN YOU AND KMS ARE RESOLVED. BY ACCEPTING THIS EULA,
             YOU AGREE TO BE BOUND BY THIS ARBITRATION PROVISION. PLEASE READ IT
             CAREFULLY.
           </strong>
@@ -115,7 +117,7 @@ const TOS = () => {
       <p>
         The Service is licensed, not sold, to you for use only under the terms
         of the EULA, subject to your complete and ongoing compliance with the
-        terms and conditions of the EULA. KBC hereby grants you a personal,
+        terms and conditions of the EULA. KMS hereby grants you a personal,
         limited, revocable, non-transferable license to access and use the
         Service solely for your own use.
       </p>
@@ -296,11 +298,11 @@ const TOS = () => {
       <h2>TRADEMARKS</h2>
 
       <p>
-        “Kinship Bots Club” and our logos, our product or service names, our
-        slogans and the look and feel of the Service are trademarks of KBC and
-        may not be copied, imitated or used, in whole or in part, without our
-        prior written permission, which may be obtained by emailing Kinship Bots
-        Club, our technical partners, at support@kinship.today. All other
+        “Kinship Media Syndicate” and our logos, our product or service names,
+        our slogans and the look and feel of the Service are trademarks of KMS
+        and may not be copied, imitated or used, in whole or in part, without
+        our prior written permission, which may be obtained by emailing Kinship
+        Bots Club, our technical partners, at support@kinship.today. All other
         trademarks, registered trademarks, product names and company names or
         logos mentioned on the Service are the property of their respective
         owners. Reference to any products, services, processes or other
@@ -313,7 +315,7 @@ const TOS = () => {
 
       <p>
         Please read the following section carefully because it requires you to
-        arbitrate certain disputes and claims with KBC and limits the manner in
+        arbitrate certain disputes and claims with KMS and limits the manner in
         which you can seek relief from us, unless you opt out of arbitration by
         following the instructions set forth below. No class or representative
         actions or arbitrations are allowed under this arbitration provision. In
@@ -322,33 +324,33 @@ const TOS = () => {
       </p>
 
       <p>
-        (a) No Representative Actions. You and KBC agree that any dispute
+        (a) No Representative Actions. You and KMS agree that any dispute
         arising out of or related to this EULA or the Service is personal to you
-        and KBC and that any dispute will be resolved solely through individual
+        and KMS and that any dispute will be resolved solely through individual
         action, and will not be brought as a class arbitration, class action or
         any other type of representative proceeding.
       </p>
 
       <p>
-        (b) Arbitration of Disputes. You and KBC waive your rights to a jury
+        (b) Arbitration of Disputes. You and KMS waive your rights to a jury
         trial and to have any other dispute arising out of or related to this
         EULA and the Service, including claims related to privacy and data
         security, (collectively, “Disputes”) resolved in court. Instead, for any
-        Dispute that you have against KBC you agree to first contact KBC and
+        Dispute that you have against KMS you agree to first contact KMS and
         attempt to resolve the claim informally by sending a written notice of
-        your claim (“Notice”) to KBC by email at support@kinship.today or by
-        US mail addressed to Kinship Bots Club, P.O. Box 2085, Shepherdstown, WV
-        25443. The Notice must (a) include your name, residence address, email
-        address, and telephone number; (b) describe the nature and basis of the
-        Dispute; and (c) set forth the specific relief sought. Our notice to you
-        will be similar in form to that described above. If you and KBC cannot
-        reach an agreement to resolve the Dispute within thirty (30) days after
-        such Notice is received, then either party may submit the Dispute to
-        binding arbitration administered by JAMS or, under the limited
+        your claim (“Notice”) to KMS by email at support@kinship.today or by US
+        mail addressed to Kinship Media Syndicate, P.O. Box 2085, Shepherdstown,
+        WV 25443. The Notice must (a) include your name, residence address,
+        email address, and telephone number; (b) describe the nature and basis
+        of the Dispute; and (c) set forth the specific relief sought. Our notice
+        to you will be similar in form to that described above. If you and KMS
+        cannot reach an agreement to resolve the Dispute within thirty (30) days
+        after such Notice is received, then either party may submit the Dispute
+        to binding arbitration administered by JAMS or, under the limited
         circumstances set forth above, in court. All Disputes submitted to JAMS
         will be resolved through confidential, binding arbitration before one
         arbitrator. Arbitration proceedings will be held in Martinsburg, WV. You
-        and KBC agree that Disputes will be held in accordance with the JAMS
+        and KMS agree that Disputes will be held in accordance with the JAMS
         Streamlined Arbitration Rules and Procedures (“JAMS Rules”). The most
         recent version of the JAMS Rules are available on the JAMS website and
         are hereby incorporated by reference. You either acknowledge and agree
@@ -358,7 +360,7 @@ const TOS = () => {
       </p>
 
       <p>
-        (c) You and KBC agree that these Terms affect interstate commerce and
+        (c) You and KMS agree that these Terms affect interstate commerce and
         that the enforceability of this Section will be substantively and
         procedurally governed by the Federal Arbitration Act, 9 U.S.C. § 1, et
         seq. (the “FAA”), to the maximum extent permitted by applicable law. As
@@ -374,7 +376,7 @@ const TOS = () => {
 
       <p>
         (d) The arbitration will allow for the discovery or exchange of
-        non-privileged information relevant to the Dispute. The arbitrator, KBC,
+        non-privileged information relevant to the Dispute. The arbitrator, KMS,
         and you will maintain the confidentiality of any arbitration
         proceedings, judgments and awards, including information gathered,
         prepared and presented for purposes of the arbitration or related to the
@@ -389,10 +391,10 @@ const TOS = () => {
       </p>
 
       <p>
-        (e) You and KBC agree that for any arbitration you initiate, you will
+        (e) You and KMS agree that for any arbitration you initiate, you will
         pay the filing fee (up to a maximum of $250 if you are a consumer), and
-        KBC will pay the remaining JAMS fees and costs. For any arbitration
-        initiated by KBC, KBC will pay all JAMS fees and costs. You and KBC
+        KMS will pay the remaining JAMS fees and costs. For any arbitration
+        initiated by KMS, KMS will pay all JAMS fees and costs. You and KMS
         agree that the State of West Virginia shall have exclusive jurisdiction
         over any appeals and the enforcement of an arbitration award.
       </p>
@@ -400,13 +402,13 @@ const TOS = () => {
       <p>
         (f) Any Dispute must be filed within one year after the relevant claim
         arose; otherwise, the Dispute is permanently barred, which means that
-        you and KBC will not have the right to assert the claim.
+        you and KMS will not have the right to assert the claim.
       </p>
 
       <p>
         (g) You have the right to opt out of binding arbitration within 30 days
         of the date you first accepted the terms of this Section by mailing an
-        opt-out notice to KBC at P.O. Box 2085, Shepherdstown, WV 25443. In
+        opt-out notice to KMS at P.O. Box 2085, Shepherdstown, WV 25443. In
         order to be effective, the opt-out notice must include your full name
         and address and clearly indicate your intent to opt out of binding
         arbitration. By opting out of binding arbitration, you are agreeing to
@@ -448,7 +450,7 @@ const TOS = () => {
         inaccuracies, or omissions, including descriptions, pricing,
         availability, and various other information. We reserve the right to
         correct any errors, inaccuracies, or omissions and to change or update
-        the information on the Site at any time, without prior notice. KBC does
+        the information on the Site at any time, without prior notice. KMS does
         not warrant that the content will be uninterrupted or error free or free
         of computer viruses, contaminants or other harmful items.
       </p>
@@ -457,7 +459,7 @@ const TOS = () => {
 
       <p>
         THE SITE AND SERVICE IS PROVIDED ON AN “AS-IS” AND “AS-AVAILABLE” BASIS.
-        TO THE MAXIMUM EXTENT PERMITTED BY LAW, KBC WILL NOT BE LIABLE FOR ANY
+        TO THE MAXIMUM EXTENT PERMITTED BY LAW, KMS WILL NOT BE LIABLE FOR ANY
         DAMAGES OF ANY KIND ARISING FROM THE USE OF THE SITE OR SERVICE,
         INCLUDING, BUT NOT LIMITED TO INDIRECT, INCIDENTAL, PUNITIVE, EXEMPLARY,
         SPECIAL OR CONSEQUENTIAL DAMAGES, EVEN IF WE HAVE BEEN ADVISED OF THE
@@ -495,9 +497,9 @@ const TOS = () => {
       </p>
 
       <p>
-        KBC may link to products and services offered by third parties through
+        KMS may link to products and services offered by third parties through
         the Service. These third-party products and services are not offered by
-        KBC and KBC is not responsible for any damages or losses that you might
+        KMS and KMS is not responsible for any damages or losses that you might
         incur as a result of your use or purchase of these products and
         services.
       </p>
@@ -517,7 +519,7 @@ const TOS = () => {
       <h2>INDEMNIFICATION</h2>
 
       <p>
-        You hereby agree to defend, indemnify, and hold KBC harmless from and
+        You hereby agree to defend, indemnify, and hold KMS harmless from and
         against any loss, damage, liability, claim, or demand, including
         reasonable attorneys’ fees and expenses, made by any third party due to
         or arising out of: (1) use of the Service; (2) breach of this EULA; (3)
@@ -601,7 +603,7 @@ const TOS = () => {
 
       <p>
         You may withdraw your consent to receive Communications under this EULA
-        by contacting us at support@kinshpbots.com. We will process your request
+        by contacting us at support@kinship.today. We will process your request
         to withdraw your consent to receive electronic Communications in a
         reasonable time. After we process your request, your access and use of
         the Service will terminate.

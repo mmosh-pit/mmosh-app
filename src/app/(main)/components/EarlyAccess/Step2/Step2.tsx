@@ -22,7 +22,7 @@ export const Step2: React.FC<Step2Props> = ({
   setShowMsg,
   setMsgText,
   setMsgClass,
-  earlyAccessRef
+  earlyAccessRef,
 }) => {
   const [cachedData, setCachedData] = React.useState<any>({});
   const [otp, setOtp] = React.useState(["", "", "", "", "", ""]);
@@ -49,7 +49,10 @@ export const Step2: React.FC<Step2Props> = ({
     }
   }, []);
 
-  const createMessage = (message: string, type: "error" | "success" | "warn") => {
+  const createMessage = (
+    message: string,
+    type: "error" | "success" | "warn",
+  ) => {
     setMsgText(message);
     setMsgClass(type);
     setShowMsg(true);
@@ -74,7 +77,7 @@ export const Step2: React.FC<Step2Props> = ({
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     setHasInvalid(false);
 
@@ -95,7 +98,7 @@ export const Step2: React.FC<Step2Props> = ({
 
   const handlePaste = (
     e: React.ClipboardEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) => {
     e.preventDefault();
     setHasInvalid(false);
@@ -148,7 +151,7 @@ export const Step2: React.FC<Step2Props> = ({
         setHasInvalid(true);
         createMessage(
           result.data.message || "Invalid verification code.",
-          "error"
+          "error",
         );
       }
     } catch {
@@ -183,7 +186,6 @@ export const Step2: React.FC<Step2Props> = ({
     } finally {
       setHasLoadingResendOTP(false);
     }
-
   };
 
   const handleBackNavigation = () => {
@@ -208,12 +210,11 @@ export const Step2: React.FC<Step2Props> = ({
               Request Early Access
             </h2>
             <p className="max-sm:text-base font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
-              Step 2 of 8: Enter your name and email address.
+              Step 2 of 6: Enter your name and email address.
               <span className="text-[#FFFFFFE5] font-normal font-avenir -tracking-[0.02em]">
                 {" "}
-                We’ll send a link to verify it’s really you. {
-                  cachedData.email
-                }{" "}
+                We sent a security code to {cachedData.email}
+                {". "}Please follow the steps below.
               </span>
               <div className="mt-[0.563rem] text-[0.938rem] text-[#FFFFFFE5] leading-relaxed lg:leading-[105%] max-md:text-sm font-normal max-lg:w-max max-lg:mx-auto max-md:w-auto max-lg:text-start text-wrap -tracking-[0.02em]">
                 <ul className="ml-6 list-disc font-avenir">
@@ -254,7 +255,8 @@ export const Step2: React.FC<Step2Props> = ({
                 ${hasInvalid
                           ? "bg-[#F8060624] border-[#F806068F]"
                           : "bg-[#FFFFFF14] border-white/20 focus:border-white"
-                        }`} />
+                        }`}
+                    />
                   ))}
                 </div>
 
@@ -272,12 +274,19 @@ export const Step2: React.FC<Step2Props> = ({
                 )}
 
                 <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
-                  Didn’t get a code?{" "}
+                  Didn’t get it?{" "}
                   <span
                     onClick={resendOTP}
                     className="cursor-pointer underline"
                   >
                     {hasLoadingResendOTP ? "Sending..." : " Resend code"}
+                  </span>
+                </div>
+
+                <div className="text-center text-[0.875rem] text-[#FFFFFFE5] mt-[0.813rem] leading-[140%] font-normal -tracking-[0.02em]">
+                  Or try{" "}
+                  <span className="text-[#007bff]" onClick={onBack}>
+                    a different email address
                   </span>
                 </div>
               </div>
@@ -287,7 +296,7 @@ export const Step2: React.FC<Step2Props> = ({
                 className="steps_btn_submit mt-[5.438rem] text-white font-bold btn bg-[#EB8000] border-[#FF710F33] w-full hover:bg-[#EB8000] hover:border-[#FF710F33]"
                 disabled={isLoading}
               >
-                {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
+                {isLoading ? <Spinner size="sm" /> : "Confirm Security Code"}
               </button>
             </form>
           </div>

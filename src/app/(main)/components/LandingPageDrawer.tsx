@@ -57,7 +57,7 @@ const LandingPageDrawer = ({
                 handleClick(() => scrollWithOffset(originStoryRef))
               }
             >
-              Origin Story
+              Launch Video
             </label>
 
             <label
@@ -67,7 +67,7 @@ const LandingPageDrawer = ({
                 handleClick(() => scrollWithOffset(kinshipIntelligenceRef))
               }
             >
-              Kinship Intelligence
+              A New Choice
             </label>
 
             <label
@@ -77,7 +77,7 @@ const LandingPageDrawer = ({
                 handleClick(() => scrollWithOffset(collectiveEconomicsRef))
               }
             >
-              Co-op Economics
+              Circular Economy
             </label>
 
             <label
@@ -87,19 +87,8 @@ const LandingPageDrawer = ({
                 handleClick(() => scrollWithOffset(foundingCreatorsRef))
               }
             >
-              Founding Sages
+              Service Tiers{" "}
             </label>
-
-            <a
-              // href="https://deeper.kinship.today"
-              href="https://kinship.systems"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-base text-white cursor-pointer no-underline hover:no-underline font-normal"
-              onClick={() => setIsDrawerOpen(false)}
-            >
-              Go Deeper
-            </a>
           </div>
 
           <div className="h-[1px] w-[90%] bg-white mt-8" />

@@ -7,6 +7,9 @@ import { BackArrowVW } from "@/app/(catfawn)/catfawn/components/BackArrow/BackAr
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import { encryptData } from "@/utils/decryptData";
 import { decryptData } from "@/utils/decryptData";
+import Input from "../../common/Input";
+import EyeLineIcon from "@/assets/icons/EyeLineIcon";
+import EyeIcon from "@/assets/icons/EyeIcon";
 
 interface Step3Props {
   onSuccess?: () => void;
@@ -23,10 +26,13 @@ export const Step3: React.FC<Step3Props> = ({
   setShowMsg,
   setMsgText,
   setMsgClass,
-  earlyAccessRef
+  earlyAccessRef,
 }) => {
   const [cachedData, setCachedData] = React.useState<any>({});
   const [password, setPassword] = React.useState("");
+  const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] =
+    React.useState(false);
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -43,7 +49,8 @@ export const Step3: React.FC<Step3Props> = ({
       }
       const parsed = JSON.parse(stored);
       setCachedData(parsed);
-      if (parsed.password) setPassword(decryptData(parsed.password)); setConfirmPassword(decryptData(parsed.password)); // prefill password
+      if (parsed.password) setPassword(decryptData(parsed.password));
+      setConfirmPassword(decryptData(parsed.password)); // prefill password
     } catch {
       router.replace("/home_test");
     }
@@ -80,8 +87,8 @@ export const Step3: React.FC<Step3Props> = ({
       createMessage("Password is required", "error");
       return;
     }
-    if (password.length < 6) {
-      createMessage("Password must be at least 6 characters", "error");
+    if (password.length < 12) {
+      createMessage("Password must be at least 12 characters", "error");
       return;
     }
     if (password.length > 32) {
@@ -127,43 +134,68 @@ export const Step3: React.FC<Step3Props> = ({
             </h2>
 
             <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[1rem] -tracking-[0.02em]">
-              Step 3 of 8: Set your password.
+              Step 3 of 6: Set your password.
               <span className="font-normal font-avenir">
                 {" "}
-                Make sure it’s at least 6 characters.
+                Use at least 12 characters. Longer is stronger. You can use
+                letters, numbers, symbols, or a passphrase.
               </span>
             </p>
 
             <div className="mt-5">
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Password</legend>
-                <input
-                  type="password"
-                  className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
-                  maxLength={32}
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </fieldset>
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend">Confirm Password</legend>
-                <input
-                  type="password"
-                  className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
-                  maxLength={32}
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </fieldset>
+              <Input
+                required={false}
+                title="Confirm Password"
+                type={passwordVisible ? "text" : "password"}
+                maxLength={32}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                trailing={
+                  <div className="flex">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPasswordVisible(!passwordVisible);
+                      }}
+                      className="bg-[#FFFFFF12] p-2 rounded-lg"
+                    >
+                      {passwordVisible ? <EyeLineIcon /> : <EyeIcon />}
+                    </button>
+                  </div>
+                }
+              />
+
+              <div className="my-4" />
+              <Input
+                type={confirmPasswordVisible ? "text" : "password"}
+                maxLength={32}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                required={false}
+                title="Confirm Password"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                trailing={
+                  <div className="flex">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setConfirmPasswordVisible(!confirmPasswordVisible);
+                      }}
+                      className="bg-[#FFFFFF12] p-2 rounded-lg"
+                    >
+                      {confirmPasswordVisible ? <EyeLineIcon /> : <EyeIcon />}
+                    </button>
+                  </div>
+                }
+              />
             </div>
 
             <button
               type="submit"
               className="steps_btn_submit mt-[5.438rem] text-white font-bold btn bg-[#EB8000] border-[#FF710F33] w-full hover:bg-[#EB8000] hover:border-[#FF710F33]"
             >
-              {isLoading ? <Spinner size="sm" /> : "Join Early Access"}
+              {isLoading ? <Spinner size="sm" /> : "Set Your Password"}
             </button>
           </form>
         </div>

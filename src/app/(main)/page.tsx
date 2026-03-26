@@ -119,10 +119,10 @@ const pathways: Pathway[] = [
   },
   {
     id: "bill-thatcher",
-    name: "Disclosure Codes",
-    theme: "The Game That Plays You Back",
+    name: "Activation Center",
+    theme: "Collective Action at Every Scale",
     description:
-      "Bringing to life the world of starseeds, ascension, UFOs, extraterrestrials, intergalactic councils, time travel, and secret space programs. Real disclosure, real conspiracies, explored through a lens of experience, not belief. Follow the rabbit holes as deep as you're willing to go.",
+      "Where organizers, advocates, and movements can find their footing and their people — whether it's a neighborhood campaign or a global cause. Tools for coordinating action, sharing playbooks, rallying support, and keeping momentum alive across environmental, social justice, peace, and human rights efforts. Your agents help you move from conviction to impact, together.",
   },
   {
     id: "hephzibah-light",

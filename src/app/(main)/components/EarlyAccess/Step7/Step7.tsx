@@ -108,9 +108,17 @@ export const Step7 = ({
       return;
     }
 
-    if (kinshipCode.length < 6) {
+    if (kinshipCode.length < 3) {
       createMessage(
-        "Kinship Code must be between 6 and 16 characters.",
+        "Kinship Code must be between 3 and 20 characters.",
+        "error",
+      );
+      return;
+    }
+
+    if (kinshipCode.length > 20) {
+      createMessage(
+        "Kinship Code must be between 3 and 20 characters.",
         "error",
       );
       return;
@@ -203,7 +211,7 @@ export const Step7 = ({
                     setKinshipCode(event.target.value.trim());
                     if (event.target.value) setNoCodeChecked(false);
                   }}
-                  maxLength={16}
+                  maxLength={20}
                 />
 
                 <label className="flex items-center gap-0.5 text-[#FFFFFFE5] opacity-70 text-[0.75rem] max-md:text-xs leading-[140%] mt-2 -tracking-[0.02em] cursor-pointer">

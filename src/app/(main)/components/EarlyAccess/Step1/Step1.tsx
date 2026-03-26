@@ -50,8 +50,8 @@ export const Step1: React.FC<Step1Props> = ({
     } else if (firstName.trim().length < 2) {
       createMessage("First name must be at least 2 characters", "error");
       return false;
-    } else if (firstName.trim().length > 16) {
-      createMessage("First name can be up to 16 characters only", "error");
+    } else if (firstName.trim().length > 20) {
+      createMessage("First name can be up to 20 characters only", "error");
       return false;
     }
 
@@ -160,7 +160,7 @@ export const Step1: React.FC<Step1Props> = ({
                   placeholder="First Name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  maxLength={16}
+                  maxLength={20}
                 />
               </fieldset>
 

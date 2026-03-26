@@ -133,8 +133,8 @@ const pathways: Pathway[] = [
   },
   {
     id: "warren-kahn",
-    name: "Activation Center",
-    theme: "Where Tech Finds Its Tribe",
+    name: "Battery Life",
+    theme: "Where Tech Finds It's Tribe",
     description:
       "Entrepreneurs, startups, and established tech companies can connect with the people who want to go first — early access testers, power users, and enthusiasts who want to learn about the hottest products, systems, and platforms before anyone else. Your launch community is ready, willing and able.",
   },

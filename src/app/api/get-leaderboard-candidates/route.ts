@@ -1,5 +1,4 @@
 import { db } from "@/app/lib/mongoClient";
-import { Document, Filter } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 const OTHER_PARTIES = ["CON", "UNK", "DFL", "CONST", "UN"];
@@ -24,7 +23,7 @@ export async function GET(req: NextRequest) {
   const stateFilter = searchParams.get("state") as string;
   const districtFilter = searchParams.get("district") as string;
 
-  const filterCondition: Filter<Document> = {};
+  const filterCondition: any = {};
 
   const candidateTypeRegex = candidateTypes.map((val) => new RegExp(`^${val}`));
 

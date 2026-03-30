@@ -1,5 +1,4 @@
 import { db } from "@/app/lib/mongoClient";
-import { Document, Filter } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -9,7 +8,7 @@ export async function GET(req: NextRequest) {
   const searchText = searchParams.get("search") as string;
   const type = searchParams.get("type") as string;
 
-  const filterCondition: Filter<Document> = {
+  const filterCondition: any = {
     $and: [
       {
         ORDER: Number(type),

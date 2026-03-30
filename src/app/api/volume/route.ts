@@ -1,4 +1,3 @@
-import { Filter } from "mongodb";
 import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -70,7 +69,7 @@ export async function GET(req: NextRequest) {
     filterDate = new Date(d.setFullYear(d.getFullYear() - 13));
   }
 
-  const matchCondition: Filter<Document> = {};
+  const matchCondition: any = {};
 
   if (bonding) {
     matchCondition.bonding = bonding;

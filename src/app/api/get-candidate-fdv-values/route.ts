@@ -1,5 +1,4 @@
 import { db } from "@/app/lib/mongoClient";
-import { Sort } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -65,7 +64,7 @@ export async function GET(req: NextRequest) {
       totalVolume = volumeelement.totalAmount;
     }
 
-    const priceSortFilter: Sort = {
+    const priceSortFilter: any = {
       created_date: 1,
     };
 
@@ -123,7 +122,7 @@ export async function GET(req: NextRequest) {
       totalVolume = volumeelement.totalAmount;
     }
 
-    const priceSortFilter: Sort = {
+    const priceSortFilter: any = {
       created_date: 1,
     };
 

@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         email: "security@kinship.today",
         name: "Kinship Intelligence",
       },
-      subject: "Your Verification Code",
+      subject: "New Early Access Registration",
       html: `
       Hello,<br /><br />
       A new User just have registered Early Access.<br /><br />

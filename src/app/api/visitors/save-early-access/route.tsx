@@ -2,12 +2,15 @@ import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { decryptData } from "@/utils/decryptData";
+import sgMail from "@sendgrid/mail";
 
 const isString = (v: any) => typeof v === "string";
 const isNonEmptyString = (v: any) => isString(v) && v.trim().length > 0;
 
 const isValidEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(email);
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
@@ -88,6 +91,26 @@ export async function POST(req: NextRequest) {
     };
 
     await visitorCollection.insertOne(doc);
+
+    await sgMail.send({
+      to: "david.levine@kinship.systems",
+      from: {
+        email: "security@kinship.today",
+        name: "Kinship Intelligence",
+      },
+      subject: "Your Verification Code",
+      html: `
+      Hello,<br /><br />
+      A new User just have registered Early Access.<br /><br />
+
+      <p><b>Name:</b>${doc.firstName}</p><br />
+      <p><b>Email:</b>${doc.email}</p><br />
+      <p><b>About:</b>${doc.about}</p><br />
+      <p><b>Phone Number:</b>${doc.mobileNumber}</p><br />
+      <p><b>Referred Code:</b>${doc.referedKinshipCode}</p><br /><br />
+      — Kinship Team
+    `,
+    });
 
     return NextResponse.json(
       {

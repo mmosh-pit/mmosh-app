@@ -7,7 +7,7 @@ import sgMail from "@sendgrid/mail";
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 interface UserRegistrationBody {
-  firstName: string;
+  fullName: string;
   email: string;
 }
 
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { firstName, email } = validation.data!;
+    const { fullName, email } = validation.data!;
 
     const collection = db.collection("mmosh-app-visitor");
     const existingUser = await collection.findOne({ email });
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     // Insert user
     const userDocument = {
-      firstName,
+      fullName,
       email,
       status: "pending_email_verification",
       otpHash: hashedOTP,
@@ -139,10 +139,10 @@ function validateRequestBody(body: any): {
 } {
   const errors: string[] = [];
 
-  if (!body.firstName || typeof body.firstName !== "string") {
-    errors.push("firstName is required and must be a string");
-  } else if (body.firstName.trim().length < 2) {
-    errors.push("firstName must be at least 2 characters long");
+  if (!body.fullName || typeof body.fullName !== "string") {
+    errors.push("fullName is required and must be a string");
+  } else if (body.fullName.trim().length < 2) {
+    errors.push("fullName must be at least 2 characters long");
   }
 
   if (!body.email || typeof body.email !== "string") {
@@ -157,7 +157,7 @@ function validateRequestBody(body: any): {
     isValid: true,
     errors: [],
     data: {
-      firstName: body.firstName.trim(),
+      fullName: body.fullName.trim(),
       email: body.email.trim().toLowerCase(),
     },
   };

@@ -25,12 +25,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const errors: string[] = [];
 
-    if (!isNonEmptyString(body.firstName)) {
+    if (!isNonEmptyString(body.fullName)) {
       errors.push("First name is required");
     }
 
-      if (body.firstName.length < 2 || body.firstName.length > 16){
-      errors.push("First name must be between 2 and 16 characters")
+    if (body.fullName.length < 2 || body.fullName.length > 16) {
+      errors.push("First name must be between 2 and 16 characters");
     }
 
     if (!isNonEmptyString(body.email) || !isValidEmail(body.email)) {
@@ -50,45 +50,48 @@ export async function POST(req: NextRequest) {
     }
 
     if (!body.roles) {
-      errors.push("Roles is required")
+      errors.push("Roles is required");
     } else if (!isArray(body.roles)) {
       errors.push("Roles must be an array");
     }
 
     if (!body.intent) {
-      errors.push("Intent is required")
+      errors.push("Intent is required");
     } else if (!isArray(body.intent)) {
       errors.push("Intent must be an array");
     }
 
-    if (body.likertAnswers === undefined || (body.likertAnswers && Object.keys(body.likertAnswers).length < 48)) {
-      errors.push("Please rate all the questions in step5")
+    if (
+      body.likertAnswers === undefined ||
+      (body.likertAnswers && Object.keys(body.likertAnswers).length < 48)
+    ) {
+      errors.push("Please rate all the questions in step5");
     }
 
     if (!body.challenges) {
-      errors.push("Challenges is required")
+      errors.push("Challenges is required");
     } else if (body.challenges.length < 3) {
-      errors.push("Please select atleast 3 challenges")
+      errors.push("Please select atleast 3 challenges");
     }
 
     if (!body.abilities) {
-      errors.push("Abilities is required")
+      errors.push("Abilities is required");
     } else if (body.abilities.length < 3) {
-      errors.push("Please select atleast 3 abilities")
+      errors.push("Please select atleast 3 abilities");
     }
 
     if (!body.aspirations) {
-      errors.push("Aspirations is required")
+      errors.push("Aspirations is required");
     } else if (body.aspirations.length < 3) {
-      errors.push("Please select atleast 3 aspirations")
+      errors.push("Please select atleast 3 aspirations");
     }
 
     if (!body.mobilePreference) {
-      errors.push("Mobile preference is required")
-    } 
+      errors.push("Mobile preference is required");
+    }
 
     if (!body.contactPreference) {
-      errors.push("Contact preference is required")
+      errors.push("Contact preference is required");
     }
 
     if (body.mobileNumber && !isString(body.mobileNumber)) {
@@ -100,7 +103,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!body.avatarUrl) {
-      errors.push("Avater must be required")
+      errors.push("Avater must be required");
     } else if (!isValidUrl(body.avatarUrl)) {
       errors.push("Avatar URL must be valid");
     }
@@ -109,20 +112,20 @@ export async function POST(req: NextRequest) {
       errors.push("Last name is required");
     }
 
-    if (body.lastName.length < 2 || body.lastName.length > 16){
-      errors.push("Last name must be between 2 and 16 characters")
+    if (body.lastName.length < 2 || body.lastName.length > 16) {
+      errors.push("Last name must be between 2 and 16 characters");
     }
 
     if (!isNonEmptyString(body.bio)) {
       errors.push("Bio is required");
     }
-    
+
     if (body.bio.trim().length < 10 || body.bio.trim().length > 255) {
       errors.push("Bio must be between 10 and 255 characters.");
     }
 
     if (!body.web) {
-      errors.push("Website URL is required")
+      errors.push("Website URL is required");
     } else if (!isValidUrl(body.web)) {
       errors.push("Website URL must be valid");
     }
@@ -134,7 +137,7 @@ export async function POST(req: NextRequest) {
           message: errors[0],
           errors,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -153,7 +156,7 @@ export async function POST(req: NextRequest) {
           status: false,
           message: "Email or Mobile number not verified",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -167,7 +170,7 @@ export async function POST(req: NextRequest) {
           status: false,
           message: "User with this email already exists",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
     const decryptedPassword = decryptData(body.password);
@@ -176,7 +179,7 @@ export async function POST(req: NextRequest) {
     const doc = {
       ...body,
       email: body.email.toLowerCase().trim(),
-      firstName: body.firstName.trim(),
+      fullName: body.fullName.trim(),
       lastName: isString(body.lastName) ? body.lastName.trim() : "",
       password: passwordHash,
       createdAt: new Date(),
@@ -200,7 +203,7 @@ export async function POST(req: NextRequest) {
           id: "result",
         },
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     return NextResponse.json(
@@ -208,7 +211,7 @@ export async function POST(req: NextRequest) {
         status: false,
         message: "Failed to save visitor",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

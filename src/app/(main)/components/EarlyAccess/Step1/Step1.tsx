@@ -20,7 +20,7 @@ export const Step1: React.FC<Step1Props> = ({
   setMsgText,
   setMsgClass,
 }) => {
-  const [firstName, setFirstName] = React.useState("");
+  const [fullName, setFullName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [hasChecked, setHasChecked] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -35,7 +35,7 @@ export const Step1: React.FC<Step1Props> = ({
       if (!stored) return;
 
       const parsed = JSON.parse(stored);
-      setFirstName(parsed.firstName || "");
+      setFullName(parsed.fullName || "");
       setEmail(parsed.email || "");
       setHasChecked(parsed.hasChecked ?? true);
     } catch {
@@ -44,13 +44,13 @@ export const Step1: React.FC<Step1Props> = ({
   }, []);
 
   const validateForm = () => {
-    if (!firstName.trim()) {
+    if (!fullName.trim()) {
       createMessage("First name is required", "error");
       return false;
-    } else if (firstName.trim().length < 2) {
+    } else if (fullName.trim().length < 2) {
       createMessage("First name must be at least 2 characters", "error");
       return false;
-    } else if (firstName.trim().length > 20) {
+    } else if (fullName.trim().length > 20) {
       createMessage("First name can be up to 20 characters only", "error");
       return false;
     }
@@ -91,7 +91,7 @@ export const Step1: React.FC<Step1Props> = ({
         localStorage.setItem(
           STORAGE_KEY,
           JSON.stringify({
-            firstName: firstName.trim(),
+            fullName: fullName.trim(),
             email: email.trim(),
             hasChecked,
             hasVerifiedEmail: false,
@@ -153,13 +153,13 @@ export const Step1: React.FC<Step1Props> = ({
 
             <form onSubmit={createVisitorRecord}>
               <fieldset className="fieldset">
-                <legend className="fieldset-legend">First Name*</legend>
+                <legend className="fieldset-legend">Full Name*</legend>
                 <input
                   type="text"
                   className="input w-full bg-[#FFFFFF14] border-[1px] border-[#FFFFFF29]"
-                  placeholder="First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   maxLength={20}
                 />
               </fieldset>

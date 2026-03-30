@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    if (!isNonEmptyString(body.firstName)) {
+    if (!isNonEmptyString(body.fullName)) {
       return NextResponse.json(
         { status: false, message: "First name is required" },
         { status: 200 },
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await bcrypt.hash(decryptedPassword, 10);
 
     const doc = {
-      firstName: body.firstName.trim(),
+      fullName: body.fullName.trim(),
       email: body.email.toLowerCase().trim(),
       password: passwordHash,
 
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       Hello,<br /><br />
       A new User just have registered Early Access.<br /><br />
 
-      <p><b>Name:</b>${doc.firstName}</p><br />
+      <p><b>Name:</b>${doc.fullName}</p><br />
       <p><b>Email:</b>${doc.email}</p><br />
       <p><b>About:</b>${doc.about}</p><br />
       <p><b>Phone Number:</b>${doc.mobileNumber}</p><br />

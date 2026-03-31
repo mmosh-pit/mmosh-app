@@ -32,7 +32,7 @@ export const Step8 = ({
 
   useEffect(() => {
     const stored = localStorage.getItem("early-access-data");
-    if (!stored) return router.replace("/home_test");
+    if (!stored) return router.replace("/");
 
     try {
       const parsed = JSON.parse(stored);
@@ -43,7 +43,7 @@ export const Step8 = ({
         router.replace(`/${parsed.currentStep}`);
       }
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

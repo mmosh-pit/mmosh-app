@@ -34,7 +34,7 @@ export const Step7 = ({
   React.useEffect(() => {
     const stored = localStorage.getItem("early-access-data");
     if (!stored) {
-      return router.replace("/home_test");
+      return router.replace("/");
     }
     try {
       const result = JSON.parse(stored);
@@ -45,7 +45,7 @@ export const Step7 = ({
       setKinshipCode(result.referedKinshipCode);
       setNoCodeChecked(result.noCodeChecked);
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

@@ -39,7 +39,7 @@ export const Step1: React.FC<Step1Props> = ({
       setEmail(parsed.email || "");
       setHasChecked(parsed.hasChecked ?? true);
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

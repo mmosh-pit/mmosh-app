@@ -37,13 +37,13 @@ export const Step5: React.FC<Step5Props> = ({
 
   useEffect(() => {
     const stored = localStorage.getItem("early-access-data");
-    if (!stored) return router.replace("/home_test");
+    if (!stored) return router.replace("/");
 
     try {
       const parsed = JSON.parse(stored);
       setCachedData(parsed);
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

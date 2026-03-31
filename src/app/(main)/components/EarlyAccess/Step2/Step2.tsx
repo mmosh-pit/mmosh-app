@@ -39,13 +39,13 @@ export const Step2: React.FC<Step2Props> = ({
     try {
       const stored = localStorage.getItem("early-access-data");
       if (!stored) {
-        router.replace("/home_test");
+        router.replace("/");
         return;
       }
       const parsed = JSON.parse(stored);
       setCachedData(parsed);
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

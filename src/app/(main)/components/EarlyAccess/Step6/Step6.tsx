@@ -21,7 +21,7 @@ export const Step6 = ({
   setShowMsg,
   setMsgText,
   setMsgClass,
-  earlyAccessRef
+  earlyAccessRef,
 }: Step6Props) => {
   const router = useRouter();
 
@@ -33,7 +33,7 @@ export const Step6 = ({
 
   useEffect(() => {
     const stored = localStorage.getItem("early-access-data");
-    if (!stored) return router.replace("/home_test");
+    if (!stored) return router.replace("/");
 
     try {
       const parsed = JSON.parse(stored);
@@ -45,7 +45,7 @@ export const Step6 = ({
         router.replace(`/${parsed.currentStep}`);
       }
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 
@@ -68,7 +68,7 @@ export const Step6 = ({
     setMobilePreferences((prev) =>
       checked
         ? Array.from(new Set([...prev, formatted]))
-        : prev.filter((i) => i !== formatted)
+        : prev.filter((i) => i !== formatted),
     );
   };
 
@@ -88,7 +88,7 @@ export const Step6 = ({
           ...cachedData,
           mobilePreferences,
           currentStep: "7",
-        })
+        }),
       );
       if (onSuccess) onSuccess();
     } finally {
@@ -125,7 +125,7 @@ export const Step6 = ({
                 <CheckBoxVW
                   labelText="iPhone"
                   hasChecked={mobilePreferences.includes(
-                    formatPreference("iphone")
+                    formatPreference("iphone"),
                   )}
                   onChange={(e) =>
                     handlePreferenceChange("iphone", e.target.checked)
@@ -134,7 +134,7 @@ export const Step6 = ({
                 <CheckBoxVW
                   labelText="Android"
                   hasChecked={mobilePreferences.includes(
-                    formatPreference("android")
+                    formatPreference("android"),
                   )}
                   onChange={(e) =>
                     handlePreferenceChange("android", e.target.checked)

@@ -53,7 +53,7 @@ export const Step4: React.FC<Step4Props> = ({
       const stored = localStorage.getItem("early-access-data");
 
       if (!stored) {
-        router.replace("/home_test");
+        router.replace("/");
         return;
       }
       const result = JSON.parse(stored);
@@ -69,7 +69,7 @@ export const Step4: React.FC<Step4Props> = ({
         setPhone(`+${result.countryCode}${result.mobileNumber}`);
       }
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

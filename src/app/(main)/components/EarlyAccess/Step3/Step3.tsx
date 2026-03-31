@@ -44,7 +44,7 @@ export const Step3: React.FC<Step3Props> = ({
     try {
       const stored = localStorage.getItem("early-access-data");
       if (!stored) {
-        router.replace("/home_test");
+        router.replace("/");
         return;
       }
       const parsed = JSON.parse(stored);
@@ -52,7 +52,7 @@ export const Step3: React.FC<Step3Props> = ({
       if (parsed.password) setPassword(decryptData(parsed.password));
       setConfirmPassword(decryptData(parsed.password)); // prefill password
     } catch {
-      router.replace("/home_test");
+      router.replace("/");
     }
   }, []);
 

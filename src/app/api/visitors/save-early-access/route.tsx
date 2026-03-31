@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const visitorCollection = db.collection("mmosh-app-early-access");
+    const visitorCollection = db.collection("early_access_users");
 
     const existing = await visitorCollection.findOne({
       email: body.email.toLowerCase().trim(),

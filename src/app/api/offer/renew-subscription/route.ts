@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const projectCollection = db.collection("mmosh-app-project");
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
   const tokenCollection = db.collection("mmosh-app-tokens");
-  const usercollection = db.collection("mmosh-users");
+  const usercollection = db.collection("users");
   const { searchParams } = new URL(req.url);
   const receiver = searchParams.get("receiver");
   const usdcBalance = searchParams.get("usdcBalance");

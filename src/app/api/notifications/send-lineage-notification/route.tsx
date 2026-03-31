@@ -175,7 +175,7 @@ const sendNotification = async (params: NotificationParams[]) => {
  * Returns username from guest_data or name field
  */
 const getSenderName = async (senderWallet: string): Promise<string> => {
-  const usersCollection = db.collection("mmosh-users");
+  const usersCollection = db.collection("users");
   let username = "unknown user";
   const senderDetails = await usersCollection.findOne({ wallet: senderWallet });
   if (senderDetails !== null) {

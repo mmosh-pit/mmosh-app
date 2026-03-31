@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   const user =
     userId != null
-      ? await db.collection("mmosh-users").findOne({
+      ? await db.collection("users").findOne({
         _id: new ObjectId(userId),
       })
       : null;

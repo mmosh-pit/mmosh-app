@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
         const { email, otp, type } = validation.data!;
 
-        const collection = db.collection("mmosh-users-email-verification");
+        const collection = db.collection("email_verification");
 
         const record = await collection.findOne({ email });
 

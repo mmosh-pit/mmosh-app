@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     const otpHash = await bcrypt.hash(otp, 10);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    const otpCollection = db.collection("mmosh-users-email-verification");
+    const otpCollection = db.collection("email_verification");
 
     const existingOTP = await otpCollection.findOne(
       type === "email" ? { email } : { mobile },

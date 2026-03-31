@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     // 5 - decline logic
 
     const collection = db.collection("mmosh-app-connections");
-    const usercollection = db.collection("mmosh-users");
+    const usercollection = db.collection("users");
 
     const { sender, receiver, status, badge} = await req.json();
     

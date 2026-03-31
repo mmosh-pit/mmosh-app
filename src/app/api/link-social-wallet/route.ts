@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   const { token, wallet } = await req.json();
 
   const linksCollection = db.collection("temporal-links");
-  const mmoshCollection = db.collection("mmosh-users");
+  const mmoshCollection = db.collection("users");
   const usersCollection = db.collection("users");
 
   const linkData = await linksCollection.findOne({ token });

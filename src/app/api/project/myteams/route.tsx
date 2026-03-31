@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
      match,
       {
         $lookup: {
-          from: "mmosh-users",
+          from: "users",
           localField: "sender",
           foreignField: "wallet",
           as: "sender",

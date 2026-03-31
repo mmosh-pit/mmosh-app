@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
       { $match: { projectkey: projectData.key } },
       {
         $lookup: {
-          from: "mmosh-users",
+          from: "users",
           localField: "profilekey",
           foreignField: "wallet",
           as: "profiles",
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
       },
       {
         $lookup: {
-          from: "mmosh-users",
+          from: "users",
           localField: "coin",
           foreignField: "key",
           as: "coins",

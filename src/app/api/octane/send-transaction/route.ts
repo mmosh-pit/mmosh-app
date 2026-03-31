@@ -12,7 +12,7 @@ import nacl from "tweetnacl";
 
 export async function POST(req: NextRequest) {
   console.log("inside the octane gas fees ==================>>");
-  const userCollection = db.collection("mmosh-users");
+  const userCollection = db.collection("users");
   const { userWallet, serialized } = await req.json();
   const gasBalanceCollection = db.collection("mmosh-app-gas-balance");
 

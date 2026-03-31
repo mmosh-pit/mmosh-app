@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
     }
 
     const visitorCollection = db.collection("mmosh-app-visitor");
-    const otpCollection = db.collection("mmosh-users-email-verification");
+    const otpCollection = db.collection("email_verification");
 
     const hasVerified = await otpCollection.findOne({
       email: body.email.toLowerCase().trim(),

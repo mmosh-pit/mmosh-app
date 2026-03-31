@@ -81,7 +81,7 @@ const sendNotification = async (params: NotificationParams) => {
 };
 
 const getSenderName = async (senderWallet: string) => {
-  const usersCollection = db.collection("mmosh-users");
+  const usersCollection = db.collection("users");
   let username = "unknown user";
   const senderDetails = await usersCollection.findOne({ wallet: senderWallet });
   if (senderDetails !== null) {

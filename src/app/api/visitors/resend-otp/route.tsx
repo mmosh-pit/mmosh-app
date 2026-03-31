@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { type, email, mobile, countryCode } = validation.data!;
-    const collection = db.collection("mmosh-users-email-verification");
+    const collection = db.collection("email_verification");
 
     const existingOTP = await collection.findOne(
       type === "email" ? { email } : { mobile },

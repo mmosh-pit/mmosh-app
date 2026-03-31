@@ -4,8 +4,8 @@ import argon2 from "argon2";
 import { db } from "@/app/lib/mongoClient";
 
 export async function POST(req: NextRequest) {
-  const collection = db.collection("mmosh-users");
-  const emailCollection = db.collection("mmosh-users-email-verification");
+  const collection = db.collection("users");
+  const emailCollection = db.collection("email_verification");
 
   const data = await req.json();
 

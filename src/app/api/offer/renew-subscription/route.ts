@@ -14,7 +14,7 @@ import { pinFileToShadowDriveBackend } from "@/app/lib/uploadFileToShdwDrive";
 export async function GET(req: NextRequest) {
   const collection = db.collection("mmosh-app-offer-subscription");
   const offerCollection = db.collection("mmosh-app-project-offer");
-  const projectCollection = db.collection("mmosh-app-project");
+  const projectCollection = db.collection("bots");
   const projectCoinCollection = db.collection("mmosh-app-project-coins");
   const tokenCollection = db.collection("mmosh-app-tokens");
   const usercollection = db.collection("users");

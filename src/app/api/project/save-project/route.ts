@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const OPTIONS = async () => Response.json(null, { status: 200 });
 
 export async function POST(req: NextRequest) {
-  const collection = db.collection("mmosh-app-project");
+  const collection = db.collection("bots");
 
   const token = req.headers.get("Authorization");
 

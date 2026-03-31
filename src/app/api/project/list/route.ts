@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
   }
 
   const result = await db
-    .collection("mmosh-app-project")
+    .collection("bots")
     .aggregate([
       match,
       {

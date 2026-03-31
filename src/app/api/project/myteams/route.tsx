@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       },
       {
         $lookup: {
-          from: "mmosh-app-project",
+          from: "bots",
           localField: "projectkey",
           foreignField: "key",
           as: "project",

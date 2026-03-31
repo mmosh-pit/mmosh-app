@@ -2,7 +2,7 @@ import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(req: NextRequest) {
-  const collection = db.collection("mmosh-app-project");
+  const collection = db.collection("bots");
   const chatCollection = db.collection("chats");
 
   const data = await req.json();

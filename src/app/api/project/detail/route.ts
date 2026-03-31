@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const symbol = searchParams.get("symbol");
   const address = searchParams.get("address");
 
-  const projectCollection = db.collection("mmosh-app-project");
+  const projectCollection = db.collection("bots");
 
   let projectData: any;
   if (symbol) {

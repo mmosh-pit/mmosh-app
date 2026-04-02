@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 
 import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAccessCircle/EarlyAccessCircleVW";
@@ -108,13 +109,20 @@ export const Step3: React.FC<Step3Props> = ({
       return;
     }
 
+    const encryptedPassword = encryptData(password);
     const updatedData = {
       ...cachedData,
-      password: encryptData(password),
+      password: encryptedPassword,
       currentStep: "4",
     };
     localStorage.setItem("early-access-data", JSON.stringify(updatedData));
     setCachedData(updatedData);
+
+    axios.post("/api/visitors/upsert-early-access", {
+      email: cachedData.email,
+      password: encryptedPassword,
+      currentStep: "4",
+    }).catch(() => {});
 
     if (onSuccess) onSuccess();
   };

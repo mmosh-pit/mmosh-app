@@ -98,6 +98,12 @@ export const Step1: React.FC<Step1Props> = ({
             currentStep: "2",
           }),
         );
+        axios.post("/api/visitors/upsert-early-access", {
+          email: email.trim(),
+          firstName: firstName.trim(),
+          hasChecked,
+          currentStep: "2",
+        }).catch(() => {});
         if (onSuccess) {
           onSuccess();
         }

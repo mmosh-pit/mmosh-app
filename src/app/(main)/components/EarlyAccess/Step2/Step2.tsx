@@ -144,6 +144,12 @@ export const Step2: React.FC<Step2Props> = ({
         localStorage.setItem("early-access-data", JSON.stringify(updatedData));
         setCachedData(updatedData);
 
+        axios.post("/api/visitors/upsert-early-access", {
+          email: cachedData.email,
+          hasVerifiedEmail: true,
+          currentStep: "3",
+        }).catch(() => {});
+
         if (onSuccess) {
           onSuccess();
         }

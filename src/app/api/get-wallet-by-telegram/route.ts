@@ -1,17 +1,15 @@
-import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export async function GET(req: NextRequest) {
-  const collection = db.collection("users");
-
   const { searchParams } = new URL(req.url);
-  const param = searchParams.get("telegramId");
+  const telegramId = searchParams.get("telegramId") ?? "";
 
-  const user = await collection.findOne({
-    "telegram.id": Number(param),
-  });
+  const res = await fetch(
+    `${BACKEND_URL}/get-wallet-by-telegram?telegramId=${encodeURIComponent(telegramId)}`,
+  );
 
-  return NextResponse.json(user, {
-    status: 200,
-  });
+  const data = await res.json().catch(() => null);
+  return NextResponse.json(data, { status: res.status });
 }

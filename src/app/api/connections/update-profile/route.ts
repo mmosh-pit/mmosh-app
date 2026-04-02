@@ -1,27 +1,16 @@
-import { db } from "../../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export async function PUT(req: NextRequest) {
-  const collection = db.collection("users");
+  const body = await req.json().catch(() => ({}));
 
-  const { value, wallet } = await req.json();
-
-  const user = await collection.findOne({
-    wallet,
+  const res = await fetch(`${BACKEND_URL}/connections/update-profile`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
   });
 
-  if (user) {
-    await collection.updateOne(
-      {
-        _id: user._id,
-      },
-      {
-        $set: {
-          profile: value,
-        },
-      },
-    );
-   
-  }
-  return NextResponse.json("", { status: 200 });
+  const data = await res.json().catch(() => null);
+  return NextResponse.json(data, { status: res.status });
 }

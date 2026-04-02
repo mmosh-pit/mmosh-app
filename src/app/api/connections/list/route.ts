@@ -1,43 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../lib/mongoClient";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const wallet = searchParams.get("wallet");
+  const { searchParams } = new URL(req.url);
+  const wallet = searchParams.get("wallet") ?? "";
 
-  let match = {$match: {receiver: wallet, status: { $in: [0, 1] }}};
-  const connections = await db
-    .collection("mmosh-app-connections")
-    .aggregate([
-     match,
-      {
-        $lookup: {
-          from: "users",
-          localField: "receiver",
-          foreignField: "wallet",
-          as: "receiver",
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "sender",
-          foreignField: "wallet",
-          as: "sender",
-        },
-      },
-      {
-        $project: {
-          badge: 1,
-          status: 1,
-          receiver: "$receiver",
-          sender: "$sender",
-        },
-      },
-    ])
-    .toArray();
+  const res = await fetch(
+    `${BACKEND_URL}/connections/list?wallet=${encodeURIComponent(wallet)}`,
+  );
 
-    return NextResponse.json(connections, {
-       status: 200,
-    });
+  const data = await res.json().catch(() => null);
+  return NextResponse.json(data, { status: res.status });
 }

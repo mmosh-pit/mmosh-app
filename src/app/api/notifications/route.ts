@@ -1,61 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../lib/mongoClient";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function GET(req: NextRequest) {
-  if (req.method !== "GET") {
-    return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
-  }
   const { searchParams } = new URL(req.url);
-  const wallet = searchParams.get("wallet");
+  const wallet = searchParams.get("wallet") ?? "";
 
-  const unreadNotification = await db
-  .collection("mmosh-app-notifications")
-  .find(
-    {
-      receiver: wallet,
-      unread: 1
-    }
-  )
-  .toArray();
-  let match = {$match: {receiver: wallet}};
-  const notifications = await db
-    .collection("mmosh-app-notifications")
-    .aggregate([
-     match,
-      {
-        $lookup: {
-          from: "users",
-          localField: "receiver",
-          foreignField: "wallet",
-          as: "receiver",
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "sender",
-          foreignField: "wallet",
-          as: "sender",
-        },
-      },
-      {
-        $project: {
-          type: 1,
-          message: 1,
-          unread: 1,
-          created_date: 1,
-          receiver: "$receiver",
-          sender: "$sender",
-        },
-      },
-      {$sort: {created_date: -1}},
-    ])
-    .limit(unreadNotification.length > 100 ? unreadNotification.length : 100)
-    .toArray();
-    return NextResponse.json({
-       unread: unreadNotification.length,
-       data: notifications
-    }, {
-       status: 200,
-    });
+  const res = await fetch(
+    `${BACKEND_URL}/notifications?wallet=${encodeURIComponent(wallet)}`,
+  );
+
+  const data = await res.json().catch(() => null);
+  return NextResponse.json(data, { status: res.status });
 }

@@ -1,25 +1,15 @@
-import { db } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export async function GET(req: NextRequest) {
-  const collection = db.collection("mmosh-users");
-
   const { searchParams } = new URL(req.url);
-  const param = searchParams.get("username");
+  const username = searchParams.get("username") ?? "";
 
-  const user = await collection.findOne(
-    {
-      "profile.username": param,
-    },
-    {
-      collation: {
-        locale: "en",
-        strength: 2,
-      },
-    },
+  const res = await fetch(
+    `${BACKEND_URL}/check-username?username=${encodeURIComponent(username)}`,
   );
 
-  return NextResponse.json(!!user, {
-    status: 200,
-  });
+  const data = await res.json().catch(() => null);
+  return NextResponse.json(data, { status: res.status });
 }

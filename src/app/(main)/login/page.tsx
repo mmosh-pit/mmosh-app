@@ -151,7 +151,7 @@ const Login = () => {
           </a>
         </div>
 
-        <div className="mt-6">
+        {/*<div className="mt-6">
           <p className="text-sm">
             Don't have an account?{" "}
             <span
@@ -161,7 +161,7 @@ const Login = () => {
               Sign up here!
             </span>
           </p>
-        </div>
+        </div>*/}
       </div>
     </form>
   );

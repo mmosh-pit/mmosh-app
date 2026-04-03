@@ -1,5 +1,4 @@
-import { ObjectId } from "mongodb";
-import { db } from "../../lib/mongoClient";
+import { db, ObjectId } from "../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

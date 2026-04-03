@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
 
   const { wallet, gasBalance, token } = await req.json();
 
-  const userCollection = db.collection("mmosh-users");
+  const userCollection = db.collection("users");
   const gasBalanceCollection = db.collection("mmosh-app-gas-balance");
   try {
     const findUser = await userCollection.findOne({ wallet: wallet });

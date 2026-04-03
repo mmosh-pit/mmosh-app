@@ -89,7 +89,7 @@ export async function POST(req: Request) {
       { upsert: true }
     );
 
-    return NextResponse.json({ success: true, upserted: result.upsertedId ?? null });
+    return NextResponse.json({ success: true, upserted: result.modifiedCount ?? null });
 
   } catch (error) {
     console.error("POST Error:", error);

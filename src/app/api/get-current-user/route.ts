@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { db } from "@/app/lib/mongoClient";
 
 export async function GET(req: NextRequest) {
-  const collection = db.collection("mmosh-users");
+  const collection = db.collection("users");
 
   const cookieStore = cookies();
 

@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
   }
 
   const data = await db
-    .collection("mmosh-users")
+    .collection("users")
     .find(filter, {
       projection: {
         wallet: 1,
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     .toArray();
 
   if (requester) {
-    const user = await db.collection("mmosh-users").findOne({
+    const user = await db.collection("users").findOne({
       wallet: requester,
     });
     if (user) {

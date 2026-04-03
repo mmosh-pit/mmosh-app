@@ -14,7 +14,6 @@ import { Step4 } from "../(main)/components/EarlyAccess/Step4/Step4";
 import { Step5 } from "../(main)/components/EarlyAccess/Step5/Step5";
 import { Step6 } from "../(main)/components/EarlyAccess/Step6/Step6";
 import { Step7 } from "../(main)/components/EarlyAccess/Step7/Step7";
-import { Step8 } from "../(main)/components/EarlyAccess/Step8/Step8";
 import { ErrorContainerVW } from "../(catfawn)/catfawn/components/ErrorContainer/ErrorContainerVW";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai";

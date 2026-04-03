@@ -1,6 +1,5 @@
-import { db } from "../../../lib/mongoClient";
+import { db, ObjectId } from "../../../lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
 
 export async function PUT(req: NextRequest) {
   const collection = db.collection("mmosh-app-project-coins");

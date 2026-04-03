@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Document, Filter } from "mongodb";
-
 import { db } from "../../lib/mongoClient";
 
 export async function GET(req: NextRequest) {
@@ -18,7 +16,7 @@ export async function GET(req: NextRequest) {
     "data.username": 1,
   };
 
-  const search: Filter<Document> = {
+  const search: any = {
     completed: {
       $exists: true,
     },

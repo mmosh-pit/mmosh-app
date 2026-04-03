@@ -1,36 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import argon2 from "argon2";
 
-import { db } from "@/app/lib/mongoClient";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export async function POST(req: NextRequest) {
-  const collection = db.collection("mmosh-users");
-  const emailCollection = db.collection("mmosh-users-email-verification");
+  const body = await req.json();
 
-  const data = await req.json();
-
-  const { code, password } = data;
-
-  const existingData = await emailCollection.findOne({
-    code: Number(code.trim()),
+  const res = await fetch(`${BACKEND_URL}/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
   });
 
-  if (!existingData) {
-    return NextResponse.json("", { status: 400 });
-  }
-
-  const hashedPassword = await argon2.hash(password);
-
-  await collection.updateOne(
-    { email: existingData?.email },
-    {
-      $set: {
-        password: hashedPassword,
-      },
-    },
-  );
-
-  await emailCollection.deleteOne({ _id: existingData._id });
-
-  return NextResponse.json("");
+  const data = await res.json().catch(() => null);
+  return NextResponse.json(data, { status: res.status });
 }

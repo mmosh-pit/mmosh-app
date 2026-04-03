@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       },
       {
         $lookup: {
-          from: "mmosh-users",
+          from: "users",
           localField: "userId",
           foreignField: "_id",
           as: "user",

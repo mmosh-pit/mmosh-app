@@ -2,7 +2,7 @@ import { User } from "../models/user";
 import { db } from "./mongoClient";
 
 export async function getUserDataForMetadata(username: string) {
-  const collection = db.collection("mmosh-users");
+  const collection = db.collection("users");
 
   const user = await collection.findOne<User>(
     {

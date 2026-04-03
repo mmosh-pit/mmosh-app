@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);  
   const wallet = searchParams.get("wallet") ? searchParams.get("wallet") as string : "";
 
-  const userCollection = db.collection("mmosh-users");
+  const userCollection = db.collection("users");
   const gasBalanceCollection = db.collection("mmosh-app-gas-balance");
   try {
     const findUser = await userCollection.findOne({ wallet: wallet });

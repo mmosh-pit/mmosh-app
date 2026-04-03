@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const symbol = searchParams.get("symbol");
   const code = searchParams.get("code");
 
-  const result = await db.collection("mmosh-app-project").findOne({
+  const result = await db.collection("bots").findOne({
     symbol,
     code,
   });

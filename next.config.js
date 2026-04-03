@@ -7,6 +7,15 @@ module.exports = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async rewrites() {
+    const nodeBackend = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:6050";
+    return [
+      {
+        source: "/api/visitors/:path*",
+        destination: `${nodeBackend}/visitors/:path*`,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

@@ -146,6 +146,11 @@ export const Step5: React.FC<Step5Props> = ({
             currentStep: "6",
           }),
         );
+        axios.post("/api/visitors/upsert-early-access", {
+          email: cachedData.email,
+          isMobileNumberVerified: true,
+          currentStep: "6",
+        }).catch(() => {});
         onSuccess?.();
       } else {
         setHasInvalid(true);

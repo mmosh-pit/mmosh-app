@@ -4,8 +4,10 @@ import { EarlyAccessCircleVW } from "@/app/(catfawn)/catfawn/components/EarlyAcc
 import { InputVW } from "@/app/(catfawn)/catfawn/components/Input/InputVW";
 import Spinner from "@/app/(catfawn)/catfawn/components/Spinner";
 import axios from "axios";
+import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { data as userDataAtom, isAuth, isAuthOverlayOpen } from "@/app/store";
 
 interface Step7Props {
   onBack?: () => void;
@@ -30,6 +32,10 @@ export const Step7 = ({
   const [kinshipCode, setKinshipCode] = React.useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [, setIsUserAuthenticated] = useAtom(isAuth);
+  const [, setShowAuthOverlay] = useAtom(isAuthOverlayOpen);
+  const [, setUser] = useAtom(userDataAtom);
 
   React.useEffect(() => {
     const stored = localStorage.getItem("early-access-data");
@@ -74,6 +80,14 @@ export const Step7 = ({
       }
 
       localStorage.removeItem("early-access-data");
+
+      if (res.data?.token) {
+        window.localStorage.setItem("token", res.data.token);
+        setIsUserAuthenticated(true);
+        setShowAuthOverlay(false);
+        if (res.data?.user) setUser(res.data.user);
+      }
+
       createMessage("Successfully submitted.", "success");
       router.replace("/early");
     } catch {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const collection = db.collection("mmosh-app-ptv");
-  const projectCollection = db.collection("mmosh-app-project");
+  const projectCollection = db.collection("bots");
 
   const { coin, reward, wallet } = await req.json();
 

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { MongoClient, ObjectId } from "mongodb";
+import { db, ObjectId } from "@/app/lib/mongoClient";
 import axios from "axios";
-
-const MONGO_URI = process.env.MONGO_URI;
-const MONGO_DB_NAME = process.env.DATABASE_NAME;
 
 interface CheckpointAttribute {
   label: string;
@@ -52,18 +49,12 @@ export async function GET(request: NextRequest) {
 
     const userId = authData.data.user.ID;
 
-    const client = new MongoClient(MONGO_URI!);
-    await client.connect();
-    const db = client.db(MONGO_DB_NAME);
-
     const checkpoints = await db.collection("checkpoints")
       .find({
         bot_id: botId
       })
       .sort({ execution_order: 1, created_at: 1 })
       .toArray();
-
-    await client.close();
 
     // Transform MongoDB format to component format
     const transformedCheckpoints = checkpoints.map((cp: any) => ({
@@ -120,10 +111,6 @@ export async function POST(request: NextRequest) {
 
     const userId = authData.data.user.ID;
 
-    const client = new MongoClient(MONGO_URI!);
-    await client.connect();
-    const db = client.db(MONGO_DB_NAME);
-
     // Get the next execution order
     const lastCheckpoint = await db.collection("checkpoints")
       .findOne(
@@ -157,7 +144,6 @@ export async function POST(request: NextRequest) {
     };
 
     const result = await db.collection("checkpoints").insertOne(checkpointDoc);
-    await client.close();
 
     if (result.insertedId) {
       await updateGoalsChanged(userId, bot_id, authorization || "");
@@ -213,10 +199,6 @@ export async function PUT(request: NextRequest) {
 
     const userId = authData.data.user.ID;
 
-    const client = new MongoClient(MONGO_URI!);
-    await client.connect();
-    const db = client.db(MONGO_DB_NAME);
-
     const updateDoc = {
       checkpoint_name: checkpoint.name,
       tag: checkpoint.tag,
@@ -242,8 +224,6 @@ export async function PUT(request: NextRequest) {
       },
       { $set: updateDoc }
     );
-
-    await client.close();
 
     if (result.matchedCount > 0) {
       await updateGoalsChanged(userId, bot_id, authorization || "");
@@ -297,16 +277,10 @@ export async function DELETE(request: NextRequest) {
 
     const userId = authData.data.user.ID;
 
-    const client = new MongoClient(MONGO_URI!);
-    await client.connect();
-    const db = client.db(MONGO_DB_NAME);
-
     const result = await db.collection("checkpoints").deleteOne({
       _id: new ObjectId(id),
       bot_id: botId
     });
-
-    await client.close();
 
     if (result.deletedCount > 0) {
       return NextResponse.json({ success: true });

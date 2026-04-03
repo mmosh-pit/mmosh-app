@@ -6,7 +6,7 @@ import axios from "axios";
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
   const collection = db.collection("mmosh-app-staked-history");
-  const userCollection = db.collection("mmosh-users");
+  const userCollection = db.collection("users");
   const { stakedAmount, userAddeess, purchaseId } = await req.json();
   const username = await getUserName(userAddeess);
   const { origin } = new URL(req.url);
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 }
 
 const getUserName = async (wallet: string) => {
-  const usersCollection = db.collection("mmosh-users");
+  const usersCollection = db.collection("users");
   let username = "unknown user";
   const parentDetails = await usersCollection.findOne({ wallet: wallet });
   if (parentDetails !== null) {

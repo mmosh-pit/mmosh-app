@@ -1,5 +1,4 @@
-import { db } from "@/app/lib/mongoClient";
-import { ObjectId } from "mongodb";
+import { db, ObjectId } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -15,7 +14,7 @@ export async function GET(req: NextRequest) {
 
   const user =
     userId != null
-      ? await db.collection("mmosh-users").findOne({
+      ? await db.collection("users").findOne({
         _id: new ObjectId(userId),
       })
       : null;
@@ -117,7 +116,7 @@ export async function GET(req: NextRequest) {
   }
 
   const result = await db
-    .collection("mmosh-app-project")
+    .collection("bots")
     .aggregate([
       match,
       {

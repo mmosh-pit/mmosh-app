@@ -221,7 +221,7 @@ function getSuccessMessage(transactionType: string) {
 }
 
 const getReferrerName = async (wallet: string, isTransfer: boolean) => {
-  const usersCollection = db.collection("mmosh-users");
+  const usersCollection = db.collection("users");
 
   let referrerWallet = wallet;
 

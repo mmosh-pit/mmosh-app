@@ -1,19 +1,15 @@
-import { db } from "@/app/lib/mongoClient";
 import { NextRequest, NextResponse } from "next/server";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 export async function POST(req: NextRequest) {
-  const { wallet, appWallet } = await req.json();
+  const body = await req.json().catch(() => ({}));
 
-  const collection = db.collection("linked-wallets");
-
-  const existingOne = await collection.findOne({ wallet, appWallet });
-
-  if (!existingOne) {
-    await collection.insertOne({
-      wallet,
-      appWallet,
-    });
-  }
+  await fetch(`${BACKEND_URL}/link-wallet`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).catch(() => null);
 
   return NextResponse.json("", { status: 200 });
 }

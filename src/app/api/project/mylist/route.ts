@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
   console.log(creator,"mmosh-app-project-profiles creator profile address =====================>>")
 
   const result = await db
-    .collection("mmosh-app-project")
+    .collection("bots")
     .aggregate([
       {
         $lookup: {

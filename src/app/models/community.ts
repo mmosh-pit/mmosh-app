@@ -1,8 +1,7 @@
-import { ObjectId } from "mongodb";
 import { Coin } from "./coin";
 
 export type CommunityAPIResult = {
-  _id?: ObjectId;
+  _id?: string;
   data: Community;
   profileAddress: string;
   completed?: boolean;

@@ -996,6 +996,16 @@ export default function LandingPage() {
           />
         )}
         {currentStep === 4 && (
+          <Step7
+            // onSuccess={() => setCurrentStep(5)}
+            earlyAccessRef={earlyAccessRef}
+            onBack={() => setCurrentStep(3)}
+            setShowMsg={setShowMsg}
+            setMsgClass={setMsgClass}
+            setMsgText={setMsgText}
+          />
+        )}
+        {/*currentStep === 4 && (
           <Step4
             onSuccess={() => setCurrentStep(5)}
             earlyAccessRef={earlyAccessRef}
@@ -1004,7 +1014,7 @@ export default function LandingPage() {
             setMsgClass={setMsgClass}
             setMsgText={setMsgText}
           />
-        )}
+        )*/}
         {currentStep === 5 && (
           <Step5
             onSuccess={() => setCurrentStep(6)}

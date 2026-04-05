@@ -112,14 +112,16 @@ export const Step4: React.FC<Step4Props> = ({
               isMobileNumberVerified: false,
             }),
           );
-          axios.post("/api/visitors/upsert-early-access", {
-            email: cachedData.email,
-            mobileNumber: contactDetails.mobileNumber,
-            countryCode: contactDetails.countryCode,
-            country: contactDetails.country,
-            isMobileNumberVerified: false,
-            currentStep: "5",
-          }).catch(() => {});
+          axios
+            .post("/api/visitors/upsert-early-access", {
+              email: cachedData.email,
+              mobileNumber: contactDetails.mobileNumber,
+              countryCode: contactDetails.countryCode,
+              country: contactDetails.country,
+              isMobileNumberVerified: false,
+              currentStep: "5",
+            })
+            .catch(() => { });
           if (onSuccess) onSuccess();
         } else {
           createMessage(

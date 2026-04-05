@@ -118,11 +118,13 @@ export const Step3: React.FC<Step3Props> = ({
     localStorage.setItem("early-access-data", JSON.stringify(updatedData));
     setCachedData(updatedData);
 
-    axios.post("/api/visitors/upsert-early-access", {
-      email: cachedData.email,
-      password: encryptedPassword,
-      currentStep: "4",
-    }).catch(() => {});
+    axios
+      .post("/api/visitors/upsert-early-access", {
+        email: cachedData.email,
+        password: encryptedPassword,
+        currentStep: "4",
+      })
+      .catch(() => { });
 
     if (onSuccess) onSuccess();
   };
@@ -142,7 +144,7 @@ export const Step3: React.FC<Step3Props> = ({
             </h2>
 
             <p className="max-sm:text-base text-[#FFFFFFE5] font-avenirNext max-md:text-sm font-bold leading-snug lg:leading-[94%] mt-[1rem] -tracking-[0.02em]">
-              Step 3 of 6: Set your password.
+              Step 3 of 4: Set your password.
               <span className="font-normal font-avenir">
                 {" "}
                 Use at least 12 characters. Longer is stronger. You can use

@@ -144,11 +144,13 @@ export const Step2: React.FC<Step2Props> = ({
         localStorage.setItem("early-access-data", JSON.stringify(updatedData));
         setCachedData(updatedData);
 
-        axios.post("/api/visitors/upsert-early-access", {
-          email: cachedData.email,
-          hasVerifiedEmail: true,
-          currentStep: "3",
-        }).catch(() => {});
+        axios
+          .post("/api/visitors/upsert-early-access", {
+            email: cachedData.email,
+            hasVerifiedEmail: true,
+            currentStep: "3",
+          })
+          .catch(() => { });
 
         if (onSuccess) {
           onSuccess();
@@ -216,7 +218,7 @@ export const Step2: React.FC<Step2Props> = ({
               Request Early Access
             </h2>
             <p className="max-sm:text-base font-avenirNext max-md:text-sm font-bold leading-[130%] mt-[0.313rem] -tracking-[0.06em]">
-              Step 2 of 6: Enter your name and email address.
+              Step 2 of 4: Enter your name and email address.
               <span className="text-[#FFFFFFE5] font-normal font-avenir -tracking-[0.02em]">
                 {" "}
                 We sent a security code to {cachedData.email}

@@ -154,7 +154,7 @@ export const Step1: React.FC<Step1Props> = ({
 
             <p className="text-[#FFFFFFE5] text-base  my-2">
               <span className="text-white font-bold text-base">
-                Step 1 of 6: Enter your name and email address.
+                Step 1 of 4: Enter your name and email address.
               </span>
               We’ll send a 6-digit code by email to verify your address.
             </p>

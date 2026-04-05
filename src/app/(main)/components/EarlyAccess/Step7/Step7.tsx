@@ -203,7 +203,7 @@ export const Step7 = ({
 
             <p className="mt-2 text-sm text-white/90">
               <span className="font-bold">
-                Step 6 of 6: Enter your Kinship Code
+                Step 4 of 4: Enter your Kinship Code
               </span>{" "}
               Kinship is currently invite-only. Enter a code from a member,
               organization, or agent to join early access.
